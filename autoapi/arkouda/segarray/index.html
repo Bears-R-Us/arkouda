@@ -847,6 +847,55 @@ the HDF5 file, not nested under a group.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.to_parquet">
+<span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.to_parquet" title="Permalink to this definition">#</a></dt>
+<dd><p>Save the SegArray object to Parquet. The result is a collection of files,
+one file per locale of the arkouda server, where each filename starts
+with prefix_path. Each locale saves its chunk of the object to its
+corresponding file.
+:param prefix_path: Directory and filename prefix that all output files share
+:type prefix_path: str
+:param dataset: Name of the dataset to create in files (must not already exist)
+:type dataset: str
+:param mode: Deprecated.</p>
+<blockquote>
+<div><p>Parameter kept to maintain functionality of other calls. Only Truncate
+supported.
+By default, truncate (overwrite) output files, if they exist.
+If ‘append’, attempt to create new dataset in existing files.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compression</strong> (<em>str</em><em> (</em><em>Optional</em><em>)</em>) – (None | “snappy” | “gzip” | “brotli” | “zstd” | “lz4”)
+Sets the compression type used with Parquet files</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>string message indicating result of save operation</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>
+<li><p><strong>ValueError</strong> – If write mode is not Truncate.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Append mode for Parquet has been deprecated. It was not implemented for SegArray.</p></li>
+<li><p>The prefix_path must be visible to the arkouda server and the user must</p></li>
+</ul>
+<p>have write permission.
+- Output files have names of the form <code class="docutils literal notranslate"><span class="pre">&lt;prefix_path&gt;_LOCALE&lt;i&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;i&gt;</span></code>
+ranges from 0 to <code class="docutils literal notranslate"><span class="pre">numLocales</span></code> for <cite>file_type=’distribute’</cite>.
+- If any of the output files already exist and
+the mode is ‘truncate’, they will be overwritten. If the mode is ‘append’
+and the number of output files is less than the number of locales or a
+dataset with the same name already exists, a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will result.
+- Any file extension can be used.The file I/O does not rely on the extension to
+determine the file format.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.save" title="Permalink to this definition">#</a></dt>
 <dd><p>DEPRECATED
@@ -1268,6 +1317,7 @@ was supplied to SegArray.save()</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.aggregate"><code class="docutils literal notranslate"><span class="pre">SegArray.aggregate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.unique"><code class="docutils literal notranslate"><span class="pre">SegArray.unique()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.to_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.to_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.to_parquet"><code class="docutils literal notranslate"><span class="pre">SegArray.to_parquet()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.save"><code class="docutils literal notranslate"><span class="pre">SegArray.save()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.read_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.read_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.load"><code class="docutils literal notranslate"><span class="pre">SegArray.load()</span></code></a></li>
@@ -1323,6 +1373,7 @@ was supplied to SegArray.save()</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.aggregate">aggregate</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.unique">unique</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.to_hdf">to_hdf</a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.to_parquet">to_parquet</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.save">save</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.read_hdf">read_hdf</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.load">load</a></li>

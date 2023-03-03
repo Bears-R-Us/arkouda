@@ -287,7 +287,7 @@
 <li><p>Strings</p></li>
 <li><p>SegArray</p>
 <ul>
-<li><p>Read Only (Writes coming soon. Track progress <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/issues/2119">here</a>)</p></li>
+<li><p>Writing multi-column files not yet supported. Track <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/issues/2186">here</a>)</p></li>
 <li><p>Strings dtype not yet supported. Track <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/issues/2121">here</a></p></li>
 </ul>
 </li>
@@ -313,7 +313,7 @@
 </div></blockquote>
 <p><strong>Append</strong></p>
 <blockquote>
-<div><p>When writting to Parquet in <code class="docutils literal notranslate"><span class="pre">append</span></code> mode, all datasets will be appended to the file. If no file with the supplied name exists, one will be created. If any datasets being written have a name that is already the name of a dataset within the file, an error will be generated.</p>
+<div><p>When writting to Parquet in <code class="docutils literal notranslate"><span class="pre">append</span></code> mode, all datasets will be appended to the file. If no file with the supplied name exists, one will be created. If any datasets being written have a name that is already the name of a dataset within the file, an error will be generated. Append is not supported for SegArray objects.</p>
 <p><em>Please Note: appending to a Parquet file is not natively support and is extremely ineffiecent. It is recommended to read the file out and call <code class="docutils literal notranslate"><span class="pre">arkouda.io.to_parquet</span></code> on the output with the additional columns added and then writting in <code class="docutils literal notranslate"><span class="pre">truncate</span></code> mode.</em></p>
 </div></blockquote>
 </section>
@@ -346,6 +346,12 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id687" title="arkouda.Strings.to_parquet"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.to_parquet()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id690" title="arkouda.Strings.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.save()</span></code></a></p></li>
+</ul>
+</section>
+<section id="segarray">
+<h3>SegArray<a class="headerlink" href="#segarray" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray.to_parquet" title="arkouda.SegArray.to_parquet"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.SegArray.to_parquet()</span></code></a></p></li>
 </ul>
 </section>
 <section id="categorical">
@@ -419,6 +425,7 @@
 <li><a class="reference internal" href="#index">Index</a></li>
 <li><a class="reference internal" href="#dataframe">DataFrame</a></li>
 <li><a class="reference internal" href="#strings">Strings</a></li>
+<li><a class="reference internal" href="#segarray">SegArray</a></li>
 <li><a class="reference internal" href="#categorical">Categorical</a></li>
 </ul>
 </li>

@@ -360,6 +360,8 @@ or
    * Helper proc to cast AbstractSymEntry to SegStringSymEntry
    
 
+.. function:: proc toSegArraySymEntry(entry: borrowed AbstractSymEntry, type t) throws
+
 .. function:: proc getArraySpecFromEntry(entry: borrowed AbstractSymEntry) throws
 
    *
