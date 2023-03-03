@@ -460,7 +460,7 @@ def _build_objects(
     RuntimeError
         - If no objects were returned
     """
-    items = rep_msg["items"] if "items" in rep_msg else []
+    items = json.loads(rep_msg["items"]) if "items" in rep_msg else []
     # We have a couple possible return conditions
     # 1. We have multiple items returned i.e. multi pdarrays, multi strings, multi pdarrays & strings
     # 2. We have a single pdarray

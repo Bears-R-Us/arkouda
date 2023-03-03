@@ -10,6 +10,7 @@ module GenSymIO {
     use Sort;
     use NumPyDType;
     use List;
+    use Map;
     use Set;
     use Reflection;
     use ServerErrors;
@@ -187,84 +188,45 @@ module GenSymIO {
         }
     }
 
-    /**
-     * Construct json object to be returned from readAllMsg
-     * :arg rnames: List of (DataSetName, arkouda_type, id of SymEntry) for items read from files
-     * :type rnames: List of 3*string tuples
-     *
-     * :arg allowErrors: True if we allowed errors when reading files from HDF5
-     * :type allowErros: bool
-     *
-     * :arg fileErrorCount: Number of files which threw errors when being read
-     * :type fileErrorCount: int
-     *
-     * :arg fileErrors: List of the error messages when trying to read HDF5 files
-     * :type fileErrors: list(string)
-     *
-     * :arg st: SymTab used to look up attributes of pdarray/seg_string ids
-     * :type borrowed SymTab:
-     *
-     * :returns: response message string formatted in json
-     *
-     * Example
-     *   {
-     *       "items": [
-     *           {
-     *               "dataset_name": "int_tens_pdarray",
-     *               "arkouda_type": "pdarray",
-     *               "created": "created id_9 int64 1000 1 (1000) 8"
-     *           }
-     *       ],
-     *       "allow_errors": "true",
-     *       "file_error_count": "1",
-     *       "file_errors": [
-     *           "Permission error Operation not permitted (error msg) opening path/to/file"
-     *       ]
-     *   }
-     *  Uses keys:  dataset_name, arkouda_type->[pdarray|seg_string], created->(legacy creation statement)
-     */
     proc _buildReadAllMsgJson(rnames:list(3*string), allowErrors:bool, fileErrorCount:int, fileErrors:list(string), st: borrowed SymTab): string throws {
-        // TODO: Right now we're building the legacy "created ..." string so we'll stuff them in a single array of items
-        // in the future we should begin to build out actual json objects of each pdarray as k:v pairs
-        var items: list(string);
+        var items: list(map(string, string));
+
         for rname in rnames {
             var (dsetName, akType, id) = rname;
-            dsetName = dsetName.replace(Q, ESCAPED_QUOTES, -1); // sanitize dsetName with respect to double quotes
-            var item = "{" + Q + "dataset_name"+ QCQ + dsetName + Q +
-                       "," + Q + "arkouda_type" + QCQ + akType + Q;
-            select (akType) {
-                when ("ArrayView") {
-                    var (valName, segName) = id.splitMsgToTuple("+", 2);
-                    item += "," + Q + "created" + QCQ + "created " + st.attrib(valName) + "+created " + st.attrib(segName) + Q + "}";
-                }
-                when ("pdarray") {
-                    item +="," + Q + "created" + QCQ + "created " + st.attrib(id) + Q + "}";
-                }
-                when ("seg_string") {
-                    var (segName, nBytes) = id.splitMsgToTuple("+", 2);
-                    item += "," + Q + "created" + QCQ + "created " + st.attrib(segName) + "+created bytes.size " + nBytes + Q + "}";
-                }
-                when ("seg_array") {
-                    item += "," + Q + "created" + QCQ + id.replace(Q, ESCAPED_QUOTES) + Q + "}";
-                }
-                otherwise {
-                    item += "}";
-                }
+            var item: map(string, string) = new map(string, string);
+            item.add("dataset_name", dsetName.replace(Q, ESCAPED_QUOTES, -1));
+            item.add("arkouda_type", akType);
+            var create_str: string;
+            if (akType == "ArrayView") {
+                var (valName, segName) = id.splitMsgToTuple("+", 2);
+                create_str = "created " + st.attrib(valName) + "+created " + st.attrib(segName);
             }
+            else if (akType == "pdarray") {
+                create_str = "created " + st.attrib(id);
+            }
+            else if (akType == "seg_string") {
+                var (segName, nBytes) = id.splitMsgToTuple("+", 2);
+                create_str = "created " + st.attrib(segName) + "+created bytes.size " + nBytes;
+            }
+            else if (akType == "seg_array") {
+                create_str = id;
+
+            } 
+            else {
+                continue;
+            }
+            item.add("created", create_str);
             items.append(item);
         }
-
-        // Now assemble the reply message
-        var reply = "{" + Q + "items" + Q + ":[" + ",".join(items.these()) + "]";
+        
+        var reply: map(string, string) = new map(string, string);
+        reply.add("items", "%jt".format(items));
         if allowErrors && !fileErrors.isEmpty() { // If configured, build the allowErrors portion
-            reply += ",";
-            reply += Q + "allow_errors" + QCQ + "true" + Q + ",";
-            reply += Q + "file_error_count" + QCQ + fileErrorCount:string + Q + ",";
-            reply += Q + "file_errors" + Q + ": [" + Q;
-            reply += (Q +"," + Q).join(fileErrors.these()) + Q + "]";
+            reply.add("allow_errors", "true");
+            reply.add("file_error_count", fileErrorCount:string);
+            reply.add("file_errors", "%jt".format(fileErrors));
         }
-        reply += "}";
-        return reply;
+        return "%jt".format(reply);
     }
 
 }
