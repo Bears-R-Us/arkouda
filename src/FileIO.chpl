@@ -18,7 +18,7 @@ module FileIO {
     private config const logChannel = ServerConfig.logChannel;
     const fioLogger = new Logger(logLevel, logChannel);
     
-    enum FileType {HDF5, ARROW, PARQUET, UNKNOWN};
+    enum FileType {HDF5, ARROW, PARQUET, CSV, UNKNOWN};
 
     proc appendFile(filePath : string, line : string) throws {
         var writer;
@@ -191,6 +191,7 @@ module FileIO {
     const MAGIC_PARQUET:bytes = b"\x50\x41\x52\x31"; // 4 bytes "PAR1"
     const MAGIC_HDF5:bytes = b"\x89\x48\x44\x46\x0d\x0a\x1a\x0a"; // 8 bytes "\211HDF\r\n\032\n"
     const MAGIC_ARROW:bytes = b"\x41\x52\x52\x4F\x57\x31\x00\x00"; // 6 bytes "ARROW1" padded to 8 with nulls
+    const MAGIC_CSV:bytes = b"\x2a\x2a\x48\x45\x41\x44\x45\x52"; // 8 bytes "**HEADER"
 
     /* Determine FileType based on public File Magic for supported types
       :arg header: file header
@@ -207,6 +208,8 @@ module FileIO {
             t = FileType.HDF5;
         } else if (length >= 8 && MAGIC_ARROW == header.this(0..7)) {
             t = FileType.ARROW;
+        } else if (length >= 8 && MAGIC_CSV == header.this(0..7)) {
+          t = FileType.CSV;
         }
         return t;
     }
@@ -285,8 +288,11 @@ module FileIO {
         }
         when FileType.PARQUET {
           return new MsgTuple("Parquet", MsgType.NORMAL);
+        }
+        when FileType.CSV {
+          return new MsgTuple("CSV", MsgType.NORMAL);
         } otherwise {
-          var errorMsg = "Unsupported file type; Parquet and HDF5 are only supported formats";
+          var errorMsg = "Unsupported file type; Parquet, HDF5 and CSV are only supported formats";
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
       }
@@ -327,6 +333,8 @@ module FileIO {
         }
         when FileType.PARQUET {
           return executeCommand("lspq", msgArgs, st);
+        } when FileType.CSV {
+          return executeCommand("lscsv", msgArgs, st);
         } otherwise {
           var errorMsg = "Unsupported file type; Parquet and HDF5 are only supported formats";
           return new MsgTuple(errorMsg, MsgType.ERROR);

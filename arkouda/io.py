@@ -51,7 +51,7 @@ def get_filetype(filenames: Union[str, List[str]]) -> str:
     Returns
     -------
     str
-        Type of the file returned as a string, either 'HDF5' or 'Parquet'
+        Type of the file returned as a string, either 'HDF5', 'Parquet' or 'CSV
 
     Raises
     ------
@@ -60,7 +60,8 @@ def get_filetype(filenames: Union[str, List[str]]) -> str:
 
     Notes
     -----
-    When list provided, it is assumed that all files are the same type
+    - When list provided, it is assumed that all files are the same type
+    - CSV Files without the Arkouda Header are not supported
 
     See Also
     --------
@@ -76,7 +77,7 @@ def get_filetype(filenames: Union[str, List[str]]) -> str:
     return cast(str, generic_msg(cmd="getfiletype", args={"filename": fname}))
 
 
-def ls(filename: str) -> List[str]:
+def ls(filename: str, col_delim: str = ",") -> List[str]:
     """
     This function calls the h5ls utility on a HDF5 file visible to the
     arkouda server or calls a function that imitates the result of h5ls
@@ -86,6 +87,8 @@ def ls(filename: str) -> List[str]:
     ----------
     filename : str
         The name of the file to pass to the server
+    col_delim : str
+        The delimiter used to separate columns if the file is a csv
 
     Returns
     -------
@@ -103,6 +106,11 @@ def ls(filename: str) -> List[str]:
     Notes
         - This will need to be updated because Parquet will not technically support this when we update.
             Similar functionality will be added for Parquet in the future
+        - For CSV files without headers, please use ls_csv
+
+    See Also
+    ---------
+    ls_csv
     """
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
@@ -115,6 +123,7 @@ def ls(filename: str) -> List[str]:
                 cmd=cmd,
                 args={
                     "filename": filename,
+                    "col_delim": col_delim
                 },
             ),
         )
@@ -277,6 +286,26 @@ def get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False) -
 
 
 def ls_csv(filename: str, col_delim: str = ",") -> List[str]:
+    """
+    Used for identifying the datasets within a file when a CSV does not
+    have a header.
+
+    Parameters
+    ----------
+    filename : str
+        The name of the file to pass to the server
+    col_delim : str
+        The delimiter used to separate columns if the file is a csv
+
+    Returns
+    -------
+    str
+        The string output of the datasets from the server
+
+    See Also
+    ---------
+    ls
+    """
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
 
@@ -1295,6 +1324,7 @@ def load(
     file_format: str = "INFER",
     dataset: str = "array",
     calc_string_offsets: bool = False,
+    column_delim: str = ","
 ) -> Union[
     pdarray,
     Strings,
@@ -1317,6 +1347,8 @@ def load(
     calc_string_offsets : bool
         If True the server will ignore Segmented Strings 'offsets' array and derive
         it from the null-byte terminators.  Defaults to False currently
+    column_delim : str
+        Column delimiter to be used if dataset is CSV. Otherwise, unused.
 
     Returns
     -------
@@ -1346,6 +1378,8 @@ def load(
 
     This function will be deprecated when glob flags are added to read_* functions
 
+    CSV files without the Arkouda Header are not supported.
+
     Examples
     --------
     >>> # Loading from file without extension
@@ -1365,8 +1399,10 @@ def load(
         file_format = get_filetype(globstr) if file_format.lower() == "infer" else file_format
         if file_format.lower() == "hdf5":
             return read_hdf(globstr, dataset, calc_string_offsets=calc_string_offsets)
-        else:
+        elif file_format.lower() == "parquet":
             return read_parquet(globstr, dataset)
+        else:
+            return read_csv(globstr, dataset, column_delim=column_delim)
     except RuntimeError as re:
         if "does not exist" in str(re):
             raise ValueError(
@@ -1390,7 +1426,7 @@ def load_all(
     path_prefix : str
         Filename prefix used to save the original pdarray
     file_format: str
-        'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Indicates the format being loaded.
+        'INFER', 'HDF5', 'Parquet', or 'CSV'. Defaults to 'INFER'. Indicates the format being loaded.
         When 'INFER' the processing will detect the format
         Defaults to 'HDF5'
 
@@ -1422,6 +1458,8 @@ def load_all(
     This function has been updated to determine the file extension based on the file format variable
 
     This function will be deprecated when glob flags are added to read_* methods
+
+    CSV files without the Arkouda Header are not supported.
     """
     prefix, extension = os.path.splitext(path_prefix)
     firstname = f"{prefix}_LOCALE0000{extension}"
@@ -1469,6 +1507,7 @@ def read(
     strictTypes: bool = True,
     allow_errors: bool = False,
     calc_string_offsets=False,
+    column_delim: str = ","
 ) -> Union[
     pdarray,
     Strings,
@@ -1503,6 +1542,8 @@ def read(
         Default False, if True this will tell the server to calculate the
         offsets/segments array on the server versus loading them from HDF5 files.
         In the future this option may be set to True as the default.
+    column_delim : str
+        Column delimiter to be used if dataset is CSV. Otherwise, unused.
 
     Returns
     -------
@@ -1535,6 +1576,8 @@ def read(
     and read all of them. Use ``get_datasets`` to show the names of datasets
     to HDF5/Parquet files.
 
+    CSV files without the Arkouda Header are not supported.
+
     Examples
     --------
     Read with file Extension
@@ -1564,6 +1607,13 @@ def read(
             iterative=iterative,
             strict_types=strictTypes,
             allow_errors=allow_errors,
+        )
+    elif ftype.lower() == "csv":
+        return read_csv(
+            filenames,
+            datasets=datasets,
+            column_delim=",",
+            allow_errors=allow_errors
         )
     else:
         raise RuntimeError(f"Invalid File Type detected, {ftype}")
