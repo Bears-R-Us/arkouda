@@ -234,7 +234,7 @@ def _mode_str_to_int(mode: str) -> int:
         raise ValueError(f"Write Mode expected to be 'truncate' or 'append'. Got {mode}.")
 
 
-def get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False) -> List[str]:
+def get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ",") -> List[str]:
     """
     Get the names of the datasets in the provide files
 
@@ -245,6 +245,8 @@ def get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False) -
     allow_errors: bool
         Default: False
         Whether or not to allow errors while accessing datasets
+    column_delim : str
+        Column delimiter to be used if dataset is CSV. Otherwise, unused.
 
     Returns
     -------
@@ -271,7 +273,7 @@ def get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False) -
         filenames = [filenames]
     for fname in filenames:
         try:
-            datasets = ls(fname)
+            datasets = ls(fname, col_delim=column_delim)
             if datasets:
                 break
         except RuntimeError:
@@ -1415,7 +1417,7 @@ def load(
 
 @typechecked
 def load_all(
-    path_prefix: str, file_format: str = "INFER"
+    path_prefix: str, file_format: str = "INFER", column_delim: str = ","
 ) -> Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]:
     """
     Load multiple pdarrays, Strings, SegArrays, or Categoricals previously
@@ -1428,7 +1430,9 @@ def load_all(
     file_format: str
         'INFER', 'HDF5', 'Parquet', or 'CSV'. Defaults to 'INFER'. Indicates the format being loaded.
         When 'INFER' the processing will detect the format
-        Defaults to 'HDF5'
+        Defaults to 'INFER'
+    column_delim : str
+        Column delimiter to be used if dataset is CSV. Otherwise, unused.
 
     Returns
     -------
@@ -1466,7 +1470,7 @@ def load_all(
     try:
         result = {
             dataset: load(prefix, file_format=file_format, dataset=dataset)
-            for dataset in get_datasets(firstname)
+            for dataset in get_datasets(firstname, column_delim)
         }
 
         result = _dict_recombine_segarrays(result)
