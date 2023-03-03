@@ -413,29 +413,3 @@ class DatetimeTest(ArkoudaTest):
             ak.Datetime(ak.date_range("2005-01-01", periods=10, freq="d")).week.to_list(),
             pd.Series(pd.date_range("2005-01-01", periods=10, freq="d")).dt.isocalendar().week.to_list(),
         )
-
-    def test_head_tail_resetting_index(self):
-        # Test that issue #2183 is resolved
-        df = ak.DataFrame({"cnt": ak.arange(65)})
-        # Note we have to call __repr__ to trigger head_tail_server call
-
-        bool_idx = df[df["cnt"] > 3]
-        bool_idx.__repr__()
-        self.assertListEqual(bool_idx.index.index.to_list(), list(range(4, 65)))
-
-        slice_idx = df[:]
-        slice_idx.__repr__()
-        self.assertListEqual(slice_idx.index.index.to_list(), list(range(65)))
-
-        # verify it persists non-int Index
-        idx = ak.concatenate([ak.zeros(5, bool), ak.ones(60, bool)])
-        df = ak.DataFrame({"cnt": ak.arange(65)}, index=idx)
-
-        bool_idx = df[df["cnt"] > 3]
-        bool_idx.__repr__()
-        # the new index is first False and rest True (because we lose first 4), so equivalent to arange(61, bool)
-        self.assertListEqual(bool_idx.index.index.to_list(), ak.arange(61, dtype=bool).to_list())
-
-        slice_idx = df[:]
-        slice_idx.__repr__()
-        self.assertListEqual(slice_idx.index.index.to_list(), idx.to_list())
