@@ -502,7 +502,6 @@ class ParquetTest(ArkoudaTest):
             s.to_parquet(f"{tmp_dirname}/int_test")
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
-            print(rd_data)
             for i in range(6):
                 self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
 

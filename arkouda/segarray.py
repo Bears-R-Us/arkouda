@@ -1074,7 +1074,6 @@ class SegArray:
         have write permission.
         - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
         ranges from 0 to ``numLocales`` for `file_type='distribute'`.
-        - 'append' write mode is supported, but is not efficient.
         - If any of the output files already exist and
         the mode is 'truncate', they will be overwritten. If the mode is 'append'
         and the number of output files is less than the number of locales or a
