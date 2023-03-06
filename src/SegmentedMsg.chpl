@@ -91,33 +91,27 @@ module SegmentedMsg {
     select genEntry.dtype {
       when (DType.Int64) {
         var segArr = getSegArray(name, st, int);
-        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
-        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
       }
       when (DType.UInt64) {
         var segArr = getSegArray(name, st, uint);
-        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
-        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
       }
       when (DType.Float64) {
         var segArr = getSegArray(name, st, real);
-        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
-        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
       }
       when (DType.Bool) {
         var segArr = getSegArray(name, st, bool);
-        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
-        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
       }
       when (DType.UInt8){
         var segArr = getSegArray(name, st, uint(8));
-        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
-        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
       }
       when (DType.BigInt){
         var segArr = getSegArray(name, st, bigint);
-        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
-        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
       }
       otherwise {
         throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(genEntry.dtype:string),
