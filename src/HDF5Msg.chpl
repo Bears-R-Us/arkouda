@@ -900,6 +900,45 @@ module HDF5Msg {
         writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_OFFSET_NAME), "pdarray", getDataType(int));
     }
 
+    private proc writeNilSegArrayGroupToHdf(fileId: int, group: string, ctype) throws {
+        var dset_id: C_HDF5.hid_t;
+        var zero = 0: uint(64);
+
+        // create empty values dataset
+        C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1,
+                c_ptrTo(zero), ctype, nil);
+
+        dset_id = C_HDF5.H5Dopen(fileId, "/%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), C_HDF5.H5P_DEFAULT);
+
+        // Create the attribute space
+        var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+        var attr_id: C_HDF5.hid_t;
+
+        // Create the objectType. This will be important when merging with other read/write functionality.
+        attr_id = C_HDF5.H5Acreate2(dset_id, "ObjType".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+        var val_t: ObjType = ObjType.PDARRAY;
+        var val_t_int: int = val_t: int;
+        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(val_t_int));
+        C_HDF5.H5Aclose(attr_id);
+        C_HDF5.H5Sclose(attrSpaceId);
+        C_HDF5.H5Dclose(dset_id);
+
+        // create empty segments dataset
+        C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1,
+            c_ptrTo(zero), getHDF5Type(int), nil);
+
+        dset_id = C_HDF5.H5Dopen(fileId, "/%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), C_HDF5.H5P_DEFAULT);
+
+        attrSpaceId = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+        attr_id = C_HDF5.H5Acreate2(dset_id, "ObjType".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+        var seg_t: ObjType = ObjType.PDARRAY;
+        var seg_t_int: int = seg_t: int;
+        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(seg_t_int));
+        C_HDF5.H5Aclose(attr_id);
+        C_HDF5.H5Sclose(attrSpaceId);
+        C_HDF5.H5Dclose(dset_id);
+    }
+
     proc writeSegmentedDistDset(filenames: [] string, group: string, objType: string, values, segments, st: borrowed SymTab, type t) throws {
         const lastSegIdx = segments.domain.high;
         const lastValIdx = values.domain.high;
@@ -916,28 +955,37 @@ module HDF5Msg {
             // create the group
             validateGroup(file_id, localeFilename, group);
 
-            // write the segments
             const locDom = segments.localSubdomain();
             var dims: [0..#1] C_HDF5.hsize_t;
             dims[0] = locDom.size: C_HDF5.hsize_t;
 
-            var localSegs = segments[locDom];
-            var startValIdx = localSegs[locDom.low];
-            var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else segments[locDom.high + 1] - 1;
-            var valIdxRange = startValIdx..endValIdx;
+            if (locDom.isEmpty() || locDom.size <= 0) {
+                h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "write1DDistStringsAggregators: locale.id %i has empty locDom.size %i, will get empty dataset."
+                    .format(loc.id, locDom.size));
+                writeNilSegArrayGroupToHdf(file_id, group, getDataType(t));
+                // write attributes for arkouda meta info
+                writeArkoudaMetaData(file_id, group, objType, getDataType(t));
+            } else {
+                // write the segments
+                var localSegs = segments[locDom];
+                var startValIdx = localSegs[locDom.low];
+                var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else segments[locDom.high + 1] - 1;
+                var valIdxRange = startValIdx..endValIdx;
 
-            var localVals: [valIdxRange] t;
+                var localVals: [valIdxRange] t;
 
-            forall (localVal, valIdx) in zip(localVals, valIdxRange) with (var agg = newSrcAggregator(t)) {
-                // Copy the remote value at index position valIdx to our local array
-                agg.copy(localVal, values[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
+                forall (localVal, valIdx) in zip(localVals, valIdxRange) with (var agg = newSrcAggregator(t)) {
+                    // Copy the remote value at index position valIdx to our local array
+                    agg.copy(localVal, values[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
+                }
+
+                writeSegmentedComponentToHdf(file_id, group, SEGMENTED_VALUE_NAME, localVals);
+                localSegs = localSegs - startValIdx;
+                writeSegmentedComponentToHdf(file_id, group, SEGMENTED_OFFSET_NAME, localSegs);
+
+                writeArkoudaMetaData(file_id, group, objType, getDataType(t));
             }
-
-            writeSegmentedComponentToHdf(file_id, group, SEGMENTED_VALUE_NAME, localVals);
-            localSegs = localSegs - startValIdx;
-            writeSegmentedComponentToHdf(file_id, group, SEGMENTED_OFFSET_NAME, localSegs);
-
-            writeArkoudaMetaData(file_id, group, objType, getDataType(t));
         }
     }
 
@@ -1449,6 +1497,7 @@ module HDF5Msg {
                     diffs[i+1] = vd.size;
                 }
             } else {
+                b = -1; // if segment has nothing, use to avoid overwriting index 0.
                 h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                     "fD:%t segments subdom:%t is malformed signaling no segment data in file, skipping".format(i, sd));
             }
@@ -1456,7 +1505,9 @@ module HDF5Msg {
         // Insert height increases at region boundaries
         var sparseDiffs: [D] int;
         forall (b, d) in zip(boundaries, diffs) with (var agg = newDstAggregator(int)) {
-            agg.copy(sparseDiffs[b], d);
+            if b != -1 {
+                agg.copy(sparseDiffs[b], d);
+            }
         }
         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
         overMemLimit(numBytes(int) * sparseDiffs.size);
