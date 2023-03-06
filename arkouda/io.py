@@ -1612,6 +1612,8 @@ def read(
             allow_errors=allow_errors,
         )
     elif ftype.lower() == "csv":
-        return read_csv(filenames, datasets=datasets, column_delim=column_delim, allow_errors=allow_errors)
+        return read_csv(
+            filenames, datasets=datasets, column_delim=column_delim, allow_errors=allow_errors
+        )
     else:
         raise RuntimeError(f"Invalid File Type detected, {ftype}")
