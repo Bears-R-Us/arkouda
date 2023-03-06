@@ -117,7 +117,7 @@
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="FileIO.FileType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">FileType</span></span> <span class="pre">{</span> <span class="pre">HDF5,</span> <span class="pre">ARROW,</span> <span class="pre">PARQUET,</span> <span class="pre">UNKNOWN</span> <span class="pre">}</span><a class="headerlink" href="#FileIO.FileType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">FileType</span></span> <span class="pre">{</span> <span class="pre">HDF5,</span> <span class="pre">ARROW,</span> <span class="pre">PARQUET,</span> <span class="pre">CSV,</span> <span class="pre">UNKNOWN</span> <span class="pre">}</span><a class="headerlink" href="#FileIO.FileType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -222,6 +222,11 @@
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="FileIO.MAGIC_ARROW">
 <em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_ARROW</span></span><span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">=</span> <span class="pre">b&quot;ARROW1\x00\x00&quot;</span><a class="headerlink" href="#FileIO.MAGIC_ARROW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="FileIO.MAGIC_CSV">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_CSV</span></span><span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">=</span> <span class="pre">b&quot;**HEADER&quot;</span><a class="headerlink" href="#FileIO.MAGIC_CSV" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

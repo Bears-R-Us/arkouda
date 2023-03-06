@@ -42,19 +42,20 @@ Functions
    :param filenames: A file or list of files visible to the arkouda server
    :type filenames: Union[str, List[str]]
 
-   :returns: Type of the file returned as a string, either 'HDF5' or 'Parquet'
+   :returns: Type of the file returned as a string, either 'HDF5', 'Parquet' or 'CSV
    :rtype: str
 
    :raises ValueError: Raised if filename is empty or contains only whitespace
 
    .. rubric:: Notes
 
-   When list provided, it is assumed that all files are the same type
+   - When list provided, it is assumed that all files are the same type
+   - CSV Files without the Arkouda Header are not supported
 
    .. seealso:: :obj:`read_parquet`, :obj:`read_hdf`
 
 
-.. py:function:: ls(filename: str) -> List[str]
+.. py:function:: ls(filename: str, col_delim: str = ',') -> List[str]
 
    This function calls the h5ls utility on a HDF5 file visible to the
    arkouda server or calls a function that imitates the result of h5ls
@@ -62,6 +63,8 @@ Functions
 
    :param filename: The name of the file to pass to the server
    :type filename: str
+   :param col_delim: The delimiter used to separate columns if the file is a csv
+   :type col_delim: str
 
    :returns: The string output of the datasets from the server
    :rtype: str
@@ -71,6 +74,9 @@ Functions
    :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
    :raises Notes: - This will need to be updated because Parquet will not technically support this when we update.
            Similar functionality will be added for Parquet in the future
+       - For CSV files without headers, please use ls_csv
+
+   .. seealso:: :obj:`ls_csv`
 
 
 .. py:function:: get_null_indices(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None) -> Union[arkouda.pdarrayclass.pdarray, Mapping[str, arkouda.pdarrayclass.pdarray]]
@@ -93,7 +99,7 @@ Functions
    .. seealso:: :obj:`get_datasets`, :obj:`ls`
 
 
-.. py:function:: get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False) -> List[str]
+.. py:function:: get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ',') -> List[str]
 
    Get the names of the datasets in the provide files
 
@@ -102,6 +108,8 @@ Functions
    :param allow_errors: Default: False
                         Whether or not to allow errors while accessing datasets
    :type allow_errors: bool
+   :param column_delim: Column delimiter to be used if dataset is CSV. Otherwise, unused.
+   :type column_delim: str
 
    :rtype: List[str] of names of the datasets
 
@@ -118,6 +126,19 @@ Functions
 
 
 .. py:function:: ls_csv(filename: str, col_delim: str = ',') -> List[str]
+
+   Used for identifying the datasets within a file when a CSV does not
+   have a header.
+
+   :param filename: The name of the file to pass to the server
+   :type filename: str
+   :param col_delim: The delimiter used to separate columns if the file is a csv
+   :type col_delim: str
+
+   :returns: The string output of the datasets from the server
+   :rtype: str
+
+   .. seealso:: :obj:`ls`
 
 
 .. py:function:: get_columns(filenames: Union[str, List[str]], col_delim: str = ',', allow_errors: bool = False) -> List[str]
@@ -534,7 +555,7 @@ Functions
    >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
 
 
-.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, column_delim: str = ',') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -548,6 +569,8 @@ Functions
    :param calc_string_offsets: If True the server will ignore Segmented Strings 'offsets' array and derive
                                it from the null-byte terminators.  Defaults to False currently
    :type calc_string_offsets: bool
+   :param column_delim: Column delimiter to be used if dataset is CSV. Otherwise, unused.
+   :type column_delim: str
 
    :returns: The pdarray or Strings that was previously saved
    :rtype: Union[pdarray, Strings]
@@ -568,6 +591,8 @@ Functions
 
    This function will be deprecated when glob flags are added to read_* functions
 
+   CSV files without the Arkouda Header are not supported.
+
    .. rubric:: Examples
 
    >>> # Loading from file without extension
@@ -582,17 +607,19 @@ Functions
    the extension is not required to be a specific format.
 
 
-.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER') -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical]]
+.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER', column_delim: str = ',') -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical]]
 
    Load multiple pdarrays, Strings, SegArrays, or Categoricals previously
    saved with ``save_all()``.
 
    :param path_prefix: Filename prefix used to save the original pdarray
    :type path_prefix: str
-   :param file_format: 'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Indicates the format being loaded.
+   :param file_format: 'INFER', 'HDF5', 'Parquet', or 'CSV'. Defaults to 'INFER'. Indicates the format being loaded.
                        When 'INFER' the processing will detect the format
-                       Defaults to 'HDF5'
+                       Defaults to 'INFER'
    :type file_format: str
+   :param column_delim: Column delimiter to be used if dataset is CSV. Otherwise, unused.
+   :type column_delim: str
 
    :returns: Dictionary of {datsetName: Union[pdarray, Strings, SegArray, Categorical]}
              with the previously saved pdarrays, Strings, SegArrays, or Categoricals
@@ -613,8 +640,10 @@ Functions
 
    This function will be deprecated when glob flags are added to read_* methods
 
+   CSV files without the Arkouda Header are not supported.
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
+
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
 
    Read datasets from files.
    File Type is determined automatically.
@@ -640,6 +669,8 @@ Functions
                                offsets/segments array on the server versus loading them from HDF5 files.
                                In the future this option may be set to True as the default.
    :type calc_string_offsets: bool
+   :param column_delim: Column delimiter to be used if dataset is CSV. Otherwise, unused.
+   :type column_delim: str
 
    :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,*
              * *or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,*
@@ -663,6 +694,8 @@ Functions
    If datasets is None, infer the names of datasets from the first file
    and read all of them. Use ``get_datasets`` to show the names of datasets
    to HDF5/Parquet files.
+
+   CSV files without the Arkouda Header are not supported.
 
    .. rubric:: Examples
 
