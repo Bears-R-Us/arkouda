@@ -11,7 +11,7 @@ module SegmentedString {
   use PrivateDist;
   use ServerConfig;
   use Unique;
-  use Time only getCurrentTime;
+  use Time;
   use Reflection;
   use Logging;
   use ServerErrors;
@@ -222,7 +222,7 @@ module SegmentedString {
       }
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                               "Computing lengths and offsets");
-      var t1 = getCurrentTime();
+      var t1 = timeSinceEpoch().totalSeconds();
       ref oa = offsets.a;
       const low = offsets.a.domain.low, high = offsets.a.domain.high;
       // Gather the right and left boundaries of the indexed strings
@@ -248,10 +248,10 @@ module SegmentedString {
       gatheredOffsets -= gatheredLengths;
       
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                "aggregation in %i seconds".format(getCurrentTime() - t1));
+                                "aggregation in %i seconds".format(timeSinceEpoch().totalSeconds() - t1));
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
       if logLevel == LogLevel.DEBUG {
-          t1 = getCurrentTime();
+          t1 = timeSinceEpoch().totalSeconds();
       }
       var gatheredVals = makeDistArray(retBytes, uint(8));
       if CHPL_COMM != 'none' {
@@ -295,7 +295,7 @@ module SegmentedString {
       }
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             "Gathered offsets and vals in %i seconds".format(
-                                           getCurrentTime() -t1));
+                                           timeSinceEpoch().totalSeconds() -t1));
       return (gatheredOffsets, gatheredVals);
     }
 
@@ -309,7 +309,7 @@ module SegmentedString {
       }
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                  "Computing lengths and offsets");
-      var t1 = getCurrentTime();
+      var t1 = timeSinceEpoch().totalSeconds();
       ref oa = offsets.a;
       const low = offsets.a.domain.low, high = offsets.a.domain.high;
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -345,20 +345,20 @@ module SegmentedString {
         // Hash all strings
         ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
         var t1: real;
-        if logLevel == LogLevel.DEBUG { t1 = getCurrentTime(); }
+        if logLevel == LogLevel.DEBUG { t1 = timeSinceEpoch().totalSeconds(); }
         var hashes = this.siphash();
 
         if logLevel == LogLevel.DEBUG { 
             ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           "hashing took %t seconds\nSorting hashes".format(getCurrentTime() - t1));
-            t1 = getCurrentTime();
+                           "hashing took %t seconds\nSorting hashes".format(timeSinceEpoch().totalSeconds() - t1));
+            t1 = timeSinceEpoch().totalSeconds();
         }
 
         // Return the permutation that sorts the hashes
         var iv = radixSortLSD_ranks(hashes);
         if logLevel == LogLevel.DEBUG { 
             ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                            "sorting took %t seconds".format(getCurrentTime() - t1));
+                                            "sorting took %t seconds".format(timeSinceEpoch().totalSeconds() - t1));
         }
         if logLevel == LogLevel.DEBUG {
           var sortedHashes = [i in iv] hashes[i];
