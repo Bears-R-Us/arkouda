@@ -6,3 +6,5 @@ arkouda-string.graph
 arkouda-comp.graph
 # suite: Sort Cases
 arkouda-sort-cases.graph
+# suite: Bigint Benchmarks
+arkouda-bigint.graph

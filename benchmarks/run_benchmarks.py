@@ -51,6 +51,7 @@ BENCHMARKS = [
     "bigint_conversion",
     "bigint_stream",
     "bigint_bitwise_binops",
+    "bigint_groupby",
 ]
 
 if os.getenv("ARKOUDA_SERVER_PARQUET_SUPPORT"):
