@@ -24,10 +24,10 @@ module FileIO {
         var writer;
         if exists(filePath) {
             use ArkoudaFileCompat;
-            var aFile = open(filePath, iomode.rw);
+            var aFile = open(filePath, ioMode.rw);
             writer = aFile.appendWriter();
         } else {
-            var aFile = open(filePath, iomode.cwr);
+            var aFile = open(filePath, ioMode.cwr);
             writer = aFile.writer();
         }
 
@@ -37,7 +37,7 @@ module FileIO {
     }
 
     proc writeToFile(filePath : string, line : string) throws {
-        var aFile = open(filePath, iomode.cwr);
+        var aFile = open(filePath, ioMode.cwr);
         var writer = aFile.writer();
 
         writer.writeln(line);
@@ -46,7 +46,7 @@ module FileIO {
     }
     
     proc writeLinesToFile(filePath : string, lines : string) throws {
-        var aFile = open(filePath, iomode.cwr);
+        var aFile = open(filePath, ioMode.cwr);
         var writer = aFile.writer();
 
         for line in lines {
@@ -57,7 +57,7 @@ module FileIO {
     }
 
     proc getLineFromFile(filePath : string, lineIndex : int=-1) : string throws {
-        var aFile = open(filePath, iomode.rw);
+        var aFile = open(filePath, ioMode.rw);
         var lines = aFile.lines();
         var line : string;
         var returnLine : string;
@@ -76,7 +76,7 @@ module FileIO {
     }
     
     proc getLineFromFile(path: string, match: string) throws {
-        var aFile = open(path, iomode.r);
+        var aFile = open(path, ioMode.r);
         var reader = aFile.reader();
         var returnLine: string;
 
@@ -96,7 +96,7 @@ module FileIO {
     proc delimitedFileToMap(filePath : string, delimiter : string=',') : map {
         var fileMap : map(keyType=string, valType=string, parSafe=false) = 
                          new map(keyType=string,valType=string,parSafe=false);
-        var aFile = try! open(filePath, iomode.rw);
+        var aFile = try! open(filePath, ioMode.rw);
         var lines = try! aFile.lines();
         var line : string;
         for line in lines do {
@@ -230,7 +230,7 @@ module FileIO {
     }
 
     proc getFirstEightBytesFromFile(path:string):bytes throws {
-        var f:file = open(path, iomode.r);
+        var f:file = open(path, ioMode.r);
         var reader = f.reader(kind=ionative);
         var header:bytes;
         if (reader.binary()) {

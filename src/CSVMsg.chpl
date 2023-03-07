@@ -64,7 +64,7 @@ module CSVMsg {
 
         // open file and determine if header exists.
         var idx = 0;
-        var csvFile = open(filename, iomode.r);
+        var csvFile = open(filename, ioMode.r);
         var reader = csvFile.reader();
         var lines = reader.lines().strip();
         if lines[0] == CSV_HEADER_OPEN {
@@ -199,7 +199,7 @@ module CSVMsg {
             const localeFilename = filenames[loc.id];
             
             // create the file to write to
-            var csvFile = open(localeFilename, iomode.cw);
+            var csvFile = open(localeFilename, ioMode.cw);
             var writer = csvFile.writer();
 
             // write the header
@@ -272,7 +272,7 @@ module CSVMsg {
                            errorClass="FileNotFoundError");
         }
 
-        var csvFile = open(filename, iomode.r);
+        var csvFile = open(filename, ioMode.r);
         var reader = csvFile.reader();
         var lines = reader.lines();
         var hasHeader = false;
@@ -333,7 +333,7 @@ module CSVMsg {
                              "File %s does not contain data for this dataset, skipping".format(filename));
                     continue;
                 } else {
-                    var csvFile = open(filename, iomode.r);
+                    var csvFile = open(filename, ioMode.r);
                     var reader = csvFile.reader();
                     var lines = reader.lines().strip();
                     var data_offset = 1;

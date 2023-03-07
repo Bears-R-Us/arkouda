@@ -5,8 +5,8 @@ use FileIO;
 use GenSymIO;
 
 proc getFirstEightBytesFromFile(path:string):bytes throws {
-    //var f:file = open("resources/sample.parquet", iomode.r);
-    var f:file = open(path, iomode.r);
+    //var f:file = open("resources/sample.parquet", ioMode.r);
+    var f:file = open(path, ioMode.r);
     defer { f.close(); }
     var reader = f.reader(kind=ionative);
     var header:bytes;

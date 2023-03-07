@@ -48,7 +48,7 @@ module CommandMap {
 
   proc writeUsedModules() {
     use IO;
-    var newCfgFile = try! open("UsedModules.cfg", iomode.cw);
+    var newCfgFile = try! open("UsedModules.cfg", ioMode.cw);
     var chnl = try! newCfgFile.writer();
     for mod in usedModules do
       try! chnl.write(mod + '\n');

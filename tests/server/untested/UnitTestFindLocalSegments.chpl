@@ -13,7 +13,7 @@ prototype module UnitTestFindSegments
     use FindSegmentsMsg;
 
     proc writeIntArray(a:[?D] int, filename:string) {
-      var f = try! open(filename, iomode.cw);
+      var f = try! open(filename, ioMode.cw);
       var w = try! f.writer(kind=ionative);
       try! w.write(D.size);
       try! w.write(a);
