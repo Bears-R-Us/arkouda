@@ -843,24 +843,24 @@ module IndexingMsg
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
+            var iv = toSymEntry(gIV,int);
+            var ivMin = min reduce iv.a;
+            var ivMax = max reduce iv.a;
+            var y = toSymEntry(gY,t);
+            if ivMin < 0 {
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+            if ivMax >= gX.size {
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,gX.size-1);
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+            ref iva = iv.a;
+            ref ya = y.a;
             if gX.dtype == DType.BigInt {
                 var e = toSymEntry(gX, bigint);
-                var iv = toSymEntry(gIV,int);
-                var ivMin = min reduce iv.a;
-                var ivMax = max reduce iv.a;
-                var y = toSymEntry(gY,t);
-                if ivMin < 0 {
-                    var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                if ivMax >= e.size {
-                    var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                ref iva = iv.a;
-                ref ya = y.a;
                 // NOTE y.etype will never be real when gX.dtype is bigint, but the compiler doesn't know that
                 var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
                 ref ea = e.a;
@@ -870,27 +870,61 @@ module IndexingMsg
             }
             else {
                 var e = toSymEntry(gX,t);
-                var iv = toSymEntry(gIV,int);
-                var ivMin = min reduce iv.a;
-                var ivMax = max reduce iv.a;
-                var y = toSymEntry(gY,t);
-                if ivMin < 0 {
-                    var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                if ivMax >= e.size {
-                    var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                ref iva = iv.a;
-                var ya = y.a;
                 ref ea = e.a;
                 forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
                     agg.copy(ea[i],v);
                 }
             }
+            // XXS
+            // if gX.dtype == DType.BigInt {
+            //     var e = toSymEntry(gX, bigint);
+            //     var iv = toSymEntry(gIV,int);
+            //     var ivMin = min reduce iv.a;
+            //     var ivMax = max reduce iv.a;
+            //     var y = toSymEntry(gY,t);
+            //     if ivMin < 0 {
+            //         var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+            //         imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+            //         return new MsgTuple(errorMsg,MsgType.ERROR);
+            //     }
+            //     if ivMax >= e.size {
+            //         var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
+            //         imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
+            //         return new MsgTuple(errorMsg,MsgType.ERROR);
+            //     }
+            //     ref iva = iv.a;
+            //     ref ya = y.a;
+            //     // NOTE y.etype will never be real when gX.dtype is bigint, but the compiler doesn't know that
+            //     var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
+            //     ref ea = e.a;
+            //     forall (i,v) in zip(iva,tmp) with (var agg = newDstAggregator(bigint)) {
+            //         agg.copy(ea[i],v);
+            //     }
+            // }
+            // else {
+            //     var e = toSymEntry(gX,t);
+            //     var iv = toSymEntry(gIV,int);
+            //     var ivMin = min reduce iv.a;
+            //     var ivMax = max reduce iv.a;
+            //     var y = toSymEntry(gY,t);
+            //     if ivMin < 0 {
+            //         var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+            //         imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+            //         return new MsgTuple(errorMsg,MsgType.ERROR);
+            //     }
+            //     if ivMax >= e.size {
+            //         var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
+            //         imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
+            //         return new MsgTuple(errorMsg,MsgType.ERROR);
+            //     }
+            //     ref iva = iv.a;
+            //     var ya = y.a;
+            //     ref ea = e.a;
+            //     forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
+            //         agg.copy(ea[i],v);
+            //     }
+            // }
+            // XXE
             var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -904,24 +938,24 @@ module IndexingMsg
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
-            if t == bigint {
+            var iv = toSymEntry(gIV,uint);
+            var ivMin = min reduce iv.a;
+            var ivMax = max reduce iv.a;
+            var y = toSymEntry(gY,t);
+            if ivMin < 0 {
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+            if ivMax >= gX.size {
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,gX.size-1);
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+            ref iva = iv.a;
+            ref ya = y.a;
+            if gX.dtype == DType.BigInt {
                 var e = toSymEntry(gX, bigint);
-                var iv = toSymEntry(gIV,uint);
-                var ivMin = min reduce iv.a;
-                var ivMax = max reduce iv.a;
-                var y = toSymEntry(gY,t);
-                if ivMin < 0 {
-                    var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                if ivMax >= e.size {
-                    var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                ref iva = iv.a;
-                ref ya = y.a;
                 // NOTE y.etype will never be real when gX.dtype is bigint, but the compiler doesn't know that
                 var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
                 ref ea = e.a;
@@ -931,22 +965,6 @@ module IndexingMsg
             }
             else {
                 var e = toSymEntry(gX,t);
-                var iv = toSymEntry(gIV,uint);
-                var ivMin = min reduce iv.a;
-                var ivMax = max reduce iv.a;
-                var y = toSymEntry(gY,t);
-                if ivMin < 0 {
-                    var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                if ivMax >= e.size {
-                    var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                ref iva = iv.a;
-                var ya = y.a;
                 ref ea = e.a;
                 forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
                     agg.copy(ea[i:int],v);
@@ -1062,14 +1080,14 @@ module IndexingMsg
             when (DType.BigInt, DType.Int64, DType.BigInt) {
                 return ivInt64Helper(bigint);
             }
-            when (DType.BigInt, DType.UInt64, DType.BigInt) {
-                return ivUInt64Helper(bigint);
-            }
             when (DType.BigInt, DType.Int64, DType.Int64) {
                 return ivInt64Helper(int);
             }
             when (DType.BigInt, DType.Int64, DType.UInt64) {
                 return ivInt64Helper(uint);
+            }
+            when (DType.BigInt, DType.UInt64, DType.BigInt) {
+                return ivUInt64Helper(bigint);
             }
             when (DType.BigInt, DType.UInt64, DType.Int64) {
                 return ivUInt64Helper(int);
