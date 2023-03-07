@@ -24,7 +24,7 @@ module IndexingMsg
     const imLogger = new Logger(logLevel, logChannel);
 
     proc jsonToTuple(json: string, type t) throws {
-        var f = openmem(); defer { ensureClose(f); }
+        var f = openMemFile(); defer { ensureClose(f); }
         var w = f.writer();
         w.write(json);
         w.close();

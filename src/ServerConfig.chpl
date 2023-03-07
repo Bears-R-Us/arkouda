@@ -230,7 +230,7 @@ module ServerConfig
     proc getByteorder() throws {
         use IO;
         var writeVal = 1, readVal = 0;
-        var tmpf = openmem();
+        var tmpf = openMemFile();
         tmpf.writer(kind=iobig).write(writeVal);
         tmpf.reader(kind=ionative).read(readVal);
         return if writeVal == readVal then "big" else "little";

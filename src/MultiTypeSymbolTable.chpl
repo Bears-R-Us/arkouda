@@ -315,7 +315,7 @@ module MultiTypeSymbolTable
         :returns: [] string of entry names
         */
         proc parseJson(names:string): [] string throws {
-            var mem = openmem();
+            var mem = openMemFile();
             mem.writer().write(names);
             var reader = mem.reader();
 
