@@ -179,9 +179,10 @@ module MetricsMsg {
         proc size() {
             return this.measurements.size;
         }
-        
-        proc items() {
-            return this.measurements.items();
+
+        iter items() {
+          for (key, val) in zip(measurements.keys(), measurements.values()) do
+            yield(key, val);
         }
     }
 
@@ -266,8 +267,9 @@ module MetricsMsg {
             }
         }   
         
-        proc items() {
-            return this.counts.items();
+        iter items() {
+          for (key, val) in zip(counts.keys(), counts.values()) do
+            yield(key, val);
         }
         
         proc size() {
