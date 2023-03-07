@@ -122,6 +122,7 @@ class ParameterObject:
         """
         from arkouda.pdarrayclass import pdarray
         from arkouda.strings import Strings
+        from arkouda.segarray import SegArray
 
         # want the object type. If pdarray the content dtypes can vary
         dtypes = {type(p).__name__ for p in val}
@@ -129,7 +130,7 @@ class ParameterObject:
             t = dtypes.pop()
         else:
             for t in dtypes:
-                if t not in [pdarray.__name__, Strings.__name__]:
+                if t not in [pdarray.__name__, Strings.__name__, SegArray.__name__]:
                     t_str = ", ".join(dtypes)
                     raise TypeError(f"Lists of multiple types can only "
                                     f"contain strings and pdarray. Found {t_str}")

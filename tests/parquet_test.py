@@ -505,6 +505,31 @@ class ParquetTest(ArkoudaTest):
             for i in range(6):
                 self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
 
+    def test_multicol_write(self):
+        df_dict = {
+            "c_1": ak.arange(3),
+            "c_2": ak.segarray(ak.array([0, 9, 14]), ak.arange(20)),
+            "c_3": ak.arange(3, 6, dtype=ak.uint64),
+            "c_4": ak.segarray(ak.array([0, 5, 10]), ak.arange(15, dtype=ak.uint64)),
+            "c_5": ak.array([False, True, False]),
+            "c_6": ak.segarray(ak.array([0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool)),
+            "c_7": ak.array(np.random.uniform(0, 100, 3)),
+            "c_8": ak.segarray(ak.array([0, 9, 14]), ak.array(np.random.uniform(0, 100, 20))),
+        }
+        akdf = ak.DataFrame(df_dict)
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            # use multicolumn write to generate parquet file
+            akdf.to_parquet(f"{tmp_dirname}/multicol_parquet")
+
+            # read files and ensure that all resulting fields are as expected
+            rd_data = ak.read_parquet(f"{tmp_dirname}/multicol_parquet*")
+            for k, v in rd_data.items():
+                self.assertListEqual(v.to_list(), akdf[k].to_list())
+
+            # extra insurance, check dataframes are equivalent
+            rd_df = ak.DataFrame(rd_data)
+            self.assertTrue(akdf.to_pandas().equals(rd_df.to_pandas()))
+
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
