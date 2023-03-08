@@ -34,7 +34,7 @@ module SegmentedMsg {
 
     var rtnmap: map(string, string) = new map(string, string);
 
-    var valEntry = st.tab.getBorrowed(valName);
+    var valEntry = st.tab[valName];
     if valEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry){ //SegString
       var vals = getSegString(valName, st);
       var segArray = getSegArray(segs.a, vals.values.a, st);
@@ -85,7 +85,7 @@ module SegmentedMsg {
   proc getSANonEmptyMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var repMsg: string = "";
     var name = msgArgs.getValueOf("name"): string;
-    var entry = st.tab.getBorrowed(name);
+    var entry = st.tab[name];
     var genEntry: GenSymEntry = toGenSymEntry(entry);
     var neName = st.nextName();
     select genEntry.dtype {

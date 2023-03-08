@@ -118,7 +118,7 @@ module MultiTypeSymbolTable
             entry.setName(name);
             // When we retrieve from table, it comes back as AbstractSymEntry so we need to cast it
             // back to the original type. Since we know it already we can skip isAssignableTo check
-            return (tab.getBorrowed(name):borrowed GenSymEntry).toSymEntry(t);
+            return (tab[name]:borrowed GenSymEntry).toSymEntry(t);
         }
 
         /*
@@ -152,7 +152,7 @@ module MultiTypeSymbolTable
 
             tab.addOrSet(name, entry);
             entry.setName(name);
-            return tab.getBorrowed(name);
+            return tab[name];
         }
 
         /*
@@ -229,7 +229,7 @@ module MultiTypeSymbolTable
          */
         proc lookup(name: string): borrowed AbstractSymEntry throws {
             checkTable(name, "lookup");
-            return tab.getBorrowed(name);
+            return tab[name];
         }
 
         /**
@@ -344,7 +344,7 @@ module MultiTypeSymbolTable
             for name in infoList {
                 i+=1;
                 checkTable(name);
-                entries[i] = formatEntry(name, tab.getBorrowed(name));
+                entries[i] = formatEntry(name, tab[name]);
             }
             return entries;
         }
@@ -355,7 +355,7 @@ module MultiTypeSymbolTable
         :arg name: name of entry to be formatted
         :type name: string
 
-        :arg item: AbstractSymEntry to be formatted (tab.getBorrowed(name))
+        :arg item: AbstractSymEntry to be formatted (tab[name])
         :type item: AbstractSymEntry
 
         :returns: JSON formatted dictionary
@@ -389,7 +389,7 @@ module MultiTypeSymbolTable
         proc attrib(name:string):string throws {
             checkTable(name, "attrib");
 
-            var entry = tab.getBorrowed(name);
+            var entry = tab[name];
             if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry){ //Anything considered a GenSymEntry
                 var g:GenSymEntry = toGenSymEntry(entry);
                 return "%s %s %t %t %t %t".format(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
@@ -418,7 +418,7 @@ module MultiTypeSymbolTable
         */
         proc datastr(name: string, thresh:int): string throws {
             checkTable(name, "datastr");
-            var u: borrowed AbstractSymEntry = tab.getBorrowed(name);
+            var u: borrowed AbstractSymEntry = tab[name];
 
             // I don't think we need to do this check, but I'm keeping the code around for now.
             // if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
@@ -446,7 +446,7 @@ module MultiTypeSymbolTable
         */
         proc datarepr(name: string, thresh:int): string throws {
             checkTable(name, "datarepr");
-            var entry = tab.getBorrowed(name);
+            var entry = tab[name];
             if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
                 var u: borrowed GenSymEntry = toGenSymEntry(entry);
                 if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {

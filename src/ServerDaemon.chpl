@@ -625,11 +625,11 @@ module ServerDaemon {
                         if commandMap.contains(cmd) {
                             if moduleMap.contains(cmd) then
                                 usedModules.add(moduleMap[cmd]);
-                            repTuple = commandMap.getBorrowed(cmd)(cmd, msgArgs, st);
+                            repTuple = commandMap[cmd](cmd, msgArgs, st);
                         } else if commandMapBinary.contains(cmd) { // Binary response commands require different handling
                             if moduleMap.contains(cmd) then
                                 usedModules.add(moduleMap[cmd]);
-                            var binaryRepMsg = commandMapBinary.getBorrowed(cmd)(cmd, msgArgs, st);
+                            var binaryRepMsg = commandMapBinary[cmd](cmd, msgArgs, st);
                             sendRepMsg(binaryRepMsg);
                         } else {
                           repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
