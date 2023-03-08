@@ -1449,19 +1449,18 @@ module HDF5Msg {
         if(1 == a.size) { // short circuit case where we only have one string/segment
             return;
         }
-        var boundaries: [fD] int; // First index of each region that needs to be raised
+        var boundaries: [fD] int = -1 ; // First index of each region that needs to be raised
         var diffs: [fD] int; // Amount each region must be raised over previous region
-        forall (i, sd, vd, b) in zip(fD, segSubdoms, valSubdoms, boundaries) {
+        forall (i, sd, vd, b, d) in zip(fD, segSubdoms, valSubdoms, boundaries, diffs) {
             // if we encounter a malformed subdomain i.e. {1..0} that means we encountered a file
             // that has no data for this SegString object, we can safely skip processing this file.
             if (_isValidRange(sd)) {
                 b = sd.low; // Boundary is index of first segment in file
                 // Height increase of next region is number of bytes in current region
                 if (i < fD.high) {
-                    diffs[i+1] = vd.size;
+                    d = vd.size;
                 }
             } else {
-                b = -1; // if segment has nothing, use to avoid overwriting index 0.
                 h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                     "fD:%t segments subdom:%t is malformed signaling no segment data in file, skipping".format(i, sd));
             }
@@ -1475,8 +1474,8 @@ module HDF5Msg {
         }
         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
         overMemLimit(numBytes(int) * sparseDiffs.size);
-        // Make plateaus from peaks
-        var corrections = + scan sparseDiffs;
+        // calculate offset corrections
+        var corrections = (+ scan sparseDiffs) - sparseDiffs;
         // Raise the segment offsets by the plateaus
         a += corrections;
     }
