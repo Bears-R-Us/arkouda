@@ -11,14 +11,23 @@ import arkouda as ak
 TYPES = ("int64", "float64")
 
 
-def time_ak_array_transfer(N, trials, dtype, seed):
+def time_ak_array_transfer(N, trials, dtype, seed, max_bits=-1):
     print(">>> arkouda {} array creation".format(dtype))
     cfg = ak.get_config()
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
 
-    a = ak.randint(0, 2**32, N, dtype=dtype, seed=seed)
-    nb = a.size * a.itemsize
-    ak.client.maxTransferBytes = nb
+    if dtype == ak.bigint.name:
+        u1 = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
+        u2 = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
+        a = ak.bigint_from_uint_arrays([u1, u2], max_bits=max_bits)
+        # bytes per bigint array (N * 16) since it's made of 2 uint64 arrays
+        # if max_bits in [0, 64] then they're essentially 1 uint64 array
+        nb = a.size * 8 if max_bits != -1 and max_bits <= 64 else a.size * 8 * 2
+        ak.client.maxTransferBytes = nb
+    else:
+        a = ak.randint(0, 2**32, N, dtype=dtype, seed=seed)
+        nb = a.size * a.itemsize
+        ak.client.maxTransferBytes = nb
 
     to_ndarray_times = []
     to_pdarray_times = []
@@ -28,7 +37,7 @@ def time_ak_array_transfer(N, trials, dtype, seed):
         end = time.time()
         to_ndarray_times.append(end - start)
         start = time.time()
-        aka = ak.array(npa)
+        aka = ak.array(npa, max_bits=max_bits)
         end = time.time()
         to_pdarray_times.append(end - start)
         gc.collect()
@@ -42,19 +51,34 @@ def time_ak_array_transfer(N, trials, dtype, seed):
     print("ak.array Average rate = {:.4f} GiB/sec".format(nb / 2**30 / avgpd))
 
 
-def check_correctness(dtype, seed):
+def check_correctness(dtype, seed, max_bits=-1):
     N = 10**4
-
     if seed is not None:
         np.random.seed(seed)
-    if dtype == "int64":
-        a = np.random.randint(1, N, N)
-    elif dtype == "float64":
-        a = np.random.random(N) + 0.5
-
-    aka = ak.array(a)
-    npa = aka.to_ndarray()
-    assert np.allclose(a, npa)
+    if dtype == ak.bigint.name:
+        u1 = np.random.randint(1, N, N)
+        u2 = np.random.randint(1, N, N)
+        a = (u1.astype("O") << 64) + u2.astype("O")
+        aka = ak.array(a, max_bits=max_bits)
+        npa = aka.to_ndarray()
+        if max_bits == -1 or max_bits >= 128:
+            assert np.all(a == npa)
+        elif max_bits <= 64:
+            npa2 = (npa % 2**64).astype(np.uint)
+            assert np.all(u2 % (2**max_bits) == npa2)
+        else:
+            max_bits -= 64
+            npa1, npa2 = (npa >> 64).astype(np.uint), (npa % 2**64).astype(np.uint)
+            assert np.all(u1 % (2**max_bits) == npa1)
+            assert np.all(u2 == npa2)
+    else:
+        if dtype == "int64":
+            a = np.random.randint(1, N, N)
+        elif dtype == "float64":
+            a = np.random.random(N) + 0.5
+        aka = ak.array(a)
+        npa = aka.to_ndarray()
+        assert np.allclose(a, npa)
 
 
 def create_parser():

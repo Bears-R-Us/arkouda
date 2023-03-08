@@ -1,23 +1,13 @@
-#!/usr/bin/env python3
-
-from groupby import *
+from array_transfer import *
 
 
 def create_parser():
-    parser = argparse.ArgumentParser(
-        description="Measure performance of grouping bigint arrays of random values."
-    )
+    parser = argparse.ArgumentParser(description="Measure the performance of transferring bigint arrays.")
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
+    parser.add_argument("-n", "--size", type=int, default=10**6, help="Problem size: length of array")
     parser.add_argument(
-        "-n",
-        "--size",
-        type=int,
-        default=10**6,
-        help="Problem size: total length of all arrays to group",
-    )
-    parser.add_argument(
-        "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
+        "-t", "--trials", type=int, default=6, help="Number of times to run the benchmark"
     )
     parser.add_argument(
         "--max-bits",
@@ -52,5 +42,5 @@ if __name__ == "__main__":
 
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_ak_groupby(args.size, args.trials, dtype, args.seed, args.max_bits)
+    time_ak_array_transfer(args.size, args.trials, dtype, args.seed, args.max_bits)
     sys.exit(0)
