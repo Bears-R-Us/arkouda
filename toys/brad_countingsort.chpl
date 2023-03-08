@@ -7,7 +7,7 @@ const numUniqueEntries = 4;
 
 // lame way to bootstrap a distributed array of data values from 1..4
 var Aloc = [1, 4, 3, 2, 1, 4, 3, 2, 2, 2, 4, 3, 1, 4, 1, 3, 4, 1, 3, 3, 2, 1, 4, 2, 4, 2, 3, 2, 1, 4, 3, 2, 1, 3, 4, 2, 3, 1, 4, 4, 2, 3, 1, 4, 1, 2, 3, 4, 2, 4, 3, 4, 4, 2, 2];
-var D = newBlockDom(1..Aloc.size);
+var D = Block.createDomain(1..Aloc.size);
 var A: [D] int = Aloc;
 
 
@@ -141,7 +141,7 @@ proc +=(X: [?D] int, Y: [D] atomic int) {
 {
   use BlockDist;
 
-  const onePerLoc = newBlockDom({0..#numLocales});
+  const onePerLoc = Block.createDomain({0..#numLocales});
   var counters: [onePerLoc] [1..numUniqueEntries] atomic int;
 
   forall a in A do

@@ -68,7 +68,7 @@ module CountingSort
         if v {try! writeln("bins = %t".format(bins));}
 
         // histogram domain size should be equal to a_nvals
-        var hD = newBlockDom({0..#bins});
+        var hD = Block.createDomain({0..#bins});
 
         // atomic histogram
         var atomic_hist: [hD] atomic int;
@@ -381,7 +381,7 @@ module CountingSort
     }
 
     proc test_argsort(n: int, nVals: int) {
-        const blockDom = newBlockDom({0..#n});
+        const blockDom = Block.createDomain({0..#n});
         var a: [blockDom] int;
 
         var aMin = 0;
