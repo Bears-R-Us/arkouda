@@ -16,12 +16,6 @@ files: bigint_bitwise_binops.dat, bigint_bitwise_binops.dat, bigint_bitwise_bino
 graphtitle: Bigint Bitwise Binops Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: Average bigint AND rate =, Average bigint OR rate =, Average bigint SHIFT rate =
-graphkeys: bigint AND GiB/s, bigint OR GiB/s, bigint SHIFT GiB/s
-files: bigint_bitwise_binops.dat, bigint_bitwise_binops.dat, bigint_bitwise_binops.dat
-graphtitle: Bigint Bitwise Binops Performance
-ylabel: Performance (GiB/s)
-
 perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
 graphkeys: 1 array Groupby GiB/s, 2 array Groupby GiB/s, 8 array Groupby GiB/s, 16 array Groupby GiB/s
 files: bigint_groupby.dat, bigint_groupby.dat, bigint_groupby.dat, bigint_groupby.dat

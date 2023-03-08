@@ -15,7 +15,7 @@ def create_parser():
         "-n",
         "--size",
         type=int,
-        default=10**8,
+        default=10**6,
         help="Problem size: total length of all arrays to group",
     )
     parser.add_argument(
