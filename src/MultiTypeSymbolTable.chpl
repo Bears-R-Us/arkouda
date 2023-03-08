@@ -333,8 +333,7 @@ module MultiTypeSymbolTable
         Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])
 
         :arg infoList: Iterable containing sym entries to be returned by info
-        :type infoList: map(string, shared GenSymEntry), domain(string), or [] string
-                        for tab, registry, and [names] respectively
+        :type infoList: domain(string) or [] string for registry and [names]
 
         :returns: array of JSON formatted strings
         */
@@ -342,6 +341,25 @@ module MultiTypeSymbolTable
             var entries: [1..infoList.size] string;
             var i = 0;
             for name in infoList {
+                i+=1;
+                checkTable(name);
+                entries[i] = formatEntry(name, tab[name]);
+            }
+            return entries;
+        }
+
+        /*
+        Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])
+
+        :arg infoList: Iterable containing sym entries to be returned by info
+        :type infoList: map(string, shared GenSymEntry) for tab
+
+        :returns: array of JSON formatted strings
+        */
+        proc getEntries(infoList:map): [] string throws {
+            var entries: [1..infoList.size] string;
+            var i = 0;
+            for name in infoList.keys() {
                 i+=1;
                 checkTable(name);
                 entries[i] = formatEntry(name, tab[name]);
