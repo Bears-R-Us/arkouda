@@ -234,7 +234,7 @@ module FileIO {
         var reader = f.reader(kind=ionative);
         var header:bytes;
         if (reader.binary()) {
-          reader.readbytes(header, 8);
+          reader.readBytes(header, 8);
         } else {
           throw getErrorWithContext(
                      msg="File reader was not in binary mode",
