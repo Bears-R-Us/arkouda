@@ -77,7 +77,7 @@ module BigIntMsg {
                   all_zero = true;
                   forall t in tmp with (&& reduce all_zero) {
                     t >>= ushift;
-                    all_zero &&= (t == 0);
+                    all_zero &&= (t <= 0);
                   }
                 }
                 var repMsg = "%jt".format(retList);
