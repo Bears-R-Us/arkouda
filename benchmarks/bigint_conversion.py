@@ -12,6 +12,10 @@ def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
     a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
     b = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
 
+    # bytes per bigint array (N * 16) since it's made of 2 uint64 arrays
+    # if max_bits in [0, 64] then they're essentially 1 uint64 array
+    tot_bytes = N * 8 if max_bits != -1 and max_bits <= 64 else N * 8 * 2
+
     convert_to_bigint_times = []
     for i in range(trials):
         start = time.time()
@@ -23,7 +27,7 @@ def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
     print("bigint_from_uint_arrays Average time = {:.4f} sec".format(avg_conversion))
     print(
         "bigint_from_uint_arrays Average rate = {:.4f} GiB/sec".format(
-            (2 * a.size * a.itemsize) / 2**30 / avg_conversion
+            tot_bytes / 2**30 / avg_conversion
         )
     )
     print()
@@ -40,7 +44,7 @@ def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
     print("bigint_to_uint_arrays Average time = {:.4f} sec".format(avg_conversion))
     print(
         "bigint_to_uint_arrays Average rate = {:.4f} GiB/sec".format(
-            (2 * a.size * a.itemsize) / 2**30 / avg_conversion
+            tot_bytes / 2**30 / avg_conversion
         )
     )
     if max_bits == -1 or max_bits > 128:

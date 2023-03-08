@@ -1,5 +1,5 @@
 import itertools
-from typing import Iterable, Optional, Union, cast
+from typing import Iterable, List, Optional, Union, cast
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -268,8 +268,10 @@ def array(
         # 2. too big to fit into other numpy types (dtype = object)
         try:
             # attempt to break bigint into multiple uint64 arrays
-            uint_arrays = []
-            while any(a != 0):
+            uint_arrays: List[Union[pdarray, Strings]] = []
+            # early out if we would have more uint arrays than can fit in max_bits
+            early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
+            while any(a != 0) and len(uint_arrays) < early_out:
                 low, a = a % 2**64, a // 2**64
                 uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
             return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
@@ -356,6 +358,14 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
         raise TypeError("All pdarrays must be same size")
     if not isinstance(arrays, list):
         arrays = list(arrays)
+
+    if max_bits != -1:
+        # truncate if we have more uint arrays than can fit in max_bits
+        max_num_arrays = (max_bits // 64) + (max_bits % 64 != 0)
+        if len(arrays) > max_num_arrays:
+            # only want max_num_arrays from the right (because those are the lowest bits)
+            arrays = arrays[-max_num_arrays:]
+
     return create_pdarray(
         generic_msg(
             cmd="big_int_creation",

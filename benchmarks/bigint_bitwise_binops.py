@@ -21,7 +21,8 @@ def time_ak_bitwise_binops(N_per_locale, trials, max_bits, seed):
     b = ak.bigint_from_uint_arrays([b1, b2], max_bits=max_bits)
 
     # bytes per bigint array (N * 16) since it's made of 2 uint64 arrays
-    tot_bytes = N * 8 * 2
+    # if max_bits in [0, 64] then they're essentially 1 uint64 array
+    tot_bytes = N * 8 if max_bits != -1 and max_bits <= 64 else N * 8 * 2
 
     and_timings = []
     or_timings = []

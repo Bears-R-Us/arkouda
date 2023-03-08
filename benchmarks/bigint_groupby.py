@@ -2,12 +2,12 @@
 
 from groupby import *
 
-TYPES = ("str", "mixed")
+TYPES = ("bigint",)
 
 
 def create_parser():
     parser = argparse.ArgumentParser(
-        description="Measure performance of grouping arrays of random values."
+        description="Measure performance of grouping bigint arrays of random values."
     )
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
@@ -15,14 +15,17 @@ def create_parser():
         "-n",
         "--size",
         type=int,
-        default=10**8,
+        default=10**6,
         help="Problem size: total length of all arrays to group",
     )
     parser.add_argument(
         "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
     )
     parser.add_argument(
-        "-d", "--dtype", default="str", help="Dtype of array ({})".format(", ".join(TYPES))
+        "--max-bits",
+        type=int,
+        default=-1,
+        help="Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum",
     )
     parser.add_argument(
         "--correctness-only",
@@ -41,17 +44,15 @@ if __name__ == "__main__":
 
     parser = create_parser()
     args = parser.parse_args()
-    if args.dtype not in TYPES:
-        raise ValueError("Dtype must be {}, not {}".format("/".join(TYPES), args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
+    dtype = ak.bigint.name
 
     if args.correctness_only:
-        for dtype in TYPES:
-            check_correctness(dtype, args.seed)
+        check_correctness(dtype, args.seed, args.max_bits)
         sys.exit(0)
 
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_ak_groupby(args.size, args.trials, args.dtype, args.seed)
+    time_ak_groupby(args.size, args.trials, dtype, args.seed, args.max_bits)
     sys.exit(0)

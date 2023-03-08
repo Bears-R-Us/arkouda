@@ -8,11 +8,19 @@ import arkouda as ak
 TYPES = ("int64",)
 
 
-def generate_arrays(N, numArrays, dtype, seed):
+def generate_arrays(N, numArrays, dtype, seed, max_bits=-1):
     totalbytes = 0
     arrays = []
     for i in range(numArrays):
-        if dtype == "int64" or (i % 2 == 0 and dtype == "mixed"):
+        if dtype == ak.bigint.name:
+            a = ak.randint(0, 2**32, N // numArrays, dtype=ak.uint64, seed=seed)
+            b = ak.randint(0, 2**32, N // numArrays, dtype=ak.uint64, seed=seed)
+            ba = ak.bigint_from_uint_arrays([a, b], max_bits=max_bits)
+            arrays.append(ba)
+            # bytes per bigint array (N * 16) since it's made of 2 uint64 arrays
+            # if max_bits in [0, 64] then they're essentially 1 uint64 array
+            totalbytes += a.size * 8 if max_bits != -1 and max_bits <= 64 else a.size * 8 * 2
+        elif dtype == "int64" or (i % 2 == 0 and dtype == "mixed"):
             a = ak.randint(0, 2**32, N // numArrays, seed=seed)
             arrays.append(a)
             totalbytes += a.size * a.itemsize
@@ -27,7 +35,7 @@ def generate_arrays(N, numArrays, dtype, seed):
     return arrays, totalbytes
 
 
-def time_ak_groupby(N_per_locale, trials, dtype, seed):
+def time_ak_groupby(N_per_locale, trials, dtype, seed, max_bits=-1):
     print(">>> arkouda {} groupby".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
@@ -35,7 +43,7 @@ def time_ak_groupby(N_per_locale, trials, dtype, seed):
     for numArrays in (1, 2, 8, 16):
         if dtype == "mixed" and numArrays == 1:
             continue
-        arrays, totalbytes = generate_arrays(N, numArrays, dtype, seed)
+        arrays, totalbytes = generate_arrays(N, numArrays, dtype, seed, max_bits)
         timings = []
         for i in range(trials):
             start = time.time()
@@ -48,8 +56,8 @@ def time_ak_groupby(N_per_locale, trials, dtype, seed):
         print("{}-array Average rate = {:.4f} GiB/sec".format(numArrays, bytes_per_sec / 2**30))
 
 
-def check_correctness(dtype, seed):
-    arrays, totalbytes = generate_arrays(1000, 2, dtype, seed)
+def check_correctness(dtype, seed, max_bits=-1):
+    arrays, totalbytes = generate_arrays(1000, 2, dtype, seed, max_bits)
     g = ak.GroupBy(arrays)
     perm = ak.argsort(ak.randint(0, 2**32, arrays[0].size))
     g2 = ak.GroupBy([a[perm] for a in arrays])
