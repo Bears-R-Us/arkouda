@@ -970,22 +970,23 @@ module IndexingMsg
             //         }
             //     }
             // }
-            if t == bigint {
-                var e = toSymEntry(gX, bigint);
-                var truth = toSymEntry(gIV,bool);
-                // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                overMemLimit(numBytes(int) * truth.size);
-                var iv: [truth.a.domain] int = (+ scan truth.a);
-                var pop = iv[iv.size-1];
-                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                            "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
-                var y = toSymEntry(gY,t);
-                if (y.size != pop) {
-                    var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                ref ya = y.a;
+            
+            var e = toSymEntry(gX, bigint);
+            var truth = toSymEntry(gIV,bool);
+            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+            overMemLimit(numBytes(int) * truth.size);
+            var iv: [truth.a.domain] int = (+ scan truth.a);
+            var pop = iv[iv.size-1];
+            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                        "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
+            var y = toSymEntry(gY,t);
+            if (y.size != pop) {
+                var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+            ref ya = y.a;
+            if gX.dtype == DType.BigInt {
                 // NOTE y.etype will never be real when gX.dtype is bigint, but the compiler doesn't know that
                 var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
                 ref ea = e.a;
@@ -999,19 +1000,6 @@ module IndexingMsg
             }
             else {
                 var e = toSymEntry(gX,t);
-                var truth = toSymEntry(gIV,bool);
-                // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                overMemLimit(numBytes(int) * truth.size);
-                var iv: [truth.a.domain] int = (+ scan truth.a);
-                var pop = iv[iv.size-1];
-                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                            "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
-                var y = toSymEntry(gY,t);
-                if (y.size != pop) {
-                    var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
                 var ya = y.a;
                 const ref ead = e.a.domain;
                 ref ea = e.a;
