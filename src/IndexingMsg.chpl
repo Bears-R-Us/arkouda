@@ -971,7 +971,6 @@ module IndexingMsg
             //     }
             // }
             
-            var e = toSymEntry(gX, bigint);
             var truth = toSymEntry(gIV,bool);
             // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
             overMemLimit(numBytes(int) * truth.size);
@@ -987,6 +986,7 @@ module IndexingMsg
             }
             ref ya = y.a;
             if gX.dtype == DType.BigInt {
+                var e = toSymEntry(gX, bigint);
                 // NOTE y.etype will never be real when gX.dtype is bigint, but the compiler doesn't know that
                 var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
                 ref ea = e.a;
