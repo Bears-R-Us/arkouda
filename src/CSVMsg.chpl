@@ -302,7 +302,8 @@ module CSVMsg {
 
         var dtypes: [0..#datasets.size] string;
         forall (i, dset) in zip(0..#datasets.size, datasets) {
-            var (col_exists, idx) = columns.find(dset);
+            var idx: int;
+            var col_exists = columns.find(dset, idx);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: %jt, IDX: %i".format(dset, col_exists, idx));
             if !col_exists {
                 throw getErrorWithContext(
@@ -342,7 +343,8 @@ module CSVMsg {
                     }
                     // determine the index of the column.
                     var column_names = lines[data_offset-1].split(col_delim);
-                    var (colExists, colidx) = column_names.find(dset);
+                    var colidx: int;
+                    var colExists = column_names.find(dset, colidx);
                     if !colExists{
                         throw getErrorWithContext(
                             msg="The dataset %s was not found in %s".format(dset, filename),
