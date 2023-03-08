@@ -58,7 +58,7 @@ module FileIO {
 
     proc getLineFromFile(filePath : string, lineIndex : int=-1) : string throws {
         var aFile = open(filePath, ioMode.rw);
-        var lines = aFile.lines();
+        var lines = aFile.reader().lines();
         var line : string;
         var returnLine : string;
         var i = 1;
