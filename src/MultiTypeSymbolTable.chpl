@@ -490,10 +490,10 @@ module MultiTypeSymbolTable
         :returns: string array containing matching entry names
         */
         proc findAll(pattern: string): [] string throws {
-            var regex = compile(pattern);
+            var rg = new regex(pattern);
             var infoStr = "";
             forall name in tab.keysToArray() with (+ reduce infoStr) {
-                var match = regex.match(name);
+                var match = rg.match(name);
                 if match.matched {
                     var end : int = (match.byteOffset: int) + match.numBytes;
                     infoStr += name[match.byteOffset..#end] + "+";

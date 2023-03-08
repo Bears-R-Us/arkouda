@@ -1327,7 +1327,7 @@ module SegmentedString {
   */
   proc checkCompile(const pattern: ?t) throws where t == bytes || t == string {
     try {
-      return compile(pattern);
+      return new regex(pattern);
     }
     catch {
       var errorMsg = "re2 could not compile pattern: %s".format(pattern);
@@ -1342,7 +1342,7 @@ module SegmentedString {
     // This proc is a workaound to allow declaring regexps using a with clause in forall loops
     // since using declarations with throws are illegal
     // It is only called after checkCompile so the try! will not result in a server crash
-    return try! compile(pattern);
+    return try! new regex(pattern);
   }
 
   inline proc stringSearch(values, rng, myRegex) throws {

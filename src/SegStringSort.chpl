@@ -9,6 +9,7 @@ module SegStringSort {
   use Reflection;
   use Logging;
   use ServerConfig;
+  use BlockDist;
 
   private config const SSS_v = false;
   private const vv = SSS_v;
