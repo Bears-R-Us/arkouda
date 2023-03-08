@@ -963,7 +963,7 @@ module IndexingMsg
             }
             else {
                 var e = toSymEntry(gX,t);
-                // var truth = toSymEntry(gIV,bool);
+                var truth = toSymEntry(gIV,bool);
                 const ref ead = e.a.domain;
                 ref ea = e.a;
                 ref trutha = truth.a;
