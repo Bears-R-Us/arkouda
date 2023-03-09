@@ -1449,35 +1449,24 @@ module HDF5Msg {
         if(1 == a.size) { // short circuit case where we only have one string/segment
             return;
         }
-        var boundaries: [fD] int = -1 ; // First index of each region that needs to be raised
         var diffs: [fD] int; // Amount each region must be raised over previous region
-        forall (i, sd, vd, b, d) in zip(fD, segSubdoms, valSubdoms, boundaries, diffs) {
+        forall (i, sd, vd, d) in zip(fD, segSubdoms, valSubdoms, diffs) {
             // if we encounter a malformed subdomain i.e. {1..0} that means we encountered a file
             // that has no data for this SegString object, we can safely skip processing this file.
             if (_isValidRange(sd)) {
-                b = sd.low; // Boundary is index of first segment in file
-                // Height increase of next region is number of bytes in current region
-                if (i < fD.high) {
-                    d = vd.size;
-                }
+                d = vd.size;
             } else {
                 h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                     "fD:%t segments subdom:%t is malformed signaling no segment data in file, skipping".format(i, sd));
             }
         }
-        // Insert height increases at region boundaries
-        var sparseDiffs: [D] int;
-        forall (b, d) in zip(boundaries, diffs) with (var agg = newDstAggregator(int)) {
-            if b != -1 {
-                agg.copy(sparseDiffs[b], d);
-            }
+        
+        // compute amount to adjust 
+        var adjustments = (+ scan diffs) - diffs;
+        forall(i, sd, adj) in zip(fD, segSubdoms, adjustments) {
+            // adjust offset of the segment based on the sizes of the segments preceeding it
+            a[sd] += adj;
         }
-        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-        overMemLimit(numBytes(int) * sparseDiffs.size);
-        // calculate offset corrections
-        var corrections = (+ scan sparseDiffs) - sparseDiffs;
-        // Raise the segment offsets by the plateaus
-        a += corrections;
     }
 
     /*
