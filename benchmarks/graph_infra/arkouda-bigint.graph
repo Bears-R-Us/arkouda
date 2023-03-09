@@ -21,3 +21,9 @@ graphkeys: 1 array Groupby GiB/s, 2 array Groupby GiB/s, 8 array Groupby GiB/s, 
 files: bigint_groupby.dat, bigint_groupby.dat, bigint_groupby.dat, bigint_groupby.dat
 graphtitle: Bigint Groupby Performance
 ylabel: Performance (GiB/S)
+
+perfkeys: to_ndarray Average rate =, ak.array Average rate =
+graphkeys: to_ndarray GiB/s, ak.array GiB/s
+files: bigint_array_transfer.dat, bigint_array_transfer.dat
+graphtitle: Bigint Array Transfer Performance
+ylabel: Performance (GiB/S)
