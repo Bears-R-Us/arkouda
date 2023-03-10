@@ -690,8 +690,8 @@ module IndexingMsg
             // [i in iv.a] e.a[i] = val;
             ref iva = iv.a;
             ref ea = e.a;
-            forall i in iva with (var agg = newDstAggregator(dtype)) {
-              agg.copy(ea[i],val);
+            forall i in iva with (var agg = newDstAggregator(dtype), var locVal = val) {
+              agg.copy(ea[i],locVal);
             }
             var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -722,8 +722,8 @@ module IndexingMsg
             // [i in iv.a] e.a[i] = val;
             ref iva = iv.a;
             ref ea = e.a;
-            forall i in iva with (var agg = newDstAggregator(dtype)) {
-              agg.copy(ea[i:int],val);
+            forall i in iva with (var agg = newDstAggregator(dtype), var locVal = val) {
+              agg.copy(ea[i:int],locVal);
             }
             var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -748,9 +748,9 @@ module IndexingMsg
             const ref ead = e.a.domain;
             ref ea = e.a;
             ref trutha = truth.a;
-            forall i in ead with (var agg = newDstAggregator(dtype)) {
-              if (trutha[i] == true) {
-                agg.copy(ea[i],val);
+            forall i in ead with (var agg = newDstAggregator(dtype), var locVal = val) {
+              if (trutha[i]) {
+                agg.copy(ea[i],locVal);
               }
             }
 
