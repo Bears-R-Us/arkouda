@@ -826,7 +826,7 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
       parquet::ParquetFileWriter::Open(out_file, schema, props);
 
     std::queue<int64_t> idxQueue_str; // queue used to track string byteIdx 
-    std::queue<int64_t> idxQueue_segarray; // queue used to track string byteIdx 
+    std::queue<int64_t> idxQueue_segarray; // queue used to track index into the offsets
 
     auto dtypes_ptr = (int64_t*) datatypes;
     auto objType_ptr = (int64_t*) objTypes;
