@@ -1451,16 +1451,19 @@ module ParquetMsg {
             const lastValIdx = ss.values.a.domain.high;
             const locDom = ss.offsets.a.localSubdomain();
 
-            var localOffsets = A[locDom];
-            var startValIdx = localOffsets[locDom.low];
-            var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else A[locDom.high + 1] - 1;
-            var valIdxRange = startValIdx..endValIdx;
-            ref olda = ss.values.a;
-            str_vals[si..#valIdxRange.size] = olda[valIdxRange];
-            ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
             objTypes[i] = ObjType.STRINGS: int;
             datatypes[i] = ARROWSTRING;
-            sizeList[i] = locDom.size;
+
+            if locDom.size > 0 {
+              var localOffsets = A[locDom];
+              var startValIdx = localOffsets[locDom.low];
+              var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else A[locDom.high + 1] - 1;
+              var valIdxRange = startValIdx..endValIdx;
+              ref olda = ss.values.a;
+              str_vals[si..#valIdxRange.size] = olda[valIdxRange];
+              ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
+              sizeList[i] = locDom.size;
+            }
           } otherwise {
             throw getErrorWithContext(
               msg="Writing Parquet files (multi-column) does not support columns of type %s".format(entryDtype),
