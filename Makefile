@@ -501,6 +501,10 @@ CLEAN_TARGETS += test-clean
 test-clean:
 	$(RM) $(TEST_TARGETS) $(addsuffix _real,$(TEST_TARGETS))
 
+.PHONY: benchmark
+benchmark:
+	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks
+
 version:
 	@echo $(VERSION);
 

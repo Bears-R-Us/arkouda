@@ -38,3 +38,4 @@ UsedModules.cfg
 .flake8
 .DS_Store
 */.benchmarks
+*/.pytest_cache
