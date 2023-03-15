@@ -314,6 +314,10 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
+ifeq ($(shell expr $(CHPL_MINOR) \= 30),1)
+	CHPL_FLAGS += -sbigintInitThrows=true
+endif
+
 ifeq ($(shell expr $(CHPL_MINOR) \= 27),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-127
 	CHPL_FLAGS += --instantiate-max 512
