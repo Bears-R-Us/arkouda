@@ -87,7 +87,6 @@ module FileIO {
             }
         }
 
-        reader.flush();
         reader.close();
 
         return returnLine;
