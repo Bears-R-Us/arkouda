@@ -468,6 +468,25 @@ class GroupByTest(ArkoudaTest):
         for arrs in mixted_types_arrays:
             ak.GroupBy(arrs).count()
 
+    def test_bigint_groupby_aggregations(self):
+        u = ak.cast(ak.arange(10) % 2 + 2**63, ak.uint64)
+        bi = ak.cast(u, ak.bigint)
+        vals = ak.cast(ak.arange(2**63 - 11, 2**63 - 1), ak.bigint)
+
+        u_gb = ak.GroupBy(u)
+        bi_gb = ak.GroupBy(bi)
+        aggregations = ["or", "sum", "nunique", "first", "mode", "unique"]
+        for agg in aggregations:
+            u_res = u_gb.aggregate(vals, agg)
+            bi_res = bi_gb.aggregate(vals, agg)
+            self.assertListEqual(u_res[0].to_list(), bi_res[0].to_list())
+            self.assertListEqual(u_res[1].to_list(), bi_res[1].to_list())
+
+            u_res = u_gb.aggregate(bi, agg)
+            bi_res = bi_gb.aggregate(bi, agg)
+            self.assertListEqual(u_res[0].to_list(), bi_res[0].to_list())
+            self.assertListEqual(u_res[1].to_list(), bi_res[1].to_list())
+
     def test_zero_length_groupby(self):
         """
         This tests groupby boundary condition on a zero length pdarray, see Issue #900 for details
