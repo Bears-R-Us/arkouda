@@ -38,4 +38,5 @@ dependencies:
     - furo # sphinx theme
     - myst-parser
     - linkify-it-py
+    - pytest-benchmark
   
