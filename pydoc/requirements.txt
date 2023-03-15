@@ -29,3 +29,4 @@ linkify-it-py
 typed-ast
 mypy>=0.931,0.990
 flake8
+pytest-benchmark
