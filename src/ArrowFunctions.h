@@ -27,6 +27,11 @@ extern "C" {
 #define ARROWLIST 8
 #define ARROWERROR -1
 
+#define ARRAYVIEW 0 // not currently used, but included for continuity with Chapel
+#define PDARRAY 1
+#define STRINGS 2
+#define SEGARRAY 3
+
 // compression mappings
 #define SNAPPY_COMP 1
 #define GZIP_COMP 2
@@ -120,13 +125,13 @@ extern "C" {
                                 char** errMsg);
   
   int c_writeMultiColToParquet(const char* filename, void* column_names, 
-                                void** ptr_arr, void* datatypes,
-                                int64_t colnum, int64_t numelems, int64_t rowGroupSize,
+                                void** ptr_arr, void** offset_arr, void* objTypes, void* datatypes,
+                                void* segArr_sizes, int64_t colnum, int64_t numelems, int64_t rowGroupSize,
                                 int64_t compression, char** errMsg);
 
   int cpp_writeMultiColToParquet(const char* filename, void* column_names, 
-                                  void** ptr_arr, void* datatypes,
-                                  int64_t colnum, int64_t numelems, int64_t rowGroupSize,
+                                  void** ptr_arr, void** offset_arr, void* objTypes, void* datatypes,
+                                  void* segArr_sizes, int64_t colnum, int64_t numelems, int64_t rowGroupSize,
                                   int64_t compression, char** errMsg);
     
   const char* c_getVersionInfo(void);
