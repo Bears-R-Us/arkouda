@@ -1203,8 +1203,8 @@ class GroupBy:
         RuntimeError
             Raised if all is not supported for the values dtype
         """
-        if values.dtype not in [akint64, akuint64]:
-            raise TypeError("AND is only supported for pdarrays of dtype int64 or uint64")
+        if values.dtype not in [akint64, akuint64, bigint]:
+            raise TypeError("AND is only supported for pdarrays of dtype int64, uint64, or bigint")
 
         return self.aggregate(values, "and")  # type: ignore
 

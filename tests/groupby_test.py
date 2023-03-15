@@ -469,13 +469,16 @@ class GroupByTest(ArkoudaTest):
             ak.GroupBy(arrs).count()
 
     def test_bigint_groupby_aggregations(self):
+        # test equivalent to uint when max_bits=64
         u = ak.cast(ak.arange(10) % 2 + 2**63, ak.uint64)
         bi = ak.cast(u, ak.bigint)
+        bi.max_bits = 64
         vals = ak.cast(ak.arange(2**63 - 11, 2**63 - 1), ak.bigint)
+        vals.max_bits = 64
 
         u_gb = ak.GroupBy(u)
         bi_gb = ak.GroupBy(bi)
-        aggregations = ["or", "sum", "nunique", "first", "mode", "unique"]
+        aggregations = ["or", "sum", "and", "min", "max", "nunique", "first", "mode", "unique"]
         for agg in aggregations:
             u_res = u_gb.aggregate(vals, agg)
             bi_res = bi_gb.aggregate(vals, agg)
@@ -486,6 +489,18 @@ class GroupByTest(ArkoudaTest):
             bi_res = bi_gb.aggregate(bi, agg)
             self.assertListEqual(u_res[0].to_list(), bi_res[0].to_list())
             self.assertListEqual(u_res[1].to_list(), bi_res[1].to_list())
+
+        # test aggregations with > 64 bits and scale back down
+        i = ak.arange(10)
+        bi = ak.arange(2**200, 2**200 + 10, max_bits=201)
+        revs = ak.arange(10) % 2 == 0
+        gb = ak.GroupBy(revs)
+        other_aggs = ["or", "and", "min", "max"]
+        for agg in other_aggs:
+            i_res = gb.aggregate(i, agg)
+            bi_res = gb.aggregate(bi, agg)
+            self.assertListEqual(i_res[0].to_list(), bi_res[0].to_list())
+            self.assertListEqual(i_res[1].to_list(), (bi_res[1] - 2**200).to_list())
 
     def test_zero_length_groupby(self):
         """

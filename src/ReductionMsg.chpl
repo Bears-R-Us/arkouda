@@ -26,6 +26,18 @@ module ReductionMsg
     private config const logChannel = ServerConfig.logChannel;
     const rmLogger = new Logger(logLevel, logChannel);
 
+    var class_lvl_max_bits = 64;
+
+    // define max for bigint to be (2 ** max_bits) - 1
+    proc max(type etype) where etype == bigint {
+      return (1:bigint << class_lvl_max_bits) - 1;
+    }
+
+    // define min for bigint to be - (2 ** max_bits)
+    proc min(type etype) where etype == bigint {
+      return -(1:bigint << class_lvl_max_bits);
+    }
+
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
@@ -587,13 +599,39 @@ module ReductionMsg
             }
             when (DType.BigInt) {
                 var values = toSymEntry(gVal, bigint);
+                var max_bits = values.max_bits;
+                var has_max_bits = max_bits != -1;
+                if has_max_bits {
+                    class_lvl_max_bits = max_bits;
+                }
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
                     }
+                    when "min" {
+                        if !has_max_bits {
+                          throw new Error("Must set max_bits to MIN");
+                        }
+                        var res = segMin(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "max" {
+                        if !has_max_bits {
+                          throw new Error("Must set max_bits to MAX");
+                        }
+                        var res = segMax(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
                     when "or" {
                         var res = segOr(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "and" {
+                        if !has_max_bits {
+                          throw new Error("Must set max_bits to AND");
+                        }
+                        var res = segAnd(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
                     }
                     otherwise {
@@ -910,7 +948,7 @@ module ReductionMsg
       }
       return res;
     }
-    
+
     proc segMax(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t throws {
       var res: [D] t = min(t);
       if (D.size == 0) { return res; }
@@ -1108,7 +1146,10 @@ module ReductionMsg
         agg.copy(flagvalues[s][0], true);
       }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-      overMemLimit((numBytes(t)+1) * flagvalues.size);
+      if t != bigint {
+        // TODO update when we have a better way to handle bigint mem estimation
+        overMemLimit((numBytes(t)+1) * flagvalues.size);
+      }
       // Scan with custom operator, which resets the bitwise AND
       // at segment boundaries.
       const scanresult = ResettingAndScanOp scan flagvalues;
@@ -1137,10 +1178,11 @@ module ReductionMsg
          have already been scanned, or for internal state, the flag means 
          "there has already been a reset in the computation of this value".
       */
-      var value = if eltType == (bool, int) then (false, 0xffffffffffffffff:int) else (false, 0xffffffffffffffff:uint);
+      const max_val: bigint = max(bigint);
+      var value = if eltType == (bool, int) then (false, 0xffffffffffffffff:int) else if eltType == (bool, uint) then (false, 0xffffffffffffffff:uint) else (false, max_val);
 
       proc identity {
-        return if eltType == (bool, int) then (false, 0xffffffffffffffff:int) else (false, 0xffffffffffffffff:uint);
+        return if eltType == (bool, int) then (false, 0xffffffffffffffff:int) else if eltType == (bool, uint) then (false, 0xffffffffffffffff:uint) else (false, max_val);
       }
 
       proc accumulate(x) {
