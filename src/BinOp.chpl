@@ -1191,9 +1191,10 @@ module BinOp
             if r.etype == int {
               // cant just do botBits >>= shift_amt;
               forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                t <<= ri;
+                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
+                t <<= modded_shift;
                 var div_by = 1:bigint;
-                var shift_amt = max_bits - ri;
+                var shift_amt = max_bits - modded_shift;
                 div_by <<= shift_amt;
                 bot_bits /= div_by;
                 t += bot_bits;
@@ -1202,8 +1203,9 @@ module BinOp
             }
             else {
               forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                t <<= ri;
-                var shift_amt = max_bits:uint - ri;
+                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
+                t <<= modded_shift;
+                var shift_amt = max_bits:uint - modded_shift;
                 bot_bits >>= shift_amt;
                 t += bot_bits;
                 t &= local_max_size;
@@ -1220,10 +1222,11 @@ module BinOp
             // cant just do tmp >>= ra;
             var topBits = la;
             forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
+              var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
               var div_by = 1:bigint;
-              div_by <<= ri;
+              div_by <<= modded_shift;
               t /= div_by;
-              var shift_amt = if r.etype == int then max_bits - ri else max_bits:uint - ri;
+              var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
               tB <<= shift_amt;
               t += tB;
               t &= local_max_size;
@@ -1441,9 +1444,10 @@ module BinOp
             // return (la << val) | (la >> (max_bits - val));
             var botBits = la;
             if val.type == int {
-              var shift_amt = max_bits - val;
+              var modded_shift = val % max_bits;
+              var shift_amt = max_bits - modded_shift;
               // cant just do botBits >>= shift_amt;
-              forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = val, var local_shift_amt = shift_amt, var local_max_size = max_size) {
+              forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
                 t <<= local_val;
                 var div_by = 1:bigint;
                 div_by <<= local_shift_amt;
@@ -1453,8 +1457,9 @@ module BinOp
               }
             }
             else {
-              var shift_amt = max_bits:uint - val;
-              forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = val, var local_shift_amt = shift_amt, var local_max_size = max_size) {
+              var modded_shift = val % max_bits:uint;
+              var shift_amt = max_bits:uint - modded_shift;
+              forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
                 t <<= local_val;
                 bot_bits >>= local_shift_amt;
                 t += bot_bits;
@@ -1471,8 +1476,9 @@ module BinOp
             // return (la >> val) | (la << (max_bits - val));
             // cant just do tmp >>= ra;
             var topBits = la;
-            var shift_amt = if val.type == int then max_bits - val else max_bits:uint - val;
-            forall (t, tB) in zip(tmp, topBits) with (var local_val = val, var local_shift_amt = shift_amt, var local_max_size = max_size) {
+            var modded_shift = if val.type == int then val % max_bits else val % max_bits:uint;
+            var shift_amt = if val.type == int then max_bits - modded_shift else max_bits:uint - modded_shift;
+            forall (t, tB) in zip(tmp, topBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
               var div_by = 1:bigint;
               div_by <<= local_val;
               t /= div_by;
@@ -1715,9 +1721,10 @@ module BinOp
             if r.etype == int {
               // cant just do botBits >>= shift_amt;
               forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                t <<= ri;
+                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
+                t <<= modded_shift;
                 var div_by = 1:bigint;
-                var shift_amt = max_bits - ri;
+                var shift_amt = max_bits - modded_shift;
                 div_by <<= shift_amt;
                 bot_bits /= div_by;
                 t += bot_bits;
@@ -1726,8 +1733,9 @@ module BinOp
             }
             else {
               forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                t <<= ri;
-                var shift_amt = max_bits:uint - ri;
+                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
+                t <<= modded_shift;
+                var shift_amt = max_bits:uint - modded_shift;
                 bot_bits >>= shift_amt;
                 t += bot_bits;
                 t &= local_max_size;
@@ -1745,10 +1753,11 @@ module BinOp
             var topBits = makeDistArray(ra.size, bigint);
             topBits = val;
             forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
+              var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
               var div_by = 1:bigint;
-              div_by <<= ri;
+              div_by <<= modded_shift;
               t /= div_by;
-              var shift_amt = if r.etype == int then max_bits - ri else max_bits:uint - ri;
+              var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
               tB <<= shift_amt;
               t += tB;
               t &= local_max_size;

@@ -874,6 +874,24 @@ class OperatorsTest(ArkoudaTest):
             self.assertListEqual([(bi[i] * s) % mod_by for i in range(bi.size)], (bi * s).to_list())
             self.assertListEqual([(s * bi[i]) % mod_by for i in range(bi.size)], (s * bi).to_list())
 
+    def test_bigint_rotate(self):
+        # see issue #2214
+        # verify bigint pdarray correctly rotate when shift_amount exceeds max_bits
+        # in this test we are rotating 10 with max_bits=4, so even rotations will equal 10
+        # and odd rotations will equal 5. We test rotations up to 10 (which is > 4)
+
+        # rotate by scalar
+        for i in range(10):
+            self.assertEqual(ak.array([10], dtype=ak.bigint, max_bits=4).rotl(i), 10 if i % 2 == 0 else 5)
+            self.assertEqual(ak.array([10], dtype=ak.bigint, max_bits=4).rotr(i), 10 if i % 2 == 0 else 5)
+
+        # rotate by array
+        left_rot = ak.bigint_from_uint_arrays([ak.full(10, 10, ak.uint64)], max_bits=4).rotl(ak.arange(10))
+        right_rot = ak.bigint_from_uint_arrays([ak.full(10, 10, ak.uint64)], max_bits=4).rotr(ak.arange(10))
+        ans = [10 if i % 2 == 0 else 5 for i in range(10)]
+        self.assertListEqual(left_rot.to_list(), ans)
+        self.assertListEqual(right_rot.to_list(), ans)
+
     def test_fmod(self):
         # Note - uint/float and float/uint handles in another test case
         npf = np.array([2.23, 3.14, 3.08, 5.7])
