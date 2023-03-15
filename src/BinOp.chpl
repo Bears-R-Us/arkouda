@@ -1191,7 +1191,7 @@ module BinOp
             if r.etype == int {
               // cant just do botBits >>= shift_amt;
               forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                var modded_shift = ri % max_bits;
+                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
                 t <<= modded_shift;
                 var div_by = 1:bigint;
                 var shift_amt = max_bits - modded_shift;
@@ -1203,7 +1203,7 @@ module BinOp
             }
             else {
               forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                var modded_shift = ri % max_bits;
+                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
                 t <<= modded_shift;
                 var shift_amt = max_bits:uint - modded_shift;
                 bot_bits >>= shift_amt;
@@ -1222,7 +1222,7 @@ module BinOp
             // cant just do tmp >>= ra;
             var topBits = la;
             forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
-              var modded_shift = ri % max_bits;
+              var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
               var div_by = 1:bigint;
               div_by <<= modded_shift;
               t /= div_by;
@@ -1443,8 +1443,8 @@ module BinOp
             // should be as simple as the below, see issue #2006
             // return (la << val) | (la >> (max_bits - val));
             var botBits = la;
-            var modded_shift = val % max_bits;
             if val.type == int {
+              var modded_shift = val % max_bits;
               var shift_amt = max_bits - modded_shift;
               // cant just do botBits >>= shift_amt;
               forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
@@ -1457,6 +1457,7 @@ module BinOp
               }
             }
             else {
+              var modded_shift = val % max_bits:uint;
               var shift_amt = max_bits:uint - modded_shift;
               forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
                 t <<= local_val;
@@ -1475,7 +1476,7 @@ module BinOp
             // return (la >> val) | (la << (max_bits - val));
             // cant just do tmp >>= ra;
             var topBits = la;
-            var modded_shift = val % max_bits;
+            var modded_shift = if val.type == int then val % max_bits else val % max_bits:uint;
             var shift_amt = if val.type == int then max_bits - modded_shift else max_bits:uint - modded_shift;
             forall (t, tB) in zip(tmp, topBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
               var div_by = 1:bigint;
@@ -1720,7 +1721,7 @@ module BinOp
             if r.etype == int {
               // cant just do botBits >>= shift_amt;
               forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                var modded_shift = ri % max_bits;
+                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
                 t <<= modded_shift;
                 var div_by = 1:bigint;
                 var shift_amt = max_bits - modded_shift;
@@ -1732,7 +1733,7 @@ module BinOp
             }
             else {
               forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                var modded_shift = ri % max_bits;
+                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
                 t <<= modded_shift;
                 var shift_amt = max_bits:uint - modded_shift;
                 bot_bits >>= shift_amt;
@@ -1752,7 +1753,7 @@ module BinOp
             var topBits = makeDistArray(ra.size, bigint);
             topBits = val;
             forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
-              var modded_shift = ri % max_bits;
+              var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
               var div_by = 1:bigint;
               div_by <<= modded_shift;
               t /= div_by;
