@@ -37,3 +37,4 @@ test/file_LOCALE0000
 UsedModules.cfg
 .flake8
 .DS_Store
+*/.benchmarks
