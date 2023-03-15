@@ -1508,7 +1508,7 @@ module BinOp
         when "%" { // modulo
           // we only do in place mod when val != 0, tmp will be 0 in other locations
           // we can't use ei = li % val because this can result in negatives
-          forall (t, li) in zip(tmp, la) with (var local_val = val, var local_max_size = max_size) {
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
             if local_val != 0 {
               t.mod(t, local_val);
             }
