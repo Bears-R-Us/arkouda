@@ -6,12 +6,14 @@ module MultiTypeSymbolTable
     use Reflection;
     use ServerErrors;
     use Logging;
-    use Regex;
     use BigInteger;
     
     use MultiTypeSymEntry;
-    use Map;
     use IO;
+
+    use ArkoudaMapCompat;
+    use ArkoudaRegexCompat;
+    use ArkoudaFileCompat;
     
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

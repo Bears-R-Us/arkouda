@@ -1,0 +1,3 @@
+module ArkoudaBlockCompat {
+  use BlockDist;
+}

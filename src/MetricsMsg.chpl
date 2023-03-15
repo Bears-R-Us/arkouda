@@ -5,13 +5,14 @@ module MetricsMsg {
     use Logging;    
     use List;
     use IO;
-    use Map;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use Message;
     use Memory.Diagnostics;
-    use ArkoudaDateTimeCompat;
     use NumPyDType;
+    use Time;
+
+    use ArkoudaMapCompat;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,SYSTEM,SERVER,SERVER_INFO};
     enum MetricScope{GLOBAL,LOCALE,REQUEST,USER};
@@ -109,7 +110,7 @@ module MetricsMsg {
 
         proc getUserMetrics(user: User) {
             if this.metrics.contains(user: User) {
-                return try! this.metrics[user];
+              return try! this.metrics[user];
             } else {
                 var userMetrics = new shared CounterTable();
                 this.metrics.add(user, userMetrics);

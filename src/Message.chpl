@@ -4,9 +4,11 @@ module Message {
     use Reflection;
     use ServerErrors;
     use NumPyDType;
-    use Map;
     use List;
     use BigInteger;
+
+    use ArkoudaFileCompat;
+    use ArkoudaMapCompat;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}

@@ -1,10 +1,12 @@
 module Logging {
     use Set;
-    use IO;
     use FileSystem;
-    use ArkoudaDateTimeCompat;
     use Reflection;
     use ServerErrors;
+    use Time;
+
+    import IO.{format, stdout, file};
+    use ArkoudaFileCompat;
 
     /*
      * The LogLevel enum is used to provide a strongly-typed means of
@@ -32,6 +34,7 @@ module Logging {
      */
     class ConsoleOutputHandler : OutputHandler {
         override proc write(message: string) throws {
+            import IO.stdout;
             writeln(message);
             stdout.flush();
         }
@@ -60,7 +63,7 @@ module Logging {
             if exists(filePath) {
                 use ArkoudaFileCompat;
                 var aFile = open(filePath, ioMode.rw);
-                writer = aFile.appendWriter();
+                writer = aFile.writer(region=aFile.size..);
             } else {
                 var aFile = open(filePath, ioMode.cwr);
                 writer = aFile.writer();

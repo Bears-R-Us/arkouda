@@ -12,6 +12,8 @@ module ServerConfig
     use Reflection;
     use ServerErrors;
     use Logging;
+
+    use ArkoudaFileCompat;
     
     enum Deployment {STANDARD,KUBERNETES}
     

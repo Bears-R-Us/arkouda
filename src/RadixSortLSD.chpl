@@ -23,6 +23,8 @@ module RadixSortLSD
     use Logging;
     use ServerConfig;
 
+    use ArkoudaBlockCompat;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const rsLogger = new Logger(logLevel, logChannel);

@@ -27,6 +27,8 @@ module ServerDaemon {
     use BigIntMsg;
     use NumPyDType;
 
+    use ArkoudaFileCompat;
+
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
     private config const logLevel = ServerConfig.logLevel;

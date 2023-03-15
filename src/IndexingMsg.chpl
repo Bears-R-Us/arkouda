@@ -17,7 +17,8 @@ module IndexingMsg
     use FileIO;
     use List;
 
-    use Map;
+    use ArkoudaMapCompat;
+    use ArkoudaFileCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

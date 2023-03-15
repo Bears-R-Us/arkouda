@@ -12,9 +12,10 @@ module SegmentedMsg {
   use MultiTypeSymEntry;
   use RandArray;
   use IO;
-  use Map;
   use GenSymIO;
   use BigInteger;
+
+  use ArkoudaMapCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;

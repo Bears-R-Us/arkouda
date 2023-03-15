@@ -15,12 +15,13 @@ module SegmentedString {
   use Reflection;
   use Logging;
   use ServerErrors;
-  use Regex;
   use SegmentedComputation;
 
   use Subprocess;
   use Path;
   use FileSystem;
+
+  use ArkoudaRegexCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;

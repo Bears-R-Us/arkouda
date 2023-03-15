@@ -10,7 +10,6 @@ module GenSymIO {
     use Sort;
     use NumPyDType;
     use List;
-    use Map;
     use Set;
     use Reflection;
     use ServerErrors;
@@ -18,6 +17,8 @@ module GenSymIO {
     use Message;
     use ServerConfig;
     use SegmentedString;
+
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

@@ -1,10 +1,8 @@
 
 
 module FileIO {
-    use IO;
     use GenSymIO;
     use FileSystem;
-    use Map;
     use Path;
     use Reflection;
     use Message;
@@ -12,6 +10,9 @@ module FileIO {
     use MultiTypeSymEntry;
     use ServerErrors;
     use Sort;
+
+    use ArkoudaFileCompat;
+    use ArkoudaMapCompat;
 
     use ServerConfig, Logging, CommandMap;
     private config const logLevel = ServerConfig.logLevel;
@@ -23,9 +24,8 @@ module FileIO {
     proc appendFile(filePath : string, line : string) throws {
         var writer;
         if exists(filePath) {
-            use ArkoudaFileCompat;
             var aFile = open(filePath, ioMode.rw);
-            writer = aFile.appendWriter();
+            writer = aFile.writer(region=aFile.size..);
         } else {
             var aFile = open(filePath, ioMode.cwr);
             writer = aFile.writer();
@@ -93,8 +93,8 @@ module FileIO {
     }
 
     proc delimitedFileToMap(filePath : string, delimiter : string=',') : map {
-        var fileMap : map(keyType=string, valType=string, parSafe=false) = 
-                         new map(keyType=string,valType=string,parSafe=false);
+        var fileMap : map(keyType=string, valType=string) = 
+                         new map(keyType=string,valType=string);
         var aFile = try! open(filePath, ioMode.rw);
         var lines = try! aFile.lines();
         var line : string;
@@ -233,7 +233,7 @@ module FileIO {
         var reader = f.reader(kind=ionative);
         var header:bytes;
         if (reader.binary()) {
-          reader.readBytes(header, 8);
+          reader.bytesRead(header, 8);
         } else {
           throw getErrorWithContext(
                      msg="File reader was not in binary mode",

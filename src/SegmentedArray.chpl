@@ -9,7 +9,8 @@ module SegmentedArray {
     use ServerErrors;
     use CommAggregation;
     use Time;
-    use Map;
+
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

@@ -1,7 +1,9 @@
 module CommandMap {
-  use Map;
   use Message;
   use MultiTypeSymbolTable;
+
+  use ArkoudaFileCompat;
+  use ArkoudaMapCompat;
 
   /**
    * This is a dummy function to get the signature of the Arkouda
@@ -72,6 +74,7 @@ module CommandMap {
    * Dump the combined contents of the command maps as a single json encoded string
    */
   proc dumpCommandMap(): string throws {
+    writeln("\n", commandMap, "\n");
     var cm1:string = "%jt".format(commandMap);
     var cm2:string = "%jt".format(commandMapBinary);
     // Join these two together

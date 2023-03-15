@@ -5,10 +5,11 @@ module RandArray {
   use Random;
   use ServerErrorStrings;
   use MultiTypeSymEntry;
-  use Map;
   use SipHash;
   use ServerConfig;
   private use IO;
+
+  use ArkoudaMapCompat;
   
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -103,7 +104,7 @@ module RandArray {
     return ret;
   }
 
-  var charBounds: map(keyType=charSet, valType=2*int, parSafe=false);
+  var charBounds: map(keyType=charSet, valType=2*int);
   try! {
     charBounds[charSet.Uppercase] = (65, 91);
     charBounds[charSet.Lowercase] = (97, 123);
