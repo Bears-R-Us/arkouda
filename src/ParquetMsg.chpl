@@ -1200,7 +1200,7 @@ module ParquetMsg {
 
       var offset_ct: [0..#ncols] int;
       var sections_sizes_str: [0..#ncols] int; // only fill in sizes for str columns
-      var sections_sizes_int: [0..#ncols] int; // only fill in sizes for int, uint, bool segarray columns
+      var sections_sizes_int: [0..#ncols] int; // only fill in sizes for int, uint segarray columns
       var sections_sizes_real: [0..#ncols] int; // only fill in sizes for float segarray columns
       var sections_sizes_bool: [0..#ncols] int; // only fill in sizes for bool segarray columns
       forall (i, column) in zip(0..#ncols, sym_names) {
