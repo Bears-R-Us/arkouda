@@ -1,6 +1,7 @@
 import pytest
 import os
 import importlib
+import argparse
 
 import arkouda as ak
 
@@ -10,6 +11,14 @@ from server_util.test.server_test_util import (
     start_arkouda_server,
     stop_arkouda_server,
 )
+
+default_dtype = ["int64", "uint64", "float64", "bool", "str"]
+def pytest_configure(config):
+    pytest.prob_size = config.getoption("size")
+    pytest.trials = config.getoption("trials")
+    pytest.seed = config.getoption("seed")
+    dtype_str = config.getoption("dtype")
+    pytest.dtype = default_dtype if dtype_str is None else dtype_str.split(",")
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -52,7 +61,8 @@ def startup_teardown():
 
 @pytest.fixture(scope="function", autouse=True)
 def manage_connection():
-    pytest.problem_size = eval(os.getenv("ARKOUDA_PROBLEM_SIZE", "10**8"))
+    # pytest.problem_size = eval(os.getenv("ARKOUDA_PROBLEM_SIZE", "10**8"))
+    # pytest.trials = eval(os.getenv("ARKOUDA_TRIALS", "10"))
     port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
     server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
     timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
