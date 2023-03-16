@@ -10,6 +10,31 @@ def pytest_addoption(parser):
         "--optional-parquet", action="store_true", default=False, help="run optional parquet tests"
     )
 
+    # due to the order pytest looks for conftest in, options for our benchmarks are added here
+    # this has no impact on testing, but allows quick and easy access to settings without the need
+    # for env vars. Everything below is for workflows in arkouda/benchmark_v2
+    parser.addoption(
+        "--size", action="store", default="10**8",
+        help="Benchmark only option. Problem size: length of array to use for benchmarks."
+    )
+    parser.addoption(
+        "--trials", action="store", default="5",
+        help="Benchmark only option. Problem size: length of array to use for benchmarks."
+    )
+    parser.addoption(
+        "--seed", action="store", default="",
+        help="Benchmark only option. Value to initialize random number generator."
+    )
+    parser.addoption(
+        "--dtype", action="store", default="",
+        help="Benchmark only option. Dtypes to run benchmarks against. Comma separated list "
+             "(NO SPACES) allowing for multiple. Accepted values: int64, uint64, float64, bool, and str."
+    )
+    parser.addoption(
+        "--numpy", action="store_true", default=False,
+        help="Benchmark only option. When set, runs numpy comparison benchmarks."
+    )
+
 
 def pytest_collection_modifyitems(config, items):
     if config.getoption("--optional-parquet"):

@@ -39,7 +39,7 @@ def append_col_parquet_write(df):
 
 
 def bench_append_parquet(benchmark):
-    benchmark.extra_info["problem_size"] = pytest.problem_size
+    benchmark.extra_info["problem_size"] = pytest.prob_size
     df_dict = {
         "c_1": ak.arange(3),
         # "c_2": ak.segarray(ak.array([0, 9, 14]), ak.arange(20)),
