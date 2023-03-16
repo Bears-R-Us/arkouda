@@ -11,13 +11,14 @@ from server_util.test.server_test_util import (
     stop_arkouda_server,
 )
 
-default_dtype = ["int64", "uint64", "float64", "bool", "str"]
+default_dtype = ["int64", "uint64", "float64", "bool", "str", "bigint"]
 def pytest_configure(config):
     pytest.prob_size = eval(config.getoption("size"))
     pytest.trials = eval(config.getoption("trials"))
     pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
     dtype_str = config.getoption("dtype")
     pytest.dtype = default_dtype if dtype_str == "" else dtype_str.split(",")
+    pytest.max_bits = eval(config.getoption("maxbits"))
 
 
 @pytest.fixture(scope="module", autouse=True)
