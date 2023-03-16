@@ -1,7 +1,6 @@
 import pytest
 import os
 import importlib
-import argparse
 
 import arkouda as ak
 
