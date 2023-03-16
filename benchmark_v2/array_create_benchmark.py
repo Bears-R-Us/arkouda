@@ -50,8 +50,11 @@ def bench_ak_array_create(benchmark, op, dtype):
             _create_ak_array, args=(size, op, dtype, pytest.seed), rounds=pytest.trials
         )
 
-        bytes_per_sec = (a.size * a.itemsize) / benchmark.stats["mean"]
-        benchmark.extra_info["Bytes per second"] = "{:.4f} GiB/sec".format(bytes_per_sec / 2**30)
+        nbytes = (a.size * a.itemsize)
+        benchmark.extra_info["description"] = "Measures the performance of Arkouda array creation"
+        benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
+            (nbytes / benchmark.stats["mean"]) / 2 ** 30)
 
 
 @pytest.mark.benchmark(group="NP Array Create")
@@ -69,5 +72,8 @@ def bench_np_array_create(benchmark, op, dtype):
             _create_np_array, args=(size, op, dtype, pytest.seed), rounds=pytest.trials
         )
 
-        bytes_per_sec = (a.size * a.itemsize) / benchmark.stats["mean"]
-        benchmark.extra_info["Bytes per second"] = "{:.4f} GiB/sec".format(bytes_per_sec / 2**30)
+        nbytes = (a.size * a.itemsize)
+        benchmark.extra_info["description"] = "Measures the performance of numpy array creation"
+        benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
+            (nbytes / benchmark.stats["mean"]) / 2 ** 30)
