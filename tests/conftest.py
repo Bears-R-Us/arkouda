@@ -14,24 +14,24 @@ def pytest_addoption(parser):
     # this has no impact on testing, but allows quick and easy access to settings without the need
     # for env vars. Everything below is for workflows in arkouda/benchmark_v2
     parser.addoption(
-        "--size", action="store", default=10**8, type=int,
+        "--size", action="store", default="10**8",
         help="Benchmark only option. Problem size: length of array to use for benchmarks."
     )
     parser.addoption(
-        "--trials", action="store", default=5, type=int,
+        "--trials", action="store", default="5",
         help="Benchmark only option. Problem size: length of array to use for benchmarks."
     )
     parser.addoption(
-        "--seed", action="store", default=None, type=int,
+        "--seed", action="store", default="None",
         help="Benchmark only option. Value to initialize random number generator."
     )
     parser.addoption(
-        "--dtype", action="store", default=None, type=str,
+        "--dtype", action="store", default="None",
         help="Benchmark only option. Dtypes to run benchmarks against. Comma separated list "
              "(NO SPACES) allowing for multiple. Accepted values: int64, uint64, float64, bool, and str."
     )
     parser.addoption(
-        "--numpy", action="store_true", default=False, type=bool,
+        "--numpy", action="store_true", default=False,
         help="Benchmark only option. When set, runs numpy comparison benchmarks."
     )
 
