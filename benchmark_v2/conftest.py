@@ -19,6 +19,7 @@ def pytest_configure(config):
     dtype_str = config.getoption("dtype")
     pytest.dtype = default_dtype if dtype_str == "" else dtype_str.split(",")
     pytest.max_bits = eval(config.getoption("maxbits"))
+    pytest.numpy = config.getoption("numpy")
 
 
 @pytest.fixture(scope="module", autouse=True)
