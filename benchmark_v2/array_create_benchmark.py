@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-
 from context import arkouda as ak
 
 OPS = ("zeros", "ones", "randint")
@@ -47,7 +46,9 @@ def bench_ak_array_create(benchmark, op, dtype):
     size = pytest.prob_size * cfg["numLocales"]
 
     if dtype in pytest.dtype:
-        a = benchmark.pedantic(_create_ak_array, args=(size, op, dtype, pytest.seed), rounds=pytest.trials)
+        a = benchmark.pedantic(
+            _create_ak_array, args=(size, op, dtype, pytest.seed), rounds=pytest.trials
+        )
 
         bytes_per_sec = (a.size * a.itemsize) / benchmark.stats["mean"]
         benchmark.extra_info["Bytes per second"] = "{:.4f} GiB/sec".format(bytes_per_sec / 2**30)
@@ -64,7 +65,9 @@ def bench_np_array_create(benchmark, op, dtype):
     size = pytest.prob_size * cfg["numLocales"]
 
     if pytest.numpy and dtype in pytest.dtype:
-        a = benchmark.pedantic(_create_np_array, args=(size, op, dtype, pytest.seed), rounds=pytest.trials)
+        a = benchmark.pedantic(
+            _create_np_array, args=(size, op, dtype, pytest.seed), rounds=pytest.trials
+        )
 
         bytes_per_sec = (a.size * a.itemsize) / benchmark.stats["mean"]
         benchmark.extra_info["Bytes per second"] = "{:.4f} GiB/sec".format(bytes_per_sec / 2**30)
