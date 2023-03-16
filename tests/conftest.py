@@ -28,11 +28,16 @@ def pytest_addoption(parser):
     parser.addoption(
         "--dtype", action="store", default="",
         help="Benchmark only option. Dtypes to run benchmarks against. Comma separated list "
-             "(NO SPACES) allowing for multiple. Accepted values: int64, uint64, float64, bool, and str."
+             "(NO SPACES) allowing for multiple. Accepted values: int64, uint64, bigint, float64, bool, and str."
     )
     parser.addoption(
         "--numpy", action="store_true", default=False,
         help="Benchmark only option. When set, runs numpy comparison benchmarks."
+    )
+    parser.addoption(
+        "--maxbits", action="store", default="-1",
+        help="Benchmark only option. Only applies to bigint testing."
+             "Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum."
     )
 
 
