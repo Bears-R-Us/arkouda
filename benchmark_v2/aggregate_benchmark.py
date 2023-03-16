@@ -4,7 +4,7 @@ import pytest
 
 def setup_agg(t="int"):
     cfg = ak.get_config()
-    N = pytest.problem_size * cfg["numLocales"]
+    N = pytest.prob_size * cfg["numLocales"]
 
     # Sort keys so that aggregations will not have to permute values
     # We just want to measure aggregation time, not gather
@@ -33,9 +33,9 @@ def bench_aggs(benchmark, op):
     else:
         g, vals = setup_agg()
 
-    numBytes = benchmark.pedantic(run_agg, args=(g, vals, op), rounds=pytest.num_trials)
+    numBytes = benchmark.pedantic(run_agg, args=(g, vals, op), rounds=pytest.trials)
 
-    benchmark.extra_info["Problem size"] = pytest.problem_size
+    benchmark.extra_info["Problem size"] = pytest.prob_size
     benchmark.extra_info["Bytes per second"] = "{:.4f} GiB/sec".format(
         (numBytes / benchmark.stats["mean"]) / 2 ** 30)
     benchmark.extra_info["Description"] = f"This benchmark tests GroupBy Aggregation using the {op} operator."
