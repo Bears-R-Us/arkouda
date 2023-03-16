@@ -13,8 +13,8 @@ def _perform_or_binop(a, b):
     return a | b
 
 
-def _perform_shift_binop(a, b):
-    return a >> b
+def _perform_shift_binop(a):
+    return a >> 10
 
 
 @pytest.mark.benchmark(group="Bigint Bitwise Binops")
@@ -42,10 +42,11 @@ def bench_ak_bitwise_binops(benchmark, op):
     elif op == "or":
         benchmark.pedantic(_perform_or_binop, args=(a, b), rounds=pytest.trials)
     elif op == "shift":
-        benchmark.pedantic(_perform_or_binop, args=(a, b), rounds=pytest.trials)
+        benchmark.pedantic(_perform_shift_binop, args=[a], rounds=pytest.trials)
 
     benchmark.extra_info["description"] = "Measures the performance of bigint bitwise binops"
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
+    benchmark.extra_info["max_bit"] = pytest.max_bits  # useful when looking at bigint
