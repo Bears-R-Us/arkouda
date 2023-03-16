@@ -34,8 +34,10 @@ def bench_aggs(benchmark, op):
         g, vals = setup_agg()
 
     numBytes = benchmark.pedantic(run_agg, args=(g, vals, op), rounds=pytest.trials)
-
-    benchmark.extra_info["Problem size"] = pytest.prob_size
-    benchmark.extra_info["Bytes per second"] = "{:.4f} GiB/sec".format(
-        (numBytes / benchmark.stats["mean"]) / 2 ** 30)
-    benchmark.extra_info["Description"] = f"This benchmark tests GroupBy Aggregation using the {op} operator."
+    benchmark.extra_info[
+        "description"
+    ] = f"Measures performance of GroupBy.aggregate using the {op} operator."
+    benchmark.extra_info["problem_size"] = pytest.prob_size
+    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
+        (numBytes / benchmark.stats["mean"]) / 2**30
+    )
