@@ -61,8 +61,6 @@ def startup_teardown():
 
 @pytest.fixture(scope="function", autouse=True)
 def manage_connection():
-    # pytest.problem_size = eval(os.getenv("ARKOUDA_PROBLEM_SIZE", "10**8"))
-    # pytest.trials = eval(os.getenv("ARKOUDA_TRIALS", "10"))
     port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
     server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
     timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
