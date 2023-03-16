@@ -15,9 +15,9 @@ default_dtype = ["int64", "uint64", "float64", "bool", "str"]
 def pytest_configure(config):
     pytest.prob_size = eval(config.getoption("size"))
     pytest.trials = eval(config.getoption("trials"))
-    pytest.seed = eval(config.getoption("seed"))
+    pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
     dtype_str = config.getoption("dtype")
-    pytest.dtype = default_dtype if dtype_str is None else dtype_str.split(",")
+    pytest.dtype = default_dtype if dtype_str == "" else dtype_str.split(",")
 
 
 @pytest.fixture(scope="module", autouse=True)

@@ -22,11 +22,11 @@ def pytest_addoption(parser):
         help="Benchmark only option. Problem size: length of array to use for benchmarks."
     )
     parser.addoption(
-        "--seed", action="store", default="None",
+        "--seed", action="store", default="",
         help="Benchmark only option. Value to initialize random number generator."
     )
     parser.addoption(
-        "--dtype", action="store", default="None",
+        "--dtype", action="store", default="",
         help="Benchmark only option. Dtypes to run benchmarks against. Comma separated list "
              "(NO SPACES) allowing for multiple. Accepted values: int64, uint64, float64, bool, and str."
     )
