@@ -1270,39 +1270,81 @@ module OperatorMsg
                 var max_size = 1:bigint;
                 var has_max_bits = max_bits != -1;
                 if has_max_bits {
-                    max_size <<= max_bits;
+                  max_size <<= max_bits;
+                  max_size -= 1;
                 }
                 select op {
-                    when "+=" { la += ra; }
-                    when "-=" { la -= ra; }
-                    when "*=" { la *= ra; }
-                    when "//=" {
-                        [(li,ri) in zip(la,ra)] li = if ri != 0 then li/ri else 0:bigint;
-                    }
-                    when "%=" {
-                        // we can't use li %= ri because this can result in negatives
-                        [(li,ri) in zip(la,ra)] if ri != 0 then li.mod(li, ri);
-                        [(li,ri) in zip(la,ra)] if ri == 0 then li = 0:bigint;
-                    }
-                    when "**=" {
-                        if || reduce (ra<0) {
-                            throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                        }
-                        if has_max_bits {
-                            [(li,ri) in zip(la,ra)] li.powMod(li, ri, max_size);
-                        }
-                        else {
-                            la **= ra;
-                        }
+                  when "+=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li += ri;
+                      if has_max_bits {
+                        li &= local_max_size;
                       }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
-                }
-                if has_max_bits {
-                    la.mod(la, max_size);
+                  }
+                  when "-=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li -= ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "*=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li *= ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "//=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      if ri != 0 {
+                        li /= ri;
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "%=" {
+                    // we can't use li %= ri because this can result in negatives
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      if ri != 0 {
+                        li.mod(li, ri);
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "**=" {
+                    if || reduce (ra<0) {
+                      throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
+                    }
+                    if has_max_bits {
+                      forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                        li.powMod(li, ri, local_max_size + 1);
+                      }
+                    }
+                    else {
+                      forall (li, ri) in zip(la, ra) {
+                        li **= ri:uint;
+                      }
+                    }
+                  }
+                  otherwise {
+                    var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
                 }
             }
             when (DType.BigInt, DType.UInt64) {
@@ -1314,39 +1356,81 @@ module OperatorMsg
                 var max_size = 1:bigint;
                 var has_max_bits = max_bits != -1;
                 if has_max_bits {
-                    max_size <<= max_bits;
+                  max_size <<= max_bits;
+                  max_size -= 1;
                 }
                 select op {
-                    when "+=" { la += ra; }
-                    when "-=" { la -= ra; }
-                    when "*=" { la *= ra; }
-                    when "//=" {
-                        [(li,ri) in zip(la,ra)] li = if ri != 0 then li/ri else 0:bigint;
+                  when "+=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li += ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    when "%=" {
-                        // we can't use li %= ri because this can result in negatives
-                        [(li,ri) in zip(la,ra)] if ri != 0 then li.mod(li, ri);
-                        [(li,ri) in zip(la,ra)] if ri == 0 then li = 0:bigint;
+                  }
+                  when "-=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li -= ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    when "**=" {
-                        if || reduce (ra<0) {
-                            throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                        }
-                        if has_max_bits {
-                            [(li,ri) in zip(la,ra)] li.powMod(li, ri, max_size);
-                        }
-                        else {
-                            la **= ra;
-                        }
+                  }
+                  when "*=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li *= ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+                  when "//=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      if ri != 0 {
+                        li /= ri;
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                }
-                if has_max_bits {
-                    la.mod(la, max_size);
+                  }
+                  when "%=" {
+                    // we can't use li %= ri because this can result in negatives
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      if ri != 0 {
+                        li.mod(li, ri);
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "**=" {
+                    if || reduce (ra<0) {
+                      throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
+                    }
+                    if has_max_bits {
+                      forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                        li.powMod(li, ri, local_max_size + 1);
+                      }
+                    }
+                    else {
+                      forall (li, ri) in zip(la, ra) {
+                        li **= ri:uint;
+                      }
+                    }
+                  }
+                  otherwise {
+                    var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
                 }
             }
             when (DType.BigInt, DType.Float64) {
@@ -1358,26 +1442,45 @@ module OperatorMsg
                 var l = toSymEntry(left,bigint);
                 var r = toSymEntry(right,bool);
                 ref la = l.a;
-                ref ra = r.a;
+                // TODO change once we can cast directly from bool to bigint
+                var ra = r.a:int:bigint;
                 var max_bits = l.max_bits;
                 var max_size = 1:bigint;
                 var has_max_bits = max_bits != -1;
                 if has_max_bits {
-                    max_size <<= max_bits;
+                  max_size <<= max_bits;
+                  max_size -= 1;
                 }
                 select op {
-                    // TODO change once we can cast directly from bool to bigint
-                    when "+=" {la += ra:int:bigint;}
-                    when "-=" {la -= ra:int:bigint;}
-                    when "*=" {la *= ra:int:bigint;}
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                  when "+=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li += ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                }
-                if has_max_bits {
-                    la.mod(la, max_size);
+                  }
+                  when "-=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li -= ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "*=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li *= ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  otherwise {
+                    var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
                 }
             }
             when (DType.BigInt, DType.BigInt) {
@@ -1389,40 +1492,81 @@ module OperatorMsg
                 var max_size = 1:bigint;
                 var has_max_bits = max_bits != -1;
                 if has_max_bits {
-                    max_size <<= max_bits;
+                  max_size <<= max_bits;
+                  max_size -= 1;
                 }
                 select op {
-                    when "+=" { la += ra; }
-                    when "-=" { la -= ra; }
-                    when "*=" { la *= ra; }
-                    when "//=" {
-                        [(li,ri) in zip(la,ra)] li = if ri != 0 then li/ri else 0:bigint;
+                  when "+=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li += ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    when "%=" {
-                        // we can't use li %= ri because this can result in negatives
-                        [(li,ri) in zip(la,ra)] if ri != 0 then li.mod(li, ri);
-                        [(li,ri) in zip(la,ra)] if ri == 0 then li = 0:bigint;
+                  }
+                  when "-=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li -= ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    when "**=" {
-                        if || reduce (ra<0) {
-                            throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                        }
-                        if has_max_bits {
-                            [(li,ri) in zip(la,ra)] li.powMod(li, ri, max_size);
-                        }
-                        else {
-                            // TODO cast to uint for now until chapel issue #21194
-                            la **= ra:uint;
-                        }
+                  }
+                  when "*=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      li *= ri;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+                  when "//=" {
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      if ri != 0 {
+                        li /= ri;
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                }
-                if has_max_bits {
-                    la.mod(la, max_size);
+                  }
+                  when "%=" {
+                    // we can't use li %= ri because this can result in negatives
+                    forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                      if ri != 0 {
+                        li.mod(li, ri);
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "**=" {
+                    if || reduce (ra<0) {
+                      throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
+                    }
+                    if has_max_bits {
+                      forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                        li.powMod(li, ri, local_max_size + 1);
+                      }
+                    }
+                    else {
+                      forall (li, ri) in zip(la, ra) {
+                        li **= ri:uint;
+                      }
+                    }
+                  }
+                  otherwise {
+                    var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
                 }
             }
             otherwise {
@@ -1674,39 +1818,81 @@ module OperatorMsg
                 var max_size = 1:bigint;
                 var has_max_bits = max_bits != -1;
                 if has_max_bits {
-                    max_size <<= max_bits;
+                  max_size <<= max_bits;
+                  max_size -= 1;
                 }
                 select op {
-                    when "+=" { la += val; }
-                    when "-=" { la -= val; }
-                    when "*=" { la *= val; }
-                    when "//=" {
-                        [li in la] li = if val != 0 then li/val else 0:bigint;
+                  when "+=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      li += local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    when "%=" {
-                        // we can't use li %= val because this can result in negatives
-                        [li in la] if val != 0 then li.mod(li, val);
-                        [li in la] if val == 0 then li = 0:bigint;
+                  }
+                  when "-=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      li -= local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    when "**=" {
-                        if val<0 {
-                            throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                        }
-                        if has_max_bits {
-                            [li in la] li.powMod(li, val, max_size);
-                        }
-                        else {
-                            la **= val;
-                        }
+                  }
+                  when "*=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      li *= local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+                  when "//=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      if local_val != 0 {
+                        li /= local_val;
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                }
-                if has_max_bits {
-                    la.mod(la, max_size);
+                  }
+                  when "%=" {
+                    // we can't use li %= val because this can result in negatives
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      if local_val != 0 {
+                        li.mod(li, local_val);
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "**=" {
+                    if val<0 {
+                      throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
+                    }
+                    if has_max_bits {
+                      forall li in la with (var local_val = val, var local_max_size = max_size) {
+                        li.powMod(li, local_val, local_max_size + 1);
+                      }
+                    }
+                    else {
+                      forall li in la with (var local_val = val) {
+                        li **= local_val:uint;
+                      }
+                    }
+                  }
+                  otherwise {
+                    var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
                 }
             }
             when (DType.BigInt, DType.UInt64) {
@@ -1717,39 +1903,81 @@ module OperatorMsg
                 var max_size = 1:bigint;
                 var has_max_bits = max_bits != -1;
                 if has_max_bits {
-                    max_size <<= max_bits;
+                  max_size <<= max_bits;
+                  max_size -= 1;
                 }
                 select op {
-                    when "+=" { la += val; }
-                    when "-=" { la -= val; }
-                    when "*=" { la *= val; }
-                    when "//=" {
-                        [li in la] li = if val != 0 then li/val else 0:bigint;
+                  when "+=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      li += local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    when "%=" {
-                        // we can't use li %= val because this can result in negatives
-                        [li in la] if val != 0 then li.mod(li, val);
-                        [li in la] if val == 0 then li = 0:bigint;
+                  }
+                  when "-=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      li -= local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    when "**=" {
-                        if val<0 {
-                            throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                        }
-                        if has_max_bits {
-                            [li in la] li.powMod(li, val, max_size);
-                        }
-                        else {
-                            la **= val;
-                        }
+                  }
+                  when "*=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      li *= local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+                  when "//=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      if local_val != 0 {
+                        li /= local_val;
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                }
-                if has_max_bits {
-                    la.mod(la, max_size);
+                  }
+                  when "%=" {
+                    // we can't use li %= val because this can result in negatives
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      if local_val != 0 {
+                        li.mod(li, local_val);
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "**=" {
+                    if val<0 {
+                      throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
+                    }
+                    if has_max_bits {
+                      forall li in la with (var local_val = val, var local_max_size = max_size) {
+                        li.powMod(li, local_val, local_max_size + 1);
+                      }
+                    }
+                    else {
+                      forall li in la with (var local_val = val) {
+                        li **= local_val:uint;
+                      }
+                    }
+                  }
+                  otherwise {
+                    var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
                 }
             }
             when (DType.BigInt, DType.Float64) {
@@ -1765,21 +1993,40 @@ module OperatorMsg
                 var max_size = 1:bigint;
                 var has_max_bits = max_bits != -1;
                 if has_max_bits {
-                    max_size <<= max_bits;
+                  max_size <<= max_bits;
+                  max_size -= 1;
                 }
                 select op {
-                    // TODO change once we can cast directly from bool to bigint
-                    when "+=" {la += val:int:bigint;}
-                    when "-=" {la -= val:int:bigint;}
-                    when "*=" {la *= val:int:bigint;}
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                  // TODO change once we can cast directly from bool to bigint
+                  when "+=" {
+                    forall li in la with (var local_val = val:int:bigint, var local_max_size = max_size) {
+                      li += local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                }
-                if has_max_bits {
-                    la.mod(la, max_size);
+                  }
+                  when "-=" {
+                    forall li in la with (var local_val = val:int:bigint, var local_max_size = max_size) {
+                      li -= local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "*=" {
+                    forall li in la with (var local_val = val:int:bigint, var local_max_size = max_size) {
+                      li *= local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  otherwise {
+                    var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
                 }
             }
             when (DType.BigInt, DType.BigInt) {
@@ -1790,47 +2037,88 @@ module OperatorMsg
                 var max_size = 1:bigint;
                 var has_max_bits = max_bits != -1;
                 if has_max_bits {
-                    max_size <<= max_bits;
+                  max_size <<= max_bits;
+                  max_size -= 1;
                 }
                 select op {
-                    when "+=" { la += val; }
-                    when "-=" { la -= val; }
-                    when "*=" { la *= val; }
-                    when "//=" {
-                        [li in la] li = if val != 0 then li/val else 0:bigint;
+                  when "+=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      li += local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    when "%=" {
-                        // we can't use li %= val because this can result in negatives
-                        [li in la] if val != 0 then li.mod(li, val);
-                        [li in la] if val == 0 then li = 0:bigint;
+                  }
+                  when "-=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      li -= local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    when "**=" {
-                        if val<0 {
-                            throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                        }
-                        if has_max_bits {
-                            [li in la] li.powMod(li, val, max_size);
-                        }
-                        else {
-                            // TODO cast to uint for now until chapel issue #21194
-                            la **= val:uint;
-                        }
+                  }
+                  when "*=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      li *= local_val;
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+                  when "//=" {
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      if local_val != 0 {
+                        li /= local_val;
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
                     }
-                }
-                if has_max_bits {
-                    la.mod(la, max_size);
+                  }
+                  when "%=" {
+                    // we can't use li %= val because this can result in negatives
+                    forall li in la with (var local_val = val, var local_max_size = max_size) {
+                      if local_val != 0 {
+                        li.mod(li, local_val);
+                      }
+                      else {
+                        li = 0:bigint;
+                      }
+                      if has_max_bits {
+                        li &= local_max_size;
+                      }
+                    }
+                  }
+                  when "**=" {
+                    if val<0 {
+                      throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
+                    }
+                    if has_max_bits {
+                      forall li in la with (var local_val = val, var local_max_size = max_size) {
+                        li.powMod(li, local_val, local_max_size + 1);
+                      }
+                    }
+                    else {
+                      forall li in la with (var local_val = val) {
+                        li **= local_val:uint;
+                      }
+                    }
+                  }
+                  otherwise {
+                    var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
                 }
             }
             otherwise {
-                var errorMsg = unrecognizedTypeError(pn,
-                                   "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                           
-                return new MsgTuple(errorMsg, MsgType.ERROR);
+              var errorMsg = unrecognizedTypeError(pn,
+                                  "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");
+              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
         repMsg = "opeqvs success";
