@@ -40,7 +40,7 @@ def pytest_addoption(parser):
              "Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum."
     )
     parser.addoption(
-        "--alpha", action="store", default="1",
+        "--alpha", action="store", default="1.0",
         help="Benchmark only option. Scalar multiple"
     )
     parser.addoption(
