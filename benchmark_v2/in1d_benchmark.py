@@ -13,6 +13,10 @@ MAXSTRLEN = 5
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("size", SIZES)
 def bench_ak_in1d(benchmark, dtype, size):
+    """
+    Measures the performance of ak.in1d
+
+    """
     if dtype in pytest.dtype:
         cfg = ak.get_config()
         N = pytest.prob_size * cfg["numLocales"]
@@ -33,7 +37,7 @@ def bench_ak_in1d(benchmark, dtype, size):
 
         benchmark.pedantic(ak.in1d, args=(a, b), rounds=pytest.trials)
 
-        benchmark.extra_info["description"] = "Measures the performance of ak.GroupBy"
+        benchmark.extra_info["description"] = "Measures the performance of ak.in1d"
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (nbytes / benchmark.stats["mean"]) / 2 ** 30)
