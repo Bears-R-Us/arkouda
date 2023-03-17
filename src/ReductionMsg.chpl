@@ -6,6 +6,7 @@ module ReductionMsg
     use Math only;
     use Reflection only;
     use CommAggregation;
+    use BigInteger;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -584,6 +585,24 @@ module ReductionMsg
                     }
                 }
             }
+            when (DType.BigInt) {
+                var values = toSymEntry(gVal, bigint);
+                select op {
+                    when "sum" {
+                        var res = segSum(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "or" {
+                        var res = segOr(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,op,gVal.dtype);
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
           otherwise {
               var errorMsg = unrecognizedTypeError(pn, dtype2str(gVal.dtype));
               rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -620,7 +639,10 @@ module ReductionMsg
         agg.copy(flagvalues[s][0], true);
       }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-      overMemLimit((numBytes(t)+1) * flagvalues.size);
+      if t != bigint {
+        // TODO update when we have a better way to handle bigint mem estimation
+        overMemLimit((numBytes(t)+1) * flagvalues.size);
+      }
       // Scan with custom operator, which resets the bitwise AND
       // at segment boundaries.
       const scanresult = ResettingPlusScanOp scan flagvalues;
@@ -654,6 +676,7 @@ module ReductionMsg
       proc identity {
         if eltType == (bool, real) then return (false, 0.0);
         else if eltType == (bool, uint) then return (false, 0:uint);
+        else if eltType == (bool, bigint) then return (false, 0:bigint);
         else return (false, 0);
       }
 
@@ -997,7 +1020,10 @@ module ReductionMsg
         agg.copy(flagvalues[s][0], true);
       }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-      overMemLimit((numBytes(t)+1) * flagvalues.size);
+      if t != bigint {
+        // TODO update when we have a better way to handle bigint mem estimation
+        overMemLimit((numBytes(t)+1) * flagvalues.size);
+      }
       // Scan with custom operator, which resets the bitwise AND
       // at segment boundaries.
       const scanresult = ResettingOrScanOp scan flagvalues;
@@ -1026,10 +1052,10 @@ module ReductionMsg
          have already been scanned, or for internal state, the flag means 
          "there has already been a reset in the computation of this value".
       */
-      var value = if eltType == (bool, int) then (false, 0) else (false, 0:uint);
+      var value: eltType;
 
       proc identity {
-        return if eltType == (bool, int) then (false, 0) else (false, 0:uint);
+        return if eltType == (bool, int) then (false, 0) else if eltType == (bool, uint) then (false, 0:uint) else (false, 0:bigint);
       }
 
       proc accumulate(x) {
