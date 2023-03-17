@@ -13,6 +13,8 @@ from server_util.test.server_test_util import (
 
 default_dtype = ["int64", "uint64", "float64", "bool", "str", "bigint", "mixed"]
 default_encoding = ["ascii", "idna"]
+
+
 def pytest_configure(config):
     pytest.prob_size = eval(config.getoption("size"))
     pytest.trials = eval(config.getoption("trials"))
