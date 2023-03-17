@@ -64,8 +64,7 @@ def bench_np_array_create(benchmark, op, dtype):
     """
     Measures Numpy array creation performance
     """
-    cfg = ak.get_config()
-    size = pytest.prob_size * cfg["numLocales"]
+    size = pytest.prob_size
 
     if pytest.numpy and dtype in pytest.dtype:
         a = benchmark.pedantic(
