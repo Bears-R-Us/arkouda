@@ -4,8 +4,8 @@ import pytest
 DTYPES = ["int64", "float64", "bigint"]
 
 
-def run_test(a, b):
-    return a + b * pytest.alpha
+def run_test(a, b, alpha):
+    return a + b * alpha
 
 
 @pytest.mark.benchmark(group="ak_stream")
@@ -21,19 +21,20 @@ def bench_ak_stream(benchmark, dtype):
     nBytes = N * 8 * 3
 
     if dtype in ["int64", "float64"]:
+        alpha = pytest.alpha * 1.0
         if pytest.random or pytest.seed is not None:
             if dtype == "int64":
                 a = ak.randint(0, 2 ** 32, N, seed=pytest.seed)
                 b = ak.randint(0, 2 ** 32, N, seed=pytest.seed)
-                benchmark.pedantic(run_test, args=(a, b), rounds=pytest.trials)
+                benchmark.pedantic(run_test, args=(a, b, alpha), rounds=pytest.trials)
             elif dtype == "float64":
                 a = ak.randint(0, 1, N, dtype=ak.float64, seed=pytest.seed)
                 b = ak.randint(0, 1, N, dtype=ak.float64, seed=pytest.seed)
-                benchmark.pedantic(run_test, args=(a, b), rounds=pytest.trials)
+                benchmark.pedantic(run_test, args=(a, b, alpha), rounds=pytest.trials)
         else:
             a = ak.ones(N, dtype=dtype)
             b = ak.ones(N, dtype=dtype)
-            benchmark.pedantic(run_test, args=(a, b), rounds=pytest.trials)
+            benchmark.pedantic(run_test, args=(a, b, alpha), rounds=pytest.trials)
 
     else:  # bigint
         if pytest.random or pytest.seed is not None:
@@ -49,7 +50,7 @@ def bench_ak_stream(benchmark, dtype):
             a = ak.bigint_from_uint_arrays([ak.ones(N, dtype=ak.uint64)], max_bits=pytest.max_bits)
             b = ak.bigint_from_uint_arrays([ak.ones(N, dtype=ak.uint64)], max_bits=pytest.max_bits)
 
-        benchmark.pedantic(run_test, args=(a, b), rounds=pytest.trials)
+        benchmark.pedantic(run_test, args=(a, b, pytest.alpha), rounds=pytest.trials)
 
     benchmark.extra_info["description"] = f"Measures performance of stream using {dtype} types."
     benchmark.extra_info["problem_size"] = pytest.prob_size
