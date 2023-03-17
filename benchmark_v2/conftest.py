@@ -11,7 +11,7 @@ from server_util.test.server_test_util import (
     stop_arkouda_server,
 )
 
-default_dtype = ["int64", "uint64", "float64", "bool", "str", "bigint"]
+default_dtype = ["int64", "uint64", "float64", "bool", "str", "bigint", "mixed"]
 def pytest_configure(config):
     pytest.prob_size = eval(config.getoption("size"))
     pytest.trials = eval(config.getoption("trials"))
