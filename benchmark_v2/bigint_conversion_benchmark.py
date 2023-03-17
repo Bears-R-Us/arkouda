@@ -19,7 +19,7 @@ def bench_to_bigint(benchmark):
         kwargs={"max_bits": pytest.max_bits},
         rounds=pytest.trials,
     )
-    benchmark.extra_info["description"] = "Measures the performance of ak.argsort"
+    benchmark.extra_info["description"] = "Measures the performance of ak.bigint_from_uint_arrays"
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (tot_bytes / benchmark.stats["mean"]) / 2 ** 30)
@@ -39,7 +39,7 @@ def bench_from_bigint(benchmark):
     ba = ak.bigint_from_uint_arrays([a, b], max_bits=pytest.max_bits)
 
     benchmark.pedantic(ba.bigint_to_uint_arrays, rounds=pytest.trials)
-    benchmark.extra_info["description"] = "Measures the performance of ak.argsort"
+    benchmark.extra_info["description"] = "Measures the performance of bigint_to_uint_arrays"
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (tot_bytes / benchmark.stats["mean"]) / 2 ** 30)
