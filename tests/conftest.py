@@ -28,7 +28,8 @@ def pytest_addoption(parser):
     parser.addoption(
         "--dtype", action="store", default="",
         help="Benchmark only option. Dtypes to run benchmarks against. Comma separated list "
-             "(NO SPACES) allowing for multiple. Accepted values: int64, uint64, bigint, float64, bool, and str."
+             "(NO SPACES) allowing for multiple. Accepted values: int64, uint64, bigint, float64, bool, str and mixed."
+             "Mixed is used to generate sets of multiple types."
     )
     parser.addoption(
         "--numpy", action="store_true", default=False,
