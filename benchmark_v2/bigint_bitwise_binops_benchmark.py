@@ -38,9 +38,9 @@ def bench_ak_bitwise_binops(benchmark, op):
     nbytes = N * 8 if pytest.max_bits != -1 and pytest.max_bits <= 64 else N * 8 * 2
 
     if op == "and":
-        benchmark.pedantic(_perform_and_binop, args=(a, b), rounds=pytest.trials)
+        benchmark.pedantic(_perform_and_binop, args=[a, b], rounds=pytest.trials)
     elif op == "or":
-        benchmark.pedantic(_perform_or_binop, args=(a, b), rounds=pytest.trials)
+        benchmark.pedantic(_perform_or_binop, args=[a, b], rounds=pytest.trials)
     elif op == "shift":
         benchmark.pedantic(_perform_shift_binop, args=[a], rounds=pytest.trials)
 
