@@ -1,7 +1,8 @@
 import arkouda as ak
 import pytest
 
-TYPES = ["int64", "bigint", "str"]
+# mixed used for groupby of str and int64
+TYPES = ["int64", "bigint", "str", "mixed"]
 NUM_ARR = [1, 2, 8, 16]
 
 
@@ -41,10 +42,11 @@ def generate_arrays(dtype, numArrays):
 @pytest.mark.parametrize("numArrays", NUM_ARR)
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_groupby(benchmark, numArrays, dtype):
-    arrays, totalbytes = generate_arrays(dtype, numArrays)
-    benchmark.pedantic(ak.GroupBy, args=[arrays], rounds=pytest.trials)
+    if dtype in pytest.dtype:
+        arrays, totalbytes = generate_arrays(dtype, numArrays)
+        benchmark.pedantic(ak.GroupBy, args=[arrays], rounds=pytest.trials)
 
-    benchmark.extra_info["description"] = "Measures the performance of ak.GroupBy"
-    benchmark.extra_info["problem_size"] = pytest.prob_size
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (totalbytes / benchmark.stats["mean"]) / 2 ** 30)
+        benchmark.extra_info["description"] = "Measures the performance of ak.GroupBy"
+        benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
+            (totalbytes / benchmark.stats["mean"]) / 2 ** 30)
