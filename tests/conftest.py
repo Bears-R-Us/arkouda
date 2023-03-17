@@ -40,6 +40,14 @@ def pytest_addoption(parser):
         help="Benchmark only option. Only applies to bigint testing."
              "Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum."
     )
+    parser.addoption(
+        "--alpha", action="store", default="1.0",
+        help="Benchmark only option. Scalar multiple"
+    )
+    parser.addoption(
+        "--randomize", action="store_true", default=False,
+        help="Fill arrays with random values instead of ones"
+    )
 
 
 def pytest_collection_modifyitems(config, items):
