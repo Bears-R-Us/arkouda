@@ -30,6 +30,14 @@ def pytest_configure(config):
     pytest.idx_size = None if config.getoption("index_size") == "" else eval(config.getoption("index_size"))
     pytest.val_size = None if config.getoption("value_size") == "" else eval(config.getoption("value_size"))
 
+    # IO settings
+    pytest.io_compressed = config.getoption("io_compressed")
+    pytest.io_delete = config.getoption("io_delete")
+    pytest.io_files = eval(config.getoption("io_files_per_loc"))
+    pytest.io_path = config.getoption("io_path")
+    pytest.io_read = config.getoption("io_read")
+    pytest.io_write = config.getoption("io_write")
+
 
 @pytest.fixture(scope="module", autouse=True)
 def startup_teardown():

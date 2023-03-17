@@ -63,6 +63,30 @@ def pytest_addoption(parser):
              "Comma separated list (NO SPACES) allowing for multiple"
              "Encoding to be used. Accepted values: idna, ascii"
     )
+    parser.addoption(
+        "--io_write", action="store_true", default=False,
+        help="Only write the files; files will not be removed"
+    )
+    parser.addoption(
+        "--io_read", action="store_true", default=False,
+        help="Only read the files; files will not be removed"
+    )
+    parser.addoption(
+        "--io_delete", action="store_true", default=False,
+        help="Only delete files created from writing with this benchmark"
+    )
+    parser.addoption(
+        "--io_files_per_loc", action="store", default="1",
+        help="Number of files to create per locale"
+    )
+    parser.addoption(
+        "--io_compressed", action="store_true", default=False,
+        help="Write with Snappy compression and RLE encoding",
+    )
+    parser.addoption(
+        "--io_path", action="store", default=os.path.join(os.getcwd(), "ak-io-benchmark"),
+        help="Target path for measuring read/write rates",
+    )
 
 
 def pytest_collection_modifyitems(config, items):
