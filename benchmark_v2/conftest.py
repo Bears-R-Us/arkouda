@@ -20,6 +20,7 @@ def pytest_configure(config):
     pytest.dtype = default_dtype if dtype_str == "" else dtype_str.split(",")
     pytest.max_bits = eval(config.getoption("maxbits"))
     pytest.alpha = eval(config.getoption("alpha"))
+    pytest.random = config.getoption("randomize")
 
 
 @pytest.fixture(scope="module", autouse=True)

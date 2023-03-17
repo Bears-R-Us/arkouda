@@ -43,6 +43,10 @@ def pytest_addoption(parser):
         "--alpha", action="store", default="1",
         help="Benchmark only option. Scalar multiple"
     )
+    parser.addoption(
+        "--randomize", action="store_true", default=False,
+        help="Fill arrays with random values instead of ones"
+    )
 
 
 def pytest_collection_modifyitems(config, items):

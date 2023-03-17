@@ -21,7 +21,7 @@ def bench_ak_stream(benchmark, dtype):
     nBytes = N * 8 * 3
 
     if dtype in ["int64", "float64"]:
-        if pytest.seed is not None:
+        if pytest.random or pytest.seed is not None:
             if dtype == "int64":
                 a = ak.randint(0, 2 ** 32, N, seed=pytest.seed)
                 b = ak.randint(0, 2 ** 32, N, seed=pytest.seed)
@@ -36,7 +36,7 @@ def bench_ak_stream(benchmark, dtype):
             benchmark.pedantic(run_test, args=(a, b), rounds=pytest.trials)
 
     else:  # bigint
-        if pytest.seed is not None:
+        if pytest.random or pytest.seed is not None:
             a1 = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=pytest.seed)
             a2 = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=pytest.seed)
             a = ak.bigint_from_uint_arrays([a1, a2], max_bits=pytest.max_bits)
