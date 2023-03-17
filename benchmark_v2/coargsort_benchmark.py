@@ -35,7 +35,8 @@ def bench_coargsort(benchmark, dtype, numArrays):
         benchmark.extra_info["description"] = "Measures the performance of ak.coargsort"
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2 ** 30)
+            (nbytes / benchmark.stats["mean"]) / 2**30
+        )
 
 
 @pytest.mark.benchmark(group="NumPy_CoArgSort")
@@ -43,21 +44,24 @@ def bench_coargsort(benchmark, dtype, numArrays):
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_coargsort_numpy(benchmark, dtype, numArrays):
     cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
     if pytest.numpy and dtype in pytest.dtype:
         if pytest.seed is not None:
             np.random.seed(pytest.seed)
         if dtype == "int64":
-            arrs = [np.random.randint(0, 2 ** 32, N // numArrays) for _ in range(numArrays)]
+            arrs = [
+                np.random.randint(0, 2**32, pytest.prob_size // numArrays) for _ in range(numArrays)
+            ]
         elif dtype == "uint64":
             arrs = [
-                np.random.randint(0, 2 ** 32, N // numArrays, dtype=np.uint64) for _ in range(numArrays)
+                np.random.randint(0, 2**32, pytest.prob_size // numArrays, dtype=np.uint64)
+                for _ in range(numArrays)
             ]
         elif dtype == "float64":
-            arrs = [np.random.random(N // numArrays) for _ in range(numArrays)]
+            arrs = [np.random.random(pytest.prob_size // numArrays) for _ in range(numArrays)]
         elif dtype == "str":
             arrs = [
-                np.cast["str"](np.random.randint(0, 2 ** 32, N // numArrays)) for _ in range(numArrays)
+                np.cast["str"](np.random.randint(0, 2**32, pytest.prob_size // numArrays))
+                for _ in range(numArrays)
             ]
 
         nbytes = sum(a.size * a.itemsize for a in arrs)
@@ -65,4 +69,5 @@ def bench_coargsort_numpy(benchmark, dtype, numArrays):
         benchmark.extra_info["description"] = "Measures the performance of np.lexsort for comparison"
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2 ** 30)
+            (nbytes / benchmark.stats["mean"]) / 2**30
+        )
