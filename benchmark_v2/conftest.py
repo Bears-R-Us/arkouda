@@ -84,6 +84,7 @@ def manage_connection():
     yield
 
     try:
+        ak.clear()
         ak.disconnect()
     except Exception as e:
         raise ConnectionError(e)
