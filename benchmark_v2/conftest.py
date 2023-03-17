@@ -21,6 +21,7 @@ def pytest_configure(config):
     pytest.max_bits = eval(config.getoption("maxbits"))
     pytest.alpha = eval(config.getoption("alpha"))
     pytest.random = config.getoption("randomize")
+    pytest.numpy = config.getoption("numpy")
 
 
 @pytest.fixture(scope="module", autouse=True)
