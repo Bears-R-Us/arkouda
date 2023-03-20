@@ -27,6 +27,8 @@ def pytest_configure(config):
     pytest.numpy = config.getoption("numpy")
     encode_str = config.getoption("encoding")
     pytest.encoding = default_encoding if encode_str == "" else encode_str.split(",")
+    pytest.idx_size = None if config.getoption("index_size") == "" else eval(config.getoption("index_size"))
+    pytest.val_size = None if config.getoption("value_size") == "" else eval(config.getoption("value_size"))
 
 
 @pytest.fixture(scope="module", autouse=True)
