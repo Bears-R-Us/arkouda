@@ -12,6 +12,9 @@ from server_util.test.server_test_util import (
 )
 
 default_dtype = ["int64", "uint64", "float64", "bool", "str", "bigint", "mixed"]
+default_encoding = ["ascii", "idna"]
+
+
 def pytest_configure(config):
     pytest.prob_size = eval(config.getoption("size"))
     pytest.trials = eval(config.getoption("trials"))
@@ -22,6 +25,8 @@ def pytest_configure(config):
     pytest.alpha = eval(config.getoption("alpha"))
     pytest.random = config.getoption("randomize")
     pytest.numpy = config.getoption("numpy")
+    encode_str = config.getoption("encoding")
+    pytest.encoding = default_encoding if encode_str == "" else encode_str.split(",")
 
 
 @pytest.fixture(scope="module", autouse=True)

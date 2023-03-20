@@ -48,6 +48,12 @@ def pytest_addoption(parser):
         "--randomize", action="store_true", default=False,
         help="Fill arrays with random values instead of ones"
     )
+    parser.addoption(
+        "--encoding", action="store", default="",
+        help="Benchmark only option. Only applies to encoding benchmarks."
+             "Comma separated list (NO SPACES) allowing for multiple"
+             "Encoding to be used. Accepted values: idna, ascii"
+    )
 
 
 def pytest_collection_modifyitems(config, items):
