@@ -5,7 +5,7 @@ import numpy as np
 TYPES = ("int64", "float64", "bool", "str")
 
 
-def _ak_gather(a, i):
+def _run_gather(a, i):
     """
     Helper function allowing for the gather to be benchmarked
     """
@@ -40,7 +40,7 @@ def bench_ak_gather(benchmark, dtype):
             else:
                 v = ak.ones(Nv, dtype=dtype)
 
-        c = benchmark.pedantic(_ak_gather, args=[v, i], rounds=pytest.trials)
+        c = benchmark.pedantic(_run_gather, args=[v, i], rounds=pytest.trials)
 
         if dtype == "str":
             offsets_transferred = 3 * c.size * 8
@@ -49,20 +49,12 @@ def bench_ak_gather(benchmark, dtype):
         else:
             bytes_per_sec = (c.size * c.itemsize * 3) / benchmark.stats["mean"]
 
-        bytes_per_sec / 2 ** 30
         benchmark.extra_info["description"] = "Measures the performance of Arkouda gather"
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["index_size"] = isize
         benchmark.extra_info["value_size"] = vsize
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (bytes_per_sec / 2 ** 30))
-
-
-def _np_gather(a, i):
-    """
-    Helper function allowing for the gather to be benchmarked
-    """
-    return a[i]
 
 
 @pytest.mark.benchmark(group="NumPy_Gather")
@@ -87,7 +79,7 @@ def bench_np_gather(benchmark, dtype):
         else:
             v = np.ones(Nv, dtype=dtype)
 
-        c = benchmark.pedantic(_np_gather, args=[v, i], rounds=pytest.trials)
+        c = benchmark.pedantic(_run_gather, args=[v, i], rounds=pytest.trials)
         bytes_per_sec = (c.size * c.itemsize * 3) / benchmark.stats["mean"]
         benchmark.extra_info["description"] = "Measures the performance of NumPy gather"
         benchmark.extra_info["problem_size"] = pytest.prob_size
