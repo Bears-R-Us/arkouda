@@ -18,6 +18,7 @@ default_encoding = ["ascii", "idna"]
 def pytest_configure(config):
     pytest.prob_size = eval(config.getoption("size"))
     pytest.trials = eval(config.getoption("trials"))
+    pytest.time_trial = eval(config.getoption("time_trial"))
     pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
     dtype_str = config.getoption("dtype")
     pytest.dtype = default_dtype if dtype_str == "" else dtype_str.split(",")

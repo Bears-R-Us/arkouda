@@ -62,6 +62,10 @@ def pytest_addoption(parser):
              "Comma separated list (NO SPACES) allowing for multiple"
              "Encoding to be used. Accepted values: idna, ascii"
     )
+    parser.addoption(
+        "--time_trial", action="store", default="1",
+        help="Benchmark only option. Number of seconds to run time-trial benchmarks"
+    )
 
 
 def pytest_collection_modifyitems(config, items):
