@@ -1463,9 +1463,16 @@ module HDF5Msg {
         
         // compute amount to adjust 
         var adjustments = (+ scan diffs) - diffs;
-        forall(sd, adj) in zip(segSubdoms, adjustments) {
-            // adjust offset of the segment based on the sizes of the segments preceeding it
-            a[sd] += adj;
+        coforall loc in a.targetLocales() do on loc {
+            forall(sd, adj) in zip(segSubdoms, adjustments) {
+                for locdom in a.localSubdomains() {
+                    const intersection = domain_intersection(locdom, sd);
+                    if intersection.size > 0 {
+                        // adjust offset of the segment based on the sizes of the segments preceeding it
+                        a[intersection] += adj;
+                    }
+                }
+            }
         }
     }
 
