@@ -1,5 +1,5 @@
 module ArkoudaFileCompat {
-  import IO.{openmem, iomode, fileReader as chapelFileReader, iokind, itemReaderInternal, file};
+  import IO.{openmem, iomode, iokind, channel, itemReaderInternal, file};
   import IO.open as fileOpen;
   enum ioMode {
     r = 1,
@@ -32,14 +32,14 @@ module ArkoudaFileCompat {
   }
 
   record fileReader {
-    type chapelFileReader;
+    type t;
 
     proc lines() {
-      var ret = new itemReaderInternal(string, iokind.dynamic, true, chapelFileReader);
+      var ret = new itemReaderInternal(string, iokind.dynamic, true, t);
       return ret;
     }
   }
-  proc chapelFileReader.bytesRead(ref a, b) throws {
+  proc channel.bytesRead(ref a, b) throws {
     this.readbytes(a,b);
   }
 }
