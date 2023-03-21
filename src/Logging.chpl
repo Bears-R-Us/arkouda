@@ -34,7 +34,6 @@ module Logging {
      */
     class ConsoleOutputHandler : OutputHandler {
         override proc write(message: string) throws {
-            import IO.stdout;
             writeln(message);
             stdout.flush();
         }

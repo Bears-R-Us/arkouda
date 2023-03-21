@@ -74,7 +74,6 @@ module CommandMap {
    * Dump the combined contents of the command maps as a single json encoded string
    */
   proc dumpCommandMap(): string throws {
-    writeln("\n", commandMap, "\n");
     var cm1:string = "%jt".format(commandMap);
     var cm2:string = "%jt".format(commandMapBinary);
     // Join these two together
