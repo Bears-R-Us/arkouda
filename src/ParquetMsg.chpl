@@ -1295,7 +1295,7 @@ module ParquetMsg {
               var segArray = new SegArray("", e, int);
               ref sa = segArray;
               var A = sa.segments.a;
-              const lastOffset = A[A.domain.high];
+              const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty;
               const lastValIdx = sa.values.a.domain.high;
               const locDom = sa.segments.a.localSubdomain();
 
@@ -1333,7 +1333,7 @@ module ParquetMsg {
               var segArray = new SegArray("", e, uint);
               ref sa = segArray;
               var A = sa.segments.a;
-              const lastOffset = A[A.domain.high];
+              const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty;
               const lastValIdx = sa.values.a.domain.high;
               const locDom = sa.segments.a.localSubdomain();
 
@@ -1371,7 +1371,7 @@ module ParquetMsg {
               var segArray = new SegArray("", e, bool);
               ref sa = segArray;
               var A = sa.segments.a;
-              const lastOffset = A[A.domain.high];
+              const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty
               const lastValIdx = sa.values.a.domain.high;
               const locDom = sa.segments.a.localSubdomain();
 
@@ -1409,7 +1409,7 @@ module ParquetMsg {
               var segArray = new SegArray("", e, real);
               ref sa = segArray;
               var A = sa.segments.a;
-              const lastOffset = A[A.domain.high];
+              const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty
               const lastValIdx = sa.values.a.domain.high;
               const locDom = sa.segments.a.localSubdomain();
 
@@ -1447,7 +1447,7 @@ module ParquetMsg {
             var segStr = new SegString("", e);
             ref ss = segStr;
             var A = ss.offsets.a;
-            const lastOffset = A[A.domain.high];
+            const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty
             const lastValIdx = ss.values.a.domain.high;
             const locDom = ss.offsets.a.localSubdomain();
 
