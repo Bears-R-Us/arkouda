@@ -33,6 +33,7 @@ def generate_dataframe():
     return ak.DataFrame(df_dict)
 
 
+@pytest.mark.benchmark(group="Dataframe_Indexing")
 @pytest.mark.parametrize("op", OPS)
 def bench_ak_dataframe(benchmark, op):
     """
@@ -59,9 +60,10 @@ def bench_ak_dataframe(benchmark, op):
         elif isinstance(col_obj, ak.Strings):
             nbytes += col_obj.nbytes * col_obj.entry.itemsize
         elif isinstance(col_obj, ak.SegArray):
-            nbytes += col_obj.values.size * col_obj.values.itemsize
+            nbytes += col_obj.values.size * col_obj.values.itemsize + \
+                      (col_obj.segments.size * col_obj.segments.itemsize)
 
-    # benchmark.extra_info["description"] = "Measures the performance of arkouda Dataframe indexing"
-    # benchmark.extra_info["problem_size"] = pytest.prob_size
-    # benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-    #     (nbytes / benchmark.stats["mean"]) / 2 ** 30)
+    benchmark.extra_info["description"] = "Measures the performance of arkouda Dataframe indexing"
+    benchmark.extra_info["problem_size"] = pytest.prob_size
+    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
+        (nbytes / benchmark.stats["mean"]) / 2 ** 30)
