@@ -813,7 +813,7 @@ module HDF5Msg {
 
                 ref ss = segString;
                 var A = ss.offsets.a;
-                const lastOffset = A[A.domain.high];
+                const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty
                 const lastValIdx = ss.values.a.domain.high;
 
                 // For each locale gather the string bytes corresponding to the offsets in its local domain

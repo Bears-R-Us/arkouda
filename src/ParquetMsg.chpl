@@ -560,7 +560,7 @@ module ParquetMsg {
     }
     
     const extraOffset = ss.values.size;
-    const lastOffset = A[A.domain.high];
+    const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty
     const lastValIdx = ss.values.a.domain.high;
     // For each locale gather the string bytes corresponding to the offsets in its local domain
     coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with (ref ss) do on loc {
@@ -1026,7 +1026,7 @@ module ParquetMsg {
     }
     
     const extraOffset = sa.values.size;
-    const lastOffset = segments[segments.domain.high];
+    const lastOffset = if segments.size == 0 then 0 else segments[segments.domain.high]; // prevent index error when empty
     const lastValIdx = sa.values.a.domain.high;
 
     // pull values to the locale of the offset
