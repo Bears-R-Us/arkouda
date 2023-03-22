@@ -10,7 +10,7 @@ module StatsMsg {
     use ServerErrorStrings;
     use Stats;
 
-    use Map;
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

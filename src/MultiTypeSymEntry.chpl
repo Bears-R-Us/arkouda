@@ -59,6 +59,11 @@ module MultiTypeSymEntry
             this.assignableTypes.add(this.entryType);
         }
 
+        proc init(input) {
+          this.entryType = input.entryType;
+          this.assignableTypes = input.assignableTypes;
+        }
+
         /*
             Sets the name of the entry when it is added to the Symbol Table
         */

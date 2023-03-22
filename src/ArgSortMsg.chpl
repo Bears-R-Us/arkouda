@@ -298,7 +298,7 @@ module ArgSortMsg
     }
     
     proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm):[D] int throws {
-      var t1 = Time.getCurrentTime();
+      var t1 = Time.timeSinceEpoch().totalSeconds();
       var iv: [D] int;
       select algorithm {
         when SortingAlgorithm.TwoArrayRadixSort {
@@ -320,7 +320,7 @@ module ArgSortMsg
         }
       }
       try! asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "argsort time = %i".format(Time.getCurrentTime() - t1));
+                             "argsort time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
       return iv;
     }
     

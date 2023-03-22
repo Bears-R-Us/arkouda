@@ -12,8 +12,8 @@ prototype module UnitTestArgSort
     use ArgSortMsg;
 
     proc writeIntArray(a:[?D] int, filename:string) {
-        var f: open(filename, iomode.cw).type;
-        try { f = open(filename, iomode.cw); } catch e { exit(1); }
+        var f: open(filename, ioMode.cw).type;
+        try { f = open(filename, ioMode.cw); } catch e { exit(1); }
         var w: f.writer(kind=ionative).type ;
         try { w = f.writer(kind=ionative); } catch e { exit(1); }
       try! w.write(D.size);

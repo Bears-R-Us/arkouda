@@ -46,7 +46,15 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--randomize", action="store_true", default=False,
-        help="Fill arrays with random values instead of ones"
+        help="Benchmark only option. Fill arrays with random values instead of ones"
+    )
+    parser.addoption(
+        "--index_size", action="store", default="",
+        help="Benchmark only option. Length of index array (number of gathers to perform)"
+    )
+    parser.addoption(
+        "--value_size", action="store", default="",
+        help="Benchmark only option.Length of array from which values are gathered"
     )
     parser.addoption(
         "--encoding", action="store", default="",

@@ -1,10 +1,8 @@
 
 
 module FileIO {
-    use IO;
     use GenSymIO;
     use FileSystem;
-    use Map;
     use Path;
     use Reflection;
     use Message;
@@ -12,6 +10,9 @@ module FileIO {
     use MultiTypeSymEntry;
     use ServerErrors;
     use Sort;
+
+    use ArkoudaFileCompat;
+    use ArkoudaMapCompat;
 
     use ServerConfig, Logging, CommandMap;
     private config const logLevel = ServerConfig.logLevel;
@@ -23,11 +24,10 @@ module FileIO {
     proc appendFile(filePath : string, line : string) throws {
         var writer;
         if exists(filePath) {
-            use ArkoudaFileCompat;
-            var aFile = open(filePath, iomode.rw);
-            writer = aFile.appendWriter();
+            var aFile = open(filePath, ioMode.rw);
+            writer = aFile.writer(region=aFile.size..);
         } else {
-            var aFile = open(filePath, iomode.cwr);
+            var aFile = open(filePath, ioMode.cwr);
             writer = aFile.writer();
         }
 
@@ -37,7 +37,7 @@ module FileIO {
     }
 
     proc writeToFile(filePath : string, line : string) throws {
-        var aFile = open(filePath, iomode.cwr);
+        var aFile = open(filePath, ioMode.cwr);
         var writer = aFile.writer();
 
         writer.writeln(line);
@@ -46,7 +46,7 @@ module FileIO {
     }
     
     proc writeLinesToFile(filePath : string, lines : string) throws {
-        var aFile = open(filePath, iomode.cwr);
+        var aFile = open(filePath, ioMode.cwr);
         var writer = aFile.writer();
 
         for line in lines {
@@ -57,8 +57,8 @@ module FileIO {
     }
 
     proc getLineFromFile(filePath : string, lineIndex : int=-1) : string throws {
-        var aFile = open(filePath, iomode.rw);
-        var lines = aFile.lines();
+        var aFile = open(filePath, ioMode.rw);
+        var lines = aFile.reader().lines();
         var line : string;
         var returnLine : string;
         var i = 1;
@@ -76,7 +76,7 @@ module FileIO {
     }
     
     proc getLineFromFile(path: string, match: string) throws {
-        var aFile = open(path, iomode.r);
+        var aFile = open(path, ioMode.r);
         var reader = aFile.reader();
         var returnLine: string;
 
@@ -87,16 +87,15 @@ module FileIO {
             }
         }
 
-        reader.flush();
         reader.close();
 
         return returnLine;
     }
 
     proc delimitedFileToMap(filePath : string, delimiter : string=',') : map {
-        var fileMap : map(keyType=string, valType=string, parSafe=false) = 
-                         new map(keyType=string,valType=string,parSafe=false);
-        var aFile = try! open(filePath, iomode.rw);
+        var fileMap : map(keyType=string, valType=string) = 
+                         new map(keyType=string,valType=string);
+        var aFile = try! open(filePath, ioMode.rw);
         var lines = try! aFile.lines();
         var line : string;
         for line in lines do {
@@ -230,11 +229,11 @@ module FileIO {
     }
 
     proc getFirstEightBytesFromFile(path:string):bytes throws {
-        var f:file = open(path, iomode.r);
+        var f:file = open(path, ioMode.r);
         var reader = f.reader(kind=ionative);
         var header:bytes;
         if (reader.binary()) {
-          reader.readbytes(header, 8);
+          reader.bytesRead(header, 8);
         } else {
           throw getErrorWithContext(
                      msg="File reader was not in binary mode",

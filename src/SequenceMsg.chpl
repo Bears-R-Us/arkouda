@@ -1,7 +1,7 @@
 module SequenceMsg {
     use ServerConfig;
 
-    use Time only;
+    use Time;
     use Reflection;
     use Logging;
     use Message;
@@ -39,12 +39,12 @@ module SequenceMsg {
                        "cmd: %s start: %i stop: %i stride: %i : len: %i rname: %s".format(
                         cmd, start, stop, stride, len, rname));
         
-        var t1 = Time.getCurrentTime();
+        var t1 = Time.timeSinceEpoch().totalSeconds();
         var e = st.addEntry(rname, len, int);
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "alloc time = %i sec".format(Time.getCurrentTime() - t1));
+                                      "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
 
-        t1 = Time.getCurrentTime();
+        t1 = Time.timeSinceEpoch().totalSeconds();
         ref ea = e.a;
         const ref ead = e.a.domain;
         forall (ei, i) in zip(ea,ead) {
@@ -52,7 +52,7 @@ module SequenceMsg {
         }
 
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "compute time = %i sec".format(Time.getCurrentTime() - t1));
+                                      "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
 
         repMsg = "created " + st.attrib(rname);
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -75,7 +75,7 @@ module SequenceMsg {
                        "cmd: %s start: %jt stop: %jt stride: %jt : len: %jt rname: %s".format(
                         cmd, start, stop, stride, len, rname));
         
-        var t1 = Time.getCurrentTime();
+        var t1 = Time.timeSinceEpoch().totalSeconds();
         var tmp = makeDistArray(len:int, bigint);
         const ref td = tmp.domain;
         forall (ti, i) in zip(tmp,td) {
@@ -84,7 +84,7 @@ module SequenceMsg {
         var e = st.addEntry(rname, new shared SymEntry(tmp));
 
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "compute time = %i sec".format(Time.getCurrentTime() - t1));
+                                      "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
 
         repMsg = "created " + st.attrib(rname);
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -116,12 +116,12 @@ module SequenceMsg {
                         "cmd: %s start: %r stop: %r len: %i stride: %r rname: %s".format(
                          cmd, start, stop, len, stride, rname));
 
-        var t1 = Time.getCurrentTime();
+        var t1 = Time.timeSinceEpoch().totalSeconds();
         var e = st.addEntry(rname, len, real);
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "alloc time = %i".format(Time.getCurrentTime() - t1));
+                                      "alloc time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
 
-        t1 = Time.getCurrentTime();
+        t1 = Time.timeSinceEpoch().totalSeconds();
         ref ea = e.a;
         const ref ead = e.a.domain;
         forall (ei, i) in zip(ea,ead) {
@@ -130,7 +130,7 @@ module SequenceMsg {
         ea[0] = start;
         ea[len-1] = stop;
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                   "compute time = %i".format(Time.getCurrentTime() - t1));
+                                   "compute time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
 
         repMsg = "created " + st.attrib(rname);
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       

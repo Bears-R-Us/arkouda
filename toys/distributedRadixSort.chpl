@@ -667,7 +667,7 @@ proc simpletestcore(input:[]) {
   var localCopy = input;
   shuffle(localCopy, seed);
 
-  const blockDom = newBlockDom(input.domain);
+  const blockDom = Block.createDomain(input.domain);
   var src: [blockDom] uint = localCopy;
   var dst: [blockDom] uint;
 
@@ -722,7 +722,7 @@ simpletest([0x01:uint,
 
 
 proc randomtest(n:int) {
-  const blockDom = newBlockDom({0..#n});
+  const blockDom = Block.createDomain({0..#n});
   var src: [blockDom] uint;
   var seed = SeedGenerator.oddCurrentTime;
   fillRandom(src, seed);

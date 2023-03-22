@@ -4,7 +4,6 @@ module HDF5Msg {
     use HDF5;
     use IO;
     use List;
-    use Map;
     use PrivateDist;
     use Reflection;
     use Set;
@@ -26,6 +25,8 @@ module HDF5Msg {
     use SegmentedString;
     use SegmentedArray;
     use Sort;
+
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -813,7 +814,7 @@ module HDF5Msg {
 
                 ref ss = segString;
                 var A = ss.offsets.a;
-                const lastOffset = A[A.domain.high];
+                const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty
                 const lastValIdx = ss.values.a.domain.high;
 
                 // For each locale gather the string bytes corresponding to the offsets in its local domain
@@ -1463,9 +1464,16 @@ module HDF5Msg {
         
         // compute amount to adjust 
         var adjustments = (+ scan diffs) - diffs;
-        forall(sd, adj) in zip(segSubdoms, adjustments) {
-            // adjust offset of the segment based on the sizes of the segments preceeding it
-            a[sd] += adj;
+        coforall loc in a.targetLocales() do on loc {
+            forall(sd, adj) in zip(segSubdoms, adjustments) {
+                for locdom in a.localSubdomains() {
+                    const intersection = domain_intersection(locdom, sd);
+                    if intersection.size > 0 {
+                        // adjust offset of the segment based on the sizes of the segments preceeding it
+                        a[intersection] += adj;
+                    }
+                }
+            }
         }
     }
 
