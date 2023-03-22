@@ -110,7 +110,7 @@ or
 
    .. method:: proc size()
 
-   .. method:: proc items()
+   .. itermethod:: iter items()
 
 .. class:: AverageMeasurementTable : MeasurementTable
 
@@ -142,7 +142,7 @@ or
 
    .. method:: proc decrement(metric: string, increment: int = 1)
 
-   .. method:: proc items()
+   .. itermethod:: iter items()
 
    .. method:: proc size()
 

@@ -48,6 +48,8 @@ or
 
    .. method:: proc init()
 
+   .. method:: proc init(input)
+
    .. method:: proc setName(name: string)
 
       

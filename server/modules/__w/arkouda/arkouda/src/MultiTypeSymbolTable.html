@@ -344,8 +344,21 @@ Pass __RegisteredSymbols__ to process all registered sym entries.</p>
 <dd><p>Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><p><strong>infoList</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">map(string,</span> <span class="pre">shared</span> <span class="pre">GenSymEntry),</span> <span class="pre">domain(string),</span> <span class="pre">or</span> <span class="pre">[]</span> <span class="pre">string</span>
-<span class="pre">for</span> <span class="pre">tab,</span> <span class="pre">registry,</span> <span class="pre">and</span> <span class="pre">[names]</span> <span class="pre">respectively</span></code></span> – Iterable containing sym entries to be returned by info</p>
+<dd class="field-odd"><p><strong>infoList</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">domain(string)</span> <span class="pre">or</span> <span class="pre">[]</span> <span class="pre">string</span> <span class="pre">for</span> <span class="pre">registry</span> <span class="pre">and</span> <span class="pre">[names]</span></code></span> – Iterable containing sym entries to be returned by info</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of JSON formatted strings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEntries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">infoList:</span> <span class="pre">map</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span> <span class="pre">throws</span></dt>
+<dd><p>Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>infoList</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">map(string,</span> <span class="pre">shared</span> <span class="pre">GenSymEntry)</span> <span class="pre">for</span> <span class="pre">tab</span></code></span> – Iterable containing sym entries to be returned by info</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>array of JSON formatted strings</p>
@@ -361,7 +374,7 @@ Pass __RegisteredSymbols__ to process all registered sym entries.</p>
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – name of entry to be formatted</p></li>
-<li><p><strong>item</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">AbstractSymEntry</span></code></span> – AbstractSymEntry to be formatted (tab.getBorrowed(name))</p></li>
+<li><p><strong>item</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">AbstractSymEntry</span></code></span> – AbstractSymEntry to be formatted (tab[name])</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

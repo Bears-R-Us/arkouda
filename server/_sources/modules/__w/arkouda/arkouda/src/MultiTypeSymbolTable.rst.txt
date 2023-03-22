@@ -184,8 +184,18 @@ or
       Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])
       
       :arg infoList: Iterable containing sym entries to be returned by info
-      :type infoList: map(string, shared GenSymEntry), domain(string), or [] string
-                      for tab, registry, and [names] respectively
+      :type infoList: domain(string) or [] string for registry and [names]
+      
+      :returns: array of JSON formatted strings
+      
+
+   .. method:: proc getEntries(infoList: map): [] string throws
+
+      
+      Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])
+      
+      :arg infoList: Iterable containing sym entries to be returned by info
+      :type infoList: map(string, shared GenSymEntry) for tab
       
       :returns: array of JSON formatted strings
       
@@ -198,7 +208,7 @@ or
       :arg name: name of entry to be formatted
       :type name: string
       
-      :arg item: AbstractSymEntry to be formatted (tab.getBorrowed(name))
+      :arg item: AbstractSymEntry to be formatted (tab[name])
       :type item: AbstractSymEntry
       
       :returns: JSON formatted dictionary
