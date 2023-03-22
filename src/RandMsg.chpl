@@ -46,69 +46,69 @@ module RandMsg
                 overMemLimit(8*len);
                 var aMin = low.getIntValue();
                 var aMax = high.getIntValue();
-                var t1 = Time.getCurrentTime();
+                var t1 = Time.timeSinceEpoch().totalSeconds();
                 var e = st.addEntry(rname, len, int);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                   "alloc time = %i sec".format(Time.getCurrentTime() - t1));
+                                   "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
                 
-                t1 = Time.getCurrentTime();
+                t1 = Time.timeSinceEpoch().totalSeconds();
                 fillInt(e.a, aMin, aMax, seed);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "compute time = %i sec".format(Time.getCurrentTime() - t1));
+                                  "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
             }
             when (DType.UInt8) {
                 overMemLimit(len);
                 var aMin = low.getUInt8Value();
                 var aMax = high.getUInt8Value();
-                var t1 = Time.getCurrentTime();
+                var t1 = Time.timeSinceEpoch().totalSeconds();
                 var e = st.addEntry(rname, len, uint(8));
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "alloc time = %i sec".format(Time.getCurrentTime() - t1));
+                                     "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
                 
-                t1 = Time.getCurrentTime();
+                t1 = Time.timeSinceEpoch().totalSeconds();
                 fillUInt(e.a, aMin, aMax, seed);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "compute time = %i".format(Time.getCurrentTime() - t1));
+                                        "compute time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
             }
             when (DType.UInt64) {
                 overMemLimit(len);
                 var aMin = low.getUIntValue();
                 var aMax = high.getUIntValue();
-                var t1 = Time.getCurrentTime();
+                var t1 = Time.timeSinceEpoch().totalSeconds();
                 var e = st.addEntry(rname, len, uint);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "alloc time = %i sec".format(Time.getCurrentTime() - t1));
+                                     "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
                 
-                t1 = Time.getCurrentTime();
+                t1 = Time.timeSinceEpoch().totalSeconds();
                 fillUInt(e.a, aMin, aMax, seed);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "compute time = %i".format(Time.getCurrentTime() - t1));
+                                        "compute time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
             }
             when (DType.Float64) {
                 overMemLimit(8*len);
                 var aMin = low.getRealValue();
                 var aMax = high.getRealValue();
-                var t1 = Time.getCurrentTime();
+                var t1 = Time.timeSinceEpoch().totalSeconds();
                 var e = st.addEntry(rname, len, real);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "alloc time = %i sec".format(Time.getCurrentTime() - t1));
+                                         "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
                 
-                t1 = Time.getCurrentTime();
+                t1 = Time.timeSinceEpoch().totalSeconds();
                 fillReal(e.a, aMin, aMax, seed);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                          "compute time = %i sec".format(Time.getCurrentTime() - t1));
+                          "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
             }
             when (DType.Bool) {
                 overMemLimit(len);
-                var t1 = Time.getCurrentTime();
+                var t1 = Time.timeSinceEpoch().totalSeconds();
                 var e = st.addEntry(rname, len, bool);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "alloc time = %i sec".format(Time.getCurrentTime() - t1));
+                                  "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
                 
-                t1 = Time.getCurrentTime();
+                t1 = Time.timeSinceEpoch().totalSeconds();
                 fillBool(e.a, seed);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "compute time = %i sec".format(Time.getCurrentTime() - t1));
+                                "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
             }            
             otherwise {
                 var errorMsg = notImplementedError(pn,dtype);

@@ -1,6 +1,5 @@
 module CSVMsg {
     use CommAggregation;
-    use IO;
     use GenSymIO;
     use List;
     use Reflection;
@@ -17,6 +16,9 @@ module CSVMsg {
     use Sort;
     use FileIO;
     use Set;
+
+    use ArkoudaFileCompat;
+    use ArkoudaArrayCompat;
 
     const CSV_HEADER_OPEN = "**HEADER**";
     const CSV_HEADER_CLOSE = "*/HEADER/*";
@@ -64,7 +66,7 @@ module CSVMsg {
 
         // open file and determine if header exists.
         var idx = 0;
-        var csvFile = open(filename, iomode.r);
+        var csvFile = open(filename, ioMode.r);
         var reader = csvFile.reader();
         var lines = reader.lines().strip();
         if lines[0] == CSV_HEADER_OPEN {
@@ -199,7 +201,7 @@ module CSVMsg {
             const localeFilename = filenames[loc.id];
             
             // create the file to write to
-            var csvFile = open(localeFilename, iomode.cw);
+            var csvFile = open(localeFilename, ioMode.cw);
             var writer = csvFile.writer();
 
             // write the header
@@ -272,7 +274,7 @@ module CSVMsg {
                            errorClass="FileNotFoundError");
         }
 
-        var csvFile = open(filename, iomode.r);
+        var csvFile = open(filename, ioMode.r);
         var reader = csvFile.reader();
         var lines = reader.lines();
         var hasHeader = false;
@@ -302,7 +304,8 @@ module CSVMsg {
 
         var dtypes: [0..#datasets.size] string;
         forall (i, dset) in zip(0..#datasets.size, datasets) {
-            var (col_exists, idx) = columns.find(dset);
+            var idx: int;
+            var col_exists = columns.find(dset, idx);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: %jt, IDX: %i".format(dset, col_exists, idx));
             if !col_exists {
                 throw getErrorWithContext(
@@ -333,7 +336,7 @@ module CSVMsg {
                              "File %s does not contain data for this dataset, skipping".format(filename));
                     continue;
                 } else {
-                    var csvFile = open(filename, iomode.r);
+                    var csvFile = open(filename, ioMode.r);
                     var reader = csvFile.reader();
                     var lines = reader.lines().strip();
                     var data_offset = 1;
@@ -342,7 +345,8 @@ module CSVMsg {
                     }
                     // determine the index of the column.
                     var column_names = lines[data_offset-1].split(col_delim);
-                    var (colExists, colidx) = column_names.find(dset);
+                    var colidx: int;
+                    var colExists = column_names.find(dset, colidx);
                     if !colExists{
                         throw getErrorWithContext(
                             msg="The dataset %s was not found in %s".format(dset, filename),

@@ -4,7 +4,6 @@ module HDF5Msg {
     use HDF5;
     use IO;
     use List;
-    use Map;
     use PrivateDist;
     use Reflection;
     use Set;
@@ -26,6 +25,8 @@ module HDF5Msg {
     use SegmentedString;
     use SegmentedArray;
     use Sort;
+
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

@@ -1,7 +1,9 @@
 module CommandMap {
-  use Map;
   use Message;
   use MultiTypeSymbolTable;
+
+  use ArkoudaFileCompat;
+  use ArkoudaMapCompat;
 
   /**
    * This is a dummy function to get the signature of the Arkouda
@@ -48,7 +50,7 @@ module CommandMap {
 
   proc writeUsedModules() {
     use IO;
-    var newCfgFile = try! open("UsedModules.cfg", iomode.cw);
+    var newCfgFile = try! open("UsedModules.cfg", ioMode.cw);
     var chnl = try! newCfgFile.writer();
     for mod in usedModules do
       try! chnl.write(mod + '\n');
@@ -83,7 +85,7 @@ module CommandMap {
     var repTuple: MsgTuple;
     if commandMap.contains(cmd) {
       usedModules.add(moduleMap[cmd]);
-      repTuple = commandMap.getBorrowed(cmd)(cmd, msgArgs, st);
+      repTuple = commandMap[cmd](cmd, msgArgs, st);
     } else {
       repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
     }

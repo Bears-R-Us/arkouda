@@ -13,10 +13,11 @@ module ParquetMsg {
   use Sort;
   use CommAggregation;
   use AryUtil;
-  use Map;
 
   use SegmentedString;
   use SegmentedArray;
+
+  use ArkoudaMapCompat;
 
   enum CompressionType {
     NONE=0,

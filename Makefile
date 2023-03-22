@@ -201,12 +201,12 @@ $(ARROW_O): $(ARROW_CPP) $(ARROW_H)
 	make compile-arrow-cpp
 
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")
-CHPL_VERSION_OK := $(shell test $(CHPL_MINOR) -ge 27 && echo yes)
-CHPL_VERSION_WARN := $(shell test $(CHPL_MINOR) -le 28 && echo yes)
+CHPL_VERSION_OK := $(shell test $(CHPL_MINOR) -ge 28 && echo yes)
+CHPL_VERSION_WARN := $(shell test $(CHPL_MINOR) -le 29 && echo yes)
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
-	$(error Chapel 1.27.0 or newer is required)
+	$(error Chapel 1.28.0 or newer is required)
 endif
 ifeq ($(CHPL_VERSION_WARN),yes)
 	$(warning Chapel 1.29.0 or newer is recommended)
@@ -314,13 +314,13 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 27),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-127
-	CHPL_FLAGS += --instantiate-max 512
+ifeq ($(shell expr $(CHPL_MINOR) \>= 30),1)
+	CHPL_FLAGS += -sbigintInitThrows=true
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-130
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \>= 28),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-128
+ifeq ($(shell expr $(CHPL_MINOR) \<= 29),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/le-129
 endif
 
 

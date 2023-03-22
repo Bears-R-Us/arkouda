@@ -5,13 +5,14 @@ module MetricsMsg {
     use Logging;    
     use List;
     use IO;
-    use Map;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use Message;
     use Memory.Diagnostics;
-    use ArkoudaDateTimeCompat;
     use NumPyDType;
+    use Time;
+
+    use ArkoudaMapCompat;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,SYSTEM,SERVER,SERVER_INFO};
     enum MetricScope{GLOBAL,LOCALE,REQUEST,USER};
@@ -48,7 +49,7 @@ module MetricsMsg {
                 users.add(name,user);
                 return user;
             } else {
-                return try! users.getValue(name);
+                return try! users[name];
             }
         }
 
@@ -109,11 +110,11 @@ module MetricsMsg {
 
         proc getUserMetrics(user: User) {
             if this.metrics.contains(user: User) {
-                return try! this.metrics.getValue(user);
+              return try! this.metrics[user];
             } else {
                 var userMetrics = new shared CounterTable();
                 this.metrics.add(user, userMetrics);
-                return userMetrics;
+                return try! this.metrics[user];
             }
         }
 
@@ -179,9 +180,10 @@ module MetricsMsg {
         proc size() {
             return this.measurements.size;
         }
-        
-        proc items() {
-            return this.measurements.items();
+
+        iter items() {
+          for (key, val) in zip(measurements.keys(), measurements.values()) do
+            yield(key, val);
         }
     }
 
@@ -238,7 +240,7 @@ module MetricsMsg {
                 this.counts.add(metric,0);
                 return 0;
             } else {
-                return try! this.counts.getValue(metric);
+                return try! this.counts[metric];
             }
         }   
         
@@ -266,8 +268,9 @@ module MetricsMsg {
             }
         }   
         
-        proc items() {
-            return this.counts.items();
+        iter items() {
+          for (key, val) in zip(counts.keys(), counts.values()) do
+            yield(key, val);
         }
         
         proc size() {

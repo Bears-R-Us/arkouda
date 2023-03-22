@@ -1226,7 +1226,7 @@ module ReductionMsg
       }
       var keys = expandKeys(kD, segments);
       // sort keys and values together
-      var t1 = Time.getCurrentTime();
+      var t1 = Time.timeSinceEpoch().totalSeconds();
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                          "Sorting keys and values...");
       /* var toSort = [(k, v) in zip(keys, values)] (k, v); */
@@ -1248,7 +1248,7 @@ module ReductionMsg
         valsAgg.copy(kvi1, values[idx]);
       }
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "sort time = %i".format(Time.getCurrentTime() - t1));
+                                           "sort time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "Finding unique (key, value) pairs...");
       var truth: [kD] bool;
@@ -1275,7 +1275,7 @@ module ReductionMsg
         }
       }
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "time = %i".format(Time.getCurrentTime() - t1));
+                                       "time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "Finding unique keys and num unique vals per key.");
       // find steps in keys
@@ -1313,7 +1313,7 @@ module ReductionMsg
         }
       }
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "time = %i".format(Time.getCurrentTime() - t1));
+                                                   "time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
       return res;
     }
 

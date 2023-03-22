@@ -9,9 +9,9 @@ module TimeClassMsg {
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use BinOp;
+    use Time;
 
-    use ArkoudaDateTimeCompat;
-    use Map;
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

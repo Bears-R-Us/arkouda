@@ -667,7 +667,7 @@ proc simpletestcore(input:[]) {
   var localCopy = input;
   shuffle(localCopy, seed);
 
-  const blockDom = newBlockDom(input.domain);
+  const blockDom = Block.createDomain(input.domain);
   var src: [blockDom] uint = localCopy;
   var dst: [blockDom] uint;
 
@@ -722,7 +722,7 @@ simpletest([0x01:uint,
 
 
 proc randomtest(n:int) {
-  const blockDom = newBlockDom({0..#n});
+  const blockDom = Block.createDomain({0..#n});
   var src: [blockDom] uint;
   var seed = SeedGenerator.oddCurrentTime;
   fillRandom(src, seed);
@@ -794,14 +794,14 @@ proc argsortDRS(a: [?aD] int, aMin: int, aMax: int): [aD] int {
 // fill a with integers from interval aMin..(aMax-1)
 proc fillRandInt(a: [?aD] int, aMin: int, aMax: int) {
     
-    var t1 = Time.getCurrentTime();
+    var t1 = Time.timeSinceEpoch().totalSeconds();
     coforall loc in Locales {
         on loc {
             var R = new owned RandomStream(real); R.getNext();
             [i in a.localSubdomain()] a[i] = (R.getNext() * (aMax - aMin) + aMin):int;
         }
     }
-    writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+    writeln("compute time = ",Time.timeSinceEpoch().totalSeconds() - t1,"sec"); try! stdout.flush();
     
 }
 proc isSorted(A:[?D] ?t): bool {
@@ -816,7 +816,7 @@ proc isSorted(A:[?D] ?t): bool {
 }
 
 proc test_argsort(n: int, nVals: int) {
-    const blockDom = newBlockDom({0..#n});
+    const blockDom = Block.createDomain({0..#n});
     var a: [blockDom] int;
 
     var aMin = 0;
@@ -828,10 +828,10 @@ proc test_argsort(n: int, nVals: int) {
     var localCopy:[0..#n] int = a;
 
     writeln(">>> argsortDRS");
-    var t1 = Time.getCurrentTime();
+    var t1 = Time.timeSinceEpoch().totalSeconds();
     // returns a perm vector
     var iv = argsortDRS(a, aMin, aMax);
-    writeln("sort time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+    writeln("sort time = ",Time.timeSinceEpoch().totalSeconds() - t1,"sec"); try! stdout.flush();
 
     // permute into sorted order
     var sorted: [a.domain] int = a[iv];
