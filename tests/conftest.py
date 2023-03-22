@@ -64,28 +64,29 @@ def pytest_addoption(parser):
              "Encoding to be used. Accepted values: idna, ascii"
     )
     parser.addoption(
-        "--io_write", action="store_true", default=False,
-        help="Only write the files; files will not be removed"
+        "--io_only_write", action="store_true", default=False,
+        help="Benchmark only option. Only write the files; files will not be removed"
     )
     parser.addoption(
-        "--io_read", action="store_true", default=False,
-        help="Only read the files; files will not be removed"
+        "--io_only_read", action="store_true", default=False,
+        help="Benchmark only option. Only read the files; files will not be removed"
     )
     parser.addoption(
-        "--io_delete", action="store_true", default=False,
-        help="Only delete files created from writing with this benchmark"
+        "--io_only_delete", action="store_true", default=False,
+        help="Benchmark only option. Only delete files created from writing with this benchmark"
     )
     parser.addoption(
         "--io_files_per_loc", action="store", default="1",
-        help="Number of files to create per locale"
+        help="Benchmark only option. Number of files to create per locale"
     )
     parser.addoption(
-        "--io_compressed", action="store_true", default=False,
-        help="Write with Snappy compression and RLE encoding",
+        "--io_compression", action="store", default="",
+        help="Benchmark only option. Compression types to run IO benchmarks against. Comma delimited list"
+             "(NO SPACES) allowing for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4"
     )
     parser.addoption(
-        "--io_path", action="store", default=os.path.join(os.getcwd(), "ak-io-benchmark"),
-        help="Target path for measuring read/write rates",
+        "--io_path", action="store", default=os.path.join(os.getcwd(), "ak_io_benchmark"),
+        help="Benchmark only option. Target path for measuring read/write rates",
     )
 
 
