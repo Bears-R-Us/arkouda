@@ -75,7 +75,7 @@ def time_ak_df_display(N_per_locale, trials, seed):
         elif isinstance(col_obj, ak.Strings):
             nbytes += col_obj.nbytes * col_obj.entry.itemsize
         elif isinstance(col_obj, ak.SegArray):
-            nbytes += col_obj.values.size * col_obj.values.itemsize \
+            nbytes += col_obj.values.size * col_obj.values.itemsize + \
                       (col_obj.segments.size * col_obj.segments.itemsize)
 
     for op, t in tavg.items():
