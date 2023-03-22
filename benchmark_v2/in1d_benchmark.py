@@ -25,15 +25,15 @@ def bench_ak_in1d(benchmark, dtype, size):
         if dtype == "str":
             a = ak.random_strings_uniform(1, MAXSTRLEN, N)
             b = ak.random_strings_uniform(1, MAXSTRLEN, s)
-            nbytes = (a.size * a.entry.itemsize + b.size * b.entry.itemsize)
+            nbytes = (a.nbytes * a.entry.itemsize + b.nbytes * b.entry.itemsize)
         else:
             a = ak.arange(N) % SIZES["LARGE"]
             b = ak.arange(s)
             nbytes = (a.size * a.itemsize + b.size * b.itemsize)
 
-        if dtype == "uint64":
-            a = ak.cast(a, ak.uint64)
-            b = ak.cast(b, ak.uint64)
+            if dtype == "uint64":
+                a = ak.cast(a, ak.uint64)
+                b = ak.cast(b, ak.uint64)
 
         benchmark.pedantic(ak.in1d, args=(a, b), rounds=pytest.trials)
 
