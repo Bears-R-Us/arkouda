@@ -25,7 +25,7 @@ def bench_ak_in1d(benchmark, dtype, size):
         if dtype == "str":
             a = ak.random_strings_uniform(1, MAXSTRLEN, N)
             b = ak.random_strings_uniform(1, MAXSTRLEN, s)
-            nbytes = (a.nbytes * a.entry.itemsize + b.nbytes * b.entry.itemsize)
+            nbytes = (a.size * 8 + a.nbytes + b.size * 8 + b.nbytes)
         else:
             a = ak.arange(N) % SIZES["LARGE"]
             b = ak.arange(s)
