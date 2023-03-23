@@ -56,26 +56,27 @@ def bench_ak_setops(benchmark, op, dtype):
     """
     Measures the performance of arkouda setops
     """
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
-    seed = pytest.seed
+    if dtype in pytest.dtype:
+        cfg = ak.get_config()
+        N = pytest.prob_size * cfg["numLocales"]
+        seed = pytest.seed
 
-    if dtype == "int64":
-        a = ak.randint(0, 2**32, N, seed=seed)
-        b = ak.randint(0, 2**32, N, seed=seed)
-    elif dtype == "uint64":
-        a = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
-        b = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
+        if dtype == "int64":
+            a = ak.randint(0, 2**32, N, seed=seed)
+            b = ak.randint(0, 2**32, N, seed=seed)
+        elif dtype == "uint64":
+            a = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
+            b = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
 
-    fxn = getattr(ak, op)
-    benchmark.pedantic(fxn, args=(a, b), rounds=pytest.trials)
+        fxn = getattr(ak, op)
+        benchmark.pedantic(fxn, args=(a, b), rounds=pytest.trials)
 
-    nbytes = a.size * a.itemsize * 2
-    benchmark.extra_info["description"] = "Measures the performance of arkouda setops"
-    benchmark.extra_info["problem_size"] = pytest.prob_size
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2**30
-    )
+        nbytes = a.size * a.itemsize * 2
+        benchmark.extra_info["description"] = "Measures the performance of arkouda setops"
+        benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
+            (nbytes / benchmark.stats["mean"]) / 2**30
+        )
 
 
 @pytest.mark.benchmark(group="Numpy_Setops")
@@ -85,7 +86,7 @@ def bench_np_setops(benchmark, op, dtype):
     """
     Measures performance of Numpy setops for comparison
     """
-    if pytest.numpy:
+    if pytest.numpy and dtype in pytest.dtype:
         seed = pytest.seed
         N = pytest.prob_size
 
