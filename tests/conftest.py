@@ -19,7 +19,8 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--trials", action="store", default="5",
-        help="Benchmark only option. Problem size: length of array to use for benchmarks."
+        help="Benchmark only option. Problem size: length of array to use for benchmarks. For tests that run "
+             "as many trials as possible in a given time, will be treated as number of seconds to run for."
     )
     parser.addoption(
         "--seed", action="store", default="",
