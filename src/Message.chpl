@@ -4,9 +4,11 @@ module Message {
     use Reflection;
     use ServerErrors;
     use NumPyDType;
-    use Map;
     use List;
     use BigInteger;
+
+    use ArkoudaFileCompat;
+    use ArkoudaMapCompat;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
@@ -373,7 +375,7 @@ module Message {
     */
     proc parseParameter(payload:string) throws {
         var p: ParameterObj;
-        var newmem = openmem();
+        var newmem = openMemFile();
         newmem.writer().write(payload);
         var nreader = newmem.reader();
         try {
@@ -408,7 +410,7 @@ module Message {
      *
      */
     proc deserialize(ref msg: RequestMsg, request: string) throws {
-        var newmem = openmem();
+        var newmem = openMemFile();
         newmem.writer().write(request);
         var nreader = newmem.reader();
         try {
@@ -435,7 +437,7 @@ module Message {
      * Converts the JSON array to a pdarray
      */
     proc jsonToPdArray(json: string, size: int) throws {
-        var f = openmem(); defer { ensureClose(f); }
+        var f = openMemFile(); defer { ensureClose(f); }
         var w = f.writer();
         w.write(json);
         w.close();

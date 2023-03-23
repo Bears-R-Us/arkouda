@@ -14,7 +14,7 @@ module testRadixSortLSDTuple
     
     proc testIt(nVals: int, nRange: int, posOnly: bool, type t) {
 
-        var D = newBlockDom({0..#nVals});
+        var D = Block.createDomain({0..#nVals});
         var A: [D] t;
 
         fillRandom(A, 241);
@@ -52,7 +52,7 @@ module testRadixSortLSDTuple
     }
     
     proc testTuple(nVals: int, type args...?nt) {
-      var D = newBlockDom({0..#nVals});
+      var D = Block.createDomain({0..#nVals});
       var dummy: args;
       var arrays = for i in 0..#nt do makeArray(dummy[i], D);
       for (a, i) in zip(arrays, 1..) {
@@ -92,7 +92,7 @@ module testRadixSortLSDTuple
     /*     vv = true; */
         
     /*     // test a simple case */
-    /*     var D = newBlockDom({0..#8}); */
+    /*     var D = Block.createDomain({0..#8}); */
     /*     var A: [D] int = [5,7,3,1,4,2,7,2]; */
         
     /*     printAry("A = ",A); */

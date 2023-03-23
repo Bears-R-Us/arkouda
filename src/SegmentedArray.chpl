@@ -8,8 +8,9 @@ module SegmentedArray {
     use Logging;
     use ServerErrors;
     use CommAggregation;
-    use Time only getCurrentTime;
-    use Map;
+    use Time;
+
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -127,7 +128,7 @@ module SegmentedArray {
             }
             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                     "Computing lengths and offsets");
-            var t1 = getCurrentTime();
+            var t1 = timeSinceEpoch().totalSeconds();
             ref oa = segments.a;
             const low = segments.a.domain.low, high = segments.a.domain.high;
 
@@ -155,10 +156,10 @@ module SegmentedArray {
             gatheredOffsets -= gatheredLengths;
             
             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                        "aggregation in %i seconds".format(getCurrentTime() - t1));
+                                        "aggregation in %i seconds".format(timeSinceEpoch().totalSeconds() - t1));
             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
             if logLevel == LogLevel.DEBUG {
-                t1 = getCurrentTime();
+                t1 = timeSinceEpoch().totalSeconds();
             }
             var gatheredVals = makeDistArray(rtn, values.etype);
             if CHPL_COMM != 'none' {
@@ -202,7 +203,7 @@ module SegmentedArray {
             }
             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                     "Gathered offsets and vals in %i seconds".format(
-                                                getCurrentTime() -t1));
+                                                timeSinceEpoch().totalSeconds() -t1));
             return (gatheredOffsets, gatheredVals);
         }
 

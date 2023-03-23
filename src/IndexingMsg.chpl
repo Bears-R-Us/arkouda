@@ -17,14 +17,15 @@ module IndexingMsg
     use FileIO;
     use List;
 
-    use Map;
+    use ArkoudaMapCompat;
+    use ArkoudaFileCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const imLogger = new Logger(logLevel, logChannel);
 
     proc jsonToTuple(json: string, type t) throws {
-        var f = openmem(); defer { ensureClose(f); }
+        var f = openMemFile(); defer { ensureClose(f); }
         var w = f.writer();
         w.write(json);
         w.close();

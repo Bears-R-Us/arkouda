@@ -154,7 +154,7 @@ module RadixSortLSDTuple
         var kr1: [aD] (t,int);
 
         // create a global count array to scan
-        var gD = newBlockDom({0..#(numLocales * numTasks * numBuckets)});
+        var gD = Block.createDomain({0..#(numLocales * numTasks * numBuckets)});
         var globalCounts: [gD] int;
         var globalStarts: [gD] int;
 
