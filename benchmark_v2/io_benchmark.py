@@ -7,7 +7,7 @@ import arkouda as ak
 
 TYPES = ("int64", "float64", "uint64", "str")
 FILETYPES = ("HDF5", "PARQUET")
-COMPRESSIONS = ("none", "snappy", "gzip", "brotli", "zstd", "lz4")
+COMPRESSIONS = (None, "snappy", "gzip", "brotli", "zstd", "lz4")
 
 
 def _write_files(a, ftype, dtype, compression=None):
@@ -176,7 +176,7 @@ def bench_ak_write_parquet_append(benchmark, dtype, comp):
 @pytest.mark.benchmark(group="Arkouda_IO_Read_HDF5")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_ak_read_hdf(benchmark, dtype):
-    if pytest.io_read or (not pytest.io_write and not pytest.io_delete):
+    if pytest.io_read or (not pytest.io_write and not pytest.io_delete) and dtype in pytest.dtype:
         dataset = "strings_array" if dtype == "str" else "array"
         a = benchmark.pedantic(
             ak.read_hdf, args=[pytest.io_path + f"_hdf_{dtype}*", dataset], rounds=pytest.trials
@@ -199,7 +199,8 @@ def bench_ak_read_hdf(benchmark, dtype):
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
 def bench_ak_read_parquet(benchmark, dtype, comp):
-    if pytest.io_read or (not pytest.io_write and not pytest.io_delete) and comp in pytest.io_compression:
+    if pytest.io_read or (not pytest.io_write and not pytest.io_delete) \
+            and comp in pytest.io_compression and dtype in pytest.dtype:
         a = benchmark.pedantic(
             ak.read_parquet, args=[pytest.io_path + f"_par_{comp}_{dtype}_*"], rounds=pytest.trials
         )
@@ -220,11 +221,12 @@ def bench_ak_read_parquet(benchmark, dtype, comp):
 @pytest.mark.benchmark(group="Arkouda_IO_Read_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_read_parquet_multi_append(benchmark, dtype, comp):
+def bench_ak_read_parquet_multi_column(benchmark, dtype, comp):
     """
     Read files written by parquet multicolumn and parquet append modes
     """
-    if pytest.io_read or (not pytest.io_write and not pytest.io_delete) and comp in pytest.io_compression:
+    if pytest.io_read or (not pytest.io_write and not pytest.io_delete) \
+            and comp in pytest.io_compression and dtype in pytest.dtype:
         a = benchmark.pedantic(
             ak.read_parquet, args=[pytest.io_path + f"_par_multi_{comp}_{dtype}_*"], rounds=pytest.trials
         )

@@ -13,7 +13,7 @@ from server_util.test.server_test_util import (
 
 default_dtype = ["int64", "uint64", "float64", "bool", "str", "bigint", "mixed"]
 default_encoding = ["ascii", "idna"]
-default_compression = ["none", "snappy", "gzip", "brotli", "zstd", "lz4"]
+default_compression = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
 
 
 def pytest_configure(config):
