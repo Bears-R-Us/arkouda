@@ -82,7 +82,7 @@ module testSplitRadixSort
     
     proc testIt(nVals: int, nRange:int) {
 
-        var D = newBlockDom({0..#nVals});
+        var D = Block.createDomain({0..#nVals});
         var A: [D] int;
 
         var R = new owned RandomStream(real, 241); R.getNext();
@@ -109,7 +109,7 @@ module testSplitRadixSort
 
     proc testSimple() {
         // test a simple case
-        var D = newBlockDom({0..#8});
+        var D = Block.createDomain({0..#8});
         var A: [D] int = [5,7,3,1,4,2,7,2];
         
         printAry("A = ",A);

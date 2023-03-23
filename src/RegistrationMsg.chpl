@@ -9,7 +9,6 @@ module RegistrationMsg
     use Logging;
     use Message;
     use List;
-    use Map;
     use Set;
     use Sort;
 
@@ -19,6 +18,8 @@ module RegistrationMsg
     use SegmentedString;
     use SegmentedArray;
     use SegmentedMsg;
+
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

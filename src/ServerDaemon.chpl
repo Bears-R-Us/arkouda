@@ -27,6 +27,8 @@ module ServerDaemon {
     use BigIntMsg;
     use NumPyDType;
 
+    use ArkoudaFileCompat;
+
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
     private config const logLevel = ServerConfig.logLevel;
@@ -268,7 +270,7 @@ module ServerDaemon {
                 sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                'writing serverConnectionInfo to %t'.format(serverConnectionInfo));
                 try! {
-                    var w = open(serverConnectionInfo, iomode.cw).writer();
+                    var w = open(serverConnectionInfo, ioMode.cw).writer();
                     w.writef("%s %t %s\n",serverHostname,ServerPort,this.connectUrl);
                 }
             }
@@ -479,7 +481,7 @@ module ServerDaemon {
             }
             this.registerServerCommands();
                     
-            var startTime = getCurrentTime();
+            var startTime = timeSinceEpoch().totalSeconds();
         
             while !this.shutdownDaemon {
                 // receive message on the zmq socket
@@ -487,7 +489,7 @@ module ServerDaemon {
 
                 this.reqCount += 1;
 
-                var s0 = getCurrentTime();
+                var s0 = timeSinceEpoch().totalSeconds();
         
                 /*
                  * Separate the first tuple, which is a string binary containing the JSON binary
@@ -576,7 +578,7 @@ module ServerDaemon {
                     if (trace) {
                         sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                         "<<< shutdown initiated by %s took %.17r sec".format(user, 
-                                                getCurrentTime() - s0));
+                                                timeSinceEpoch().totalSeconds() - s0));
                     }
                 }
 
@@ -625,11 +627,11 @@ module ServerDaemon {
                         if commandMap.contains(cmd) {
                             if moduleMap.contains(cmd) then
                                 usedModules.add(moduleMap[cmd]);
-                            repTuple = commandMap.getBorrowed(cmd)(cmd, msgArgs, st);
+                            repTuple = commandMap[cmd](cmd, msgArgs, st);
                         } else if commandMapBinary.contains(cmd) { // Binary response commands require different handling
                             if moduleMap.contains(cmd) then
                                 usedModules.add(moduleMap[cmd]);
-                            var binaryRepMsg = commandMapBinary.getBorrowed(cmd)(cmd, msgArgs, st);
+                            var binaryRepMsg = commandMapBinary[cmd](cmd, msgArgs, st);
                             sendRepMsg(binaryRepMsg);
                         } else {
                           repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
@@ -646,7 +648,7 @@ module ServerDaemon {
                                                               msgFormat=MsgFormat.STRING, user=user));
                 }
 
-                var elapsedTime = getCurrentTime() - s0;
+                var elapsedTime = timeSinceEpoch().totalSeconds() - s0;
 
                 /*
                  * log that the request message has been handled and reply message has been sent 
@@ -673,7 +675,7 @@ module ServerDaemon {
                                                         user=user));
                 if trace {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                        "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, getCurrentTime() - s0));
+                        "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (e: Error) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
@@ -688,12 +690,12 @@ module ServerDaemon {
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 
                     "<<< %s resulted in error: %s in %.17r sec".format(cmd, e.message(),
-                                                                                 getCurrentTime() - s0));
+                                                                                 timeSinceEpoch().totalSeconds() - s0));
                 }
             }
         }
 
-        var elapsed = getCurrentTime() - startTime;
+        var elapsed = timeSinceEpoch().totalSeconds() - startTime;
 
         deleteServerConnectionInfo();
 

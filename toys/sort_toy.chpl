@@ -17,7 +17,7 @@ var comp : MyComparator;
 
 var R = new owned RandomStream(real, 241); R.getNext();
 
-var D = newBlockDom({0..#N});
+var D = Block.createDomain({0..#N});
 var A: [D] real;
 for a in A { a = R.getNext(); }
 print_ary("A = ",A);

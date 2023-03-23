@@ -6,12 +6,14 @@ module MultiTypeSymbolTable
     use Reflection;
     use ServerErrors;
     use Logging;
-    use Regex;
     use BigInteger;
     
     use MultiTypeSymEntry;
-    use Map;
     use IO;
+
+    use ArkoudaMapCompat;
+    use ArkoudaRegexCompat;
+    use ArkoudaFileCompat;
     
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -118,7 +120,7 @@ module MultiTypeSymbolTable
             entry.setName(name);
             // When we retrieve from table, it comes back as AbstractSymEntry so we need to cast it
             // back to the original type. Since we know it already we can skip isAssignableTo check
-            return (tab.getBorrowed(name):borrowed GenSymEntry).toSymEntry(t);
+            return (tab[name]:borrowed GenSymEntry).toSymEntry(t);
         }
 
         /*
@@ -152,7 +154,7 @@ module MultiTypeSymbolTable
 
             tab.addOrSet(name, entry);
             entry.setName(name);
-            return tab.getBorrowed(name);
+            return tab[name];
         }
 
         /*
@@ -229,7 +231,7 @@ module MultiTypeSymbolTable
          */
         proc lookup(name: string): borrowed AbstractSymEntry throws {
             checkTable(name, "lookup");
-            return tab.getBorrowed(name);
+            return tab[name];
         }
 
         /**
@@ -315,7 +317,7 @@ module MultiTypeSymbolTable
         :returns: [] string of entry names
         */
         proc parseJson(names:string): [] string throws {
-            var mem = openmem();
+            var mem = openMemFile();
             mem.writer().write(names);
             var reader = mem.reader();
 
@@ -333,8 +335,7 @@ module MultiTypeSymbolTable
         Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])
 
         :arg infoList: Iterable containing sym entries to be returned by info
-        :type infoList: map(string, shared GenSymEntry), domain(string), or [] string
-                        for tab, registry, and [names] respectively
+        :type infoList: domain(string) or [] string for registry and [names]
 
         :returns: array of JSON formatted strings
         */
@@ -344,7 +345,26 @@ module MultiTypeSymbolTable
             for name in infoList {
                 i+=1;
                 checkTable(name);
-                entries[i] = formatEntry(name, tab.getBorrowed(name));
+                entries[i] = formatEntry(name, tab[name]);
+            }
+            return entries;
+        }
+
+        /*
+        Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])
+
+        :arg infoList: Iterable containing sym entries to be returned by info
+        :type infoList: map(string, shared GenSymEntry) for tab
+
+        :returns: array of JSON formatted strings
+        */
+        proc getEntries(infoList:map): [] string throws {
+            var entries: [1..infoList.size] string;
+            var i = 0;
+            for name in infoList.keys() {
+                i+=1;
+                checkTable(name);
+                entries[i] = formatEntry(name, tab[name]);
             }
             return entries;
         }
@@ -355,7 +375,7 @@ module MultiTypeSymbolTable
         :arg name: name of entry to be formatted
         :type name: string
 
-        :arg item: AbstractSymEntry to be formatted (tab.getBorrowed(name))
+        :arg item: AbstractSymEntry to be formatted (tab[name])
         :type item: AbstractSymEntry
 
         :returns: JSON formatted dictionary
@@ -389,7 +409,7 @@ module MultiTypeSymbolTable
         proc attrib(name:string):string throws {
             checkTable(name, "attrib");
 
-            var entry = tab.getBorrowed(name);
+            var entry = tab[name];
             if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry){ //Anything considered a GenSymEntry
                 var g:GenSymEntry = toGenSymEntry(entry);
                 return "%s %s %t %t %t %t".format(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
@@ -418,7 +438,7 @@ module MultiTypeSymbolTable
         */
         proc datastr(name: string, thresh:int): string throws {
             checkTable(name, "datastr");
-            var u: borrowed AbstractSymEntry = tab.getBorrowed(name);
+            var u: borrowed AbstractSymEntry = tab[name];
 
             // I don't think we need to do this check, but I'm keeping the code around for now.
             // if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
@@ -446,7 +466,7 @@ module MultiTypeSymbolTable
         */
         proc datarepr(name: string, thresh:int): string throws {
             checkTable(name, "datarepr");
-            var entry = tab.getBorrowed(name);
+            var entry = tab[name];
             if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
                 var u: borrowed GenSymEntry = toGenSymEntry(entry);
                 if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
@@ -490,10 +510,10 @@ module MultiTypeSymbolTable
         :returns: string array containing matching entry names
         */
         proc findAll(pattern: string): [] string throws {
-            var regex = compile(pattern);
+            var rg = compile(pattern);
             var infoStr = "";
             forall name in tab.keysToArray() with (+ reduce infoStr) {
-                var match = regex.match(name);
+                var match = rg.match(name);
                 if match.matched {
                     var end : int = (match.byteOffset: int) + match.numBytes;
                     infoStr += name[match.byteOffset..#end] + "+";
