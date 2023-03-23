@@ -2,7 +2,7 @@ import arkouda as ak
 import numpy as np
 import pytest
 
-SECONDS = pytest.time_trial
+SECONDS = pytest.trials
 
 
 @pytest.mark.benchmark(group="Arkouda_No_Op",
