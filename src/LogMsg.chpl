@@ -8,8 +8,6 @@ module LogMsg
     use Message;
     
     use MultiTypeSymbolTable;
-    use MultiTypeSymEntry;
-    use ServerErrorStrings;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
