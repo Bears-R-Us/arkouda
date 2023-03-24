@@ -4,6 +4,7 @@ from glob import glob
 import pytest
 
 import arkouda as ak
+from arkouda.io import to_parquet
 
 TYPES = ("int64", "float64", "uint64", "str")
 FILETYPES = ("HDF5", "PARQUET")
@@ -12,32 +13,35 @@ COMPRESSIONS = (None, "snappy", "gzip", "brotli", "zstd", "lz4")
 
 def _write_files(a, ftype, dtype, compression=None):
     for i in range(pytest.io_files):
-        a.to_hdf(f"{pytest.io_path}_hdf_{dtype}_{i:04}") if ftype == "HDF5" else a.to_parquet(
+        a.to_hdf(f"{pytest.io_path}_hdf_{dtype}_{i:04}") if ftype == "HDF5" else to_parquet(
+            [a],
             f"{pytest.io_path}_par_{compression}_{dtype}_{i:04}",
             compression=compression,
         )
 
 
 def _write_multi(a, dtype, compression=None):
+    data = a._prep_data()
     for i in range(pytest.io_files):
-        a.to_parquet(
+        to_parquet(
+            data,
             f"{pytest.io_path}_par_multi_{compression}_{dtype}_{i:04}",
             compression=compression,
         )
 
 
 def _append_files(a, dtype, compression):
+    _remove_append_test_files(compression, dtype)
     for i in range(pytest.io_files):
-        mode = "truncate"  # First iteration of each trial needs to truncate the file
         for key in a:
             val = a[key]
-            val.to_parquet(
-                f"{pytest.io_path}_par_multi_app_{compression}_{dtype}_{i:04}",
-                dataset=key,
-                mode=mode,
+            to_parquet(
+                [val],
+                f"{pytest.io_path}_par_multi_{compression}_{dtype}_app_{i:04}",
+                names=[key],
+                mode="append",
                 compression=compression,
             )
-            mode = "append"
 
 
 def _generate_array(N, dtype):
@@ -258,4 +262,9 @@ def bench_ak_delete(benchmark):
 
 def _remove_files():
     for f in glob(pytest.io_path + "*"):
+        os.remove(f)
+
+
+def _remove_append_test_files(compression, dtype):
+    for f in glob(f"{pytest.io_path}_par_multi_{compression}_{dtype}_app_" + "*"):
         os.remove(f)
