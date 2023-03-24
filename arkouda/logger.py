@@ -15,7 +15,7 @@ from typing import List, Optional, cast
 
 from typeguard import typechecked
 
-__all__ = ["enableVerbose", "disableVerbose"]
+__all__ = ["LogLevel", "enableVerbose", "disableVerbose", "write_log"]
 
 loggers = {}
 
@@ -27,7 +27,6 @@ levels for ArkoudaLogger.
 
 
 class LogLevel(Enum):
-
     DEBUG = "DEBUG"
     CRITICAL = "CRITICAL"
     INFO = "INFO"
@@ -53,7 +52,6 @@ at varying levels including debug, info, critical, warn, and error
 
 
 class ArkoudaLogger(Logger):
-
     DEFAULT_LOG_FORMAT = "[%(name)s] Line %(lineno)d %(levelname)s: %(message)s"
 
     CLIENT_LOG_FORMAT = ""
@@ -74,7 +72,6 @@ class ArkoudaLogger(Logger):
         handlers: Optional[List[Handler]] = None,
         logFormat: Optional[str] = "[%(name)s] Line %(lineno)d %(levelname)s: %(message)s",
     ) -> None:
-
         """
         Initializes the ArkoudaLogger with the name, level, logFormat, and
         handlers parameters
@@ -340,3 +337,29 @@ def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
     """
     for logger in loggers.values():
         logger.disableVerbose(logLevel)
+
+
+@typechecked
+def write_log(log_msg: str, tag: str = "ClientGeneratedLog", log_lvl: LogLevel = LogLevel.INFO):
+    """
+    Allows the user to write custom logs.
+
+    Parameters
+    -----------
+    log_msg: str
+        The message to be added to the server log
+    tag: str
+        The tag to use in the log. This takes the place of the server function name.
+        Allows for easy identification of custom logs.
+        Defaults to "ClientGeneratedLog"
+    log_lvl: LogLevel
+        The type of log to be written
+        Defaults to LogLevel.INFO
+
+    See Also
+    ---------
+    LogLevel
+    """
+    from arkouda.client import generic_msg
+
+    generic_msg(cmd="clientlog", args={"log_msg": log_msg, "log_lvl": log_lvl.name, "tag": tag})

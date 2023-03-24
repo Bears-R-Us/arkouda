@@ -177,13 +177,14 @@ module Logging {
         
         proc generateLogMessage(moduleName: string, routineName, lineNumber, 
                            msg, level: string) throws {
+            var lineStr: string = if lineNumber != 0 then "Line %i ".format(lineNumber) else "";
              if printDate {
-                 return "%s [%s] %s Line %i %s [Chapel] %s".format(
-                 generateDateTimeString(), moduleName,routineName,lineNumber, 
+                 return "%s [%s] %s %s%s [Chapel] %s".format(
+                 generateDateTimeString(), moduleName,routineName,lineStr, 
                                      level,msg);
              } else {
-                 return "[%s] %s Line %i %s [Chapel] %s".format(moduleName, 
-                 routineName,lineNumber,level,msg);            
+                 return "[%s] %s %s%s [Chapel] %s".format(moduleName, 
+                 routineName,lineStr,level,msg);            
              }
         }
          
