@@ -798,13 +798,13 @@ module HDF5Msg {
                 //localize values and write dataset
                 var localVals = new lowLevelLocalizingSlice(segString.values.a, 0..#segString.values.size);
                 var val_dims: C_HDF5.hsize_t = segString.values.size:C_HDF5.hsize_t;
-                C_HDF5.H5LTmake_dataset(file_id, "/%s/values".format(group).c_str(), 1:c_int, val_dims, getHDF5Type(uint(8)), localVals.ptr);
+                C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, val_dims, getHDF5Type(uint(8)), localVals.ptr);
                 
                 if (writeOffsets) {
                     //localize offsets and write dataset
                     var localOffsets = new lowLevelLocalizingSlice(segString.offsets.a, 0..#segString.size);
                     var off_dims: C_HDF5.hsize_t = segString.offsets.size:C_HDF5.hsize_t;
-                    C_HDF5.H5LTmake_dataset(file_id, "/%s/segments".format(group).c_str(), 1:c_int, off_dims, getHDF5Type(int), localOffsets.ptr);
+                    C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1:c_int, off_dims, getHDF5Type(int), localOffsets.ptr);
                 }
                 writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8)));
                 C_HDF5.H5Fclose(file_id);
@@ -1817,7 +1817,7 @@ module HDF5Msg {
         else{
             // work around to handle old formats that do not store meta data.
             // It is assumed that any objects in this case are storing strings or pdarray
-            if C_HDF5.H5Lexists(obj_id, "values".c_str(), C_HDF5.H5P_DEFAULT) > 0{
+            if C_HDF5.H5Lexists(obj_id, SEGMENTED_VALUE_NAME.c_str(), C_HDF5.H5P_DEFAULT) > 0{
                 // this means that the obj is a group and contains a strings obj
                 objType_int = ObjType.STRINGS: int;
             }
