@@ -63,6 +63,31 @@ def pytest_addoption(parser):
              "Comma separated list (NO SPACES) allowing for multiple"
              "Encoding to be used. Accepted values: idna, ascii"
     )
+    parser.addoption(
+        "--io_only_write", action="store_true", default=False,
+        help="Benchmark only option. Only write the files; files will not be removed"
+    )
+    parser.addoption(
+        "--io_only_read", action="store_true", default=False,
+        help="Benchmark only option. Only read the files; files will not be removed"
+    )
+    parser.addoption(
+        "--io_only_delete", action="store_true", default=False,
+        help="Benchmark only option. Only delete files created from writing with this benchmark"
+    )
+    parser.addoption(
+        "--io_files_per_loc", action="store", default="1",
+        help="Benchmark only option. Number of files to create per locale"
+    )
+    parser.addoption(
+        "--io_compression", action="store", default="",
+        help="Benchmark only option. Compression types to run IO benchmarks against. Comma delimited list"
+             "(NO SPACES) allowing for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4"
+    )
+    parser.addoption(
+        "--io_path", action="store", default=os.path.join(os.getcwd(), "ak_io_benchmark"),
+        help="Benchmark only option. Target path for measuring read/write rates",
+    )
 
 
 def pytest_collection_modifyitems(config, items):

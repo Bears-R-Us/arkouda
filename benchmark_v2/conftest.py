@@ -13,6 +13,7 @@ from server_util.test.server_test_util import (
 
 default_dtype = ["int64", "uint64", "float64", "bool", "str", "bigint", "mixed"]
 default_encoding = ["ascii", "idna"]
+default_compression = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
 
 
 def pytest_configure(config):
@@ -29,6 +30,15 @@ def pytest_configure(config):
     pytest.encoding = default_encoding if encode_str == "" else encode_str.split(",")
     pytest.idx_size = None if config.getoption("index_size") == "" else eval(config.getoption("index_size"))
     pytest.val_size = None if config.getoption("value_size") == "" else eval(config.getoption("value_size"))
+
+    # IO settings
+    comp_str = config.getoption("io_compression")
+    pytest.io_compression = default_compression if comp_str == "" else comp_str.split(",")
+    pytest.io_delete = config.getoption("io_only_delete")
+    pytest.io_files = eval(config.getoption("io_files_per_loc"))
+    pytest.io_path = config.getoption("io_path")
+    pytest.io_read = config.getoption("io_only_read")
+    pytest.io_write = config.getoption("io_only_write")
 
 
 @pytest.fixture(scope="module", autouse=True)
