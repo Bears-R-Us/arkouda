@@ -24,19 +24,19 @@ module LogMsg
 
         select logLvl {
             when Logging.LogLevel.DEBUG {
-                clLogger.debug(mod_replace,tag,getLineNumber(),logMsg);
+                clLogger.debug(mod_replace,tag,0,logMsg);
             }
             when Logging.LogLevel.INFO {
                 clLogger.info(mod_replace,tag,0,logMsg);
             }
             when Logging.LogLevel.WARN {
-                clLogger.warn(mod_replace,tag,getLineNumber(),logMsg);
+                clLogger.warn(mod_replace,tag,0,logMsg);
             }
             when Logging.LogLevel.ERROR {
-                clLogger.error(mod_replace,tag,getLineNumber(),logMsg);
+                clLogger.error(mod_replace,tag,0,logMsg);
             }
             when Logging.LogLevel.CRITICAL {
-                clLogger.critical(mod_replace,tag,getLineNumber(),logMsg);
+                clLogger.critical(mod_replace,tag,0,logMsg);
             }
             otherwise {
                 var errorMsg = "Unknown Log Type Found.";
