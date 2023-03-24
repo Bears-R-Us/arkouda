@@ -18,22 +18,25 @@ module LogMsg
 
         const logMsg: string = msgArgs.getValueOf("log_msg");
         const logLvl: Logging.LogLevel = msgArgs.getValueOf("log_lvl").toUpper(): Logging.LogLevel;
+        const tag: string = msgArgs.getValueOf("tag");
+
+        const mod_replace: string = "ClientGeneratedLog";
 
         select logLvl {
             when Logging.LogLevel.DEBUG {
-                clLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),logMsg);
+                clLogger.debug(mod_replace,tag,getLineNumber(),logMsg);
             }
             when Logging.LogLevel.INFO {
-                clLogger.info(getModuleName(),getRoutineName(),getLineNumber(),logMsg);
+                clLogger.info(mod_replace,tag,0,logMsg);
             }
             when Logging.LogLevel.WARN {
-                clLogger.warn(getModuleName(),getRoutineName(),getLineNumber(),logMsg);
+                clLogger.warn(mod_replace,tag,getLineNumber(),logMsg);
             }
             when Logging.LogLevel.ERROR {
-                clLogger.error(getModuleName(),getRoutineName(),getLineNumber(),logMsg);
+                clLogger.error(mod_replace,tag,getLineNumber(),logMsg);
             }
             when Logging.LogLevel.CRITICAL {
-                clLogger.critical(getModuleName(),getRoutineName(),getLineNumber(),logMsg);
+                clLogger.critical(mod_replace,tag,getLineNumber(),logMsg);
             }
             otherwise {
                 var errorMsg = "Unknown Log Type Found.";
