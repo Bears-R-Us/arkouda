@@ -16,13 +16,13 @@ For convenience, the steps to install Chapel from source are detailed here. If y
 **Step 2**
 > Unpack the release
 > ```bash
-> tar xzf chapel-1.29.0.tar.gz
+> tar xzf chapel-1.30.0.tar.gz
 > ```
 
 **Step 3**
 > Access the directory created when the release was unpacked
 > ```bash
-> cd chapel-1.29.0
+> cd chapel-1.30.0
 > ```
 
 **Step 4**
