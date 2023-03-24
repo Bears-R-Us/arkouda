@@ -17,13 +17,17 @@ or
 
    import CommAggregation.BigIntegerAggregation;
 
+.. method:: proc bigint._serializedSize()
+
+.. method:: proc bigint._serializeInto(x: c_ptr(uint(8)))
+
+.. method:: proc bigint._deserializeFrom(x: c_ptr(uint(8)))
+
 .. record:: DstAggregatorBigint
 
-   .. attribute:: type elemType = bigint
+   .. attribute:: type aggType = uint(8)
 
-   .. attribute:: type aggType = (c_ptr(elemType), elemType)
-
-   .. attribute:: const bufferSize = dstBuffSize
+   .. attribute:: const bufferSize = dstBuffSize * (c_sizeof(c_ptr(bigint)) + c_sizeof(mp_size_t) + c_sizeof(mp_limb_t)): int
 
    .. attribute:: const myLocaleSpace = 0..<numLocales
 
@@ -43,17 +47,17 @@ or
 
    .. method:: proc flush()
 
-   .. method:: proc copy(ref dst: elemType, const ref src: elemType)
+   .. method:: proc copy(ref dst: bigint, const ref src: bigint)
 
    .. method:: proc _flushBuffer(loc: int, ref bufferIdx, freeData)
 
 .. record:: SrcAggregatorBigint
 
-   .. attribute:: type elemType = bigint
-
-   .. attribute:: type aggType = c_ptr(elemType)
+   .. attribute:: type aggType = c_ptr(bigint)
 
    .. attribute:: const bufferSize = srcBuffSize
+
+   .. attribute:: const uintBufferSize = srcBuffSize * (c_sizeof(mp_size_t) + c_sizeof(mp_limb_t)): int
 
    .. attribute:: const myLocaleSpace = 0..<numLocales
 
@@ -65,11 +69,11 @@ or
 
    .. attribute:: var lSrcAddrs: c_ptr(c_ptr(aggType))
 
-   .. attribute:: var lSrcVals: [myLocaleSpace] [0..#bufferSize] elemType
+   .. attribute:: var lSrcVals: [myLocaleSpace] [0..#uintBufferSize] uint(8)
 
    .. attribute:: var rSrcAddrs: [myLocaleSpace] remoteBuffer(aggType)
 
-   .. attribute:: var rSrcVals: [myLocaleSpace] remoteBuffer(elemType)
+   .. attribute:: var rSrcVals: [myLocaleSpace] remoteBuffer(uint(8))
 
    .. attribute:: var bufferIdxs: c_ptr(int)
 
@@ -79,7 +83,7 @@ or
 
    .. method:: proc flush()
 
-   .. method:: proc copy(ref dst: elemType, const ref src: elemType)
+   .. method:: proc copy(ref dst: bigint, const ref src: bigint)
 
    .. method:: proc _flushBuffer(loc: int, ref bufferIdx, freeData)
 
