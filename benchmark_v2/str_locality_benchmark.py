@@ -16,13 +16,21 @@ LOCALITY = {"Good", "Poor"}
 RAND_DATA = None
 SORT_DATA = None
 
+
 def _generate_data(loc):
+    """
+    Generate the test data. In an interest to leverage the same data for the benchmark
+    The data is all created at once.
+    """
     global RAND_DATA, SORT_DATA
+
     # early out if already set
     if loc == "Good" and RAND_DATA is not None:
         return RAND_DATA
     if loc == "Poor" and SORT_DATA is not None:
         return SORT_DATA
+
+    # otherwise set both and return the desired one.
     N = pytest.prob_size * ak.get_config()["numLocales"]
     prefix = ak.random_strings_uniform(minlen=1, maxlen=16, size=N, seed=pytest.seed, characters="numeric")
     if pytest.seed is not None:
@@ -31,13 +39,11 @@ def _generate_data(loc):
     random_strings = prefix.stick(suffix, delimiter=".")
     RAND_DATA = random_strings
 
-    if loc == "Poor":
-        perm = ak.argsort(random_strings.get_lengths())
-        sorted_strings = random_strings[perm]
-        SORT_DATA = sorted_strings
-        return SORT_DATA
+    perm = ak.argsort(random_strings.get_lengths())
+    sorted_strings = random_strings[perm]
+    SORT_DATA = sorted_strings
 
-    return RAND_DATA # Default return for good locality
+    return RAND_DATA if loc == "Good" else SORT_DATA
 
 
 @pytest.mark.benchmark(group="String_Locality")
@@ -52,3 +58,4 @@ def bench_str_locality(benchmark, op, loc):
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (data.nbytes / benchmark.stats["mean"]) / 2 ** 30)
+    benchmark.extra_info["data_name"] = data.name
