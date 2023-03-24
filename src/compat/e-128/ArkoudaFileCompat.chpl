@@ -1,6 +1,5 @@
 module ArkoudaFileCompat {
-  import IO.{openmem, iomode, iokind, channel, itemReaderInternal, file};
-  import IO.open as fileOpen;
+  use IO;
   enum ioMode {
     r = 1,
     cw = 2,
@@ -28,7 +27,7 @@ module ArkoudaFileCompat {
         oldMode = iomode.cwr;
       }
     }
-    return fileOpen(path, oldMode);
+    return open(path, oldMode);
   }
 
   record fileReader {
