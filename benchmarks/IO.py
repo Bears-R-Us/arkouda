@@ -16,6 +16,8 @@ TYPES = (
 
 
 def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, comps=None):
+    if comps is None:
+        comps = ["none"]
     supported_comps = [None, "none", "snappy", "gzip", "brotli", "zstd", "lz4"]
 
     if not parquet:
