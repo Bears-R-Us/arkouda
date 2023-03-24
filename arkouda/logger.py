@@ -27,7 +27,6 @@ levels for ArkoudaLogger.
 
 
 class LogLevel(Enum):
-
     DEBUG = "DEBUG"
     CRITICAL = "CRITICAL"
     INFO = "INFO"
@@ -53,7 +52,6 @@ at varying levels including debug, info, critical, warn, and error
 
 
 class ArkoudaLogger(Logger):
-
     DEFAULT_LOG_FORMAT = "[%(name)s] Line %(lineno)d %(levelname)s: %(message)s"
 
     CLIENT_LOG_FORMAT = ""
@@ -74,7 +72,6 @@ class ArkoudaLogger(Logger):
         handlers: Optional[List[Handler]] = None,
         logFormat: Optional[str] = "[%(name)s] Line %(lineno)d %(levelname)s: %(message)s",
     ) -> None:
-
         """
         Initializes the ArkoudaLogger with the name, level, logFormat, and
         handlers parameters
@@ -341,10 +338,12 @@ def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
     for logger in loggers.values():
         logger.disableVerbose(logLevel)
 
+
 @typechecked
 def write_log(log_msg: str, log_lvl: LogLevel = LogLevel.INFO):
     """
     Allows the user to write custom logs.
     """
     from arkouda.client import generic_msg
+
     generic_msg(cmd="clientlog", args={"log_msg": log_msg, "log_lvl": log_lvl.name})
