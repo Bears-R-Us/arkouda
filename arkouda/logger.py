@@ -15,7 +15,7 @@ from typing import List, Optional, cast
 
 from typeguard import typechecked
 
-__all__ = ["enableVerbose", "disableVerbose"]
+__all__ = ["LogLevel", "enableVerbose", "disableVerbose", "write_log"]
 
 loggers = {}
 
@@ -340,3 +340,11 @@ def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
     """
     for logger in loggers.values():
         logger.disableVerbose(logLevel)
+
+@typechecked
+def write_log(log_msg: str, log_lvl: LogLevel = LogLevel.INFO):
+    """
+    Allows the user to write custom logs.
+    """
+    from arkouda.client import generic_msg
+    generic_msg(cmd="clientlog", args={"log_msg": log_msg, "log_lvl": log_lvl.name})
