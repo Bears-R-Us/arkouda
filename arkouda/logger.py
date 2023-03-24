@@ -340,7 +340,7 @@ def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
 
 
 @typechecked
-def write_log(log_msg: str, tag: str= "ClientGeneratedLog", log_lvl: LogLevel = LogLevel.INFO):
+def write_log(log_msg: str, tag: str = "ClientGeneratedLog", log_lvl: LogLevel = LogLevel.INFO):
     """
     Allows the user to write custom logs.
 
