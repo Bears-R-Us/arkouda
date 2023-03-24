@@ -6,7 +6,9 @@ from IO import *
 
 TYPES = (
     "int64",
+    "float64",
     "uint64",
+    "str"
 )
 
 
@@ -65,9 +67,10 @@ def create_parser():
     parser.add_argument(
         "-c",
         "--compressed",
-        default=False,
-        action="store_true",
-        help="Write with Snappy compression and RLE encoding",
+        default="none",
+        action="store",
+        help="Compression types to run Parquet benchmarks against. Comma delimited list (NO SPACES) allowing "
+             "for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4"
     )
     return parser
 
@@ -81,6 +84,8 @@ if __name__ == "__main__":
         raise ValueError("Dtype must be {}, not {}".format("/".join(TYPES), args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
+    comp_str = args.compressed
+    comp_types = None if comp_str == "" else comp_str.lower().split(",")
 
     if args.correctness_only:
         for dtype in TYPES:
@@ -99,7 +104,7 @@ if __name__ == "__main__":
             args.path,
             args.seed,
             True,
-            args.compressed,
+            comp_types,
         )
     elif args.only_read:
         time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True)
@@ -112,7 +117,7 @@ if __name__ == "__main__":
             args.path,
             args.seed,
             True,
-            args.compressed,
+            comp_types,
         )
         time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True)
         remove_files(args.path)

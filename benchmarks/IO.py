@@ -11,14 +11,17 @@ TYPES = (
     "int64",
     "float64",
     "uint64",
+    "str"
 )
 
 
-def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, compressed=False):
+def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, comps=None):
+    supported_comps = [None, "none", "snappy", "gzip", "brotli", "zstd", "lz4"]
+
     if not parquet:
-        print(">>> arkouda {} HDF5 write with compressed={}".format(dtype, compressed))
+        print(">>> arkouda {} HDF5 write with compressed={}".format(dtype, comps))
     else:
-        print(">>> arkouda {} Parquet write with compressed={}".format(dtype, compressed))
+        print(">>> arkouda {} Parquet write with compressed={}".format(dtype, comps))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
@@ -28,16 +31,20 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
     elif dtype == "uint64":
         a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
+    elif dtype == "str":
+        a = ak.random_strings_uniform(1, 16, N, seed=seed)
 
     writetimes = []
     for i in range(trials):
-        for j in range(numfiles):
-            start = time.time()
-            a.to_hdf(f"{path}{j:04}") if not parquet else a.to_parquet(
-                f"{path}{j:04}", compression="snappy" if compressed else None
-            )
-            end = time.time()
-            writetimes.append(end - start)
+        for comp in comps:
+            if comp in supported_comps:
+                for j in range(numfiles):
+                    start = time.time()
+                    a.to_hdf(f"{path}{j:04}") if not parquet else a.to_parquet(
+                        f"{path}{comp}{j:04}", compression=None if comp == "none" else comp
+                    )
+                    end = time.time()
+                    writetimes.append(end - start)
     avgwrite = sum(writetimes) / trials
 
     print("write Average time = {:.4f} sec".format(avgwrite))
@@ -164,9 +171,10 @@ def create_parser():
     parser.add_argument(
         "-c",
         "--compressed",
-        default=False,
-        action="store_true",
-        help="Write with Snappy compression and RLE encoding",
+        default="none",
+        action="store",
+        help="Compression types to run Parquet benchmarks against. Comma delimited list (NO SPACES) allowing "
+             "for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4"
     )
     return parser
 
@@ -180,6 +188,8 @@ if __name__ == "__main__":
         raise ValueError("Dtype must be {}, not {}".format("/".join(TYPES), args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
+    comp_str = args.compressed
+    comp_types = None if comp_str == "" else comp_str.lower().split(",")
 
     if args.correctness_only:
         for dtype in TYPES:
@@ -198,7 +208,7 @@ if __name__ == "__main__":
             args.path,
             args.seed,
             args.parquet,
-            args.compressed,
+            comp_types,
         )
     elif args.only_read:
         time_ak_read(
@@ -213,7 +223,7 @@ if __name__ == "__main__":
             args.path,
             args.seed,
             args.parquet,
-            args.compressed,
+            comp_types,
         )
         time_ak_read(
             args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet
