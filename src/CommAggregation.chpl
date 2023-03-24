@@ -403,10 +403,58 @@ module CommAggregation {
     use CommAggregation;
     use BigInteger, GMP;
 
+    proc bigint._serializedSize() {
+      extern proc chpl_gmp_mpz_struct_sign_size(from: __mpz_struct) : mp_size_t;
+
+      var sign_size = chpl_gmp_mpz_struct_sign_size(this.getImpl());
+
+      var size_bytes = c_sizeof(mp_size_t):int;
+      var limb_bytes = AutoMath.abs(sign_size:int) * c_sizeof(mp_limb_t):int;
+
+      return size_bytes + limb_bytes;
+    }
+
+    proc bigint._serializeInto(x: c_ptr(uint(8))) {
+      extern proc chpl_gmp_mpz_struct_sign_size(from: __mpz_struct) : mp_size_t;
+      extern proc chpl_gmp_mpz_struct_limbs(from: __mpz_struct) : c_ptr(mp_limb_t);
+
+      var sign_size = chpl_gmp_mpz_struct_sign_size(this.getImpl());
+
+      var size_bytes = c_sizeof(mp_size_t):int;
+      var limb_bytes = AutoMath.abs(sign_size:int) * c_sizeof(mp_limb_t):int;
+
+      var limb_ptr = chpl_gmp_mpz_struct_limbs(this.getImpl());
+
+      c_memcpy(x, c_ptrTo(sign_size), size_bytes);
+      c_memcpy(x+size_bytes, limb_ptr, limb_bytes);
+    }
+
+    proc bigint._deserializeFrom(x: c_ptr(uint(8))) {
+      extern proc chpl_gmp_mpz_struct_limbs(from: __mpz_struct) : c_ptr(mp_limb_t);
+      extern proc chpl_gmp_mpz_set_sign_size(ref dst:mpz_t, sign_size:mp_size_t);
+
+      var sign_size: mp_size_t;
+      var src_limbs: c_ptr(mp_limb_t);
+
+      var size_bytes = c_sizeof(mp_size_t);
+
+      c_memcpy(c_ptrTo(sign_size), x, size_bytes);
+
+      var nlimbs = AutoMath.abs(sign_size:int);
+      var limb_bytes = nlimbs * c_sizeof(mp_limb_t):int;
+
+      _mpz_realloc(this.mpz, nlimbs);
+      var xp = chpl_gmp_mpz_struct_limbs(this.getImpl());
+      c_memcpy(xp, x+size_bytes, limb_bytes);
+
+      chpl_gmp_mpz_set_sign_size(this.mpz, sign_size);
+
+      return size_bytes:int + limb_bytes:int;
+    }
+
     record DstAggregatorBigint {
-      type elemType = bigint;
-      type aggType = (c_ptr(elemType), elemType);
-      const bufferSize = dstBuffSize;
+      type aggType = uint(8);
+      const bufferSize = dstBuffSize * (c_sizeof(c_ptr(bigint)) + c_sizeof(mp_size_t) + c_sizeof(mp_limb_t)): int;
       const myLocaleSpace = 0..<numLocales;
       var lastLocale: int;
       var opsUntilYield = yieldFrequency;
@@ -440,30 +488,42 @@ module CommAggregation {
         }
       }
 
-      inline proc copy(ref dst: elemType, const ref src: elemType) {
-        // TODO aggregation not supported today, just do plain assignment
-        dst = src;
-        return;
-
-        // Get the locale of dst and the local address on that locale
+      inline proc copy(ref dst: bigint, const ref src: bigint) {
+        if boundsChecking { assert(src.locale.id == here.id && src.localeId == here.id); }
+        // Note this is the locale of the record wrapper, and required to be
+        // the same as the mpz storage itself.
         const loc = dst.locale.id;
+
+        const serialize_bytes = src._serializedSize();
+
+        // Just do direct assignment if dst is local or src size is large
+        if loc == here.id || serialize_bytes > (bufferSize >> 2) {
+          dst = src;
+          return;
+        }
+
         lastLocale = loc;
-        const dstAddr = getAddr(dst);
+
+        var dstAddr = getAddr(dst);
+        var addr_bytes = c_sizeof(c_ptr(bigint)): int;
 
         // Get our current index into the buffer for dst's locale
         ref bufferIdx = bufferIdxs[loc];
 
-        // Buffer the address and desired value
-        lBuffers[loc][bufferIdx] = (dstAddr, src);
-        bufferIdx += 1;
-
-        // Flush our buffer if it's full. If it's been a while since we've let
-        // other tasks run, yield so that we're not blocking remote tasks from
-        // flushing their buffers.
-        if bufferIdx == bufferSize {
+        // Flush our buffer if this entry will exceed capacity
+        if bufferIdx + addr_bytes + serialize_bytes > bufferSize {
           _flushBuffer(loc, bufferIdx, freeData=false);
           opsUntilYield = yieldFrequency;
-        } else if opsUntilYield == 0 {
+        }
+
+        // Buffer the address and the serialized value
+        c_memcpy(c_ptrTo(lBuffers[loc][bufferIdx]), c_ptrTo(dstAddr), addr_bytes);
+        src._serializeInto(c_ptrTo(lBuffers[loc][bufferIdx+addr_bytes]));
+        bufferIdx += addr_bytes + serialize_bytes;
+
+        // If it's been a while since we've let other tasks run, yield so that
+        // we're not blocking remote tasks from flushing their buffers.
+        if opsUntilYield == 0 {
           chpl_task_yield();
           opsUntilYield = yieldFrequency;
         } else {
@@ -484,9 +544,20 @@ module CommAggregation {
 
         // Process remote buffer
         on Locales[loc] {
-          for (dstAddr, srcVal) in rBuffer.localIter(remBufferPtr, myBufferIdx) {
-            dstAddr.deref() = srcVal;
+          var curBufferIdx = 0;
+          while curBufferIdx < myBufferIdx {
+            var dstAddr: c_ptr(bigint);
+            var addr_bytes = c_sizeof(c_ptr(bigint)): int;
+
+            // Copy addr out of buffer
+            c_memcpy(c_ptrTo(dstAddr), c_ptrTo(remBufferPtr[curBufferIdx]), addr_bytes);
+            // assert that record locality matches mpz locality
+            if boundsChecking { assert(dstAddr.deref().localeId == here.id); }
+            // deserialize into bigint
+            var ser_bytes = dstAddr.deref()._deserializeFrom(c_ptrTo(remBufferPtr[curBufferIdx+addr_bytes]));
+            curBufferIdx += addr_bytes + ser_bytes;
           }
+
           if freeData {
             rBuffer.localFree(remBufferPtr);
           }
@@ -499,17 +570,17 @@ module CommAggregation {
     }
 
     record SrcAggregatorBigint {
-      type elemType = bigint;
-      type aggType = c_ptr(elemType);
+      type aggType = c_ptr(bigint);
       const bufferSize = srcBuffSize;
+      const uintBufferSize = srcBuffSize * (c_sizeof(mp_size_t) + c_sizeof(mp_limb_t)): int;
       const myLocaleSpace = 0..<numLocales;
       var lastLocale: int;
       var opsUntilYield = yieldFrequency;
       var dstAddrs: c_ptr(c_ptr(aggType));
       var lSrcAddrs: c_ptr(c_ptr(aggType));
-      var lSrcVals: [myLocaleSpace][0..#bufferSize] elemType;
+      var lSrcVals: [myLocaleSpace][0..#uintBufferSize] uint(8);
       var rSrcAddrs: [myLocaleSpace] remoteBuffer(aggType);
-      var rSrcVals: [myLocaleSpace] remoteBuffer(elemType);
+      var rSrcVals: [myLocaleSpace] remoteBuffer(uint(8));
       var bufferIdxs: c_ptr(int);
 
       proc postinit() {
@@ -521,7 +592,7 @@ module CommAggregation {
           lSrcAddrs[loc] = c_malloc(aggType, bufferSize);
           bufferIdxs[loc] = 0;
           rSrcAddrs[loc] = new remoteBuffer(aggType, bufferSize, loc);
-          rSrcVals[loc] = new remoteBuffer(elemType, bufferSize, loc);
+          rSrcVals[loc] = new remoteBuffer(uint(8), uintBufferSize, loc);
         }
       }
 
@@ -543,11 +614,7 @@ module CommAggregation {
         }
       }
 
-      inline proc copy(ref dst: elemType, const ref src: elemType) {
-        // TODO aggregation not supported today, just do plain assignment
-        dst = src;
-        return;
-
+      inline proc copy(ref dst: bigint, const ref src: bigint) {
         if boundsChecking {
           assert(dst.locale.id == here.id);
         }
@@ -588,29 +655,66 @@ module CommAggregation {
         // Copy local addresses to remote buffer
         myRSrcAddrs.PUT(lSrcAddrs[loc], myBufferIdx);
 
-        // Process remote buffer, copying the value of our addresses into a
-        // remote buffer
-        on Locales[loc] {
-          for i in 0..<myBufferIdx {
-            rSrcValPtr[i] = rSrcAddrPtr[i].deref();
+        var bytesValsWritten: 2*int;
+        var addrBufferIdx = 0;
+
+        while bytesValsWritten(1) < myBufferIdx {
+          // Process remote buffer, copying the value of our addresses into a
+          // remote buffer
+          const cbytesValsWritten = bytesValsWritten;
+          const myBufferSize = uintBufferSize;
+          on Locales[loc] {
+            const mycbytesValsWritten = cbytesValsWritten;
+            var (valueBufferIdx, addrBufferIdx) = mycbytesValsWritten;
+            valueBufferIdx = 0;
+
+            while valueBufferIdx < myBufferSize && addrBufferIdx < myBufferIdx {
+              var srcAddr = rSrcAddrPtr[addrBufferIdx];
+
+              var ser_size = srcAddr.deref()._serializedSize();
+              if ser_size > myBufferSize {
+                // Halt if the size is too big. A slow fallback would be to
+                // just break and have the initiator see the bytes written
+                // didn't advance and do the assignment. Smarter would be to
+                // serialize size and enough to call `chpl_gmp_get_mpz`
+                halt("size of bigint exceeds max serialized size");
+              }
+              if valueBufferIdx + ser_size > myBufferSize {
+                break;
+              }
+
+              // copy value for current address into value array
+              srcAddr.deref()._serializeInto(c_ptrTo(rSrcValPtr[valueBufferIdx]));
+
+              valueBufferIdx += ser_size;
+              addrBufferIdx += 1;
+            }
+            bytesValsWritten = (valueBufferIdx, addrBufferIdx);
+
+            if freeData && addrBufferIdx == myBufferIdx {
+              myRSrcAddrs.localFree(rSrcAddrPtr);
+            }
           }
-          if freeData {
-            myRSrcAddrs.localFree(rSrcAddrPtr);
+
+          // Copy remote values into local buffer
+          myRSrcVals.GET(myLSrcVals, bytesValsWritten(0));
+
+          // Assign the srcVal to the dstAddrs
+          var dstAddrPtr = c_ptrTo(dstAddrs[loc][0]);
+          var srcValPtr = c_ptrTo(myLSrcVals[0]);
+          var curBufferIdx = 0;
+          while addrBufferIdx < bytesValsWritten(1) {
+            var dstAddr = dstAddrPtr[addrBufferIdx];
+            var ser_size = dstAddr.deref()._deserializeFrom(c_ptrTo(srcValPtr[curBufferIdx]));
+            curBufferIdx += ser_size:int;
+            addrBufferIdx += 1;
           }
         }
+
         if freeData {
           myRSrcAddrs.markFreed();
         }
 
-        // Copy remote values into local buffer
-        myRSrcVals.GET(myLSrcVals, myBufferIdx);
-
-        // Assign the srcVal to the dstAddrs
-        var dstAddrPtr = c_ptrTo(dstAddrs[loc][0]);
-        var srcValPtr = c_ptrTo(myLSrcVals[0]);
-        for i in 0..<myBufferIdx {
-          dstAddrPtr[i].deref() = srcValPtr[i];
-        }
 
         bufferIdx = 0;
       }
