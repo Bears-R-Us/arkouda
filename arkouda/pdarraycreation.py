@@ -207,8 +207,10 @@ def array(
 
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
-        # TODO update if max_bits is set
-        return a if dtype is None else akcast(a, dtype)
+        casted = a if dtype is None else akcast(a, dtype)
+        if dtype == bigint and max_bits != -1:
+            casted.max_bits = max_bits
+        return casted
     from arkouda.client import maxTransferBytes
 
     # If a is not already a numpy.ndarray, convert it
@@ -380,7 +382,11 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
 
 
 @typechecked
-def zeros(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str, BigInt] = float64) -> pdarray:
+def zeros(
+    size: Union[int_scalars, str],
+    dtype: Union[np.dtype, type, str, BigInt] = float64,
+    max_bits: Optional[int] = None,
+) -> pdarray:
     """
     Create a pdarray filled with zeros.
 
@@ -390,6 +396,8 @@ def zeros(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str, BigIn
         Size of the array (only rank-1 arrays supported)
     dtype : all_scalars
         Type of resulting array, default float64
+    max_bits: int
+        Specifies the maximum number of bits; only used for bigint pdarrays
 
     Returns
     -------
@@ -426,11 +434,15 @@ def zeros(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str, BigIn
         raise TypeError(f"unsupported dtype {dtype}")
     repMsg = generic_msg(cmd="create", args={"dtype": dtype_name, "size": size})
 
-    return create_pdarray(repMsg)
+    return create_pdarray(repMsg, max_bits=max_bits)
 
 
 @typechecked
-def ones(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str, BigInt] = float64) -> pdarray:
+def ones(
+    size: Union[int_scalars, str],
+    dtype: Union[np.dtype, type, str, BigInt] = float64,
+    max_bits: Optional[int] = None,
+) -> pdarray:
     """
     Create a pdarray filled with ones.
 
@@ -440,6 +452,8 @@ def ones(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str, BigInt
         Size of the array (only rank-1 arrays supported)
     dtype : Union[float64, int64, bool]
         Resulting array type, default float64
+    max_bits: int
+        Specifies the maximum number of bits; only used for bigint pdarrays
 
     Returns
     -------
@@ -477,6 +491,8 @@ def ones(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str, BigInt
     repMsg = generic_msg(cmd="create", args={"dtype": dtype_name, "size": size})
     a = create_pdarray(repMsg)
     a.fill(1)
+    if max_bits:
+        a.max_bits = max_bits
     return a
 
 
@@ -485,6 +501,7 @@ def full(
     size: Union[int_scalars, str],
     fill_value: int_scalars,
     dtype: Union[np.dtype, type, str, BigInt] = float64,
+    max_bits: Optional[int] = None,
 ) -> pdarray:
     """
     Create a pdarray filled with fill_value.
@@ -497,6 +514,8 @@ def full(
         Value with which the array will be filled
     dtype: all_scalars
         Resulting array type, default float64
+    max_bits: int
+        Specifies the maximum number of bits; only used for bigint pdarrays
 
     Returns
     -------
@@ -534,6 +553,8 @@ def full(
     repMsg = generic_msg(cmd="create", args={"dtype": dtype_name, "size": size})
     a = create_pdarray(repMsg)
     a.fill(fill_value)
+    if max_bits:
+        a.max_bits = max_bits
     return a
 
 
@@ -576,7 +597,7 @@ def zeros_like(pda: pdarray) -> pdarray:
     >>> ak.zeros_like(zeros)
     array([False, False, False, False, False])
     """
-    return zeros(pda.size, pda.dtype)
+    return zeros(pda.size, pda.dtype, pda.max_bits)
 
 
 @typechecked
@@ -623,7 +644,7 @@ def ones_like(pda: pdarray) -> pdarray:
     >>> ak.ones_like(ones)
     array([True, True, True, True, True])
     """
-    return ones(pda.size, pda.dtype)
+    return ones(pda.size, pda.dtype, pda.max_bits)
 
 
 @typechecked
@@ -672,7 +693,7 @@ def full_like(pda: pdarray, fill_value: int_scalars) -> pdarray:
     >>> ak.full_like(full)
     array([True, True, True, True, True])
     """
-    return full(pda.size, fill_value, pda.dtype)
+    return full(pda.size, fill_value, pda.dtype, pda.max_bits)
 
 
 def arange(*args, **kwargs) -> pdarray:
@@ -697,6 +718,8 @@ def arange(*args, **kwargs) -> pdarray:
         if stride is specified then start must also be specified.
     dtype: np.dtype, type, or str
         The target dtype to cast values to
+    max_bits: int
+        Specifies the maximum number of bits; only used for bigint pdarrays
 
     Returns
     -------
@@ -762,11 +785,12 @@ def arange(*args, **kwargs) -> pdarray:
 
     if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(stride):
         if dtype in ["bigint", bigint] or start >= 2**64 or stop >= 2**64:
+            max_bits = None if "max_bits" not in kwargs.keys() else kwargs["max_bits"]
             # we only return dtype bigint here
             repMsg = generic_msg(
                 cmd="bigintArange", args={"start": start, "stop": stop, "stride": stride}
             )
-            return create_pdarray(repMsg)
+            return create_pdarray(repMsg, max_bits=max_bits)
         else:
             if stride < 0:
                 stop = stop + 2

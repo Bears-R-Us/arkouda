@@ -92,7 +92,61 @@ module BigIntMsg {
         }
     }
 
+    proc getMaxBitsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        const name = msgArgs.getValueOf("array");
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+        select gEnt.dtype {
+            when DType.BigInt {
+                var repMsg = "%jt".format(toSymEntry(gEnt, bigint).max_bits);
+                biLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+                return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            otherwise {
+                var errorMsg = notImplementedError(pn, "("+dtype2str(gEnt.dtype)+")");
+                biLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
+    proc setMaxBitsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        const name = msgArgs.getValueOf("array");
+        var max_bits = msgArgs.get("max_bits").getIntValue();
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+        select gEnt.dtype {
+            when DType.BigInt {
+                var e = toSymEntry(gEnt, bigint);
+                ref ea = e.a;
+
+                if max_bits != -1 {
+                    // modBy should always be non-zero since we start at 1 and left shift
+                    var max_size = 1:bigint;
+                    max_size <<= max_bits;
+                    max_size -= 1;
+                    forall ei in ea with (var local_max_size = max_size) {
+                      ei &= local_max_size;
+                    }
+                }
+                e.max_bits = max_bits;
+                var repMsg = "Sucessfully set max_bits";
+                biLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+                return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            otherwise {
+                var errorMsg = notImplementedError(pn, "("+dtype2str(gEnt.dtype)+")");
+                biLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
     use CommandMap;
     registerFunction("big_int_creation", bigIntCreationMsg, getModuleName());
     registerFunction("bigint_to_uint_list", bigintToUintArraysMsg, getModuleName());
+    registerFunction("get_max_bits", getMaxBitsMsg, getModuleName());
+    registerFunction("set_max_bits", setMaxBitsMsg, getModuleName());
 }

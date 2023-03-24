@@ -303,6 +303,7 @@ module IndexingMsg
             forall (elt,j) in zip(aa, slice) with (var agg = newSrcAggregator(t)) {
               agg.copy(elt,ea[j]);
             }
+            a.max_bits = e.max_bits;
             var repMsg = "created " + st.attrib(rname);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -379,6 +380,7 @@ module IndexingMsg
             forall (a1,idx) in zip(aa,iva) with (var agg = newSrcAggregator(XType)) {
               agg.copy(a1,a2[idx]);
             }
+            a.max_bits = e.max_bits;
             
             var repMsg =  "created " + st.attrib(rname);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
@@ -415,6 +417,7 @@ module IndexingMsg
             forall (a1,idx) in zip(aa,iva) with (var agg = newSrcAggregator(XType)) {
               agg.copy(a1,a2[idx:int]);
             }
+            a.max_bits = e.max_bits;
             
             var repMsg =  "created " + st.attrib(rname);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
@@ -449,6 +452,7 @@ module IndexingMsg
                 agg.copy(aa[iv[i]-1], eai);
               }
             }
+            a.max_bits = e.max_bits;
 
             var repMsg = "created " + st.attrib(rname);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 

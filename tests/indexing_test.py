@@ -83,3 +83,9 @@ class IndexingTest(ArkoudaTest):
         a = ak.arange(10) * 2
         b = ak.cast(ak.array([3, 0, 8]), ak.uint64)
         a[b]
+
+    def test_bigint_indexing_preserves_max_bits(self):
+        max_bits = 64
+        a = ak.arange(2**200 - 1, 2**200 + 11, max_bits=max_bits)
+        self.assertEqual(max_bits, a[ak.arange(10)].max_bits)
+        self.assertEqual(max_bits, a[:].max_bits)
