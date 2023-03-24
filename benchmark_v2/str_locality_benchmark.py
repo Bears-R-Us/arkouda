@@ -58,4 +58,3 @@ def bench_str_locality(benchmark, op, loc):
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (data.nbytes / benchmark.stats["mean"]) / 2 ** 30)
-    benchmark.extra_info["data_name"] = data.name
