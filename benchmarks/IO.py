@@ -96,6 +96,10 @@ def check_correctness(dtype, path, seed, parquet, multifile=False):
         a = ak.randint(0, 1, N, dtype=ak.uint64, seed=seed)
         if multifile:
             b = ak.randint(0, 1, N, dtype=ak.uint64, seed=seed)
+    elif dtype == "str":
+        a = ak.random_strings_uniform(1, 16, N, seed=seed)
+        if multifile:
+            b = ak.random_strings_uniform(1, 16, N, seed=seed)
 
     a.to_hdf(f"{path}{1}") if not parquet else a.to_parquet(f"{path}{1}")
     if multifile:
