@@ -191,6 +191,14 @@ class CoargsortTest(ArkoudaTest):
             mixed_perm = ak.coargsort([cat, string, cat_from_codes], algo)
             self.assertListEqual(["a", "a", "b", "b", "c"], cat_from_codes[mixed_perm].to_list())
 
+    def test_coargsort_empty(self):
+        empty_str = ak.random_strings_uniform(1, 16, 0)
+        empty_cat = ak.Categorical(empty_str)
+        empty_pda = ak.array([], int)
+        self.assertEqual(0, len(ak.coargsort([empty_pda])))
+        self.assertEqual(0, len(ak.coargsort([empty_str])))
+        self.assertEqual(0, len(ak.coargsort([empty_cat])))
+        
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Check coargsort correctness.")
