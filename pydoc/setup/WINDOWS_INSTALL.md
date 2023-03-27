@@ -14,7 +14,7 @@ for installing Chapel & Arkouda.  We also recommend installing Anaconda for wind
 
 **Note:** When running `make` to build Chapel while using WSL, pathing issues to library dependencies are common. In most cases, a symlink pointing to the correct location or library will fix these errors.
 
-An example of one of these errors found while using Chapel 1.29.0 and Ubuntu 20.04 LTS with WSL is:
+An example of one of these errors found while using Chapel 1.30.0 and Ubuntu 20.04 LTS with WSL is:
 
 ```bash
 ../../../bin/llvm-tblgen: error while loading shared libraries: libtinfow.so.6: cannot open shared object file: No such file or directory

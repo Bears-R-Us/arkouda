@@ -1,5 +1,5 @@
 module ArkoudaRegexCompat {
-  public import Regex.{regex, match};
+  public import Regex.regex;
 
   // Previous releases of Chapel do not support throwing
   // initializers and to work around that, we had to run

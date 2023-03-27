@@ -17,7 +17,7 @@ jobs:
   mypy:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:1.29.0
+      image: chapel/chapel:1.30.0
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
@@ -32,7 +32,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:1.29.0
+      image: chapel/chapel:1.30.0
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
@@ -47,7 +47,7 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:1.29.0
+      image: chapel/chapel:1.30.0
     steps:
       - uses: actions/checkout@v3
       - name: Install Dependencies
@@ -65,7 +65,7 @@ jobs:
       matrix:
         python-version: ['3.8', '3.9', '3.10']
     container:
-      image: chapel/chapel:1.29.0
+      image: chapel/chapel:1.30.0
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -131,7 +131,7 @@ jobs:
     env:
       CHPL_RT_NUM_THREADS_PER_LOCALE: ${{matrix.threads}}
     container:
-      image: chapel/${{matrix.image}}:1.29.0
+      image: chapel/${{matrix.image}}:1.30.0
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
