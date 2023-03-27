@@ -1,0 +1,19 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaMapCompat
+
+ArkoudaMapCompat
+================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaMapCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaMapCompat;
+

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="MacOS" href="MAC_INSTALL.html" /><link rel="prev" title="Linux" href="LINUX_INSTALL.html" />
 
-    <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
+    <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.27 -->
         <title>Windows (WSL2) - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
@@ -286,7 +286,7 @@ The general strategy here is to use Linux terminals on WSL to launch the server.
 <p>Once configured you can follow the basic <a class="reference internal" href="LINUX_INSTALL.html"><span class="std std-doc">Linux Install</span></a>
 for installing Chapel &amp; Arkouda.  We also recommend installing Anaconda for windows.</p>
 <p><strong>Note:</strong> When running <code class="docutils literal notranslate"><span class="pre">make</span></code> to build Chapel while using WSL, pathing issues to library dependencies are common. In most cases, a symlink pointing to the correct location or library will fix these errors.</p>
-<p>An example of one of these errors found while using Chapel 1.29.0 and Ubuntu 20.04 LTS with WSL is:</p>
+<p>An example of one of these errors found while using Chapel 1.30.0 and Ubuntu 20.04 LTS with WSL is:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>../../../bin/llvm-tblgen:<span class="w"> </span>error<span class="w"> </span><span class="k">while</span><span class="w"> </span>loading<span class="w"> </span>shared<span class="w"> </span>libraries:<span class="w"> </span>libtinfow.so.6:<span class="w"> </span>cannot<span class="w"> </span>open<span class="w"> </span>shared<span class="w"> </span>object<span class="w"> </span>file:<span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory
 </pre></div>
 </div>
