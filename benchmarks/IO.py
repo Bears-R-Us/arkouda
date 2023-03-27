@@ -202,7 +202,7 @@ if __name__ == "__main__":
     ak.verbose = False
     ak.connect(args.hostname, args.port)
     comp_str = args.compression
-    comp_types = None if comp_str == "" else comp_str.lower().split(",")
+    comp_types = COMPRESSIONS if comp_str == "" else comp_str.lower().split(",")
 
     if args.correctness_only:
         for dtype in TYPES:
