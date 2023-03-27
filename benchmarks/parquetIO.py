@@ -66,8 +66,8 @@ def create_parser():
     )
     parser.add_argument(
         "-c",
-        "--compressed",
-        default="none",
+        "--compression",
+        default="",
         action="store",
         help="Compression types to run Parquet benchmarks against. Comma delimited list (NO SPACES) allowing "
              "for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4"
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         raise ValueError("Dtype must be {}, not {}".format("/".join(TYPES), args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
-    comp_str = args.compressed
+    comp_str = args.compression
     comp_types = None if comp_str == "" else comp_str.lower().split(",")
 
     if args.correctness_only:

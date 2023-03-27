@@ -13,12 +13,19 @@ TYPES = (
     "uint64",
     "str"
 )
+COMPRESSIONS = (
+    "none",
+    "snappy",
+    "gzip",
+    "brotli",
+    "zstd",
+    "lz4"
+)
 
 
 def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, comps=None):
-    if comps is None:
-        comps = ["none"]
-    supported_comps = [None, "none", "snappy", "gzip", "brotli", "zstd", "lz4"]
+    if comps is None or comps == [""]:
+        comps = COMPRESSIONS
 
     if not parquet:
         print(">>> arkouda {} HDF5 write with compressed={}".format(dtype, comps))
@@ -39,7 +46,7 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
     writetimes = []
     for i in range(trials):
         for comp in comps:
-            if comp in supported_comps:
+            if comp in COMPRESSIONS:
                 for j in range(numfiles):
                     start = time.time()
                     a.to_hdf(f"{path}{j:04}") if not parquet else a.to_parquet(
@@ -176,8 +183,8 @@ def create_parser():
     )
     parser.add_argument(
         "-c",
-        "--compressed",
-        default="none",
+        "--compression",
+        default="",
         action="store",
         help="Compression types to run Parquet benchmarks against. Comma delimited list (NO SPACES) allowing "
              "for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4"
@@ -194,7 +201,7 @@ if __name__ == "__main__":
         raise ValueError("Dtype must be {}, not {}".format("/".join(TYPES), args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
-    comp_str = args.compressed
+    comp_str = args.compression
     comp_types = None if comp_str == "" else comp_str.lower().split(",")
 
     if args.correctness_only:
