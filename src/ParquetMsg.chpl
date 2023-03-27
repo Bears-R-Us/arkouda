@@ -1488,6 +1488,9 @@ module ParquetMsg {
         );
       }
       var result: int = c_writeMultiColToParquet(fname.localize().c_str(), c_ptrTo(c_names), c_ptrTo(ptrList), c_ptrTo(offsetPtr), c_ptrTo(objTypes), c_ptrTo(datatypes), c_ptrTo(segarray_sizes), ncols, numelems, ROWGROUPS, compression, c_ptrTo(pqErr.errMsg));
+      if result == ARROWERROR {
+        pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+      }
     }
     return filesExist;
   }
