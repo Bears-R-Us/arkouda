@@ -28,9 +28,9 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
         comps = COMPRESSIONS
 
     if not parquet:
-        print(">>> arkouda {} HDF5 write with compressed={}".format(dtype, comps))
+        print(">>> arkouda {} HDF5 write with compression={}".format(dtype, comps))
     else:
-        print(">>> arkouda {} Parquet write with compressed={}".format(dtype, comps))
+        print(">>> arkouda {} Parquet write with compression={}".format(dtype, comps))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
