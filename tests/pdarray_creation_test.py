@@ -70,7 +70,7 @@ class PdarrayCreationTest(ArkoudaTest):
 
         # test that max_bits being set results in a mod
         self.assertListEqual(
-            ak.array([bi, bi + 1, bi + 2, bi + 3, bi + 4], max_bits=200).to_list(),
+            ak.arange(bi, bi + 5, max_bits=200).to_list(),
             ak.arange(5).to_list(),
         )
 
@@ -90,6 +90,11 @@ class PdarrayCreationTest(ArkoudaTest):
         t = ak.arange(bi - 1, bi + 9)
         t_dup = ak.bigint_from_uint_arrays(t.bigint_to_uint_arrays())
         self.assertListEqual(t.to_list(), t_dup.to_list())
+        self.assertEqual(t_dup.max_bits, -1)
+
+        # test setting max_bits after creation still mods
+        t_dup.max_bits = 200
+        self.assertListEqual(t_dup.to_list(), [bi - 1, 0, 1, 2, 3, 4, 5, 6, 7, 8])
 
         # test slice_bits along 64 bit boundaries matches return from bigint_to_uint_arrays
         for i, uint_bits in enumerate(t.bigint_to_uint_arrays()):

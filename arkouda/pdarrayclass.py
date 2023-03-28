@@ -177,6 +177,7 @@ class pdarray:
         ndim: int_scalars,
         shape: Sequence[int],
         itemsize: int_scalars,
+        max_bits: Optional[int] = None,
     ) -> None:
         self.name = name
         self.dtype = dtype(mydtype)
@@ -184,6 +185,8 @@ class pdarray:
         self.ndim = ndim
         self.shape = shape
         self.itemsize = itemsize
+        if max_bits:
+            self.max_bits = max_bits
 
     def __del__(self):
         try:
@@ -212,6 +215,21 @@ class pdarray:
         from arkouda.client import pdarrayIterThresh
 
         return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
+
+    @property
+    def max_bits(self):
+        if self.dtype == bigint:
+            if not hasattr(self, "_max_bits"):
+                # if _max_bits hasn't been set, fetch value from server
+                self._max_bits = generic_msg(cmd="get_max_bits", args={"array": self})
+            return int(self._max_bits)
+        return None
+
+    @max_bits.setter
+    def max_bits(self, max_bits):
+        if self.dtype == bigint:
+            generic_msg(cmd="set_max_bits", args={"array": self, "max_bits": max_bits})
+            self._max_bits = max_bits
 
     def format_other(self, other) -> str:
         """
@@ -1832,7 +1850,7 @@ class pdarray:
 #       all values have been checked by python module and...
 #       server has created pdarray already before this is called
 @typechecked
-def create_pdarray(repMsg: str) -> pdarray:
+def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
     The user should not call this function directly.
@@ -1875,7 +1893,7 @@ def create_pdarray(repMsg: str) -> pdarray:
         f"created Chapel array with name: {name} dtype: {mydtype} size: {size} ndim: {ndim} "
         + f"shape: {shape} itemsize: {itemsize}"
     )
-    return pdarray(name, dtype(mydtype), size, ndim, shape, itemsize)
+    return pdarray(name, dtype(mydtype), size, ndim, shape, itemsize, max_bits)
 
 
 def clear() -> None:
