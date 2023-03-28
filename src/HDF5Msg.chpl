@@ -383,7 +383,7 @@ module HDF5Msg {
         writeArkoudaMetaData(file_id, dset_name, objType, dtype);
     }
 
-     /*
+    /*
         writes 1D array to dataset in single file
     */
     proc writeLocalDset(file_id: C_HDF5.hid_t, dset_name: string, A, dimension: int, type t) throws{
