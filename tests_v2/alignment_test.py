@@ -1,5 +1,6 @@
-import arkouda as ak
 import pytest
+
+import arkouda as ak
 
 
 def test_search_interval():
@@ -13,21 +14,21 @@ def test_search_interval():
     upper_bound = ak.array(ub)
     vals = ak.array(v)
     interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-    assert(expected_result == interval_idxs.to_list())
+    assert expected_result == interval_idxs.to_list()
 
     # test uint64
     lower_bound = ak.array(lb, dtype=ak.uint64)
     upper_bound = ak.array(ub, dtype=ak.uint64)
     vals = ak.array(v, dtype=ak.uint64)
     interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-    assert(expected_result == interval_idxs.to_list())
+    assert expected_result == interval_idxs.to_list()
 
     # test uint64
     lower_bound = ak.array(lb, dtype=ak.float64)
     upper_bound = ak.array(ub, dtype=ak.float64)
     vals = ak.array(v, dtype=ak.float64)
     interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-    assert(expected_result == interval_idxs.to_list())
+    assert expected_result == interval_idxs.to_list()
 
 
 def test_multi_array_search_interval():
@@ -36,44 +37,42 @@ def test_multi_array_search_interval():
     ends = (ak.array([4, 14, 24]), ak.array([4, 14, 24]))
     vals = (ak.array([3, 13, 23]), ak.array([23, 13, 3]))
     ans = [-1, 1, -1]
-    assert(
-        ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
-    )
-    assert(ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
+    assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
+    assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list()
 
     vals = (ak.array([23, 13, 3]), ak.array([23, 13, 3]))
     ans = [2, 1, 0]
-    assert(
-        ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
-    )
-    assert(ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
+    assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
+    assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list()
 
     vals = (ak.array([23, 13, 33]), ak.array([23, 13, 3]))
     ans = [2, 1, -1]
-    assert(
-        ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
-    )
-    assert(ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
+    assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
+    assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list()
 
     # test hierarchical flag
     starts = (ak.array([0, 5]), ak.array([0, 11]))
     ends = (ak.array([5, 9]), ak.array([10, 20]))
     vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
 
-    assert(
-        ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list() ==
-        [0, -1, 0, 0, 1, -1, 1, -1]
-    )
+    assert ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list() == [
+        0,
+        -1,
+        0,
+        0,
+        1,
+        -1,
+        1,
+        -1,
+    ]
     search_intervals_hierarchical = ak.search_intervals(vals, (starts, ends)).to_list()
-    assert(search_intervals_hierarchical == [0, 0, 0, 0, 1, 1, 1, -1])
+    assert search_intervals_hierarchical == [0, 0, 0, 0, 1, 1, 1, -1]
 
     # bigint is equivalent to hierarchical=True case
     bi_starts = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in starts])
     bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])
     bi_vals = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in vals])
-    assert(
-        ak.search_intervals(bi_vals, (bi_starts, bi_ends)).to_list() == search_intervals_hierarchical
-    )
+    assert ak.search_intervals(bi_vals, (bi_starts, bi_ends)).to_list() == search_intervals_hierarchical
 
 
 def test_search_interval_nonunique():
@@ -87,21 +86,21 @@ def test_search_interval_nonunique():
     upper_bound = ak.array(ub)
     vals = ak.array(v)
     interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-    assert(expected_result == interval_idxs.to_list())
+    assert expected_result == interval_idxs.to_list()
 
     # test uint64
     lower_bound = ak.array(lb, dtype=ak.uint64)
     upper_bound = ak.array(ub, dtype=ak.uint64)
     vals = ak.array(v, dtype=ak.uint64)
     interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-    assert(expected_result == interval_idxs.to_list())
+    assert expected_result == interval_idxs.to_list()
 
     # test uint64
     lower_bound = ak.array(lb, dtype=ak.float64)
     upper_bound = ak.array(ub, dtype=ak.float64)
     vals = ak.array(v, dtype=ak.float64)
     interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-    assert(expected_result == interval_idxs.to_list())
+    assert expected_result == interval_idxs.to_list()
 
 
 def test_error_handling():
@@ -176,8 +175,8 @@ def test_representative_cases():
     first_answer = [-1, -1, 0, 0, -1, 0, 2, 0, -1, 0, 0, 3, -1]
     smallest_answer = [-1, -1, 0, 2, -1, 2, 2, 1, -1, 0, 0, 3, -1]
     first_result = ak.search_intervals(values, intervals, hierarchical=False)
-    assert(first_result.to_list() == first_answer)
+    assert first_result.to_list() == first_answer
     smallest_result = ak.search_intervals(
         values, intervals, tiebreak=tiebreak_smallest, hierarchical=False
     )
-    assert(smallest_result.to_list() == smallest_answer)
+    assert smallest_result.to_list() == smallest_answer

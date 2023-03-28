@@ -1,5 +1,6 @@
-import arkouda as ak
 import pytest
+
+import arkouda as ak
 
 TYPES = ("int64", "uint64", "float64")
 

@@ -1,9 +1,9 @@
-import pytest
-import os
 import importlib
+import os
+
+import pytest
 
 import arkouda as ak
-
 from server_util.test.server_test_util import (
     TestRunningMode,
     get_arkouda_numlocales,
@@ -40,11 +40,7 @@ def startup_teardown():
                 e,
             )
     else:
-        print(
-            "in client stack test mode with host: {} port: {}".format(
-                server, port
-            )
-        )
+        print("in client stack test mode with host: {} port: {}".format(server, port))
 
     yield
 
@@ -61,9 +57,7 @@ def manage_connection():
     server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
     timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
     try:
-        ak.connect(
-            server=server, port=port, timeout=timeout
-        )
+        ak.connect(server=server, port=port, timeout=timeout)
     except Exception as e:
         raise ConnectionError(e)
 
