@@ -25,7 +25,7 @@ ARKOUDA_RUNTIME_CHECKS = true
 endif
 
 ifdef ARKOUDA_QUICK_COMPILE
-CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --no-fast-followers --ccflags="-O0" -suseBulkTransfer=false
+CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --no-fast-followers --ccflags="-O0"
 else
 CHPL_FLAGS += --fast
 endif
