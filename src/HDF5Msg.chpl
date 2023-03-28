@@ -384,6 +384,20 @@ module HDF5Msg {
     }
 
     /*
+        Takes distributed data and localizes it to the root.
+        This is used when writing data to a single file.
+    */
+    proc localizeData(localFlat: [?D] ?t, A) throws {
+        coforall loc in A.targetLocales() with (ref A) do on loc {
+            const locDom = A.localSubdomain();
+            forall (localVal, valIdx) in zip(localFlat[locDom.low..locDom.high], locDom.low..locDom.high) with (var agg = newDstAggregator(t), ref A) {
+                // Copy the value local to the current locale to the array on the root.
+                agg.copy(localVal, A[valIdx]);
+            }
+        }
+    }
+
+     /*
         writes 1D array to dataset in single file
     */
     proc writeLocalDset(file_id: C_HDF5.hid_t, dset_name: string, A, dimension: int, type t) throws{
@@ -394,7 +408,7 @@ module HDF5Msg {
 
         // always store multidimensional arrays as flattened array
         var dims = dimension:C_HDF5.hsize_t;
-        C_HDF5.H5LTmake_dataset(file_id, dset_name.c_str(), 1:c_int, dims, dtype_id, A.ptr);
+        C_HDF5.H5LTmake_dataset(file_id, dset_name.c_str(), 1:c_int, dims, dtype_id, A);
     }
 
     /*
@@ -489,26 +503,38 @@ module HDF5Msg {
                 select entryDtype {
                     when DType.Int64 {
                         var flat = toSymEntry(toGenSymEntry(entry), int);
-                        var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
-                        writeLocalDset(file_id, dset_name, localFlat, dims, int);
+                        var localFlat: [0..#flat.size] int;
+                        ref olda = flat.a;
+                        localizeData(localFlat, olda);
+                        
+                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), dims, int);
                         dtype = getHDF5Type(int);
                     }
                     when DType.UInt64 {
                         var flat = toSymEntry(toGenSymEntry(entry), uint);
-                        var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
-                        writeLocalDset(file_id, dset_name, localFlat, dims, uint);
+                        var localFlat: [0..#flat.size] uint;
+                        ref olda = flat.a;
+                        localizeData(localFlat, olda);
+                        
+                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), dims, uint);
                         dtype = getHDF5Type(uint);
                     }
                     when DType.Float64 {
                         var flat = toSymEntry(toGenSymEntry(entry), real);
-                        var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
-                        writeLocalDset(file_id, dset_name, localFlat, dims, real);
+                        var localFlat: [0..#flat.size] real;
+                        ref olda = flat.a;
+                        localizeData(localFlat, olda);
+                        
+                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), dims, real);
                         dtype = getHDF5Type(real);
                     }
                     when DType.Bool {
                         var flat = toSymEntry(toGenSymEntry(entry), bool);
-                        var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
-                        writeLocalDset(file_id, dset_name, localFlat, dims, bool);
+                        var localFlat: [0..#flat.size] bool;
+                        ref olda = flat.a;
+                        localizeData(localFlat, olda);
+                        
+                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), dims, bool);
                         dtype = C_HDF5.H5T_NATIVE_HBOOL;
                     }
                     otherwise {
@@ -606,26 +632,38 @@ module HDF5Msg {
                 select entryDtype {
                     when DType.Int64 {
                         var flat = toSymEntry(toGenSymEntry(entry), int);
-                        var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
-                        writeLocalDset(file_id, dset_name, localFlat, flat.size, int);
+                        var localFlat: [0..#flat.size] int;
+                        ref olda = flat.a;
+                        localizeData(localFlat, olda);
+
+                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), flat.size, int);
                         dtype = getHDF5Type(int);
                     }
                     when DType.UInt64 {
                         var flat = toSymEntry(toGenSymEntry(entry), uint);
-                        var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
-                        writeLocalDset(file_id, dset_name, localFlat, flat.size, uint);
+                        var localFlat: [0..#flat.size] uint;
+                        ref olda = flat.a;
+                        localizeData(localFlat, olda);
+
+                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), flat.size, uint);
                         dtype = getHDF5Type(uint);
                     }
                     when DType.Float64 {
                         var flat = toSymEntry(toGenSymEntry(entry), real);
-                        var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
-                        writeLocalDset(file_id, dset_name, localFlat, flat.size, real);
+                        var localFlat: [0..#flat.size] real;
+                        ref olda = flat.a;
+                        localizeData(localFlat, olda);
+
+                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), flat.size, real);
                         dtype = getHDF5Type(real);
                     }
                     when DType.Bool {
                         var flat = toSymEntry(toGenSymEntry(entry), bool);
-                        var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
-                        writeLocalDset(file_id, dset_name, localFlat, flat.size, bool);
+                        var localFlat: [0..#flat.size] bool;
+                        ref olda = flat.a;
+                        localizeData(localFlat, olda);
+
+                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), flat.size, bool);
                         dtype = C_HDF5.H5T_NATIVE_HBOOL;
                     }
                     otherwise {
@@ -796,15 +834,19 @@ module HDF5Msg {
                 validateGroup(file_id, f, group);
 
                 //localize values and write dataset
-                var localVals = new lowLevelLocalizingSlice(segString.values.a, 0..#segString.values.size);
+                var localVals: [0..#segString.values.size] uint(8);
+                ref olda = segString.values.a;
+                localizeData(localVals, olda);
                 var val_dims: C_HDF5.hsize_t = segString.values.size:C_HDF5.hsize_t;
-                C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, val_dims, getHDF5Type(uint(8)), localVals.ptr);
+                C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, val_dims, getHDF5Type(uint(8)), c_ptrTo(localVals));
                 
                 if (writeOffsets) {
                     //localize offsets and write dataset
-                    var localOffsets = new lowLevelLocalizingSlice(segString.offsets.a, 0..#segString.size);
+                    var localOffsets: [0..#segString.offsets.size] int;
+                    ref oldo = segString.offsets.a;
+                    localizeData(localOffsets, oldo);
                     var off_dims: C_HDF5.hsize_t = segString.offsets.size:C_HDF5.hsize_t;
-                    C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1:c_int, off_dims, getHDF5Type(int), localOffsets.ptr);
+                    C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1:c_int, off_dims, getHDF5Type(int), c_ptrTo(localOffsets));
                 }
                 writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8)));
                 C_HDF5.H5Fclose(file_id);
