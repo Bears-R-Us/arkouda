@@ -160,7 +160,7 @@ def coargsort(
             raise ValueError("All pdarrays, Strings, or Categoricals must be of the same size")
 
     if size == 0:
-        return zeros(0, dtype=int if a.dtype=='str' else arrays[0].dtype)
+        return zeros(0, dtype=int if a.dtype == 'str' else arrays[0].dtype)
 
     repMsg = generic_msg(
         cmd="coargsort",

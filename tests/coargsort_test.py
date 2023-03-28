@@ -198,7 +198,7 @@ class CoargsortTest(ArkoudaTest):
         self.assertEqual(0, len(ak.coargsort([empty_pda])))
         self.assertEqual(0, len(ak.coargsort([empty_str])))
         self.assertEqual(0, len(ak.coargsort([empty_cat])))
-        
+
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Check coargsort correctness.")
