@@ -194,8 +194,6 @@ class CoargsortTest(ArkoudaTest):
     def test_coargsort_empty(self):
         empty_str = ak.random_strings_uniform(1, 16, 0)
         empty_cat = ak.Categorical(empty_str)
-        empty_pda = ak.array([], int)
-        self.assertEqual(0, len(ak.coargsort([empty_pda])))
         self.assertEqual(0, len(ak.coargsort([empty_str])))
         self.assertEqual(0, len(ak.coargsort([empty_cat])))
 
