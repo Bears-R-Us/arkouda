@@ -1322,8 +1322,19 @@ class GroupBy:
             The unique keys, in grouped order
         result : (list of) SegArray
             The unique values of each group
+
+        Raises
+        ------
+        TypeError
+            Raised if values is or contains Strings or Categorical
         """
         from arkouda.segarray import SegArray
+        from arkouda import Categorical
+
+        if isinstance(values, (Strings, Categorical)) or (
+            isinstance(values, Sequence) and any([isinstance(v, (Strings, Categorical)) for v in values])
+        ):
+            raise TypeError("Groupby.unique not supported on Strings or Categorical")
 
         togroup = self._nested_grouping_helper(values)
         # Group to unique (key, value) pairs
