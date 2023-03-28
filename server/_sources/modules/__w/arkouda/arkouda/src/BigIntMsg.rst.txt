@@ -23,3 +23,7 @@ or
 
 .. function:: proc bigintToUintArraysMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
 
+.. function:: proc getMaxBitsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc setMaxBitsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+

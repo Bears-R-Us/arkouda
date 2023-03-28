@@ -179,7 +179,7 @@ Functions
    True
 
 
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 
@@ -187,6 +187,8 @@ Functions
    :type size: int_scalars
    :param dtype: Type of resulting array, default float64
    :type dtype: all_scalars
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
 
    :returns: Zeros of the requested size and dtype
    :rtype: pdarray
@@ -208,7 +210,7 @@ Functions
    array([False, False, False, False, False])
 
 
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -216,6 +218,8 @@ Functions
    :type size: int_scalars
    :param dtype: Resulting array type, default float64
    :type dtype: Union[float64, int64, bool]
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
 
    :returns: Ones of the requested size and dtype
    :rtype: pdarray
@@ -237,7 +241,7 @@ Functions
    array([True, True, True, True, True])
 
 
-.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: arkouda.dtypes.int_scalars, dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: arkouda.dtypes.int_scalars, dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with fill_value.
 
@@ -247,6 +251,8 @@ Functions
    :type fill_value: int_scalars
    :param dtype: Resulting array type, default float64
    :type dtype: all_scalars
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
 
    :returns: array of the requested size and dtype filled with fill_value
    :rtype: pdarray
@@ -390,6 +396,8 @@ Functions
    :type stride: int_scalars, optional
    :param dtype: The target dtype to cast values to
    :type dtype: np.dtype, type, or str
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
 
    :returns: Integers from start (inclusive) to stop (exclusive) by stride
    :rtype: pdarray, dtype
