@@ -43,10 +43,11 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
     elif dtype == "str":
         a = ak.random_strings_uniform(1, 16, N, seed=seed)
 
-    writetimes = []
-    for i in range(trials):
-        for comp in comps:
-            if comp in COMPRESSIONS:
+    times = {}
+    for comp in comps:
+        if comp in COMPRESSIONS:
+            writetimes = []
+            for i in range(trials):
                 for j in range(numfiles):
                     start = time.time()
                     a.to_hdf(f"{path}{j:04}") if not parquet else a.to_parquet(
@@ -54,12 +55,13 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
                     )
                     end = time.time()
                     writetimes.append(end - start)
-    avgwrite = sum(writetimes) / trials
-
-    print("write Average time = {:.4f} sec".format(avgwrite))
+            times[comp] = sum(writetimes) / trials
 
     nb = a.size * a.itemsize * numfiles
-    print("write Average rate = {:.2f} GiB/sec".format(nb / 2**30 / avgwrite))
+    for comp in comps:
+        if comp in COMPRESSIONS:
+            print("Write Average time, Compression: {} = {:.4f} sec".format(comp, times[comp]))
+            print("Write Average rate, Compression: {}  = {:.2f} GiB/sec".format(comp, nb / 2**30 / times[comp]))
 
 
 def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
