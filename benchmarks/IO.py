@@ -60,8 +60,8 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
     nb = a.size * a.itemsize * numfiles
     for comp in comps:
         if comp in COMPRESSIONS:
-            print("Write Average time, Compression: {} = {:.4f} sec".format(comp, times[comp]))
-            print("Write Average rate, Compression: {}  = {:.2f} GiB/sec".format(comp, nb / 2**30 / times[comp]))
+            print("write Average time {} = {:.4f} sec".format(comp, times[comp]))
+            print("write Average rate {} = {:.2f} GiB/sec".format(comp, nb / 2**30 / times[comp]))
 
 
 def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
