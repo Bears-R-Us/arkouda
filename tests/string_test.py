@@ -321,7 +321,6 @@ if __name__ == "__main__":
 
 
 class StringTest(ArkoudaTest):
-
     Gremlins = namedtuple(
         "Gremlins", "gremlins_base_words gremlins_strings gremlins_test_strings gremlins_cat"
     )
@@ -581,6 +580,29 @@ class StringTest(ArkoudaTest):
         expected = ak.arange(40) >= 30
         self.assertListEqual(istitle.to_list(), expected.to_list())
 
+    def test_where(self):
+        revs = ak.arange(10) % 2 == 0
+        s1 = ak.array([f"str {i}" for i in range(10)])
+
+        # SegString and str literal
+        str_lit = "str 1222222"
+        ans = ak.where(revs, s1, str_lit)
+        self.assertListEqual(s1[revs].to_list(), ans[revs].to_list())
+        for s in ans[~revs].to_list():
+            self.assertEqual(s, str_lit)
+
+        # str literal first
+        ans = ak.where(revs, str_lit, s1)
+        self.assertListEqual(s1[~revs].to_list(), ans[~revs].to_list())
+        for s in ans[revs].to_list():
+            self.assertEqual(s, str_lit)
+
+        # 2 SegStr
+        s2 = ak.array([f"str {i*2}" for i in range(10)])
+        ans = ak.where(revs, s1, s2)
+        self.assertListEqual(s1[revs].to_list(), ans[revs].to_list())
+        self.assertListEqual(s2[~revs].to_list(), ans[~revs].to_list())
+
     def test_concatenate(self):
         s1 = self._get_strings("string", 51)
         s2 = self._get_strings("string-two", 51)
@@ -640,43 +662,50 @@ class StringTest(ArkoudaTest):
         self.assertListEqual(["c", "d", "i"], p.to_list())
 
     def test_encoding(self):
-        idna_strings = ak.array(['Bücher.example','ドメイン.テスト', 'домен.испытание', 'Königsgäßchen'])
-        expected = ak.array(['xn--bcher-kva.example','xn--eckwd4c7c.xn--zckzah', 'xn--d1acufc.xn--80akhbyknj4f', 'xn--knigsgchen-b4a3dun'])
-        self.assertTrue((idna_strings.encode('idna') == expected).all())
-        
+        idna_strings = ak.array(["Bücher.example", "ドメイン.テスト", "домен.испытание", "Königsgäßchen"])
+        expected = ak.array(
+            [
+                "xn--bcher-kva.example",
+                "xn--eckwd4c7c.xn--zckzah",
+                "xn--d1acufc.xn--80akhbyknj4f",
+                "xn--knigsgchen-b4a3dun",
+            ]
+        )
+        self.assertTrue((idna_strings.encode("idna") == expected).all())
+
         # IDNA test
         a1 = ["münchen", "zürich"]
         s1 = ak.array(a1)
-        result = s1.encode('idna')
+        result = s1.encode("idna")
         self.assertListEqual([i.encode("idna").decode("ascii") for i in a1], result.to_list())
 
         # validate encoding with empty string
         e = ["", "abc", "", "123"]
         ak_e = ak.array(e)
-        result = ak_e.encode('idna')
+        result = ak_e.encode("idna")
         self.assertListEqual([i.encode("idna").decode("ascii") for i in e], result.to_list())
 
-        a2 = ['xn--mnchen-3ya', 'xn--zrich-kva', 'xn--zrich-boguscode', 'xn--!!', 'example.com']
+        a2 = ["xn--mnchen-3ya", "xn--zrich-kva", "xn--zrich-boguscode", "xn--!!", "example.com"]
         s2 = ak.array(a2)
-        result = s2.decode('idna')
+        result = s2.decode("idna")
         # using the below assertion due to a bug in `Strings.to_ndarray`. See issue #1828
         self.assertListEqual(["münchen", "zürich", "", "", "example.com"], result.to_list())
 
         a3 = ak.random_strings_uniform(1, 10, UNIQUE, characters="printable")
-        self.assertTrue((a3 == a3.encode('ascii').decode('ascii')).all())
+        self.assertTrue((a3 == a3.encode("ascii").decode("ascii")).all())
 
     def test_idna_utf16(self):
-        s = ak.array(['xn--mnchen-3ya', 'xn--zrich-kva', 'example.com'])
+        s = ak.array(["xn--mnchen-3ya", "xn--zrich-kva", "example.com"])
 
         # go from idna -> utf-16
-        result = s.encode(fromEncoding='idna', toEncoding='utf-16')
+        result = s.encode(fromEncoding="idna", toEncoding="utf-16")
 
         # roundtrip to return back to decoded values in UTF-8
-        decoded = result.decode(fromEncoding='utf-16', toEncoding="utf-8")
+        decoded = result.decode(fromEncoding="utf-16", toEncoding="utf-8")
         self.assertListEqual(["münchen", "zürich", "example.com"], decoded.to_list())
 
     def test_tondarray(self):
-        v1 = ["münchen","zürich", "abc", "123", ""]
+        v1 = ["münchen", "zürich", "abc", "123", ""]
         s1 = ak.array(v1)
         nd1 = s1.to_ndarray()
         self.assertListEqual(nd1.tolist(), v1)

@@ -1416,6 +1416,33 @@ module SegmentedMsg {
       }
     }
   }
+
+  proc segmentedWhereMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    var repMsg: string;
+    const segStrName = msgArgs.getValueOf("seg_str");
+    const other = msgArgs.getValueOf("other");
+    const conditionName = msgArgs.getValueOf("condition");
+    const newLensName = msgArgs.getValueOf("new_lens");
+    const isStrLiteral = msgArgs.get("is_str_literal").getBoolValue();
+    // check to make sure symbols defined
+    st.checkTable(segStrName);
+    st.checkTable(conditionName);
+    st.checkTable(newLensName);
+    if !isStrLiteral {
+      st.checkTable(other);
+    }
+
+    const strings = getSegString(segStrName, st);
+    ref condition = toSymEntry(getGenericTypedArrayEntry(conditionName, st), bool).a;
+    ref newLens = toSymEntry(getGenericTypedArrayEntry(newLensName, st), int).a;
+
+    var (off, val) = if isStrLiteral then strings.segStrWhere(other, condition, newLens) else strings.segStrWhere(getSegString(other, st), condition, newLens);
+    var retString = getSegString(off, val, st);
+    repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
+
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
   
   use CommandMap;
   registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
@@ -1440,4 +1467,5 @@ module SegmentedMsg {
   registerFunction("stringsToJSON", stringsToJSONMsg, getModuleName());
   registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
   registerFunction("segmentedSubstring", segmentedSubstringMsg, getModuleName());
+  registerFunction("segmentedWhere", segmentedWhereMsg, getModuleName());
 }
