@@ -514,7 +514,7 @@ def read_hdf(
     strict_types: bool = True,
     allow_errors: bool = False,
     calc_string_offsets: bool = False,
-    tag_data = False
+    tag_data=False,
 ) -> Union[
     pdarray,
     Strings,
@@ -612,7 +612,7 @@ def read_hdf(
                 strict_types=strict_types,
                 allow_errors=allow_errors,
                 calc_string_offsets=calc_string_offsets,
-                tag_data=tag_data
+                tag_data=tag_data,
             )[dset]
             for dset in datasets
         }
@@ -627,7 +627,7 @@ def read_hdf(
                 "calc_string_offsets": calc_string_offsets,
                 "dsets": datasets,
                 "filenames": filenames,
-                "tag_data": tag_data
+                "tag_data": tag_data,
             },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
@@ -736,7 +736,7 @@ def read_parquet(
                 datasets=dset,
                 strict_types=strict_types,
                 allow_errors=allow_errors,
-                tag_data=tag_data
+                tag_data=tag_data,
             )[dset]
             for dset in datasets
         }
@@ -750,7 +750,7 @@ def read_parquet(
                 "allow_errors": allow_errors,
                 "dsets": datasets,
                 "filenames": filenames,
-                "tag_data": tag_data
+                "tag_data": tag_data,
             },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
@@ -1645,12 +1645,14 @@ def read(
         raise RuntimeError(f"Invalid File Type detected, {ftype}")
 
 
-def read_tagged_data(filenames: Union[str, List[str]],
+def read_tagged_data(
+    filenames: Union[str, List[str]],
     datasets: Optional[Union[str, List[str]]] = None,
     iterative: bool = False,
     strictTypes: bool = True,
     allow_errors: bool = False,
-    calc_string_offsets=False,):
+    calc_string_offsets=False,
+):
     """
     Read datasets from files and tag each record to the file it was read from.
     File Type is determined automatically.
@@ -1683,7 +1685,7 @@ def read_tagged_data(filenames: Union[str, List[str]],
     ---------
     Read files and return data with tagging corresponding to the Categorical returned
     cat.codes will link the codes in data to the filename. Data will contain the code `Filename_Codes`
-    >>> data, cat = ak.read_tagged_data('path/name') # load HDF5 - processing determines file type not extension
+    >>> data, cat = ak.read_tagged_data('path/name')
     >>> data
     {'Filname_Codes': array([0 3 6 9 12]), 'col_name': array([0 0 0 1])}
     """
@@ -1694,35 +1696,40 @@ def read_tagged_data(filenames: Union[str, List[str]],
     # TODO - may want to not make this call if len > 1 because won't do anything on server if it is
     j_str = generic_msg(
         cmd="globExpansion",
-        args={
-            "file_count": len(filenames),
-            "filenames": filenames
-        },
+        args={"file_count": len(filenames), "filenames": filenames},
     )
     file_list = json.loads(j_str)
-    file_cat = Categorical(array(file_list))  # create a categorical from the ak.Strings representation of the file list
+    file_cat = Categorical(
+        array(file_list)
+    )  # create a categorical from the ak.Strings representation of the file list
 
     # TODO - Add parameter sent to server that triggers the filename mapping be added
     ftype = get_filetype(filenames)
     if ftype.lower() == "hdf5":
-        return read_hdf(
-            filenames,
-            datasets=datasets,
-            iterative=iterative,
-            strict_types=strictTypes,
-            allow_errors=allow_errors,
-            calc_string_offsets=calc_string_offsets,
-            tag_data=True
-        ), file_cat
+        return (
+            read_hdf(
+                filenames,
+                datasets=datasets,
+                iterative=iterative,
+                strict_types=strictTypes,
+                allow_errors=allow_errors,
+                calc_string_offsets=calc_string_offsets,
+                tag_data=True,
+            ),
+            file_cat,
+        )
     elif ftype.lower() == "parquet":
-        return read_parquet(
-            filenames,
-            datasets=datasets,
-            iterative=iterative,
-            strict_types=strictTypes,
-            allow_errors=allow_errors,
-            tag_data=True,
-        ), file_cat
+        return (
+            read_parquet(
+                filenames,
+                datasets=datasets,
+                iterative=iterative,
+                strict_types=strictTypes,
+                allow_errors=allow_errors,
+                tag_data=True,
+            ),
+            file_cat,
+        )
     elif ftype.lower() == "csv":
         raise RuntimeError("CSV does not support tagging data with file name associated.")
     else:
