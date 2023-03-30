@@ -1181,6 +1181,8 @@ Attributes
       :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
                 * **result** (*(list of) SegArray*) -- The unique values of each group
 
+      :raises TypeError: Raised if values is or contains Strings or Categorical
+
 
    .. py:method:: broadcast(values: arkouda.pdarrayclass.pdarray, permute: bool = True) -> arkouda.pdarrayclass.pdarray
 
@@ -7364,6 +7366,8 @@ Attributes
       :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
                 * **result** (*(list of) SegArray*) -- The unique values of each group
 
+      :raises TypeError: Raised if values is or contains Strings or Categorical
+
 
    .. py:method:: broadcast(values: arkouda.pdarrayclass.pdarray, permute: bool = True) -> arkouda.pdarrayclass.pdarray
 
@@ -11669,6 +11673,8 @@ Attributes
       :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
                 * **result** (*(list of) SegArray*) -- The unique values of each group
 
+      :raises TypeError: Raised if values is or contains Strings or Categorical
+
 
    .. py:method:: broadcast(values: arkouda.pdarrayclass.pdarray, permute: bool = True) -> arkouda.pdarrayclass.pdarray
 
@@ -15244,6 +15250,8 @@ Attributes
       :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
                 * **result** (*(list of) SegArray*) -- The unique values of each group
 
+      :raises TypeError: Raised if values is or contains Strings or Categorical
+
 
    .. py:method:: broadcast(values: arkouda.pdarrayclass.pdarray, permute: bool = True) -> arkouda.pdarrayclass.pdarray
 
@@ -18321,6 +18329,8 @@ Attributes
 
       :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
                 * **result** (*(list of) SegArray*) -- The unique values of each group
+
+      :raises TypeError: Raised if values is or contains Strings or Categorical
 
 
    .. py:method:: broadcast(values: arkouda.pdarrayclass.pdarray, permute: bool = True) -> arkouda.pdarrayclass.pdarray
