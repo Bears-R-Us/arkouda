@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import warnings
 from typing import cast as type_cast
-from typing import Optional
+from typing import Optional, Sequence
 
 import numpy as np  # type: ignore
 
@@ -1430,14 +1430,15 @@ class SegArray:
         from arkouda.pdarraysetops import in1d
 
         # convert to pdarray if more than 1 element
-        if isinstance(filter, list) or isinstance(filter, tuple):
+        if isinstance(filter, Sequence):
             filter = array(filter)
 
         # create boolean index for values to keep
-        if isinstance(filter, pdarray):
-            keep = in1d(self.values, filter, invert=True)
-        else:
-            keep = self.values != filter
+        keep = (
+            in1d(self.values, filter, invert=True)
+            if isinstance(filter, pdarray)
+            else self.values != filter
+        )
 
         new_vals = self.values[keep]
 
