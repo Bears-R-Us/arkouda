@@ -1411,6 +1411,43 @@ class SegArray:
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray.from_parts(segments, new_values[g.permutation])
 
+    def filter(self, filter, discard_empty: bool = False):
+        """
+        Filter values out of the SegArray object
+
+        Parameters
+        ----------
+        filter: pdarray, list, or value
+            The value/s to be filtered out of the SegArray
+        discard_empty: bool
+            Defaults to False. When True, empty segments are removed from
+            the return SegArray
+
+        Returns
+        --------
+        SegArray
+        """
+        from arkouda.pdarraysetops import in1d
+
+        # convert to pdarray if more than 1 element
+        if isinstance(filter, list) or isinstance(filter, tuple):
+            filter = array(filter)
+
+        # create boolean index for values to keep
+        if isinstance(filter, pdarray):
+            keep = in1d(self.values, filter, invert=True)
+        else:
+            keep = self.values != filter
+
+        new_vals = self.values[keep]
+
+        # recreate the segment boundaries
+        seg_cts = self.grouping.sum(keep)[1]
+        new_segs = cumsum(seg_cts) - seg_cts
+
+        new_segarray = SegArray.from_parts(new_segs, new_vals)
+        return new_segarray[new_segarray.non_empty] if discard_empty else new_segarray
+
     def register(self, user_defined_name):
         """
         Save this SegArray object by registering it to the Symbol Table using a defined name
