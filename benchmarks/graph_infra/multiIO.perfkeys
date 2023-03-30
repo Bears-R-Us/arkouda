@@ -1,14 +1,4 @@
-write Average time none =
-write Average rate none =
-write Average time snappy =
-write Average rate snappy =
-write Average time gzip =
-write Average rate gzip =
-write Average time brotli =
-write Average rate brotli =
-write Average time zstd =
-write Average rate zstd =
-write Average time lz4 =
-write Average rate lz4 =
+write Average time HDF5 =
+write Average rate HDF5 =
 read Average time =
 read Average rate =

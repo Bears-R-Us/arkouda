@@ -88,13 +88,13 @@ files: array_transfer.dat, array_transfer.dat
 graphtitle: Array Transfer Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: write Average time none =, write Average rate none =, write Average time snappy =, write Average rate snappy =, write Average time gzip =, write Average rate gzip =, write Average time brotli =, write Average rate brotli =, write Average time zstd =, write Average rate zstd =, write Average time lz4 =, write Average rate lz4 =, read Average time =, read Average rate =
+perfkeys: write Average time HDF5 =, write Average rate HDF5 =, read Average time =, read Average rate =
 graphkeys: Write GiB/s, Read GiB/s
 files: IO.dat, IO.dat
 graphtitle: IO Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: write Average time none =, write Average rate none =, write Average time snappy =, write Average rate snappy =, write Average time gzip =, write Average rate gzip =, write Average time brotli =, write Average rate brotli =, write Average time zstd =, write Average rate zstd =, write Average time lz4 =, write Average rate lz4 =, read Average time =, read Average rate =
+perfkeys: write Average time HDF5 =, write Average rate HDF5 =, read Average time =, read Average rate =
 graphkeys: Write GiB/s, Read GiB/s
 files: multiIO.dat, multiIO.dat
 graphtitle: HDF5 10 Files/Loc IO Performance

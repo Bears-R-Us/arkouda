@@ -44,24 +44,33 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
         a = ak.random_strings_uniform(1, 16, N, seed=seed)
 
     times = {}
-    for comp in comps:
-        if comp in COMPRESSIONS:
-            writetimes = []
-            for i in range(trials):
-                for j in range(numfiles):
-                    start = time.time()
-                    a.to_hdf(f"{path}{j:04}") if not parquet else a.to_parquet(
-                        f"{path}{comp}{j:04}", compression=None if comp == "none" else comp
-                    )
-                    end = time.time()
-                    writetimes.append(end - start)
-            times[comp] = sum(writetimes) / trials
+    if parquet:
+        for comp in comps:
+            if comp in COMPRESSIONS:
+                writetimes = []
+                for i in range(trials):
+                    for j in range(numfiles):
+                        start = time.time()
+                        a.to_parquet(
+                            f"{path}{comp}{j:04}", compression=None if comp == "none" else comp
+                        )
+                        end = time.time()
+                        writetimes.append(end - start)
+                times[comp] = sum(writetimes) / trials
+    else:
+        writetimes = []
+        for i in range(trials):
+            for j in range(numfiles):
+                start = time.time()
+                a.to_hdf(f"{path}{j:04}")
+                end = time.time()
+                writetimes.append(end - start)
+        times["HDF5"] = sum(writetimes) / trials
 
     nb = a.size * a.itemsize * numfiles
-    for comp in comps:
-        if comp in COMPRESSIONS:
-            print("write Average time {} = {:.4f} sec".format(comp, times[comp]))
-            print("write Average rate {} = {:.2f} GiB/sec".format(comp, nb / 2**30 / times[comp]))
+    for key in times.keys():
+        print("write Average time {} = {:.4f} sec".format(key, times[key]))
+        print("write Average rate {} = {:.2f} GiB/sec".format(key, nb / 2**30 / times[key]))
 
 
 def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
