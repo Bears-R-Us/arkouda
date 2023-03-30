@@ -18384,6 +18384,24 @@ was supplied to SegArray.save()</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.SegArray.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard_empty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.SegArray.filter" title="Permalink to this definition">#</a></dt>
+<dd><p>Filter values out of the SegArray object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filter</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>list</em><em>, or </em><em>value</em>) – The value/s to be filtered out of the SegArray</p></li>
+<li><p><strong>discard_empty</strong> (<em>bool</em>) – Defaults to False. When True, empty segments are removed from
+the return SegArray</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.SegArray.register">
 <span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.SegArray.register" title="Permalink to this definition">#</a></dt>
 <dd><p>Save this SegArray object by registering it to the Symbol Table using a defined name</p>
@@ -32653,6 +32671,7 @@ one or more of them</p></li>
 <li><a class="reference internal" href="#arkouda.SegArray.union"><code class="docutils literal notranslate"><span class="pre">SegArray.union()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.setdiff"><code class="docutils literal notranslate"><span class="pre">SegArray.setdiff()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.setxor"><code class="docutils literal notranslate"><span class="pre">SegArray.setxor()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.SegArray.filter"><code class="docutils literal notranslate"><span class="pre">SegArray.filter()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.register"><code class="docutils literal notranslate"><span class="pre">SegArray.register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.unregister"><code class="docutils literal notranslate"><span class="pre">SegArray.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.unregister_segarray_by_name"><code class="docutils literal notranslate"><span class="pre">SegArray.unregister_segarray_by_name()</span></code></a></li>

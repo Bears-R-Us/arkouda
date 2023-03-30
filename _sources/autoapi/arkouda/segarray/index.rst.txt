@@ -627,6 +627,19 @@ Functions
       ])
 
 
+   .. py:method:: filter(filter, discard_empty: bool = False)
+
+      Filter values out of the SegArray object
+
+      :param filter: The value/s to be filtered out of the SegArray
+      :type filter: pdarray, list, or value
+      :param discard_empty: Defaults to False. When True, empty segments are removed from
+                            the return SegArray
+      :type discard_empty: bool
+
+      :rtype: SegArray
+
+
    .. py:method:: register(user_defined_name)
 
       Save this SegArray object by registering it to the Symbol Table using a defined name
