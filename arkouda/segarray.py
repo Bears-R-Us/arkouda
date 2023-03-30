@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import warnings
 from typing import cast as type_cast
-from typing import Optional
+from typing import Optional, Sequence
 
 import numpy as np  # type: ignore
 
@@ -1410,6 +1410,44 @@ class SegArray:
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray.from_parts(segments, new_values[g.permutation])
+
+    def filter(self, filter, discard_empty: bool = False):
+        """
+        Filter values out of the SegArray object
+
+        Parameters
+        ----------
+        filter: pdarray, list, or value
+            The value/s to be filtered out of the SegArray
+        discard_empty: bool
+            Defaults to False. When True, empty segments are removed from
+            the return SegArray
+
+        Returns
+        --------
+        SegArray
+        """
+        from arkouda.pdarraysetops import in1d
+
+        # convert to pdarray if more than 1 element
+        if isinstance(filter, Sequence):
+            filter = array(filter)
+
+        # create boolean index for values to keep
+        keep = (
+            in1d(self.values, filter, invert=True)
+            if isinstance(filter, pdarray)
+            else self.values != filter
+        )
+
+        new_vals = self.values[keep]
+
+        # recreate the segment boundaries
+        seg_cts = self.grouping.sum(keep)[1]
+        new_segs = cumsum(seg_cts) - seg_cts
+
+        new_segarray = SegArray.from_parts(new_segs, new_vals)
+        return new_segarray[new_segarray.non_empty] if discard_empty else new_segarray
 
     def register(self, user_defined_name):
         """

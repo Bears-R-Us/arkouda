@@ -627,3 +627,54 @@ class SegArrayTest(ArkoudaTest):
         self.assertEqual(segarr.__eq__(ak.array([1])), NotImplemented)
         self.assertTrue(segarr.__eq__(segarr).all())
         self.assertTrue(segarr.non_empty_count == 3)
+
+    def test_filter(self):
+        v = ak.randint(0, 5, 100)
+        s = ak.arange(0, 100, 2)
+        sa = ak.SegArray.from_parts(s, v)
+
+        # test filtering single value retain empties
+        filter_result = sa.filter(2, discard_empty=False)
+        self.assertEqual(sa.size, filter_result.size)
+        #ensure 2 does not exist in return values
+        self.assertTrue((filter_result.values != 2).all())
+        for i in range(sa.size):
+            self.assertListEqual(sa[i][(sa[i] != 2)].tolist(), filter_result[i].tolist())
+
+        # test list filter
+        filter_result = sa.filter([1, 2], discard_empty=False)
+        self.assertEqual(sa.size, filter_result.size)
+        # ensure 1 & 2 do not exist in return values
+        self.assertTrue((filter_result.values != 1).all())
+        self.assertTrue((filter_result.values != 2).all())
+        for i in range(sa.size):
+            x = ak.in1d(ak.array(sa[i]), ak.array([1, 2]), invert=True)
+            v = ak.array(sa[i])[x]
+            self.assertListEqual(v.to_list(), filter_result[i].tolist())
+
+        # test pdarray filter
+        filter_result = sa.filter(ak.array([1, 2]), discard_empty=False)
+        self.assertEqual(sa.size, filter_result.size)
+        # ensure 1 & 2 do not exist in return values
+        self.assertTrue((filter_result.values != 1).all())
+        self.assertTrue((filter_result.values != 2).all())
+        for i in range(sa.size):
+            x = ak.in1d(ak.array(sa[i]), ak.array([1, 2]), invert=True)
+            v = ak.array(sa[i])[x]
+            self.assertListEqual(v.to_list(), filter_result[i].tolist())
+
+        # test dropping empty segments
+        filter_result = sa.filter(ak.array([1, 2]), discard_empty=True)
+        # ensure no empty segments
+        self.assertTrue((filter_result.lengths != 0).all())
+        # ensure 2 does not exist in return values
+        self.assertTrue((filter_result.values != 2).all())
+        offset = 0
+        for i in range(sa.size):
+            x = ak.in1d(ak.array(sa[i]), ak.array([1, 2]), invert=True)
+            v = ak.array(sa[i])[x]
+            if v.size != 0:
+                self.assertListEqual(v.to_list(), filter_result[i-offset].tolist())
+            else:
+                offset += 1
+
