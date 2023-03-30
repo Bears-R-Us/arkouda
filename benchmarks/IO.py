@@ -73,7 +73,10 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
         print("write Average rate {} = {:.2f} GiB/sec".format(key, nb / 2**30 / times[key]))
 
 
-def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
+def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet, comps=None):
+    if comps is None or comps == [""]:
+        comps = COMPRESSIONS
+
     if not parquet:
         print(">>> arkouda HDF5 {} read".format(dtype))
     else:
@@ -83,18 +86,31 @@ def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
     print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
     a = ak.array([])
 
-    readtimes = []
-    for i in range(trials):
-        start = time.time()
-        a = ak.read_hdf(path + "*") if not parquet else ak.read_parquet(path + "*")
-        end = time.time()
-        readtimes.append(end - start)
-    avgread = sum(readtimes) / trials
+    times = {}
+    if parquet:
+        for comp in COMPRESSIONS:
+            if comp in comps:
+                readtimes = []
+                for i in range(trials):
+                    start = time.time()
+                    a = ak.read_parquet(path + comp + "*")
+                    end = time.time()
+                    readtimes.append(end - start)
+                times[comp] = sum(readtimes) / trials
 
-    print("read Average time = {:.4f} sec".format(avgread))
+    else:
+        readtimes = []
+        for i in range(trials):
+            start = time.time()
+            a = ak.read_hdf(path + "*")
+            end = time.time()
+            readtimes.append(end - start)
+        times["HDF5"] = sum(readtimes) / trials
 
     nb = a.size * a.itemsize
-    print("read Average rate = {:.2f} GiB/sec".format(nb / 2**30 / avgread))
+    for key in times.keys():
+        print("read Average time {} = {:.4f} sec".format(key, times[key]))
+        print("read Average rate {} = {:.2f} GiB/sec".format(key, nb / 2**30 / times[key]))
 
 
 def remove_files(path):
@@ -236,7 +252,7 @@ if __name__ == "__main__":
         )
     elif args.only_read:
         time_ak_read(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet
+            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet, comp_types
         )
     else:
         time_ak_write(
@@ -250,7 +266,7 @@ if __name__ == "__main__":
             comp_types,
         )
         time_ak_read(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet
+            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet, comp_types
         )
         remove_files(args.path)
 

@@ -109,7 +109,7 @@ if __name__ == "__main__":
             comp_types,
         )
     elif args.only_read:
-        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True)
+        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True, comp_types)
     elif args.only_delete:
         remove_files(args.path)
     else:
@@ -123,7 +123,7 @@ if __name__ == "__main__":
             True,
             comp_types,
         )
-        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True)
+        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True, comp_types)
         remove_files(args.path)
 
     sys.exit(0)
