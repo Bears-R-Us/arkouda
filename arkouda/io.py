@@ -11,6 +11,7 @@ import arkouda.array_view
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.pdarraycreation import array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 
@@ -25,6 +26,7 @@ __all__ = [
     "read_parquet",
     "read_csv",
     "read",
+    "read_tagged_data",
     "import_data",
     "export",
     "to_hdf",
@@ -512,6 +514,7 @@ def read_hdf(
     strict_types: bool = True,
     allow_errors: bool = False,
     calc_string_offsets: bool = False,
+    tag_data = False
 ) -> Union[
     pdarray,
     Strings,
@@ -545,6 +548,9 @@ def read_hdf(
         Default False, if True this will tell the server to calculate the
         offsets/segments array on the server versus loading them from HDF5 files.
         In the future this option may be set to True as the default.
+    tagData: bool
+        Default False, if True tag the data with the code associated with the filename
+        that the data was pulled from.
 
     Returns
     -------
@@ -580,6 +586,10 @@ def read_hdf(
     and read all of them. Use ``get_datasets`` to show the names of datasets
     to HDF5 files.
 
+    See Also
+    ---------
+    read_tagged_data
+
     Examples
     --------
     >>>
@@ -593,6 +603,8 @@ def read_hdf(
     datasets = _prep_datasets(filenames, datasets, allow_errors)
 
     if iterative:
+        if tag_data:
+            raise RuntimeError("Cannot tag data with iterative read.")
         return {
             dset: read_hdf(
                 filenames,
@@ -600,6 +612,7 @@ def read_hdf(
                 strict_types=strict_types,
                 allow_errors=allow_errors,
                 calc_string_offsets=calc_string_offsets,
+                tag_data=tag_data
             )[dset]
             for dset in datasets
         }
@@ -614,6 +627,7 @@ def read_hdf(
                 "calc_string_offsets": calc_string_offsets,
                 "dsets": datasets,
                 "filenames": filenames,
+                "tag_data": tag_data
             },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
@@ -627,6 +641,7 @@ def read_parquet(
     iterative: bool = False,
     strict_types: bool = True,
     allow_errors: bool = False,
+    tag_data: bool = False,
 ) -> Union[
     pdarray,
     Strings,
@@ -656,6 +671,9 @@ def read_parquet(
         Default False, if True will allow files with read errors to be skipped
         instead of failing.  A warning will be included in the return containing
         the total number of files skipped due to failure and up to 10 filenames.
+    tagData: bool
+        Default False, if True tag the data with the code associated with the filename
+        that the data was pulled from.
 
     Returns
     -------
@@ -694,6 +712,10 @@ def read_parquet(
     Parquet always recomputes offsets at this time
     This will need to be updated once parquets workflow is updated
 
+    See Also
+    ---------
+    read_tagged_data
+
     Examples
     --------
     Read without file Extension
@@ -706,12 +728,15 @@ def read_parquet(
     datasets = _prep_datasets(filenames, datasets)
 
     if iterative:
+        if tag_data:
+            raise RuntimeError("Cannot tag data with iterative read.")
         return {
             dset: read_parquet(
                 filenames,
                 datasets=dset,
                 strict_types=strict_types,
                 allow_errors=allow_errors,
+                tag_data=tag_data
             )[dset]
             for dset in datasets
         }
@@ -725,6 +750,7 @@ def read_parquet(
                 "allow_errors": allow_errors,
                 "dsets": datasets,
                 "filenames": filenames,
+                "tag_data": tag_data
             },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
@@ -1615,5 +1641,89 @@ def read(
         return read_csv(
             filenames, datasets=datasets, column_delim=column_delim, allow_errors=allow_errors
         )
+    else:
+        raise RuntimeError(f"Invalid File Type detected, {ftype}")
+
+
+def read_tagged_data(filenames: Union[str, List[str]],
+    datasets: Optional[Union[str, List[str]]] = None,
+    iterative: bool = False,
+    strictTypes: bool = True,
+    allow_errors: bool = False,
+    calc_string_offsets=False,):
+    """
+    Read datasets from files and tag each record to the file it was read from.
+    File Type is determined automatically.
+
+    Parameters
+    ----------
+    filenames : list or str
+        Either a list of filenames or shell expression
+    datasets : list or str or None
+        (List of) name(s) of dataset(s) to read (default: all available)
+    iterative : bool
+        Iterative (True) or Single (False) function call(s) to server
+    strictTypes: bool
+        If True (default), require all dtypes of a given dataset to have the
+        same precision and sign. If False, allow dtypes of different
+        precision and sign across different files. For example, if one
+        file contains a uint32 dataset and another contains an int64
+        dataset with the same name, the contents of both will be read
+        into an int64 pdarray.
+    allow_errors: bool
+        Default False, if True will allow files with read errors to be skipped
+        instead of failing.  A warning will be included in the return containing
+        the total number of files skipped due to failure and up to 10 filenames.
+    calc_string_offsets: bool
+        Default False, if True this will tell the server to calculate the
+        offsets/segments array on the server versus loading them from HDF5 files.
+        In the future this option may be set to True as the default.
+
+    Examples
+    ---------
+    Read files and return data with tagging corresponding to the Categorical returned
+    cat.codes will link the codes in data to the filename. Data will contain the code `Filename_Codes`
+    >>> data, cat = ak.read_tagged_data('path/name') # load HDF5 - processing determines file type not extension
+    >>> data
+    {'Filname_Codes': array([0 3 6 9 12]), 'col_name': array([0 0 0 1])}
+    """
+    if isinstance(filenames, str):
+        filenames = [filenames]
+
+    # handle glob expansion
+    # TODO - may want to not make this call if len > 1 because won't do anything on server if it is
+    j_str = generic_msg(
+        cmd="globExpansion",
+        args={
+            "file_count": len(filenames),
+            "filenames": filenames
+        },
+    )
+    file_list = json.loads(j_str)
+    file_cat = Categorical(array(file_list))  # create a categorical from the ak.Strings representation of the file list
+
+    # TODO - Add parameter sent to server that triggers the filename mapping be added
+    ftype = get_filetype(filenames)
+    if ftype.lower() == "hdf5":
+        return read_hdf(
+            filenames,
+            datasets=datasets,
+            iterative=iterative,
+            strict_types=strictTypes,
+            allow_errors=allow_errors,
+            calc_string_offsets=calc_string_offsets,
+            tag_data=True
+        ), file_cat
+    elif ftype.lower() == "parquet":
+        return read_parquet(
+            filenames,
+            datasets=datasets,
+            iterative=iterative,
+            strict_types=strictTypes,
+            allow_errors=allow_errors,
+            tag_data=True,
+        ), file_cat
+    elif ftype.lower() == "csv":
+        raise RuntimeError("CSV does not support tagging data with file name associated.")
     else:
         raise RuntimeError(f"Invalid File Type detected, {ftype}")

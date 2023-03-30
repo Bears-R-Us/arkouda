@@ -340,4 +340,49 @@ module FileIO {
         }
       }
     }
+
+    proc globExpansionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+      var nfiles = msgArgs.get("file_count").getIntValue();
+      var filelist: [0..#nfiles] string;
+      
+      // attempt to read file name list
+      try {
+          filelist = msgArgs.get("filenames").getList(nfiles);
+      } catch {
+          // limit length of file names to 2000 chars
+          var n: int = 1000;
+          var jsonfiles = msgArgs.getValueOf("filenames");
+          var files: string = if jsonfiles.size > 2*n then jsonfiles[0..#n]+'...'+jsonfiles[jsonfiles.size-n..#n] else jsonfiles;
+          var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, files);
+          fioLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+
+      var filedom = filelist.domain;
+      var filenames: [filedom] string;
+
+      if filelist.size == 1 {
+          if filelist[0].strip().size == 0 {
+              var errorMsg = "filelist was empty.";
+              fioLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+          var tmp = glob(filelist[0]);
+          fioLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "glob expanded %s to %i files".format(filelist[0], tmp.size));
+          if tmp.size == 0 {
+              var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
+              fioLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+          // Glob returns filenames in weird order. Sort for consistency
+          sort(tmp);
+          filedom = tmp.domain;
+          filenames = tmp;
+      } else {
+          // assumes that we are providing 
+          filenames = filelist;
+      }
+      return new MsgTuple("%jt".format(filenames), MsgType.NORMAL);
+    }
 }
