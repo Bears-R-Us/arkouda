@@ -88,26 +88,26 @@ files: array_transfer.dat, array_transfer.dat
 graphtitle: Array Transfer Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: write Average rate =, read Average rate =
+perfkeys: write Average rate HDF5 =, read Average rate HDF5 =
 graphkeys: Write GiB/s, Read GiB/s
 files: IO.dat, IO.dat
 graphtitle: IO Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: write Average rate =, read Average rate =
+perfkeys: write Average rate HDF5 =, read Average rate HDF5 =
 graphkeys: Write GiB/s, Read GiB/s
 files: multiIO.dat, multiIO.dat
 graphtitle: HDF5 10 Files/Loc IO Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: write Average rate =, read Average rate =
-graphkeys: Write GiB/s, Read GiB/s
+perfkeys: write Average rate none =, write Average rate snappy =, write Average rate gzip =, write Average rate brotli =, write Average rate zstd =, write Average rate lz4 =, read Average rate none =, read Average rate snappy =, read Average rate gzip =, read Average rate brotli =, read Average rate zstd =, read Average rate lz4 =
+graphkeys: Write no compression GiB/s, Write snappy GiB/s, Write gzip GiB/s, Write brotli GiB/s, Write zstd GiB/s, Write lz4 GiB/s, Read no compression GiB/s, Read snappy GiB/s, Read gzip GiB/s, Read brotli GiB/s, Read zstd GiB/s, Read lz4 GiB/s
 files: parquetIO.dat, parquetIO.dat
 graphtitle: Parquet IO Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: write Average rate =, read Average rate =
-graphkeys: Write GiB/s, Read GiB/s
+perfkeys: write Average rate none =, write Average rate snappy =, write Average rate gzip =, write Average rate brotli =, write Average rate zstd =, write Average rate lz4 =, read Average rate none =, read Average rate snappy =, read Average rate gzip =, read Average rate brotli =, read Average rate zstd =, read Average rate lz4 =
+graphkeys: Write no compression GiB/s, Write snappy GiB/s, Write gzip GiB/s, Write brotli GiB/s, Write zstd GiB/s, Write lz4 GiB/s, Read no compression GiB/s, Read snappy GiB/s, Read gzip GiB/s, Read brotli GiB/s, Read zstd GiB/s, Read lz4 GiB/s
 files: parquetMultiIO.dat, parquetMultiIO.dat
 graphtitle: Parquet 10 Files/Loc IO Performance
 ylabel: Performance (GiB/s)
