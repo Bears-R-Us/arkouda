@@ -517,7 +517,10 @@ class Datetime(_AbstractBaseTime):
 
     @property
     def date(self):
-        self._ensure_components()
+        # no need to call _ensure_components for the date
+        # if _date has been set, return it. Otherwise set it first
+        if not hasattr(self, "_date"):
+            self._date = self.floor("d")
         return self._date
 
     @property
