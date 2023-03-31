@@ -1714,18 +1714,7 @@ module HDF5Msg {
         return (dset, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes));
     }
 
-    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {
-        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "Filename: %jt, dset: %s, dataclass: %i, bytesize: %i, isSigned: %i, validFiles: %jt".format(
-                filenames,
-                dset,
-                dataclass,
-                bytesize,
-                isSigned,
-                validFiles
-            )
-        );
-        
+    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {        
         var valSubdoms: [fD] domain(1);
         var segSubdoms: [fD] domain(1);
         var skips = new set(string);
@@ -1738,7 +1727,6 @@ module HDF5Msg {
         var segDist = makeDistArray(nSeg, int);
         read_files_into_distributed_array(segDist, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
         fixupSegBoundaries(segDist, segSubdoms, valSubdoms);
-        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Segment Values: %jt".format(segDist));
 
         var rtnMap: map(string, string) = new map(string, string);
 
@@ -1749,7 +1737,6 @@ module HDF5Msg {
                     // Load the values
                     var valDist = makeDistArray(len, int);
                     read_files_into_distributed_array(valDist, valSubdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
-                    h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Values Entry Values: %jt".format(valDist));
 
                     if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
                         var boolDist = makeDistArray(len, bool);
@@ -1763,7 +1750,6 @@ module HDF5Msg {
                 } else {
                     var valDist = makeDistArray(len, uint);
                     read_files_into_distributed_array(valDist, valSubdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
-                    h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Values Entry Values: %jt".format(valDist));
 
                     if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
                         var boolDist = makeDistArray(len, bool);
@@ -2087,7 +2073,6 @@ module HDF5Msg {
                     validFiles[i] = false;
                 }
             }
-
             
             // identify the index of the first valid file
             var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
