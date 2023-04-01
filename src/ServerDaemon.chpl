@@ -393,7 +393,7 @@ module ServerDaemon {
             }
         }
 
-        proc processMetrics(user: string, cmd: string, args: MessageArgs, elapsedTime: real) throws {
+        proc processMetrics(user: string, cmd: string, args: MessageArgs, elapsedTime: real, memUsed: uint) throws {
             proc getArrayParameterObj(args: MessageArgs) throws {
                 var obj : ParameterObj;
 
@@ -425,12 +425,28 @@ module ServerDaemon {
                           "Set Response Time cmd: %s time %t".format(cmd,elapsedTime));
             
             // Add response time to the avg response time for the cmd
-            avgResponseTimeMetrics.add(cmd,elapsedTime);
+            avgResponseTimeMetrics.add(cmd,elapsedTime:real);
+            
+            // Add total response time
+            totalResponseTimeMetrics.add(cmd,elapsedTime:real);
+            
+            // Add total memory used
+            totalMemoryUsedMetrics.add(cmd,memUsed:real);
             
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
                           "Added Avg Response Time cmd: %s time %t".format(cmd,elapsedTime));
+                          
+            sdLogger.debug(getModuleName(),
+                          getRoutineName(),
+                          getLineNumber(),
+                          "Updated Total Response Time cmd: %s time %t".format(cmd,totalResponseTimeMetrics.get(cmd)));
+                          
+            sdLogger.debug(getModuleName(),
+                          getRoutineName(),
+                          getLineNumber(),
+                          "Updated Total Memory Used (MB) cmd: %s memory %t".format(cmd,totalMemoryUsedMetrics.get(cmd)));    
 
             var apo = getArrayParameterObj(args);
 
@@ -665,9 +681,10 @@ module ServerDaemon {
                         "bytes of memory %t pct of max memory %t%% used after %s command".format(memUsed,
                                                                                                  pctMemUsed,
                                                                                                  cmd));
-                }
-                if metricsEnabled() {
-                    processMetrics(user, cmd, msgArgs, elapsedTime);
+
+                    if metricsEnabled() {
+                        processMetrics(user, cmd, msgArgs, elapsedTime, memUsed);
+                    }
                 }
             } catch (e: ErrorWithMsg) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string

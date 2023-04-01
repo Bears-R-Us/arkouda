@@ -14,7 +14,8 @@ module MetricsMsg {
 
     use ArkoudaMapCompat;
 
-    enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,SYSTEM,SERVER,SERVER_INFO};
+    enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,TOTAL_RESPONSE_TIME,
+                        TOTAL_MEMORY_USED,SYSTEM,SERVER,SERVER_INFO};
     enum MetricScope{GLOBAL,LOCALE,REQUEST,USER};
     enum MetricDataType{INT,REAL};
 
@@ -31,6 +32,10 @@ module MetricsMsg {
     var avgResponseTimeMetrics = new AverageMeasurementTable();
     
     var responseTimeMetrics = new MeasurementTable();
+    
+    var totalResponseTimeMetrics = new MeasurementTable();
+    
+    var totalMemoryUsedMetrics = new MeasurementTable();
 
     var users = new Users();
     
@@ -181,6 +186,10 @@ module MetricsMsg {
             return this.measurements.size;
         }
 
+        proc add(metric: string, measurement: real) throws {
+            this.measurements.set(metric,(this.get(metric) + measurement));
+        }
+
         iter items() {
           for (key, val) in zip(measurements.keys(), measurements.values()) do
             yield(key, val);
@@ -219,7 +228,7 @@ module MetricsMsg {
             return value;
         }
         
-        proc add(metric: string, measurement) throws {
+        override proc add(metric: string, measurement: real) throws {
             var numMeasurements = getNumMeasurements(metric);
             var measurementTotal = getMeasurementTotal(metric);
 
@@ -298,6 +307,12 @@ module MetricsMsg {
             metrics.append(metric);
         }        
         for metric in getAvgResponseTimeMetrics() {
+            metrics.append(metric);
+        }
+        for metric in getTotalResponseTimeMetrics() {
+            metrics.append(metric);
+        }
+        for metric in getTotalMemoryUsedMetrics() {
             metrics.append(metric);
         }
         for metric in getSystemMetrics() {
@@ -387,6 +402,29 @@ module MetricsMsg {
         return metrics;
     }
 
+    proc getTotalResponseTimeMetrics() throws {
+        var metrics = new list(owned Metric?);
+
+        for item in totalResponseTimeMetrics.items() {
+            metrics.append(new Metric(name=item[0], 
+                                      category=MetricCategory.TOTAL_RESPONSE_TIME,
+                                      value=item[1]));
+        }
+
+        return metrics;
+    }
+    
+    proc getTotalMemoryUsedMetrics() throws {
+        var metrics = new list(owned Metric?);
+
+        for item in totalMemoryUsedMetrics.items() {
+            metrics.append(new Metric(name=item[0], 
+                                      category=MetricCategory.TOTAL_MEMORY_USED,
+                                      value=item[1]));
+        }
+
+        return metrics;
+    }
 
     proc getMaxLocaleMemory(loc) throws {
        if memMax:real > 0 {
