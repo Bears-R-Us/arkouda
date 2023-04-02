@@ -431,7 +431,7 @@ module ServerDaemon {
             totalResponseTimeMetrics.add(cmd,elapsedTime:real);
             
             // Add total memory used
-            totalMemoryUsedMetrics.add(cmd,memUsed:real);
+            totalMemoryUsedMetrics.add(cmd,memUsed/1000000000:real);
             
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
@@ -446,7 +446,7 @@ module ServerDaemon {
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
-                          "Updated Total Memory Used (MB) cmd: %s memory %t".format(cmd,totalMemoryUsedMetrics.get(cmd)));    
+                          "Updated Total Memory Used cmd: %s memory %t GB".format(cmd,totalMemoryUsedMetrics.get(cmd)));    
 
             var apo = getArrayParameterObj(args);
 
