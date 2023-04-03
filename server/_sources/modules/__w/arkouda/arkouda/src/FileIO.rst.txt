@@ -104,3 +104,5 @@ or
 
 .. function:: proc lsAnyMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
 
+.. function:: proc globExpansionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+
