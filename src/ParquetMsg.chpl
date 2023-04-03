@@ -830,6 +830,14 @@ module ParquetMsg {
         } else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
           var entryVal = new shared SymEntry(len, uint);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          // when reading a uint32, conversion to uint64 does not handle the high bit correctly
+          if (ty == ArrowTypes.uint32){ 
+            ref ea = entryVal.a;
+            // Move the high bit of uint32 back to the 32nd bit from 64th bit and mask so
+            // uint32 can be represented in a uint64
+            entryVal.a = ((ea & (2**63))>>32 | ea) & (2**32 -1);
+          }
+
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
