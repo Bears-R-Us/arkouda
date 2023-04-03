@@ -22,18 +22,18 @@ Install Dependencies
 Install Arkouda
 **********************
 
-1. Download Arkouda `v2023.03.01 <https://github.com/Bears-R-Us/arkouda/archive/refs/tags/v2023.03.01.tar.gz>`_
+1. Download Arkouda `v2023.03.24 <https://github.com/Bears-R-Us/arkouda/archive/refs/tags/v2023.03.24.tar.gz>`_
 2. Unpack the source files:
 
    .. substitution-code-block:: bash
 
-       tar xzf arkouda-2023.03.01.tar.gz
+       tar xzf arkouda-2023.03.24.tar.gz
 
 3. Change to the arkouda directory
 
    .. substitution-code-block:: bash
 
-       cd arkouda-2023.03.01
+       cd arkouda-2023.03.24
 
 4. Build Arkouda
 
