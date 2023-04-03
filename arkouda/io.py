@@ -1648,7 +1648,6 @@ def read(
 def read_tagged_data(
     filenames: Union[str, List[str]],
     datasets: Optional[Union[str, List[str]]] = None,
-    iterative: bool = False,
     strictTypes: bool = True,
     allow_errors: bool = False,
     calc_string_offsets=False,
@@ -1663,8 +1662,6 @@ def read_tagged_data(
         Either a list of filenames or shell expression
     datasets : list or str or None
         (List of) name(s) of dataset(s) to read (default: all available)
-    iterative : bool
-        Iterative (True) or Single (False) function call(s) to server
     strictTypes: bool
         If True (default), require all dtypes of a given dataset to have the
         same precision and sign. If False, allow dtypes of different
@@ -1693,7 +1690,6 @@ def read_tagged_data(
         filenames = [filenames]
 
     # handle glob expansion
-    # TODO - may want to not make this call if len > 1 because won't do anything on server if it is
     j_str = generic_msg(
         cmd="globExpansion",
         args={"file_count": len(filenames), "filenames": filenames},
@@ -1703,14 +1699,13 @@ def read_tagged_data(
         array(file_list)
     )  # create a categorical from the ak.Strings representation of the file list
 
-    # TODO - Add parameter sent to server that triggers the filename mapping be added
     ftype = get_filetype(filenames)
     if ftype.lower() == "hdf5":
         return (
             read_hdf(
                 filenames,
                 datasets=datasets,
-                iterative=iterative,
+                iterative=False,
                 strict_types=strictTypes,
                 allow_errors=allow_errors,
                 calc_string_offsets=calc_string_offsets,
@@ -1723,7 +1718,7 @@ def read_tagged_data(
             read_parquet(
                 filenames,
                 datasets=datasets,
-                iterative=iterative,
+                iterative=False,  # hard-coded because iterative not supported
                 strict_types=strictTypes,
                 allow_errors=allow_errors,
                 tag_data=True,
