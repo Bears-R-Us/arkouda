@@ -89,7 +89,6 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
       return ARROWERROR;
     }
     auto myType = sc -> field(idx) -> type();
-    std::cout << "\n\nCol: " << colname << " Type: " << myType->name() << "\n\n";
 
     if(myType->id() == arrow::Type::INT64)
       return ARROWINT64;
