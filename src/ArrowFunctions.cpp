@@ -94,11 +94,12 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
     if(myType->id() == arrow::Type::INT64)
       return ARROWINT64;
     else if(myType->id() == arrow::Type::INT32 || myType->id() == arrow::Type::INT16)
-      return ARROWINT32; // 16bit stored as 32bit so can treat both as 32bit
+      return ARROWINT32; // int16 is logical type, stored as int32
     else if(myType->id() == arrow::Type::UINT64)
       return ARROWUINT64;
-    else if(myType->id() == arrow::Type::UINT32 || myType->id() == arrow::Type::UINT16)
-      return ARROWUINT32; // 16bit stored as 32bit so can treat both as 32bit
+    else if(myType->id() == arrow::Type::UINT32 || 
+            myType->id() == arrow::Type::UINT16)
+      return ARROWUINT32; // uint16 is logical type, stored as uint32
     else if(myType->id() == arrow::Type::TIMESTAMP)
       return ARROWTIMESTAMP;
     else if(myType->id() == arrow::Type::BOOL)
