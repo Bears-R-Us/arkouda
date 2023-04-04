@@ -566,14 +566,25 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           startIdx -= reader->Skip(startIdx);
           
           while (reader->HasNext() && i < numElems) {
-            float value;
-            (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-            if(values_read == 0 && definition_level == 3) { // ensure null value and not empty segment
-              chpl_ptr[i] = NAN;
-              i++;
-            }
-            else if (values_read != 0){
-              chpl_ptr[i] = value;
+            if((numElems - i) < batchSize) // adjust batchSize if needed
+              batchSize = numElems - i;
+
+            // define def and rep level tracking to the batch size. This is required to detect NaN
+            int16_t* def_lvl = new int16_t[batchSize] { 0 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            
+            float* tmpArr = new float[batchSize] { 0 }; // this will not include NaN values
+            
+            int64_t idx_adjust = 0; // adjustment for NaNs encountered so index into tmpArr is correct
+            (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
+            // copy values to Chapel array. Convert to double if not NaN
+            for (int64_t j = 0; j < values_read; j++){
+              if (def_lvl[j] == 0) { // when definition level is 0, mean Null which equated to NaN here
+                chpl_ptr[i] = NAN;
+                idx_adjust++; // account for the NaN at the indexes after because tmpArr only stores values
+              } else {
+                chpl_ptr[i] = (double)tmpArr[j-idx_adjust]; // cast to double for Chapel
+              }
               i++;
             }
           }
@@ -584,14 +595,24 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           startIdx -= reader->Skip(startIdx);
 
           while (reader->HasNext() && i < numElems) {
-            double value;
-            (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-            if(values_read == 0 && definition_level == 3) { // ensure null value and not empty segment
-              chpl_ptr[i] = NAN;
-              i++;
-            }
-            else if (values_read != 0){
-              chpl_ptr[i] = value;
+            if((numElems - i) < batchSize) // adjust batchSize if needed
+              batchSize = numElems - i;
+
+            // define def and rep level tracking to the batch size. This is required to detect NaN
+            int16_t* def_lvl = new int16_t[batchSize] { 0 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+
+            double* tmpArr = new double[batchSize] { 0 }; // this will not include NaN values
+            int64_t idx_adjust = 0; // adjustment for NaNs encountered so index into tmpArr is correct
+            (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
+            // copy values into our Chapel array
+            for (int64_t j = 0; j < batchSize; j++){
+              if (def_lvl[j] == 0) { // when definition level is 0, mean Null which equated to NaN here
+                chpl_ptr[i] = NAN;
+                idx_adjust++; // account for the NaN at the indexes after because tmpArr only stores values
+              } else {
+                chpl_ptr[i] = tmpArr[j-idx_adjust];
+              }
               i++;
             }
           }
