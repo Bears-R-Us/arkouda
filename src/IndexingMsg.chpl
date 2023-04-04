@@ -19,6 +19,7 @@ module IndexingMsg
 
     use ArkoudaMapCompat;
     use ArkoudaFileCompat;
+    use ArkoudaBigIntCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

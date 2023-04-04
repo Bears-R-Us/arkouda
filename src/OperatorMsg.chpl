@@ -17,6 +17,8 @@ module OperatorMsg
     use Reflection;
     use Logging;
     use Message;
+
+    use ArkoudaBigIntCompat;
     
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

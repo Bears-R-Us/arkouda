@@ -10,6 +10,8 @@ module BinOp
   use BitOps;
   use BigInteger;
 
+  use ArkoudaBigIntCompat;
+
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const omLogger = new Logger(logLevel, logChannel);
