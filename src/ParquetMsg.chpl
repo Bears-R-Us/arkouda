@@ -717,8 +717,33 @@ module ParquetMsg {
     }
   }
 
+  proc populateTagData(A, filenames: [?fD] string, sizes) throws {
+    var (subdoms, length) = getSubdomains(sizes);
+    var fileOffsets = (+ scan sizes) - sizes;
+    
+    coforall loc in A.targetLocales() do on loc {
+      var locFiles = filenames;
+      var locFiledoms = subdoms;
+      var locOffsets = fileOffsets;
+      
+      try {
+        forall (off, filedom, filename, tag) in zip(locOffsets, locFiledoms, locFiles, 0..) {
+          for locdom in A.localSubdomains() {
+            const intersection = domain_intersection(locdom, filedom);
+
+            if intersection.size > 0 {
+              // write the tag into the entry
+              A[intersection] = tag;
+            }
+          }
+        }
+      }
+    }
+  }
+
   proc readAllParquetMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var repMsg: string;
+    var tagData: bool = msgArgs.get("tag_data").getBoolValue();
     var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
     var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false
@@ -819,6 +844,17 @@ module ParquetMsg {
         var len = + reduce sizes;
         var ty = types[dsetidx];
 
+        // If tagging is turned on, tag the data
+        if tagData {
+          pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Tagging Data with File Code");
+          var tagEntry = new shared SymEntry(len, int); // this will always contain integer values
+          populateTagData(tagEntry.a, filenames, sizes);
+          var rname = st.nextName();
+          st.addEntry(rname, tagEntry);
+          rnames.append(("Filename_Codes", "pdarray", rname));
+          tagData = false; // turn off so we only run once
+        }
+
         // Only integer is implemented for now, do nothing if the Parquet
         // file has a different type
         if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
@@ -830,6 +866,12 @@ module ParquetMsg {
         } else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
           var entryVal = new shared SymEntry(len, uint);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          if (ty == ArrowTypes.uint32){ // correction for high bit 
+            ref ea = entryVal.a;
+            // Access the high bit (64th bit) and shift it into the high bit for uint32 (32nd bit)
+            // Apply 32 bit mask to drop top 32 bits and properly store uint32
+            entryVal.a = ((ea & (2**63))>>32 | ea) & (2**32 -1);
+          }
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));

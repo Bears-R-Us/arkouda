@@ -1942,10 +1942,91 @@ module HDF5Msg {
         return (objType, dataclass, bytesize, isSigned);
     }
 
+    proc assign_tags(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string, skips: set(string)) throws {
+        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "entry.a.targetLocales() = %t".format(A.targetLocales()));
+        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "Filedomains: %t".format(filedomains));
+        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "skips: %t".format(skips));
+
+        coforall loc in A.targetLocales() do on loc {
+            // Create local copies of args
+            var locFiles = filenames;
+            var locFiledoms = filedomains;
+            /* On this locale, find all files containing data that belongs in
+                this locale's chunk of A */
+            for (filedom, filename, tag) in zip(locFiledoms, locFiles, 0..) {
+                var isopen = false;
+                var file_id: C_HDF5.hid_t;
+                var dataset: C_HDF5.hid_t;
+
+                if (skips.contains(filename)) {
+                    h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "File %s does not contain data for this dataset, skipping".format(filename));
+                } else {
+                    // Look for overlap between A's local subdomains and this file
+                    for locdom in A.localSubdomains() {
+                        const intersection = domain_intersection(locdom, filedom);
+                        if intersection.size > 0 {
+                            A[intersection] = tag;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    proc generateTagData(filenames: [?fD] string, dset: string, 
+                            objType: ObjType, validFiles: [] bool, st: borrowed SymTab) throws {
+        var subdoms: [fD] domain(1);
+        var skips = new set(string);
+        var len: int;
+        
+        select objType {
+            when ObjType.PDARRAY {
+                (subdoms, len, skips) = get_subdoms(filenames, dset, validFiles);
+            }
+            when ObjType.STRINGS {
+                (subdoms, len, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_OFFSET_NAME, validFiles);
+            }
+            when ObjType.SEGARRAY {
+                (subdoms, len, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_OFFSET_NAME, validFiles);
+            }
+            when ObjType.ARRAYVIEW {
+                var errorMsg = "ArrayView Objects do not support tagging";
+                h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                throw getErrorWithContext(
+                                    msg=errorMsg,
+                                    lineNumber=getLineNumber(), 
+                                    routineName=getRoutineName(), 
+                                    moduleName=getModuleName(), 
+                                    errorClass='UnhandledDatatypeError');
+            }
+            otherwise {
+                var errorMsg = "Unknown object type found";
+                h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                throw getErrorWithContext(
+                                    msg=errorMsg,
+                                    lineNumber=getLineNumber(), 
+                                    routineName=getRoutineName(), 
+                                    moduleName=getModuleName(), 
+                                    errorClass='UnhandledDatatypeError');
+            }
+        }
+        // create the tag entry
+        var tagEntry = new shared SymEntry(len, int); // this will always contain integer values
+        assign_tags(tagEntry.a, subdoms, filenames, dset, skips);
+        var rname = st.nextName();
+        st.addEntry(rname, tagEntry);
+        return ("Filename_Codes", "pdarray", rname);
+    }
+
     /*
         Read HDF5 files into an Arkouda Object
     */
     proc readAllHdfMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var tagData: bool = msgArgs.get("tag_data").getBoolValue();
         var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
         var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false
@@ -2100,6 +2181,12 @@ module HDF5Msg {
             }
             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "Verified all dtypes across files for dataset %s".format(dsetName));
+
+            if tagData {
+                h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Tagging Data with File Code");
+                rtnData.append(generateTagData(filenames, dsetName, objType, validFiles, st));
+                tagData = false; // turn off so we only run once
+            }
 
             select objType {
                 when ObjType.ARRAYVIEW {
