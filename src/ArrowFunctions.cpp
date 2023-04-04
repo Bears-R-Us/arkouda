@@ -643,7 +643,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         parquet_reader->RowGroup(r);
 
       int64_t values_read = 0;
-      
 
       std::shared_ptr<parquet::ColumnReader> column_reader;
 
