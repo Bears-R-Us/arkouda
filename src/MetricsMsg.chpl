@@ -168,26 +168,43 @@ module MetricsMsg {
     class MeasurementTable {
         var measurements = new map(string, real);
 
+        /*
+         * Returns the measurement corresponding to the metric name If the
+         * metric does not exist, the metric value is set to 0.0 and is returned.
+         */
         proc get(metric: string): real throws {
+            var value: real;
+
             if !this.measurements.contains(metric) {
-                var value = 0.0;
-                    this.measurements.add(metric, value);
-                return value;
+                value = 0.0;
+                this.measurements.add(metric, value);
             } else {
-                return this.measurements(metric);
+                value = this.measurements(metric);
             }
+            
+            return value;
         }   
 
+        /* 
+         * Sets the metrics value
+         */
         proc set(metric: string, measurement: real) throws {
             this.measurements.addOrSet(metric, measurement);
         }
 
+        /*
+         * Returns the number of measurements in the MeasurementTable.s
+         */
         proc size() {
             return this.measurements.size;
         }
 
+        /* 
+         * Adds a measurement to an existing measurement corresponding to the 
+         * metric name, setting the value if the metric does not exist.
+         */
         proc add(metric: string, measurement: real) throws {
-            this.measurements.set(metric,(this.get(metric) + measurement));
+            this.measurements.replace(metric,(this.get(metric) + measurement));
         }
 
         iter items() {
@@ -198,7 +215,7 @@ module MetricsMsg {
 
     /* 
      * The AverageMeasurementTable extends the MeasurementTable by generating
-     * values that are averages of incoming values.
+     * values that are averages of incoming values for each metric.
      */
     class AverageMeasurementTable : MeasurementTable {
         //number of recorded measurements
@@ -207,14 +224,27 @@ module MetricsMsg {
         // total value of measurements to be averaged for each metric measured.s
         var measurementTotals = new map(string, real);
 
+        /*
+         * Returns the number of measurements corresponding to a metric.
+         */
         proc getNumMeasurements(metric: string) throws {
-            if this.numMeasurements.contains(metric) {
-                return this.numMeasurements(metric) + 1;
+            var value: int;
+
+            if !this.numMeasurements.contains(metric) {
+                value = 0;
+                this.numMeasurements.addOrSet(metric, value);
             } else {
-                return 1;
+                value = this.numMeasurements(metric);
             }
+
+            return value;
         }
         
+        /*
+         * Returns the sum of all measurements corresponding to a metric. Note:
+         * this function is designed to invoked internally in order to 
+         * calculate the avg measurement value corresponding to the metric.
+         */
         proc getMeasurementTotal(metric: string) : real throws {
             var value: real;
 
@@ -228,6 +258,14 @@ module MetricsMsg {
             return value;
         }
         
+        /*
+         * The overridden add method updates the measurement value by doing the following:
+         *
+         * 1. adds the measurement to a running total measurement for the metric
+         * 2. increments the number of measurements for the metric
+         * 3. divides the updated total measurement by the number of measurements to
+         *    to calculate the avg measurement
+         */
         override proc add(metric: string, measurement: real) throws {
             var numMeasurements = getNumMeasurements(metric);
             var measurementTotal = getMeasurementTotal(metric);
