@@ -55,16 +55,8 @@ def test_multi_array_search_interval():
     ends = (ak.array([5, 9]), ak.array([10, 20]))
     vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
 
-    assert ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list() == [
-        0,
-        -1,
-        0,
-        0,
-        1,
-        -1,
-        1,
-        -1,
-    ]
+    search_int_non_hierarch = ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
+    assert search_int_non_hierarch == [0, -1, 0, 0, 1, -1, 1, -1]
     search_intervals_hierarchical = ak.search_intervals(vals, (starts, ends)).to_list()
     assert search_intervals_hierarchical == [0, 0, 0, 0, 1, 1, 1, -1]
 
@@ -95,7 +87,7 @@ def test_search_interval_nonunique():
     interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
     assert expected_result == interval_idxs.to_list()
 
-    # test uint64
+    # test float64
     lower_bound = ak.array(lb, dtype=ak.float64)
     upper_bound = ak.array(ub, dtype=ak.float64)
     vals = ak.array(v, dtype=ak.float64)
