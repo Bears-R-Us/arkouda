@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import List, Optional, Sequence, Union, cast
+from typing import List, Optional, Sequence, Union, cast, Tuple
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -2339,6 +2339,11 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
     """
     return parse_single_value(generic_msg(cmd="corr", args={"x": x, "y": y}))
+
+
+@typechecked
+def divmod(pda1: pdarray, pda2: pdarray) -> Tuple[pdarray, pdarray]:
+    return (pda1//pda2, pda1%pda2)
 
 
 @typechecked
