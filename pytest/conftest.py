@@ -14,7 +14,7 @@ from server_util.test.server_test_util import (
 
 def pytest_configure(config):
     pytest.prob_size = eval(config.getoption("size"))
-    pytest.seed = eval(config.getoption("seed"))
+    pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
 
 
 @pytest.fixture(scope="module", autouse=True)
