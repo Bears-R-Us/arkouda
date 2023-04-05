@@ -108,11 +108,8 @@ class ParameterObject:
         import numpy as np
 
         return (
-            isinstance(val, str)
-            or isinstance(val, np.str_)
+            isinstance(val, (str, np.str_, builtins.bool, np.bool_))
             or isSupportedNumber(val)
-            or isinstance(val, builtins.bool)
-            or isinstance(val, np.bool_)
         )
 
     @staticmethod
@@ -143,9 +140,7 @@ class ParameterObject:
         else:
             for p in val:
                 if not (
-                    isinstance(p, pdarray)
-                    or isinstance(p, Strings)
-                    or isinstance(p, SegArray)
+                    isinstance(p, (pdarray, Strings, SegArray))
                     or ParameterObject._is_supported_value(p)
                 ):
                     raise TypeError(
