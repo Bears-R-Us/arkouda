@@ -8,7 +8,7 @@ module SegmentedArray {
     use Logging;
     use ServerErrors;
     use CommAggregation;
-    use Time;
+    use ArkoudaTimeCompat as Time;
 
     use ArkoudaMapCompat;
 

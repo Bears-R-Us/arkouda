@@ -11,7 +11,7 @@ module SegmentedString {
   use PrivateDist;
   use ServerConfig;
   use Unique;
-  use Time;
+  use ArkoudaTimeCompat as Time;
   use Reflection;
   use Logging;
   use ServerErrors;

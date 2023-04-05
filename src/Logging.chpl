@@ -3,7 +3,7 @@ module Logging {
     use FileSystem;
     use Reflection;
     use ServerErrors;
-    use Time;
+    use ArkoudaTimeCompat as Time;
 
     import IO.{format, stdout, file};
     use ArkoudaFileCompat;

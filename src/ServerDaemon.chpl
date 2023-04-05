@@ -4,7 +4,7 @@ module ServerDaemon {
     use Security;
     use ServerConfig;
     use ServerErrors;
-    use Time;
+    use ArkoudaTimeCompat as Time;
     use ZMQ only;
     use Memory;
     use FileSystem;
