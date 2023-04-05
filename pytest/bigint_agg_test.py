@@ -4,6 +4,15 @@ import arkouda as ak
 SIZE = 5
 
 
+def gather_scatter(a):
+    rev = ak.array(np.arange(len(a) - 1, -1, -1))
+    a2 = a[rev]
+    res = ak.zeros(len(a), dtype=a.dtype)
+    res[:] = a2
+    res[rev] = a2
+    return res
+
+
 def test_negative():
     # test with negative bigint values
     arr = -1 * ak.randint(0, 2**32, SIZE)
@@ -49,12 +58,3 @@ def test_change_size():
     res = ak.ones_like(bi_arr)
     bi_arr[:] = res
     assert (bi_arr.to_list() == res.to_list())
-
-
-def gather_scatter(a):
-    rev = ak.array(np.arange(len(a) - 1, -1, -1))
-    a2 = a[rev]
-    res = ak.zeros(len(a), dtype=a.dtype)
-    res[:] = a2
-    res[rev] = a2
-    return res
