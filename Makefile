@@ -324,10 +324,6 @@ ifeq ($(shell expr $(CHPL_MINOR) \= 30),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-130
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \<= 29),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/le-129
-endif
-
 ifeq ($(shell expr $(CHPL_MINOR) \= 29),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-129
 endif
