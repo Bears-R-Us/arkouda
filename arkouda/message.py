@@ -7,7 +7,7 @@ from typing import Dict
 
 from typeguard import typechecked
 
-from arkouda.dtypes import bigint, all_scalars
+from arkouda.dtypes import bigint, isSupportedNumber
 
 
 class ObjectType(Enum):
@@ -103,6 +103,16 @@ class ParameterObject:
         return ParameterObject(key, ObjectType.STRINGS, "str", name)
 
     @staticmethod
+    def _is_supported_value(val):
+        import builtins
+        import numpy as np
+        return (isinstance(val, str)
+                or isinstance(val, np.str_)
+                or isSupportedNumber(val)
+                or isinstance(val, builtins.bool)
+                or isinstance(val, np.bool_))
+
+    @staticmethod
     @typechecked
     def _build_list_param(key: str, val: list) -> ParameterObject:
         """
@@ -133,8 +143,7 @@ class ParameterObject:
                     isinstance(p, pdarray)
                     or isinstance(p, Strings)
                     or isinstance(p, SegArray)
-                    or isinstance(p, str)
-                    or isinstance(p, all_scalars)  # type: ignore
+                    or ParameterObject._is_supported_value(p)
                 ):
                     raise TypeError(
                         f"List parameters must be pdarray, Strings, SegArray, str or a type "
@@ -142,7 +151,7 @@ class ParameterObject:
                         f"does not meet that criteria."
                     )
             t = "mixed"
-        data = [str(p) if isinstance(p, all_scalars) else p.name for p in val]  # type: ignore
+        data = [str(p) if ParameterObject._is_supported_value(p) else p.name for p in val]  # type: ignore
         return ParameterObject(key, ObjectType.LIST, t, json.dumps(data))
 
     @staticmethod

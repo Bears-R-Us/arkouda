@@ -32,6 +32,7 @@ __all__ = [
     "all_scalars",
     "get_byteorder",
     "get_server_byteorder",
+    "isSupportedNumber"
 ]
 
 NUMBER_FORMAT_STRINGS = {
