@@ -54,6 +54,7 @@ __all__ = [
     "rotr",
     "cov",
     "corr",
+    "divmod",
     "sqrt",
     "power",
     "attach_pdarray",
@@ -2343,9 +2344,23 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
 
 @typechecked
 def divmod(
-    x: Union[int, float, pdarray], y: Union[int, float, pdarray]
-) -> Tuple[Union[int, float, pdarray], Union[int, float, pdarray]]:
-    return (x // y, x % y)
+    x: Union[int, float, pdarray], y: Union[int, float, pdarray], where: Union[bool, pdarray] = True) -> Tuple[Union[int, float, pdarray], Union[int, float, pdarray]]:
+    
+    from arkouda.numeric import cast as akcast
+    from arkouda.numeric import where as akwhere
+
+    if isinstance(x, pdarray) and isinstance(y, pdarray):
+        if x.size != y.size:
+            raise ValueError(f"size mismatch {x.size} {y.size}")
+
+    if where is True:
+        return (x // y, x % y)
+    elif where is False:
+        return (x, x)
+    else:
+        div = x // y
+        mod = x % y
+        return (akwhere(where, div, akcast(x, div.dtype)), akwhere(where, mod, akcast(x, mod.dtype)))
 
 
 @typechecked
