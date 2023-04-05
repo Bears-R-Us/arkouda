@@ -106,11 +106,14 @@ class ParameterObject:
     def _is_supported_value(val):
         import builtins
         import numpy as np
-        return (isinstance(val, str)
-                or isinstance(val, np.str_)
-                or isSupportedNumber(val)
-                or isinstance(val, builtins.bool)
-                or isinstance(val, np.bool_))
+
+        return (
+            isinstance(val, str)
+            or isinstance(val, np.str_)
+            or isSupportedNumber(val)
+            or isinstance(val, builtins.bool)
+            or isinstance(val, np.bool_)
+        )
 
     @staticmethod
     @typechecked
@@ -151,7 +154,7 @@ class ParameterObject:
                         f"does not meet that criteria."
                     )
             t = "mixed"
-        data = [str(p) if ParameterObject._is_supported_value(p) else p.name for p in val]  # type: ignore
+        data = [str(p) if ParameterObject._is_supported_value(p) else p.name for p in val]
         return ParameterObject(key, ObjectType.LIST, t, json.dumps(data))
 
     @staticmethod
