@@ -7,6 +7,7 @@ from typing import Dict
 
 from typeguard import typechecked
 
+import arkouda
 from arkouda.dtypes import bigint
 
 
@@ -40,7 +41,6 @@ class ObjectType(Enum):
 
 
 class ParameterObject:
-
     __slots = ("key", "objType", "dtype", "val")
 
     key: str
@@ -129,19 +129,22 @@ class ParameterObject:
         if len(dtypes) == 1:
             t = dtypes.pop()
         else:
-            for t in dtypes:
-                if t not in [pdarray.__name__, Strings.__name__, SegArray.__name__]:
-                    t_str = ", ".join(dtypes)
-                    raise TypeError(f"Lists of multiple types can only "
-                                    f"contain strings and pdarray. Found {t_str}")
-            # using pdarray for now. May change in future. This does not impact functionality
-            t = pdarray.__name__
-        if any(x == t for x in [pdarray.__name__, Strings.__name__]):
-            return ParameterObject(key, ObjectType.LIST, t, json.dumps([x.name for x in val]))
-        else:
-            # need all values to be str for chapel to read list properly
-            v = val if t == str.__name__ else [str(x) for x in val]
-            return ParameterObject(key, ObjectType.LIST, t, json.dumps(v))
+            for p in val:
+                if not (
+                    isinstance(p, pdarray)
+                    or isinstance(p, Strings)
+                    or isinstance(p, SegArray)
+                    or isinstance(p, str)
+                    or isinstance(p, arkouda.dtypes.all_scalars)
+                ):
+                    raise TypeError(
+                        f"List parameters must be pdarray, Strings, SegArray, str or a type "
+                        f"that inherits from the aforementioned. {type(p).__name__} "
+                        f"does not meet that criteria."
+                    )
+            t = "mixed"
+        data = [str(p) if isinstance(p, arkouda.dtypes.all_scalars) else p.name for p in val]
+        return ParameterObject(key, ObjectType.LIST, t, json.dumps(data))
 
     @staticmethod
     @typechecked
@@ -281,7 +284,6 @@ context of an Arkouda server request.
 
 @dataclass(frozen=True)
 class RequestMessage:
-
     __slots = ("user", "token", "cmd", "format", "args", "size")
 
     user: str
@@ -365,7 +367,6 @@ a message returned by the Arkouda server
 
 @dataclass(frozen=True)
 class ReplyMessage:
-
     __slots__ = ("msg", "msgType", "user")
 
     msg: str
