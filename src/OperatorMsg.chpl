@@ -3,7 +3,7 @@ module OperatorMsg
 {
     use ServerConfig;
 
-    use Time;
+    use ArkoudaTimeCompat as Time;
     use Math;
     use BitOps;
     use Reflection;

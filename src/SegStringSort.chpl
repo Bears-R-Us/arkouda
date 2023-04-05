@@ -1,7 +1,7 @@
 module SegStringSort {
   use SegmentedString;
   use Sort;
-  use Time;
+  use ArkoudaTimeCompat as Time;
   use IO;
   use CTypes;
   use CommAggregation;

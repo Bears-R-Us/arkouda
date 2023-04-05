@@ -1,7 +1,7 @@
 module SequenceMsg {
     use ServerConfig;
 
-    use Time;
+    use ArkoudaTimeCompat as Time;
     use Reflection;
     use Logging;
     use Message;

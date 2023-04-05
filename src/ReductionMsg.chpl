@@ -2,7 +2,7 @@ module ReductionMsg
 {
     use ServerConfig;
 
-    use Time only;
+    use ArkoudaTimeCompat as Time;
     use Math only;
     use Reflection only;
     use CommAggregation;

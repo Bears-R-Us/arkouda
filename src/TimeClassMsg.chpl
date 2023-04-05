@@ -9,7 +9,7 @@ module TimeClassMsg {
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use BinOp;
-    use Time;
+    use ArkoudaTimeCompat as Time;
 
     use ArkoudaMapCompat;
 

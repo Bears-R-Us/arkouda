@@ -2,7 +2,7 @@ module RegistrationMsg
 {
     use ServerConfig;
 
-    use Time only;
+    use ArkoudaTimeCompat as Time;
     use Math only;
     use Reflection;
     use ServerErrors;
