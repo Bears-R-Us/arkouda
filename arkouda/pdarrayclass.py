@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import List, Optional, Sequence, Union, cast, Tuple
+from typing import List, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -2344,8 +2344,22 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
 
 @typechecked
 def divmod(
-    x: Union[int, float, pdarray], y: Union[int, float, pdarray], where: Union[bool, pdarray] = True) -> Tuple[Union[int, float, pdarray], Union[int, float, pdarray]]:
-    
+    x: Union[numeric_scalars, pdarray],
+    y: Union[numeric_scalars, pdarray],
+    where: Union[bool, pdarray] = True,
+) -> Tuple[pdarray, pdarray]:
+    """
+
+    Parameters
+    ----------
+    x
+    y
+    where
+
+    Returns
+    -------
+
+    """
     from arkouda.numeric import cast as akcast
     from arkouda.numeric import where as akwhere
 
