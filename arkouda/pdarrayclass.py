@@ -2342,8 +2342,10 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
 
 
 @typechecked
-def divmod(pda1: pdarray, pda2: pdarray) -> Tuple[pdarray, pdarray]:
-    return (pda1//pda2, pda1%pda2)
+def divmod(
+    x: Union[int, float, pdarray], y: Union[int, float, pdarray]
+) -> Tuple[Union[int, float, pdarray], Union[int, float, pdarray]]:
+    return (x // y, x % y)
 
 
 @typechecked
