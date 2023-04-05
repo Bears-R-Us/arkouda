@@ -9,6 +9,7 @@
     use Message;
     use SegmentedMsg;
     use AryUtil;
+    use BigInteger;
 
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
@@ -50,7 +51,7 @@
         forall (a1,i) in zip(aa,iva) {
             a1 = a2[i];
         }
-        
+
         if rtnName {
             return rname;
         }
@@ -155,6 +156,10 @@
                         }
                         when (DType.Float64){
                             var col_vals = toSymEntry(gCol, real);
+                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                        }
+                        when (DType.BigInt){
+                            var col_vals = toSymEntry(gCol, bigint);
                             rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         otherwise {

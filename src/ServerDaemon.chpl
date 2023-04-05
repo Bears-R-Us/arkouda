@@ -363,6 +363,7 @@ module ServerDaemon {
             registerFunction("clear", clearMsg);
             registerFunction("lsany", lsAnyMsg);
             registerFunction("getfiletype", getFileTypeMsg);
+            registerFunction("globExpansion", globExpansionMsg);
 
             // For a few specialized cmds we're going to add dummy functions, so they
             // get added to the client listing of available commands. They will be

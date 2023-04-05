@@ -92,12 +92,13 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
 
     if(myType->id() == arrow::Type::INT64)
       return ARROWINT64;
-    else if(myType->id() == arrow::Type::INT32)
-      return ARROWINT32;
+    else if(myType->id() == arrow::Type::INT32 || myType->id() == arrow::Type::INT16)
+      return ARROWINT32; // int16 is logical type, stored as int32
     else if(myType->id() == arrow::Type::UINT64)
       return ARROWUINT64;
-    else if(myType->id() == arrow::Type::UINT32)
-      return ARROWUINT32;
+    else if(myType->id() == arrow::Type::UINT32 || 
+            myType->id() == arrow::Type::UINT16)
+      return ARROWUINT32; // uint16 is logical type, stored as uint32
     else if(myType->id() == arrow::Type::TIMESTAMP)
       return ARROWTIMESTAMP;
     else if(myType->id() == arrow::Type::BOOL)
@@ -163,11 +164,11 @@ int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
         auto f_type = field->type();
         if(f_type->id() == arrow::Type::INT64)
           return ARROWINT64;
-        else if(f_type->id() == arrow::Type::INT32)
+        else if(f_type->id() == arrow::Type::INT32 || f_type->id() == arrow::Type::INT16)
           return ARROWINT32;
         else if(f_type->id() == arrow::Type::UINT64)
           return ARROWUINT64;
-        else if(f_type->id() == arrow::Type::UINT32)
+        else if(f_type->id() == arrow::Type::UINT32 || f_type->id() == arrow::Type::UINT16)
           return ARROWUINT32;
         else if(f_type->id() == arrow::Type::TIMESTAMP)
           return ARROWTIMESTAMP;
@@ -1639,8 +1640,10 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) 
       // only add fields of supported types
       if(sc->field(i)->type()->id() == arrow::Type::INT64 ||
          sc->field(i)->type()->id() == arrow::Type::INT32 ||
+         sc->field(i)->type()->id() == arrow::Type::INT16 ||
          sc->field(i)->type()->id() == arrow::Type::UINT64 ||
          sc->field(i)->type()->id() == arrow::Type::UINT32 ||
+         sc->field(i)->type()->id() == arrow::Type::UINT16 ||
          sc->field(i)->type()->id() == arrow::Type::TIMESTAMP ||
          sc->field(i)->type()->id() == arrow::Type::BOOL ||
          sc->field(i)->type()->id() == arrow::Type::STRING ||

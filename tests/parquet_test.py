@@ -531,6 +531,19 @@ class ParquetTest(ArkoudaTest):
             rd_df = ak.DataFrame(rd_data)
             self.assertTrue(akdf.to_pandas().equals(rd_df.to_pandas()))
 
+    def test_small_ints(self):
+        df_pd = pd.DataFrame({
+            "int16": pd.Series([2 ** 15 - 1, -2 ** 15], dtype=np.int16),
+            "int32": pd.Series([2 ** 31 - 1, -2 ** 31], dtype=np.int32),
+            "uint16": pd.Series([2 ** 15 - 1, 2 ** 15], dtype=np.uint16),
+            "uint32": pd.Series([2 ** 31 - 1, 2 ** 31], dtype=np.uint32),
+        })
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            fname = tmp_dirname+"/pq_small_int"
+            df_pd.to_parquet(fname)
+            df_ak = ak.DataFrame(ak.read(fname + "*"))
+            for c in df_ak.columns:
+                self.assertListEqual(df_ak[c].to_list(), df_pd[c].to_list())
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
