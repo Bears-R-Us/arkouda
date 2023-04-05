@@ -134,7 +134,7 @@ class ParameterObject:
                     or isinstance(p, Strings)
                     or isinstance(p, SegArray)
                     or isinstance(p, str)
-                    or isinstance(p, all_scalars)
+                    or isinstance(p, all_scalars)  # type: ignore
                 ):
                     raise TypeError(
                         f"List parameters must be pdarray, Strings, SegArray, str or a type "
@@ -142,7 +142,7 @@ class ParameterObject:
                         f"does not meet that criteria."
                     )
             t = "mixed"
-        data = [str(p) if isinstance(p, all_scalars) else p.name for p in val]
+        data = [str(p) if isinstance(p, all_scalars) else p.name for p in val]  # type: ignore
         return ParameterObject(key, ObjectType.LIST, t, json.dumps(data))
 
     @staticmethod
