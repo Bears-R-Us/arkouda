@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+ * Copyright 2020-2022 Hewlett Packard Enterprise Development LP
  * Copyright 2004-2019 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
@@ -70,7 +70,6 @@ private extern proc chpl_timevalue_parts(t:           _timevalue,
                                          out isdst:   int(32));
 
 /* Specifies the units to be used when certain functions return a time */
-@deprecated(notes="The 'TimeUnits' type is deprecated. Please specify times in seconds in this module.")
 enum TimeUnits { microseconds, milliseconds, seconds, minutes, hours }
 
 /* Specifies the day of the week */
@@ -323,7 +322,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
 
      1 <= `day` <= the number of days in the given month and year
   */
-  proc date.init(year: int, month: int, day: int) {
+  proc date.init(year, month, day) {
     if year < MINYEAR-1 || year > MAXYEAR+1 then
       HaltWrappers.initHalt("year is out of the valid range");
     if month < 1 || month > 12 then
@@ -374,7 +373,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   /* Return a filled record matching the C `struct tm` type for the given date */
-  @unstable("'date.timetuple' is unstable")
   proc date.timetuple() {
     var timeStruct: tm;
 
@@ -461,7 +459,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   /* Return a `string` representing the date */
-  @unstable("'date.ctime' is unstable")
   proc date.ctime() {
     const month = strftime("%b");
     const wday = strftime("%a");
@@ -472,7 +469,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   /* Return a formatted `string` matching the `format` argument and the date */
-  @unstable("'date.strftime' is unstable")
   proc date.strftime(fmt: string) {
     extern proc strftime(s: c_void_ptr, size: c_size_t, format: c_string, ref timeStruct: tm);
     const bufLen: c_size_t = 100;
@@ -540,14 +536,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
       f._readLiteral('"');
   }
 
-  //
-  // TODO: need to get this to work with the Json formatter
-  //
-  pragma "no doc"
-  proc date.init(f: fileReader) {
-    this.init();
-    readThis(f);
-  }
 
   /* Operators on date values */
   pragma "no doc"
@@ -624,7 +612,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
     }
 
     pragma "no doc"
-    @deprecated(notes="'tzinfo' is deprecated, please use 'timezone' instead")
+    deprecated "'tzinfo' is deprecated, please use 'timezone' instead"
     proc tzinfo {
       return timezone;
     }
@@ -650,8 +638,8 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   /* Initialize a new `time` value from the given `hour`, `minute`, `second`,
      `microsecond`, and `timezone`.  All arguments are optional
    */
-  @unstable("tz is unstable; its type may change in the future")
-  proc time.init(hour:int=0, minute:int=0, second:int=0, microsecond:int=0,
+  @unstable "tz is unstable; its type may change in the future"
+  proc time.init(hour=0, minute=0, second=0, microsecond=0,
                  in tz: shared Timezone?) {
     if hour < 0 || hour >= 24 then
       HaltWrappers.initHalt("hour out of range");
@@ -671,7 +659,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   /* Initialize a new `time` value from the given `hour`, `minute`, `second`,
      `microsecond`.  All arguments are optional
    */
-  proc time.init(hour:int=0, minute:int=0, second:int=0, microsecond:int=0) {
+  proc time.init(hour=0, minute=0, second=0, microsecond=0) {
     if hour < 0 || hour >= 24 then
       HaltWrappers.initHalt("hour out of range");
     if minute < 0 || minute >= 60 then
@@ -712,7 +700,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   /* Replace the `hour`, `minute`, `second`, `microsecond` and `tz` in a
      `time` to create a new `time`. All arguments are optional.
    */
-  @unstable("tz is unstable; its type may change in the future")
+  @unstable "tz is unstable; its type may change in the future"
   proc time.replace(hour=-1, minute=-1, second=-1, microsecond=-1,
                     in tz) {
     const newhour = if hour != -1 then hour else this.hour;
@@ -782,7 +770,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   /* Return a `string` matching the `format` argument for this `time` */
-  @unstable("'time.strftime' is unstable")
   proc time.strftime(fmt: string) {
     extern proc strftime(s: c_void_ptr, size: c_size_t, format: c_string, ref timeStruct: tm);
     const bufLen: c_size_t = 100;
@@ -850,15 +837,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
 
     if isjson then
       f._readLiteral('"');
-  }
-
-  //
-  // TODO: need to get this to work with the Json formatter
-  //
-  pragma "no doc"
-  proc time.init(f: fileReader) {
-    this.init();
-    readThis(f);
   }
 
 
@@ -1046,7 +1024,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
     }
 
     pragma "no doc"
-    @deprecated(notes="'tzinfo' is deprecated, please use 'timezone' instead")
+    deprecated "'tzinfo' is deprecated, please use 'timezone' instead"
     proc tzinfo {
       return timezone;
     }
@@ -1062,9 +1040,9 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
      `hour`, `minute`, `second`, `microsecond` and timezone.  The `year`,
      `month`, and `day` arguments are required, the rest are optional.
    */
-  @unstable("tz is unstable; its type may change in the future")
-  proc datetime.init(year:int, month:int, day:int,
-                     hour:int=0, minute:int=0, second:int=0, microsecond:int=0,
+  @unstable "tz is unstable; its type may change in the future"
+  proc datetime.init(year, month, day,
+                     hour=0, minute=0, second=0, microsecond=0,
                      in tz) {
     chpl_date = new date(year, month, day);
     chpl_time = new time(hour, minute, second, microsecond, tz);
@@ -1074,8 +1052,8 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
      `hour`, `minute`, `second`, `microsecond` and timezone.  The `year`,
      `month`, and `day` arguments are required, the rest are optional.
    */
-  proc datetime.init(year:int, month:int, day:int,
-                     hour:int=0, minute:int=0, second:int=0, microsecond:int=0) {
+  proc datetime.init(year, month, day,
+                     hour=0, minute=0, second=0, microsecond=0) {
     chpl_date = new date(year, month, day);
     chpl_time = new time(hour, minute, second, microsecond);
   }
@@ -1129,7 +1107,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   /* The `datetime` that is `timestamp` seconds from the epoch */
-  @unstable("tz is unstable; its type may change in the future")
+  @unstable "tz is unstable; its type may change in the future"
   proc type datetime.fromTimestamp(timestamp: real,
                                    in tz: shared Timezone?) {
     if tz.borrow() == nil {
@@ -1203,7 +1181,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   /* Return the date and time converted into the timezone in the argument */
-  @unstable("tz is unstable; its type may change in the future")
+  @unstable "tz is unstable; its type may change in the future"
   proc datetime.astimezone(in tz: shared Timezone) {
     if timezone == tz {
       return this;
@@ -1236,7 +1214,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
 
   /* Return a filled record matching the C `struct tm` type for the given
      `datetime` */
-  @unstable("'datetime.timetuple' is unstable")
   proc datetime.timetuple() {
     var timeStruct: tm;
     timeStruct.tm_sec = second: int(32);
@@ -1262,7 +1239,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   /* Return a filled record matching the C `struct tm` type for the given
      `datetime` in UTC
    */
-  @unstable("'datetime.utctimetuple' is unstable")
   proc datetime.utctimetuple() {
     if timezone.borrow() == nil {
       var ret = timetuple();
@@ -1296,7 +1272,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   pragma "no doc"
-  @deprecated(notes="'isoweekday' is deprecated, please use 'isoWeekday' instead")
+  deprecated "'isoweekday' is deprecated, please use 'isoWeekday' instead"
   proc datetime.isoweekday() {
     return isoWeekday();
   }
@@ -1309,7 +1285,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   pragma "no doc"
-  @deprecated(notes="'isocalendar' is deprecated, please use 'isoCalendar' instead")
+  deprecated "'isocalendar' is deprecated, please use 'isoCalendar' instead"
   proc datetime.isocalendar() {
     return getdate().isoCalendar();
   }
@@ -1352,7 +1328,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
      `format` string.  Note that this routine currently only supports
      the format strings of C's strptime().
   */
-  @unstable("'datetime.strptime' is unstable")
   proc type datetime.strptime(date_string: string, format: string) {
     extern proc strptime(buf: c_string, format: c_string, ref ts: tm);
     var timeStruct: tm;
@@ -1366,7 +1341,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   /* Create a `string` from a `datetime` matching the `format` string */
-  @unstable("'datetime.strftime' is unstable")
   proc datetime.strftime(fmt: string) {
     extern proc strftime(s: c_void_ptr, size: c_size_t, format: c_string, ref timeStruct: tm);
     const bufLen: c_size_t = 100;
@@ -1439,7 +1413,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   /* Return a `string` from a `datetime` in the form:
      Wed Dec  4 20:30:40 2002
   */
-  @unstable("'datetime.ctime' is unstable")
   proc datetime.ctime() {
     return this.strftime("%a %b %e %T %Y");
   }
@@ -1464,15 +1437,6 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
 
     if isjson then
       f._readLiteral('"');
-  }
-
-  //
-  // TODO: need to get this to work with the Json formatter
-  //
-  pragma "no doc"
-  proc datetime.init(f: fileReader) {
-    this.init();
-    readThis(f);
   }
 
 
@@ -1727,8 +1691,8 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
      default to 0. Since only `days`, `seconds` and `microseconds` are
      stored, the other arguments are converted to days, seconds
      and microseconds. */
-  proc timedelta.init(days:int=0, seconds:int=0, microseconds:int=0,
-                      milliseconds:int=0, minutes:int=0, hours:int=0, weeks:int=0) {
+  proc timedelta.init(days=0, seconds=0, microseconds=0,
+                      milliseconds=0, minutes=0, hours=0, weeks=0) {
     param usps = 1000000,  // microseconds per second
           uspms = 1000,    // microseconds per millisecond
           spd = 24*60*60; // seconds per day
@@ -1900,7 +1864,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   pragma "no doc"
-  @deprecated(notes="'TZInfo' is deprecated, please use 'Timezone' instead")
+  deprecated "'TZInfo' is deprecated, please use 'Timezone' instead"
   class TZInfo: Timezone { }
 
   /* Abstract base class for time zones. This class should not be used
@@ -1943,8 +1907,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
    :returns: The elapsed time since midnight, local time, in the units specified
    :rtype:   `real(64)`
  */
-@deprecated(notes="'getCurrentTime()' is deprecated please use 'timeSinceEpoch().totalSeconds()' instead")
-proc getCurrentTime(unit: TimeUnits = TimeUnits.seconds) : real(64) do
+proc getCurrentTime(unit: TimeUnits = TimeUnits.seconds) : real(64)
   return _convert_microseconds(unit, chpl_now_time());
 
 /*
@@ -1988,8 +1951,7 @@ proc getCurrentDayOfWeek() : Day {
    :arg  unit: The units for the duration
    :type unit: :type:`TimeUnits`
 */
-@deprecated(notes="'sleep' with a 'TimeUnits' argument is deprecated. Please use 'sleep' with a time in seconds")
-inline proc sleep(t: real, unit: TimeUnits) : void {
+inline proc sleep(t: real, unit: TimeUnits = TimeUnits.seconds) : void {
   use CTypes;
   extern proc chpl_task_sleep(s:c_double) : void;
 
@@ -1998,25 +1960,6 @@ inline proc sleep(t: real, unit: TimeUnits) : void {
     return;
   }
   chpl_task_sleep(_convert_to_seconds(unit, t:real):c_double);
-}
-
-/*
-   Delay a task for a duration specified in seconds. This function
-   will return without sleeping and emit a warning if the duration is
-   negative.
-
-   :arg  t: The duration for the time to sleep
-   :type t: `real`
-*/
-inline proc sleep(t: real) : void {
-  use CTypes;
-  extern proc chpl_task_sleep(s:c_double) : void;
-
-  if t < 0 {
-    warning("sleep() called with negative time parameter: '", t, "'");
-    return;
-  }
-  chpl_task_sleep(t:c_double);
 }
 
 /*
@@ -2099,8 +2042,7 @@ record stopwatch {
      :returns: The elapsed time in the units specified
      :rtype:   `real(64)`
   */
-  @deprecated(notes="'stopwatch.elapsed' with a 'TimeUnits' argument is deprecated. Please call 'stopwatch.elapsed' without an argument and assume it returns a time in seconds.")
-  proc elapsed(unit: TimeUnits) : real {
+  proc elapsed(unit: TimeUnits = TimeUnits.seconds) : real {
     if running {
       var time2: _timevalue = chpl_now_timevalue();
 
@@ -2109,29 +2051,9 @@ record stopwatch {
       return _convert_microseconds(unit, accumulated);
     }
   }
-
-  /*
-     Returns the cumulative elapsed time, in seconds, between
-     all pairs of calls to :proc:`start` and :proc:`stop`
-     since the timer was created or the last call to :proc:`clear`.
-     If the timer is running, the elapsed time since the last call to
-     :proc:`start` is added to the return value.
-
-     :returns: The elapsed time in seconds
-     :rtype:   `real(64)`
-  */
-  proc elapsed() : real {
-    if running {
-      var time2: _timevalue = chpl_now_timevalue();
-
-      return (accumulated + _diff_time(time2, time)) / 1.0e+6;
-    } else {
-      return accumulated / 1.0e+6;
-    }
-  }
 }
 
-@deprecated(notes="'Timer' is deprecated, please use 'stopwatch' instead")
+deprecated "'Timer' is deprecated, please use 'stopwatch' instead"
 record Timer {
   pragma "no doc"
   var time:        _timevalue = chpl_null_timevalue();
@@ -2189,7 +2111,6 @@ record Timer {
      :returns: The elapsed time in the units specified
      :rtype:   `real(64)`
   */
-  @deprecated(notes="'Timer.elapsed' with a 'TimeUnits' argument is deprecated. Please call 'stopwatch.elapsed' without an argument and assume it returns a time in seconds.")
   proc elapsed(unit: TimeUnits = TimeUnits.seconds) : real {
     if running {
       var time2: _timevalue = chpl_now_timevalue();
@@ -2216,7 +2137,6 @@ private inline proc _diff_time(t1: _timevalue, t2: _timevalue) {
 }
 
 // converts a time specified by unit into seconds
-@deprecated(notes="'_convert_to_seconds' is deprecated without replacement")
 private proc _convert_to_seconds(unit: TimeUnits, us: real) {
   select unit {
     when TimeUnits.microseconds do return us *    1.0e-6;
@@ -2231,7 +2151,6 @@ private proc _convert_to_seconds(unit: TimeUnits, us: real) {
 }
 
 // converts microseconds to another unit
-@deprecated(notes="'_convert_microseconds' is deprecated without replacement")
 private proc _convert_microseconds(unit: TimeUnits, us: real) {
   select unit {
     when TimeUnits.microseconds do return us;
