@@ -721,7 +721,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
           // copy values to Chapel array. Convert to double if not NaN
           for (int64_t j = 0; j < batchSize; j++){
-            if (max_def != 0 && def_lvl[j] == 0) { // when definition level is 0, mean Null which equated to NaN here
+            // when definition level is 0, mean Null which equated to NaN here unless 0 is the max meaning no null/nan values
+            if (max_def != 0 && def_lvl[j] == 0) {
               chpl_ptr[i] = NAN;
               idx_adjust++; // account for the NaN at the indexes after because tmpArr only stores values
             } else {
@@ -749,8 +750,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
           // copy values into our Chapel array
           for (int64_t j = 0; j < batchSize; j++){
-            std::cout << "j = " << j << " Def Lvl: " << def_lvl[j] << " Rep Lvl: " << rep_lvl[j];
-            if (max_def != 0 && def_lvl[j] == 0) { // when definition level is 0, mean Null which equated to NaN here
+            // when definition level is 0, mean Null which equated to NaN here unless 0 is the max meaning no null/nan values
+            if (max_def != 0 && def_lvl[j] == 0) {
               chpl_ptr[i] = NAN;
               idx_adjust++; // account for the NaN at the indexes after because tmpArr only stores values
             } else {
