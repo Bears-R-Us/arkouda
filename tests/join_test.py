@@ -95,6 +95,12 @@ class JoinTest(ArkoudaTest):
         l, r = ak.join.inner_join(left, right)
         self.assertListEqual(left[l].to_list(), right[r].to_list())
 
+        strLeft = ak.array(["a", "b", "c", "d", "e", "f", "g", "h"])
+        strRight = ak.array(["c", "g", "a", "d", "f", "e", "b", "d"])
+
+        strL, strR = ak.join.inner_join(strLeft, strRight)
+        self.assertListEqual(strLeft[strL].to_list(), strRight[strR].to_list())
+
         with self.assertRaises(ValueError):
             l, r = ak.join.inner_join(left, right, wherefunc=ak.unique)
 

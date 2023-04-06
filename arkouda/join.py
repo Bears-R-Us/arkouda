@@ -13,6 +13,7 @@ from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate, in1d
+from arkouda.strings import Strings
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
 
@@ -169,7 +170,8 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
 
 @typechecked
 def inner_join(
-    left: pdarray, right: pdarray, wherefunc: Callable = None, whereargs: Tuple[pdarray, pdarray] = None
+    left: Union[pdarray, Strings], right: Union[pdarray, Strings], wherefunc: Callable = None,
+        whereargs: Tuple[Union[pdarray, Strings], Union[pdarray, Strings]] = None
 ) -> Tuple[pdarray, pdarray]:
     """Perform inner join on values in <left> and <right>,
     using conditions defined by <wherefunc> evaluated on
@@ -177,9 +179,9 @@ def inner_join(
 
     Parameters
     ----------
-    left : pdarray(int64)
+    left : pdarray(int64), Strings
         The left values to join
-    right : pdarray(int64)
+    right : pdarray(int64), Strings
         The right values to join
     wherefunc : function, optional
         Function that takes two pdarray arguments and returns
@@ -204,6 +206,9 @@ def inner_join(
 
     """
     from inspect import signature
+
+    if type(left) != type(right):
+        raise TypeError("Left and Right arrays must be of same type")
 
     sample = np.min((left.size, right.size, 5))  # type: ignore
     if wherefunc is not None:
