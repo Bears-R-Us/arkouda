@@ -181,9 +181,9 @@ def inner_join(
     <whereargs>, returning indices of left-right pairs.
     Parameters
     ----------
-    left : pdarray(int64)
+    left : pdarray(int64), Strings
         The left values to join
-    right : pdarray(int64)
+    right : pdarray(int64), Strings
         The right values to join
     wherefunc : function, optional
         Function that takes two pdarray arguments and returns
@@ -204,6 +204,9 @@ def inner_join(
     `assert wherefunc(whereargs[0][leftInds], whereargs[1][rightInds]).all()`
     """
     from inspect import signature
+
+    if type(left) != type(right):
+        raise TypeError("Left and Right arrays must be of same type")
 
     sample = np.min((left.size, right.size, 5))  # type: ignore
     if wherefunc is not None:
