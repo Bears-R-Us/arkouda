@@ -2371,6 +2371,9 @@ def divmod(
         if x.size != y.size:
             raise ValueError(f"size mismatch {x.size} {y.size}")
 
+    # if (not isinstance(y, pdarray) and y == 0) or (isinstance(y, pdarray) and all(y)):
+    #     raise ZeroDivisionError("Can not divide by zero")
+
     if where is True:
         return x // y, x % y  # type: ignore
     elif where is False:
@@ -2382,9 +2385,9 @@ def divmod(
     else:
         div = x // y
         mod = x % y
-        return akwhere(where, div, akcast(x, div.dtype)), akwhere(
-            where, mod, akcast(x, mod.dtype)
-        )  # type: ignore
+        return (
+            akwhere(where, div, akcast(x, div.dtype)),  # type: ignore
+            akwhere(where, mod, akcast(x, mod.dtype)))  # type: ignore
 
 
 @typechecked

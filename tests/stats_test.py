@@ -125,22 +125,84 @@ class StatsTest(ArkoudaTest):
         ).corr()
 
     def test_divmod(self):
-        div_int, mod_int = ak.divmod(self.x, self.y)
-        divnp_int, modnp_int = np.divmod(self.npx, self.npy)
-        self.assertListEqual(div_int.to_list(), divnp_int.tolist())
-        self.assertListEqual(mod_int.to_list(), modnp_int.tolist())
+        # int pda int pda
+        ak_div, ak_mod = ak.divmod(self.x, self.y)
+        np_div, np_mod = np.divmod(self.npx, self.npy)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
-        div_int, mod_int = ak.divmod(self.x, self.y)
-        divnp_int, modnp_int = np.divmod(self.npx, self.npy)
-        self.assertListEqual(div_int.to_list(), divnp_int.tolist())
-        self.assertListEqual(mod_int.to_list(), modnp_int.tolist())
+        # float pda float pda
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x, ak.float64), ak.cast(self.y, ak.float64))
+        np_div, np_mod = np.divmod(self.npx.astype(float), self.npy.astype(float))
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
-        # truth = ak.arange(10) % 2 == 0
-        # truthnp = np.arange(10) % 2 == 0
-        # div_intt, mod_intt = ak.divmod(self.x, self.y, where=False)
-        # divnp_intt, modnp_intt = np.divmod(self.npx, self.npy, where=False)
-        #
-        # print(div_intt)
-        # print(divnp_intt)
-        # self.assertListEqual(div_intt.to_list(), divnp_intt.tolist())
-        # self.assertListEqual(mod_intt.to_list(), modnp_intt.tolist())
+        # int pda float pda
+        ak_div, ak_mod = ak.divmod(self.x, ak.cast(self.y, ak.float64))
+        np_div, np_mod = np.divmod(self.npx, self.npy.astype(float))
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float pda int pda
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x, ak.float64), self.y)
+        np_div, np_mod = np.divmod(self.npx.astype(float), self.npy)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # scalar
+        # int scalar int pda
+        ak_div, ak_mod = ak.divmod(30, self.y)
+        np_div, np_mod = np.divmod(30, self.npy)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # int scalar float pda
+        ak_div, ak_mod = ak.divmod(30, ak.cast(self.y, ak.float64))
+        np_div, np_mod = np.divmod(30, self.npy.astype(float))
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # int pda int scalar
+        ak_div, ak_mod = ak.divmod(self.x, 3)
+        np_div, np_mod = np.divmod(self.npx, 3)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # int pda int scalar
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x, ak.float64), 3)
+        np_div, np_mod = np.divmod(self.npx.astype(float), 3)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float scalar int pda
+        ak_div, ak_mod = ak.divmod(30.0, self.y)
+        np_div, np_mod = np.divmod(30.0, self.npy)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float scalar float pda
+        ak_div, ak_mod = ak.divmod(30.0, ak.cast(self.y, ak.float64))
+        np_div, np_mod = np.divmod(30.0, self.npy.astype(float))
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # int pda float scalar
+        ak_div, ak_mod = ak.divmod(self.x, 3.0)
+        np_div, np_mod = np.divmod(self.npx, 3.0)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # int pda float scalar
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x, ak.float64), 3.0)
+        np_div, np_mod = np.divmod(self.npx.astype(float), 3.0)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        #where
+        truth = ak.arange(10) % 2 == 0
+        ak_div_truth, ak_mod_truth = ak.divmod(self.x, self.y, where=truth)
+        self.assertListEqual(ak_div_truth.to_list(),
+                             [(self.x[i] // self.y[i]) if truth[i] else self.x[i] for i in range(10)])
+        self.assertListEqual(ak_mod_truth.to_list(),
+                             [(self.x[i] % self.y[i]) if truth[i] else self.x[i] for i in range(10)])
+
