@@ -13,10 +13,8 @@ This will run the entire benchmark suite with the following command:
 python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks
 ```
 
-The results for the benchmarks can be found within the provided benchmark storage path, which by default is within a
-directory found in `//benchmark_v2/.benchmarks`.
-
-The command used here will provide a full set of information on all benchmarks available. 
+The results for the benchmarks can be found within the provided benchmark storage path, which by default is within
+a directory found in `//benchmark_v2/.benchmarks`. Here you will find JSON files with the details on all the benchmarks.
 
 The `-c` flag specifies to PyTest to use `benchmark.ini` as the configuration file for this set of test. The 
 configuration file specifies which files contain benchmarks as well as a set of environment variables used by 
@@ -40,7 +38,7 @@ to any use case.
 > Storage location for benchmark output JSON
 
 `--benchmark-save`
-> **Default:** "COMMIT-ID_DATE_TIME_IS-DIRTY" example: 0d4865d7c9453adc6af6409568da326845c358b9_20230406_165330.json
+> example: 0001_0d4865d7c9453adc6af6409568da326845c358b9_20230406_165330.json
 > 
 > Name to save the output JSON as. Will be saved as "counter_NAME.json"
 
