@@ -20,10 +20,4 @@ module Stats {
     proc corr(ar1: [?aD1] ?t1, ar2: [?aD2] ?t2): real throws {
         return cov(ar1, ar2) / (std(ar1, 1) * std(ar2, 1));
     }
-    proc div(ar1: [?aD1] ?t1, ar2: [?aD2] ?t2): real throws {
-        return (ar1:real / ar2:real):real;
-    }
-    proc mod(ar1: [?aD1] ?t1, ar2: [?aD2] ?t2): real throws {
-        return (ar1:real % ar2:real):real;
-    }
 }

@@ -306,5 +306,4 @@ module StatsMsg {
     registerFunction("cov", covMsg, getModuleName());
     registerFunction("corr",  corrMsg, getModuleName());
     registerFunction("corrMatrix",  corrMatrixMsg, getModuleName());
-    registerFunction("divmod", divmodMsg, getModuleName());
 }
