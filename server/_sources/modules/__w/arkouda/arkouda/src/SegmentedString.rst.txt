@@ -220,6 +220,10 @@ or
       :returns: Strings – Substrings with pattern matches substituted and (optional) int64 pdarray – For each original string, the number of susbstitutions
       
 
+   .. method:: proc segStrWhere(otherStr: ?t, condition: [] bool, newLens: [] int) throws
+
+   .. method:: proc segStrWhere(other: ?t, condition: [] bool, newLens: [] int) throws
+
    .. method:: proc strip(chars: string) throws
 
       

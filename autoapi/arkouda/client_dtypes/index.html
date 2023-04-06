@@ -402,7 +402,7 @@ typically treat this class like a uint64 pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id701" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id596" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
 binary representation of fields. If Strings, the values are converted
 to binary according to the mapping defined by the names and MSB_left
 arguments.</p></li>
@@ -486,6 +486,11 @@ for importing Python lists of IP addresses into Arkouda.</p>
 <p>This class is a thin wrapper around pdarray that mostly affects
 how values are displayed to the user. Operators and methods will
 typically treat this class like an int64 pdarray.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.export_uint">
+<span class="sig-name descname"><span class="pre">export_uint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.export_uint" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.format">
 <span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.format" title="Permalink to this definition">#</a></dt>
@@ -643,6 +648,7 @@ and convert it to an integer.</p>
 </li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.ip_address"><code class="docutils literal notranslate"><span class="pre">ip_address()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4"><code class="docutils literal notranslate"><span class="pre">IPv4</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.export_uint"><code class="docutils literal notranslate"><span class="pre">IPv4.export_uint()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.format"><code class="docutils literal notranslate"><span class="pre">IPv4.format()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.normalize"><code class="docutils literal notranslate"><span class="pre">IPv4.normalize()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.to_ndarray"><code class="docutils literal notranslate"><span class="pre">IPv4.to_ndarray()</span></code></a></li>

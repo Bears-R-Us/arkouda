@@ -176,6 +176,9 @@ Functions
    how values are displayed to the user. Operators and methods will
    typically treat this class like an int64 pdarray.
 
+   .. py:method:: export_uint()
+
+
    .. py:method:: format(x)
 
       Format a single integer IP address as a string.

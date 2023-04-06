@@ -306,7 +306,7 @@ Functions
    the array.
 
 
-.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], B: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
+.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]
 
    Returns an array with elements chosen from A and B based upon a
    conditioning array. As is the case with numpy.where, the return array
@@ -317,18 +317,18 @@ Functions
    :param condition: Used to choose values from A or B
    :type condition: pdarray
    :param A: Value(s) used when condition is True
-   :type A: Union[numeric_scalars, pdarray]
+   :type A: Union[numeric_scalars, str, pdarray, Strings, Categorical]
    :param B: Value(s) used when condition is False
-   :type B: Union[numeric_scalars, pdarray]
+   :type B: Union[numeric_scalars, str, pdarray, Strings, Categorical]
 
    :returns: Values chosen from A where the condition is True and B where
              the condition is False
    :rtype: pdarray
 
    :raises TypeError: Raised if the condition object is not a pdarray, if A or B is not
-       an int, np.int64, float, np.float64, or pdarray, if pdarray dtypes
-       are not supported or do not match, or multiple condition clauses (see
-       Notes section) are applied
+       an int, np.int64, float, np.float64, pdarray, str, Strings, Categorical
+       if pdarray dtypes are not supported or do not match, or multiple
+       condition clauses (see Notes section) are applied
    :raises ValueError: Raised if the shapes of the condition, A, and B pdarrays are unequal
 
    .. rubric:: Examples
@@ -350,6 +350,18 @@ Functions
    >>> cond = a1 < 5
    >>> ak.where(cond,a1,a2)
    array([1, 2, 3, 4, 10, 10, 10, 10, 10])
+
+   >>> s1 = ak.array([f'str {i}' for i in range(10)])
+   >>> s2 = 'str 21'
+   >>> cond = (ak.arange(10) % 2 == 0)
+   >>> ak.where(cond,s1,s2)
+   array(['str 0', 'str 21', 'str 2', 'str 21', 'str 4', 'str 21', 'str 6', 'str 21', 'str 8','str 21'])
+
+   >>> c1 = ak.Categorical(ak.array([f'str {i}' for i in range(10)]))
+   >>> c2 = ak.Categorical(ak.array([f'str {i}' for i in range(9, -1, -1)]))
+   >>> cond = (ak.arange(10) % 2 == 0)
+   >>> ak.where(cond,c1,c2)
+   array(['str 0', 'str 8', 'str 2', 'str 6', 'str 4', 'str 4', 'str 6', 'str 2', 'str 8', 'str 0'])
 
    .. rubric:: Notes
 

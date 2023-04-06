@@ -14,6 +14,7 @@ Functions
 .. autoapisummary::
 
    arkouda.dtypes.dtype
+   arkouda.dtypes.isSupportedNumber
    arkouda.dtypes.check_np_dtype
    arkouda.dtypes.translate_np_dtype
    arkouda.dtypes.resolve_scalar_dtype
@@ -126,6 +127,9 @@ Attributes
 .. py:data:: DTypeObjects
 
    
+
+.. py:function:: isSupportedNumber(num)
+
 
 .. py:function:: check_np_dtype(dt: numpy.dtype) -> None
 

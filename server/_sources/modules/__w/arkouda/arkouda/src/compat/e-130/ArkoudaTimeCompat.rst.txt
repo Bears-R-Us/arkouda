@@ -1,0 +1,777 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaTimeCompat
+   :synopsis: Support for routines related to measuring the passing of time.
+
+ArkoudaTimeCompat
+=================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaTimeCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaTimeCompat;
+
+Support for routines related to measuring the passing of time.
+
+This module provides support for querying wall time in the local
+timezone and implements a record :record:`~stopwatch` that can measure
+the execution time of sections of a program. The stopwatch has the
+potential for microsecond resolution and is intended to be useful for
+performance testing.
+
+
+.. enum:: enum TimeUnits { microseconds, milliseconds, seconds, minutes, hours }
+
+   Specifies the units to be used when certain functions return a time 
+
+
+   .. warning::
+
+      The 'TimeUnits' type is deprecated. Please specify times in seconds in this module.
+
+.. enum:: enum Day { sunday = 0, monday, tuesday, wednesday, thursday, friday, saturday }
+
+   Specifies the day of the week 
+
+
+.. enum:: enum dayOfWeek { Monday = 0, Tuesday = 1, Wednesday = 2, Thursday = 3, Friday = 4, Saturday = 5, Sunday = 6 }
+
+   Days in the week, starting with `Monday` = 0 
+
+
+.. enum:: enum isoDayOfWeek { Monday = 1, Tuesday = 2, Wednesday = 3, Thursday = 4, Friday = 5, Saturday = 6, Sunday = 7 }
+
+   Days in the week, starting with `Monday` = 1 
+
+
+.. data:: param MINYEAR = 1
+
+   The minimum year allowed in `date` objects 
+
+.. data:: param MAXYEAR = 9999
+
+   The maximum year allowed in `date` objects 
+
+.. data:: const unixEpoch = new datetime(1970, 1, 1)
+
+   The Unix Epoch date and time 
+
+.. function:: proc timeSinceEpoch(): timedelta
+
+   Get the `time` since Unix Epoch in seconds
+     
+
+.. function:: proc isLeapYear(year: int)
+
+   Return true if `year` is a leap year 
+
+.. function:: proc daysInMonth(year: int, month: int) throws
+
+   Return the number of days in month `month` during the year `year`.
+   The number for a month can change from year to year due to leap years.
+   
+   :throws IllegalArgumentError: Thrown if `month` is out of range.
+
+.. record:: date
+
+   A record representing a date 
+
+
+   .. method:: proc year
+
+      The year represented by this `date` value 
+
+   .. method:: proc month
+
+      The month represented by this `date` value 
+
+   .. method:: proc day
+
+      The day represented by this `date` value 
+
+   .. method:: proc type min
+
+      The minimum representable `date` 
+
+   .. method:: proc type max
+
+      The maximum representable `date` 
+
+   .. method:: proc type resolution
+
+      The minimum non-zero difference between two dates 
+
+.. method:: proc date.init(year: int, month: int, day: int)
+
+   Initialize a new `date` value from a `year`, `month`, and `day`. All
+   three arguments are required and must be in valid ranges.  The
+   valid ranges are:
+   
+   1 <= `year` <= 9999
+   
+   1 <= `month` <= 12
+   
+   1 <= `day` <= the number of days in the given month and year
+   
+
+.. method:: proc type date.today()
+
+   A `date` object representing the current day 
+
+.. method:: proc type date.fromTimestamp(timestamp)
+
+   The date that is `timestamp` seconds from the epoch 
+
+.. method:: proc type date.fromOrdinal(ord)
+
+   The `date` that is `ord` days from 1-1-0001 
+
+.. method:: proc date.replace(year = 0, month = 0, day = 0)
+
+   Replace the `year`, `month` and/or `day` in a date to create a
+   new `date` 
+
+.. method:: proc date.timetuple()
+
+   Return a filled record matching the C `struct tm` type for the given date 
+
+   .. warning::
+
+      'date.timetuple' is unstable
+
+.. method:: proc date.toOrdinal()
+
+   Return the number of days since 1-1-0001 this `date` represents 
+
+.. method:: proc date.weekday()
+
+   Return the day of the week as a `dayOfWeek`.
+   `Monday` == 0, `Sunday` == 6
+   
+
+.. method:: proc date.isoWeekday()
+
+   Return the day of the week as an `isoDayOfWeek`.
+   `Monday` == 1, `Sunday` == 7 
+
+.. method:: proc date.isoCalendar()
+
+   Return the ISO date as a tuple containing the ISO year, ISO week number,
+   and ISO day of the week
+   
+
+.. method:: proc date.isoFormat()
+
+   Return the date as a `string` in ISO 8601 format: "YYYY-MM-DD" 
+
+.. method:: proc date.ctime()
+
+   Return a `string` representing the date 
+
+   .. warning::
+
+      'date.ctime' is unstable
+
+.. method:: proc date.strftime(fmt: string)
+
+   Return a formatted `string` matching the `format` argument and the date 
+
+   .. warning::
+
+      'date.strftime' is unstable
+
+.. method:: proc date.writeThis(f) throws
+
+   Writes this `date` in ISO 8601 format: YYYY-MM-DD 
+
+.. method:: proc date.readThis(f) throws
+
+   Reads this `date` from ISO 8601 format: YYYY-MM-DD 
+
+.. record:: time
+
+   A record representing a time 
+
+
+   .. method:: proc hour
+
+      The hour represented by this `time` value 
+
+   .. method:: proc minute
+
+      The minute represented by this `time` value 
+
+   .. method:: proc second
+
+      The second represented by this `time` value 
+
+   .. method:: proc microsecond
+
+      The microsecond represented by this `time` value 
+
+   .. method:: proc timezone
+
+      The timezone represented by this `time` value 
+
+   .. method:: proc type min
+
+      The minimum representable `time` 
+
+   .. method:: proc type max
+
+      The maximum representable `time` 
+
+   .. method:: proc type resolution
+
+      The minimum non-zero difference between two times 
+
+.. method:: proc time.init(hour: int = 0, minute: int = 0, second: int = 0, microsecond: int = 0, in tz: shared Timezone?)
+
+   Initialize a new `time` value from the given `hour`, `minute`, `second`,
+   `microsecond`, and `timezone`.  All arguments are optional
+   
+
+   .. warning::
+
+      tz is unstable; its type may change in the future
+
+.. method:: proc time.init(hour: int = 0, minute: int = 0, second: int = 0, microsecond: int = 0)
+
+   Initialize a new `time` value from the given `hour`, `minute`, `second`,
+   `microsecond`.  All arguments are optional
+   
+
+.. method:: proc time.replace(hour = -1, minute = -1, second = -1, microsecond = -1)
+
+   Replace the `hour`, `minute`, `second`, `microsecond` in a
+   `time` to create a new `time`. All arguments are optional.
+   
+
+.. method:: proc time.replace(hour = -1, minute = -1, second = -1, microsecond = -1, in tz)
+
+   Replace the `hour`, `minute`, `second`, `microsecond` and `tz` in a
+   `time` to create a new `time`. All arguments are optional.
+   
+
+   .. warning::
+
+      tz is unstable; its type may change in the future
+
+.. method:: proc time.isoFormat()
+
+   Return a `string` representing the `time` in ISO format 
+
+.. method:: proc time.utcOffset()
+
+   Return the offset from UTC 
+
+.. method:: proc time.dst()
+
+   Return the daylight saving time offset 
+
+.. method:: proc time.tzname()
+
+   Return the name of the timezone for this `time` value 
+
+.. method:: proc time.strftime(fmt: string)
+
+   Return a `string` matching the `format` argument for this `time` 
+
+   .. warning::
+
+      'time.strftime' is unstable
+
+.. method:: proc time.writeThis(f) throws
+
+   Writes this `time` in ISO format: hh:mm:ss.sss 
+
+.. method:: proc time.readThis(f) throws
+
+   Reads this `time` from ISO format: hh:mm:ss.sss 
+
+.. record:: datetime
+
+   A record representing a combined `date` and `time` 
+
+
+   .. method:: proc type min
+
+      The minimum representable `date` and `time` 
+
+   .. method:: proc type max
+
+      The maximum representable `date` and `time` 
+
+   .. method:: proc type resolution
+
+      The minimum non-zero difference between two datetimes 
+
+   .. method:: proc year
+
+      The year represented by this `datetime` value 
+
+   .. method:: proc month
+
+      The month represented by this `datetime` value 
+
+   .. method:: proc day
+
+      The day represented by this `datetime` value 
+
+   .. method:: proc hour
+
+      The hour represented by this `datetime` value 
+
+   .. method:: proc minute
+
+      The minute represented by this `datetime` value 
+
+   .. method:: proc second
+
+      The second represented by this `datetime` value 
+
+   .. method:: proc microsecond
+
+      The microsecond represented by this `datetime` value 
+
+   .. method:: proc timezone
+
+      The timezone represented by this `datetime` value 
+
+.. method:: proc datetime.init(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0, microsecond: int = 0, in tz)
+
+   Initialize a new `datetime` value from the given `year`, `month`, `day`,
+   `hour`, `minute`, `second`, `microsecond` and timezone.  The `year`,
+   `month`, and `day` arguments are required, the rest are optional.
+   
+
+   .. warning::
+
+      tz is unstable; its type may change in the future
+
+.. method:: proc datetime.init(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0, microsecond: int = 0)
+
+   Initialize a new `datetime` value from the given `year`, `month`, `day`,
+   `hour`, `minute`, `second`, `microsecond` and timezone.  The `year`,
+   `month`, and `day` arguments are required, the rest are optional.
+   
+
+.. method:: proc datetime.init(d: date, t: time)
+
+   Initialize a new `datetime` value from the given `date` and `time` 
+
+.. method:: proc type datetime.now()
+
+   Return a `datetime` value representing the current time and date 
+
+.. method:: proc type datetime.now(in tz: shared Timezone?)
+
+   Return a `datetime` value representing the current time and date 
+
+.. method:: proc type datetime.utcNow()
+
+   Return a `datetime` value representing the current time and date in UTC 
+
+.. method:: proc type datetime.fromTimestamp(timestamp: real)
+
+   The `datetime` that is `timestamp` seconds from the epoch 
+
+.. method:: proc type datetime.fromTimestamp(timestamp: real, in tz: shared Timezone?)
+
+   The `datetime` that is `timestamp` seconds from the epoch 
+
+   .. warning::
+
+      tz is unstable; its type may change in the future
+
+.. method:: proc type datetime.utcFromTimestamp(timestamp)
+
+   The `datetime` that is `timestamp` seconds from the epoch in UTC 
+
+.. method:: proc type datetime.fromOrdinal(ordinal)
+
+   The `datetime` that is `ordinal` days from 1-1-0001 
+
+.. method:: proc type datetime.combine(d: date, t: time)
+
+   Form a `datetime` value from a given `date` and `time` 
+
+.. method:: proc datetime.getdate()
+
+   Get the `date` portion of the `datetime` value 
+
+.. method:: proc datetime.gettime()
+
+   Get the `time` portion of the `datetime` value, with `tz` = nil 
+
+.. method:: proc datetime.timetz()
+
+   Get the `time` portion of the `datetime` value including the
+   `tz` field
+   
+
+.. method:: proc datetime.replace(year = -1, month = -1, day = -1, hour = -1, minute = -1, second = -1, microsecond = -1, in tz = this.timezone)
+
+   Replace the `year`, `month`, `day`, `hour`, `minute`, `second`,
+   `microsecond`, or `tz` to form a new `datetime` object. All
+   arguments are optional.
+   
+
+.. method:: proc datetime.astimezone(in tz: shared Timezone)
+
+   Return the date and time converted into the timezone in the argument 
+
+   .. warning::
+
+      tz is unstable; its type may change in the future
+
+.. method:: proc datetime.utcOffset()
+
+   Return the offset from UTC 
+
+.. method:: proc datetime.dst()
+
+   Return the daylight saving time offset 
+
+.. method:: proc datetime.tzname()
+
+   Return the name of the timezone for this `datetime` value 
+
+.. method:: proc datetime.timetuple()
+
+   Return a filled record matching the C `struct tm` type for the given
+   `datetime` 
+
+   .. warning::
+
+      'datetime.timetuple' is unstable
+
+.. method:: proc datetime.utctimetuple()
+
+   Return a filled record matching the C `struct tm` type for the given
+   `datetime` in UTC
+   
+
+   .. warning::
+
+      'datetime.utctimetuple' is unstable
+
+.. method:: proc datetime.toOrdinal()
+
+   Return the number of days since 1-1-0001 this `datetime` represents 
+
+.. method:: proc datetime.weekday()
+
+   Return the day of the week as a `dayOfWeek`.
+   `Monday` == 0, `Sunday` == 6
+   
+
+.. method:: proc datetime.isoWeekday()
+
+   Return the day of the week as an `isoDayOfWeek`.
+   `Monday` == 1, `Sunday` == 7
+   
+
+.. method:: proc datetime.isoCalendar()
+
+   Return the ISO date as a tuple containing the ISO year, ISO week number,
+   and ISO day of the week
+   
+
+.. method:: proc datetime.isoFormat(sep = "T")
+
+   Return the `datetime` as a `string` in ISO format 
+
+.. method:: proc type datetime.strptime(date_string: string, format: string)
+
+   Create a `datetime` as described by the `date_string` and
+   `format` string.  Note that this routine currently only supports
+   the format strings of C's strptime().
+   
+
+   .. warning::
+
+      'datetime.strptime' is unstable
+
+.. method:: proc datetime.strftime(fmt: string)
+
+   Create a `string` from a `datetime` matching the `format` string 
+
+   .. warning::
+
+      'datetime.strftime' is unstable
+
+.. method:: proc datetime.ctime()
+
+   Return a `string` from a `datetime` in the form:
+   Wed Dec  4 20:30:40 2002
+   
+
+   .. warning::
+
+      'datetime.ctime' is unstable
+
+.. method:: proc datetime.writeThis(f) throws
+
+   Writes this `datetime` in ISO format: YYYY-MM-DDThh:mm:ss.sss 
+
+.. method:: proc datetime.readThis(f) throws
+
+   Reads this `datetime` from ISO format: YYYY-MM-DDThh:mm:ss.sss 
+
+.. record:: timedelta
+
+   A record representing an amount of time.  A `timedelta` has fields
+   representing days, seconds, and microseconds.  These fields are always
+   kept within the following ranges:
+   
+   0 <= `microseconds` < 1000000
+   
+   0 <= `seconds` < 60*60*24
+   
+   -999999999 <= `days` <= 999999999
+   
+   It is an overflow error if `days` is outside the given range.
+   
+
+
+   .. method:: proc days
+
+      The number of days this `timedelta` represents 
+
+   .. method:: proc seconds
+
+      The number of seconds this `timedelta` represents 
+
+   .. method:: proc microseconds
+
+      The number of microseconds this `timedelta` represents 
+
+   .. method:: proc type min
+
+      Return the minimum representable `timedelta` object. 
+
+   .. method:: proc type max
+
+      Return the maximum representable `timedelta` object. 
+
+   .. method:: proc type resolution
+
+      Return the smallest positive value representable by a `timedelta`
+      object.
+      
+
+.. method:: proc timedelta.init(days: int = 0, seconds: int = 0, microseconds: int = 0, milliseconds: int = 0, minutes: int = 0, hours: int = 0, weeks: int = 0)
+
+   Initialize a `timedelta` object.  All arguments are optional and
+   default to 0. Since only `days`, `seconds` and `microseconds` are
+   stored, the other arguments are converted to days, seconds
+   and microseconds. 
+
+.. method:: proc timedelta.init(timestamp: real)
+
+   Create a `timedelta` from a given number of seconds 
+
+.. method:: proc timedelta.totalSeconds(): real
+
+   Return the total number of seconds represented by this object 
+
+.. function:: proc abs(t: timedelta)
+
+   Return the absolute value of `t`.  If `t` is negative, then returns `-t`,
+   else returns `t`.
+   
+
+.. class:: Timezone
+
+   Abstract base class for time zones. This class should not be used
+   directly, but concrete implementations of time zones should be
+   derived from it. 
+
+
+   .. method:: proc utcOffset(dt: datetime): timedelta
+
+      The offset from UTC this class represents 
+
+   .. method:: proc dst(dt: datetime): timedelta
+
+      The `timedelta` for daylight saving time 
+
+   .. method:: proc tzname(dt: datetime): string
+
+      The name of this time zone 
+
+   .. method:: proc fromUtc(dt: datetime): datetime
+
+      Convert a `time` in UTC to this time zone 
+
+.. function:: proc getCurrentTime(unit: TimeUnits = TimeUnits.seconds): real(64)
+
+   
+   :arg  unit: The units for the returned value
+   :type unit: :type:`TimeUnits`
+   
+   :returns: The elapsed time since midnight, local time, in the units specified
+   :rtype:   `real(64)`
+   
+
+   .. warning::
+
+      'getCurrentTime()' is deprecated please use 'timeSinceEpoch().totalSeconds()' instead
+
+.. function:: proc getCurrentDate()
+
+   
+   :returns:  (year, month, day) as a tuple of 3 ints
+   
+   The month is in the range 1 to 12.
+   The day   is in the range 1 to 31
+
+.. function:: proc getCurrentDayOfWeek(): Day
+
+   
+   :returns: The current day of the week
+   :rtype:   :type:`Day`
+   
+
+.. function:: proc sleep(t: real, unit: TimeUnits): void
+
+   
+   Delay a task for a duration in the units specified. This function
+   will return without sleeping and emit a warning if the duration is
+   negative.
+   
+   :arg  t: The duration for the time to sleep
+   :type t: `real`
+   
+   :arg  unit: The units for the duration
+   :type unit: :type:`TimeUnits`
+
+   .. warning::
+
+      'sleep' with a 'TimeUnits' argument is deprecated. Please use 'sleep' with a time in seconds
+
+.. function:: proc sleep(t: real): void
+
+   
+   Delay a task for a duration specified in seconds. This function
+   will return without sleeping and emit a warning if the duration is
+   negative.
+   
+   :arg  t: The duration for the time to sleep
+   :type t: `real`
+
+.. record:: stopwatch
+
+   
+   Implements basic stopwatch behavior with a potential resolution of
+   microseconds if supported by the runtime platform.
+   
+   The :record:`!stopwatch` can be started, stopped, and cleared.
+   A :record:`!stopwatch` is either running or stopped.
+
+
+   .. method:: proc clear(): void
+
+      
+      Clears the elapsed time. If the timer is running then it is restarted
+      otherwise it remains in the stopped state.
+      
+
+   .. method:: proc start(): void
+
+      Starts the timer. A warning is emitted if the timer is already running. 
+
+   .. method:: proc stop(): void
+
+      Stops the timer. A warning is emitted if the timer is not running. 
+
+   .. method:: proc reset()
+
+      Clear the elapsed time and ensure the stopwatch is stopped 
+
+   .. method:: proc restart()
+
+      Clear the elapsed time and ensure the stopwatch is running 
+
+   .. method:: proc elapsed(unit: TimeUnits): real
+
+      
+      Returns the cumulative elapsed time, in the units specified, between
+      all pairs of calls to :proc:`start` and :proc:`stop`
+      since the timer was created or the last call to :proc:`clear`.
+      If the timer is running, the elapsed time since the last call to
+      :proc:`start` is added to the return value.
+      
+      :arg  unit: The units for the returned value
+      :type unit: :type:`TimeUnits`
+      
+      :returns: The elapsed time in the units specified
+      :rtype:   `real(64)`
+      
+
+      .. warning::
+
+         'stopwatch.elapsed' with a 'TimeUnits' argument is deprecated. Please call 'stopwatch.elapsed' without an argument and assume it returns a time in seconds.
+
+   .. method:: proc elapsed(): real
+
+      
+      Returns the cumulative elapsed time, in seconds, between
+      all pairs of calls to :proc:`start` and :proc:`stop`
+      since the timer was created or the last call to :proc:`clear`.
+      If the timer is running, the elapsed time since the last call to
+      :proc:`start` is added to the return value.
+      
+      :returns: The elapsed time in seconds
+      :rtype:   `real(64)`
+      
+
+.. record:: Timer
+
+   .. warning::
+
+      'Timer' is deprecated, please use 'stopwatch' instead
+
+   .. method:: proc clear(): void
+
+      
+      Clears the elapsed time. If the timer is running then it is restarted
+      otherwise it remains in the stopped state.
+      
+
+   .. method:: proc start(): void
+
+      Starts the timer. A warning is emitted if the timer is already running. 
+
+   .. method:: proc stop(): void
+
+      Stops the timer. A warning is emitted if the timer is not running. 
+
+   .. method:: proc elapsed(unit: TimeUnits = TimeUnits.seconds): real
+
+      
+      Returns the cumulative elapsed time, in the units specified, between
+      all pairs of calls to :proc:`start` and :proc:`stop`
+      since the timer was created or the last call to :proc:`clear`.
+      If the timer is running, the elapsed time since the last call to
+      :proc:`start` is added to the return value.
+      
+      :arg  unit: The units for the returned value
+      :type unit: :type:`TimeUnits`
+      
+      :returns: The elapsed time in the units specified
+      :rtype:   `real(64)`
+      
+
+      .. warning::
+
+         'Timer.elapsed' with a 'TimeUnits' argument is deprecated. Please call 'stopwatch.elapsed' without an argument and assume it returns a time in seconds.
+
