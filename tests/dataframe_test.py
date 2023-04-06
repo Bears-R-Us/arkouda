@@ -703,3 +703,10 @@ class DataFrameTest(ArkoudaTest):
 
             self.assertListEqual(df['a'].to_list(), rddf['a'].to_list())
             self.assertListEqual(df['b'].to_list(), rddf['b'].to_list())
+
+        # test replacement of IPv4 with uint representation
+        df = ak.DataFrame({
+            'a': ak.IPv4(ak.arange(10))
+        })
+        df['a'] = df['a'].export_uint()
+        self.assertListEqual(ak.arange(10).to_list(), df['a'].to_list())
