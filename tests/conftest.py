@@ -19,7 +19,7 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--trials", action="store", default="5",
-        help="Benchmark only option. Problem size: length of array to use for benchmarks. For tests that run "
+        help="Benchmark only option. Number of times to run each test before averaging results. For tests that run "
              "as many trials as possible in a given time, will be treated as number of seconds to run for."
     )
     parser.addoption(
@@ -55,7 +55,7 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--value_size", action="store", default="",
-        help="Benchmark only option.Length of array from which values are gathered"
+        help="Benchmark only option. Length of array from which values are gathered"
     )
     parser.addoption(
         "--encoding", action="store", default="",
