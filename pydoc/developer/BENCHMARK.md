@@ -25,10 +25,6 @@ the benchmarks.
 `--benchmark-autosave` tells `pytest-benchmark` to save the results of the benchmark in a json file stored in the
 path specified by `--benchmark-storage`.
 
-For more information on these and other available flags, look in the [Benchmark Arguments](#args) section of this
-document.
-
-<span id="args"></span>
 ## Benchmark Arguments
 There are a large number of commandline arguments available for configuring the benchmarks to run in a way fitting 
 to any use case.
@@ -47,6 +43,15 @@ to any use case.
 > **Default:** "COMMIT-ID_DATE_TIME_IS-DIRTY" example: 0d4865d7c9453adc6af6409568da326845c358b9_20230406_165330.json
 > 
 > Name to save the output JSON as. Will be saved as "counter_NAME.json"
+
+`-c`
+> Specify configuration file to be used by PyTest
+> 
+> `benchmark.ini` is our benchmarking configuration file
+
+`-k`
+> Run tests which contain names that match the given string expression (case-insensitive), and can include 
+> Python operators that use filenames, class names and function names as variables.
 
 `--size`
 > **Default:** 10**8
@@ -162,10 +167,7 @@ int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate s
 
 ## Running Single Files or Tests
 
-In instances where a single test or set of tests needs to be run, use the `-k <expression>` flag. `-k` will run tests 
-which contain names that match the given string expression (case-insensitive), and can include Python operators 
-that use filenames, class names and function names as variables.
-
+In instances where a single test or set of tests needs to be run, use the `-k <expression>` flag.
 
 ```commandline
 python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k encoding_benchmark.py
