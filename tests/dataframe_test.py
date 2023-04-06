@@ -710,3 +710,15 @@ class DataFrameTest(ArkoudaTest):
         })
         df['a'] = df['a'].export_uint()
         self.assertListEqual(ak.arange(10).to_list(), df['a'].to_list())
+    def test_subset(self):
+        df = ak.DataFrame({
+            'a': ak.arange(100),
+            'b': ak.randint(0, 20, 100),
+            'c': ak.random_strings_uniform(0, 16, 100),
+            'd': ak.randint(25, 75, 100)
+        })
+        df2 = df[['a', 'b']]
+        self.assertListEqual(['a', 'b'], df2.columns)
+        self.assertListEqual(df.index.to_list(), df2.index.to_list())
+        self.assertListEqual(df['a'].to_list(), df2['a'].to_list())
+        self.assertListEqual(df['b'].to_list(), df2['b'].to_list())
