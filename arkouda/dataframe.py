@@ -399,6 +399,7 @@ class DataFrame(UserDict):
                     result.data[k] = UserDict.__getitem__(self, k)
                     result._columns.append(k)
                 result._empty = False
+                result._set_index(self.index)  # column lens remain the same. Copy the indexing
                 return result
             else:
                 raise TypeError(
