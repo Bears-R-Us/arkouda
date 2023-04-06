@@ -1,9 +1,8 @@
 # PyTest Benchmarks
 
-**Purpose**: Outline the general steps and options available for running the new PyTest benchmarks
+Arkouda uses `pytest-benchmark` for performance benchmarking. This document provides an overview of running `pytest-benchmark` and the configurations available to the user.
 
-The PyTest benchmark structure allows the flexibility of running the entire suite, a single file, 
-or a single benchmark.
+More information on `pytest-benchmark` can be found [here](https://pytest-benchmark.readthedocs.io/en/latest/)
 
 ## Running The Full Suite
 In most cases, running the full benchmark suite is desired. The simplest way to do this is to navigate into the 
@@ -16,8 +15,7 @@ python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file
 
 ## Running Single Files or Tests
 
-In instances where a single test or set of tests needs to be ran, use the `-k <name_of_file>.py` argument. For these 
-examples, `encoding_benchmark.py` and the specific benchmark from within the file `bench_encode` is used.
+In instances where a single test or set of tests needs to be ran, use the `-k <name_of_file>.py` argument. 
 
 ```commandline
 python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k encoding_benchmark.py
@@ -37,7 +35,7 @@ bench_decode[idna]      3.4444 (1.03)     4.4177 (1.0)      3.7852 (1.01)     0.
 bench_decode[ascii]     3.4621 (1.04)     4.9177 (1.11)     4.2250 (1.13)     0.6125 (1.50)     4.0197 (1.17)     0.9991 (1.90)          2;0  236.6864 (0.88)          5           1
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ```
-Similarly, to only run a single test within a file, specify the test name with the `-k` flag instead of a filename
+Similarly, to only run a single test within a file, specify the test name with the `-k` flag instead of a filename. The following example will run only the `bench_encode` benchmark.
 ```commandline
 python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k bench_encode
 ```
@@ -70,7 +68,8 @@ to any use case.
     <td>--benchmark-storage</td>
     <td>"file://benchmark_v2/.benchmarks" when using "<b>make benchmark"</b></td>
 </tr>
-<tr><td colspan="2">Storage location to save benchmark output JSON</td></tr>
+<tr><td colspan="2">Storage location for benchmark output JSON</td></tr>
+
 <tr>
     <td>--benchmark-save</td>
     <td>"COMMIT-ID_DATE_TIME_IS-DIRTY" example: 
@@ -108,7 +107,8 @@ int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate s
     <td>--maxbits</td>
     <td>-1</td>
 </tr>
-<tr><td colspan="2">Only applies to bigint testing. Maximum number of bits, so values > 2**max_bits will wraparound. -1 is 
+<tr><td colspan="2">Only applies to bigint. Maximum number of bits, so values > 2**max_bits will wraparound. -1 is 
+
 interpreted as no maximum.</td></tr>
 <tr>
     <td>--alpha</td>
@@ -465,6 +465,7 @@ Simplified version of the JSON with only sections that we care about:
 }
 ```
 
-The main important components are `benchmarks.extra_info`, which contains the details on the problem size and 
+The components to pay attention to are `benchmarks.extra_info`, which contains the details on the problem size and 
+
 data transfer rate, and `benchmarks.stats` which contains all the timing statistic information calculated from
 the number of trials we ran, represented in `benchmarks.stats.rounds`
