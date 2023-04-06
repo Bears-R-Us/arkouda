@@ -13,9 +13,159 @@ This will run the entire benchmark suite with the following command:
 python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks
 ```
 
+The results for the benchmarks can be found within the provided benchmark storage path, which by default is within a
+directory found in `//benchmark_v2/.benchmarks`.
+
+The command used here will provide a full set of information on all benchmarks available. 
+
+The `-c` flag specifies to PyTest to use `benchmark.ini` as the configuration file for this set of test. The 
+configuration file specifies which files contain benchmarks as well as a set of environment variables used by 
+the benchmarks.
+
+`--benchmark-autosave` tells `pytest-benchmark` to save the results of the benchmark in a json file stored in the
+path specified by `--benchmark-storage`.
+
+For more information on these and other available flags, look in the [Benchmark Arguments](#args) section of this
+document.
+
+<span id="args"></span>
+## Benchmark Arguments
+There are a large number of commandline arguments available for configuring the benchmarks to run in a way fitting 
+to any use case.
+
+`--benchmark-autosave`
+> Used by default when running `make benchmark`
+> 
+> Save the benchmark JSON results to the provided storage location
+
+`--benchmark-storage`
+> Sets location to "file://benchmark_v2/.benchmarks" when using `make benchmark`
+> 
+> Storage location for benchmark output JSON
+
+`--benchmark-save`
+> **Default:** "COMMIT-ID_DATE_TIME_IS-DIRTY" example: 0d4865d7c9453adc6af6409568da326845c358b9_20230406_165330.json
+> 
+> Name to save the output JSON as. Will be saved as "counter_NAME.json"
+
+`--size`
+> **Default:** 10**8
+> 
+> Problem size: length of array to use for benchmarks.
+
+`--trials`
+> **Default:** 5
+> Number of times to run each test before averaging results. For tests that run as many trials as possible in a 
+> given time, will be treated as number of seconds to run for.
+
+`--seed`
+> Value to initialize random number generator.
+
+`--dtype`
+> Dtypes to run benchmarks against. Comma separated list (NO SPACES) allowing for multiple. Accepted values: 
+int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate sets of multiple types.
+> 
+> **Example:** 
+> ```commandline
+> --dtype="int64,bigint,bool,str"
+> ```
+
+`--numpy`
+> True if `--numpy` is provided, False if omitted
+> 
+>When set, runs numpy comparison benchmarks
+
+`--maxbits`
+> **Default:** -1
+> 
+> Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum
+> 
+> *Only applies to BigInt benchmarks, other benchmarks will be unaffected*
+
+`--alpha`
+> **Default:** 1.0
+> 
+> Scalar Multiple
+
+`--randomize`
+> True if `--randomize` is provided, False if omitted
+> 
+> Fill arrays with random values instead of ones
+
+`--index_size`
+> Length of index array (number of gathers to perform)
+> 
+> *Only used by Gather and Scatter Benchmarks, other benchmarks will be unaffected*
+
+`--value_size`
+> Length of array from which values are gathered
+> 
+> *Only used by Gather and Scatter Benchmarks, other benchmarks will be unaffected*
+
+`--encoding`
+> Comma separated list (NO SPACES) allowing for multiple encoding to be used. Accepted values: idna, ascii
+> 
+> **Example:**
+> ```commandline
+> --encoding="idna,ascii"   
+> ```
+> 
+> *Only used by Encoding benchmarks, other benchmarks will be unaffected*
+
+`--io_only_write`
+> True if `--io_only_write` is provided, False if omitted
+> 
+> Only write the files; files will not be removed
+> 
+> *Only applies to IO benchmarks*
+
+`--io_only_read`
+> True if `--io_only_read` is provided, False if omitted
+> 
+> Only read the files; files will not be removed
+> 
+> *Only applies to IO benchmarks*
+
+`--io_only_delete`
+> True if `--io_only_delete` is provided, False if omitted
+> 
+> Only delete files created from writing with this benchmark
+> 
+> *Only applies to IO benchmarks*
+
+`--io_files_per_loc`
+> **Default:** 1
+> 
+> Number of files to create per locale
+> 
+> *Only applies to IO benchmarks*
+
+`--io_compression`
+> **Default:** All types
+> 
+> Compression types to run Parquet IO benchmarks against. Comma delimited list (NO SPACES) allowing for multiple. 
+> Accepted values: none, snappy, gzip, brotli, zstd, and lz4
+> 
+> ```commandline
+> --io_compression="none,snappy,brotli,lz4"
+> ```
+> 
+> *Only applies to IO benchmarks*
+
+`--io_path`
+> **Default:** //benchmark_v2/ak_io_benchmark
+> 
+> Target path for measuring read/write rates
+> 
+> *Only applies to IO benchmarks*
+
+
 ## Running Single Files or Tests
 
-In instances where a single test or set of tests needs to be ran, use the `-k <name_of_file>.py` argument. 
+In instances where a single test or set of tests needs to be run, use the `-k <expression>` flag. `-k` will run tests 
+which contain names that match the given string expression (case-insensitive), and can include Python operators 
+that use filenames, class names and function names as variables.
+
 
 ```commandline
 python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k encoding_benchmark.py
@@ -52,122 +202,8 @@ bench_encode[idna]      3.4875 (1.02)     4.5255 (1.24)     3.7912 (1.07)     0.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ```
 
-## Benchmark Arguments
-There are a large number of commandline arguments available for configuring the benchmarks to run in a way fitting 
-to any use case.
-
-<table>
-<tr><th>Argument</th><th>Default Value</th></tr>
-<tr><th colspan="2">Description</th></tr>
-<tr>
-    <td>--benchmark-autosave</td>
-    <td>True when using "<b>make benchmark"</b></td>
-</tr>
-<tr><td colspan="2">Save the benchmark JSON results to the provided storage location</td></tr>
-<tr>
-    <td>--benchmark-storage</td>
-    <td>"file://benchmark_v2/.benchmarks" when using "<b>make benchmark"</b></td>
-</tr>
-<tr><td colspan="2">Storage location for benchmark output JSON</td></tr>
-
-<tr>
-    <td>--benchmark-save</td>
-    <td>"COMMIT-ID_DATE_TIME_IS-DIRTY" example: 
-31de39be8b19c76d073a8999def6673a305c250d_20230405_145947_uncommited-changes.json</td>
-</tr>
-<tr><td colspan="2">Name to save the output JSON as. Will be saved as "counter_NAME.json"</td></tr>
-<tr>
-    <td>--size</td>
-    <td>10**8</td>
-</tr>
-<tr><td colspan="2">Problem size: length of array to use for benchmarks.</td></tr>
-<tr>
-    <td>--trials</td>
-    <td>5</td>
-</tr>
-<tr><td colspan="2">Number of times to run each test before averaging results. For tests that run as many trials as possible in 
-a given time, will be treated as number of seconds to run for.</td></tr>
-<tr>
-    <td>--seed</td>
-    <td></td>
-</tr>
-<tr><td colspan="2">Value to initialize random number generator.</td></tr>
-<tr>
-    <td>--dtype</td>
-    <td></td>
-</tr>
-<tr><td colspan="2">Dtypes to run benchmarks against. Comma separated list (NO SPACES) allowing for multiple. Accepted values: 
-int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate sets of multiple types.</td></tr>
-<tr>
-    <td>--numpy</td>
-    <td>False</td>
-</tr>
-<tr><td colspan="2">When set, runs numpy comparison benchmarks.</td></tr>
-<tr>
-    <td>--maxbits</td>
-    <td>-1</td>
-</tr>
-<tr><td colspan="2">Only applies to bigint. Maximum number of bits, so values > 2**max_bits will wraparound. -1 is 
-
-interpreted as no maximum.</td></tr>
-<tr>
-    <td>--alpha</td>
-    <td>1.0</td>
-</tr>
-<tr><td colspan="2">Scalar multiple</td></tr>
-<tr>
-    <td>--randomize</td>
-    <td>False</td>
-</tr>
-<tr><td colspan="2">Fill arrays with random values instead of ones</td></tr>
-<tr>
-    <td>--index_size</td>
-    <td></td>
-</tr>
-<tr><td colspan="2">Only used for Gather and Scatter Benchmarks. Length of index array (number of gathers to perform)</td></tr>
-<tr>
-    <td>--value_size</td>
-    <td></td>
-</tr>
-<tr><td colspan="2">Only used for Gather and Scatter Benchmarks. Length of array from which values are gathered</td></tr>
-<tr>
-    <td>--encoding</td>
-    <td></td>
-</tr>
-<tr><td colspan="2">Only applies to encoding benchmarks. Comma separated list (NO SPACES) allowing for multiple encoding to be 
-used. Accepted values: idna, ascii</td></tr>
-<tr>
-    <td>--io_only_write</td>
-    <td>False</td>
-</tr>
-<tr><td colspan="2">Only applies to IO benchmarks. Only write the files; files will not be removed</td></tr>
-<tr>
-    <td>--io_only_read</td>
-    <td>False</td>
-</tr>
-<tr><td colspan="2">Only applies to IO benchmarks. Only read the files; files will not be removed</td></tr>
-<tr>
-    <td>--io_only_delete</td>
-    <td>False</td>
-</tr>
-<tr><td colspan="2">Only applies to IO benchmarks. Only delete files created from writing with this benchmark</td></tr>
-<tr>
-    <td>--io_files_per_loc</td>
-    <td>1</td>
-</tr>
-<tr><td colspan="2">Only applies to IO benchmarks. Number of files to create per locale</td></tr>
-<tr>
-    <td>--io_compression</td>
-    <td></td>
-</tr>
-<tr><td colspan="2">Only applies to IO benchmarks. Compression types to run Parquet IO benchmarks against. Comma delimited list 
-(NO SPACES) allowing for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4</td></tr>
-<tr>
-    <td>--io_path</td>
-    <td>arkouda_root/benchmark_v2/ak_io_benchmark</td>
-</tr>
-<tr><td colspan="2">Only applies to IO benchmarks. Target path for measuring read/write rates</td></tr>
-</table>
+More information on running single files, sets of files, or benchmarks can be found 
+[here](https://docs.pytest.org/en/7.1.x/how-to/usage.html) under "Specifying which tests to run".
 
 ## Reading the JSON Output
 
@@ -178,9 +214,6 @@ machine information can be beneficial to see how different CPU architectures per
 The `benchmarks` section contains one entry for every benchmark that gets ran. For a full build, this will result
 in 350 entries. Each entry contains the name of the benchmark and a group name that allows for easy association
 between related benchmarks.
-
-The results for the benchmarks can be found within the provided benchmark storage path, which by default is within a
-directory found in `//benchmark_v2/.benchmarks`.
 
 The below JSON is the output from the above example 
 `python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k bench_encode --size=100`
