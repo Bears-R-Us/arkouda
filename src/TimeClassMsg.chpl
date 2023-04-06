@@ -9,7 +9,7 @@ module TimeClassMsg {
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use BinOp;
-    use Time;
+    use ArkoudaTimeCompat as Time;
 
     use ArkoudaMapCompat;
 
@@ -20,14 +20,14 @@ module TimeClassMsg {
     // The first 13 entries give the month days elapsed as of the first of month N
     // (or the total number of days in the year for N=13) in non-leap years.
     // The remaining 13 entries give the days elapsed in leap years.
-    const MONTHOFFSET = [
+    const MONTHOFFSET = (
         0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365,
         0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366
-    ];
+    );
 
     // To get UNITS do (values // (PROD_PREVIOUS_FACTORS)) % CURRENT_FACTOR
     // for example seconds = (values // (1000*1000*1000)) % 60
-    const FACTORS = [
+    const FACTORS = (
         1000,  // nanosecond
         1000,  // microsecond
         1000,  // millisecond
@@ -35,9 +35,9 @@ module TimeClassMsg {
         60,  // minute
         24,  // hour
         7,  // day
-    ];
+    );
 
-    const UNITS = ["nanosecond", "microsecond", "millisecond", "second", "minute", "hour", "day"];
+    const UNITS = ("nanosecond", "microsecond", "millisecond", "second", "minute", "hour", "day");
 
     proc dateTimeAttributesMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var values: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("values"), st);
@@ -49,16 +49,19 @@ module TimeClassMsg {
         var month: [valDom] int;
         var day: [valDom] int;
         var isoYear: [valDom] int;
+        var is_leap_year: [valDom] bool;
         var weekOfYear: [valDom] int;
+        var dayOfYear: [valDom] int;
         var dayOfWeek: [valDom] int;
-        forall (v, y, m, d, iso_y, woy, dow) in zip(valuesEntry.a, year, month, day, isoYear, weekOfYear, dayOfWeek) {
+
+        forall (v, y, m, d, iso_y, is_ly, woy, doy, dow) in zip(valuesEntry.a, year, month, day, isoYear, is_leap_year, weekOfYear, dayOfYear, dayOfWeek) {
             // convert to seconds and create date
             var t = date.fromTimestamp(floorDivisionHelper(v, 10**9):int);
             (y, m, d, (iso_y, woy, dow)) = (t.year, t.month, t.day, t.isoCalendar());
             dow -= 1;
+            is_ly = isLeapYear(y);
+            doy = MONTHOFFSET[is_ly * 13 + m - 1] + d;
         }
-        const is_leap_year: [valDom] bool = isLeapYear(year);
-        const dayOfYear: [valDom] int = MONTHOFFSET[is_leap_year * 13 + month - 1] + day;
 
         var retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(day));

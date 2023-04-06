@@ -5,7 +5,7 @@ from typing import Optional, Union
 import numpy as np  # type: ignore
 from typeguard import typechecked
 
-from arkouda.dtypes import bitType, intTypes, isSupportedInt
+from arkouda.dtypes import bitType, intTypes, isSupportedInt, uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import where
@@ -455,6 +455,9 @@ class IPv4(pdarray):
             self.values.shape,
             self.values.itemsize,
         )
+
+    def export_uint(self):
+        return akcast(self.values, akuint64)
 
     def format(self, x):
         """

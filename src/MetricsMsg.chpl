@@ -10,7 +10,7 @@ module MetricsMsg {
     use Message;
     use Memory.Diagnostics;
     use NumPyDType;
-    use Time;
+    use ArkoudaTimeCompat as Time;
 
     use ArkoudaMapCompat;
 

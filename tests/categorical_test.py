@@ -213,6 +213,48 @@ class CategoricalTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             ak.in1d(catOne, ak.randint(0, 5, 5))
 
+    def test_where(self):
+        revs = ak.arange(10) % 2 == 0
+        cat1 = ak.Categorical(ak.array([f"str {i}" for i in range(10)]))
+
+        # str in categories, cat first
+        str_in_cat = "str 1"
+        ans = ak.where(revs, cat1, str_in_cat)
+        self.assertListEqual(cat1[revs].to_list(), ans[revs].to_list())
+        for s in ans[~revs].to_list():
+            self.assertEqual(s, str_in_cat)
+
+        # str in categories, str first
+        ans = ak.where(revs, str_in_cat, cat1)
+        self.assertListEqual(cat1[~revs].to_list(), ans[~revs].to_list())
+        for s in ans[revs].to_list():
+            self.assertEqual(s, str_in_cat)
+
+        # str not in categories, cat first
+        str_not_in_cat = "str 122222"
+        ans = ak.where(revs, cat1, str_not_in_cat)
+        self.assertListEqual(cat1[revs].to_list(), ans[revs].to_list())
+        for s in ans[~revs].to_list():
+            self.assertEqual(s, str_not_in_cat)
+
+        # str not in categories, str first
+        ans = ak.where(revs, str_not_in_cat, cat1)
+        self.assertListEqual(cat1[~revs].to_list(), ans[~revs].to_list())
+        for s in ans[revs].to_list():
+            self.assertEqual(s, str_not_in_cat)
+
+        # 2 categorical, same categories
+        cat2 = ak.Categorical(ak.array([f"str {i}" for i in range(9, -1, -1)]))
+        ans = ak.where(revs, cat1, cat2)
+        self.assertListEqual(cat1[revs].to_list(), ans[revs].to_list())
+        self.assertListEqual(cat2[~revs].to_list(), ans[~revs].to_list())
+
+        # 2 categorical, different categories
+        cat2 = ak.Categorical(ak.array([f"str {i*2}" for i in range(10)]))
+        ans = ak.where(revs, cat1, cat2)
+        self.assertListEqual(cat1[revs].to_list(), ans[revs].to_list())
+        self.assertListEqual(cat2[~revs].to_list(), ans[~revs].to_list())
+
     def testConcatenate(self):
         catOne = self._getCategorical("string", 51)
         catTwo = self._getCategorical("string-two", 51)
@@ -281,9 +323,7 @@ class CategoricalTest(ArkoudaTest):
 
             f = h5py.File(tmp_dirname + "/cat-save-test_LOCALE0000", mode="r")
             keys = set(f.keys())
-            if (
-                io.ARKOUDA_HDF5_FILE_METADATA_GROUP in keys
-            ):  # Ignore the metadata group if it exists
+            if io.ARKOUDA_HDF5_FILE_METADATA_GROUP in keys:  # Ignore the metadata group if it exists
                 keys.remove(io.ARKOUDA_HDF5_FILE_METADATA_GROUP)
             self.assertEqual(len(keys), 5, "Expected 5 keys")
             self.assertSetEqual(
@@ -394,7 +434,6 @@ class CategoricalTest(ArkoudaTest):
         # set to none and validate no entries in symbol table
         cat = None
         self.assertEqual(len(ak.list_symbol_table()), 0)
-
 
     def tearDown(self):
         super(CategoricalTest, self).tearDown()

@@ -2,7 +2,7 @@ module SortMsg
 {
     use ServerConfig;
 
-    use Time only;
+    use ArkoudaTimeCompat as Time;
     use Math only;
     use Sort only;
     use Reflection;

@@ -4,7 +4,7 @@ module ServerDaemon {
     use Security;
     use ServerConfig;
     use ServerErrors;
-    use Time;
+    use ArkoudaTimeCompat as Time;
     use ZMQ only;
     use Memory;
     use FileSystem;
@@ -423,7 +423,7 @@ module ServerDaemon {
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
-                          "Set Response Time cmd: %s time %t".format(cmd,elapsedTime));
+                          "Set Response Time for %s: %t".format(cmd,elapsedTime));
             
             // Add response time to the avg response time for the cmd
             avgResponseTimeMetrics.add(cmd,elapsedTime:real);
@@ -437,17 +437,17 @@ module ServerDaemon {
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
-                          "Added Avg Response Time cmd: %s time %t".format(cmd,elapsedTime));
+                          "Added Avg Response Time for cmd %s: %t".format(cmd,elapsedTime));
                           
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
-                          "Updated Total Response Time cmd: %s time %t".format(cmd,totalResponseTimeMetrics.get(cmd)));
+                          "Total Response Time for cmd %s: %t".format(cmd,totalResponseTimeMetrics.get(cmd)));
                           
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
-                          "Updated Total Memory Used cmd: %s memory %t GB".format(cmd,totalMemoryUsedMetrics.get(cmd)));    
+                          "Total Memory Used for cmd %s: %t GB".format(cmd,totalMemoryUsedMetrics.get(cmd)));    
 
             var apo = getArrayParameterObj(args);
 
@@ -677,12 +677,13 @@ module ServerDaemon {
                 }
                 if (trace && memTrack) {
                     var memUsed = getMemUsed():uint * numLocales:uint;
-                    var pctMemUsed = ((memUsed:real/getMemLimit():real)*100):int;
+                    var memLimit = (getMemLimit():real * numLocales:uint):int;
+                    var pctMemUsed = ((memUsed:real/memLimit)*100):int;
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                        "bytes of memory %t pct of max memory %t%% used after %s command".format(memUsed,
-                                                                                                 pctMemUsed,
-                                                                                                 cmd));
-
+                        "bytes of memory %t used after %s command is %t%% pct of max memory %t".format(memUsed,
+                                                                                                       cmd,
+                                                                                                       pctMemUsed,
+                                                                                                       memLimit));
                     if metricsEnabled() {
                         processMetrics(user, cmd, msgArgs, elapsedTime, memUsed);
                     }

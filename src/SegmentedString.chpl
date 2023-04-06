@@ -11,7 +11,7 @@ module SegmentedString {
   use PrivateDist;
   use ServerConfig;
   use Unique;
-  use Time;
+  use ArkoudaTimeCompat as Time;
   use Reflection;
   use Logging;
   use ServerErrors;
@@ -740,6 +740,59 @@ module SegmentedString {
       }
       return (subbedOffsets, subbedVals, numReplacements);
     }
+
+    proc segStrWhere(otherStr: ?t, condition: [] bool, newLens: [] int) throws where t == string {
+      // add one to account for null bytes
+      newLens += 1;
+      ref origOffs = this.offsets.a;
+      ref origVals = this.values.a;
+      const other = otherStr:bytes;
+
+      overMemLimit(newLens.size * numBytes(int));
+      var whereOffs = (+ scan newLens) - newLens;
+      const valSize = (+ reduce newLens);
+      var whereVals = makeDistArray(valSize, uint(8));
+
+      forall (whereOff, origOff, len, cond) in zip(whereOffs, origOffs, newLens, condition) with (var valAgg = newDstAggregator(uint(8))) {
+        if cond {
+          var localizedVals = new lowLevelLocalizingSlice(origVals, origOff..#len);
+          for i in 0..#len {
+            valAgg.copy(whereVals[whereOff+i], localizedVals.ptr[i]);
+          }
+        }
+        else {
+          for i in 0..#(len-1) {
+            valAgg.copy(whereVals[whereOff+i], other[i]:uint(8));
+          }
+          // write null byte
+          valAgg.copy(whereVals[whereOff+(len-1)], 0:uint(8));
+        }
+      }
+      return (whereOffs, whereVals);
+    }
+
+   proc segStrWhere(other: ?t, condition: [] bool, newLens: [] int) throws where t == owned SegString {
+      // add one to account for null bytes
+      newLens += 1;
+      ref origOffs = this.offsets.a;
+      ref origVals = this.values.a;
+      ref otherOffs = other.offsets.a;
+      ref otherVals = other.values.a;
+
+      overMemLimit(newLens.size * numBytes(int));
+      var whereOffs = (+ scan newLens) - newLens;
+      const valSize = (+ reduce newLens);
+      var whereVals = makeDistArray(valSize, uint(8));
+
+      forall (whereOff, origOff, otherOff, len, cond) in zip(whereOffs, origOffs, otherOffs, newLens, condition) with (var valAgg = newDstAggregator(uint(8))) {
+        const localizedVals = if cond then new lowLevelLocalizingSlice(origVals, origOff..#len) else new lowLevelLocalizingSlice(otherVals, otherOff..#len);
+        for i in 0..#len {
+          valAgg.copy(whereVals[whereOff+i], localizedVals.ptr[i]);
+        }
+      }
+      return (whereOffs, whereVals);
+    }
+
 
     /*
       Strip out all of the leading and trailing characters of each element of a segstring that are

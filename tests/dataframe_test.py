@@ -666,3 +666,47 @@ class DataFrameTest(ArkoudaTest):
         slice_idx = df[:]
         slice_idx.__repr__()
         self.assertListEqual(slice_idx.index.index.to_list(), idx.to_list())
+
+    def test_ipv4_columns(self):
+        # test with single IPv4 column
+        df = ak.DataFrame({
+            'a': ak.arange(10),
+            'b': ak.IPv4(ak.arange(10))
+        })
+        with tempfile.TemporaryDirectory(dir=DataFrameTest.df_test_base_tmp) as tmp_dirname:
+            fname = tmp_dirname + "/ipv4_df"
+            df.to_parquet(fname)
+
+            data = ak.read(fname+"*")
+            rddf = ak.DataFrame({
+                'a': data['a'],
+                'b': ak.IPv4(data['b'])
+            })
+
+            self.assertListEqual(df['a'].to_list(), rddf['a'].to_list())
+            self.assertListEqual(df['b'].to_list(), rddf['b'].to_list())
+
+        # test with multiple
+        df = ak.DataFrame({
+            'a': ak.IPv4(ak.arange(10)),
+            'b': ak.IPv4(ak.arange(10))
+        })
+        with tempfile.TemporaryDirectory(dir=DataFrameTest.df_test_base_tmp) as tmp_dirname:
+            fname = tmp_dirname + "/ipv4_df"
+            df.to_parquet(fname)
+
+            data = ak.read(fname + "*")
+            rddf = ak.DataFrame({
+                'a': ak.IPv4(data['a']),
+                'b': ak.IPv4(data['b'])
+            })
+
+            self.assertListEqual(df['a'].to_list(), rddf['a'].to_list())
+            self.assertListEqual(df['b'].to_list(), rddf['b'].to_list())
+
+        # test replacement of IPv4 with uint representation
+        df = ak.DataFrame({
+            'a': ak.IPv4(ak.arange(10))
+        })
+        df['a'] = df['a'].export_uint()
+        self.assertListEqual(ak.arange(10).to_list(), df['a'].to_list())
