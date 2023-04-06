@@ -526,12 +526,6 @@ def _str_cat_where(
     from arkouda.categorical import Categorical
     from arkouda.pdarraysetops import concatenate
 
-    if not isinstance(A, (str, Strings, Categorical)) or not isinstance(B, (str, Strings, Categorical)):
-        raise TypeError(
-            "both A and B must be an int, np.int64, float, np.float64, pdarray OR"
-            " both A and B must be an str, Strings, Categorical"
-        )
-
     if isinstance(A, str) and isinstance(B, (Categorical, Strings)):
         # This allows us to assume if a str is present it is B
         A, B, condition = B, A, ~condition
@@ -671,6 +665,18 @@ def where(
     if (not isSupportedNumber(A) and not isinstance(A, pdarray)) or (
         not isSupportedNumber(B) and not isinstance(B, pdarray)
     ):
+        from arkouda.categorical import Categorical  # type: ignore
+
+        # fmt: off
+        if (
+            not isinstance(A, (str, Strings, Categorical))  # type: ignore
+            or not isinstance(B, (str, Strings, Categorical))  # type: ignore
+        ):
+            # fmt:on
+            raise TypeError(
+                "both A and B must be an int, np.int64, float, np.float64, pdarray OR"
+                " both A and B must be an str, Strings, Categorical"
+            )
         return _str_cat_where(condition, A, B)
     if isinstance(A, pdarray) and isinstance(B, pdarray):
         repMsg = generic_msg(
