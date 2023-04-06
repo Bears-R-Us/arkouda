@@ -2362,19 +2362,27 @@ def divmod(
     """
     from arkouda.numeric import cast as akcast
     from arkouda.numeric import where as akwhere
+    from arkouda.pdarraycreation import full
+
+    if not isinstance(x, pdarray) and not isinstance(y, pdarray):
+        raise TypeError(f"At least one entry must be a pdarray.")
 
     if isinstance(x, pdarray) and isinstance(y, pdarray):
         if x.size != y.size:
             raise ValueError(f"size mismatch {x.size} {y.size}")
 
     if where is True:
-        return (x // y, x % y)
+        return x // y, x % y  # type: ignore
     elif where is False:
-        return (x, x)
+        if not isinstance(x, pdarray) and isinstance(y, pdarray):
+            x = full(y.size, x)
+            return x, x  # type: ignore
+        else:
+            return x, x # type: ignore
     else:
         div = x // y
         mod = x % y
-        return (akwhere(where, div, akcast(x, div.dtype)), akwhere(where, mod, akcast(x, mod.dtype)))
+        return akwhere(where, div, akcast(x, div.dtype)), akwhere(where, mod, akcast(x, mod.dtype))  # type: ignore
 
 
 @typechecked
