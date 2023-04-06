@@ -16,7 +16,7 @@ jobs:
     container:
       image: chapel/chapel:1.30.0
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install dependencies
       run: |
         apt-get update && apt-get install -y python3-pip rsync libhdf5-dev hdf5-tools libzmq3-dev
