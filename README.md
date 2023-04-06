@@ -119,11 +119,14 @@ This yielded a >20TB dataframe in Arkouda.
 
 For a complete list of requirements for Arkouda, please review [REQUIREMENTS.md](pydoc/setup/REQUIREMENTS.md).
 
-For detailed prerequisite information and installation guides, please review [INSTALL.md](pydoc/setup/INSTALL.md).
+For detailed prerequisite information and installation guides, please review the install guide for your operating system.
+- [Linux Install](pydoc/setup/LINUX_INSTALL.md)
+- [MacOS Install](pydoc/setup/MAC_INSTALL.md)
+- [Windows Install](pydoc/setup/WINDOWS_INSTALL.md)
 
 <a id="build-ak"></a>
 ## Building Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-In order to run the Arkouda server, it must first be compiled. Detailed instructions on the build process can be found at [BUILD.md](BUILD.md).
+In order to run the Arkouda server, it must first be compiled. Detailed instructions on the build process can be found at [BUILD.md](pydoc/setup/BUILD.md).
 
 <a id="test-ak"></a>
 ## Testing Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
