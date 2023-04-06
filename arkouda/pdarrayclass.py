@@ -2344,8 +2344,8 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
 
 @typechecked
 def divmod(
-    x: Union[int, float, pdarray],
-    y: Union[int, float, pdarray],
+    x: Union[numeric_scalars, pdarray],
+    y: Union[numeric_scalars, pdarray],
     where: Union[bool, pdarray] = True,
 ) -> Tuple[pdarray, pdarray]:
     """
