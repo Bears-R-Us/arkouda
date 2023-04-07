@@ -204,7 +204,7 @@ module MetricsMsg {
          * metric name, setting the value if the metric does not exist.
          */
         proc add(metric: string, measurement: real) throws {
-            this.measurements.set(metric,(this.get(metric) + measurement));
+            this.measurements.replace(metric,(this.get(metric) + measurement));
         }
 
         iter items() {
