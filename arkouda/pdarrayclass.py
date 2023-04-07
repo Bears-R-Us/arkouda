@@ -2349,16 +2349,44 @@ def divmod(
     where: Union[bool, pdarray] = True,
 ) -> Tuple[pdarray, pdarray]:
     """
-
     Parameters
     ----------
-    x
-    y
-    where
+    x : numeric_scalars(float_scalars, int_scalars) or pdarray
+        The values that will be the numerator of the division, the dividends
+    y : numeric_scalars(float_scalars, int_scalars) or pdarray
+        The values that will be the denominator of the division, the divisors
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True, the
+        corresponding value will be divided using floor and modular division. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
+    (pdarray, pdarray)
+        Returns a tuple that contains quotient and remainder of the division
 
+    Raises
+    ------
+    TypeError
+        At least one entry must be a pdarray
+    ValueError
+        If both inputs are both pdarrays, their size must match
+    ZeroDivisionError
+        No entry in y is allowed to be 0, to prevent division by zero
+
+    Notes
+    -----
+    The div is calculated by x // y
+    The mod is calculated by x % y
+
+    Examples
+    --------
+    >>> x = ak.arange(5, 10)
+    >>> y = ak.array([2, 1, 4, 5, 8])
+    >>> ak.divmod(x,y)
+    (array([2 6 1 1 1]), array([1 0 3 3 1]))
+    >>> ak.divmod(x,y, x % 2 == 0)
+    (array([5 6 7 1 9]), array([5 0 7 3 9]))
     """
     from arkouda.numeric import cast as akcast
     from arkouda.numeric import where as akwhere
