@@ -206,3 +206,19 @@ class StatsTest(ArkoudaTest):
         self.assertListEqual(ak_mod_truth.to_list(),
                              [(self.x[i] % self.y[i]) if truth[i] else self.x[i] for i in range(10)])
 
+        edge_case = [-np.inf, -7.0, -0.0, np.nan, 0.0, 7.0, np.inf]
+        np_edge_case = np.array(edge_case)
+        ak_edge_case = ak.array(np_edge_case)
+        ak_div, ak_mod = ak.divmod(ak_edge_case, ak.arange(1, len(edge_case)+1))
+        np_div, np_mod = np.divmod(np_edge_case, np.arange(1, len(edge_case)+1))
+        self.assertTrue(np.allclose(ak_div.to_ndarray(), np_div, equal_nan=True))
+        self.assertTrue(np.allclose(ak_mod.to_ndarray(), np_mod, equal_nan=True))
+
+        edge_case = [-np.inf, -7.0, np.nan, 7.0, np.inf]
+        np_edge_case = np.array(edge_case)
+        ak_edge_case = ak.array(np_edge_case)
+        ak_div, ak_mod = ak.divmod(ak_edge_case, ak.arange(1, len(edge_case)+1))
+        np_div, np_mod = np.divmod(np_edge_case, np.arange(1, len(edge_case)+1))
+        self.assertTrue(np.allclose(ak_div.to_ndarray(), np_div, equal_nan=True))
+        self.assertTrue(np.allclose(ak_mod.to_ndarray(), np_mod, equal_nan=True))
+

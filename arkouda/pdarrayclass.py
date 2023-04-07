@@ -2371,8 +2371,8 @@ def divmod(
         if x.size != y.size:
             raise ValueError(f"size mismatch {x.size} {y.size}")
 
-    # if (not isinstance(y, pdarray) and y == 0) or (isinstance(y, pdarray) and all(y)):
-    #     raise ZeroDivisionError("Can not divide by zero")
+    if (not isinstance(y, pdarray) and y == 0) or (isinstance(y, pdarray) and not all(y)):
+        raise ZeroDivisionError("Can not divide by zero")
 
     if where is True:
         return x // y, x % y  # type: ignore
