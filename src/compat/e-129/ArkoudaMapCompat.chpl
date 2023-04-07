@@ -19,5 +19,9 @@ module ArkoudaMapCompat {
     proc const writeThis(ch) throws {
       m.writeThis(ch);
     }
+
+    proc replace(k: keyType, in v: valType):bool {
+      return m.set(k, v);
+    }
   }
 }
