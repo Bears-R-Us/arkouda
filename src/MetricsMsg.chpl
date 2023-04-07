@@ -14,7 +14,8 @@ module MetricsMsg {
 
     use ArkoudaMapCompat;
 
-    enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,SYSTEM,SERVER,SERVER_INFO};
+    enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,TOTAL_RESPONSE_TIME,
+                        TOTAL_MEMORY_USED,SYSTEM,SERVER,SERVER_INFO};
     enum MetricScope{GLOBAL,LOCALE,REQUEST,USER};
     enum MetricDataType{INT,REAL};
 
@@ -31,6 +32,10 @@ module MetricsMsg {
     var avgResponseTimeMetrics = new AverageMeasurementTable();
     
     var responseTimeMetrics = new MeasurementTable();
+    
+    var totalResponseTimeMetrics = new MeasurementTable();
+    
+    var totalMemoryUsedMetrics = new MeasurementTable();
 
     var users = new Users();
     
@@ -163,22 +168,43 @@ module MetricsMsg {
     class MeasurementTable {
         var measurements = new map(string, real);
 
+        /*
+         * Returns the measurement corresponding to the metric name If the
+         * metric does not exist, the metric value is set to 0.0 and is returned.
+         */
         proc get(metric: string): real throws {
+            var value: real;
+
             if !this.measurements.contains(metric) {
-                var value = 0.0;
-                    this.measurements.add(metric, value);
-                return value;
+                value = 0.0;
+                this.measurements.add(metric, value);
             } else {
-                return this.measurements(metric);
+                value = this.measurements(metric);
             }
+            
+            return value;
         }   
 
+        /* 
+         * Sets the metrics value
+         */
         proc set(metric: string, measurement: real) throws {
             this.measurements.addOrSet(metric, measurement);
         }
 
+        /*
+         * Returns the number of measurements in the MeasurementTable.s
+         */
         proc size() {
             return this.measurements.size;
+        }
+
+        /* 
+         * Adds a measurement to an existing measurement corresponding to the 
+         * metric name, setting the value if the metric does not exist.
+         */
+        proc add(metric: string, measurement: real) throws {
+            this.measurements.set(metric,(this.get(metric) + measurement));
         }
 
         iter items() {
@@ -189,7 +215,7 @@ module MetricsMsg {
 
     /* 
      * The AverageMeasurementTable extends the MeasurementTable by generating
-     * values that are averages of incoming values.
+     * values that are averages of incoming values for each metric.
      */
     class AverageMeasurementTable : MeasurementTable {
         //number of recorded measurements
@@ -198,6 +224,9 @@ module MetricsMsg {
         // total value of measurements to be averaged for each metric measured.s
         var measurementTotals = new map(string, real);
 
+        /*
+         * Returns the number of measurements corresponding to a metric.
+         */
         proc getNumMeasurements(metric: string) throws {
             if this.numMeasurements.contains(metric) {
                 return this.numMeasurements(metric) + 1;
@@ -206,6 +235,11 @@ module MetricsMsg {
             }
         }
         
+        /*
+         * Returns the sum of all measurements corresponding to a metric. Note:
+         * this function is designed to invoked internally in order to 
+         * calculate the avg measurement value corresponding to the metric.
+         */
         proc getMeasurementTotal(metric: string) : real throws {
             var value: real;
 
@@ -219,7 +253,15 @@ module MetricsMsg {
             return value;
         }
         
-        proc add(metric: string, measurement) throws {
+        /*
+         * The overridden add method updates the measurement value by doing the following:
+         *
+         * 1. adds the measurement to a running total measurement for the metric
+         * 2. increments the number of measurements for the metric
+         * 3. divides the updated total measurement by the number of measurements to
+         *    to calculate the avg measurement
+         */
+        override proc add(metric: string, measurement: real) throws {
             var numMeasurements = getNumMeasurements(metric);
             var measurementTotal = getMeasurementTotal(metric);
 
@@ -298,6 +340,12 @@ module MetricsMsg {
             metrics.append(metric);
         }        
         for metric in getAvgResponseTimeMetrics() {
+            metrics.append(metric);
+        }
+        for metric in getTotalResponseTimeMetrics() {
+            metrics.append(metric);
+        }
+        for metric in getTotalMemoryUsedMetrics() {
             metrics.append(metric);
         }
         for metric in getSystemMetrics() {
@@ -387,6 +435,29 @@ module MetricsMsg {
         return metrics;
     }
 
+    proc getTotalResponseTimeMetrics() throws {
+        var metrics = new list(owned Metric?);
+
+        for item in totalResponseTimeMetrics.items() {
+            metrics.append(new Metric(name=item[0], 
+                                      category=MetricCategory.TOTAL_RESPONSE_TIME,
+                                      value=item[1]));
+        }
+
+        return metrics;
+    }
+    
+    proc getTotalMemoryUsedMetrics() throws {
+        var metrics = new list(owned Metric?);
+
+        for item in totalMemoryUsedMetrics.items() {
+            metrics.append(new Metric(name=item[0], 
+                                      category=MetricCategory.TOTAL_MEMORY_USED,
+                                      value=item[1]));
+        }
+
+        return metrics;
+    }
 
     proc getMaxLocaleMemory(loc) throws {
        if memMax:real > 0 {
@@ -576,6 +647,15 @@ module MetricsMsg {
             }
             when MetricCategory.SERVER_INFO {
                 metrics = "%jt".format(getServerInfo());
+            }
+            when MetricCategory.TOTAL_MEMORY_USED {
+                metrics = "%jt".format(getTotalMemoryUsedMetrics());            
+            }
+            when MetricCategory.AVG_RESPONSE_TIME {
+                metrics = "%jt".format(getAvgResponseTimeMetrics());            
+            }
+            when MetricCategory.TOTAL_RESPONSE_TIME {
+                metrics = "%jt".format(getTotalResponseTimeMetrics());            
             }
             otherwise {
                 throw getErrorWithContext(getLineNumber(),getModuleName(),getRoutineName(),
