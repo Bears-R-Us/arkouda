@@ -228,16 +228,11 @@ module MetricsMsg {
          * Returns the number of measurements corresponding to a metric.
          */
         proc getNumMeasurements(metric: string) throws {
-            var value: int;
-
-            if !this.numMeasurements.contains(metric) {
-                value = 0;
-                this.numMeasurements.addOrSet(metric, value);
+            if this.numMeasurements.contains(metric) {
+                return this.numMeasurements(metric) + 1;
             } else {
-                value = this.numMeasurements(metric);
+                return 1;
             }
-
-            return value;
         }
         
         /*
@@ -652,6 +647,15 @@ module MetricsMsg {
             }
             when MetricCategory.SERVER_INFO {
                 metrics = "%jt".format(getServerInfo());
+            }
+            when MetricCategory.TOTAL_MEMORY_USED {
+                metrics = "%jt".format(getTotalMemoryUsedMetrics());            
+            }
+            when MetricCategory.AVG_RESPONSE_TIME {
+                metrics = "%jt".format(getAvgResponseTimeMetrics());            
+            }
+            when MetricCategory.TOTAL_RESPONSE_TIME {
+                metrics = "%jt".format(getTotalResponseTimeMetrics());            
             }
             otherwise {
                 throw getErrorWithContext(getLineNumber(),getModuleName(),getRoutineName(),
