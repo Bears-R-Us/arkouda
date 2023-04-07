@@ -118,7 +118,7 @@
 </div>
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MetricCategory</span></span> <span class="pre">{</span> <span class="pre">ALL,</span> <span class="pre">NUM_REQUESTS,</span> <span class="pre">RESPONSE_TIME,</span> <span class="pre">AVG_RESPONSE_TIME,</span> <span class="pre">SYSTEM,</span> <span class="pre">SERVER,</span> <span class="pre">SERVER_INFO</span> <span class="pre">}</span><a class="headerlink" href="#MetricsMsg.MetricCategory" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MetricCategory</span></span> <span class="pre">{</span> <span class="pre">ALL,</span> <span class="pre">NUM_REQUESTS,</span> <span class="pre">RESPONSE_TIME,</span> <span class="pre">AVG_RESPONSE_TIME,</span> <span class="pre">TOTAL_RESPONSE_TIME,</span> <span class="pre">TOTAL_MEMORY_USED,</span> <span class="pre">SYSTEM,</span> <span class="pre">SERVER,</span> <span class="pre">SERVER_INFO</span> <span class="pre">}</span><a class="headerlink" href="#MetricsMsg.MetricCategory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enum">
@@ -159,6 +159,16 @@
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.responseTimeMetrics">
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">responseTimeMetrics</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">MeasurementTable()</span><a class="headerlink" href="#MetricsMsg.responseTimeMetrics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="MetricsMsg.totalResponseTimeMetrics">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">totalResponseTimeMetrics</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">MeasurementTable()</span><a class="headerlink" href="#MetricsMsg.totalResponseTimeMetrics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="MetricsMsg.totalMemoryUsedMetrics">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">totalMemoryUsedMetrics</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">MeasurementTable()</span><a class="headerlink" href="#MetricsMsg.totalMemoryUsedMetrics" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
@@ -325,17 +335,36 @@
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.get">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">real</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.MeasurementTable.get" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><ul class="simple">
+<li><p>Returns the measurement corresponding to the metric name If the</p></li>
+<li><p>metric does not exist, the metric value is set to 0.0 and is returned.</p></li>
+</ul>
+</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.set">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">measurement:</span> <span class="pre">real</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.MeasurementTable.set" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><ul class="simple">
+<li><p>Sets the metrics value</p></li>
+</ul>
+</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.size">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.MeasurementTable.size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><ul class="simple">
+<li><p>Returns the number of measurements in the MeasurementTable.s</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.add">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">measurement:</span> <span class="pre">real</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.MeasurementTable.add" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Adds a measurement to an existing measurement corresponding to the</p></li>
+<li><p>metric name, setting the value if the metric does not exist.</p></li>
+</ul>
+</dd></dl>
 
 <dl class="chpl itermethod">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.items">
@@ -349,7 +378,7 @@
 <em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AverageMeasurementTable</span></span><span class="pre">:</span> <span class="pre">MeasurementTable</span><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>The AverageMeasurementTable extends the MeasurementTable by generating</p></li>
-<li><p>values that are averages of incoming values.</p></li>
+<li><p>values that are averages of incoming values for each metric.</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.AverageMeasurementTable.numMeasurements">
@@ -364,17 +393,42 @@
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.AverageMeasurementTable.getNumMeasurements">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumMeasurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.getNumMeasurements" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><ul class="simple">
+<li><p>Returns the number of measurements corresponding to a metric.</p></li>
+</ul>
+</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.AverageMeasurementTable.getMeasurementTotal">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMeasurementTotal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">real</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.getMeasurementTotal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><ul class="simple">
+<li><p>Returns the sum of all measurements corresponding to a metric. Note:</p></li>
+<li><p>this function is designed to invoked internally in order to</p></li>
+<li><p>calculate the avg measurement value corresponding to the metric.</p></li>
+</ul>
+</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.AverageMeasurementTable.add">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">measurement</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.add" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">measurement:</span> <span class="pre">real</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.add" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>The overridden add method updates the measurement value by doing the following:</p></li>
+<li></li>
+<li><ol class="arabic simple">
+<li><p>adds the measurement to a running total measurement for the metric</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="2">
+<li><p>increments the number of measurements for the metric</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="3">
+<li><p>divides the updated total measurement by the number of measurements to</p></li>
+</ol>
+</li>
+<li><p>to calculate the avg measurement</p></li>
+</ul>
+</dd></dl>
 
 </dd></dl>
 
@@ -461,6 +515,16 @@
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getAvgResponseTimeMetrics">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getAvgResponseTimeMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.getAvgResponseTimeMetrics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MetricsMsg.getTotalResponseTimeMetrics">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTotalResponseTimeMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.getTotalResponseTimeMetrics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MetricsMsg.getTotalMemoryUsedMetrics">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTotalMemoryUsedMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.getTotalMemoryUsedMetrics" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

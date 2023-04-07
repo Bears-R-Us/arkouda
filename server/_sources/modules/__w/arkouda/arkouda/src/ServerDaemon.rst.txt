@@ -179,7 +179,7 @@ or
       * ServerDaemons configured for this Arkouda instance.
       
 
-   .. method:: proc processMetrics(user: string, cmd: string, args: MessageArgs, elapsedTime: real) throws
+   .. method:: proc processMetrics(user: string, cmd: string, args: MessageArgs, elapsedTime: real, memUsed: uint) throws
 
    .. method:: override proc run() throws
 
