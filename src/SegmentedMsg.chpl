@@ -25,6 +25,7 @@ module SegmentedMsg {
   * Build a Segmented Array object based on the segments/values specified.
   **/
   proc assembleSegArrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    var repMsg: string;
     var segName = msgArgs.getValueOf("segments");
     var valName = msgArgs.getValueOf("values"); 
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -36,12 +37,7 @@ module SegmentedMsg {
     var rtnmap: map(string, string) = new map(string, string);
 
     var valEntry = st.tab[valName];
-    if valEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry){ //SegString
-      var vals = getSegString(valName, st);
-      var segArray = getSegArray(segs.a, vals.values.a, st);
-      segArray.fillReturnMap(rtnmap, st);
-    } 
-    else { // pdarray
+    if valEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) { // pdarray
       var values = getGenericTypedArrayEntry(valName, st);
       select values.dtype {
         when (DType.Int64) {
@@ -78,7 +74,12 @@ module SegmentedMsg {
         }
       }
     }
-    var repMsg: string = "%jt".format(rtnmap);
+    else {
+      repMsg = "Values must be a pdarray.";
+      smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+      return new MsgTuple(repMsg, MsgType.ERROR);
+    }
+    repMsg = "%jt".format(rtnmap);
     smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
@@ -104,10 +105,6 @@ module SegmentedMsg {
       }
       when (DType.Bool) {
         var segArr = getSegArray(name, st, bool);
-        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
-      }
-      when (DType.UInt8){
-        var segArr = getSegArray(name, st, uint(8));
         repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
       }
       when (DType.BigInt){
