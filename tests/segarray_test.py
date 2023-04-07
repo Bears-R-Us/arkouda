@@ -294,13 +294,6 @@ class SegArrayTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             segarr.set_jth(1, 4, 999)
 
-        s = ak.array(["abc", "123"])
-        s_segments = ak.array([0])
-        segarr = ak.segarray(s_segments, s)
-
-        with self.assertRaises(TypeError):
-            segarr.set_jth(0, 0, "test")
-
     def test_get_length_n(self):
         a = [10, 11, 12, 13, 14, 15]
         b = [20, 21]

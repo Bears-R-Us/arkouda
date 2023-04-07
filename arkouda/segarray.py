@@ -188,6 +188,8 @@ class SegArray:
         # validate inputs
         if not isinstance(segments, pdarray) or segments.dtype != akint64:
             raise TypeError("Segments must be int64 pdarray")
+        if not isinstance(values, pdarray):
+            raise TypeError("Values must be a pdarray.")
         if not is_sorted(segments):
             raise ValueError("Segments must be unique and in sorted order")
         if segments.size > 0:
