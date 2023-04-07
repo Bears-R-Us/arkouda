@@ -14,3 +14,4 @@ Here you will find documentation useful for development in Arkouda.
     MEMORY
     GASNET
     RELEASE_PROCESS
+    BENCHMARK
