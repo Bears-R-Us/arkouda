@@ -2352,9 +2352,11 @@ def divmod(
     Parameters
     ----------
     x : numeric_scalars(float_scalars, int_scalars) or pdarray
-        The values that will be the numerator of the division, the dividends
+        The dividend array, the values that will be the numerator of the floordivision and will be
+        acted on by the bases for modular division.
     y : numeric_scalars(float_scalars, int_scalars) or pdarray
-        The values that will be the denominator of the division, the divisors
+        The divisor array, the values that will be the denominator of the division and will be the
+        bases for the modular division.
     where : Boolean or pdarray
         This condition is broadcast over the input. At locations where the condition is True, the
         corresponding value will be divided using floor and modular division. Elsewhere, it will retain
@@ -2399,7 +2401,8 @@ def divmod(
         if x.size != y.size:
             raise ValueError(f"size mismatch {x.size} {y.size}")
 
-    if (not isinstance(y, pdarray) and y == 0) or (isinstance(y, pdarray) and not all(y)):
+    equal_zero = y == 0
+    if equal_zero if isinstance(equal_zero, bool) else any(equal_zero):
         raise ZeroDivisionError("Can not divide by zero")
 
     if where is True:
@@ -2407,15 +2410,11 @@ def divmod(
     elif where is False:
         if not isinstance(x, pdarray) and isinstance(y, pdarray):
             x = full(y.size, x)
-            return x, x  # type: ignore
-        else:
-            return x, x  # type: ignore
+        return x, x  # type: ignore
     else:
-        div = x // y
-        mod = x % y
-        return (
-            akwhere(where, div, akcast(x, div.dtype)),  # type: ignore
-            akwhere(where, mod, akcast(x, mod.dtype)))  # type: ignore
+        div = cast(pdarray, x // y)
+        mod = cast(pdarray, x % y)
+        return (akwhere(where, div, akcast(x, div.dtype)), akwhere(where, mod, akcast(x, mod.dtype)))
 
 
 @typechecked

@@ -150,6 +150,18 @@ class StatsTest(ArkoudaTest):
         self.assertListEqual(ak_div.to_list(), np_div.tolist())
         self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
+        # float float (non-whole numbers)
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x+.5, ak.float64), ak.cast(self.y+1.5, ak.float64))
+        np_div, np_mod = np.divmod(self.npx.astype(float)+.5, self.npy.astype(float)+1.5)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # uint uint
+        ak_div, ak_mod = ak.divmod(ak.arange(10, 20, dtype=ak.uint64), self.u)
+        np_div, np_mod = np.divmod(np.arange(10, 20, dtype=np.uint64), self.npu)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
         # scalar-vector cases
         # int int
         ak_div, ak_mod = ak.divmod(30, self.y)
@@ -175,6 +187,12 @@ class StatsTest(ArkoudaTest):
         self.assertListEqual(ak_div.to_list(), np_div.tolist())
         self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
+        # float float (non-whole numbers)
+        ak_div, ak_mod = ak.divmod(30.5, ak.cast(self.y+1.5, ak.float64))
+        np_div, np_mod = np.divmod(30.5, self.npy.astype(float)+1.5)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
         # vector-scalar cases
         # int int
         ak_div, ak_mod = ak.divmod(self.x, 3)
@@ -197,6 +215,12 @@ class StatsTest(ArkoudaTest):
         # float float
         ak_div, ak_mod = ak.divmod(ak.cast(self.x, ak.float64), 3.0)
         np_div, np_mod = np.divmod(self.npx.astype(float), 3.0)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float float (non-whole numbers)
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x+.5, ak.float64), 4.5)
+        np_div, np_mod = np.divmod(self.npx.astype(float)+.5, 4.5)
         self.assertListEqual(ak_div.to_list(), np_div.tolist())
         self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
