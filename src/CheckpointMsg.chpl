@@ -8,23 +8,30 @@ module CheckpointMsg {
   use ArkoudaMapCompat;
 
   proc checkpointMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-    if !exists('checkpoint') then
-      mkdir("checkpoint");
+    var path = msgArgs.getValueOf("path");
+    if !exists(path) then
+      mkdir(path);
     
     for (k, v) in zip(st.tab.keys(), st.tab.values()) {
       var e = toSymEntry(toGenSymEntry(v), int);
-      write1DDistArrayParquet("checkpoint/"+k+"-"+e.size:string, 'asd', "int64", 0, 0, e.a);
+      write1DDistArrayParquet(path+"/"+k+"-"+e.size:string, 'asd', "int64", 0, 0, e.a);
     }
     return new MsgTuple("Checkpointed yo", MsgType.NORMAL);
   }
 
   proc checkpointLoadMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-    var tmp = glob("checkpoint/*");
+    var path = msgArgs.getValueOf("path");
+    if !exists(path) {
+      var errorMsg = "Directory not found: " + path;
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+    var tmp = glob(path+"/*");
     var rnames: list(3*string);
     for filename in tmp {
-      var fileSize = filename[24]:int;
+      var fileSize = filename[filename.find("-")+1..filename.rfind("_")-1]:int;
       var entryVal = new shared SymEntry(fileSize, int);
       readFilesByName(entryVal.a, [filename], [fileSize], "asd", 0);
+      //readFilesByName(entryVal.a, [filename], [3], "asd", 0);
       var rname = st.nextName();
       st.addEntry(rname, entryVal);
       rnames.append((rname, "pdarray", rname));
