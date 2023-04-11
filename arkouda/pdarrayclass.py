@@ -4323,6 +4323,29 @@ def unregister_pdarray_by_name(user_defined_name: str) -> None:
     )
     return unregister(user_defined_name)
 
+def checkpoint():
+    '''
+    namesToIds = {}
+    locVals = vars()
+    print(locVals)
+    for name in locVals:
+        if isinstance(locVals[name], pdarray):
+            namesToIds[name] = locVals[name].name
+    print(namesToIds)'''
+    return cast(str, generic_msg(cmd="checkpoint"))
+
+def load_checkpoint():
+    '''
+    namesToIds = {}
+    locVals = vars()
+    print(locVals)
+    for name in locVals:
+        if isinstance(locVals[name], pdarray):
+            namesToIds[name] = locVals[name].name
+    print(namesToIds)'''
+    rep_msg = generic_msg(cmd="loadcheckpoint")
+    rep = json.loads(rep_msg)
+    return _build_objects(rep)
 
 # TODO In the future move this to a specific errors file
 class RegistrationError(Exception):
