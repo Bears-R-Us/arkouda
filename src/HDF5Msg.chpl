@@ -9,6 +9,7 @@ module HDF5Msg {
     use Set;
     use ArkoudaTimeCompat as Time;
     use AryUtil;
+    use Regex;
 
     use CommAggregation;
     use FileIO;
@@ -141,6 +142,16 @@ module HDF5Msg {
                                             moduleName=getModuleName(), 
                                             errorClass='FileNotFoundError');
             }
+            
+            // Create the attribute space
+            var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+            var attr_id: C_HDF5.hid_t;
+            // Create the File_Type. This will be important when merging with other read/write functionality.
+            attr_id = C_HDF5.H5Acreate2(file_id, "File_Format".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+            var ft: int = SINGLE_FILE;
+            C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(ft));
+            C_HDF5.H5Aclose(attr_id);
+
         }
         return f;
     }
@@ -193,6 +204,14 @@ module HDF5Msg {
                                     moduleName=getModuleName(), 
                                     errorClass='FileNotFoundError');
               }
+              // Create the attribute space
+                var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+                var attr_id: C_HDF5.hid_t;
+                // Create the File_Type. This will be important when merging with other read/write functionality.
+                attr_id = C_HDF5.H5Acreate2(file_id, "File_Format".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+                var ft: int = MULTI_FILE;
+                C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(ft));
+                C_HDF5.H5Aclose(attr_id);
             }
         }
         else if mode == APPEND {
@@ -286,7 +305,7 @@ module HDF5Msg {
 
         var attrStringType = C_HDF5.H5Tcopy(C_HDF5.H5T_C_S1): C_HDF5.hid_t;
 
-         // Create the objectType. This will be important when merging with other read/write functionality.
+        // Create the objectType. This will be important when merging with other read/write functionality.
         attr_id = C_HDF5.H5Acreate2(obj_id, "ObjType".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         var t: ObjType = objType.toUpper(): ObjType;
         var t_int: int = t: int;
@@ -2217,8 +2236,96 @@ module HDF5Msg {
         return new MsgTuple(repMsg,MsgType.NORMAL);
     }
 
+    proc hdfFileFormatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var repMsg: string;
+
+        // Retrieve filename from payload
+        var filename: string = msgArgs.getValueOf("filename");
+        if filename.isEmpty() {
+            var errorMsg = "Filename was Empty";
+            h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        // If the filename represents a glob pattern, retrieve the locale 0 filename
+        if isGlobPattern(filename) {
+            // Attempt to interpret filename as a glob expression and ls the first result
+            var tmp = glob(filename);
+            h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                      "glob-expanded filename: %s to size: %i files".format(filename, tmp.size));
+
+            if tmp.size <= 0 {
+                var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".format(filename);
+                h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+            
+            // Set filename to globbed filename corresponding to locale 0
+            filename = tmp[tmp.domain.first];
+        }
+        
+        // Check to see if the file exists. If not, return an error message
+        if !exists(filename) {
+            var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
+            h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg,MsgType.ERROR);
+        } 
+
+        if !isHdf5File(filename) {
+            var errorMsg = "File %s is not an HDF5 file".format(filename);
+            h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg,MsgType.ERROR);
+        }
+        
+        try {
+            var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+            defer { C_HDF5.H5Fclose(file_id); } // ensure file is closed
+            if C_HDF5.H5Aexists_by_name(file_id, ".".c_str(), "File_Format", C_HDF5.H5P_DEFAULT) > 0 {
+                var file_format_id: C_HDF5.hid_t = C_HDF5.H5Aopen_by_name(file_id, ".".c_str(), "File_Format", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+                var file_format: int;
+                C_HDF5.H5Aread(file_format_id, getHDF5Type(int), c_ptrTo(file_format));
+                C_HDF5.H5Aclose(file_format_id);
+
+                writeln("\n\n\nFile_Format Attribute Found: %i\n\n\n".format(file_format));
+                // convert integer to string
+                if file_format == 0 {
+                    repMsg = "single";
+                }
+                else if file_format == 1 {
+                    repMsg = "distribute";
+                }
+                else {
+                    throw getErrorWithContext(
+                            msg="Unknown file formatting, %i.".format(file_format),
+                            lineNumber=getLineNumber(),
+                            routineName=getRoutineName(), 
+                            moduleName=getModuleName(),
+                            errorClass="IllegalArgumentError");
+                }
+            }
+            else{
+                // generate regex to match distributed filename
+                var dist_regex = new regex("_LOCALE\\d{4}");
+
+                if dist_regex.search(filename){
+                    repMsg = "distribute";
+                }
+                else {
+                    repMsg = "single";
+                }
+            }
+        } catch e : Error {
+            var errorMsg = "Failed to process HDF5 file %t".format(e.message());
+            h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     use CommandMap;
     registerFunction("lshdf", lshdfMsg, getModuleName());
     registerFunction("readAllHdf", readAllHdfMsg, getModuleName());
     registerFunction("tohdf", tohdfMsg, getModuleName());
+    registerFunction("hdffileformat", hdfFileFormatMsg, getModuleName());
 }

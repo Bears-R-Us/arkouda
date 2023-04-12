@@ -1193,6 +1193,34 @@ def to_hdf(
             mode = "append"
 
 
+def _get_hdf_filetype(filename: str) -> str:
+    if not (filename and filename.strip()):
+        raise ValueError("filename cannot be an empty string")
+
+    cmd = "hdffileformat"
+    return cast(
+        str,
+        generic_msg(
+            cmd=cmd,
+            args={"filename": filename},
+        ),
+    )
+
+
+def update_hdf(
+    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    prefix_path: str,
+    names: List[str] = None
+):
+    # TODO - add docstring
+    datasetNames, pdarrays = _bulk_write_prep(columns, names)
+    for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
+        arr.update_hdf(
+            prefix_path=prefix_path,
+            dataset=name
+        )
+
+
 def to_csv(
     columns: Union[Mapping[str, pdarray], List[pdarray]],
     prefix_path: str,

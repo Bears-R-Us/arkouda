@@ -1513,6 +1513,47 @@ class pdarray:
             ),
         )
 
+    def update_hdf(
+            self,
+            prefix_path: str,
+            dataset: str = "array",
+    ) -> str:
+        """
+        Overwrite the dataset with the name provided with this pdarray. If
+        the dataset does not exist it is appended
+
+        Parameters
+        -----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in files (must not already exist)
+        file_type: str ("single" | "distribute")
+            Default: "distribute"
+            When set to single, dataset is written to a single file.
+            When distribute, dataset is written on a file per locale.
+            This should be set to whatever the original file was written with
+        """
+        from arkouda.io import _get_hdf_filetype, ls, read_hdf, to_hdf
+
+        file_type = _get_hdf_filetype(prefix_path+"*")
+        print(file_type)
+
+        # read everything out of file that is not dset to be overwritten
+        dset_list = ls(prefix_path+"*")
+        dset_list.remove(dataset)  # this will effectively drop the dataset
+
+        upd_with = read_hdf(prefix_path+"*", datasets=dset_list)
+
+        # handle case with single dset
+        if len(dset_list) == 1:
+            upd_with = {dset_list[0]: upd_with}
+
+        upd_with[dataset] = self
+        to_hdf(upd_with, prefix_path, file_type=file_type)
+
+        return f"Overwrite of {dataset} successful!"
+
     @typechecked
     def to_csv(
         self,
