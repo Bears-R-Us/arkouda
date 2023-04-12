@@ -95,7 +95,9 @@ class JoinTest(ArkoudaTest):
         l, r = ak.join.inner_join(left, right)
         self.assertListEqual(left[l].to_list(), right[r].to_list())
 
-        l, r = ak.join.inner_join(left, right, wherefunc=join_where, whereargs=(left, right))
+        l, r = ak.join.inner_join(
+            left, right, wherefunc=join_where, whereargs=(left, right)
+        )
         self.assertListEqual(left[l].to_list(), right[r].to_list())
 
         with self.assertRaises(ValueError):
@@ -168,7 +170,6 @@ class JoinTest(ArkoudaTest):
         )
         self.assertListEqual(catLeft[L].to_list(), catRight[R].to_list())
 
-
     def test_lookup(self):
         keys = ak.arange(5)
         values = 10 * keys
@@ -216,5 +217,3 @@ def join_where(L, R):
     idx = []
     for i in range(L.size):
         idx.append(i % 2 == 0)
-
-    return ak.array(idx)
