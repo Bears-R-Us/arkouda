@@ -95,11 +95,10 @@ class JoinTest(ArkoudaTest):
         l, r = ak.join.inner_join(left, right)
         self.assertListEqual(left[l].to_list(), right[r].to_list())
 
-        strLeft = ak.array(["a", "b", "c", "d", "e", "f", "g", "h"])
-        strRight = ak.array(["c", "g", "a", "d", "f", "e", "b", "d"])
-
-        strL, strR = ak.join.inner_join(strLeft, strRight)
-        self.assertListEqual(strLeft[strL].to_list(), strRight[strR].to_list())
+        l, r = ak.join.inner_join(
+            left, right, wherefunc=num_join_where, whereargs=(left, right)
+        )
+        self.assertListEqual(left[l].to_list(), right[r].to_list())
 
         with self.assertRaises(ValueError):
             l, r = ak.join.inner_join(left, right, wherefunc=ak.unique)
@@ -116,6 +115,35 @@ class JoinTest(ArkoudaTest):
             l, r = ak.join.inner_join(
                 left, right, wherefunc=ak.intersect1d, whereargs=(ak.arange(10), ak.arange(5))
             )
+
+    def test_str_cat_inner_join(self):
+        strLeft = ak.array(["a", "c", "c", "d", "a", "b", "a", "e"])
+        strRight = ak.array(["c", "b", "a", "d", "a", "c", "b", "d"])
+
+        strL, strR = ak.join.inner_join(strLeft, strRight)
+        self.assertListEqual(strLeft[strL].to_list(), strRight[strR].to_list())
+
+        strLWhere, strRWhere = ak.join.inner_join(
+            strLeft, strRight, wherefunc=string_join_where, whereargs=(strLeft, strRight)
+        )
+        self.assertListEqual(strLeft[strLWhere].to_list(), strRight[strRWhere].to_list())
+
+        catLeft = ak.Categorical(strLeft)
+        catRight = ak.Categorical(strRight)
+
+        catL, catR = ak.join.inner_join(catLeft, catRight)
+        self.assertListEqual(
+            catLeft.categories[catLeft.codes[catL]].to_list(),
+            catRight.categories[catRight.codes[catR]].to_list(),
+        )
+
+        catLWhere, catRWhere = ak.join.inner_join(
+            catLeft, catRight, wherefunc=string_join_where, whereargs=(strLeft, strRight)
+        )
+        self.assertListEqual(
+            catLeft.categories[catLeft.codes[catLWhere]].to_list(),
+            catRight.categories[catRight.codes[catRWhere]].to_list(),
+        )
 
     def test_lookup(self):
         keys = ak.arange(5)
@@ -158,3 +186,25 @@ class JoinTest(ArkoudaTest):
             ak.join_on_eq_with_dt(self.a1, self.a1, self.t1, self.t1 * 10, 8, "ab_dt")
         with self.assertRaises(ValueError):
             ak.join_on_eq_with_dt(self.a1, self.a1, self.t1, self.t1 * 10, 8, "abs_dt", -1)
+
+
+def string_join_where(L, R):
+    idx = []
+    for i in range(L.size):
+        if L[i] in ["a", "c", "e"] and R[i] in ["a", "c"]:
+            idx.append(True)
+        else:
+            idx.append(False)
+
+    return ak.array(idx)
+
+
+def num_join_where(L, R):
+    idx = []
+    for i in range(L.size):
+        if L[i] in [0, 2, 3] and R[i] in [0, 2]:
+            idx.append(True)
+        else:
+            idx.append(False)
+
+    return ak.array(idx)

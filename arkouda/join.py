@@ -4,6 +4,7 @@ import numpy as np  # type: ignore
 from typeguard import typechecked
 
 from arkouda.alignment import right_align
+from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.dtypes import int64 as akint64
@@ -170,8 +171,10 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
 
 @typechecked
 def inner_join(
-    left: Union[pdarray, Strings], right: Union[pdarray, Strings], wherefunc: Callable = None,
-        whereargs: Tuple[Union[pdarray, Strings], Union[pdarray, Strings]] = None
+    left: Union[pdarray, Strings, Categorical],
+    right: Union[pdarray, Strings, Categorical],
+    wherefunc: Callable = None,
+    whereargs: Tuple[Union[pdarray, Strings], Union[pdarray, Strings]] = None,
 ) -> Tuple[pdarray, pdarray]:
     """Perform inner join on values in <left> and <right>,
     using conditions defined by <wherefunc> evaluated on
@@ -179,7 +182,7 @@ def inner_join(
 
     Parameters
     ----------
-    left : pdarray(int64), Strings
+    left : pdarray(int64), Strings, Categorical
         The left values to join
     right : pdarray(int64), Strings
         The right values to join
@@ -209,6 +212,26 @@ def inner_join(
 
     if type(left) != type(right):
         raise TypeError("Left and Right arrays must be of same type")
+
+    # Convert Strings and Categorical left & right values to Categorical.codes. This generates an
+    # index representation of the strings. This way they can be handled as numerics and follow the
+    # same process as int
+    t = pdarray.objtype
+    lCats = rCats = None
+    if isinstance(left, Strings):
+        t = Strings.objtype
+        catLeft = Categorical(left)
+        catRight = Categorical(right)
+        lCats = catLeft.categories
+        rCats = catRight.categories
+        left = catLeft.codes
+        right = catRight.codes
+    elif isinstance(left, Categorical):
+        t = Categorical.objtype
+        lCats = left.categories
+        rCats = right.categories
+        left = left.codes
+        right = right.codes
 
     sample = np.min((left.size, right.size, 5))  # type: ignore
     if wherefunc is not None:
@@ -246,10 +269,32 @@ def inner_join(
         keep12 = keep
     else:
         if whereargs is not None:
-            # Gather right whereargs
-            rightWhere = whereargs[1][byRight.permutation][ranges]
-            # Expand left whereargs
-            leftWhere = broadcast(fullSegs, whereargs[0][keep], ranges.size)
+            if t == Strings.objtype or t == Categorical.objtype:
+                # Find the corresponding codes value for each term in the whereargs
+                lCodes = array(
+                    [
+                        lCats.to_list().index(w)
+                        for w in whereargs[0][keep].to_ndarray()
+                        if w in lCats.to_ndarray()
+                    ]
+                )
+                lIdx = broadcast(fullSegs, lCodes, ranges.size)
+                leftWhere = whereargs[0][lIdx]
+                # Gather right whereargs
+                rCodes = array(
+                    [
+                        rCats.to_list().index(w)
+                        for w in whereargs[1][byRight.permutation][ranges].to_ndarray()
+                        if w in rCats.to_ndarray()
+                    ]
+                )
+                rightWhere = whereargs[1][rCodes]
+            else:
+                # Expand left whereargs
+                leftWhere = broadcast(fullSegs, whereargs[0][keep], ranges.size)
+                # Gather right whereargs
+                rightWhere = whereargs[1][byRight.permutation][ranges]
+
             # Evaluate wherefunc and filter ranges, recompute segments
             whereSatisfied = wherefunc(leftWhere, rightWhere)
             filtRanges = ranges[whereSatisfied]
@@ -267,4 +312,5 @@ def inner_join(
     # Gather right inds and expand left inds
     rightInds = byRight.permutation[filtRanges]
     leftInds = broadcast(filtSegs, arange(left.size)[keep12], filtRanges.size)
+
     return leftInds, rightInds
