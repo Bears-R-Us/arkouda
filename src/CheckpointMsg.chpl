@@ -10,12 +10,9 @@ module CheckpointMsg {
 
   proc checkpointMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var path = msgArgs.getValueOf("path");
-    var namesToIds = msgArgs.get("names").getJSON();
-    var sports = jsonToPdArray(namesToIds, 6);
+    var names = msgArgs.get("names").getList(3);
     writeln();
-    writeln(namesToIds);
-    writeln();
-    writeln(sports);
+    writeln(names);
     writeln();
     
     if !exists(path) then

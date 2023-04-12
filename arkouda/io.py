@@ -2001,11 +2001,14 @@ def read(
 
 def checkpoint(varNames,path="checkpoint"):
     namesToIds = {}
+    names = []
+    ids = []
     for name in varNames:
         if isinstance(varNames[name], pdarray):
             namesToIds[name] = varNames[name].name
+            names.append(name)
     return cast(str, generic_msg(cmd="checkpoint", args={"path":path,
-                                                         "names":namesToIds}))
+                                                         "names":names}))
 
 def load_checkpoint(path="checkpoint"):
     rep_msg = generic_msg(cmd="loadcheckpoint", args={"path":path})
