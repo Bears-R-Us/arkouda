@@ -5,10 +5,19 @@ module CheckpointMsg {
   use Reflection;
   use FileSystem;
   use ParquetMsg;
+  use List;
   use ArkoudaMapCompat;
 
   proc checkpointMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var path = msgArgs.getValueOf("path");
+    var namesToIds = msgArgs.get("names").getJSON();
+    var sports = jsonToPdArray(namesToIds, 6);
+    writeln();
+    writeln(namesToIds);
+    writeln();
+    writeln(sports);
+    writeln();
+    
     if !exists(path) then
       mkdir(path);
     
@@ -31,14 +40,10 @@ module CheckpointMsg {
       var fileSize = filename[filename.find("-")+1..filename.rfind("_")-1]:int;
       var entryVal = new shared SymEntry(fileSize, int);
       readFilesByName(entryVal.a, [filename], [fileSize], "asd", 0);
-      //readFilesByName(entryVal.a, [filename], [3], "asd", 0);
       var rname = st.nextName();
       st.addEntry(rname, entryVal);
       rnames.append((rname, "pdarray", rname));
     }
-
-    writeln(rnames);
-    use List;
     var l = new list(string);
     use GenSymIO;
     var repMsg = _buildReadAllMsgJson(rnames, false, 0, l, st);
