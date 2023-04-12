@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import List, Optional, Sequence, Union, cast
+from typing import List, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -54,6 +54,7 @@ __all__ = [
     "rotr",
     "cov",
     "corr",
+    "divmod",
     "sqrt",
     "power",
     "attach_pdarray",
@@ -2339,6 +2340,81 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
     """
     return parse_single_value(generic_msg(cmd="corr", args={"x": x, "y": y}))
+
+
+@typechecked
+def divmod(
+    x: Union[numeric_scalars, pdarray],
+    y: Union[numeric_scalars, pdarray],
+    where: Union[bool, pdarray] = True,
+) -> Tuple[pdarray, pdarray]:
+    """
+    Parameters
+    ----------
+    x : numeric_scalars(float_scalars, int_scalars) or pdarray
+        The dividend array, the values that will be the numerator of the floordivision and will be
+        acted on by the bases for modular division.
+    y : numeric_scalars(float_scalars, int_scalars) or pdarray
+        The divisor array, the values that will be the denominator of the division and will be the
+        bases for the modular division.
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True, the
+        corresponding value will be divided using floor and modular division. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    (pdarray, pdarray)
+        Returns a tuple that contains quotient and remainder of the division
+
+    Raises
+    ------
+    TypeError
+        At least one entry must be a pdarray
+    ValueError
+        If both inputs are both pdarrays, their size must match
+    ZeroDivisionError
+        No entry in y is allowed to be 0, to prevent division by zero
+
+    Notes
+    -----
+    The div is calculated by x // y
+    The mod is calculated by x % y
+
+    Examples
+    --------
+    >>> x = ak.arange(5, 10)
+    >>> y = ak.array([2, 1, 4, 5, 8])
+    >>> ak.divmod(x,y)
+    (array([2 6 1 1 1]), array([1 0 3 3 1]))
+    >>> ak.divmod(x,y, x % 2 == 0)
+    (array([5 6 7 1 9]), array([5 0 7 3 9]))
+    """
+    from arkouda.numeric import cast as akcast
+    from arkouda.numeric import where as akwhere
+    from arkouda.pdarraycreation import full
+
+    if not isinstance(x, pdarray) and not isinstance(y, pdarray):
+        raise TypeError("At least one entry must be a pdarray.")
+
+    if isinstance(x, pdarray) and isinstance(y, pdarray):
+        if x.size != y.size:
+            raise ValueError(f"size mismatch {x.size} {y.size}")
+
+    equal_zero = y == 0
+    if equal_zero if isinstance(equal_zero, bool) else any(equal_zero):
+        raise ZeroDivisionError("Can not divide by zero")
+
+    if where is True:
+        return x // y, x % y  # type: ignore
+    elif where is False:
+        if not isinstance(x, pdarray) and isinstance(y, pdarray):
+            x = full(y.size, x)
+        return x, x  # type: ignore
+    else:
+        div = cast(pdarray, x // y)
+        mod = cast(pdarray, x % y)
+        return (akwhere(where, div, akcast(x, div.dtype)), akwhere(where, mod, akcast(x, mod.dtype)))
 
 
 @typechecked

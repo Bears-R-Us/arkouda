@@ -123,3 +123,130 @@ class StatsTest(ArkoudaTest):
         ak.DataFrame(
             {"x": self.x, "y": self.y, "u": self.u, "b": self.b, "f": self.f, "s": self.s, "c": self.c}
         ).corr()
+
+    def test_divmod(self):
+        # vector-vector cases
+        # int int
+        ak_div, ak_mod = ak.divmod(self.x, self.y)
+        np_div, np_mod = np.divmod(self.npx, self.npy)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # int float
+        ak_div, ak_mod = ak.divmod(self.x, ak.cast(self.y, ak.float64))
+        np_div, np_mod = np.divmod(self.npx, self.npy.astype(float))
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float int
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x, ak.float64), self.y)
+        np_div, np_mod = np.divmod(self.npx.astype(float), self.npy)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float float
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x, ak.float64), ak.cast(self.y, ak.float64))
+        np_div, np_mod = np.divmod(self.npx.astype(float), self.npy.astype(float))
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float float (non-whole numbers)
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x+.5, ak.float64), ak.cast(self.y+1.5, ak.float64))
+        np_div, np_mod = np.divmod(self.npx.astype(float)+.5, self.npy.astype(float)+1.5)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # uint uint
+        ak_div, ak_mod = ak.divmod(ak.arange(10, 20, dtype=ak.uint64), self.u)
+        np_div, np_mod = np.divmod(np.arange(10, 20, dtype=np.uint64), self.npu)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # scalar-vector cases
+        # int int
+        ak_div, ak_mod = ak.divmod(30, self.y)
+        np_div, np_mod = np.divmod(30, self.npy)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # int float
+        ak_div, ak_mod = ak.divmod(30, ak.cast(self.y, ak.float64))
+        np_div, np_mod = np.divmod(30, self.npy.astype(float))
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float int
+        ak_div, ak_mod = ak.divmod(30.0, self.y)
+        np_div, np_mod = np.divmod(30.0, self.npy)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float float
+        ak_div, ak_mod = ak.divmod(30.0, ak.cast(self.y, ak.float64))
+        np_div, np_mod = np.divmod(30.0, self.npy.astype(float))
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float float (non-whole numbers)
+        ak_div, ak_mod = ak.divmod(30.5, ak.cast(self.y+1.5, ak.float64))
+        np_div, np_mod = np.divmod(30.5, self.npy.astype(float)+1.5)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # vector-scalar cases
+        # int int
+        ak_div, ak_mod = ak.divmod(self.x, 3)
+        np_div, np_mod = np.divmod(self.npx, 3)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # int float
+        ak_div, ak_mod = ak.divmod(self.x, 3.0)
+        np_div, np_mod = np.divmod(self.npx, 3.0)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float int
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x, ak.float64), 3)
+        np_div, np_mod = np.divmod(self.npx.astype(float), 3)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float float
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x, ak.float64), 3.0)
+        np_div, np_mod = np.divmod(self.npx.astype(float), 3.0)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # float float (non-whole numbers)
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x+.5, ak.float64), 4.5)
+        np_div, np_mod = np.divmod(self.npx.astype(float)+.5, 4.5)
+        self.assertListEqual(ak_div.to_list(), np_div.tolist())
+        self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
+
+        # Boolean where argument
+        truth = ak.arange(10) % 2 == 0
+        ak_div_truth, ak_mod_truth = ak.divmod(self.x, self.y, where=truth)
+        self.assertListEqual(ak_div_truth.to_list(),
+                             [(self.x[i] // self.y[i]) if truth[i] else self.x[i] for i in range(10)])
+        self.assertListEqual(ak_mod_truth.to_list(),
+                             [(self.x[i] % self.y[i]) if truth[i] else self.x[i] for i in range(10)])
+
+        # Edge cases in the numerator
+        edge_case = [-np.inf, -7.0, -0.0, np.nan, 0.0, 7.0, np.inf]
+        np_edge_case = np.array(edge_case)
+        ak_edge_case = ak.array(np_edge_case)
+        ak_div, ak_mod = ak.divmod(ak_edge_case, ak.arange(1, len(edge_case)+1))
+        np_div, np_mod = np.divmod(np_edge_case, np.arange(1, len(edge_case)+1))
+        self.assertTrue(np.allclose(ak_div.to_ndarray(), np_div, equal_nan=True))
+        self.assertTrue(np.allclose(ak_mod.to_ndarray(), np_mod, equal_nan=True))
+
+        # Edge cases in the denominator
+        edge_case = [-np.inf, -7.0, np.nan, 7.0, np.inf]
+        np_edge_case = np.array(edge_case)
+        ak_edge_case = ak.array(np_edge_case)
+        ak_div, ak_mod = ak.divmod(ak_edge_case, ak.arange(1, len(edge_case)+1))
+        np_div, np_mod = np.divmod(np_edge_case, np.arange(1, len(edge_case)+1))
+        self.assertTrue(np.allclose(ak_div.to_ndarray(), np_div, equal_nan=True))
+        self.assertTrue(np.allclose(ak_mod.to_ndarray(), np_mod, equal_nan=True))
+
