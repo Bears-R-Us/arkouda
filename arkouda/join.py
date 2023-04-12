@@ -174,11 +174,7 @@ def inner_join(
     left: Union[pdarray, Strings, Categorical],
     right: Union[pdarray, Strings, Categorical],
     wherefunc: Callable = None,
-<<<<<<< HEAD
     whereargs: Tuple[Union[pdarray, Strings, Categorical], Union[pdarray, Strings, Categorical]] = None,
-=======
-    whereargs: Tuple[Union[pdarray, Strings], Union[pdarray, Strings]] = None,
->>>>>>> Inner Join on Strings and Categorical
 ) -> Tuple[pdarray, pdarray]:
     """Perform inner join on values in <left> and <right>,
     using conditions defined by <wherefunc> evaluated on
@@ -215,18 +211,18 @@ def inner_join(
     # Convert Strings and Categorical left & right values to Categorical.codes. This generates an
     # index representation of the strings. This way they can be handled as numerics and follow the
     # same process as int
-    t = pdarray.objtype
+    t = cast(str, pdarray.objtype)
     lCats = rCats = None
-    if isinstance(left, Strings):
-        t = Strings.objtype
+    if isinstance(left, Strings) and isinstance(right, Strings):
+        t = cast(str, Strings.objtype)
         catLeft = Categorical(left)
         catRight = Categorical(right)
         lCats = catLeft.categories
         rCats = catRight.categories
         left = catLeft.codes
         right = catRight.codes
-    elif isinstance(left, Categorical):
-        t = Categorical.objtype
+    elif isinstance(left, Categorical) and isinstance(right, Categorical):
+        t = cast(str, Categorical.objtype)
         lCats = left.categories
         rCats = right.categories
         left = left.codes
@@ -268,7 +264,6 @@ def inner_join(
         keep12 = keep
     else:
         if whereargs is not None:
-<<<<<<< HEAD
             # Gather right whereargs
             rightWhere = whereargs[1][byRight.permutation][ranges]
             # Expand left whereargs
@@ -278,8 +273,11 @@ def inner_join(
                 leftWhere = keep_where[leftWhereIdx]
             else:
                 leftWhere = broadcast(fullSegs, keep_where, ranges.size)
-=======
-            if t == Strings.objtype or t == Categorical.objtype:
+            if (
+                t in [Strings.objtype, Categorical.objtype]
+                and isinstance(lCats, Strings)
+                and isinstance(rCats, Strings)
+            ):
                 # Find the corresponding codes value for each term in the whereargs
                 lCodes = array(
                     [
@@ -288,7 +286,12 @@ def inner_join(
                         if w in lCats.to_ndarray()
                     ]
                 )
-                lIdx = broadcast(fullSegs, lCodes, ranges.size)
+                if isinstance(lCodes, pdarray):
+                    lIdx = broadcast(fullSegs, lCodes, ranges.size)
+                else:
+                    raise TypeError(
+                        f"Invalid type returned from lCodes generation: {type(lCodes)}. Expected pdarray"
+                    )
                 leftWhere = whereargs[0][lIdx]
                 # Gather right whereargs
                 rCodes = array(
@@ -305,7 +308,6 @@ def inner_join(
                 # Gather right whereargs
                 rightWhere = whereargs[1][byRight.permutation][ranges]
 
->>>>>>> Inner Join on Strings and Categorical
             # Evaluate wherefunc and filter ranges, recompute segments
             whereSatisfied = wherefunc(leftWhere, rightWhere)
             filtRanges = ranges[whereSatisfied]
