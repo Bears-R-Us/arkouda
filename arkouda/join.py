@@ -184,14 +184,14 @@ def inner_join(
     ----------
     left : pdarray(int64), Strings, Categorical
         The left values to join
-    right : pdarray(int64), Strings
+    right : pdarray(int64), Strings, Categorical
         The right values to join
     wherefunc : function, optional
         Function that takes two pdarray arguments and returns
         a pdarray(bool) used to filter the join. Results for
         which wherefunc is False will be dropped.
-    whereargs : 2-tuple of pdarray
-        The two pdarray arguments to wherefunc
+    whereargs : 2-tuple of pdarray, Strings
+        The two pdarray or Strings arguments to wherefunc
 
     Returns
     -------
