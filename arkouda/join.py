@@ -216,18 +216,18 @@ def inner_join(
     # Convert Strings and Categorical left & right values to Categorical.codes. This generates an
     # index representation of the strings. This way they can be handled as numerics and follow the
     # same process as int
-    t = pdarray.objtype
+    t = cast(str, pdarray.objtype)
     lCats = rCats = None
-    if isinstance(left, Strings):
-        t = Strings.objtype
+    if isinstance(left, Strings) and isinstance(right, Strings):
+        t = cast(str, Strings.objtype)
         catLeft = Categorical(left)
         catRight = Categorical(right)
         lCats = catLeft.categories
         rCats = catRight.categories
         left = catLeft.codes
         right = catRight.codes
-    elif isinstance(left, Categorical):
-        t = Categorical.objtype
+    elif isinstance(left, Categorical) and isinstance(right, Categorical):
+        t = cast(str, Categorical.objtype)
         lCats = left.categories
         rCats = right.categories
         left = left.codes
@@ -269,7 +269,11 @@ def inner_join(
         keep12 = keep
     else:
         if whereargs is not None:
-            if t == Strings.objtype or t == Categorical.objtype:
+            if (
+                t in [Strings.objtype, Categorical.objtype]
+                and isinstance(lCats, Strings)
+                and isinstance(rCats, Strings)
+            ):
                 # Find the corresponding codes value for each term in the whereargs
                 lCodes = array(
                     [
@@ -278,7 +282,12 @@ def inner_join(
                         if w in lCats.to_ndarray()
                     ]
                 )
-                lIdx = broadcast(fullSegs, lCodes, ranges.size)
+                if isinstance(lCodes, pdarray):
+                    lIdx = broadcast(fullSegs, lCodes, ranges.size)
+                else:
+                    raise TypeError(
+                        f"Invalid type returned from lCodes generation: {type(lCodes)}. Expected pdarray"
+                    )
                 leftWhere = whereargs[0][lIdx]
                 # Gather right whereargs
                 rCodes = array(
