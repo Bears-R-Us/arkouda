@@ -133,16 +133,16 @@ class JoinTest(ArkoudaTest):
 
         catL, catR = ak.join.inner_join(catLeft, catRight)
         self.assertListEqual(
-            catLeft.categories[catLeft.codes[catL]].to_list(),
-            catRight.categories[catRight.codes[catR]].to_list(),
+            catLeft[catL].to_list(),
+            catRight[catR].to_list(),
         )
 
         catLWhere, catRWhere = ak.join.inner_join(
             catLeft, catRight, wherefunc=string_join_where, whereargs=(strLeft, strRight)
         )
         self.assertListEqual(
-            catLeft.categories[catLeft.codes[catLWhere]].to_list(),
-            catRight.categories[catRight.codes[catRWhere]].to_list(),
+            catLeft[catLWhere].to_list(),
+            catRight[catRWhere].to_list(),
         )
 
     def test_lookup(self):
