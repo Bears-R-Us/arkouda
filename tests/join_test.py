@@ -140,7 +140,10 @@ class JoinTest(ArkoudaTest):
 
         # Base Case
         catL, catR = ak.join.inner_join(catLeft, catRight)
-        self.assertListEqual(catLeft[catL].to_list(), catRight[catR].to_list())
+        self.assertListEqual(
+            catLeft[catL].to_list(),
+            catRight[catR].to_list(),
+        )
 
         catLWhere, catRWhere = ak.join.inner_join(
             catLeft, catRight, wherefunc=join_where, whereargs=(catLeft, catRight)
