@@ -340,46 +340,54 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.corr" title="arkouda.pdarrayclass.corr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">corr</span></code></a>(→ numpy.float64)</p></td>
 <td><p>Return the correlation between x and y</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mink" title="arkouda.pdarrayclass.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.divmod" title="arkouda.pdarrayclass.divmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">divmod</span></code></a>(→ Tuple[pdarray, pdarray])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param x<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The dividend array, the values that will be the numerator of the floordivision and will be</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mink" title="arkouda.pdarrayclass.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the <cite>k</cite> minimum values of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.maxk" title="arkouda.pdarrayclass.maxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxk</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.maxk" title="arkouda.pdarrayclass.maxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxk</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the <cite>k</cite> maximum values of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmink" title="arkouda.pdarrayclass.argmink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmink</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmink" title="arkouda.pdarrayclass.argmink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmink</span></code></a>(→ pdarray)</p></td>
 <td><p>Finds the indices corresponding to the <cite>k</cite> minimum values of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmaxk" title="arkouda.pdarrayclass.argmaxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmaxk</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmaxk" title="arkouda.pdarrayclass.argmaxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmaxk</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the indices corresponding to the <cite>k</cite> maximum values of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.popcount" title="arkouda.pdarrayclass.popcount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popcount</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.popcount" title="arkouda.pdarrayclass.popcount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popcount</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the population (number of bits set) for each integer in an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.parity" title="arkouda.pdarrayclass.parity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parity</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.parity" title="arkouda.pdarrayclass.parity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parity</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the bit parity (XOR of all bits) for each integer in an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.clz" title="arkouda.pdarrayclass.clz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clz</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.clz" title="arkouda.pdarrayclass.clz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clz</span></code></a>(→ pdarray)</p></td>
 <td><p>Count leading zeros for each integer in an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.ctz" title="arkouda.pdarrayclass.ctz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ctz</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.ctz" title="arkouda.pdarrayclass.ctz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ctz</span></code></a>(→ pdarray)</p></td>
 <td><p>Count trailing zeros for each integer in an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.rotl" title="arkouda.pdarrayclass.rotl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotl</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.rotl" title="arkouda.pdarrayclass.rotl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotl</span></code></a>(→ pdarray)</p></td>
 <td><p>Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.rotr" title="arkouda.pdarrayclass.rotr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotr</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.rotr" title="arkouda.pdarrayclass.rotr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotr</span></code></a>(→ pdarray)</p></td>
 <td><p>Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.power" title="arkouda.pdarrayclass.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.power" title="arkouda.pdarrayclass.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a>(→ pdarray)</p></td>
 <td><p>Raises an array to a power. If where is given, the operation will only take place in the positions</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.sqrt" title="arkouda.pdarrayclass.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.sqrt" title="arkouda.pdarrayclass.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>(→ pdarray)</p></td>
 <td><p>Takes the square root of array. If where is given, the operation will only take place in</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.attach_pdarray" title="arkouda.pdarrayclass.attach_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_pdarray</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.attach_pdarray" title="arkouda.pdarrayclass.attach_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_pdarray</span></code></a>(→ pdarray)</p></td>
 <td><p>class method to return a pdarray attached to the registered name in the arkouda</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray_by_name" title="arkouda.pdarrayclass.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray_by_name" title="arkouda.pdarrayclass.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>(→ None)</p></td>
 <td><p>Unregister a named pdarray in the arkouda server which was previously</p></td>
 </tr>
 </tbody>
@@ -1851,6 +1859,49 @@ cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.divmod">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">divmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.divmod" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numeric_scalars</em><em>(</em><em>float_scalars</em><em>, </em><em>int_scalars</em><em>) or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The dividend array, the values that will be the numerator of the floordivision and will be
+acted on by the bases for modular division.</p></li>
+<li><p><strong>y</strong> (<em>numeric_scalars</em><em>(</em><em>float_scalars</em><em>, </em><em>int_scalars</em><em>) or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The divisor array, the values that will be the denominator of the division and will be the
+bases for the modular division.</p></li>
+<li><p><strong>where</strong> (<em>Boolean</em><em> or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – This condition is broadcast over the input. At locations where the condition is True, the
+corresponding value will be divided using floor and modular division. Elsewhere, it will retain
+its original value. Default set to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns a tuple that contains quotient and remainder of the division</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – At least one entry must be a pdarray</p></li>
+<li><p><strong>ValueError</strong> – If both inputs are both pdarrays, their size must match</p></li>
+<li><p><strong>ZeroDivisionError</strong> – No entry in y is allowed to be 0, to prevent division by zero</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The div is calculated by x // y
+The mod is calculated by x % y</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">divmod</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="go">(array([2 6 1 1 1]), array([1 0 3 3 1]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">divmod</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="go">(array([5 6 7 1 9]), array([5 0 7 3 9]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.mink">
 <span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">mink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.mink" title="Permalink to this definition">#</a></dt>
 <dd><p>Find the <cite>k</cite> minimum values of an array.</p>
@@ -2473,6 +2524,7 @@ they are unregistered.</p>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.std"><code class="docutils literal notranslate"><span class="pre">std()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.cov"><code class="docutils literal notranslate"><span class="pre">cov()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.corr"><code class="docutils literal notranslate"><span class="pre">corr()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarrayclass.divmod"><code class="docutils literal notranslate"><span class="pre">divmod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.mink"><code class="docutils literal notranslate"><span class="pre">mink()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.maxk"><code class="docutils literal notranslate"><span class="pre">maxk()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.argmink"><code class="docutils literal notranslate"><span class="pre">argmink()</span></code></a></li>

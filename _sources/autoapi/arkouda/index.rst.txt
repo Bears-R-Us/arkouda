@@ -144,6 +144,7 @@ Functions
    arkouda.rotr
    arkouda.cov
    arkouda.corr
+   arkouda.divmod
    arkouda.sqrt
    arkouda.power
    arkouda.attach_pdarray
@@ -5540,6 +5541,41 @@ Attributes
 
    The correlation is calculated by
    cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
+
+
+.. py:function:: divmod(x: Union[arkouda.dtypes.numeric_scalars, pdarray], y: Union[arkouda.dtypes.numeric_scalars, pdarray], where: Union[bool, pdarray] = True) -> Tuple[pdarray, pdarray]
+
+   :param x: The dividend array, the values that will be the numerator of the floordivision and will be
+             acted on by the bases for modular division.
+   :type x: numeric_scalars(float_scalars, int_scalars) or pdarray
+   :param y: The divisor array, the values that will be the denominator of the division and will be the
+             bases for the modular division.
+   :type y: numeric_scalars(float_scalars, int_scalars) or pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True, the
+                 corresponding value will be divided using floor and modular division. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
+
+   :returns: Returns a tuple that contains quotient and remainder of the division
+   :rtype: (pdarray, pdarray)
+
+   :raises TypeError: At least one entry must be a pdarray
+   :raises ValueError: If both inputs are both pdarrays, their size must match
+   :raises ZeroDivisionError: No entry in y is allowed to be 0, to prevent division by zero
+
+   .. rubric:: Notes
+
+   The div is calculated by x // y
+   The mod is calculated by x % y
+
+   .. rubric:: Examples
+
+   >>> x = ak.arange(5, 10)
+   >>> y = ak.array([2, 1, 4, 5, 8])
+   >>> ak.divmod(x,y)
+   (array([2 6 1 1 1]), array([1 0 3 3 1]))
+   >>> ak.divmod(x,y, x % 2 == 0)
+   (array([5 6 7 1 9]), array([5 0 7 3 9]))
 
 
 .. py:function:: sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray
