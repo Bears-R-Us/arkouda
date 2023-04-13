@@ -10,17 +10,23 @@ module CheckpointMsg {
 
   proc checkpointMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var path = msgArgs.getValueOf("path");
-    var names = msgArgs.get("names").getList(3);
+    var len = msgArgs.get("numArrs").getIntValue();
+    var names = msgArgs.get("names").getList(len);
+    var ids = msgArgs.get("ids").getList(len);
     writeln();
     writeln(names);
+    writeln();
+
+    writeln(ids);
     writeln();
     
     if !exists(path) then
       mkdir(path);
     
-    for (k, v) in zip(st.tab.keys(), st.tab.values()) {
+    for (k, v, name) in zip(st.tab.keys(), st.tab.values(), names) {
       var e = toSymEntry(toGenSymEntry(v), int);
-      write1DDistArrayParquet(path+"/"+k+"-"+e.size:string, 'asd', "int64", 0, 0, e.a);
+      write1DDistArrayParquet(path+"/"+name+"-"+e.size:string, 'asd', "int64", 0, 0, e.a);
+      writeln(path+"/"+name+"-"+e.size:string);
     }
     return new MsgTuple("Checkpointed yo", MsgType.NORMAL);
   }
@@ -35,11 +41,12 @@ module CheckpointMsg {
     var rnames: list(3*string);
     for filename in tmp {
       var fileSize = filename[filename.find("-")+1..filename.rfind("_")-1]:int;
+      var name = filename[filename.find("/")+1..filename.find("-")-1];
       var entryVal = new shared SymEntry(fileSize, int);
       readFilesByName(entryVal.a, [filename], [fileSize], "asd", 0);
       var rname = st.nextName();
       st.addEntry(rname, entryVal);
-      rnames.append((rname, "pdarray", rname));
+      rnames.append((name, "pdarray", rname));
     }
     var l = new list(string);
     use GenSymIO;

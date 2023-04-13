@@ -2007,8 +2007,11 @@ def checkpoint(varNames,path="checkpoint"):
         if isinstance(varNames[name], pdarray):
             namesToIds[name] = varNames[name].name
             names.append(name)
-    return cast(str, generic_msg(cmd="checkpoint", args={"path":path,
-                                                         "names":names}))
+            ids.append(varNames[name].name)
+    return cast(str, generic_msg(cmd="checkpoint", args={"path"    : path,
+                                                         "numArrs" : len(names),
+                                                         "names"   : names,
+                                                         "ids"     : ids,}))
 
 def load_checkpoint(path="checkpoint"):
     rep_msg = generic_msg(cmd="loadcheckpoint", args={"path":path})
