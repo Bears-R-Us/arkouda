@@ -12,14 +12,11 @@ module CheckpointMsg {
     var path = msgArgs.getValueOf("path");
     var len = msgArgs.get("numArrs").getIntValue();
     var names = msgArgs.get("names").getList(len);
-    var ids = msgArgs.get("ids").getList(len);
+
     writeln();
     writeln(names);
     writeln();
 
-    writeln(ids);
-    writeln();
-    
     if !exists(path) then
       mkdir(path);
     
