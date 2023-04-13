@@ -30,3 +30,4 @@ from arkouda.alignment import *
 from arkouda.plotting import *
 from arkouda.accessor import *
 from arkouda.io import *
+from arkouda.stringmatching import *
