@@ -4,6 +4,7 @@ import numpy as np  # type: ignore
 from typeguard import typechecked
 
 from arkouda.alignment import right_align
+from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.dtypes import int64 as akint64
@@ -13,6 +14,7 @@ from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate, in1d
+from arkouda.strings import Strings
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
 
@@ -169,7 +171,10 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
 
 @typechecked
 def inner_join(
-    left: pdarray, right: pdarray, wherefunc: Callable = None, whereargs: Tuple[pdarray, pdarray] = None
+    left: Union[pdarray, Strings, Categorical],
+    right: Union[pdarray, Strings, Categorical],
+    wherefunc: Callable = None,
+    whereargs: Tuple[Union[pdarray, Strings, Categorical], Union[pdarray, Strings, Categorical]] = None,
 ) -> Tuple[pdarray, pdarray]:
     """Perform inner join on values in <left> and <right>,
     using conditions defined by <wherefunc> evaluated on
@@ -244,7 +249,12 @@ def inner_join(
             # Gather right whereargs
             rightWhere = whereargs[1][byRight.permutation][ranges]
             # Expand left whereargs
-            leftWhere = broadcast(fullSegs, whereargs[0][keep], ranges.size)
+            keep_where = whereargs[0][keep]
+            if isinstance(keep_where, Strings):
+                leftWhereIdx = broadcast(fullSegs, arange(keep_where.size), ranges.size)
+                leftWhere = keep_where[leftWhereIdx]
+            else:
+                leftWhere = broadcast(fullSegs, keep_where, ranges.size)
             # Evaluate wherefunc and filter ranges, recompute segments
             whereSatisfied = wherefunc(leftWhere, rightWhere)
             filtRanges = ranges[whereSatisfied]
