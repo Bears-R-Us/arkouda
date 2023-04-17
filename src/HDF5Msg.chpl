@@ -9,7 +9,7 @@ module HDF5Msg {
     use Set;
     use ArkoudaTimeCompat as Time;
     use AryUtil;
-    use Regex;
+    use ArkoudaRegexCompat;
 
     use CommAggregation;
     use FileIO;
@@ -2343,7 +2343,7 @@ module HDF5Msg {
             }
             else{
                 // generate regex to match distributed filename
-                var dist_regex = new regex("_LOCALE\\d{4}");
+                var dist_regex = compile("_LOCALE\\d{4}");
 
                 if dist_regex.search(filename){
                     repMsg = "distribute";
