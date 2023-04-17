@@ -1007,8 +1007,8 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(data["c"].to_list(), odf["c"].to_list())
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            df.to_hdf(f"{tmp_dirname}/repack_test")
-            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            df.to_hdf(f"{tmp_dirname}/df_test")
+            f_list = glob.glob(f"{tmp_dirname}/df_test*")
             orig_size = 0
             for f in f_list:
                 orig_size += os.path.getsize(f)
