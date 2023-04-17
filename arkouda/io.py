@@ -36,7 +36,7 @@ __all__ = [
     "save_all",
     "load",
     "load_all",
-    "update_hdf"
+    "update_hdf",
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -994,7 +994,13 @@ def export(
         return df
 
 
-def _bulk_write_prep(columns: Union[Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]], List[Union[pdarray, Strings, SegArray, ArrayView]]], names: List[str] = None):
+def _bulk_write_prep(
+    columns: Union[
+        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
+        List[Union[pdarray, Strings, SegArray, ArrayView]],
+    ],
+    names: List[str] = None,
+):
     datasetNames = []
     if names is not None:
         if len(names) != len(columns):
@@ -1019,7 +1025,10 @@ def _bulk_write_prep(columns: Union[Mapping[str, Union[pdarray, Strings, SegArra
 
 
 def to_parquet(
-    columns: Union[Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]], List[Union[pdarray, Strings, SegArray, ArrayView]]],
+    columns: Union[
+        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
+        List[Union[pdarray, Strings, SegArray, ArrayView]],
+    ],
     prefix_path: str,
     names: List[str] = None,
     mode: str = "truncate",
@@ -1117,7 +1126,10 @@ def to_parquet(
 
 
 def to_hdf(
-    columns: Union[Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]], List[Union[pdarray, Strings, SegArray, ArrayView]]],
+    columns: Union[
+        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
+        List[Union[pdarray, Strings, SegArray, ArrayView]],
+    ],
     prefix_path: str,
     names: List[str] = None,
     mode: str = "truncate",
@@ -1226,7 +1238,10 @@ def _repack_hdf(prefix_path: str):
 
 
 def update_hdf(
-    columns: Union[Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]], List[Union[pdarray, Strings, SegArray, ArrayView]]],
+    columns: Union[
+        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
+        List[Union[pdarray, Strings, SegArray, ArrayView]],
+    ],
     prefix_path: str,
     names: List[str] = None,
     repack: bool = True,
@@ -1351,7 +1366,10 @@ def to_csv(
 
 
 def save_all(
-    columns: Union[Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]], List[Union[pdarray, Strings, SegArray, ArrayView]]],
+    columns: Union[
+        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
+        List[Union[pdarray, Strings, SegArray, ArrayView]],
+    ],
     prefix_path: str,
     names: List[str] = None,
     file_format="HDF5",
