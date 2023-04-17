@@ -1550,7 +1550,7 @@ class pdarray:
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
-        
+
         generic_msg(
             cmd="tohdf",
             args={

@@ -409,7 +409,7 @@ class ArrayView:
     def update_hdf(
         self,
         prefix_path: str,
-        dataset: str = "array",
+        dataset: str = "ArrayView",
         repack: bool = True,
     ):
         """
