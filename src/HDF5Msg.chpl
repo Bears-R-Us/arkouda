@@ -230,12 +230,23 @@ module HDF5Msg {
     /*
         Validate that the dataset name provided does not already exist
     */
-    proc validateDataset(file_id: C_HDF5.hid_t, filename: string, dset_name: string) throws {
+    proc validateDataset(file_id: C_HDF5.hid_t, filename: string, dset_name: string, overwrite: bool) throws {
         // validate that the dataset does not already exist
         var dset_exists: int = C_HDF5.H5Lexists(file_id, dset_name.localize().c_str(), C_HDF5.H5P_DEFAULT);
-        if dset_exists > 0 {
+        if (dset_exists > 0 && overwrite) {
+            var del_status: int = C_HDF5.H5Ldelete(file_id, dset_name.localize().c_str(), C_HDF5.H5P_DEFAULT);
+            if del_status < 0 {
+                throw getErrorWithContext(
+                           msg="Unable to overwrite dataset named %s in %s.".format(dset_name, filename),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="RuntimeError");
+            }
+        }
+        else if dset_exists > 0 {
             throw getErrorWithContext(
-                           msg="A dataset named %s already exists in %s. Overwriting is not currently supported. Please choose another name.".format(dset_name, filename),
+                           msg=" group named %s already exists in %s. If you would like to overwrite the group please use update_hdf.".format(dset_name, filename),
                            lineNumber=getLineNumber(),
                            routineName=getRoutineName(), 
                            moduleName=getModuleName(),
@@ -255,15 +266,30 @@ module HDF5Msg {
         Validate that the group does not already exist.
         If it does not exist, it is created.
     */
-    proc validateGroup(file_id: C_HDF5.hid_t, filename: string, group: string) throws {
+    proc validateGroup(file_id: C_HDF5.hid_t, filename: string, group: string, overwrite: bool) throws {
         var group_exists: int = C_HDF5.H5Lexists(file_id, group.localize().c_str(), C_HDF5.H5P_DEFAULT);
-        if group_exists > 0 {
-            throw getErrorWithContext(
-                           msg="A group named %s already exists in %s. Overwriting is not currently supported. Please choose another name.".format(group, filename),
+        if (group_exists > 0 && overwrite) {
+            var del_status: int = C_HDF5.H5Ldelete(file_id, group.localize().c_str(), C_HDF5.H5P_DEFAULT);
+            if del_status < 0 {
+                throw getErrorWithContext(
+                           msg="Unable to overwrite group named %s in %s.".format(group, filename),
                            lineNumber=getLineNumber(),
                            routineName=getRoutineName(), 
                            moduleName=getModuleName(),
-                           errorClass="IllegalArgumentError");
+                           errorClass="RuntimeError");
+            }
+            // recreate the group to write overwrite data too
+            var groupId: C_HDF5.hid_t = C_HDF5.H5Gcreate2(file_id, "/%s".format(group).c_str(),
+                                    C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+            C_HDF5.H5Gclose(groupId);
+        }
+        else if group_exists > 0 {
+            throw getErrorWithContext(
+                           msg="A group named %s already exists in %s. If you would like to overwrite the group please use update_hdf.".format(group, filename),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="RuntimeError");
         }
         else if group_exists < 0 {
             throw getErrorWithContext(
@@ -271,7 +297,7 @@ module HDF5Msg {
                            lineNumber=getLineNumber(),
                            routineName=getRoutineName(), 
                            moduleName=getModuleName(),
-                           errorClass="IllegalArgumentError");
+                           errorClass="RuntimeError");
         }
         else {
             // create the group
@@ -419,7 +445,7 @@ module HDF5Msg {
     /*
         write 1d array to dataset in files distributed over locales
     */
-    proc writeDistDset(filenames: [] string, dset_name: string, objType: string, A, st: borrowed SymTab, shape_name: string = "") throws {
+    proc writeDistDset(filenames: [] string, dset_name: string, objType: string, overwrite: bool, A, st: borrowed SymTab, shape_name: string = "") throws {
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
             const localeFilename = filenames[idx];
             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -431,7 +457,7 @@ module HDF5Msg {
             }
 
             // validate that the dataset does not already exist
-            validateDataset(file_id, localeFilename, dset_name);
+            validateDataset(file_id, localeFilename, dset_name, overwrite);
 
             const locDom = A.localSubdomain();
             var dims: [0..#1] C_HDF5.hsize_t;
@@ -475,6 +501,9 @@ module HDF5Msg {
         var filename: string = msgArgs.getValueOf("filename");
         var entry = st.lookup(msgArgs.getValueOf("values"));
         var file_format = msgArgs.get("file_format").getIntValue();
+        var overwrite: bool = if msgArgs.contains("overwrite")
+                                then msgArgs.get("overwrite").getBoolValue()
+                                else false;
 
         const entryDtype = msgArgs.get("values").getDType();
 
@@ -497,7 +526,7 @@ module HDF5Msg {
                 }
 
                 // validate that the dataset does not already exist
-                validateDataset(file_id, f, dset_name);
+                validateDataset(file_id, f, dset_name, overwrite);
 
                 var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("shape"), st);
                 var shape = toSymEntry(shape_sym, int);
@@ -553,22 +582,22 @@ module HDF5Msg {
                     when DType.Int64 {
                         var e = toSymEntry(toGenSymEntry(entry), int);
                         var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, e.a, st, msgArgs.getValueOf("shape"));
+                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st, msgArgs.getValueOf("shape"));
                     }
                     when DType.UInt64 {
                         var e = toSymEntry(toGenSymEntry(entry), uint);
                         var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, e.a, st, msgArgs.getValueOf("shape"));
+                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st, msgArgs.getValueOf("shape"));
                     }
                     when DType.Float64 {
                         var e = toSymEntry(toGenSymEntry(entry), real);
                         var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, e.a, st, msgArgs.getValueOf("shape"));
+                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st, msgArgs.getValueOf("shape"));
                     }
                     when DType.Bool {
                         var e = toSymEntry(toGenSymEntry(entry), bool);
                         var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, e.a, st, msgArgs.getValueOf("shape"));
+                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st, msgArgs.getValueOf("shape"));
                     }
                     otherwise {
                         var errorMsg = unrecognizedTypeError("multiDimArray_tohdfMsg", dtype2str(entryDtype));
@@ -601,6 +630,9 @@ module HDF5Msg {
         var filename: string = msgArgs.getValueOf("filename");
         var entry = st.lookup(msgArgs.getValueOf("values"));
         var file_format = msgArgs.get("file_format").getIntValue();
+        var overwrite: bool = if msgArgs.contains("overwrite")
+                                then msgArgs.get("overwrite").getBoolValue()
+                                else false;
 
         const entryDtype = msgArgs.get("values").getDType();
 
@@ -624,7 +656,7 @@ module HDF5Msg {
                 }
 
                 // validate that the dataset does not already exist
-                validateDataset(file_id, f, dset_name);
+                validateDataset(file_id, f, dset_name, overwrite);
 
                 select entryDtype {
                     when DType.Int64 {
@@ -674,22 +706,22 @@ module HDF5Msg {
                     when DType.Int64 {
                         var e = toSymEntry(toGenSymEntry(entry), int);
                         var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, e.a, st);
+                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st);
                     }
                     when DType.UInt64 {
                         var e = toSymEntry(toGenSymEntry(entry), uint);
                         var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, e.a, st);
+                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st);
                     }
                     when DType.Float64 {
                         var e = toSymEntry(toGenSymEntry(entry), real);
                         var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, e.a, st);
+                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st);
                     }
                     when DType.Bool {
                         var e = toSymEntry(toGenSymEntry(entry), bool);
                         var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, e.a, st);
+                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st);
                     }
                     otherwise {
                         var errorMsg = unrecognizedTypeError("pdarray_tohdfmsg", dtype2str(entryDtype));
@@ -798,6 +830,9 @@ module HDF5Msg {
         var file_format = msgArgs.get("file_format").getIntValue();
         var group = msgArgs.getValueOf("dset");
         var writeOffsets = msgArgs.get("save_offsets").getBoolValue();
+        var overwrite: bool = if msgArgs.contains("overwrite")
+                                then msgArgs.get("overwrite").getBoolValue()
+                                else false;
 
         var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(msgArgs.getValueOf("values")));
         var segString = new SegString("", entry);
@@ -820,7 +855,7 @@ module HDF5Msg {
                 }
 
                 // create the group
-                validateGroup(file_id, f, group);
+                validateGroup(file_id, f, group, overwrite);
 
                 //localize values and write dataset
                 var localVals: [0..#segString.values.size] uint(8) = segString.values.a;
@@ -860,7 +895,7 @@ module HDF5Msg {
                     dims[0] = locDom.size: C_HDF5.hsize_t;
 
                     // create the group
-                    validateGroup(file_id, f, group);
+                    validateGroup(file_id, f, group, overwrite);
 
                     if (locDom.isEmpty() || locDom.size <= 0) { // shouldn't need the second clause, but in case negative number is returned
                         // Case where num_elements < num_locales, we need to write a nil into this locale's file
@@ -931,7 +966,7 @@ module HDF5Msg {
         writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_OFFSET_NAME), "pdarray", getDataType(int));
     }
 
-    proc writeSegmentedDistDset(filenames: [] string, group: string, objType: string, values, segments, st: borrowed SymTab, type t) throws {
+    proc writeSegmentedDistDset(filenames: [] string, group: string, objType: string, overwrite: bool, values, segments, st: borrowed SymTab, type t) throws {
         const lastSegIdx = segments.domain.high;
         const lastValIdx = values.domain.high;
         coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) do on loc {
@@ -945,7 +980,7 @@ module HDF5Msg {
             }
 
             // create the group
-            validateGroup(file_id, localeFilename, group);
+            validateGroup(file_id, localeFilename, group, overwrite);
 
             const locDom = segments.localSubdomain();
             var dims: [0..#1] C_HDF5.hsize_t;
@@ -984,6 +1019,9 @@ module HDF5Msg {
     proc segarray_tohdfMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
         use C_HDF5.HDF5_WAR;
         var mode: int = msgArgs.get("write_mode").getIntValue();
+        var overwrite: bool = if msgArgs.contains("overwrite")
+                                then msgArgs.get("overwrite").getBoolValue()
+                                else false;
 
         var filename: string = msgArgs.getValueOf("filename");
         var file_format = msgArgs.get("file_format").getIntValue();
@@ -1008,7 +1046,7 @@ module HDF5Msg {
                 }
 
                 // create the group
-                validateGroup(file_id, f, group);
+                validateGroup(file_id, f, group, overwrite);
                 var dtype: C_HDF5.hid_t;
 
                 select dType {
@@ -1073,28 +1111,28 @@ module HDF5Msg {
                         var valEntry = sa.values;
                         var segEntry = sa.segments;
                         var filenames = prepFiles(filename, mode, segEntry.a);
-                        writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, int);
+                        writeSegmentedDistDset(filenames, group, objType, overwrite, valEntry.a, segEntry.a, st, int);
                     }
                     when DType.UInt64 {
                         var sa:SegArray = getSegArray(segarr, st, uint);
                         var valEntry = sa.values;
                         var segEntry = sa.segments;
                         var filenames = prepFiles(filename, mode, segEntry.a);
-                        writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, uint);
+                        writeSegmentedDistDset(filenames, group, objType, overwrite, valEntry.a, segEntry.a, st, uint);
                     }
                     when DType.Float64 {
                         var sa:SegArray = getSegArray(segarr, st, real);
                         var valEntry = sa.values;
                         var segEntry = sa.segments;
                         var filenames = prepFiles(filename, mode, segEntry.a);
-                        writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, real);
+                        writeSegmentedDistDset(filenames, group, objType, overwrite, valEntry.a, segEntry.a, st, real);
                     }
                     when DType.Bool {
                         var sa:SegArray = getSegArray(segarr, st, bool);
                         var valEntry = sa.values;
                         var segEntry = sa.segments;
                         var filenames = prepFiles(filename, mode, segEntry.a);
-                        writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, bool);
+                        writeSegmentedDistDset(filenames, group, objType, overwrite, valEntry.a, segEntry.a, st, bool);
                     }
                     otherwise {
                         throw getErrorWithContext(

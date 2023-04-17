@@ -1207,18 +1207,63 @@ def _get_hdf_filetype(filename: str) -> str:
     )
 
 
+def _repack_hdf(prefix_path: str):
+    """
+    Overwrites the existing hdf5 file with a copy that removes any inaccessible datasets
+    """
+    file_type = _get_hdf_filetype(prefix_path + "*")
+    dset_list = ls(prefix_path + "*")
+    data = read_hdf(prefix_path + "*")
+    return to_hdf(data, prefix_path, names=dset_list, file_type=file_type)
+
+
 def update_hdf(
     columns: Union[Mapping[str, pdarray], List[pdarray]],
     prefix_path: str,
-    names: List[str] = None
+    names: List[str] = None,
+    repack: bool = True,
 ):
-    # TODO - add docstring
+    """
+    Overwrite the datasets with name appearing in names or keys in columns if columns
+
+    Parameters
+    -----------
+    columns : dict or list of pdarrays
+        Collection of arrays to save
+    prefix_path : str
+        Directory and filename prefix for output files
+    names : list of str
+        Dataset names for the pdarrays
+    repack: bool
+        Default: True
+        HDF5 does not release memory on delete. When True, the inaccessible
+        data (that was overwritten) is removed. When False, the data remains, but is
+        inaccessible. Setting to false will yield better performance, but will cause
+        file sizes to expand.
+
+    Raises
+    -------
+    RuntimeError
+        Raised if a server-side error is thrown saving the datasets
+
+    Notes
+    -----
+    - If file does not contain File_Format attribute to indicate how it was saved,
+      the file name is checked for _LOCALE#### to determine if it is distributed.
+    - If the datasets provided do not exist, they will be added
+    - Because HDF5 deletes do not release memory, this will create a copy of the
+      file with the new data
+    - This workflow is slightly different from `to_hdf` to prevent reading and
+      creating a copy of the file for each dataset
+    """
     datasetNames, pdarrays = _bulk_write_prep(columns, names)
+
     for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-        arr.update_hdf(
-            prefix_path=prefix_path,
-            dataset=name
-        )
+        # overwrite the data without repacking. Repack done once at end if set
+        arr.update_hdf(prefix_path, dataset=name, repack=False)
+
+    if repack:
+        _repack_hdf(prefix_path)
 
 
 def to_csv(

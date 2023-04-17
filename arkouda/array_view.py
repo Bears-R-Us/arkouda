@@ -405,3 +405,66 @@ class ArrayView:
                 "objType": "ArrayView",
             },
         )
+
+    def update_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "array",
+        repack: bool = True,
+    ):
+        """
+        Overwrite the dataset with the name provided with this array view object. If
+        the dataset does not exist it is added.
+
+        Parameters
+        -----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in files
+        repack: bool
+            Default: True
+            HDF5 does not release memory on delete. When True, the inaccessible
+            data (that was overwritten) is removed. When False, the data remains, but is
+            inaccessible. Setting to false will yield better performance, but will cause
+            file sizes to expand.
+
+        Returns
+        --------
+        str - success message if successful
+
+        Raises
+        -------
+        RuntimeError
+            Raised if a server-side error is thrown saving the array view
+
+        Notes
+        ------
+        - If file does not contain File_Format attribute to indicate how it was saved,
+          the file name is checked for _LOCALE#### to determine if it is distributed.
+        - If the dataset provided does not exist, it will be added
+        - Because HDF5 deletes do not release memory, this will create a copy of the
+          file with the new data
+        """
+        from arkouda.io import _get_hdf_filetype, _mode_str_to_int, _file_type_to_int, _repack_hdf
+
+        # determine the format (single/distribute) that the file was saved in
+        file_type = _get_hdf_filetype(prefix_path + "*")
+
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "values": self.base,
+                "shape": self.shape,
+                "order": self.order,
+                "filename": prefix_path,
+                "file_format": _file_type_to_int(file_type),
+                "dset": dataset,
+                "write_mode": _mode_str_to_int("append"),
+                "objType": "ArrayView",
+                "overwrite": True,
+            },
+        )
+
+        if repack:
+            _repack_hdf(prefix_path)

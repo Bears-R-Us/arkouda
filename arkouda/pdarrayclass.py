@@ -1513,46 +1513,60 @@ class pdarray:
             ),
         )
 
-    def update_hdf(
-            self,
-            prefix_path: str,
-            dataset: str = "array",
-    ) -> str:
+    def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
         """
         Overwrite the dataset with the name provided with this pdarray. If
-        the dataset does not exist it is appended
+        the dataset does not exist it is added
 
         Parameters
         -----------
         prefix_path : str
             Directory and filename prefix that all output files share
         dataset : str
-            Name of the dataset to create in files (must not already exist)
-        file_type: str ("single" | "distribute")
-            Default: "distribute"
-            When set to single, dataset is written to a single file.
-            When distribute, dataset is written on a file per locale.
-            This should be set to whatever the original file was written with
+            Name of the dataset to create in files
+        repack: bool
+            Default: True
+            HDF5 does not release memory on delete. When True, the inaccessible
+            data (that was overwritten) is removed. When False, the data remains, but is
+            inaccessible. Setting to false will yield better performance, but will cause
+            file sizes to expand.
+
+        Returns
+        --------
+        str - success message if successful
+
+        Raises
+        -------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+
+        Notes
+        ------
+        - If file does not contain File_Format attribute to indicate how it was saved,
+          the file name is checked for _LOCALE#### to determine if it is distributed.
+        - If the dataset provided does not exist, it will be added
         """
-        from arkouda.io import _get_hdf_filetype, ls, read_hdf, to_hdf
+        from arkouda.io import _mode_str_to_int, _file_type_to_int, _get_hdf_filetype, _repack_hdf
 
-        file_type = _get_hdf_filetype(prefix_path+"*")
-        print(file_type)
+        # determine the format (single/distribute) that the file was saved in
+        file_type = _get_hdf_filetype(prefix_path + "*")
 
-        # read everything out of file that is not dset to be overwritten
-        dset_list = ls(prefix_path+"*")
-        dset_list.remove(dataset)  # this will effectively drop the dataset
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "values": self,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int("append"),
+                "filename": prefix_path,
+                "dtype": self.dtype,
+                "objType": "pdarray",
+                "file_format": _file_type_to_int(file_type),
+                "overwrite": True,
+            },
+        )
 
-        upd_with = read_hdf(prefix_path+"*", datasets=dset_list)
-
-        # handle case with single dset
-        if len(dset_list) == 1:
-            upd_with = {dset_list[0]: upd_with}
-
-        upd_with[dataset] = self
-        to_hdf(upd_with, prefix_path, file_type=file_type)
-
-        return f"Overwrite of {dataset} successful!"
+        if repack:
+            _repack_hdf(prefix_path)
 
     @typechecked
     def to_csv(
@@ -1886,6 +1900,7 @@ class pdarray:
 
 
 # end pdarray class def
+
 
 # creates pdarray object
 #   only after:
