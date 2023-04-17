@@ -28,16 +28,6 @@ module ReductionMsg
 
     var class_lvl_max_bits = 64;
 
-    // define max for bigint to be (2 ** max_bits) - 1
-    proc max(type etype) where etype == bigint {
-      return (1:bigint << class_lvl_max_bits) - 1;
-    }
-
-    // define min for bigint to be - (2 ** max_bits)
-    proc min(type etype) where etype == bigint {
-      return -(1:bigint << class_lvl_max_bits);
-    }
-
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
@@ -922,7 +912,7 @@ module ReductionMsg
     }
 
     proc segMin(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t throws {
-      var res: [D] t = max(t);
+      var res: [D] t = if t != bigint then max(t) else (1:bigint << class_lvl_max_bits) - 1;
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
       var kv: [keys.domain] (int, t);
@@ -933,8 +923,16 @@ module ReductionMsg
         kv = [(k, v) in zip(keys, values)] (-k, v);
       }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-      overMemLimit(numBytes(int) * kv.size);
-      var cummin = min scan kv;
+      if t != bigint {
+        // TODO update when we have a better way to handle bigint mem estimation
+        overMemLimit((numBytes(t) + numBytes(int)) * kv.size);
+      }
+      var cummin: [keys.domain] (int, t);
+      if t != bigint {
+        cummin = min scan kv;
+      } else {
+        cummin = segmentedBigintMinScanOp scan kv;
+      }
       forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
@@ -949,8 +947,33 @@ module ReductionMsg
       return res;
     }
 
+    class segmentedBigintMinScanOp: ReduceScanOp {
+      type eltType;
+      const max_val: bigint = (1:bigint << class_lvl_max_bits) - 1;
+      var value = (max(int), max_val);
+
+      proc identity {
+        return (max(int), max_val);
+      }
+      proc accumulate(x) {
+        value = min(x, value);
+      }
+      proc accumulateOntoState(ref state, x) {
+        state = min(state, x);
+      }
+      proc combine(x) {
+        value = min(value, x.value);
+      }
+      proc generate() {
+        return value;
+      }
+      proc clone() {
+        return new unmanaged segmentedBigintMinScanOp(eltType=eltType);
+      }
+    }
+
     proc segMax(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t throws {
-      var res: [D] t = min(t);
+      var res: [D] t = if t != bigint then min(t) else -(1:bigint << class_lvl_max_bits);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
       var kv: [keys.domain] (int, t);
@@ -961,8 +984,16 @@ module ReductionMsg
         kv = [(k, v) in zip(keys, values)] (k, v);
       }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-      overMemLimit(numBytes(int) * kv.size);
-      var cummax = max scan kv;
+      if t != bigint {
+        // TODO update when we have a better way to handle bigint mem estimation
+        overMemLimit((numBytes(t) + numBytes(int)) * kv.size);
+      }
+      var cummax: [keys.domain] (int, t);
+      if t != bigint {
+        cummax = max scan kv;
+      } else {
+        cummax = segmentedBigintMaxScanOp scan kv;
+      }
       
       forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
         var vi: int;
@@ -976,6 +1007,31 @@ module ReductionMsg
         }
       }
       return res;
+    }
+
+    class segmentedBigintMaxScanOp: ReduceScanOp {
+      type eltType;
+      const min_val: bigint = -(1:bigint << class_lvl_max_bits);
+      var value = (min(int), min_val);
+
+      proc identity {
+        return (min(int), min_val);
+      }
+      proc accumulate(x) {
+        value = max(x, value);
+      }
+      proc accumulateOntoState(ref state, x) {
+        state = max(state, x);
+      }
+      proc combine(x) {
+        value = max(value, x.value);
+      }
+      proc generate() {
+        return value;
+      }
+      proc clone() {
+        return new unmanaged segmentedBigintMaxScanOp(eltType=eltType);
+      }
     }
 
     proc segArgmin(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) throws {
@@ -1178,7 +1234,7 @@ module ReductionMsg
          have already been scanned, or for internal state, the flag means 
          "there has already been a reset in the computation of this value".
       */
-      const max_val: bigint = max(bigint);
+      const max_val: bigint = (1:bigint << class_lvl_max_bits) - 1;
       var value = if eltType == (bool, int) then (false, 0xffffffffffffffff:int) else if eltType == (bool, uint) then (false, 0xffffffffffffffff:uint) else (false, max_val);
 
       proc identity {
