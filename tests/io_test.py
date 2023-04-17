@@ -876,6 +876,267 @@ class IOTest(ArkoudaTest):
             df_load = ak.DataFrame.load(f"{tmp_dirname}/dataframe_segarr")
             self.assertTrue(df.to_pandas().equals(df_load.to_pandas()))
 
+    def test_hdf_overwrite_pdarray(self):
+        # test repack with a single object
+        a = ak.arange(1000)
+        b = ak.randint(0, 100, 1000)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            a.to_hdf(f"{tmp_dirname}/repack_test")
+            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            orig_size = 0
+            for f in f_list:
+                orig_size += os.path.getsize(f)
+            b.update_hdf(f"{tmp_dirname}/repack_test")
+
+            new_size = 0
+            for f in f_list:
+                new_size += os.path.getsize(f)
+
+            # ensure that the column was actually overwritten
+            self.assertEqual(orig_size, new_size)
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data.to_list(), b.to_list())
+
+        # test with repack off - file should get larger
+        b = ak.arange(1000)
+        c = ak.arange(15)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            a.to_hdf(f"{tmp_dirname}/repack_test")
+            b.to_hdf(f"{tmp_dirname}/repack_test", dataset="array_2", mode="append")
+            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            orig_size = 0
+            for f in f_list:
+                orig_size += os.path.getsize(f)
+            # hdf5 only releases memory if overwritting last dset so overwrite first
+            c.update_hdf(f"{tmp_dirname}/repack_test", dataset="array", repack=False)
+
+            new_size = 0
+            for f in f_list:
+                new_size += os.path.getsize(f)
+
+            # ensure that the column was actually overwritten
+            self.assertGreaterEqual(new_size, orig_size)  # ensure that overwritten data mem is not released
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data["array"].to_list(), c.to_list())
+
+        # test overwrites with different types
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            a.to_hdf(f"{tmp_dirname}/repack_test")
+            b = ak.arange(15, dtype=ak.uint64)
+            b.update_hdf(f"{tmp_dirname}/repack_test")
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data.to_list(), b.to_list())
+
+            b = ak.arange(150, dtype=ak.float64)
+            b.update_hdf(f"{tmp_dirname}/repack_test")
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data.to_list(), b.to_list())
+
+            b = ak.arange(1000, dtype=ak.bool)
+            b.update_hdf(f"{tmp_dirname}/repack_test")
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data.to_list(), b.to_list())
+
+    def test_hdf_overwrite_strings(self):
+        # test repack with a single object
+        a = ak.random_strings_uniform(0, 16, 1000)
+        b = ak.random_strings_uniform(0, 16, 1000)
+        c = ak.random_strings_uniform(0, 16, 10)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            a.to_hdf(f"{tmp_dirname}/repack_test", dataset="test_set")
+            b.to_hdf(f"{tmp_dirname}/repack_test", mode="append")
+            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            orig_size = 0
+            for f in f_list:
+                orig_size += os.path.getsize(f)
+            c.update_hdf(f"{tmp_dirname}/repack_test", dataset="test_set")
+
+            new_size = 0
+            for f in f_list:
+                new_size += os.path.getsize(f)
+            # ensure that the column was actually overwritten
+            self.assertLessEqual(new_size, orig_size)
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data["test_set"].to_list(), c.to_list())
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            a.to_hdf(f"{tmp_dirname}/repack_test", dataset="test_set")
+            b.to_hdf(f"{tmp_dirname}/repack_test", mode="append")
+            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            orig_size = 0
+            for f in f_list:
+                orig_size += os.path.getsize(f)
+            # hdf5 only releases memory if overwritting last dset so overwrite first
+            c.update_hdf(f"{tmp_dirname}/repack_test", dataset="test_set", repack=False)
+
+            new_size = 0
+            for f in f_list:
+                new_size += os.path.getsize(f)
+            # ensure that the column was actually overwritten
+            self.assertGreaterEqual(new_size, orig_size)
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data["test_set"].to_list(), c.to_list())
+
+    def test_hdf_overwrite_dataframe(self):
+        df = ak.DataFrame({
+            "a": ak.arange(1000),
+            "b": ak.random_strings_uniform(0, 16, 1000),
+            "c": ak.arange(1000, dtype=bool),
+            "d": ak.randint(0, 50, 1000)
+        })
+        odf = ak.DataFrame({
+            "b": ak.randint(0, 25, 50),
+            "c": ak.arange(50, dtype=bool),
+        })
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/repack_test")
+            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            orig_size = 0
+            for f in f_list:
+                orig_size += os.path.getsize(f)
+            # hdf5 only releases memory if overwritting last dset so overwrite first
+            odf.update_hdf(f"{tmp_dirname}/repack_test")
+
+            new_size = 0
+            for f in f_list:
+                new_size += os.path.getsize(f)
+            print(f"\nOrig: {orig_size}\nNew: {new_size}\n")
+            # ensure that the column was actually overwritten
+            self.assertLessEqual(new_size, orig_size)
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data["b"].to_list(), odf["b"].to_list())
+            self.assertListEqual(data["c"].to_list(), odf["c"].to_list())
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/repack_test")
+            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            orig_size = 0
+            for f in f_list:
+                orig_size += os.path.getsize(f)
+            # hdf5 only releases memory if overwritting last dset so overwrite first
+            odf.update_hdf(f"{tmp_dirname}/repack_test", repack=False)
+
+            new_size = 0
+            for f in f_list:
+                new_size += os.path.getsize(f)
+            print(f"\nOrig: {orig_size}\nNew: {new_size}\n")
+            # ensure that the column was actually overwritten
+            self.assertGreaterEqual(new_size, orig_size)
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data["b"].to_list(), odf["b"].to_list())
+            self.assertListEqual(data["c"].to_list(), odf["c"].to_list())
+
+    def test_overwrite_segarray(self):
+        sa1 = ak.segarray(ak.arange(0, 1000, 5), ak.arange(1000))
+        sa2 = ak.segarray(ak.arange(0, 100, 5), ak.arange(100))
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            sa1.to_hdf(f"{tmp_dirname}/repack_test")
+            sa1.to_hdf(f"{tmp_dirname}/repack_test", dataset="seg2", mode="append")
+            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            orig_size = 0
+            for f in f_list:
+                orig_size += os.path.getsize(f)
+
+            sa2.update_hdf(f"{tmp_dirname}/repack_test")
+
+            new_size = 0
+            for f in f_list:
+                new_size += os.path.getsize(f)
+            # ensure that the column was actually overwritten
+            self.assertLessEqual(new_size, orig_size)
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data["segarray"].values.to_list(), sa2.values.to_list())
+            self.assertListEqual(data["segarray"].segments.to_list(), sa2.segments.to_list())
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            sa1.to_hdf(f"{tmp_dirname}/repack_test")
+            sa1.to_hdf(f"{tmp_dirname}/repack_test", dataset="seg2", mode="append")
+            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            orig_size = 0
+            for f in f_list:
+                orig_size += os.path.getsize(f)
+
+            sa2.update_hdf(f"{tmp_dirname}/repack_test", repack=False)
+
+            new_size = 0
+            for f in f_list:
+                new_size += os.path.getsize(f)
+            # ensure that the column was actually overwritten
+            self.assertGreaterEqual(new_size, orig_size)
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data["segarray"].values.to_list(), sa2.values.to_list())
+            self.assertListEqual(data["segarray"].segments.to_list(), sa2.segments.to_list())
+
+    def test_overwrite(self):
+        df = ak.DataFrame({
+            "a": ak.arange(1000),
+            "b": ak.random_strings_uniform(0, 16, 1000),
+            "c": ak.arange(1000, dtype=bool),
+            "d": ak.randint(0, 50, 1000)
+        })
+        replace = {
+            "b": ak.randint(0, 25, 50),
+            "c": ak.arange(50, dtype=bool),
+        }
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/repack_test")
+            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            orig_size = 0
+            for f in f_list:
+                orig_size += os.path.getsize(f)
+            # hdf5 only releases memory if overwritting last dset so overwrite first
+            ak.update_hdf(replace, f"{tmp_dirname}/repack_test")
+
+            new_size = 0
+            for f in f_list:
+                new_size += os.path.getsize(f)
+            print(f"\nOrig: {orig_size}\nNew: {new_size}\n")
+            # ensure that the column was actually overwritten
+            self.assertLessEqual(new_size, orig_size)
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data["b"].to_list(), replace["b"].to_list())
+            self.assertListEqual(data["c"].to_list(), replace["c"].to_list())
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/repack_test")
+            f_list = glob.glob(f"{tmp_dirname}/repack_test_*")
+            orig_size = 0
+            for f in f_list:
+                orig_size += os.path.getsize(f)
+            # hdf5 only releases memory if overwritting last dset so overwrite first
+            ak.update_hdf(replace, f"{tmp_dirname}/repack_test", repack=False)
+
+            new_size = 0
+            for f in f_list:
+                new_size += os.path.getsize(f)
+            print(f"\nOrig: {orig_size}\nNew: {new_size}\n")
+            # ensure that the column was actually overwritten
+            self.assertLessEqual(new_size, orig_size)
+            data = ak.read_hdf(f"{tmp_dirname}/repack_test_*")
+            self.assertListEqual(data["b"].to_list(), replace["b"].to_list())
+            self.assertListEqual(data["c"].to_list(), replace["c"].to_list())
+
+    def test_overwrite_single_dset(self):
+        # we need to test that both repack=False and repack=True generate the same file size here
+        a = ak.arange(1000)
+        b = ak.arange(15)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            a.to_hdf(f"{tmp_dirname}/test_file")
+            b.update_hdf(f"{tmp_dirname}/test_file")
+            f_list = glob.glob(f"{tmp_dirname}/test_file*")
+            f1_size = 0
+            for f in f_list:
+                f1_size += os.path.getsize(f)
+
+            a.to_hdf(f"{tmp_dirname}/test_file_2")
+            b.update_hdf(f"{tmp_dirname}/test_file_2", repack=False)
+            f_list = glob.glob(f"{tmp_dirname}/test_file_2_*")
+            f2_size = 0
+            for f in f_list:
+                f2_size += os.path.getsize(f)
+
+            self.assertEqual(f1_size, f2_size)
+
     def tearDown(self):
         super(IOTest, self).tearDown()
         for f in glob.glob("{}/*".format(IOTest.io_test_dir)):

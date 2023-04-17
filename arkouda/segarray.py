@@ -1040,7 +1040,7 @@ class SegArray:
     def update_hdf(
         self,
         prefix_path: str,
-        dataset: str = "array",
+        dataset: str = "segarray",
         repack: bool = True,
     ):
         """
@@ -1085,7 +1085,7 @@ class SegArray:
         generic_msg(
             cmd="tohdf",
             args={
-                "values": self,
+                "seg_name": self.name,
                 "dset": dataset,
                 "write_mode": _mode_str_to_int("append"),
                 "filename": prefix_path,

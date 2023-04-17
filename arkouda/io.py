@@ -35,6 +35,7 @@ __all__ = [
     "save_all",
     "load",
     "load_all",
+    "update_hdf"
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -1213,8 +1214,14 @@ def _repack_hdf(prefix_path: str):
     """
     file_type = _get_hdf_filetype(prefix_path + "*")
     dset_list = ls(prefix_path + "*")
+    if len(dset_list) == 1:
+        # early out because when overwriting only one value, hdf5 automatically releases memory
+        return
     data = read_hdf(prefix_path + "*")
-    return to_hdf(data, prefix_path, names=dset_list, file_type=file_type)
+    if not isinstance(data, dict):
+        # handles the case of reading only 1 dataset
+        data = [data]
+    to_hdf(data, prefix_path, names=dset_list, file_type=file_type)
 
 
 def update_hdf(
