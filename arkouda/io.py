@@ -14,6 +14,7 @@ from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
+from arkouda.array_view import ArrayView
 
 __all__ = [
     "get_filetype",
@@ -993,7 +994,7 @@ def export(
         return df
 
 
-def _bulk_write_prep(columns: Union[Mapping[str, pdarray], List[pdarray]], names: List[str] = None):
+def _bulk_write_prep(columns: Union[Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]], List[Union[pdarray, Strings, SegArray, ArrayView]]], names: List[str] = None):
     datasetNames = []
     if names is not None:
         if len(names) != len(columns):
@@ -1001,24 +1002,24 @@ def _bulk_write_prep(columns: Union[Mapping[str, pdarray], List[pdarray]], names
         else:
             datasetNames = names
 
-    pdarrays = []  # init to avoid undefined errors
+    data = []  # init to avoid undefined errors
     if isinstance(columns, dict):
-        pdarrays = list(columns.values())
+        data = list(columns.values())
         if names is None:
             datasetNames = list(columns.keys())
     elif isinstance(columns, list):
-        pdarrays = cast(List[pdarray], columns)
+        data = cast(List[pdarray], columns)
         if names is None:
             datasetNames = [str(column) for column in range(len(columns))]
 
-    if len(pdarrays) == 0:
+    if len(data) == 0:
         raise RuntimeError("No data was found.")
 
-    return datasetNames, pdarrays
+    return datasetNames, data
 
 
 def to_parquet(
-    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    columns: Union[Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]], List[Union[pdarray, Strings, SegArray, ArrayView]]],
     prefix_path: str,
     names: List[str] = None,
     mode: str = "truncate",
@@ -1116,7 +1117,7 @@ def to_parquet(
 
 
 def to_hdf(
-    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    columns: Union[Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]], List[Union[pdarray, Strings, SegArray, ArrayView]]],
     prefix_path: str,
     names: List[str] = None,
     mode: str = "truncate",
@@ -1220,12 +1221,12 @@ def _repack_hdf(prefix_path: str):
     data = read_hdf(prefix_path + "*")
     if not isinstance(data, dict):
         # handles the case of reading only 1 dataset
-        data = [data]
-    to_hdf(data, prefix_path, names=dset_list, file_type=file_type)
+        data = [data]  # type: ignore
+    to_hdf(data, prefix_path, names=dset_list, file_type=file_type)  # type: ignore
 
 
 def update_hdf(
-    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    columns: Union[Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]], List[Union[pdarray, Strings, SegArray, ArrayView]]],
     prefix_path: str,
     names: List[str] = None,
     repack: bool = True,
@@ -1274,7 +1275,7 @@ def update_hdf(
 
 
 def to_csv(
-    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    columns: Union[Mapping[str, Union[pdarray, Strings]], List[Union[pdarray, Strings]]],
     prefix_path: str,
     names: List[str] = None,
     col_delim: str = ",",
@@ -1331,7 +1332,7 @@ def to_csv(
     - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
       bytes as uint(8).
     """
-    datasetNames, pdarrays = _bulk_write_prep(columns, names)
+    datasetNames, pdarrays = _bulk_write_prep(columns, names)  # type: ignore
     dtypes = [a.dtype.name for a in pdarrays]
 
     generic_msg(
@@ -1350,7 +1351,7 @@ def to_csv(
 
 
 def save_all(
-    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    columns: Union[Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]], List[Union[pdarray, Strings, SegArray, ArrayView]]],
     prefix_path: str,
     names: List[str] = None,
     file_format="HDF5",
