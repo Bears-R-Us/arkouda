@@ -26,7 +26,9 @@ module ReductionMsg
     private config const logChannel = ServerConfig.logChannel;
     const rmLogger = new Logger(logLevel, logChannel);
 
-    var class_lvl_max_bits = 64;
+    // this should never be called with the default value
+    // it should always be overriden by the pdarray's max_bits attribute
+    var class_lvl_max_bits = -1;
 
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
