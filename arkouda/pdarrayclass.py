@@ -65,6 +65,7 @@ __all__ = [
     "attach_pdarray",
     "unregister_pdarray_by_name",
     "RegistrationError",
+    "receive_array"
 ]
 
 logger = getArkoudaLogger(name="pdarrayclass")
@@ -374,6 +375,12 @@ class pdarray:
             args={"op": op, "dtype": dt, "value": other, "a": self},
         )
         return create_pdarray(repMsg)
+
+    def send_array(self, hostname, port):
+        # hostname is the hostname to send to
+        generic_msg(cmd="sendArray", args={"arg1": self,
+                                           "hostname": hostname,
+                                           "port": port})
 
     # overload + for pdarray, other can be {pdarray, int, float}
     def __add__(self, other):
@@ -3314,6 +3321,10 @@ def unregister_pdarray_by_name(user_defined_name: str) -> None:
     )
     return unregister(user_defined_name)
 
+def receive_array(hostname, port):
+    repMsg = generic_msg(cmd="receiveArray", args={"hostname": hostname,
+                                                   "port"    : port})
+    return create_pdarray(repMsg)
 
 # TODO In the future move this to a specific errors file
 class RegistrationError(Exception):
