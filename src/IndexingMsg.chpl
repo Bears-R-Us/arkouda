@@ -381,7 +381,6 @@ module IndexingMsg
               agg.copy(a1,a2[idx]);
             }
             a.max_bits = e.max_bits;
-            
             var repMsg =  "created " + st.attrib(rname);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
             return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -418,7 +417,6 @@ module IndexingMsg
               agg.copy(a1,a2[idx:int]);
             }
             a.max_bits = e.max_bits;
-            
             var repMsg =  "created " + st.attrib(rname);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
             return new MsgTuple(repMsg, MsgType.NORMAL);
