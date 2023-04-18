@@ -1248,6 +1248,7 @@ def update_hdf(
 ):
     """
     Overwrite the datasets with name appearing in names or keys in columns if columns
+    is a dictionary
 
     Parameters
     -----------

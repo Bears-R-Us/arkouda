@@ -2032,7 +2032,11 @@ class Strings:
         )
 
     def update_hdf(
-        self, prefix_path: str, dataset: str = "array", save_offsets: bool = True, repack: bool = True
+        self,
+        prefix_path: str,
+        dataset: str = "strings_array",
+        save_offsets: bool = True,
+        repack: bool = True,
     ):
         """
         Overwrite the dataset with the name provided with this Strings object. If

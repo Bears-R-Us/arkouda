@@ -2323,8 +2323,7 @@ module HDF5Msg {
                 var file_format: int;
                 C_HDF5.H5Aread(file_format_id, getHDF5Type(int), c_ptrTo(file_format));
                 C_HDF5.H5Aclose(file_format_id);
-
-                writeln("\n\n\nFile_Format Attribute Found: %i\n\n\n".format(file_format));
+                
                 // convert integer to string
                 if file_format == 0 {
                     repMsg = "single";
