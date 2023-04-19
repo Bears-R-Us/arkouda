@@ -115,8 +115,10 @@ class JoinTest(ArkoudaTest):
             )
 
     def test_str_cat_inner_join(self):
-        strLeft = ak.array(["a", "c", "c", "d", "a", "b", "a", "e"])
-        strRight = ak.array(["c", "b", "a", "d", "a", "c", "b", "d"])
+        int_left = ak.arange(10)
+        int_right = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
+        strLeft = ak.array([f'str {i}' for i in int_left.to_list()])
+        strRight = ak.array([f'str {i}' for i in int_right.to_list()])
 
         strL, strR = ak.join.inner_join(strLeft, strRight)
         self.assertListEqual(strLeft[strL].to_list(), strRight[strR].to_list())
@@ -183,7 +185,7 @@ class JoinTest(ArkoudaTest):
 def string_join_where(L, R):
     idx = []
     for i in range(L.size):
-        if L[i] in ["a", "c", "e"] and R[i] in ["a", "c"]:
+        if L[i] in ["str 0", "str 3", "str 9"] and R[i] in ["str 0", "str 1"]:
             idx.append(True)
         else:
             idx.append(False)

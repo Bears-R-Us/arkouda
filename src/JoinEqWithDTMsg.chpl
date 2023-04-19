@@ -376,6 +376,43 @@ module JoinEqWithDTMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }// end joinEqWithDTMsg()
 
+    proc codeMappingMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        catLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Mapping codes from categories");
+
+        var catName = msgArgs.getValueOf("categories");
+        var queryName = msgArgs.getValueOf("query");
+
+        var catSym = getSegString(catName, st);
+        var querySym = getSegString(queryName, st);
+
+        var querySize = querySym.size;
+        var catSize = catSym.size;
+        var codes: [0..#querySize] int = -1;
+
+        var (catOff, catVal) = catSym[0..#catSize];
+        var (queryOff, queryVal) = querySym[0..#querySize];
+        
+        // For all indexes in the query segString, find the matching index in the categories segString
+        // Exponential Growth - break once a match is found
+        coforall i in 0..#querySize {
+            for x in 0..#catSize {
+                if queryVal[i] == catVal[x]{
+                    codes[i] = x;
+                    break;
+                }
+            }
+        }
+
+        var name = st.nextName();
+        var codeEntry = new shared SymEntry(codes);
+        st.addEntry(name, codeEntry);
+
+        var repMsg = "created " + st.attrib(name);
+        catLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     use CommandMap;
     registerFunction("joinEqWithDT", joinEqWithDTMsg, getModuleName());
+    registerFunction("codeMapping", codeMappingMsg, getModuleName());
 }// end module JoinEqWithDTMsg
