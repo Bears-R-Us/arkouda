@@ -1704,6 +1704,41 @@ determine the file format.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.strings.Strings.update_hdf">
+<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strings_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.strings.Strings.update_hdf" title="Permalink to this definition">#</a></dt>
+<dd><p>Overwrite the dataset with the name provided with this Strings object. If
+the dataset does not exist it is added</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files</p></li>
+<li><p><strong>save_offsets</strong> (<em>bool</em>) – Defaults to True which will instruct the server to save the offsets array to HDF5
+If False the offsets array will not be save and will be derived from the string values
+upon load/read.</p></li>
+<li><p><strong>repack</strong> (<em>bool</em>) – Default: True
+HDF5 does not release memory on delete. When True, the inaccessible
+data (that was overwritten) is removed. When False, the data remains, but is
+inaccessible. Setting to false will yield better performance, but will cause
+file sizes to expand.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str - success message if successful</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the Strings object</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If file does not contain File_Format attribute to indicate how it was saved,
+the file name is checked for _LOCALE#### to determine if it is distributed.</p></li>
+<li><p>If the dataset provided does not exist, it will be added</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.to_csv">
 <span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strings_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.strings.Strings.to_csv" title="Permalink to this definition">#</a></dt>
 <dd><p>Write Strings to CSV file(s). File will contain a single column with the Strings data.
@@ -2059,6 +2094,7 @@ until they are unregistered.</p>
 <li><a class="reference internal" href="#arkouda.strings.Strings.astype"><code class="docutils literal notranslate"><span class="pre">Strings.astype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.to_parquet"><code class="docutils literal notranslate"><span class="pre">Strings.to_parquet()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.to_hdf"><code class="docutils literal notranslate"><span class="pre">Strings.to_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.update_hdf"><code class="docutils literal notranslate"><span class="pre">Strings.update_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.to_csv"><code class="docutils literal notranslate"><span class="pre">Strings.to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.save"><code class="docutils literal notranslate"><span class="pre">Strings.save()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.is_registered"><code class="docutils literal notranslate"><span class="pre">Strings.is_registered()</span></code></a></li>

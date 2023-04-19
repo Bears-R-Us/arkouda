@@ -1081,6 +1081,37 @@ Classes
       .. seealso:: :obj:`to_hdf`
 
 
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'strings_array', save_offsets: bool = True, repack: bool = True)
+
+      Overwrite the dataset with the name provided with this Strings object. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the Strings object
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
 
       Write Strings to CSV file(s). File will contain a single column with the Strings data.

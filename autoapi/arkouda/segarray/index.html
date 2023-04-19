@@ -848,6 +848,40 @@ the HDF5 file, not nested under a group.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.update_hdf">
+<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.update_hdf" title="Permalink to this definition">#</a></dt>
+<dd><p>Overwrite the dataset with the name provided with this SegArray object. If
+the dataset does not exist it is added.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files</p></li>
+<li><p><strong>repack</strong> (<em>bool</em>) – Default: True
+HDF5 does not release memory on delete. When True, the inaccessible
+data (that was overwritten) is removed. When False, the data remains, but is
+inaccessible. Setting to false will yield better performance, but will cause
+file sizes to expand.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str - success message if successful</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the SegArray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If file does not contain File_Format attribute to indicate how it was saved,
+the file name is checked for _LOCALE#### to determine if it is distributed.</p></li>
+<li><p>If the dataset provided does not exist, it will be added</p></li>
+<li><p>Because HDF5 deletes do not release memory, this will create a copy of the
+file with the new data</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.to_parquet">
 <span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.to_parquet" title="Permalink to this definition">#</a></dt>
 <dd><p>Save the SegArray object to Parquet. The result is a collection of files,
@@ -1336,6 +1370,7 @@ the return SegArray</p></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.aggregate"><code class="docutils literal notranslate"><span class="pre">SegArray.aggregate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.unique"><code class="docutils literal notranslate"><span class="pre">SegArray.unique()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.to_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.to_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.update_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.update_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.to_parquet"><code class="docutils literal notranslate"><span class="pre">SegArray.to_parquet()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.save"><code class="docutils literal notranslate"><span class="pre">SegArray.save()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.read_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.read_hdf()</span></code></a></li>

@@ -477,6 +477,40 @@ Distribute will store the date in a file per locale.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.update_hdf">
+<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ArrayView'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.array_view.ArrayView.update_hdf" title="Permalink to this definition">#</a></dt>
+<dd><p>Overwrite the dataset with the name provided with this array view object. If
+the dataset does not exist it is added.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files</p></li>
+<li><p><strong>repack</strong> (<em>bool</em>) – Default: True
+HDF5 does not release memory on delete. When True, the inaccessible
+data (that was overwritten) is removed. When False, the data remains, but is
+inaccessible. Setting to false will yield better performance, but will cause
+file sizes to expand.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str - success message if successful</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the array view</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If file does not contain File_Format attribute to indicate how it was saved,
+the file name is checked for _LOCALE#### to determine if it is distributed.</p></li>
+<li><p>If the dataset provided does not exist, it will be added</p></li>
+<li><p>Because HDF5 deletes do not release memory, this will create a copy of the
+file with the new data</p></li>
+</ul>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -552,6 +586,7 @@ Distribute will store the date in a file per locale.</p></li>
 <li><a class="reference internal" href="#arkouda.array_view.ArrayView.to_ndarray"><code class="docutils literal notranslate"><span class="pre">ArrayView.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_view.ArrayView.to_list"><code class="docutils literal notranslate"><span class="pre">ArrayView.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_view.ArrayView.to_hdf"><code class="docutils literal notranslate"><span class="pre">ArrayView.to_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.array_view.ArrayView.update_hdf"><code class="docutils literal notranslate"><span class="pre">ArrayView.update_hdf()</span></code></a></li>
 </ul>
 </li>
 </ul>

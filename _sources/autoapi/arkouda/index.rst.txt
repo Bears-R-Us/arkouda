@@ -267,6 +267,7 @@ Functions
    arkouda.save_all
    arkouda.load
    arkouda.load_all
+   arkouda.update_hdf
 
 
 
@@ -447,6 +448,35 @@ Attributes
                         Indicates the format to save the file. Single will store in a single file.
                         Distribute will store the date in a file per locale.
       :type file_type: str (single|distribute)
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'ArrayView', repack: bool = True)
+
+      Overwrite the dataset with the name provided with this array view object. If
+      the dataset does not exist it is added.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the array view
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+      - Because HDF5 deletes do not release memory, this will create a copy of the
+        file with the new data
 
 
 
@@ -2261,6 +2291,33 @@ Attributes
       ``cwd/path/name_prefix.hdf5``
 
 
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
+
+      Overwrite the dataset with the name provided with this pdarray. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
 
               Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
@@ -3674,6 +3731,37 @@ Attributes
       .. seealso:: :obj:`to_hdf`
 
 
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'strings_array', save_offsets: bool = True, repack: bool = True)
+
+      Overwrite the dataset with the name provided with this Strings object. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the Strings object
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
 
       Write Strings to CSV file(s). File will contain a single column with the Strings data.
@@ -4793,6 +4881,33 @@ Attributes
       >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
       Saves the array in to single hdf5 file on the root node.
       ``cwd/path/name_prefix.hdf5``
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
+
+      Overwrite the dataset with the name provided with this pdarray. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
 
 
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
@@ -9104,6 +9219,37 @@ Attributes
       .. seealso:: :obj:`to_hdf`
 
 
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'strings_array', save_offsets: bool = True, repack: bool = True)
+
+      Overwrite the dataset with the name provided with this Strings object. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the Strings object
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
 
       Write Strings to CSV file(s). File will contain a single column with the Strings data.
@@ -10768,6 +10914,33 @@ Attributes
       ``cwd/path/name_prefix.hdf5``
 
 
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
+
+      Overwrite the dataset with the name provided with this pdarray. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
 
               Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
@@ -11766,6 +11939,35 @@ Attributes
       locale number.
 
       .. seealso:: :obj:`to_parquet`, :obj:`load`
+
+
+   .. py:method:: update_hdf(prefix_path: str, index=False, columns=None, repack: bool = True)
+
+      Overwrite the dataset with the name provided with this pdarray. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param index: If True, save the index column. By default, do not save the index.
+      :type index: bool
+      :param columns: List of columns to include in the file. If None, writes out all columns
+      :type columns: List
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
 
 
    .. py:method:: to_parquet(path, index=False, columns=None, compression: Optional[str] = None)
@@ -13845,6 +14047,33 @@ Attributes
       ``cwd/path/name_prefix.hdf5``
 
 
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
+
+      Overwrite the dataset with the name provided with this pdarray. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
 
               Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
@@ -14406,6 +14635,35 @@ Attributes
       dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
       determine the file format.
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
+
+      Overwrite the dataset with the name provided with this Index object. If
+      the dataset does not exist it is added.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the index
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+      - Because HDF5 deletes do not release memory, this will create a copy of the
+        file with the new data
 
 
    .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None)
@@ -17082,6 +17340,33 @@ Attributes
       ``cwd/path/name_prefix.hdf5``
 
 
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
+
+      Overwrite the dataset with the name provided with this pdarray. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
 
               Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
@@ -18643,6 +18928,37 @@ Attributes
         determine the file format.
 
       .. seealso:: :obj:`to_hdf`
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'strings_array', save_offsets: bool = True, repack: bool = True)
+
+      Overwrite the dataset with the name provided with this Strings object. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the Strings object
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
 
 
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
@@ -20790,6 +21106,37 @@ Attributes
       .. seealso:: :obj:`to_hdf`
 
 
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'strings_array', save_offsets: bool = True, repack: bool = True)
+
+      Overwrite the dataset with the name provided with this Strings object. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the Strings object
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
 
       Write Strings to CSV file(s). File will contain a single column with the Strings data.
@@ -21587,7 +21934,7 @@ Attributes
      the same file type, but formatted to be read by Pandas.
 
 
-.. py:function:: to_hdf(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
+.. py:function:: to_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
 
    Save multiple named pdarrays to HDF5 files.
 
@@ -21635,7 +21982,7 @@ Attributes
    >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b'])
 
 
-.. py:function:: to_parquet(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', compression: Optional[str] = None) -> None
+.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', compression: Optional[str] = None) -> None
 
    Save multiple named pdarrays to Parquet files.
 
@@ -21684,7 +22031,7 @@ Attributes
    >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b'])
 
 
-.. py:function:: to_csv(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, col_delim: str = ',', overwrite: bool = False)
+.. py:function:: to_csv(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], prefix_path: str, names: List[str] = None, col_delim: str = ',', overwrite: bool = False)
 
    Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
    include a header denoting data types of the columns.
@@ -21726,7 +22073,7 @@ Attributes
      bytes as uint(8).
 
 
-.. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
+.. py:function:: save_all(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
 
    DEPRECATED
    Save multiple named pdarrays to HDF5/Parquet files.
@@ -21864,5 +22211,36 @@ Attributes
    This function will be deprecated when glob flags are added to read_* methods
 
    CSV files without the Arkouda Header are not supported.
+
+
+.. py:function:: update_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, repack: bool = True)
+
+   Overwrite the datasets with name appearing in names or keys in columns if columns
+   is a dictionary
+
+   :param columns: Collection of arrays to save
+   :type columns: dict or list of pdarrays
+   :param prefix_path: Directory and filename prefix for output files
+   :type prefix_path: str
+   :param names: Dataset names for the pdarrays
+   :type names: list of str
+   :param repack: Default: True
+                  HDF5 does not release memory on delete. When True, the inaccessible
+                  data (that was overwritten) is removed. When False, the data remains, but is
+                  inaccessible. Setting to false will yield better performance, but will cause
+                  file sizes to expand.
+   :type repack: bool
+
+   :raises RuntimeError: Raised if a server-side error is thrown saving the datasets
+
+   .. rubric:: Notes
+
+   - If file does not contain File_Format attribute to indicate how it was saved,
+     the file name is checked for _LOCALE#### to determine if it is distributed.
+   - If the datasets provided do not exist, they will be added
+   - Because HDF5 deletes do not release memory, this will create a copy of the
+     file with the new data
+   - This workflow is slightly different from `to_hdf` to prevent reading and
+     creating a copy of the file for each dataset
 
 

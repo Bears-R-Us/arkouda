@@ -376,6 +376,35 @@ Functions
       .. seealso:: :obj:`to_parquet`, :obj:`load`
 
 
+   .. py:method:: update_hdf(prefix_path: str, index=False, columns=None, repack: bool = True)
+
+      Overwrite the dataset with the name provided with this pdarray. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param index: If True, save the index column. By default, do not save the index.
+      :type index: bool
+      :param columns: List of columns to include in the file. If None, writes out all columns
+      :type columns: List
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
    .. py:method:: to_parquet(path, index=False, columns=None, compression: Optional[str] = None)
 
       Save DataFrame to disk as parquet, preserving column names.
