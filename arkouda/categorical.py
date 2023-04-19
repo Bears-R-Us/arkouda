@@ -930,8 +930,10 @@ class Categorical:
         """
         # due to the possibility that components will be different sizes,
         # writing to Parquet is not supported at this time
-        raise RuntimeError("Categorical cannot be written to Parquet at this time due to its components "
-                           "potentially having different sizes.")
+        raise RuntimeError(
+            "Categorical cannot be written to Parquet at this time due to its components "
+            "potentially having different sizes."
+        )
         result = []
         comp_dict = {k: v for k, v in self._get_components_dict().items() if v is not None}
 
@@ -1012,6 +1014,7 @@ class Categorical:
         - ak.Categorical.to_hdf
         """
         from warnings import warn
+
         warn(
             "ak.Categorical.save has been deprecated. "
             "Please use ak.Categorical.to_parquet or ak.Categorical.to_hdf",

@@ -1513,6 +1513,61 @@ class pdarray:
             ),
         )
 
+    def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
+        """
+        Overwrite the dataset with the name provided with this pdarray. If
+        the dataset does not exist it is added
+
+        Parameters
+        -----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in files
+        repack: bool
+            Default: True
+            HDF5 does not release memory on delete. When True, the inaccessible
+            data (that was overwritten) is removed. When False, the data remains, but is
+            inaccessible. Setting to false will yield better performance, but will cause
+            file sizes to expand.
+
+        Returns
+        --------
+        str - success message if successful
+
+        Raises
+        -------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+
+        Notes
+        ------
+        - If file does not contain File_Format attribute to indicate how it was saved,
+          the file name is checked for _LOCALE#### to determine if it is distributed.
+        - If the dataset provided does not exist, it will be added
+        """
+        from arkouda.io import _mode_str_to_int, _file_type_to_int, _get_hdf_filetype, _repack_hdf
+
+        # determine the format (single/distribute) that the file was saved in
+        file_type = _get_hdf_filetype(prefix_path + "*")
+
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "values": self,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int("append"),
+                "filename": prefix_path,
+                "dtype": self.dtype,
+                "objType": "pdarray",
+                "file_format": _file_type_to_int(file_type),
+                "overwrite": True,
+            },
+        )
+
+        if repack:
+            _repack_hdf(prefix_path)
+
     @typechecked
     def to_csv(
         self,
@@ -1845,6 +1900,7 @@ class pdarray:
 
 
 # end pdarray class def
+
 
 # creates pdarray object
 #   only after:

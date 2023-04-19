@@ -186,7 +186,6 @@ class DiffAggregate(AggregateOps):
     @classmethod
     def _make_aggop(cls, opname):
         def aggop(self):
-
             return Series(self.gb.aggregate(self.values, opname))
 
         return aggop
@@ -1497,6 +1496,46 @@ class DataFrame(UserDict):
         data = self._prep_data(index=index, columns=columns)
         to_hdf(data, prefix_path=path, file_type=file_type)
 
+    def update_hdf(self, prefix_path: str, index=False, columns=None, repack: bool = True):
+        """
+        Overwrite the dataset with the name provided with this pdarray. If
+        the dataset does not exist it is added
+
+        Parameters
+        -----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        index : bool
+            If True, save the index column. By default, do not save the index.
+        columns: List
+            List of columns to include in the file. If None, writes out all columns
+        repack: bool
+            Default: True
+            HDF5 does not release memory on delete. When True, the inaccessible
+            data (that was overwritten) is removed. When False, the data remains, but is
+            inaccessible. Setting to false will yield better performance, but will cause
+            file sizes to expand.
+
+        Returns
+        --------
+        str - success message if successful
+
+        Raises
+        -------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+
+        Notes
+        ------
+        - If file does not contain File_Format attribute to indicate how it was saved,
+          the file name is checked for _LOCALE#### to determine if it is distributed.
+        - If the dataset provided does not exist, it will be added
+        """
+        from arkouda.io import update_hdf
+
+        data = self._prep_data(index=index, columns=columns)
+        update_hdf(data, prefix_path=prefix_path, repack=repack)
+
     def to_parquet(self, path, index=False, columns=None, compression: Optional[str] = None):
         """
         Save DataFrame to disk as parquet, preserving column names.
@@ -2509,7 +2548,6 @@ def intersect(a, b, positions=True, unique=False):
 
     # It takes more effort to do this with ak.Strings arrays.
     elif isinstance(a, Strings) and isinstance(b, Strings):
-
         # Hash the two arrays first
         hash_a00, hash_a01 = a.hash()
         hash_b00, hash_b01 = b.hash()
