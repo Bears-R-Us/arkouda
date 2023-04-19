@@ -222,11 +222,16 @@ def inner_join(
     if isinstance(left, Categorical) and isinstance(right, Categorical):
         t = cast(str, Categorical.objtype)
         left, right = Categorical.standardize_categories([left, right])
-        cats = left.categories[left.codes]  # Get standardized categories without NAvalue
-        leftKeepCodes = array([x is not True for x in left.isna().to_ndarray()])  # Keep codes that aren't NAvalue
-        rightKeepCodes = array([x is not True for x in right.isna().to_ndarray()])  # Keep codes that aren't NAvalue
-        left = left.codes[leftKeepCodes]
-        right = right.codes[rightKeepCodes]
+        if isinstance(left, Categorical) and isinstance(right, Categorical):
+            cats = left.categories[left.codes]  # Get standardized categories without NAvalue
+            leftKeepCodes = array(
+                [x is not True for x in left.isna().to_ndarray()]
+            )  # Keep codes that aren't NAvalue
+            rightKeepCodes = array(
+                [x is not True for x in right.isna().to_ndarray()]
+            )  # Keep codes that aren't NAvalue
+            left = left.codes[leftKeepCodes]
+            right = right.codes[rightKeepCodes]
 
     sample = np.min((left.size, right.size, 5))  # type: ignore
     if wherefunc is not None:
@@ -271,15 +276,10 @@ def inner_join(
                     args={
                         "categories": cats,
                         "query": whereargs[0][keep],  # type: ignore
-                    })
+                    },
+                )
                 lCodes = create_pdarray(repMsg)
-                # lCodes = array(
-                #     [
-                #         cats.to_list().index(w)
-                #         for w in whereargs[0][keep].to_ndarray()
-                #         if w in cats.to_ndarray()
-                #     ]
-                # )
+
                 if isinstance(lCodes, pdarray):
                     lIdx = broadcast(fullSegs, lCodes, ranges.size)
                 else:
@@ -293,15 +293,9 @@ def inner_join(
                     args={
                         "categories": cats,
                         "query": whereargs[1][byRight.permutation][ranges],  # type: ignore
-                    })
+                    },
+                )
                 rCodes = create_pdarray(repMsg)
-                # rCodes = array(
-                #     [
-                #         cats.to_list().index(w)
-                #         for w in whereargs[1][byRight.permutation][ranges].to_ndarray()
-                #         if w in cats.to_ndarray()
-                #     ]
-                # )
                 rightWhere = whereargs[1][rCodes]
             else:
                 # Expand left whereargs
