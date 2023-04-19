@@ -302,6 +302,68 @@ class GroupBy:
         except RuntimeError:
             pass
 
+    def to_hdf(
+            self,
+            prefix_path,
+            dataset="groupby",
+            mode="truncate",
+            file_type="distribute",
+    ):
+        """
+        Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
+        per locale of the arkouda server, where each filename starts with prefix_path.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files will share
+        dataset : str
+            Name prefix for saved data within the HDF5 file
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', add data as a new column to existing files.
+        file_type: str ("single" | "distribute")
+            Default: "distribute"
+            When set to single, dataset is written to a single file.
+            When distribute, dataset is written on a file per locale.
+            This is only supported by HDF5 files and will have no impact of Parquet Files.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        Unlike for ak.Strings, SegArray is saved as two datasets in the top level of
+        the HDF5 file, not nested under a group.
+
+        GroupBy is not currently supported by Parquet
+        """
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
+
+        keys = self.keys
+        if not isinstance(self.keys, Sequence):
+            keys = [self.keys]
+
+        dtypes = []
+
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "keys": keys,
+                "unique_keys": self.unique_keys,
+                "permutation": self.permutation,
+                "segments": self.segments,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int(mode),
+                "filename": prefix_path,
+                "dtype": self.keys.dtype,
+                "objType": "groupby",
+                "file_format": _file_type_to_int(file_type),
+            },
+        )
+
+
     def size(self) -> Tuple[groupable, pdarray]:
         """
         Count the number of elements in each group, i.e. the number of times

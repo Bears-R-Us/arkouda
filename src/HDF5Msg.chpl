@@ -53,7 +53,8 @@ module HDF5Msg {
       PDARRAY=1,
       STRINGS=2,
       SEGARRAY=3,
-      CATEGORICAL=4
+      CATEGORICAL=4,
+      GROUPBY=5
     };
 
     config const TRUNCATE: int = 0;
@@ -961,7 +962,7 @@ module HDF5Msg {
         var filename: string = msgArgs.getValueOf("filename");
         var file_format = msgArgs.get("file_format").getIntValue();
         var group = msgArgs.getValueOf("dset");
-        var dType = str2dtype(msgArgs.getValueOf("dtype"));
+        var val_dType = str2dtype(msgArgs.getValueOf("dtype"));
         var segarr = msgArgs.getValueOf("seg_name");
         const objType = msgArgs.getValueOf("objType");
 
@@ -984,7 +985,7 @@ module HDF5Msg {
                 validateGroup(file_id, f, group, overwrite);
                 var dtype: C_HDF5.hid_t;
 
-                select dType {
+                select val_dType {
                     when (DType.Int64) {
                         var sa:SegArray = getSegArray(segarr, st, int);
                         var valEntry = sa.values;
@@ -1020,7 +1021,7 @@ module HDF5Msg {
                     }
                     otherwise {
                         throw getErrorWithContext(
-                           msg="Unsupported SegArray DType %s".format(dtype2str(dType)),
+                           msg="Unsupported SegArray DType %s".format(dtype2str(val_dType)),
                            lineNumber=getLineNumber(),
                            routineName=getRoutineName(), 
                            moduleName=getModuleName(),
@@ -1032,7 +1033,7 @@ module HDF5Msg {
                 C_HDF5.H5Fclose(file_id);
             }
             when MULTI_FILE {
-                select dType {
+                select val_dType {
                     when DType.Int64 {
                         var sa:SegArray = getSegArray(segarr, st, int);
                         var valEntry = sa.values;
@@ -1063,7 +1064,7 @@ module HDF5Msg {
                     }
                     otherwise {
                         throw getErrorWithContext(
-                           msg="Unsupported SegArray DType %s".format(dtype2str(dType)),
+                           msg="Unsupported SegArray DType %s".format(dtype2str(val_dType)),
                            lineNumber=getLineNumber(),
                            routineName=getRoutineName(), 
                            moduleName=getModuleName(),
@@ -1083,11 +1084,6 @@ module HDF5Msg {
     }
 
     proc categorical_tohdfMsg(msgArgs: borrowed MessageArgs, st: borrowed SymTab) throws {
-        use C_HDF5.HDF5_WAR;
-        var mode: int = msgArgs.get("write_mode").getIntValue();
-
-        var filename: string = msgArgs.getValueOf("filename");
-        var file_format = msgArgs.get("file_format").getIntValue();
         var group = msgArgs.getValueOf("dset");
         const objType = msgArgs.getValueOf("objType"); // needed for metadata
 
@@ -1205,12 +1201,77 @@ module HDF5Msg {
         }
     }
 
+    proc groupby_tohdfMsg(msgArgs: borrowed MessageArgs, st: borrowed SymTab) throws {
+        use C_HDF5.HDF5_WAR;
+        var mode: int = msgArgs.get("write_mode").getIntValue();
+
+        var filename: string = msgArgs.getValueOf("filename");
+        var file_format = msgArgs.get("file_format").getIntValue();
+
+        var group = msgArgs.getValueOf("dset"); // name of the group containing components
+        var key_dtype = str2dtype(msgArgs.getValueOf("dtype")); // keys and unique-keys... we may not need
+        const objType = msgArgs.getValueOf("objType"); // needed to write metadata
+
+        // access the permutation and segments pdarrays because these are always int
+        var seg_entry = st.lookup(msgArgs.getValueOf("segments"));
+        var segments = toSymEntry(toGenSymEntry(entry), int);
+        var perm_entry = st.lookup(msgArgs.getValueOf("permutation"));
+        var perm = toSymEntry(toGenSymEntry(entry), int);
+
+        // create the group
+        select file_format {
+            when SINGLE_FILE {
+                validateGroup(file_id, f, group);
+                var dtype: C_HDF5.hid_t;
+
+                select val_dtype {
+                    when (DType.Int64) {
+                    
+                    }
+                    when (DType.UInt64) {
+
+                    }
+                    when (DType.Float64) {
+
+                    }
+                    when (DType.Bool) {
+
+                    }
+                    when (DType.Strings) {
+
+                    }
+                    otherwise {
+                        throw getErrorWithContext(
+                           msg="Unsupported DType %s".format(dtype2str(key_dtype)),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="IllegalArgumentError");
+                    }
+                }
+
+            }
+            when MULTI_FILE {
+
+            }
+            otherwise {
+                throw getErrorWithContext(
+                           msg="Unknown file format. Expecting 0 (single file) or 1 (file per locale). Found %i".format(file_format),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="IllegalArgumentError");
+            }
+        }
+    }
+
+
     /*
         Parse and exectue tohdf message.
         Determines the type of the object to be written and calls the corresponding write functionality.
     */
     proc tohdfMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        var objType: ObjType = msgArgs.getValueOf("objType").toUpper(): ObjType; // pdarray, Strings, ArrayView
+        var objType: ObjType = msgArgs.getValueOf("objType").toUpper(): ObjType;
 
         select objType {
             when ObjType.ARRAYVIEW {
@@ -1231,6 +1292,10 @@ module HDF5Msg {
             }
             when ObjType.CATEGORICAL {
                 categorical_tohdfMsg(msgArgs, st);
+            }
+            when ObjType.GROUPBY {
+                // call handler for groupby write
+                groupby_tohdfMsg(msgArgs, st);
             }
             otherwise {
                 var errorMsg = "Unable to write object type %s to HDF5 file.".format(objType);

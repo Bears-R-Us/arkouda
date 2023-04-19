@@ -1019,13 +1019,6 @@ class SegArray:
         -------
         None
 
-        Notes
-        -----
-        Unlike for ak.Strings, SegArray is saved as two datasets in the top level of
-        the HDF5 file, not nested under a group.
-
-        SegArray is not currently supported by Parquet
-
         See Also
         ---------
         load
