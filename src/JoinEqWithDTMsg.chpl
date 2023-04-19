@@ -14,6 +14,7 @@ module JoinEqWithDTMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use AryUtil;
+    use SegmentedString;
 
     param TRUE_DT = 0;
     param ABS_DT = 1;
@@ -377,7 +378,7 @@ module JoinEqWithDTMsg
     }// end joinEqWithDTMsg()
 
     proc codeMappingMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        catLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Mapping codes from categories");
+        jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Mapping codes from categories");
 
         var catName = msgArgs.getValueOf("categories");
         var queryName = msgArgs.getValueOf("query");
@@ -408,7 +409,7 @@ module JoinEqWithDTMsg
         st.addEntry(name, codeEntry);
 
         var repMsg = "created " + st.attrib(name);
-        catLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+        jeLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
