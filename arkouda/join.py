@@ -213,21 +213,20 @@ def inner_join(
     # index representation of the strings. This way they can be handled as numerics and follow the
     # same process as int
     t = cast(str, pdarray.objtype)
-    lCats = rCats = None
+    cats = None
+
     if isinstance(left, Strings) and isinstance(right, Strings):
-        t = cast(str, Strings.objtype)
-        catLeft = Categorical(left)
-        catRight = Categorical(right)
-        lCats = catLeft.categories
-        rCats = catRight.categories
-        left = catLeft.codes
-        right = catRight.codes
-    elif isinstance(left, Categorical) and isinstance(right, Categorical):
+        left = Categorical(left)
+        right = Categorical(right)
+
+    if isinstance(left, Categorical) and isinstance(right, Categorical):
         t = cast(str, Categorical.objtype)
-        lCats = left.categories
-        rCats = right.categories
-        left = left.codes
-        right = right.codes
+        left, right = Categorical.standardize_categories([left, right])
+        cats = left.categories[left.codes]  # Get standardized categories without NAvalue
+        leftKeepCodes = array([x is not True for x in left.isna().to_ndarray()])  # Keep codes that aren't NAvalue
+        rightKeepCodes = array([x is not True for x in right.isna().to_ndarray()])  # Keep codes that aren't NAvalue
+        left = left.codes[leftKeepCodes]
+        right = right.codes[rightKeepCodes]
 
     sample = np.min((left.size, right.size, 5))  # type: ignore
     if wherefunc is not None:
@@ -265,28 +264,22 @@ def inner_join(
         keep12 = keep
     else:
         if whereargs is not None:
-            # Gather right whereargs
-            rightWhere = whereargs[1][byRight.permutation][ranges]
-            # Expand left whereargs
-            keep_where = whereargs[0][keep]
-            if isinstance(keep_where, (Strings, Categorical)):
-                leftWhereIdx = broadcast(fullSegs, arange(keep_where.size), ranges.size)
-                leftWhere = keep_where[leftWhereIdx]
-            else:
-                leftWhere = broadcast(fullSegs, keep_where, ranges.size)
-            if (
-                t in [Strings.objtype, Categorical.objtype]
-                and isinstance(lCats, Strings)
-                and isinstance(rCats, Strings)
-            ):
+            if t == Categorical.objtype and isinstance(cats, Strings):
                 # Find the corresponding codes value for each term in the whereargs
-                lCodes = array(
-                    [
-                        lCats.to_list().index(w)
-                        for w in whereargs[0][keep].to_ndarray()
-                        if w in lCats.to_ndarray()
-                    ]
-                )
+                repMsg = generic_msg(
+                    cmd="codeMapping",
+                    args={
+                        "categories": cats,
+                        "query": whereargs[0][keep],  # type: ignore
+                    })
+                lCodes = create_pdarray(repMsg)
+                # lCodes = array(
+                #     [
+                #         cats.to_list().index(w)
+                #         for w in whereargs[0][keep].to_ndarray()
+                #         if w in cats.to_ndarray()
+                #     ]
+                # )
                 if isinstance(lCodes, pdarray):
                     lIdx = broadcast(fullSegs, lCodes, ranges.size)
                 else:
@@ -295,13 +288,20 @@ def inner_join(
                     )
                 leftWhere = whereargs[0][lIdx]
                 # Gather right whereargs
-                rCodes = array(
-                    [
-                        rCats.to_list().index(w)
-                        for w in whereargs[1][byRight.permutation][ranges].to_ndarray()
-                        if w in rCats.to_ndarray()
-                    ]
-                )
+                repMsg = generic_msg(
+                    cmd="codeMapping",
+                    args={
+                        "categories": cats,
+                        "query": whereargs[1][byRight.permutation][ranges],  # type: ignore
+                    })
+                rCodes = create_pdarray(repMsg)
+                # rCodes = array(
+                #     [
+                #         cats.to_list().index(w)
+                #         for w in whereargs[1][byRight.permutation][ranges].to_ndarray()
+                #         if w in cats.to_ndarray()
+                #     ]
+                # )
                 rightWhere = whereargs[1][rCodes]
             else:
                 # Expand left whereargs
