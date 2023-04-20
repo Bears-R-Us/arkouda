@@ -809,10 +809,6 @@ module SegmentedString {
       ref origVals = this.values.a;
       const lengths = this.getLengths();
 
-      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "chars: %s - origOffsets: %t - origVals: %t"
-                                             .format(chars, origOffsets, origVals:bytes));
-
       var replacedLens: [this.offsets.a.domain] int;
 
       forall (off, len, rlen) in zip(origOffsets, lengths, replacedLens) {
