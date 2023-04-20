@@ -415,7 +415,7 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
         )
 
 
-def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayView, SegArray]:
+def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayView, SegArray, Categorical]:
     """
     Helper function to create an Arkouda object from read response
 
@@ -444,24 +444,43 @@ def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayVie
         flat = create_pdarray(components[0])
         shape = create_pdarray(components[1])
         return arkouda.array_view.ArrayView(flat, shape)
+    elif "categorical" == obj["arkouda_type"]:
+        return Categorical.from_return_msg(obj["created"])
     else:
         raise TypeError(f"Unknown arkouda type:{obj['arkouda_type']}")
 
 
-def _dict_recombine_segarrays(df_dict):
+def _dict_recombine_segarrays_categoricals(df_dict):
     # this assumes segments will always have corresponding values.
     # This should happen due to save config
     seg_cols = ["_".join(col.split("_")[:-1]) for col in df_dict.keys() if col.endswith("_segments")]
-    df_dict_keys = [
-        "_".join(col.split("_")[:-1]) if col.endswith("_segments") or col.endswith("_values") else col
+    cat_cols = ["_".join(col.split(".")[:-1]) for col in df_dict.keys() if col.endswith(".categories")]
+    df_dict_keys = {
+        "_".join(col.split("_")[:-1])
+        if col.endswith("_segments") or col.endswith("_values")
+        else ".".join(col.split(".")[:-1])
+        if col.endswith("._akNAcode")
+        or col.endswith(".categories")
+        or col.endswith(".codes")
+        or col.endswith(".permutation")
+        or col.endswith(".segments")
+        else col
         for col in df_dict.keys()
-    ]
+    }
 
     # update dict to contain segarrays where applicable if any exist
-    if len(seg_cols) > 0:
+    if len(seg_cols) > 0 or len(cat_cols) > 0:
         df_dict = {
             col: SegArray.from_parts(df_dict[col + "_segments"], df_dict[col + "_values"])
             if col in seg_cols
+            else Categorical.from_codes(
+                df_dict[f"{col}.codes"],
+                df_dict[f"{col}.categories"],
+                permutation=df_dict[f"{col}.permutation"],
+                segments=df_dict[f"{col}.segments"],
+                _akNAcode=df_dict[f"{col}._akNAcode"],
+            )
+            if col in cat_cols
             else df_dict[col]
             for col in df_dict_keys
         }
@@ -475,7 +494,8 @@ def _build_objects(
     pdarray,
     SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[Strings, pdarray, SegArray, arkouda.array_view.ArrayView]],
+    Categorical,
+    Mapping[str, Union[Strings, pdarray, SegArray, arkouda.array_view.ArrayView, Categorical]],
 ]:
     """
     Helper function to create the Arkouda objects from a read operation
@@ -500,7 +520,9 @@ def _build_objects(
     # 2. We have a single pdarray
     # 3. We have a single strings object
     if len(items) > 1:  # DataSets condition
-        ds_dict = _dict_recombine_segarrays({item["dataset_name"]: _parse_obj(item) for item in items})
+        ds_dict = _dict_recombine_segarrays_categoricals(
+            {item["dataset_name"]: _parse_obj(item) for item in items}
+        )
         # if dict only has 1 element when it had >1 before, the element must be a segarray
         return next(iter(ds_dict.values())) if len(ds_dict.keys()) == 1 else ds_dict
     elif len(items) == 1:
@@ -522,7 +544,8 @@ def read_hdf(
     Strings,
     SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView]],
+    Categorical,
+    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView, Categorical]],
 ]:
     """
     Read Arkouda objects from HDF5 file/s
@@ -649,7 +672,8 @@ def read_parquet(
     Strings,
     SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView]],
+    Categorical,
+    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView, Categorical]],
 ]:
     """
     Read Arkouda objects from Parquet file/s
@@ -770,7 +794,8 @@ def read_csv(
     Strings,
     SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView]],
+    Categorical,
+    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView, Categorical]],
 ]:
     """
     Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
@@ -1457,7 +1482,8 @@ def load(
     Strings,
     SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView]],
+    Categorical,
+    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView, Categorical]],
 ]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
@@ -1598,7 +1624,7 @@ def load_all(
             for dataset in get_datasets(firstname, column_delim=column_delim)
         }
 
-        result = _dict_recombine_segarrays(result)
+        result = _dict_recombine_segarrays_categoricals(result)
         # Check for Categoricals and remove if necessary
         removal_names, categoricals = Categorical.parse_hdf_categoricals(result)
         if removal_names:
@@ -1642,7 +1668,8 @@ def read(
     Strings,
     SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView]],
+    Categorical,
+    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView, Categorical]],
 ]:
     """
     Read datasets from files.

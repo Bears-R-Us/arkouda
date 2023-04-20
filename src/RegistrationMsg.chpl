@@ -64,6 +64,10 @@ module RegistrationMsg
         return msgTuple;
     }
 
+    proc categorical_attachMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws{
+
+    }
+
     /* 
     Parse, execute, and respond to a attach message 
 
@@ -164,7 +168,7 @@ module RegistrationMsg
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                             "%s: Collecting Categorical components for '%s'".format(cmd, name));
 
-        var repMsg: string;
+        var rtnMap: map(string, string);
                 
         var cats = st.attrib("%s.categories".format(name));
         var codes = st.attrib("%s.codes".format(name));
@@ -186,15 +190,14 @@ module RegistrationMsg
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         }
 
-        repMsg = "categorical+created %s".format(cats);
-        // Check if the categories is numeric or string, if string add byte size
+        // categories should always be string, add bytes for string return message
         if (isStringAttrib(cats)) {
             var s = getSegString("%s.categories".format(name), st);
-            repMsg += "+created bytes.size %t".format(s.nBytes);
+            rtnMap.add("categories", "created %s+created %t".format(st.attrib(s.name), s.nBytes));
         }
+        rtnMap.add("codes", "created " + codes);
+        rtnMap.add("_akNAcode", "created " + naCode);
 
-        repMsg += "+created %s".format(codes);
-        repMsg += "+created %s".format(naCode);
 
         // Optional components of categorical
         if st.contains("%s.permutation".format(name)) {
@@ -204,7 +207,7 @@ module RegistrationMsg
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
-            repMsg += "+created %s".format(perm);
+            rtnMap.add("permutation", "created " + perm);
         }
         if st.contains("%s.segments".format(name)) {
             var segs = st.attrib("%s.segments".format(name));
@@ -213,9 +216,10 @@ module RegistrationMsg
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
-            repMsg += "+created %s".format(segs);
+            rtnMap.add("segments", "created " + segs);
         }
 
+        var repMsg: string = "categorical+%s+%jt".format(name, rtnMap);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 

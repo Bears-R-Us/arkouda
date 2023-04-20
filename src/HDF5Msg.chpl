@@ -39,14 +39,21 @@ module HDF5Msg {
     const ARKOUDA_HDF5_FILE_VERSION_KEY = "file_version";
     const ARKOUDA_HDF5_FILE_VERSION_VAL = 2.0:real(32);
     type ARKOUDA_HDF5_FILE_VERSION_TYPE = real(32);
+    config const NA_VALUE_KEY = "NA_Value";
     config const SEGMENTED_OFFSET_NAME = "segments";
     config const SEGMENTED_VALUE_NAME = "values";
+    config const CATEGORIES_NAME = "categories";
+    config const CODES_NAME = "codes";
+    config const NACODES_NAME = "NA_Codes";
+    config const PERMUTATION_NAME = "permutation";
+    config const CAT_SEGMENTS_NAME = "segments";
 
     enum ObjType {
       ARRAYVIEW=0,
       PDARRAY=1,
       STRINGS=2,
-      SEGARRAY=3
+      SEGARRAY=3,
+      CATEGORICAL=4
     };
 
     config const TRUNCATE: int = 0;
@@ -329,9 +336,7 @@ module HDF5Msg {
         var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
         var attr_id: C_HDF5.hid_t;
 
-        var attrStringType = C_HDF5.H5Tcopy(C_HDF5.H5T_C_S1): C_HDF5.hid_t;
-
-        // Create the objectType. This will be important when merging with other read/write functionality.
+         // Create the objectType. This will be important when merging with other read/write functionality.
         attr_id = C_HDF5.H5Acreate2(obj_id, "ObjType".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         var t: ObjType = objType.toUpper(): ObjType;
         var t_int: int = t: int;
@@ -359,7 +364,7 @@ module HDF5Msg {
         C_HDF5.H5Awrite(attrId, attrFileVersionType, c_ptrTo(fileVersion));
         C_HDF5.H5Aclose(attrId);
 
-        // var attrStringType = C_HDF5.H5Tcopy(C_HDF5.H5T_C_S1): C_HDF5.hid_t;
+        var attrStringType = C_HDF5.H5Tcopy(C_HDF5.H5T_C_S1): C_HDF5.hid_t;
         C_HDF5.H5Tset_size(attrStringType, arkoudaVersion.size:uint(64) + 1); // ensure space for NULL terminator
         C_HDF5.H5Tset_strpad(attrStringType, C_HDF5.H5T_STR_NULLTERM);
         
@@ -378,9 +383,9 @@ module HDF5Msg {
         akVersion[arkoudaVersion.size] = 0:c_char; // ensure NULL termination
 
         C_HDF5.H5Awrite(attrId, attrStringType, akVersion);
+        C_HDF5.H5Aclose(attrId);
 
         // release ArkoudaVersion HDF5 resources
-        C_HDF5.H5Aclose(attrId);
         c_free(akVersion);
         C_HDF5.H5Sclose(attrSpaceId);
         C_HDF5.H5Tclose(attrStringType);
@@ -857,88 +862,15 @@ module HDF5Msg {
                 // create the group
                 validateGroup(file_id, f, group, overwrite);
 
-                //localize values and write dataset
-                var localVals: [0..#segString.values.size] uint(8) = segString.values.a;
-                var val_dims: C_HDF5.hsize_t = segString.values.size:C_HDF5.hsize_t;
-                C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, val_dims, getHDF5Type(uint(8)), c_ptrTo(localVals));
-                
-                if (writeOffsets) {
-                    //localize offsets and write dataset
-                    var localOffsets: [0..#segString.offsets.size] int = segString.offsets.a;
-                    var off_dims: C_HDF5.hsize_t = segString.offsets.size:C_HDF5.hsize_t;
-                    C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1:c_int, off_dims, getHDF5Type(int), c_ptrTo(localOffsets));
-                }
+                writeSegmentedLocalDset(file_id, group, segString.values, segString.offsets, writeOffsets, uint(8));
                 writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8)));
                 C_HDF5.H5Fclose(file_id);
             }
             when MULTI_FILE {
-                var filenames = prepFiles(filename, mode, segString.offsets.a);
-
-                ref ss = segString;
-                var A = ss.offsets.a;
-                const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty
-                const lastValIdx = ss.values.a.domain.high;
-
-                // For each locale gather the string bytes corresponding to the offsets in its local domain
-                coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with (ref ss) do on loc {
-                    /*
-                    * Generate metadata such as file name, file id, and dataset name
-                    * for each file to be written
-                    */
-                    const f = filenames[idx];
-                    var file_id = C_HDF5.H5Fopen(f.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
-                    defer { // Close the file on exit
-                        C_HDF5.H5Fclose(file_id);
-                    }
-                    const locDom = A.localSubdomain();
-                    var dims: [0..#1] C_HDF5.hsize_t;
-                    dims[0] = locDom.size: C_HDF5.hsize_t;
-
-                    // create the group
-                    validateGroup(file_id, f, group, overwrite);
-
-                    if (locDom.isEmpty() || locDom.size <= 0) { // shouldn't need the second clause, but in case negative number is returned
-                        // Case where num_elements < num_locales, we need to write a nil into this locale's file
-                        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "write1DDistStringsAggregators: locale.id %i has empty locDom.size %i, will get empty dataset."
-                            .format(loc.id, locDom.size));
-                        writeNilSegmentedGroupToHdf(file_id, group, writeOffsets, getHDF5Type(uint(8)));
-                        // write attributes for arkouda meta info
-                        writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8)));
-                    } else {
-                        var localOffsets = A[locDom];
-                        var startValIdx = localOffsets[locDom.low];
-                        /*
-                        * The locale's last offset is the START idx of its last string, but we need to know where the END of it is located.
-                        * thus...
-                        * If this slice is the tail of the offsets, we set our endValIdx to the last index in the bytes/values array.
-                        * Else get the next offset value and back up one to get the ending position of the last string we are responsible for
-                        */
-                        var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else A[locDom.high + 1] - 1;
-                        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "locale %i, writing strings offsets[%i..%i] corresponding to values[%i..%i], lastValIdx %i"
-                            .format(loc.id, locDom.low, locDom.high, startValIdx, endValIdx, lastValIdx));
-                        
-                        var valIdxRange = startValIdx..endValIdx;
-                        var localVals: [valIdxRange] uint(8);
-                        ref olda = ss.values.a;
-                        forall (localVal, valIdx) in zip(localVals, valIdxRange) with (var agg = newSrcAggregator(uint(8))) {
-                            // Copy the remote value at index position valIdx to our local array
-                            agg.copy(localVal, olda[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
-                        }
-
-                        // localVals is now a local copy of the gathered string bytes, write that component to HDF5
-                        writeSegmentedComponentToHdf(file_id, group, SEGMENTED_VALUE_NAME, localVals);
-                        
-                        if (writeOffsets) { // if specified write the offsets component to HDF5
-                            // Re-zero offsets so local file is zero based see also fixupSegBoundaries performed during read
-                            localOffsets = localOffsets - startValIdx;
-                            writeSegmentedComponentToHdf(file_id, group, SEGMENTED_OFFSET_NAME, localOffsets);
-                        }
-                        // write attributes for arkouda meta info
-                        writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8)));
-                    }
-                }
+                var valEntry = segString.values;
+                var segEntry = segString.offsets;
+                var filenames = prepFiles(filename, mode, segEntry.a);
+                writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, uint(8));
             }
             otherwise {
                 throw getErrorWithContext(
@@ -951,19 +883,22 @@ module HDF5Msg {
         }
     }
 
-    proc writeLocalSegArray(file_id: C_HDF5.hid_t, group: string, vals, valDim: int, segs, segDim: int, type t) throws {
+    proc writeSegmentedLocalDset(file_id: C_HDF5.hid_t, group: string, vals, segs, write_offsets: bool, type t) throws {
         h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             "Writing group, %s".format(group));
 
         var dtype_id: C_HDF5.hid_t = getDataType(t);
-
-        var vd = valDim:C_HDF5.hsize_t;
-        C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, vd, dtype_id, vals.ptr);
+        var localVals: [0..#vals.size] t = vals.a;
+        var vd = vals.size:C_HDF5.hsize_t;
+        C_HDF5.H5LTmake_dataset(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, vd, dtype_id, c_ptrTo(localVals));
         writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), "pdarray", dtype_id);
 
-        var sd = segDim:C_HDF5.hsize_t;
-        C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1:c_int, sd, getDataType(int), segs.ptr);
-        writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_OFFSET_NAME), "pdarray", getDataType(int));
+        if write_offsets {
+            var localSegs: [0..#segs.size] int = segs.a;
+            var sd = segs.size:C_HDF5.hsize_t;
+            C_HDF5.H5LTmake_dataset(file_id, "%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1:c_int, sd, getDataType(int), c_ptrTo(localSegs));
+            writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_OFFSET_NAME), "pdarray", getDataType(int));
+        }
     }
 
     proc writeSegmentedDistDset(filenames: [] string, group: string, objType: string, overwrite: bool, values, segments, st: borrowed SymTab, type t) throws {
@@ -1056,9 +991,7 @@ module HDF5Msg {
                         var segEntry = sa.segments;
 
                         //localize values and write dataset
-                        var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
-                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
-                        writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, int);
+                        writeSegmentedLocalDset(file_id, group, valEntry, segEntry, true, int);
                         dtype = getDataType(int);
                     } when (DType.UInt64) {
                         var sa:SegArray = getSegArray(segarr, st, uint);
@@ -1066,9 +999,7 @@ module HDF5Msg {
                         var segEntry = sa.segments;
 
                          //localize values and write dataset
-                        var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
-                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
-                        writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, uint);
+                        writeSegmentedLocalDset(file_id, group, valEntry, segEntry, true, uint);
                         dtype = getDataType(uint);
                     } when (DType.Float64) {
                         var sa:SegArray = getSegArray(segarr, st, real);
@@ -1076,9 +1007,7 @@ module HDF5Msg {
                         var segEntry = sa.segments;
 
                          //localize values and write dataset
-                        var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
-                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
-                        writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, real);
+                        writeSegmentedLocalDset(file_id, group, valEntry, segEntry, true, real);
                         dtype = getDataType(real);
                     } when (DType.Bool) {
                         var sa:SegArray = getSegArray(segarr, st, bool);
@@ -1086,9 +1015,7 @@ module HDF5Msg {
                         var segEntry = sa.segments;
 
                          //localize values and write dataset
-                        var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
-                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
-                        writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, bool);
+                        writeSegmentedLocalDset(file_id, group, valEntry, segEntry, true, bool);
                         dtype = getDataType(bool);
                     }
                     otherwise {
@@ -1155,6 +1082,125 @@ module HDF5Msg {
         }
     }
 
+    proc categorical_tohdfMsg(msgArgs: borrowed MessageArgs, st: borrowed SymTab) throws {
+        use C_HDF5.HDF5_WAR;
+        var mode: int = msgArgs.get("write_mode").getIntValue();
+
+        var filename: string = msgArgs.getValueOf("filename");
+        var file_format = msgArgs.get("file_format").getIntValue();
+        var group = msgArgs.getValueOf("dset");
+        const objType = msgArgs.getValueOf("objType"); // needed for metadata
+
+        // access entries - types are currently always the same for each
+        var codes_entry = st.lookup(msgArgs.getValueOf("codes"));
+        var codes = toSymEntry(toGenSymEntry(codes_entry), int);
+        var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(msgArgs.getValueOf("categories")));
+        var cats = new SegString("", cat_entry);
+        var naCodes_entry = st.lookup(msgArgs.getValueOf("NA_codes"));
+        var naCodes = toSymEntry(toGenSymEntry(naCodes_entry), int);
+        var perm_seg_exist: bool = false;
+        if msgArgs.contains("permutation") && msgArgs.contains("segments") {
+            perm_seg_exist = true;
+        }
+        
+        select file_format {
+            when SINGLE_FILE {
+                var f = prepFiles(filename, mode);
+                var file_id = C_HDF5.H5Fopen(f.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+                if file_id < 0 { // HF5open returns negative value on failure
+                    C_HDF5.H5Fclose(file_id);
+                    var errorMsg = "Failure accessing file %s.".format(f);
+                    throw getErrorWithContext(
+                           msg=errorMsg,
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="FileNotFoundError");
+                }
+
+                // ensure that container for categorical exists
+                validateGroup(file_id, f, group);
+
+                // localize codes and write dataset
+                var localCodes: [0..#codes.size] int = codes.a;
+                writeLocalDset(file_id, "/%s/%s".format(group, CODES_NAME), c_ptrTo(localCodes), codes.size, int);
+
+
+                // ensure that the container for categories exists
+                validateGroup(file_id, f, "%s/%s".format(group, CATEGORIES_NAME));
+
+
+                //localize categories values and write dataset
+                writeSegmentedLocalDset(file_id, "/%s/%s".format(group, CATEGORIES_NAME), cats.values, cats.offsets, true, uint(8));
+
+                // localize _akNAcode and write to dset
+                var localNACodes: [0..#naCodes.size] int = naCodes.a;
+                writeLocalDset(file_id, "/%s/%s".format(group, NACODES_NAME), c_ptrTo(localNACodes), naCodes.size, int);
+
+                if perm_seg_exist {
+                    var perm_entry = st.lookup(msgArgs.getValueOf("permutation"));
+                    var perm = toSymEntry(toGenSymEntry(perm_entry), int);
+
+                    // localize permutation and write dataset
+                    var localPerm: [0..#perm.size] int = perm.a;
+                    writeLocalDset(file_id, "/%s/%s".format(group, PERMUTATION_NAME), c_ptrTo(localPerm), perm.size, int);
+
+                    var segment_entry = st.lookup(msgArgs.getValueOf("segments"));
+                    var segments = toSymEntry(toGenSymEntry(segment_entry), int);
+
+                    // localize segments and write dataset
+                    var localSegs: [0..#segments.size] int = segments.a;
+                    writeLocalDset(file_id, "/%s/%s".format(group, CAT_SEGMENTS_NAME), c_ptrTo(localSegs), segments.size, int);
+                }
+
+                writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8))); 
+                C_HDF5.H5Fclose(file_id);
+            }
+            when MULTI_FILE {
+                var filenames = prepFiles(filename, mode, codes.a);
+
+                // need to add the group to all files
+                coforall (loc, idx) in zip(codes.a.targetLocales(), filenames.domain) do on loc {
+                    const localeFilename = filenames[idx];
+                    h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "%s exists? %t".format(localeFilename, exists(localeFilename)));
+
+                    var file_id = C_HDF5.H5Fopen(localeFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+                    defer { // Close the file on scope exit
+                        C_HDF5.H5Fclose(file_id);
+                    }
+
+                    // create the group and generate metadata
+                    validateGroup(file_id, localeFilename, group);
+                    writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8))); 
+                }
+
+                // write codes
+                writeDistDset(filenames, "/%s/%s".format(group, CODES_NAME), "pdarray", codes.a, st);
+
+                // write categories
+                writeSegmentedDistDset(filenames, "/%s/%s".format(group, CATEGORIES_NAME), "strings", cats.values.a, cats.offsets.a, st, uint(8));
+
+                // write NA Codes
+                writeDistDset(filenames, "/%s/%s".format(group, NACODES_NAME), "pdarray", naCodes.a, st);
+
+                // writes perms and segs if they exist
+                if perm_seg_exist {
+                    writeDistDset(filenames, "/%s/%s".format(group, PERMUTATION_NAME), "pdarray", codes.a, st);
+                    writeDistDset(filenames, "/%s/%s".format(group, CAT_SEGMENTS_NAME), "pdarray", codes.a, st);
+                }
+            }
+            otherwise {
+                throw getErrorWithContext(
+                           msg="Unknown file format. Expecting 0 (single file) or 1 (file per locale). Found %i".format(file_format),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="IllegalArgumentError");
+            }
+        }
+    }
+
     /*
         Parse and exectue tohdf message.
         Determines the type of the object to be written and calls the corresponding write functionality.
@@ -1178,6 +1224,9 @@ module HDF5Msg {
             when ObjType.SEGARRAY {
                 // call handler for segarray write
                 segarray_tohdfMsg(msgArgs, st);
+            }
+            when ObjType.CATEGORICAL {
+                categorical_tohdfMsg(msgArgs, st);
             }
             otherwise {
                 var errorMsg = "Unable to write object type %s to HDF5 file.".format(objType);
@@ -1726,7 +1775,7 @@ module HDF5Msg {
     /*
         Read an strings object from the files provided into a distributed array
     */
-    proc strings_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {
+    proc readStringsFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab) throws {
         var subdoms: [fD] domain(1);
         var segSubdoms: [fD] domain(1);
         var skips = new set(string);
@@ -1767,7 +1816,13 @@ module HDF5Msg {
 
         var entrySeg = if (calcStringOffsets || nSeg < 1 || !skips.isEmpty()) then _buildEntryCalcOffsets() else _buildEntryLoadOffsets();
 
-        var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
+        return assembleSegStringFromParts(entrySeg, entryVal, st);
+        // var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
+        // return (dset, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes));
+    }
+
+    proc strings_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {
+        var stringsEntry = readStringsFromFile(filenames, dset, dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
         return (dset, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes));
     }
 
@@ -1840,6 +1895,78 @@ module HDF5Msg {
         }
         
         return (dset, "seg_array", "%jt".format(rtnMap));
+    }
+
+    proc categorical_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, string, string) throws {
+        var rtnMap: map(string, string);
+        // domain and size info for codes
+        var subdoms: [fD] domain(1);
+        var skips = new set(string);
+        var len: int;
+        (subdoms, len, skips) = get_subdoms(filenames, "%s/%s".format(dset, CODES_NAME), validFiles);
+        // read codes into distributed array
+        var codes = makeDistArray(len, int);
+        read_files_into_distributed_array(codes, subdoms, filenames, "%s/%s".format(dset, CODES_NAME), skips);
+        // create symEntry
+        var codesName = st.nextName();
+        var codesEntry = new shared SymEntry(codes);
+        st.addEntry(codesName, codesEntry);
+
+        // read the categories
+        var (objTypeList, dataclass, bytesize, isSigned) = get_info(filenames[0], "%s/%s".format(dset, CATEGORIES_NAME), calcStringOffsets);
+        var cats = readStringsFromFile(filenames, "%s/%s".format(dset, CATEGORIES_NAME), dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
+
+        // read _akNACodes
+        var nacodes_subdoms: [fD] domain(1);
+        var nacodes_skips = new set(string);
+        var nacodes_len: int;
+        (nacodes_subdoms, nacodes_len, nacodes_skips) = get_subdoms(filenames, "%s/%s".format(dset, NACODES_NAME), validFiles);
+        // read codes into distributed array
+        var naCodes = makeDistArray(nacodes_len, int);
+        read_files_into_distributed_array(naCodes, nacodes_subdoms, filenames, "%s/%s".format(dset, NACODES_NAME), nacodes_skips);
+        // create symEntry
+        var naCodesName = st.nextName();
+        var naCodesEntry = new shared SymEntry(naCodes);
+        st.addEntry(naCodesName, naCodesEntry);
+
+        rtnMap.add("codes", "created " + st.attrib(codesEntry.name));
+        rtnMap.add("categories", "created %s+created %t".format(st.attrib(cats.name), cats.nBytes));
+        rtnMap.add("_akNAcode", "created " + st.attrib(naCodesEntry.name));
+        
+        // check first file for segments and permutation. If exist here should be everywhere
+        var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+        var segments_exist = C_HDF5.H5Lexists(file_id, "%s/%s".format(dset, CAT_SEGMENTS_NAME).c_str(), C_HDF5.H5P_DEFAULT);
+        var perm_exists = C_HDF5.H5Lexists(file_id, "%s/%s".format(dset, PERMUTATION_NAME).c_str(), C_HDF5.H5P_DEFAULT);
+        
+        if segments_exist > 0 && perm_exists > 0 {
+            // get domain and size info for segments
+            var segs_subdoms: [fD] domain(1);
+            var segs_skips = new set(string);
+            var segs_len: int;
+            (segs_subdoms, segs_len, segs_skips) = get_subdoms(filenames, "%s/%s".format(dset, CAT_SEGMENTS_NAME), validFiles);
+            // read segments into distributed array
+            var segments = makeDistArray(segs_len, int);
+            read_files_into_distributed_array(segments, segs_subdoms, filenames, "%s/%s".format(dset, CAT_SEGMENTS_NAME), segs_skips);
+            var segName = st.nextName();
+            var segEntry = new shared SymEntry(segments);
+            st.addEntry(segName, segEntry);
+
+            // get domain and size info for permutation
+            var perm_subdoms: [fD] domain(1);
+            var perm_skips = new set(string);
+            var perm_len: int;
+            (perm_subdoms, perm_len, perm_skips) = get_subdoms(filenames, "%s/%s".format(dset, PERMUTATION_NAME), validFiles);
+            // read permutation into distributed array
+            var perm = makeDistArray(perm_len, int);
+            read_files_into_distributed_array(perm, perm_subdoms, filenames, "%s/%s".format(dset, PERMUTATION_NAME), perm_skips);
+            var permName = st.nextName();
+            var permEntry = new shared SymEntry(perm);
+            st.addEntry(permName, permEntry);
+
+            rtnMap.add("segments", "created " + st.attrib(segEntry.name));
+            rtnMap.add("permutation", "created " + st.attrib(permEntry.name));
+        }
+        return (dset, "categorical", "%jt".format(rtnMap));
     }
 
     /*
@@ -1982,7 +2109,9 @@ module HDF5Msg {
                 }
                 var valueDset = dsetName + "/" + SEGMENTED_VALUE_NAME;
                 try (dataclass, bytesize, isSigned) = 
-                                           try get_dataset_info(file_id, valueDset);           
+                                           try get_dataset_info(file_id, valueDset);    
+            } else if objType == ObjType.CATEGORICAL {
+                (dataclass, bytesize, isSigned) = get_dataset_info(file_id, "%s/%s".format(dsetName, CODES_NAME));   
             } else {
                 (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
             }
@@ -2257,6 +2386,9 @@ module HDF5Msg {
                 }
                 when ObjType.SEGARRAY {
                     rtnData.append(segarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
+                }
+                when ObjType.CATEGORICAL {
+                    rtnData.append(categorical_readhdfMsg(filenames, dsetName, validFiles, calcStringOffsets, st));
                 }
                 otherwise {
                     var errorMsg = "Unknown object type found";

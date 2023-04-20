@@ -229,7 +229,10 @@ def attach(name: str, dtype: str = "infer"):
     repType = repMsg.split("+")[0]
 
     if repType == "categorical":
-        return Categorical.from_return_msg(repMsg)
+        build_data = repMsg.split("+", 2)[-1]
+        c = Categorical.from_return_msg(build_data)
+        c.name = name
+        return c
     elif repType == "series":
         from arkouda.series import Series
 
