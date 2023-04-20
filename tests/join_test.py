@@ -217,3 +217,5 @@ def join_where(L, R):
     idx = []
     for i in range(L.size):
         idx.append(i % 2 == 0)
+    return ak.array(idx)
+
