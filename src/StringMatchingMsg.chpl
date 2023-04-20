@@ -23,11 +23,16 @@ module StringMatchingMsg {
 
         select algo {
             when "levenshtein" {
-                if mode == "single" {
-                    repMsg = "%i".format(match_levenshtein(query, data, 0, 0));
-                }
-                else if mode == "multi" {
-                    repMsg = segstring_match_levenshtein(query, data, st);
+                select mode {
+                    when "single" {
+                        repMsg = "%i".format(match_levenshtein(query, data, 0, 0));
+                    }
+                    when "multi" {
+                        repMsg = segstring_match_levenshtein(query, data, st);
+                    }
+                    when "many" {
+                        repMsg = segstring_many_match_levenshtein(query, data, st);
+                    }
                 }
             }
         }

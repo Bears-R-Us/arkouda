@@ -8,11 +8,22 @@ from typing import Union, cast
 ALGORITHMS = frozenset(["levenshtein"])
 
 
-def string_match(search_param: str, dataset: Union[str, Strings], algo="levenshtein"):
+def string_match(search_param: Union[str, Strings], dataset: Union[str, Strings], algo="levenshtein"):
     if algo.lower() not in ALGORITHMS:
         raise ValueError(f"Unsupported algorithm {algo}. Supported algorithms are: {ALGORITHMS}")
 
-    search_mode = "multi" if isinstance(dataset, Strings) else "single"
+    if isinstance(dataset, Strings) and isinstance(search_param, Strings):
+        if search_param.size != dataset.size:
+            raise ValueError("Strings search_param and dataset must be the same length")
+        search_mode = "many"
+    elif isinstance(dataset, Strings) and isinstance(search_param, str):
+        search_mode = "multi"
+    elif isinstance(dataset, str) and isinstance(search_param, str):
+        search_mode = "single"
+    else:
+        raise TypeError(
+            f"Combination search_param type {type(search_param)}, dataset type {type(dataset)} not supported"
+        )
 
     repMsg = cast(str, generic_msg(
         cmd="stringMatching",

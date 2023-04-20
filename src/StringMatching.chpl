@@ -27,7 +27,7 @@ module StringMatching {
         return 1 + min(
             match_levenshtein(query, dataStr, s1, s2 + 1),      // insert character
             match_levenshtein(query, dataStr, s1 + 1, s2),      // delete character
-            match_levenshtein(query, dataStr, s1 + 1, s2 + 1)  // replace character
+            match_levenshtein(query, dataStr, s1 + 1, s2 + 1)   // replace character
         );
     }
 
@@ -49,5 +49,24 @@ module StringMatching {
         return "created " + st.attrib(name);
     }
 
-    // TODO: Many to Many matching
+    // TODO: Many One to One matching
+    proc segstring_many_match_levenshtein(queryName: string, dataName: string, st: borrowed SymTab): string throws {
+        var dataString = getSegString(dataName, st);
+        var queryString = getSegString(queryName, st);
+        var distances: [0..#dataString.size] int;
+
+        coforall i in 0..#dataString.size {
+            var dataStr = dataString[i];
+            var queryStr = queryString[i];
+            
+            distances[i] = match_levenshtein(queryStr, dataStr, 0, 0);
+        }
+
+        var name = st.nextName();
+        var distEntry = new shared SymEntry(distances);
+        st.addEntry(name, distEntry);
+
+        return "created " + st.attrib(name);
+    }
+
 }
