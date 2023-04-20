@@ -395,7 +395,7 @@ module JoinEqWithDTMsg
         
         // For all indexes in the query segString, find the matching index in the categories segString
         // Exponential Growth - break once a match is found
-        coforall i in 0..#querySize {
+        forall i in 0..#querySize {
             for x in 0..#catSize {
                 if queryVal[i] == catVal[x]{
                     codes[i] = x;
