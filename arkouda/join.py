@@ -228,12 +228,8 @@ def inner_join(
         left, right = Categorical.standardize_categories([left, right])
         if isinstance(left, Categorical) and isinstance(right, Categorical):
             cats = left.categories[left.codes]  # Get standardized categories without NAvalue
-            leftKeepCodes = array(
-                [x is not True for x in left.isna().to_ndarray()]
-            )  # Keep codes that aren't NAvalue
-            rightKeepCodes = array(
-                [x is not True for x in right.isna().to_ndarray()]
-            )  # Keep codes that aren't NAvalue
+            leftKeepCodes = left.isna() == 0  # Invert bool array
+            rightKeepCodes = right.isna() == 0  # Invert bool array
             left = left.codes[leftKeepCodes]
             right = right.codes[rightKeepCodes]
 
@@ -247,6 +243,8 @@ def inner_join(
             raise ValueError("Left whereargs must be same size as left join values")
         if whereargs[1].size != right.size:
             raise ValueError("Right whereargs must be same size as right join values")
+        if isinstance(whereargs[0], Strings) and t == pdarray.objtype:
+            raise TypeError("Strings whereargs are only supported for Strings left and right arg arrays")
         try:
             _ = wherefunc(whereargs[0][:sample], whereargs[1][:sample])
         except Exception as e:
@@ -273,7 +271,11 @@ def inner_join(
         keep12 = keep
     else:
         if whereargs is not None:
-            if t == Categorical.objtype and isinstance(cats, Strings):
+            if (
+                t == Categorical.objtype
+                and isinstance(cats, Strings)
+                and isinstance(whereargs[0], Strings)
+            ):
                 # Find the corresponding codes value for each term in the whereargs
                 repMsg = generic_msg(
                     cmd="codeMapping",
