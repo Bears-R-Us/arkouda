@@ -69,7 +69,9 @@ module MultiTypeSymbolTable
             registry += userDefinedName; // add user defined name to registry
 
             // point at same shared table entry
-            tab.addOrSet(userDefinedName, tab.getAndRemove(name));
+            var entry = tab.getAndRemove(name);
+            tab.addOrSet(userDefinedName, entry);
+            entry.setName(userDefinedName);
         }
 
         proc unregName(name: string) throws {

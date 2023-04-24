@@ -509,6 +509,7 @@ class RegistrationTest(ArkoudaTest):
         s.register("seriesTest")
         self.assertTrue(s.is_registered())
 
+        ak.clear()
         s2 = Series.attach("seriesTest")
         self.assertListEqual(s2.values.to_list(), s.values.to_list())
         sEq = s2.index == s.index
@@ -518,6 +519,7 @@ class RegistrationTest(ArkoudaTest):
         s = ak.array(["abc", "123", "abc"])
         sGroup = ak.GroupBy(s)
         sGroup.register("stringsTest")
+        ak.clear()
         sAttach = ak.GroupBy.attach("stringsTest")
 
         # Verify the attached GroupBy's components equal the original components
@@ -535,6 +537,7 @@ class RegistrationTest(ArkoudaTest):
         a = ak.randint(0, 10, 10)
         aGroup = ak.GroupBy(a)
         aGroup.register("pdarray_test")
+        ak.clear()
         aAttach = ak.GroupBy.attach("pdarray_test")
 
         # Verify the attached GroupBy's components equal the original components
@@ -553,6 +556,7 @@ class RegistrationTest(ArkoudaTest):
         cat = ak.Categorical(c)
         catGroup = ak.GroupBy(cat)
         catGroup.register("categorical_test")
+        ak.clear()
         catAttach = ak.GroupBy.attach("categorical_test")
 
         # Verify the attached GroupBy's components equal the original components
@@ -573,6 +577,7 @@ class RegistrationTest(ArkoudaTest):
         lx = [a, b, c]
         group = ak.GroupBy(lx)
         group.register("sequenceTest")
+        ak.clear()
         seqAttach = ak.GroupBy.attach("sequenceTest")
 
         # Verify the attached GroupBy's components equal the original components for each key
@@ -651,6 +656,7 @@ class RegistrationTest(ArkoudaTest):
         # Register DataFrame with name 'DataFrame_test'
         df.register("DataFrame_test")
         self.assertTrue(df.is_registered())
+        ak.clear()
 
         # Attach registered DataFrame 'DataFrame_test' into variable dfa and assert the original and
         # attached versions of the DataFrame are equal
@@ -667,14 +673,14 @@ class RegistrationTest(ArkoudaTest):
         df.unregister()
         self.assertFalse(df.is_registered())
 
-    def test_register_attach(self):
+    def test_segarray_register_attach(self):
         a = [1, 2, 3]
         b = [6, 7, 8]
 
         segarr = ak.segarray(ak.array([0, len(a)]), ak.array(a + b))
         # register the seg array
         segarr.register("segarrtest")
-
+        ak.clear()
         segarr_2 = ak.SegArray.attach("segarrtest")
 
         self.assertEqual(segarr.size, segarr_2.size)
@@ -687,13 +693,14 @@ class RegistrationTest(ArkoudaTest):
         segarr.unregister()
         self.assertFalse(segarr.is_registered())
 
-    def test_unregister_by_name(self):
+    def test_segarray_unregister_by_name(self):
         a = [1, 2, 3]
         b = [6, 7, 8]
 
         segarr = ak.segarray(ak.array([0, len(a)]), ak.array(a + b))
         # register the seg array
         segarr.register("segarr_unreg_name_test")
+        ak.clear()
 
         # Verify is_registered
         self.assertTrue(segarr.is_registered())
