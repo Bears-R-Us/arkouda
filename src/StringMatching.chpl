@@ -36,7 +36,7 @@ module StringMatching {
         var segString = getSegString(dataName, st);
         var distances: [0..#segString.size] int;
 
-        coforall i in 0..#segString.size {
+        forall i in 0..#segString.size {
             var dataStr = segString[i];
             
             distances[i] = match_levenshtein(query, dataStr, 0, 0);
@@ -55,7 +55,7 @@ module StringMatching {
         var queryString = getSegString(queryName, st);
         var distances: [0..#dataString.size] int;
 
-        coforall i in 0..#dataString.size {
+        forall i in 0..#dataString.size {
             var dataStr = dataString[i];
             var queryStr = queryString[i];
             
