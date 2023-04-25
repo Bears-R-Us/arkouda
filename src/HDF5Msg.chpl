@@ -870,7 +870,7 @@ module HDF5Msg {
                 var valEntry = segString.values;
                 var segEntry = segString.offsets;
                 var filenames = prepFiles(filename, mode, segEntry.a);
-                writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, uint(8));
+                writeSegmentedDistDset(filenames, group, objType, overwrite, valEntry.a, segEntry.a, st, uint(8));
             }
             otherwise {
                 throw getErrorWithContext(
@@ -1091,6 +1091,10 @@ module HDF5Msg {
         var group = msgArgs.getValueOf("dset");
         const objType = msgArgs.getValueOf("objType"); // needed for metadata
 
+        var overwrite: bool = if msgArgs.contains("overwrite")
+                                then msgArgs.get("overwrite").getBoolValue()
+                                else false;
+
         // access entries - types are currently always the same for each
         var codes_entry = st.lookup(msgArgs.getValueOf("codes"));
         var codes = toSymEntry(toGenSymEntry(codes_entry), int);
@@ -1119,7 +1123,7 @@ module HDF5Msg {
                 }
 
                 // ensure that container for categorical exists
-                validateGroup(file_id, f, group);
+                validateGroup(file_id, f, group, overwrite);
 
                 // localize codes and write dataset
                 var localCodes: [0..#codes.size] int = codes.a;
@@ -1127,7 +1131,7 @@ module HDF5Msg {
 
 
                 // ensure that the container for categories exists
-                validateGroup(file_id, f, "%s/%s".format(group, CATEGORIES_NAME));
+                validateGroup(file_id, f, "%s/%s".format(group, CATEGORIES_NAME), overwrite);
 
 
                 //localize categories values and write dataset
@@ -1171,23 +1175,23 @@ module HDF5Msg {
                     }
 
                     // create the group and generate metadata
-                    validateGroup(file_id, localeFilename, group);
+                    validateGroup(file_id, localeFilename, group, overwrite);
                     writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8))); 
                 }
 
                 // write codes
-                writeDistDset(filenames, "/%s/%s".format(group, CODES_NAME), "pdarray", codes.a, st);
+                writeDistDset(filenames, "/%s/%s".format(group, CODES_NAME), "pdarray", overwrite, codes.a, st);
 
                 // write categories
-                writeSegmentedDistDset(filenames, "/%s/%s".format(group, CATEGORIES_NAME), "strings", cats.values.a, cats.offsets.a, st, uint(8));
+                writeSegmentedDistDset(filenames, "/%s/%s".format(group, CATEGORIES_NAME), "strings", overwrite, cats.values.a, cats.offsets.a, st, uint(8));
 
                 // write NA Codes
-                writeDistDset(filenames, "/%s/%s".format(group, NACODES_NAME), "pdarray", naCodes.a, st);
+                writeDistDset(filenames, "/%s/%s".format(group, NACODES_NAME), "pdarray", overwrite, naCodes.a, st);
 
                 // writes perms and segs if they exist
                 if perm_seg_exist {
-                    writeDistDset(filenames, "/%s/%s".format(group, PERMUTATION_NAME), "pdarray", codes.a, st);
-                    writeDistDset(filenames, "/%s/%s".format(group, CAT_SEGMENTS_NAME), "pdarray", codes.a, st);
+                    writeDistDset(filenames, "/%s/%s".format(group, PERMUTATION_NAME), "pdarray", overwrite, codes.a, st);
+                    writeDistDset(filenames, "/%s/%s".format(group, CAT_SEGMENTS_NAME), "pdarray", overwrite, codes.a, st);
                 }
             }
             otherwise {
