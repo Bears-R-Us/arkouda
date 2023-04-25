@@ -14,6 +14,7 @@ from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
+from arkouda.array_view import ArrayView
 
 __all__ = [
     "get_filetype",
@@ -35,6 +36,7 @@ __all__ = [
     "save_all",
     "load",
     "load_all",
+    "update_hdf",
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -992,7 +994,13 @@ def export(
         return df
 
 
-def _bulk_write_prep(columns: Union[Mapping[str, pdarray], List[pdarray]], names: List[str] = None):
+def _bulk_write_prep(
+    columns: Union[
+        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
+        List[Union[pdarray, Strings, SegArray, ArrayView]],
+    ],
+    names: List[str] = None,
+):
     datasetNames = []
     if names is not None:
         if len(names) != len(columns):
@@ -1000,24 +1008,27 @@ def _bulk_write_prep(columns: Union[Mapping[str, pdarray], List[pdarray]], names
         else:
             datasetNames = names
 
-    pdarrays = []  # init to avoid undefined errors
+    data = []  # init to avoid undefined errors
     if isinstance(columns, dict):
-        pdarrays = list(columns.values())
+        data = list(columns.values())
         if names is None:
             datasetNames = list(columns.keys())
     elif isinstance(columns, list):
-        pdarrays = cast(List[pdarray], columns)
+        data = cast(List[pdarray], columns)
         if names is None:
             datasetNames = [str(column) for column in range(len(columns))]
 
-    if len(pdarrays) == 0:
+    if len(data) == 0:
         raise RuntimeError("No data was found.")
 
-    return datasetNames, pdarrays
+    return datasetNames, data
 
 
 def to_parquet(
-    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    columns: Union[
+        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
+        List[Union[pdarray, Strings, SegArray, ArrayView]],
+    ],
     prefix_path: str,
     names: List[str] = None,
     mode: str = "truncate",
@@ -1115,7 +1126,10 @@ def to_parquet(
 
 
 def to_hdf(
-    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    columns: Union[
+        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
+        List[Union[pdarray, Strings, SegArray, ArrayView]],
+    ],
     prefix_path: str,
     names: List[str] = None,
     mode: str = "truncate",
@@ -1193,8 +1207,91 @@ def to_hdf(
             mode = "append"
 
 
+def _get_hdf_filetype(filename: str) -> str:
+    if not (filename and filename.strip()):
+        raise ValueError("filename cannot be an empty string")
+
+    cmd = "hdffileformat"
+    return cast(
+        str,
+        generic_msg(
+            cmd=cmd,
+            args={"filename": filename},
+        ),
+    )
+
+
+def _repack_hdf(prefix_path: str):
+    """
+    Overwrites the existing hdf5 file with a copy that removes any inaccessible datasets
+    """
+    file_type = _get_hdf_filetype(prefix_path + "*")
+    dset_list = ls(prefix_path + "*")
+    if len(dset_list) == 1:
+        # early out because when overwriting only one value, hdf5 automatically releases memory
+        return
+    data = read_hdf(prefix_path + "*")
+    if not isinstance(data, dict):
+        # handles the case of reading only 1 dataset
+        data = [data]  # type: ignore
+    to_hdf(data, prefix_path, names=dset_list, file_type=file_type)  # type: ignore
+
+
+def update_hdf(
+    columns: Union[
+        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
+        List[Union[pdarray, Strings, SegArray, ArrayView]],
+    ],
+    prefix_path: str,
+    names: List[str] = None,
+    repack: bool = True,
+):
+    """
+    Overwrite the datasets with name appearing in names or keys in columns if columns
+    is a dictionary
+
+    Parameters
+    -----------
+    columns : dict or list of pdarrays
+        Collection of arrays to save
+    prefix_path : str
+        Directory and filename prefix for output files
+    names : list of str
+        Dataset names for the pdarrays
+    repack: bool
+        Default: True
+        HDF5 does not release memory on delete. When True, the inaccessible
+        data (that was overwritten) is removed. When False, the data remains, but is
+        inaccessible. Setting to false will yield better performance, but will cause
+        file sizes to expand.
+
+    Raises
+    -------
+    RuntimeError
+        Raised if a server-side error is thrown saving the datasets
+
+    Notes
+    -----
+    - If file does not contain File_Format attribute to indicate how it was saved,
+      the file name is checked for _LOCALE#### to determine if it is distributed.
+    - If the datasets provided do not exist, they will be added
+    - Because HDF5 deletes do not release memory, this will create a copy of the
+      file with the new data
+    - This workflow is slightly different from `to_hdf` to prevent reading and
+      creating a copy of the file for each dataset
+    """
+    datasetNames, pdarrays = _bulk_write_prep(columns, names)
+
+    for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
+        # overwrite the data without repacking. Repack done once at end if set
+        arr.update_hdf(prefix_path, dataset=name, repack=False)
+
+    if repack:
+        _repack_hdf(prefix_path)
+
+
 def to_csv(
-    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    columns: Union[Mapping[str, Union[pdarray, Strings]], List[Union[pdarray, Strings]]],
     prefix_path: str,
     names: List[str] = None,
     col_delim: str = ",",
@@ -1251,7 +1348,7 @@ def to_csv(
     - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
       bytes as uint(8).
     """
-    datasetNames, pdarrays = _bulk_write_prep(columns, names)
+    datasetNames, pdarrays = _bulk_write_prep(columns, names)  # type: ignore
     dtypes = [a.dtype.name for a in pdarrays]
 
     generic_msg(
@@ -1270,7 +1367,10 @@ def to_csv(
 
 
 def save_all(
-    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    columns: Union[
+        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
+        List[Union[pdarray, Strings, SegArray, ArrayView]],
+    ],
     prefix_path: str,
     names: List[str] = None,
     file_format="HDF5",
