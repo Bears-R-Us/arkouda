@@ -1589,10 +1589,6 @@ class SegArray:
         register, attach, is_registered
         """
         SegArray.unregister_segarray_by_name(self.name)
-        self.segments.unregister()
-        self.values.unregister()
-        self.lengths.unregister()
-        self.grouping.unregister()
 
     @staticmethod
     def unregister_segarray_by_name(user_defined_name):
