@@ -3,7 +3,7 @@ from typing import Callable, Tuple, Union, cast
 import numpy as np  # type: ignore
 from typeguard import typechecked
 
-from arkouda.alignment import right_align
+from arkouda.alignment import right_align, align
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
@@ -209,25 +209,16 @@ def inner_join(
     if type(left) != type(right):
         raise TypeError("Left and Right arrays must be of same type")
 
-    # Convert Strings and Categorical left & right values to Categorical.codes. This generates an
-    # index representation of the strings. This way they can be handled as numerics and follow the
-    # same process as int
-    t = cast(str, pdarray.objtype)
-    cats = None
+    whereLeft = whereRight = None
+    if whereargs is not None:
+        whereLeft, whereRight = whereargs[0:2]
 
-    if isinstance(left, Strings) and isinstance(right, Strings):
-        left = Categorical(left)
-        right = Categorical(right)
+    if (isinstance(left, Strings) and isinstance(right, Strings)) or \
+            (isinstance(left, Categorical) and isinstance(right, Categorical)):
 
-    if isinstance(left, Categorical) and isinstance(right, Categorical):
-        t = cast(str, Categorical.objtype)
-        left, right = Categorical.standardize_categories([left, right])
-        if isinstance(left, Categorical) and isinstance(right, Categorical):
-            cats = left.categories[left.codes]  # Get standardized categories without NAvalue
-            leftKeepCodes = left.isna() == 0  # Invert bool array
-            rightKeepCodes = right.isna() == 0  # Invert bool array
-            left = left.codes[leftKeepCodes]
-            right = right.codes[rightKeepCodes]
+        left, right = align(left, right)
+        if whereargs is not None:
+            whereLeft, whereRight = align(whereLeft, whereRight)
 
     sample = np.min((left.size, right.size, 5))  # type: ignore
     if wherefunc is not None:
@@ -235,14 +226,14 @@ def inner_join(
             raise ValueError("wherefunc must be a function that accepts exactly two arguments")
         if whereargs is None or len(whereargs) != 2:
             raise ValueError("whereargs must be a 2-tuple with left and right arg arrays")
-        if whereargs[0].size != left.size:
+        if whereLeft.size != left.size:
             raise ValueError("Left whereargs must be same size as left join values")
-        if whereargs[1].size != right.size:
+        if whereRight.size != right.size:
             raise ValueError("Right whereargs must be same size as right join values")
-        if isinstance(whereargs[0], Strings) and t == pdarray.objtype:
+        if isinstance(whereLeft, Strings) and isinstance(left, pdarray):
             raise TypeError("Strings whereargs are only supported for Strings left and right arg arrays")
         try:
-            _ = wherefunc(whereargs[0][:sample], whereargs[1][:sample])
+            _ = wherefunc(whereLeft[:sample], whereRight[:sample])
         except Exception as e:
             raise ValueError("Error evaluating wherefunc") from e
 
@@ -267,43 +258,10 @@ def inner_join(
         keep12 = keep
     else:
         if whereargs is not None:
-            if (
-                t == Categorical.objtype
-                and isinstance(cats, Strings)
-                and isinstance(whereargs[0], Strings)
-            ):
-                # Find the corresponding codes value for each term in the whereargs
-                repMsg = generic_msg(
-                    cmd="codeMapping",
-                    args={
-                        "categories": cats,
-                        "query": whereargs[0][keep],  # type: ignore
-                    },
-                )
-                lCodes = create_pdarray(repMsg)
-
-                if isinstance(lCodes, pdarray):
-                    lIdx = broadcast(fullSegs, lCodes, ranges.size)
-                else:
-                    raise TypeError(
-                        f"Invalid type returned from lCodes generation: {type(lCodes)}. Expected pdarray"
-                    )
-                leftWhere = whereargs[0][lIdx]
-                # Gather right whereargs
-                repMsg = generic_msg(
-                    cmd="codeMapping",
-                    args={
-                        "categories": cats,
-                        "query": whereargs[1][byRight.permutation][ranges],  # type: ignore
-                    },
-                )
-                rCodes = create_pdarray(repMsg)
-                rightWhere = whereargs[1][rCodes]
-            else:
-                # Expand left whereargs
-                leftWhere = broadcast(fullSegs, whereargs[0][keep], ranges.size)
-                # Gather right whereargs
-                rightWhere = whereargs[1][byRight.permutation][ranges]
+            # Expand left whereargs
+            leftWhere = broadcast(fullSegs, whereLeft[keep], ranges.size)
+            # Gather right whereargs
+            rightWhere = whereRight[byRight.permutation][ranges]
 
             # Evaluate wherefunc and filter ranges, recompute segments
             whereSatisfied = wherefunc(leftWhere, rightWhere)
