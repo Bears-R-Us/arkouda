@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 import warnings
-from typing import cast as type_cast
 from typing import Optional, Sequence
+from typing import cast as type_cast
+from warnings import warn
 
 import numpy as np  # type: ignore
 
@@ -13,12 +14,22 @@ from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_, translate_np_dtype
 from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.infoclass import list_registry
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
-from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
+from arkouda.pdarrayclass import (
+    RegistrationError,
+    create_pdarray,
+    is_sorted,
+    pdarray,
+    unregister_pdarray_by_name,
+)
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate
+
+SEG_SUFFIX = "_segments"
+VAL_SUFFIX = "_values"
+LEN_SUFFIX = "_lengths"
+GROUP_SUFFIX = "_grouping"
 
 
 def gen_ranges(starts, ends, stride=1):
@@ -1077,7 +1088,12 @@ class SegArray:
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
         """
-        from arkouda.io import _get_hdf_filetype, _mode_str_to_int, _file_type_to_int, _repack_hdf
+        from arkouda.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
@@ -1549,6 +1565,10 @@ class SegArray:
             raise RegistrationError(f"Server was unable to register {user_defined_name}")
 
         self.name = user_defined_name
+        self.segments.register(self.name + SEG_SUFFIX)
+        self.values.register(self.name + VAL_SUFFIX)
+        self.lengths.register(self.name + LEN_SUFFIX)
+        self.grouping.register(self.name + GROUP_SUFFIX)
         return self
 
     def unregister(self):
@@ -1594,6 +1614,10 @@ class SegArray:
         register, unregister, attach, is_registered
         """
         generic_msg(cmd="unregister", args={"name": user_defined_name})
+        unregister_pdarray_by_name(user_defined_name + SEG_SUFFIX)
+        unregister_pdarray_by_name(user_defined_name + VAL_SUFFIX)
+        unregister_pdarray_by_name(user_defined_name + LEN_SUFFIX)
+        GroupBy.unregister_groupby_by_name(user_defined_name + GROUP_SUFFIX)
 
     @classmethod
     def attach(cls, user_defined_name):
@@ -1641,5 +1665,16 @@ class SegArray:
         --------
         register, unregister, attach
         """
+        regParts = [
+            self.segments.is_registered(),
+            self.values.is_registered(),
+            self.lengths.is_registered(),
+            self.grouping.is_registered(),
+        ]
 
-        return self.name in list_registry()
+        if any(regParts) and not all(regParts):
+            warn(
+                f"SegArray expected {len(regParts)} components to be registered,"
+                f" but only located {sum(regParts)}"
+            )
+        return all(regParts)
