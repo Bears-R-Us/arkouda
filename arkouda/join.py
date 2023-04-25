@@ -3,7 +3,7 @@ from typing import Callable, Tuple, Union, cast
 import numpy as np  # type: ignore
 from typeguard import typechecked
 
-from arkouda.alignment import right_align, align
+from arkouda.alignment import align, right_align
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
@@ -213,8 +213,9 @@ def inner_join(
     if whereargs is not None:
         whereLeft, whereRight = whereargs[0:2]
 
-    if (isinstance(left, Strings) and isinstance(right, Strings)) or \
-            (isinstance(left, Categorical) and isinstance(right, Categorical)):
+    if (isinstance(left, Strings) and isinstance(right, Strings)) or (
+        isinstance(left, Categorical) and isinstance(right, Categorical)
+    ):
 
         left, right = align(left, right)
         if whereargs is not None:
@@ -226,16 +227,17 @@ def inner_join(
             raise ValueError("wherefunc must be a function that accepts exactly two arguments")
         if whereargs is None or len(whereargs) != 2:
             raise ValueError("whereargs must be a 2-tuple with left and right arg arrays")
-        if whereLeft.size != left.size:
+        if whereLeft is not None and whereLeft.size != left.size:
             raise ValueError("Left whereargs must be same size as left join values")
-        if whereRight.size != right.size:
+        if whereRight is not None and whereRight.size != right.size:
             raise ValueError("Right whereargs must be same size as right join values")
         if isinstance(whereLeft, Strings) and isinstance(left, pdarray):
             raise TypeError("Strings whereargs are only supported for Strings left and right arg arrays")
-        try:
-            _ = wherefunc(whereLeft[:sample], whereRight[:sample])
-        except Exception as e:
-            raise ValueError("Error evaluating wherefunc") from e
+        if whereLeft is not None and whereRight is not None:
+            try:
+                _ = wherefunc(whereLeft[:sample], whereRight[:sample])
+            except Exception as e:
+                raise ValueError("Error evaluating wherefunc") from e
 
     # Need dense 0-up right index, to filter out left not in right
     keep, (denseLeft, denseRight) = right_align(left, right)
@@ -257,7 +259,7 @@ def inner_join(
         filtSegs = fullSegs
         keep12 = keep
     else:
-        if whereargs is not None:
+        if whereLeft is not None and whereRight is not None:
             # Expand left whereargs
             leftWhere = broadcast(fullSegs, whereLeft[keep], ranges.size)
             # Gather right whereargs
