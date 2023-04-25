@@ -10,6 +10,8 @@ module BinOp
   use BitOps;
   use BigInteger;
 
+  use ArkoudaBigIntCompat;
+
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const omLogger = new Logger(logLevel, logChannel);
@@ -1255,7 +1257,7 @@ module BinOp
           // we can't use ei = li % ri because this can result in negatives
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             if ri != 0 {
-              t.mod(t, ri);
+              mod(t, t, ri);
             }
             else {
               t = 0:bigint;
@@ -1272,7 +1274,7 @@ module BinOp
           }
           if has_max_bits {
             forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t.powMod(t, ri, local_max_size + 1);
+              powMod(t, t, ri, local_max_size + 1);
             }
           }
           else {
@@ -1510,7 +1512,7 @@ module BinOp
           // we can't use ei = li % val because this can result in negatives
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
             if local_val != 0 {
-              t.mod(t, local_val);
+              mod(t, t, local_val);
             }
             else {
               t = 0:bigint;
@@ -1527,7 +1529,7 @@ module BinOp
           }
           if has_max_bits {
             forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-              t.powMod(t, local_val, local_max_size + 1);
+              powMod(t, t, local_val, local_max_size + 1);
             }
           }
           else {
@@ -1784,7 +1786,7 @@ module BinOp
         when "%" { // modulo
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             if ri != 0 {
-              t.mod(t, ri);
+              mod(t, t, ri);
             }
             else {
               t = 0:bigint;
@@ -1801,7 +1803,7 @@ module BinOp
           }
           if has_max_bits {
             forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t.powMod(t, ri, local_max_size + 1);
+              powMod(t, t, ri, local_max_size + 1);
             }
           }
           else {

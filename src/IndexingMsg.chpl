@@ -19,6 +19,7 @@ module IndexingMsg
 
     use ArkoudaMapCompat;
     use ArkoudaFileCompat;
+    use ArkoudaBigIntCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -613,7 +614,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,bigint);
                 var val = valueArg.getBigIntValue();
                 if e.max_bits != -1 {
-                    val.mod(val, e.max_bits);
+                  mod(val, val, e.max_bits);
                 }
                 e.a[idx] = val;
              }
@@ -621,7 +622,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,bigint);
                 var val = valueArg.getIntValue():bigint;
                 if e.max_bits != -1 {
-                    val.mod(val, e.max_bits);
+                  mod(val, val, e.max_bits);
                 }
                 e.a[idx] = val;
              }
@@ -629,7 +630,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,bigint);
                 var val = valueArg.getUIntValue():bigint;
                 if e.max_bits != -1 {
-                    val.mod(val, e.max_bits);
+                  mod(val, val, e.max_bits);
                 }
                 e.a[idx] = val;
              }
@@ -638,7 +639,7 @@ module IndexingMsg
                 // TODO change once we can cast directly from bool to bigint
                 var val = valueArg.getBoolValue():int:bigint;
                 if e.max_bits != -1 {
-                    val.mod(val, e.max_bits);
+                  mod(val, val, e.max_bits);
                 }
                 e.a[idx] = val;
              }
@@ -1156,7 +1157,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,bigint);
                 var val = value.getBigIntValue();
                 if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
+                  mod(val, val, e.max_bits);
                 }
                 e.a[slice] = val;
              }
@@ -1164,7 +1165,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,bigint);
                 var val = value.getIntValue():bigint;
                 if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
+                  mod(val, val, e.max_bits);
                 }
                 e.a[slice] = val;
              }
@@ -1172,7 +1173,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,bigint);
                 var val = value.getUIntValue():bigint;
                 if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
+                  mod(val, val, e.max_bits);
                 }
                 e.a[slice] = val;
              }
@@ -1181,7 +1182,7 @@ module IndexingMsg
                 // TODO change once we can cast directly from bool to bigint
                 var val = value.getBoolValue():int:bigint;
                 if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
+                  mod(val, val, e.max_bits);
                 }
                 e.a[slice] = val;
              }

@@ -17,6 +17,8 @@ module OperatorMsg
     use Reflection;
     use Logging;
     use Message;
+
+    use ArkoudaBigIntCompat;
     
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -1315,7 +1317,7 @@ module OperatorMsg
                     // we can't use li %= ri because this can result in negatives
                     forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                       if ri != 0 {
-                        li.mod(li, ri);
+                        mod(li, li, ri);
                       }
                       else {
                         li = 0:bigint;
@@ -1331,7 +1333,7 @@ module OperatorMsg
                     }
                     if has_max_bits {
                       forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                        li.powMod(li, ri, local_max_size + 1);
+                        powMod(li, li, ri, local_max_size + 1);
                       }
                     }
                     else {
@@ -1401,7 +1403,7 @@ module OperatorMsg
                     // we can't use li %= ri because this can result in negatives
                     forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                       if ri != 0 {
-                        li.mod(li, ri);
+                        mod(li, li, ri);
                       }
                       else {
                         li = 0:bigint;
@@ -1417,7 +1419,7 @@ module OperatorMsg
                     }
                     if has_max_bits {
                       forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                        li.powMod(li, ri, local_max_size + 1);
+                        powMod(li, li, ri, local_max_size + 1);
                       }
                     }
                     else {
@@ -1537,7 +1539,7 @@ module OperatorMsg
                     // we can't use li %= ri because this can result in negatives
                     forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                       if ri != 0 {
-                        li.mod(li, ri);
+                        mod(li, li, ri);
                       }
                       else {
                         li = 0:bigint;
@@ -1553,7 +1555,7 @@ module OperatorMsg
                     }
                     if has_max_bits {
                       forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                        li.powMod(li, ri, local_max_size + 1);
+                        powMod(li, li, ri, local_max_size + 1);
                       }
                     }
                     else {
@@ -1863,7 +1865,7 @@ module OperatorMsg
                     // we can't use li %= val because this can result in negatives
                     forall li in la with (var local_val = val, var local_max_size = max_size) {
                       if local_val != 0 {
-                        li.mod(li, local_val);
+                        mod(li, li, local_val);
                       }
                       else {
                         li = 0:bigint;
@@ -1879,7 +1881,7 @@ module OperatorMsg
                     }
                     if has_max_bits {
                       forall li in la with (var local_val = val, var local_max_size = max_size) {
-                        li.powMod(li, local_val, local_max_size + 1);
+                        powMod(li, li, local_val, local_max_size + 1);
                       }
                     }
                     else {
@@ -1948,7 +1950,7 @@ module OperatorMsg
                     // we can't use li %= val because this can result in negatives
                     forall li in la with (var local_val = val, var local_max_size = max_size) {
                       if local_val != 0 {
-                        li.mod(li, local_val);
+                        mod(li, li, local_val);
                       }
                       else {
                         li = 0:bigint;
@@ -1964,7 +1966,7 @@ module OperatorMsg
                     }
                     if has_max_bits {
                       forall li in la with (var local_val = val, var local_max_size = max_size) {
-                        li.powMod(li, local_val, local_max_size + 1);
+                        powMod(li, li, local_val, local_max_size + 1);
                       }
                     }
                     else {
@@ -2082,7 +2084,7 @@ module OperatorMsg
                     // we can't use li %= val because this can result in negatives
                     forall li in la with (var local_val = val, var local_max_size = max_size) {
                       if local_val != 0 {
-                        li.mod(li, local_val);
+                        mod(li, li, local_val);
                       }
                       else {
                         li = 0:bigint;
@@ -2098,7 +2100,7 @@ module OperatorMsg
                     }
                     if has_max_bits {
                       forall li in la with (var local_val = val, var local_max_size = max_size) {
-                        li.powMod(li, local_val, local_max_size + 1);
+                        powMod(li, li, local_val, local_max_size + 1);
                       }
                     }
                     else {
