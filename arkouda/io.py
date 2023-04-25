@@ -415,7 +415,9 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
         )
 
 
-def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayView, SegArray, Categorical]:
+def _parse_obj(
+    obj: Dict,
+) -> Union[Strings, pdarray, arkouda.array_view.ArrayView, SegArray, Categorical]:
     """
     Helper function to create an Arkouda object from read response
 

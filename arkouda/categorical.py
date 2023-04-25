@@ -770,7 +770,7 @@ class Categorical:
             new_categories = new_arrays[0].categories
             new_codes = cast(pdarray, concatenate([arr.codes for arr in new_arrays], ordered=ordered))
             return Categorical.from_codes(new_codes, new_categories, NAvalue=self.NAvalue)
-    
+
     def to_hdf(
         self,
         prefix_path,
