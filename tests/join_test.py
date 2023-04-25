@@ -117,8 +117,8 @@ class JoinTest(ArkoudaTest):
     def test_str_cat_inner_join(self):
         intLeft = ak.arange(50)
         intRight = ak.randint(0, 50, 50)
-        strLeft = ak.array([f'str {i}' for i in intLeft.to_list()])
-        strRight = ak.array([f'str {i}' for i in intRight.to_list()])
+        strLeft = ak.array([f"str {i}" for i in intLeft.to_list()])
+        strRight = ak.array([f"str {i}" for i in intRight.to_list()])
 
         strL, strR = ak.join.inner_join(strLeft, strRight)
         self.assertListEqual(strLeft[strL].to_list(), strRight[strR].to_list())
