@@ -1821,8 +1821,6 @@ module HDF5Msg {
         var entrySeg = if (calcStringOffsets || nSeg < 1 || !skips.isEmpty()) then _buildEntryCalcOffsets() else _buildEntryLoadOffsets();
 
         return assembleSegStringFromParts(entrySeg, entryVal, st);
-        // var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
-        // return (dset, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes));
     }
 
     proc strings_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {

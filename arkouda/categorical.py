@@ -774,7 +774,7 @@ class Categorical:
     def to_hdf(
         self,
         prefix_path,
-        dataset="categorical",
+        dataset="categorical_array",
         mode="truncate",
         file_type="distribute",
     ):
@@ -828,7 +828,7 @@ class Categorical:
     def update_hdf(
         self,
         prefix_path,
-        dataset="categorical",
+        dataset="categorical_array",
         repack=True
     ):
         """
