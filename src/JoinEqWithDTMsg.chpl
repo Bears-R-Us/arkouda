@@ -14,7 +14,6 @@ module JoinEqWithDTMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use AryUtil;
-    use SegmentedString;
 
     param TRUE_DT = 0;
     param ABS_DT = 1;
