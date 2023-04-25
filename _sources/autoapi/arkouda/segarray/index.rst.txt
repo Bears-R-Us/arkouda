@@ -26,6 +26,37 @@ Functions
 
 
 
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.segarray.SEG_SUFFIX
+   arkouda.segarray.VAL_SUFFIX
+   arkouda.segarray.LEN_SUFFIX
+   arkouda.segarray.GROUP_SUFFIX
+
+
+.. py:data:: SEG_SUFFIX
+   :value: '_segments'
+
+   
+
+.. py:data:: VAL_SUFFIX
+   :value: '_values'
+
+   
+
+.. py:data:: LEN_SUFFIX
+   :value: '_lengths'
+
+   
+
+.. py:data:: GROUP_SUFFIX
+   :value: '_grouping'
+
+   
+
 .. py:function:: gen_ranges(starts, ends, stride=1)
 
    Generate a segmented array of variable-length, contiguous ranges between pairs of
