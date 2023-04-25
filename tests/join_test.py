@@ -115,8 +115,8 @@ class JoinTest(ArkoudaTest):
             )
 
     def test_str_cat_inner_join(self):
-        intLeft = ak.arange(10)
-        intRight = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
+        intLeft = ak.arange(50)
+        intRight = ak.randint(0, 50, 50)
         strLeft = ak.array([f'str {i}' for i in intLeft.to_list()])
         strRight = ak.array([f'str {i}' for i in intRight.to_list()])
 
