@@ -174,56 +174,36 @@ def inner_join(
     left: Union[pdarray, Strings, Categorical],
     right: Union[pdarray, Strings, Categorical],
     wherefunc: Callable = None,
-    whereargs: Tuple[Union[pdarray, Strings], Union[pdarray, Strings]] = None,
+    whereargs: Tuple[Union[pdarray, Strings, Categorical], Union[pdarray, Strings, Categorical]] = None,
 ) -> Tuple[pdarray, pdarray]:
     """Perform inner join on values in <left> and <right>,
     using conditions defined by <wherefunc> evaluated on
     <whereargs>, returning indices of left-right pairs.
-
     Parameters
     ----------
-    left : pdarray(int64), Strings, Categorical
+    left : pdarray(int64)
         The left values to join
-    right : pdarray(int64), Strings, Categorical
+    right : pdarray(int64)
         The right values to join
     wherefunc : function, optional
         Function that takes two pdarray arguments and returns
         a pdarray(bool) used to filter the join. Results for
         which wherefunc is False will be dropped.
-    whereargs : 2-tuple of pdarray, Strings
-        The two pdarray or Strings arguments to wherefunc
-
+    whereargs : 2-tuple of pdarray
+        The two pdarray arguments to wherefunc
     Returns
     -------
     leftInds : pdarray(int64)
         The left indices of pairs that meet the join condition
     rightInds : pdarray(int64)
         The right indices of pairs that meet the join condition
-
     Notes
     -----
     The return values satisfy the following assertions
-
     `assert (left[leftInds] == right[rightInds]).all()`
     `assert wherefunc(whereargs[0][leftInds], whereargs[1][rightInds]).all()`
-
     """
     from inspect import signature
-
-    if type(left) != type(right):
-        raise TypeError("Left and Right arrays must be of same type")
-
-    whereLeft = whereRight = None
-    if whereargs is not None:
-        whereLeft, whereRight = whereargs[0:2]
-
-    if (isinstance(left, Strings) and isinstance(right, Strings)) or (
-        isinstance(left, Categorical) and isinstance(right, Categorical)
-    ):
-
-        left, right = align(left, right)
-        if whereargs is not None:
-            whereLeft, whereRight = align(whereLeft, whereRight)
 
     sample = np.min((left.size, right.size, 5))  # type: ignore
     if wherefunc is not None:
@@ -231,17 +211,14 @@ def inner_join(
             raise ValueError("wherefunc must be a function that accepts exactly two arguments")
         if whereargs is None or len(whereargs) != 2:
             raise ValueError("whereargs must be a 2-tuple with left and right arg arrays")
-        if whereLeft is not None and whereLeft.size != left.size:
+        if whereargs[0].size != left.size:
             raise ValueError("Left whereargs must be same size as left join values")
-        if whereRight is not None and whereRight.size != right.size:
+        if whereargs[1].size != right.size:
             raise ValueError("Right whereargs must be same size as right join values")
-        if isinstance(whereLeft, Strings) and isinstance(left, pdarray):
-            raise TypeError("Strings whereargs are only supported for Strings left and right arg arrays")
-        if whereLeft is not None and whereRight is not None:
-            try:
-                _ = wherefunc(whereLeft[:sample], whereRight[:sample])
-            except Exception as e:
-                raise ValueError("Error evaluating wherefunc") from e
+        try:
+            _ = wherefunc(whereargs[0][:sample], whereargs[1][:sample])
+        except Exception as e:
+            raise ValueError("Error evaluating wherefunc") from e
 
     # Need dense 0-up right index, to filter out left not in right
     keep, (denseLeft, denseRight) = right_align(left, right)
@@ -263,12 +240,16 @@ def inner_join(
         filtSegs = fullSegs
         keep12 = keep
     else:
-        if whereLeft is not None and whereRight is not None:
-            # Expand left whereargs
-            leftWhere = broadcast(fullSegs, whereLeft[keep], ranges.size)
+        if whereargs is not None:
             # Gather right whereargs
-            rightWhere = whereRight[byRight.permutation][ranges]
-
+            rightWhere = whereargs[1][byRight.permutation][ranges]
+            # Expand left whereargs
+            keep_where = whereargs[0][keep]
+            if isinstance(keep_where, (Strings, Categorical)):
+                leftWhereIdx = broadcast(fullSegs, arange(keep_where.size), ranges.size)
+                leftWhere = keep_where[leftWhereIdx]
+            else:
+                leftWhere = broadcast(fullSegs, keep_where, ranges.size)
             # Evaluate wherefunc and filter ranges, recompute segments
             whereSatisfied = wherefunc(leftWhere, rightWhere)
             filtRanges = ranges[whereSatisfied]
@@ -286,5 +267,4 @@ def inner_join(
     # Gather right inds and expand left inds
     rightInds = byRight.permutation[filtRanges]
     leftInds = broadcast(filtSegs, arange(left.size)[keep12], filtRanges.size)
-
     return leftInds, rightInds

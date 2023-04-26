@@ -114,7 +114,7 @@ class JoinTest(ArkoudaTest):
                 left, right, wherefunc=ak.intersect1d, whereargs=(ak.arange(10), ak.arange(5))
             )
 
-    def test_str_cat_inner_join(self):
+    def test_str_inner_join(self):
         intLeft = ak.arange(50)
         intRight = ak.randint(0, 50, 50)
         strLeft = ak.array([f"str {i}" for i in intLeft.to_list()])
@@ -128,21 +128,46 @@ class JoinTest(ArkoudaTest):
         )
         self.assertListEqual(strLeft[strLWhere].to_list(), strRight[strRWhere].to_list())
 
+    def test_cat_inner_join(self):
+        intLeft = ak.arange(50)
+        intRight = ak.randint(0, 50, 50)
+        strLeft = ak.array([f"str {i}" for i in intLeft.to_list()])
+        strRight = ak.array([f"str {i}" for i in intRight.to_list()])
         catLeft = ak.Categorical(strLeft)
         catRight = ak.Categorical(strRight)
 
+        # Base Case
         catL, catR = ak.join.inner_join(catLeft, catRight)
         self.assertListEqual(catLeft[catL].to_list(), catRight[catR].to_list())
 
         catLWhere, catRWhere = ak.join.inner_join(
-            catLeft, catRight, wherefunc=join_where, whereargs=(strLeft, strRight)
+            catLeft, catRight, wherefunc=join_where, whereargs=(catLeft, catRight)
         )
         self.assertListEqual(catLeft[catLWhere].to_list(), catRight[catRWhere].to_list())
 
-        catLWhere, catRWhere = ak.join.inner_join(
-            catLeft, catRight, wherefunc=join_where, whereargs=(intLeft, intRight)
+    def test_mixed_inner_join_where(self):
+        intLeft = ak.arange(50)
+        intRight = ak.randint(0, 50, 50)
+        strLeft = ak.array([f"str {i}" for i in intLeft.to_list()])
+        strRight = ak.array([f"str {i}" for i in intRight.to_list()])
+        catLeft = ak.Categorical(strLeft)
+        catRight = ak.Categorical(strRight)
+
+        L, R = ak.join.inner_join(
+            intLeft, intRight, wherefunc=join_where, whereargs=(catLeft, strRight)
         )
-        self.assertListEqual(catLeft[catLWhere].to_list(), catRight[catRWhere].to_list())
+        self.assertListEqual(catLeft[L].to_list(), catRight[R].to_list())
+
+        L, R = ak.join.inner_join(
+            strLeft, strRight, wherefunc=join_where, whereargs=(catLeft, intRight)
+        )
+        self.assertListEqual(catLeft[L].to_list(), catRight[R].to_list())
+
+        L, R = ak.join.inner_join(
+            catLeft, catRight, wherefunc=join_where, whereargs=(strLeft, intRight)
+        )
+        self.assertListEqual(catLeft[L].to_list(), catRight[R].to_list())
+
 
     def test_lookup(self):
         keys = ak.arange(5)
