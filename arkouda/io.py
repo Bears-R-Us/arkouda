@@ -96,6 +96,7 @@ def ls(filename: str, col_delim: str = ",", read_nested: bool = True) -> List[st
     read_nested: bool
         Default True, when True, SegArray objects will be read from the file. When False,
         SegArray (or other nested Parquet columns) will be ignored.
+        Only used for Parquet files.
 
     Returns
     -------
@@ -1472,7 +1473,6 @@ def load(
     dataset: str = "array",
     calc_string_offsets: bool = False,
     column_delim: str = ",",
-    read_nested: bool = True,
 ) -> Union[
     pdarray,
     Strings,
