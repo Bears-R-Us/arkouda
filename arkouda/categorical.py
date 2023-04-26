@@ -862,8 +862,8 @@ class Categorical:
         - If file does not contain File_Format attribute to indicate how it was saved,
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
-        - Because HDF5 deletes do not release memory, this will create a copy of the
-          file with the new data
+        - Because HDF5 deletes do not release memory, the repack option allows for
+          automatic creation of a file without the inaccessible data.
         """
         from arkouda.io import _get_hdf_filetype, _mode_str_to_int, _file_type_to_int, _repack_hdf
 

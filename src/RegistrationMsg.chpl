@@ -64,10 +64,6 @@ module RegistrationMsg
         return msgTuple;
     }
 
-    proc categorical_attachMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws{
-
-    }
-
     /* 
     Parse, execute, and respond to a attach message 
 
