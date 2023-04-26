@@ -240,7 +240,10 @@ def _mode_str_to_int(mode: str) -> int:
 
 
 def get_datasets(
-    filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ",", read_nested: bool = True
+    filenames: Union[str, List[str]],
+    allow_errors: bool = False,
+    column_delim: str = ",",
+    read_nested: bool = True,
 ) -> List[str]:
     """
     Get the names of the datasets in the provide files
@@ -363,7 +366,7 @@ def _prep_datasets(
     filenames: Union[str, List[str]],
     datasets: Optional[Union[str, List[str]]] = None,
     allow_errors: bool = False,
-    read_nested: bool = True
+    read_nested: bool = True,
 ) -> List[str]:
     """
     Prepare a list of datasets to be read
@@ -659,7 +662,7 @@ def read_parquet(
     strict_types: bool = True,
     allow_errors: bool = False,
     tag_data: bool = False,
-    read_nested: bool = True
+    read_nested: bool = True,
 ) -> Union[
     pdarray,
     Strings,
@@ -759,7 +762,7 @@ def read_parquet(
                 strict_types=strict_types,
                 allow_errors=allow_errors,
                 tag_data=tag_data,
-                read_nested=read_nested
+                read_nested=read_nested,
             )[dset]
             for dset in datasets
         }
@@ -1663,7 +1666,7 @@ def read(
     allow_errors: bool = False,
     calc_string_offsets=False,
     column_delim: str = ",",
-    read_nested: bool = True
+    read_nested: bool = True,
 ) -> Union[
     pdarray,
     Strings,
@@ -1769,7 +1772,7 @@ def read(
             iterative=iterative,
             strict_types=strictTypes,
             allow_errors=allow_errors,
-            read_nested=read_nested
+            read_nested=read_nested,
         )
     elif ftype.lower() == "csv":
         return read_csv(
@@ -1785,7 +1788,7 @@ def read_tagged_data(
     strictTypes: bool = True,
     allow_errors: bool = False,
     calc_string_offsets=False,
-    read_nested: bool = True
+    read_nested: bool = True,
 ):
     """
     Read datasets from files and tag each record to the file it was read from.
@@ -1862,7 +1865,7 @@ def read_tagged_data(
                 strict_types=strictTypes,
                 allow_errors=allow_errors,
                 tag_data=True,
-                read_nested=read_nested
+                read_nested=read_nested,
             ),
             file_cat,
         )
