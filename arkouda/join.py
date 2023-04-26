@@ -3,7 +3,7 @@ from typing import Callable, Tuple, Union, cast
 import numpy as np  # type: ignore
 from typeguard import typechecked
 
-from arkouda.alignment import align, right_align
+from arkouda.alignment import right_align
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
