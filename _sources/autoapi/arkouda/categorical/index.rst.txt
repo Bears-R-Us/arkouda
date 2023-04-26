@@ -124,6 +124,16 @@ Classes
           categories is not a Strings object
 
 
+   .. py:method:: from_return_msg(rep_msg) -> Categorical
+      :classmethod:
+
+      Create categorical from return message from server
+
+      .. rubric:: Notes
+
+      This is currently only used when reading a Categorical from HDF5 files.
+
+
    .. py:method:: standardize_categories(arrays, NAvalue='N/A')
       :classmethod:
 
@@ -151,23 +161,6 @@ Classes
                 in new categories will appear unchanged. Old values not present will
                 be assigned the NA value.
       :rtype: Categorical
-
-
-   .. py:method:: from_return_msg(repMsg)
-      :staticmethod:
-
-      Return a categorical instance pointing to components created by the arkouda server.
-      The user should not call this function directly.
-
-      :param repMsg: ; delimited string containing the categories, codes, permutation, and segments
-                     details
-      :type repMsg: str
-
-      :returns: A categorical representing a set of strings and pdarray components on the server
-      :rtype: categorical
-
-      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-          the categorical instance
 
 
    .. py:method:: to_ndarray() -> numpy.ndarray
@@ -385,43 +378,55 @@ Classes
       This operation can be expensive -- slower than concatenating Strings.
 
 
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+   .. py:method:: to_hdf(prefix_path, dataset='categorical_array', mode='truncate', file_type='distribute')
 
-      Save the Categorical object to HDF5.
-      The object can be saved to a collection of files or single file.
+      Save the Categorical to HDF5. The result is a collection of HDF5 files, one file
+      per locale of the arkouda server, where each filename starts with prefix_path.
 
-      :param prefix_path: Directory and filename prefix that all output files share
+      :param prefix_path: Directory and filename prefix that all output files will share
       :type prefix_path: str
-      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+      :param dataset: Name prefix for saved data within the HDF5 file
       :type dataset: str
       :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', create a new Categorical dataset within existing files.
+                   If 'append', add data as a new column to existing files.
       :type mode: str {'truncate' | 'append'}
       :param file_type: Default: "distribute"
                         When set to single, dataset is written to a single file.
                         When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
       :type file_type: str ("single" | "distribute")
 
-      :rtype: String message indicating result of save operation
+      :rtype: None
 
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      .. seealso:: :obj:`load`
+
+
+   .. py:method:: update_hdf(prefix_path, dataset='categorical_array', repack=True)
+
+      Overwrite the dataset with the name provided with this Categorical object. If
+      the dataset does not exist it is added.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: None
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the Categorical
 
       .. rubric:: Notes
 
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-      .. seealso:: :obj:`to_parquet`
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+      - Because HDF5 deletes do not release memory, the repack option allows for
+        automatic creation of a file without the inaccessible data.
 
 
    .. py:method:: to_parquet(prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate', compression: Optional[str] = None) -> str

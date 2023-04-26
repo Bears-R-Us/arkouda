@@ -469,7 +469,7 @@ Attributes
                      file sizes to expand.
       :type repack: bool
 
-      :rtype: str - success message if successful
+      :rtype: None
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the SegArray
 
