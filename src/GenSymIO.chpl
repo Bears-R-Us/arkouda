@@ -209,9 +209,8 @@ module GenSymIO {
                 var (segName, nBytes) = id.splitMsgToTuple("+", 2);
                 create_str = "created " + st.attrib(segName) + "+created bytes.size " + nBytes;
             }
-            else if (akType == "seg_array") {
+            else if (akType == "seg_array" || akType == "categorical") {
                 create_str = id;
-
             } 
             else {
                 continue;

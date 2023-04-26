@@ -22,7 +22,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index
-from arkouda.io import _dict_recombine_segarrays, get_filetype, load_all
+from arkouda.io import _dict_recombine_segarrays_categoricals, get_filetype, load_all
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum
 from arkouda.numeric import isnan as akisnan
@@ -1744,7 +1744,7 @@ class DataFrame(UserDict):
         filetype = get_filetype(first_file) if file_format.lower() == "infer" else file_format
 
         # columns load backwards
-        df = cls(_dict_recombine_segarrays(load_all(prefix_path, file_format=filetype)))
+        df = cls(_dict_recombine_segarrays_categoricals(load_all(prefix_path, file_format=filetype)))
         # if parquet, return reversed dataframe to match what was saved
         return df if filetype == "HDF5" else df[df.columns[::-1]]
 
@@ -2434,12 +2434,8 @@ class DataFrame(UserDict):
 
             elif parts[i] == "categorical":
                 colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
-                catMsg = (
-                    f"{parts[i]}+{parts[i+1]}+{parts[i+2]}+{parts[i+3]}+"
-                    f"{parts[i+4]}+{parts[i+5]}+{parts[i+6]}"
-                )
-                cols[colName] = Categorical.from_return_msg(catMsg)
-                i += 6
+                cols[colName] = Categorical.from_return_msg(parts[i+2] + "+" + parts[i+3])
+                i += 3
 
             elif parts[i] == "segarray":
                 colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]

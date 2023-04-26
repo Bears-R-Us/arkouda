@@ -1073,7 +1073,7 @@ class SegArray:
 
         Returns
         --------
-        str - success message if successful
+        None
 
         Raises
         -------

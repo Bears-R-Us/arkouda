@@ -322,13 +322,12 @@ class CategoricalTest(ArkoudaTest):
             import h5py
 
             f = h5py.File(tmp_dirname + "/cat-save-test_LOCALE0000", mode="r")
-            keys = set(f.keys())
+            keys = list(f.keys())
             if io.ARKOUDA_HDF5_FILE_METADATA_GROUP in keys:  # Ignore the metadata group if it exists
                 keys.remove(io.ARKOUDA_HDF5_FILE_METADATA_GROUP)
-            self.assertEqual(len(keys), 5, "Expected 5 keys")
-            self.assertSetEqual(
-                set(f"categorical_array.{k}" for k in cat._get_components_dict().keys()), keys
-            )
+            self.assertEqual(len(keys), 1, f"Expected 1 key, {dset_name}")
+            self.assertListEqual([dset_name], keys)
+            d = f[dset_name]
             f.close()
 
             # Now try to read them back with load_all
@@ -348,6 +347,35 @@ class CategoricalTest(ArkoudaTest):
             self.assertTrue(cat_from_hdf.permutation is not None)
             print(f"==> cat_from_hdf.size:{cat_from_hdf.size}")
             self.assertEqual(cat_from_hdf.size, num_elems - 1)
+
+    def test_hdf_update(self):
+        num_elems = 51  # _getCategorical starts counting at 1, so the size is really off by one
+        cat = self._getCategorical(size=num_elems)
+        with tempfile.TemporaryDirectory(dir=CategoricalTest.cat_test_base_tmp) as tmp_dirname:
+            dset_name = "categorical_array"  # name of categorical array
+            cat.to_hdf(f"{tmp_dirname}/cat-save-test", dataset=dset_name)
+
+            dset_name2 = "to_replace"
+            cat.to_hdf(f"{tmp_dirname}/cat-save-test", dataset=dset_name2, mode="append")
+
+            dset_name3 = "cat_array2"
+            cat.to_hdf(f"{tmp_dirname}/cat-save-test", dataset=dset_name3, mode="append")
+
+            replace_cat = self._getCategorical(size=23)
+            replace_cat.update_hdf(f"{tmp_dirname}/cat-save-test", dataset=dset_name2)
+
+            data = ak.read_hdf(f"{tmp_dirname}/cat-save-test_*")
+            self.assertTrue(dset_name in data)
+            self.assertTrue(dset_name2 in data)
+            self.assertTrue(dset_name3 in data)
+
+            d = data[dset_name2]
+            self.assertListEqual(d.codes.to_list(), replace_cat.codes.to_list())
+            self.assertListEqual(d.permutation.to_list(), replace_cat.permutation.to_list())
+            self.assertListEqual(d.segments.to_list(), replace_cat.segments.to_list())
+            self.assertListEqual(d._akNAcode.to_list(), replace_cat._akNAcode.to_list())
+            self.assertListEqual(d.categories.to_list(), replace_cat.categories.to_list())
+
 
     def test_unused_categories_logic(self):
         """

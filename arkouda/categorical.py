@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import itertools
+import json
 from collections import defaultdict
 from typing import (
     DefaultDict,
@@ -17,6 +18,7 @@ from typing import (
 import numpy as np  # type: ignore
 from typeguard import typechecked
 
+from arkouda.client import generic_msg
 from arkouda.decorators import objtypedec
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
@@ -119,7 +121,7 @@ class Categorical:
 
         # When read from file or attached, NA code will be passed as a pdarray
         # Otherwise, the NA value is set to a string
-        if "_akNAcode" in kwargs:
+        if "_akNAcode" in kwargs and kwargs["_akNAcode"] is not None:
             self._akNAcode = kwargs["_akNAcode"]
             self._NAcode = int(self._akNAcode[0])
             self.NAvalue = self.categories[self._NAcode]
@@ -188,6 +190,29 @@ class Categorical:
             segments=segments,
             **kwargs,
         )
+
+    @classmethod
+    def from_return_msg(cls, rep_msg) -> Categorical:
+        """
+        Create categorical from return message from server
+
+        Notes
+        ------
+        This is currently only used when reading a Categorical from HDF5 files.
+        """
+        # parse return json
+        eles = json.loads(rep_msg)
+        codes = create_pdarray(eles["codes"])
+        cats = Strings.from_return_msg(eles["categories"])
+        na_code = create_pdarray(eles["_akNAcode"])
+
+        segments = None
+        perm = None
+        if "segments" in eles and "permutation" in eles:
+            segments = create_pdarray(eles["segments"])
+            perm = create_pdarray(eles["permutation"])
+
+        return cls.from_codes(codes, cats, permutation=perm, segments=segments, _akNAcode=na_code)
 
     @classmethod
     def standardize_categories(cls, arrays, NAvalue="N/A"):
@@ -274,60 +299,6 @@ class Categorical:
         # Apply the lookup to map old codes to new codes
         new_codes = code_mapping[self.codes]
         return self.__class__.from_codes(new_codes, new_categories, NAvalue=NAvalue)
-
-    @staticmethod
-    def from_return_msg(repMsg):
-        """
-        Return a categorical instance pointing to components created by the arkouda server.
-        The user should not call this function directly.
-
-        Parameters
-        ----------
-        repMsg : str
-            ; delimited string containing the categories, codes, permutation, and segments
-            details
-
-        Returns
-        -------
-        categorical
-            A categorical representing a set of strings and pdarray components on the server
-
-        Raises
-        ------
-        RuntimeError
-            Raised if a server-side error is thrown in the process of creating
-            the categorical instance
-        """
-        # parts[0] is "categorical". Used by the generic attach method to identify the
-        # response message as a Categorical
-
-        repParts = repMsg.split("+")
-        stringsMsg = f"{repParts[1]}+{repParts[2]}"
-        parts = {
-            "categories": Strings.from_return_msg(stringsMsg),
-            "codes": create_pdarray(repParts[3]),
-            "_akNAcode": create_pdarray(repParts[4]),
-        }
-
-        if len(repParts) > 5:
-            for i in range(5, len(repParts)):
-                name = repParts[i].split()[1]
-                if ".permutation" in name:
-                    parts["permutation"] = create_pdarray(repParts[i])
-                elif ".segments" in name:
-                    parts["segments"] = create_pdarray(repParts[i])
-                else:
-                    raise ValueError(f"Unknown field, {name}, found in Categorical.")
-
-        # To get the name split the message into Categories, Codes, Permutation, Segments
-        # then split the categories into it's components, Name being second: name.categories
-        # split the name on . and take the first half to get the given name
-        # for example repParts[1] = "created user_defined_name.categories"
-        name = repParts[1].split()[1].split(".")[0]
-
-        c = Categorical(None, **parts)  # Call constructor with unpacked kwargs
-        c.name = name  # Update our name
-        return c
 
     def to_ndarray(self) -> np.ndarray:
         """
@@ -802,77 +773,125 @@ class Categorical:
 
     def to_hdf(
         self,
-        prefix_path: str,
-        dataset: str = "categorical_array",
-        mode: str = "truncate",
-        file_type: str = "distribute",
-    ) -> str:
+        prefix_path,
+        dataset="categorical_array",
+        mode="truncate",
+        file_type="distribute",
+    ):
         """
-        Save the Categorical object to HDF5.
-        The object can be saved to a collection of files or single file.
+        Save the Categorical to HDF5. The result is a collection of HDF5 files, one file
+        per locale of the arkouda server, where each filename starts with prefix_path.
 
         Parameters
         ----------
         prefix_path : str
-            Directory and filename prefix that all output files share
+            Directory and filename prefix that all output files will share
         dataset : str
-            Name of the dataset to create in HDF5 files (must not already exist)
+            Name prefix for saved data within the HDF5 file
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
-            If 'append', create a new Categorical dataset within existing files.
+            If 'append', add data as a new column to existing files.
         file_type: str ("single" | "distribute")
             Default: "distribute"
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
-            This is only supported by HDF5 files and will have no impact of Parquet Files.
 
         Returns
         -------
-        String message indicating result of save operation
+        None
 
-        Raises
-        ------
-        RuntimeError
-            Raised if a server-side error is thrown saving the pdarray
-        Notes
-        -----
-        - The prefix_path must be visible to the arkouda server and the user must
-        have write permission.
-        - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-        the file name will be `prefix_path`.
-        - If any of the output files already exist and
-        the mode is 'truncate', they will be overwritten. If the mode is 'append'
-        and the number of output files is less than the number of locales or a
-        dataset with the same name already exists, a ``RuntimeError`` will result.
-        - Any file extension can be used.The file I/O does not rely on the extension to
-        determine the file format.
         See Also
         ---------
-        to_parquet
+        load
         """
-        result = []
-        comp_dict = {k: v for k, v in self._get_components_dict().items() if v is not None}
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
 
-        if self.RequiredPieces.issubset(comp_dict.keys()):
-            # Honor the first mode but switch to append for all others
-            # since each following comp may wipe out the file
-            first = True
-            for k, v in comp_dict.items():
-                result.append(
-                    v.to_hdf(
-                        prefix_path,
-                        dataset=f"{dataset}.{k}",
-                        mode=(mode if first else "append"),
-                        file_type=file_type,
-                    )
-                )
-                first = False
-        else:
-            raise Exception(
-                "The required pieces of `categories` and `codes` were not populated on this Categorical"
-            )
-        return ";".join(result)
+        args = {
+            "codes": self.codes,
+            "categories": self.categories,
+            "dset": dataset,
+            "write_mode": _mode_str_to_int(mode),
+            "filename": prefix_path,
+            "objType": "categorical",
+            "file_format": _file_type_to_int(file_type),
+            "NA_codes": self._akNAcode
+        }
+        if self.permutation is not None and self.segments is not None:
+            args["permutation"] = self.permutation
+            args["segments"] = self.segments
+
+        generic_msg(
+            cmd="tohdf",
+            args=args,
+        )
+
+    def update_hdf(
+        self,
+        prefix_path,
+        dataset="categorical_array",
+        repack=True
+    ):
+        """
+        Overwrite the dataset with the name provided with this Categorical object. If
+        the dataset does not exist it is added.
+
+        Parameters
+        -----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in files
+        repack: bool
+            Default: True
+            HDF5 does not release memory on delete. When True, the inaccessible
+            data (that was overwritten) is removed. When False, the data remains, but is
+            inaccessible. Setting to false will yield better performance, but will cause
+            file sizes to expand.
+
+        Returns
+        --------
+        None
+
+        Raises
+        -------
+        RuntimeError
+            Raised if a server-side error is thrown saving the Categorical
+
+        Notes
+        ------
+        - If file does not contain File_Format attribute to indicate how it was saved,
+          the file name is checked for _LOCALE#### to determine if it is distributed.
+        - If the dataset provided does not exist, it will be added
+        - Because HDF5 deletes do not release memory, the repack option allows for
+          automatic creation of a file without the inaccessible data.
+        """
+        from arkouda.io import _get_hdf_filetype, _mode_str_to_int, _file_type_to_int, _repack_hdf
+
+        # determine the format (single/distribute) that the file was saved in
+        file_type = _get_hdf_filetype(prefix_path + "*")
+
+        args = {
+            "codes": self.codes,
+            "categories": self.categories,
+            "dset": dataset,
+            "write_mode": _mode_str_to_int("append"),
+            "filename": prefix_path,
+            "objType": "categorical",
+            "overwrite": True,
+            "file_format": _file_type_to_int(file_type),
+            "NA_codes": self._akNAcode
+        }
+        if self.permutation is not None and self.segments is not None:
+            args["permutation"] = self.permutation
+            args["segments"] = self.segments
+
+        generic_msg(
+            cmd="tohdf",
+            args=args,
+        )
+
+        if repack:
+            _repack_hdf(prefix_path)
 
     def to_parquet(
         self,
@@ -1228,23 +1247,8 @@ class Categorical:
         --------
         register, is_registered, unregister, unregister_categorical_by_name
         """
-        # Build dict of registered components by invoking their corresponding Class.attach functions
-        parts = {
-            "categories": Strings.attach(f"{user_defined_name}.categories"),
-            "codes": pdarray.attach(f"{user_defined_name}.codes"),
-            "_akNAcode": pdarray.attach(f"{user_defined_name}._akNAcode"),
-        }
-
-        # Add optional pieces only if they're contained in the registry
-        registry = list_registry()
-        if f"{user_defined_name}.permutation" in registry:
-            parts["permutation"] = pdarray.attach(f"{user_defined_name}.permutation")
-        if f"{user_defined_name}.segments" in registry:
-            parts["segments"] = pdarray.attach(f"{user_defined_name}.segments")
-
-        c = Categorical(None, **parts)  # Call constructor with unpacked kwargs
-        c.name = user_defined_name  # Update our name
-        return c
+        from arkouda.util import attach
+        return attach(user_defined_name, dtype="categorical")
 
     @staticmethod
     @typechecked
