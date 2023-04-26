@@ -456,7 +456,7 @@ def _dict_recombine_segarrays_categoricals(df_dict):
     # this assumes segments will always have corresponding values.
     # This should happen due to save config
     seg_cols = ["_".join(col.split("_")[:-1]) for col in df_dict.keys() if col.endswith("_segments")]
-    cat_cols = ["_".join(col.split(".")[:-1]) for col in df_dict.keys() if col.endswith(".categories")]
+    cat_cols = [".".join(col.split(".")[:-1]) for col in df_dict.keys() if col.endswith(".categories")]
     df_dict_keys = {
         "_".join(col.split("_")[:-1])
         if col.endswith("_segments") or col.endswith("_values")
