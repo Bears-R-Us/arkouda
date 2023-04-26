@@ -855,7 +855,7 @@ class Categorical:
         Raises
         -------
         RuntimeError
-            Raised if a server-side error is thrown saving the SegArray
+            Raised if a server-side error is thrown saving the Categorical
 
         Notes
         ------
