@@ -250,7 +250,7 @@ def inner_join(
             rightWhere = whereargs[1][byRight.permutation][ranges]
             # Expand left whereargs
             keep_where = whereargs[0][keep]
-            if isinstance(keep_where, Strings):
+            if isinstance(keep_where, (Strings, Categorical)):
                 leftWhereIdx = broadcast(fullSegs, arange(keep_where.size), ranges.size)
                 leftWhere = keep_where[leftWhereIdx]
             else:
