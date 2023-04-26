@@ -545,6 +545,34 @@ class ParquetTest(ArkoudaTest):
             for c in df_ak.columns:
                 self.assertListEqual(df_ak[c].to_list(), df_pd[c].to_list())
 
+    def test_read_nested(self):
+        df = ak.DataFrame({
+            "idx": ak.arange(5),
+            "seg": ak.segarray(ak.arange(0, 10, 2), ak.arange(10))
+        })
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            fname = tmp_dirname+"/read_nested_test"
+            df.to_parquet(fname)
+
+            # test read with read_nested=true
+            data = ak.read_parquet(fname+"_*")
+            self.assertTrue("idx" in data)
+            self.assertTrue("seg" in data)
+            self.assertListEqual(df["idx"].to_list(), data["idx"].to_list())
+            self.assertListEqual(df["seg"].to_list(), data["seg"].to_list())
+
+            # test read with read_nested=false and no supplied datasets
+            data = ak.read_parquet(fname + "_*", read_nested=False)
+            self.assertIsInstance(data, ak.pdarray)
+            self.assertListEqual(df["idx"].to_list(), data.to_list())
+
+            # test read with read_nested=false and user supplied datasets. Should ignore read_nested
+            data = ak.read_parquet(fname + "_*", datasets=["idx", "seg"], read_nested=False)
+            self.assertTrue("idx" in data)
+            self.assertTrue("seg" in data)
+            self.assertListEqual(df["idx"].to_list(), data["idx"].to_list())
+            self.assertListEqual(df["seg"].to_list(), data["seg"].to_list())
+
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
         datadir = "resources/parquet-testing"

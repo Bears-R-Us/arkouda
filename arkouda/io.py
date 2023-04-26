@@ -81,7 +81,7 @@ def get_filetype(filenames: Union[str, List[str]]) -> str:
     return cast(str, generic_msg(cmd="getfiletype", args={"filename": fname}))
 
 
-def ls(filename: str, col_delim: str = ",") -> List[str]:
+def ls(filename: str, col_delim: str = ",", read_nested: bool = True) -> List[str]:
     """
     This function calls the h5ls utility on a HDF5 file visible to the
     arkouda server or calls a function that imitates the result of h5ls
@@ -93,6 +93,9 @@ def ls(filename: str, col_delim: str = ",") -> List[str]:
         The name of the file to pass to the server
     col_delim : str
         The delimiter used to separate columns if the file is a csv
+    read_nested: bool
+        Default True, when True, SegArray objects will be read from the file. When False,
+        SegArray (or other nested Parquet columns) will be ignored.
 
     Returns
     -------
@@ -125,7 +128,7 @@ def ls(filename: str, col_delim: str = ",") -> List[str]:
             str,
             generic_msg(
                 cmd=cmd,
-                args={"filename": filename, "col_delim": col_delim},
+                args={"filename": filename, "col_delim": col_delim, "read_nested": read_nested},
             ),
         )
     )
@@ -236,7 +239,7 @@ def _mode_str_to_int(mode: str) -> int:
 
 
 def get_datasets(
-    filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ","
+    filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ",", read_nested: bool = True
 ) -> List[str]:
     """
     Get the names of the datasets in the provide files
@@ -250,6 +253,11 @@ def get_datasets(
         Whether or not to allow errors while accessing datasets
     column_delim : str
         Column delimiter to be used if dataset is CSV. Otherwise, unused.
+    read_nested: bool
+        Default True, when True, SegArray objects will be read from the file. When False,
+        SegArray (or other nested Parquet columns) will be ignored.
+        Only used for Parquet Files.
+
 
     Returns
     -------
@@ -276,7 +284,7 @@ def get_datasets(
         filenames = [filenames]
     for fname in filenames:
         try:
-            datasets = ls(fname, col_delim=column_delim)
+            datasets = ls(fname, col_delim=column_delim, read_nested=read_nested)
             if datasets:
                 break
         except RuntimeError:
@@ -354,6 +362,7 @@ def _prep_datasets(
     filenames: Union[str, List[str]],
     datasets: Optional[Union[str, List[str]]] = None,
     allow_errors: bool = False,
+    read_nested: bool = True
 ) -> List[str]:
     """
     Prepare a list of datasets to be read
@@ -368,6 +377,10 @@ def _prep_datasets(
     allow_errors: bool
         Default: False
         Whether or not to allow errors during access operations
+    read_nested: bool
+        Default True, when True, SegArray objects will be read from the file. When False,
+        SegArray (or other nested Parquet columns) will be ignored.
+        Only used for Parquet Files
 
     Returns
     -------
@@ -380,14 +393,15 @@ def _prep_datasets(
     """
     if datasets is None:
         # get datasets. We know they exist because we pulled from the file
-        datasets = get_datasets(filenames, allow_errors)
+        datasets = get_datasets(filenames, allow_errors, read_nested=read_nested)
     else:
         if isinstance(datasets, str):
             # TODO - revisit this and enable checks that support things like "strings/values"
             # old logic did not check existence for single string dataset.
             return [datasets]
         # ensure dataset(s) exist
-        nonexistent = set(datasets) - set(get_datasets(filenames, allow_errors))
+        # read_nested always true because when user supplies datasets, it is ignored
+        nonexistent = set(datasets) - set(get_datasets(filenames, allow_errors, read_nested=True))
         if len(nonexistent) > 0:
             raise ValueError(f"Dataset(s) not found: {nonexistent}")
     return datasets
@@ -644,6 +658,7 @@ def read_parquet(
     strict_types: bool = True,
     allow_errors: bool = False,
     tag_data: bool = False,
+    read_nested: bool = True
 ) -> Union[
     pdarray,
     Strings,
@@ -676,6 +691,10 @@ def read_parquet(
     tagData: bool
         Default False, if True tag the data with the code associated with the filename
         that the data was pulled from.
+    read_nested: bool
+        Default True, when True, SegArray objects will be read from the file. When False,
+        SegArray (or other nested Parquet columns) will be ignored.
+        If datasets is not None, this will be ignored.
 
     Returns
     -------
@@ -727,7 +746,7 @@ def read_parquet(
     """
     if isinstance(filenames, str):
         filenames = [filenames]
-    datasets = _prep_datasets(filenames, datasets)
+    datasets = _prep_datasets(filenames, datasets, read_nested=read_nested)
 
     if iterative:
         if tag_data:
@@ -739,6 +758,7 @@ def read_parquet(
                 strict_types=strict_types,
                 allow_errors=allow_errors,
                 tag_data=tag_data,
+                read_nested=read_nested
             )[dset]
             for dset in datasets
         }
@@ -1452,6 +1472,7 @@ def load(
     dataset: str = "array",
     calc_string_offsets: bool = False,
     column_delim: str = ",",
+    read_nested: bool = True,
 ) -> Union[
     pdarray,
     Strings,
@@ -1510,18 +1531,19 @@ def load(
     Examples
     --------
     >>> # Loading from file without extension
-    >>> obj = a.load('path/prefix')
+    >>> obj = ak.load('path/prefix')
     Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.
     The file type is inferred during processing.
 
     >>> # Loading with an extension (HDF5)
-    >>> obj = a.load('path/prefix.test')
+    >>> obj = ak.load('path/prefix.test')
     Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where
     #### is replaced by each locale numbers. Because filetype is inferred during processing,
     the extension is not required to be a specific format.
     """
     prefix, extension = os.path.splitext(path_prefix)
     globstr = f"{prefix}*{extension}"
+    print(globstr)
     try:
         file_format = get_filetype(globstr) if file_format.lower() == "infer" else file_format
         if file_format.lower() == "hdf5":
@@ -1542,7 +1564,7 @@ def load(
 
 @typechecked
 def load_all(
-    path_prefix: str, file_format: str = "INFER", column_delim: str = ","
+    path_prefix: str, file_format: str = "INFER", column_delim: str = ",", read_nested=True
 ) -> Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]:
     """
     Load multiple pdarrays, Strings, SegArrays, or Categoricals previously
@@ -1558,6 +1580,10 @@ def load_all(
         Defaults to 'INFER'
     column_delim : str
         Column delimiter to be used if dataset is CSV. Otherwise, unused.
+    read_nested: bool
+        Default True, when True, SegArray objects will be read from the file. When False,
+        SegArray (or other nested Parquet columns) will be ignored.
+        Parquet files only
 
     Returns
     -------
@@ -1595,7 +1621,7 @@ def load_all(
     try:
         result = {
             dataset: load(prefix, file_format=file_format, dataset=dataset)
-            for dataset in get_datasets(firstname, column_delim=column_delim)
+            for dataset in get_datasets(firstname, column_delim=column_delim, read_nested=read_nested)
         }
 
         result = _dict_recombine_segarrays(result)
@@ -1637,6 +1663,7 @@ def read(
     allow_errors: bool = False,
     calc_string_offsets=False,
     column_delim: str = ",",
+    read_nested: bool = True
 ) -> Union[
     pdarray,
     Strings,
@@ -1673,6 +1700,12 @@ def read(
         In the future this option may be set to True as the default.
     column_delim : str
         Column delimiter to be used if dataset is CSV. Otherwise, unused.
+    read_nested: bool
+        Default True, when True, SegArray objects will be read from the file. When False,
+        SegArray (or other nested Parquet columns) will be ignored.
+        Ignored if datasets is not None
+        Parquet Files only.
+
 
     Returns
     -------
@@ -1736,6 +1769,7 @@ def read(
             iterative=iterative,
             strict_types=strictTypes,
             allow_errors=allow_errors,
+            read_nested=read_nested
         )
     elif ftype.lower() == "csv":
         return read_csv(
@@ -1751,6 +1785,7 @@ def read_tagged_data(
     strictTypes: bool = True,
     allow_errors: bool = False,
     calc_string_offsets=False,
+    read_nested: bool = True
 ):
     """
     Read datasets from files and tag each record to the file it was read from.
@@ -1777,6 +1812,11 @@ def read_tagged_data(
         Default False, if True this will tell the server to calculate the
         offsets/segments array on the server versus loading them from HDF5 files.
         In the future this option may be set to True as the default.
+    read_nested: bool
+        Default True, when True, SegArray objects will be read from the file. When False,
+        SegArray (or other nested Parquet columns) will be ignored.
+        Ignored if datasets is not `None`
+        Parquet Files only.
 
     Examples
     ---------
@@ -1822,6 +1862,7 @@ def read_tagged_data(
                 strict_types=strictTypes,
                 allow_errors=allow_errors,
                 tag_data=True,
+                read_nested=read_nested
             ),
             file_cat,
         )

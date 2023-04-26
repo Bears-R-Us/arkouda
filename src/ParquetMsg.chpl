@@ -1680,6 +1680,9 @@ module ParquetMsg {
     // reqMsg: "lshdf [<json_filename>]"
     var repMsg: string;
 
+    // determine if read nested flag is set
+    var read_nested: bool = msgArgs.get("read_nested").getBoolValue();
+
     // Retrieve filename from payload
     var filename: string = msgArgs.getValueOf("filename");
     if filename.isEmpty() {
@@ -1709,7 +1712,7 @@ module ParquetMsg {
     }
         
     try {
-      extern proc c_getDatasetNames(filename, dsetResult, errMsg): int(32);
+      extern proc c_getDatasetNames(filename, dsetResult, readNested, errMsg): int(32);
       extern proc strlen(a): int;
       var pqErr = new parquetErrorMsg();
       var res: c_ptr(uint(8));
@@ -1717,7 +1720,7 @@ module ParquetMsg {
         extern proc c_free_string(ptr);
         c_free_string(res);
       }
-      if c_getDatasetNames(filename.c_str(), c_ptrTo(res),
+      if c_getDatasetNames(filename.c_str(), c_ptrTo(res), read_nested,
                            c_ptrTo(pqErr.errMsg)) == ARROWERROR {
         pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
       }
