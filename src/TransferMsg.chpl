@@ -89,27 +89,15 @@ module TransferMsg
       const namesThatWillSendMessages = getNodeList(intersections, hereSubdoms, names);
       const ports = getPorts(namesThatWillSendMessages, port:int);
 
-      writeln();
-      writeln("OTHER: ", otherSubdoms);
-      writeln("HERE: ", hereSubdoms);
-      writeln("INTERSECTIONS: ", intersections);
-      writeln("PORTS: ", ports);
-      writeln();
-
       sendSetupInfo(port, e.a, names);
 
       coforall loc in Locales do on loc {
-        writeln("LOCAL SUBDOMAIN: ", e.a.localSubdomain());
         var locdom = e.a.localSubdomain();
         // TODO: Parallelize by using different ports
         for (i,p) in zip(intersections, ports) {
           const intersection = getIntersection(locdom, i);
           if intersection.size > 0 {
-            writeln();
-            writeln("SENDING ", intersection, " FROM ", here.name, " ON PORT ", p);
-            writeln();
-            if sports then
-              sendArrChunk(p, e.a, intersection);
+            sendArrChunk(p, e.a, intersection);
           }
         }
       }
@@ -121,27 +109,16 @@ module TransferMsg
       // nodeNames lines up with intersections
       const intersections = getIntersections(hereSubdoms, otherSubdoms);
 
-      writeln();
-      writeln("INTERSECTIONS: ", intersections, " HERE SUBDOMS ", hereSubdoms," REMOTE SUBDOMS: ", otherSubdoms, " NODENAMES: ", nodeNames);
-      writeln();
-
       const nodesToReceiveFrom = getNodeList(intersections, otherSubdoms, nodeNames);
       const ports = getPorts(nodesToReceiveFrom, port:int);
 
-      writeln();
-      writeln("NODES TO RECEIVE FROM: ", nodesToReceiveFrom);
-      writeln("PORTS TO RECEIVE FROM: ", ports);
-      writeln();
-
       coforall loc in Locales do on loc {
-        writeln("LOCAL SUBDOMAIN: ", A.localSubdomain());
         //TODO: parallelize
         //TODO: These should be split, nodeNames can differ from intersections
         for (intersection,name,p) in zip(intersections, nodesToReceiveFrom, ports) {
           const intrsct = getIntersection(A.localSubdomain(), intersection);
           if intrsct.size > 0 {
-            writeln("RECEIVING ", intersection, " FROM ", name, " ", p, " ON ", here.name);
-            if sports then receiveArrChunk(p, name, A, intersection);
+            receiveArrChunk(p, name, A, intersection);
           }
         }
       }
