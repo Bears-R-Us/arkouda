@@ -406,13 +406,6 @@ module ParquetMsg {
     // else if t == ARROWSTRING then return ArrowTypes.stringArr; // TODO - add handling for this case
     else if t == ARROWDOUBLE then return ArrowTypes.double;
     else if t == ARROWFLOAT then return ArrowTypes.float;
-    else if t == ARROWLIST then return ArrowTypes.list;
-    throw getErrorWithContext(
-                  msg="Unrecognized Parquet data type",
-                  getLineNumber(),
-                  getRoutineName(),
-                  getModuleName(),
-                  errorClass="ParquetError");
     return ArrowTypes.notimplemented;
   }
 
@@ -625,7 +618,7 @@ module ParquetMsg {
     } else if mode == APPEND {
       if c_appendColumnToParquet(filename.localize().c_str(), c_ptrTo(values),
                                  dsetname.localize().c_str(), offsets.size-1,
-                                 dtypeRep, compression, c_ptrTo(pqErr.errMsg)) {
+                                 dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
         pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
       }
     }
@@ -669,9 +662,8 @@ module ParquetMsg {
     return writeDistArrayToParquet(A, filename, dsetname, dtype, ROWGROUPS, compression, mode);
   }
 
-  proc parseListDataset(filenames: [] string, dsetname: string, len: int, sizes: [] int, st: borrowed SymTab) throws {
+  proc parseListDataset(filenames: [] string, dsetname: string, ty, len: int, sizes: [] int, st: borrowed SymTab) throws {
     // len here is our segment size
-    var ty = getListData(filenames[0], dsetname);
     var filedom = filenames.domain;
     var seg_sizes = makeDistArray(len, int);
     var listSizes: [filedom] int = calcListSizesandOffset(seg_sizes, filenames, sizes, dsetname);
@@ -898,8 +890,14 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
         } else if ty == ArrowTypes.list {
-          var create_str: string = parseListDataset(filenames, dsetname, len, sizes, st);
-          rnames.append((dsetname, "seg_array", create_str));
+          var list_ty = getListData(filenames[0], dsetname);
+          if list_ty == ArrowTypes.notimplemented { // check for and skip further nested datasets
+            pqLogger.info(getModuleName(),getRoutineName(),getLineNumber(),"Invalid list datatype found in %s. Skipping.".format(dsetname));
+          }
+          else {
+            var create_str: string = parseListDataset(filenames, dsetname, list_ty, len, sizes, st);
+            rnames.append((dsetname, "seg_array", create_str));
+          }
         } else {
           var errorMsg = "DType %s not supported for Parquet reading".format(ty);
           pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
