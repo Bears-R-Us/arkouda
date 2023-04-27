@@ -1546,7 +1546,6 @@ def load(
     """
     prefix, extension = os.path.splitext(path_prefix)
     globstr = f"{prefix}*{extension}"
-    print(globstr)
     try:
         file_format = get_filetype(globstr) if file_format.lower() == "infer" else file_format
         if file_format.lower() == "hdf5":
