@@ -57,7 +57,7 @@ Functions
    .. seealso:: :obj:`read_parquet`, :obj:`read_hdf`
 
 
-.. py:function:: ls(filename: str, col_delim: str = ',') -> List[str]
+.. py:function:: ls(filename: str, col_delim: str = ',', read_nested: bool = True) -> List[str]
 
    This function calls the h5ls utility on a HDF5 file visible to the
    arkouda server or calls a function that imitates the result of h5ls
@@ -67,6 +67,10 @@ Functions
    :type filename: str
    :param col_delim: The delimiter used to separate columns if the file is a csv
    :type col_delim: str
+   :param read_nested: Default True, when True, SegArray objects will be read from the file. When False,
+                       SegArray (or other nested Parquet columns) will be ignored.
+                       Only used for Parquet files.
+   :type read_nested: bool
 
    :returns: The string output of the datasets from the server
    :rtype: str
@@ -101,7 +105,7 @@ Functions
    .. seealso:: :obj:`get_datasets`, :obj:`ls`
 
 
-.. py:function:: get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ',') -> List[str]
+.. py:function:: get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ',', read_nested: bool = True) -> List[str]
 
    Get the names of the datasets in the provide files
 
@@ -112,6 +116,10 @@ Functions
    :type allow_errors: bool
    :param column_delim: Column delimiter to be used if dataset is CSV. Otherwise, unused.
    :type column_delim: str
+   :param read_nested: Default True, when True, SegArray objects will be read from the file. When False,
+                       SegArray (or other nested Parquet columns) will be ignored.
+                       Only used for Parquet Files.
+   :type read_nested: bool
 
    :rtype: List[str] of names of the datasets
 
@@ -214,7 +222,7 @@ Functions
    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical]]]
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical]]]
 
    Read Arkouda objects from Parquet file/s
 
@@ -238,6 +246,10 @@ Functions
    :param tagData: Default False, if True tag the data with the code associated with the filename
                    that the data was pulled from.
    :type tagData: bool
+   :param read_nested: Default True, when True, SegArray objects will be read from the file. When False,
+                       SegArray (or other nested Parquet columns) will be ignored.
+                       If datasets is not None, this will be ignored.
+   :type read_nested: bool
 
    :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
              * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
@@ -639,18 +651,18 @@ Functions
    .. rubric:: Examples
 
    >>> # Loading from file without extension
-   >>> obj = a.load('path/prefix')
+   >>> obj = ak.load('path/prefix')
    Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.
    The file type is inferred during processing.
 
    >>> # Loading with an extension (HDF5)
-   >>> obj = a.load('path/prefix.test')
+   >>> obj = ak.load('path/prefix.test')
    Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where
    #### is replaced by each locale numbers. Because filetype is inferred during processing,
    the extension is not required to be a specific format.
 
 
-.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER', column_delim: str = ',') -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical]]
+.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER', column_delim: str = ',', read_nested=True) -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical]]
 
    Load multiple pdarrays, Strings, SegArrays, or Categoricals previously
    saved with ``save_all()``.
@@ -663,6 +675,10 @@ Functions
    :type file_format: str
    :param column_delim: Column delimiter to be used if dataset is CSV. Otherwise, unused.
    :type column_delim: str
+   :param read_nested: Default True, when True, SegArray objects will be read from the file. When False,
+                       SegArray (or other nested Parquet columns) will be ignored.
+                       Parquet files only
+   :type read_nested: bool
 
    :returns: Dictionary of {datsetName: Union[pdarray, Strings, SegArray, Categorical]}
              with the previously saved pdarrays, Strings, SegArrays, or Categoricals
@@ -686,7 +702,7 @@ Functions
    CSV files without the Arkouda Header are not supported.
 
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical]]]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical]]]
 
    Read datasets from files.
    File Type is determined automatically.
@@ -714,6 +730,11 @@ Functions
    :type calc_string_offsets: bool
    :param column_delim: Column delimiter to be used if dataset is CSV. Otherwise, unused.
    :type column_delim: str
+   :param read_nested: Default True, when True, SegArray objects will be read from the file. When False,
+                       SegArray (or other nested Parquet columns) will be ignored.
+                       Ignored if datasets is not None
+                       Parquet Files only.
+   :type read_nested: bool
 
    :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,*
              * *or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,*
@@ -750,7 +771,7 @@ Functions
    >>> x = ak.read('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_tagged_data(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False)
+.. py:function:: read_tagged_data(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, read_nested: bool = True)
 
    Read datasets from files and tag each record to the file it was read from.
    File Type is determined automatically.
@@ -774,6 +795,11 @@ Functions
                                offsets/segments array on the server versus loading them from HDF5 files.
                                In the future this option may be set to True as the default.
    :type calc_string_offsets: bool
+   :param read_nested: Default True, when True, SegArray objects will be read from the file. When False,
+                       SegArray (or other nested Parquet columns) will be ignored.
+                       Ignored if datasets is not `None`
+                       Parquet Files only.
+   :type read_nested: bool
 
    .. rubric:: Examples
 
