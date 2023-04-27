@@ -1648,7 +1648,7 @@ const char* cpp_getVersionInfo(void) {
   return strdup(arrow::GetBuildInfo().version_string.c_str());
 }
 
-int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) {
+int cpp_getDatasetNames(const char* filename, char** dsetResult, bool readNested, char** errMsg) {
   try {
     std::shared_ptr<arrow::io::ReadableFile> infile;
     ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename, arrow::default_memory_pool()),
@@ -1677,7 +1677,7 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) 
          sc->field(i)->type()->id() == arrow::Type::BINARY ||
          sc->field(i)->type()->id() == arrow::Type::FLOAT ||
          sc->field(i)->type()->id() == arrow::Type::DOUBLE ||
-         sc->field(i)->type()->id() == arrow::Type::LIST
+         (sc->field(i)->type()->id() == arrow::Type::LIST && readNested)
          ) {
         if(!first)
           fields += ("," + sc->field(i)->name());
@@ -1791,8 +1791,8 @@ extern "C" {
     return cpp_getVersionInfo();
   }
 
-  int c_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) {
-    return cpp_getDatasetNames(filename, dsetResult, errMsg);
+  int c_getDatasetNames(const char* filename, char** dsetResult, bool readNested, char** errMsg) {
+    return cpp_getDatasetNames(filename, dsetResult, readNested, errMsg);
   }
 
   void c_free_string(void* ptr) {
