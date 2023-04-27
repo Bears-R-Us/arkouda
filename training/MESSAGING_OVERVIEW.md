@@ -62,7 +62,7 @@ proc serverFunctionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed 
 
 The parameters in this function each server a specific purpose:
 - `cmd` is the command string used to access this function. It is used mostly for debugging as the `cmd` string used to access the function will be captured in the logger messages.
-- `msgArgs` contains parameters required for the message processing. The information about the number of arguements is bundled and will be paired accordingly with the denoted passed types. Individual arguments will need to be extracted on the server side.
+- `msgArgs` contains parameters required for the message processing. The information about the number of arguments is bundled and will be paired accordingly with the denoted passed types. Individual arguments will need to be extracted on the server side.
 - `st: borrowed SymTab` is a reference parameter to the Server's Symbol Table. The Symbol Table acts like Arkouda's database; storing all information related to a data structure that can then be referenced from the Client without having to pass large amounts of data back and forth.
 
 All messages sent to the server are in JSON format. The JSON message sent to the server is used to generate a MessageArgs object automatically. These objects map the parameter name to the value using accessor methods. The values are always strings, but functions are provided to access it as the correct type for processing. The most common of these accessor methods is `getValueOf(argName)` which will return the value of an argument that matches the provided name.
