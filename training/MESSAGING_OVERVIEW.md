@@ -71,7 +71,7 @@ For example, assuming the server request in the above section is what is being r
 
 ```chapel
 var arg1 = msgArgs.getValueOf("arg1"); // str dtype example
-var arg2 = msgArgs.getIntValue("arg2"); // int dtype example
+var arg2 = msgArgs.get("arg2").getIntValue(); // int dtype example
 ```
 
 Now the values of `arg1` and `arg2` are available for use within this Chapel function. Note that the function used can differ depending on the dtype of the expected value. `msgArgs.getValueOf()` is the base case that will return your value as a string. But there are other accessor methods that will cast the return automatically to various types:
