@@ -911,7 +911,7 @@ module ParquetMsg {
   }
 
   proc getDatasets(filename) throws {
-    extern proc c_getDatasetNames(filename, dsetResult, errMsg): int(32);
+    extern proc c_getDatasetNames(filename, dsetResult, readNested, errMsg): int(32);
     extern proc strlen(a): int;
     var pqErr = new parquetErrorMsg();
     var res: c_ptr(uint(8));
@@ -919,7 +919,7 @@ module ParquetMsg {
       extern proc c_free_string(ptr);
       c_free_string(res);
     }
-    if c_getDatasetNames(filename.c_str(), c_ptrTo(res),
+    if c_getDatasetNames(filename.c_str(), c_ptrTo(res), false,
                          c_ptrTo(pqErr.errMsg)) == ARROWERROR {
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
     }
