@@ -114,7 +114,6 @@ module TransferMsg
 
       coforall loc in Locales do on loc {
         //TODO: parallelize
-        //TODO: These should be split, nodeNames can differ from intersections
         for (intersection,name,p) in zip(intersections, nodesToReceiveFrom, ports) {
           const intrsct = getIntersection(A.localSubdomain(), intersection);
           if intrsct.size > 0 {

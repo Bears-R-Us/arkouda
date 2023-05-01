@@ -376,7 +376,39 @@ class pdarray:
         )
         return create_pdarray(repMsg)
 
-    def send_array(self, hostname, port):
+    def send_array(self, hostname: str, port: int_scalars):
+        """
+        Sends a pdarray to a different Arkouda server
+
+        Parameters
+        ----------
+        hostname : str
+            The hostname of the pdarray to receive the array
+        port : int_scalars
+            The port to send the array over. This needs to be an
+            open port (i.e., not one that the Arkouda server is
+            running on). This will open up `numLocales` ports,
+            each of which in succession, so will use ports of the
+            range {port..(port+numLocales)} (e.g., running an
+            Arkouda server of 4 nodes, port 1234 is passed as
+            `port`, Arkouda will use ports 1234, 1235, 1236,
+            and 1237 to send the array data).
+            This port much match the port passed to the call to
+            `ak.receive_array()`.
+        
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        ValueError
+            Raised if the op is not within the pdarray.BinOps set
+        TypeError
+            Raised if other is not a pdarray or the pdarray.dtype is not
+            a supported dtype
+        """
         # hostname is the hostname to send to
         generic_msg(cmd="sendArray", args={"arg1": self,
                                            "hostname": hostname,
@@ -3322,6 +3354,39 @@ def unregister_pdarray_by_name(user_defined_name: str) -> None:
     return unregister(user_defined_name)
 
 def receive_array(hostname, port):
+    """
+    Receive a pdarray sent by `pdarray.send_array()`.
+
+    Parameters
+    ----------
+    hostname : str
+        The hostname of the pdarray that sent the array
+    port : int_scalars
+        The port to send the array over. This needs to be an
+        open port (i.e., not one that the Arkouda server is
+        running on). This will open up `numLocales` ports,
+        each of which in succession, so will use ports of the
+        range {port..(port+numLocales)} (e.g., running an
+        Arkouda server of 4 nodes, port 1234 is passed as
+        `port`, Arkouda will use ports 1234, 1235, 1236,
+        and 1237 to send the array data).
+        This port much match the port passed to the call to
+        `pdarray.send_array()`.
+
+    Returns
+    -------
+    pdarray
+        The pdarray sent from the sending server to the current
+        receiving server.
+
+    Raises
+    ------
+    ValueError
+        Raised if the op is not within the pdarray.BinOps set
+    TypeError
+        Raised if other is not a pdarray or the pdarray.dtype is not
+        a supported dtype
+    """
     repMsg = generic_msg(cmd="receiveArray", args={"hostname": hostname,
                                                    "port"    : port})
     return create_pdarray(repMsg)
