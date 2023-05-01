@@ -395,7 +395,7 @@ class pdarray:
             and 1237 to send the array data).
             This port much match the port passed to the call to
             `ak.receive_array()`.
-        
+
 
         Returns
         -------
@@ -3353,7 +3353,8 @@ def unregister_pdarray_by_name(user_defined_name: str) -> None:
     )
     return unregister(user_defined_name)
 
-def receive_array(hostname, port):
+
+def receive_array(hostname : str, port : int_scalars):
     """
     Receive a pdarray sent by `pdarray.send_array()`.
 
@@ -3390,6 +3391,7 @@ def receive_array(hostname, port):
     repMsg = generic_msg(cmd="receiveArray", args={"hostname": hostname,
                                                    "port"    : port})
     return create_pdarray(repMsg)
+
 
 # TODO In the future move this to a specific errors file
 class RegistrationError(Exception):
