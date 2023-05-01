@@ -254,7 +254,9 @@ module TransferMsg
       return (blo, bhi);
     }
 
-    proc intCeilXDivByY(x, y) do return 1 + (x - 1)/y;
+    proc intCeilXDivByY(x, y) {
+      return 1 + (x - 1)/y;
+    }
 
     proc bytesToLocArray(size:int, type t, ref data:bytes) throws {
       var res = makeArrayFromPtr(data.c_str():c_void_ptr:c_ptr(t), size:uint);
