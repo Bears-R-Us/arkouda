@@ -18,6 +18,8 @@ module EfuncMsg
     
     use AryUtil;
 
+    use ArkoudaBitOpsCompat;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const eLogger = new Logger(logLevel, logChannel);
@@ -106,7 +108,7 @@ module EfuncMsg
                     }
                     when "popcount" {
                         var a = st.addEntry(rname, e.size, int);
-                        a.a = popcount(e.a);
+                        a.a = popCount(e.a);
                     }
                     when "parity" {
                         var a = st.addEntry(rname, e.size, int);
@@ -220,7 +222,7 @@ module EfuncMsg
                 {
                     when "popcount" {
                         var a = st.addEntry(rname, e.size, uint);
-                        a.a = popcount(e.a);
+                        a.a = popCount(e.a);
                     }
                     when "clz" {
                         var a = st.addEntry(rname, e.size, uint);
