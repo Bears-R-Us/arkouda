@@ -8,6 +8,7 @@ module RandArray {
   use SipHash;
   use ServerConfig;
   private use IO;
+  use Math;
 
   use ArkoudaMapCompat;
   
