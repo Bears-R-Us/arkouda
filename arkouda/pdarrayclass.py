@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import builtins
 import json
+from functools import reduce
+from math import ceil
 from typing import List, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np  # type: ignore
@@ -1546,7 +1548,12 @@ class pdarray:
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
         """
-        from arkouda.io import _mode_str_to_int, _file_type_to_int, _get_hdf_filetype, _repack_hdf
+        from arkouda.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
@@ -2699,7 +2706,7 @@ def popcount(pda: pdarray) -> pdarray:
 
     Parameters
     ----------
-    pda : pdarray, int64, uint64
+    pda : pdarray, int64, uint64, bigint
         Input array (must be integral).
 
     Returns
@@ -2710,7 +2717,7 @@ def popcount(pda: pdarray) -> pdarray:
     Raises
     ------
     TypeError
-        If input array is not int64 or uint64
+        If input array is not int64, uint64, or bigint
 
     Examples
     --------
@@ -2718,16 +2725,21 @@ def popcount(pda: pdarray) -> pdarray:
     >>> ak.popcount(A)
     array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
     """
-    if pda.dtype not in [akint64, akuint64]:
-        raise TypeError("BitOps only supported on int64 and uint64 arrays")
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "popcount",
-            "array": pda,
-        },
-    )
-    return create_pdarray(repMsg)
+    if pda.dtype not in [akint64, akuint64, bigint]:
+        raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
+    if pda.dtype == bigint:
+        from builtins import sum
+
+        return sum(popcount(a) for a in pda.bigint_to_uint_arrays())
+    else:
+        repMsg = generic_msg(
+            cmd="efunc",
+            args={
+                "func": "popcount",
+                "array": pda,
+            },
+        )
+        return create_pdarray(repMsg)
 
 
 def parity(pda: pdarray) -> pdarray:
@@ -2736,7 +2748,7 @@ def parity(pda: pdarray) -> pdarray:
 
     Parameters
     ----------
-    pda : pdarray, int64, uint64
+    pda : pdarray, int64, uint64, bigint
         Input array (must be integral).
 
     Returns
@@ -2747,7 +2759,7 @@ def parity(pda: pdarray) -> pdarray:
     Raises
     ------
     TypeError
-        If input array is not int64 or uint64
+        If input array is not int64, uint64, or bigint
 
     Examples
     --------
@@ -2755,16 +2767,20 @@ def parity(pda: pdarray) -> pdarray:
     >>> ak.parity(A)
     array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
     """
-    if pda.dtype not in [akint64, akuint64]:
-        raise TypeError("BitOps only supported on int64 and uint64 arrays")
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "parity",
-            "array": pda,
-        },
-    )
-    return create_pdarray(repMsg)
+    if pda.dtype not in [akint64, akuint64, bigint]:
+        raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
+    if pda.dtype == bigint:
+        # XOR the parity of the underlying uint array to get the parity of the bigint array
+        return reduce(lambda x, y: x ^ y, [parity(a) for a in pda.bigint_to_uint_arrays()])
+    else:
+        repMsg = generic_msg(
+            cmd="efunc",
+            args={
+                "func": "parity",
+                "array": pda,
+            },
+        )
+        return create_pdarray(repMsg)
 
 
 def clz(pda: pdarray) -> pdarray:
@@ -2773,7 +2789,7 @@ def clz(pda: pdarray) -> pdarray:
 
     Parameters
     ----------
-    pda : pdarray, int64, uint64
+    pda : pdarray, int64, uint64, bigint
         Input array (must be integral).
 
     Returns
@@ -2784,7 +2800,7 @@ def clz(pda: pdarray) -> pdarray:
     Raises
     ------
     TypeError
-        If input array is not int64 or uint64
+        If input array is not int64, uint64, or bigint
 
     Examples
     --------
@@ -2792,16 +2808,47 @@ def clz(pda: pdarray) -> pdarray:
     >>> ak.clz(A)
     array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
     """
-    if pda.dtype not in [akint64, akuint64]:
-        raise TypeError("BitOps only supported on int64 and uint64 arrays")
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "clz",
-            "array": pda,
-        },
-    )
-    return create_pdarray(repMsg)
+    if pda.dtype not in [akint64, akuint64, bigint]:
+        raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
+    if pda.dtype == bigint:
+        if pda.max_bits == -1:
+            raise ValueError("max_bits must be set to count leading zeros")
+        from arkouda.numeric import where
+        from arkouda.pdarraycreation import zeros
+
+        uint_arrs = pda.bigint_to_uint_arrays()
+        # we need to adjust the number of leading zeros to account for max_bits
+        mod_max_bits, div_max_bits = pda.max_bits % 64, ceil(pda.max_bits / 64)
+        # if we don't fall on a 64 bit boundary, we need to subtract off
+        # leading zeros that aren't settable due to max_bits restrictions
+        sub_off = 0 if mod_max_bits == 0 else 64 - mod_max_bits
+        # we can have fewer uint arrays than max_bits allows if all the high bits are zero
+        # i.e. ak.arange(10, dtype=ak.bigint, max_bits=256) will only store one uint64 array,
+        # so we need to add on any leading zeros from empty higher bit arrays that were excluded
+        add_on = 64 * (div_max_bits - len(uint_arrs))
+
+        lz = zeros(pda.size, dtype=akuint64)
+        previously_non_zero = zeros(pda.size, dtype=bool)
+        for a in uint_arrs:
+            # if a bit was set somewhere in the higher bits,
+            # we don't want to add it's clz to our leading zeros count
+            # so only update positions where we've only seen zeros
+            lz += where(previously_non_zero, 0, clz(a))
+            # OR in the places where the current bits have a bit set
+            previously_non_zero |= a != 0
+            if all(previously_non_zero):
+                break
+        lz += add_on - sub_off
+        return lz
+    else:
+        repMsg = generic_msg(
+            cmd="efunc",
+            args={
+                "func": "clz",
+                "array": pda,
+            },
+        )
+        return create_pdarray(repMsg)
 
 
 def ctz(pda: pdarray) -> pdarray:
@@ -2810,7 +2857,7 @@ def ctz(pda: pdarray) -> pdarray:
 
     Parameters
     ----------
-    pda : pdarray, int64, uint64
+    pda : pdarray, int64, uint64, bigint
         Input array (must be integral).
 
     Returns
@@ -2825,7 +2872,7 @@ def ctz(pda: pdarray) -> pdarray:
     Raises
     ------
     TypeError
-        If input array is not int64 or uint64
+        If input array is not int64, uint64, or bigint
 
     Examples
     --------
@@ -2833,16 +2880,45 @@ def ctz(pda: pdarray) -> pdarray:
     >>> ak.ctz(A)
     array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
     """
-    if pda.dtype not in [akint64, akuint64]:
-        raise TypeError("BitOps only supported on int64 and uint64 arrays")
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "ctz",
-            "array": pda,
-        },
-    )
-    return create_pdarray(repMsg)
+    if pda.dtype not in [akint64, akuint64, bigint]:
+        raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
+    if pda.dtype == bigint:
+        # we don't need max_bits to be set because that only limits the high bits
+        # which is only relevant when ctz(0) which is defined to be 0
+        from arkouda.numeric import where
+        from arkouda.pdarraycreation import zeros
+
+        # reverse the list, so we visit low bits first
+        reversed_uint_arrs = pda.bigint_to_uint_arrays()[::-1]
+        tz = zeros(pda.size, dtype=akuint64)
+        previously_non_zero = zeros(pda.size, dtype=bool)
+        for a in reversed_uint_arrs:
+            # if the lower bits are all zero, we want trailing zeros
+            # to be 64 because the higher bits could still be set.
+            # But ctz(0) is defined to be 0, so use 64 in that case
+            a_is_zero = a == 0
+            num_zeros = where(a_is_zero, 64, ctz(a))
+            # if a bit was set somewhere in the lower bits,
+            # we don't want to add it's ctz to our trailing zeros count
+            # so only update positions where we've only seen zeros
+            tz += where(previously_non_zero, 0, num_zeros)
+            # OR in the places where the current bits have a bit set
+            previously_non_zero |= ~a_is_zero
+            if all(previously_non_zero):
+                break
+        if not all(previously_non_zero):
+            # ctz(0) is defined to be 0
+            tz[~previously_non_zero] = 0
+        return tz
+    else:
+        repMsg = generic_msg(
+            cmd="efunc",
+            args={
+                "func": "ctz",
+                "array": pda,
+            },
+        )
+        return create_pdarray(repMsg)
 
 
 def rotl(x, rot) -> pdarray:
