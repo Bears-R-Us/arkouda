@@ -1355,12 +1355,12 @@ Functions
    Find the population (number of bits set) for each integer in an array.
 
    :param pda: Input array (must be integral).
-   :type pda: pdarray, int64, uint64
+   :type pda: pdarray, int64, uint64, bigint
 
    :returns: **population** -- The number of bits set (1) in each element
    :rtype: pdarray
 
-   :raises TypeError: If input array is not int64 or uint64
+   :raises TypeError: If input array is not int64, uint64, or bigint
 
    .. rubric:: Examples
 
@@ -1374,12 +1374,12 @@ Functions
    Find the bit parity (XOR of all bits) for each integer in an array.
 
    :param pda: Input array (must be integral).
-   :type pda: pdarray, int64, uint64
+   :type pda: pdarray, int64, uint64, bigint
 
    :returns: **parity** -- The parity of each element: 0 if even number of bits set, 1 if odd.
    :rtype: pdarray
 
-   :raises TypeError: If input array is not int64 or uint64
+   :raises TypeError: If input array is not int64, uint64, or bigint
 
    .. rubric:: Examples
 
@@ -1393,12 +1393,12 @@ Functions
    Count leading zeros for each integer in an array.
 
    :param pda: Input array (must be integral).
-   :type pda: pdarray, int64, uint64
+   :type pda: pdarray, int64, uint64, bigint
 
    :returns: **lz** -- The number of leading zeros of each element.
    :rtype: pdarray
 
-   :raises TypeError: If input array is not int64 or uint64
+   :raises TypeError: If input array is not int64, uint64, or bigint
 
    .. rubric:: Examples
 
@@ -1412,7 +1412,7 @@ Functions
    Count trailing zeros for each integer in an array.
 
    :param pda: Input array (must be integral).
-   :type pda: pdarray, int64, uint64
+   :type pda: pdarray, int64, uint64, bigint
 
    :returns: **lz** -- The number of trailing zeros of each element.
    :rtype: pdarray
@@ -1421,7 +1421,7 @@ Functions
 
    ctz(0) is defined to be zero.
 
-   :raises TypeError: If input array is not int64 or uint64
+   :raises TypeError: If input array is not int64, uint64, or bigint
 
    .. rubric:: Examples
 

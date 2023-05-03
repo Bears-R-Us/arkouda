@@ -7671,7 +7671,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dd><p>Find the population (number of bits set) for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>population</strong> – The number of bits set (1) in each element</p>
@@ -7680,7 +7680,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – If input array is not int64 or uint64</p>
+<dd class="field-even"><p><strong>TypeError</strong> – If input array is not int64, uint64, or bigint</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -7697,7 +7697,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dd><p>Find the bit parity (XOR of all bits) for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>parity</strong> – The parity of each element: 0 if even number of bits set, 1 if odd.</p>
@@ -7706,7 +7706,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – If input array is not int64 or uint64</p>
+<dd class="field-even"><p><strong>TypeError</strong> – If input array is not int64, uint64, or bigint</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -7723,7 +7723,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dd><p>Count leading zeros for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>lz</strong> – The number of leading zeros of each element.</p>
@@ -7732,7 +7732,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – If input array is not int64 or uint64</p>
+<dd class="field-even"><p><strong>TypeError</strong> – If input array is not int64, uint64, or bigint</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -7749,7 +7749,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dd><p>Count trailing zeros for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>lz</strong> – The number of trailing zeros of each element.</p>
@@ -7762,7 +7762,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <p>ctz(0) is defined to be zero.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>TypeError</strong> – If input array is not int64 or uint64</p>
+<dd class="field-odd"><p><strong>TypeError</strong> – If input array is not int64, uint64, or bigint</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
