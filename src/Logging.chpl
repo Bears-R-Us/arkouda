@@ -189,7 +189,7 @@ module Logging {
         }
          
         proc generateDateTimeString() throws {
-            var dts = datetime.now():string;
+            var dts = dateTime.now():string;
             var vals = dts.split("T");
             var cd = vals(0);
             var rawCms = vals(1).split(".");
