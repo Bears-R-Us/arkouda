@@ -347,7 +347,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   /* The date that is `timestamp` seconds from the epoch */
-  proc type date.fromTimestamp(timestamp) {
+  proc type date.createFromTimestamp(timestamp) {
     const sec = timestamp: int;
     const us = ((timestamp-sec) * 1000000 + 0.5): int;
     const td = new timedelta(seconds=sec, microseconds=us);
@@ -1124,13 +1124,13 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
   }
 
   /* The `dateTime` that is `timestamp` seconds from the epoch */
-  proc type dateTime.fromTimestamp(timestamp: real) {
-    return dateTime.fromTimestamp(timestamp, nil);
+  proc type dateTime.createFromTimestamp(timestamp: real) {
+    return dateTime.createFromTimestamp(timestamp, nil);
   }
 
   /* The `dateTime` that is `timestamp` seconds from the epoch */
   @unstable("tz is unstable; its type may change in the future")
-  proc type dateTime.fromTimestamp(timestamp: real,
+  proc type dateTime.createFromTimestamp(timestamp: real,
                                    in tz: shared Timezone?) {
     if tz.borrow() == nil {
       var t = (timestamp: int, ((timestamp - timestamp: int)*1000000): int);
