@@ -1,0 +1,21 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaBitOpsCompat
+
+ArkoudaBitOpsCompat
+===================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaBitOpsCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaBitOpsCompat;
+
+.. function:: proc popCount(x: integral)
+
