@@ -57,23 +57,21 @@ The three components of the `registerFunction` method are the `cmd` string, the 
 
 It is important the Chapel function is formatted correctly or the server will not compile. The expected formatting for a `serverFunctionMsg` is:
 ```chapel
-proc serverFunctionMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {}
+proc serverFunctionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {}
 ```
 
 The parameters in this function each server a specific purpose:
 - `cmd` is the command string used to access this function. It is used mostly for debugging as the `cmd` string used to access the function will be captured in the logger messages.
-- `payload` is the JSON string of arguments passed from the client.
-- `argSize` lets Chapel know how many arguments are in the payload JSON so it can properly create a map using the JSON.
+- `msgArgs` contains parameters required for the message processing. The information about the number of arguments is bundled and will be paired accordingly with the denoted passed types. Individual arguments will need to be extracted on the server side.
 - `st: borrowed SymTab` is a reference parameter to the Server's Symbol Table. The Symbol Table acts like Arkouda's database; storing all information related to a data structure that can then be referenced from the Client without having to pass large amounts of data back and forth.
 
-All messages sent to the server are in JSON format. Before any arguments sent from the client can be used, they must be parsed. To do this use the function `parseMessageArgs(payload, argSize)`. This will parse your message arguments into a Map that can then be accessed using accessor methods. The most common of these accessor methods is `getValueOf(argName)` which will return the value of an argument that matches the provided name.
+All messages sent to the server are in JSON format. The JSON message sent to the server is used to generate a MessageArgs object automatically. These objects map the parameter name to the value using accessor methods. The values are always strings, but functions are provided to access it as the correct type for processing. The most common of these accessor methods is `getValueOf(argName)` which will return the value of an argument that matches the provided name.
 
-For example, assuming the server request in the above section is what is being received, there are two arguments in the JSON, `arg1` and `arg2`. To access these arguments in Chapel, we will parse the message, or `payload`, into a variable called `msgArgs`. Then using the `getValueOf()` accessor method, we will set variables `arg1` and `arg2` equal to the values of their corresponding JSON arguments.
+For example, assuming the server request in the above section is what is being received, there are two arguments in the JSON, `arg1` and `arg2`. To access these arguments in Chapel, we will use the `msgArgs` variable that is automatically generated. Then using the `getValueOf()` accessor method, we will set variables `arg1` and `arg2` equal to the values of their corresponding JSON arguments.
 
 ```chapel
-var msgArgs = parseMessageArgs(payload, argSize);
 var arg1 = msgArgs.getValueOf("arg1"); // str dtype example
-var arg2 = msgArgs.getIntValue("arg2"); // int dtype example
+var arg2 = msgArgs.get("arg2").getIntValue(); // int dtype example
 ```
 
 Now the values of `arg1` and `arg2` are available for use within this Chapel function. Note that the function used can differ depending on the dtype of the expected value. `msgArgs.getValueOf()` is the base case that will return your value as a string. But there are other accessor methods that will cast the return automatically to various types:
