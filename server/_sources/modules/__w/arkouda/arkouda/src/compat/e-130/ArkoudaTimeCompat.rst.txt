@@ -59,7 +59,7 @@ performance testing.
 
    The maximum year allowed in `date` objects 
 
-.. data:: const unixEpoch = new datetime(1970, 1, 1)
+.. data:: const unixEpoch = new dateTime(1970, 1, 1)
 
    The Unix Epoch date and time 
 
@@ -125,7 +125,7 @@ performance testing.
 
    A `date` object representing the current day 
 
-.. method:: proc type date.fromTimestamp(timestamp)
+.. method:: proc type date.createFromTimestamp(timestamp)
 
    The date that is `timestamp` seconds from the epoch 
 
@@ -296,7 +296,7 @@ performance testing.
 
    Reads this `time` from ISO format: hh:mm:ss.sss 
 
-.. record:: datetime
+.. record:: dateTime
 
    A record representing a combined `date` and `time` 
 
@@ -311,43 +311,43 @@ performance testing.
 
    .. method:: proc type resolution
 
-      The minimum non-zero difference between two datetimes 
+      The minimum non-zero difference between two dateTimes 
 
    .. method:: proc year
 
-      The year represented by this `datetime` value 
+      The year represented by this `dateTime` value 
 
    .. method:: proc month
 
-      The month represented by this `datetime` value 
+      The month represented by this `dateTime` value 
 
    .. method:: proc day
 
-      The day represented by this `datetime` value 
+      The day represented by this `dateTime` value 
 
    .. method:: proc hour
 
-      The hour represented by this `datetime` value 
+      The hour represented by this `dateTime` value 
 
    .. method:: proc minute
 
-      The minute represented by this `datetime` value 
+      The minute represented by this `dateTime` value 
 
    .. method:: proc second
 
-      The second represented by this `datetime` value 
+      The second represented by this `dateTime` value 
 
    .. method:: proc microsecond
 
-      The microsecond represented by this `datetime` value 
+      The microsecond represented by this `dateTime` value 
 
    .. method:: proc timezone
 
-      The timezone represented by this `datetime` value 
+      The timezone represented by this `dateTime` value 
 
-.. method:: proc datetime.init(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0, microsecond: int = 0, in tz)
+.. method:: proc dateTime.init(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0, microsecond: int = 0, in tz)
 
-   Initialize a new `datetime` value from the given `year`, `month`, `day`,
+   Initialize a new `dateTime` value from the given `year`, `month`, `day`,
    `hour`, `minute`, `second`, `microsecond` and timezone.  The `year`,
    `month`, and `day` arguments are required, the rest are optional.
    
@@ -356,75 +356,75 @@ performance testing.
 
       tz is unstable; its type may change in the future
 
-.. method:: proc datetime.init(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0, microsecond: int = 0)
+.. method:: proc dateTime.init(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0, microsecond: int = 0)
 
-   Initialize a new `datetime` value from the given `year`, `month`, `day`,
+   Initialize a new `dateTime` value from the given `year`, `month`, `day`,
    `hour`, `minute`, `second`, `microsecond` and timezone.  The `year`,
    `month`, and `day` arguments are required, the rest are optional.
    
 
-.. method:: proc datetime.init(d: date, t: time)
+.. method:: proc dateTime.init(d: date, t: time)
 
-   Initialize a new `datetime` value from the given `date` and `time` 
+   Initialize a new `dateTime` value from the given `date` and `time` 
 
-.. method:: proc type datetime.now()
+.. method:: proc type dateTime.now()
 
-   Return a `datetime` value representing the current time and date 
+   Return a `dateTime` value representing the current time and date 
 
-.. method:: proc type datetime.now(in tz: shared Timezone?)
+.. method:: proc type dateTime.now(in tz: shared Timezone?)
 
-   Return a `datetime` value representing the current time and date 
+   Return a `dateTime` value representing the current time and date 
 
-.. method:: proc type datetime.utcNow()
+.. method:: proc type dateTime.utcNow()
 
-   Return a `datetime` value representing the current time and date in UTC 
+   Return a `dateTime` value representing the current time and date in UTC 
 
-.. method:: proc type datetime.fromTimestamp(timestamp: real)
+.. method:: proc type dateTime.createFromTimestamp(timestamp: real)
 
-   The `datetime` that is `timestamp` seconds from the epoch 
+   The `dateTime` that is `timestamp` seconds from the epoch 
 
-.. method:: proc type datetime.fromTimestamp(timestamp: real, in tz: shared Timezone?)
+.. method:: proc type dateTime.createFromTimestamp(timestamp: real, in tz: shared Timezone?)
 
-   The `datetime` that is `timestamp` seconds from the epoch 
+   The `dateTime` that is `timestamp` seconds from the epoch 
 
    .. warning::
 
       tz is unstable; its type may change in the future
 
-.. method:: proc type datetime.utcFromTimestamp(timestamp)
+.. method:: proc type dateTime.utcFromTimestamp(timestamp)
 
-   The `datetime` that is `timestamp` seconds from the epoch in UTC 
+   The `dateTime` that is `timestamp` seconds from the epoch in UTC 
 
-.. method:: proc type datetime.fromOrdinal(ordinal)
+.. method:: proc type dateTime.fromOrdinal(ordinal)
 
-   The `datetime` that is `ordinal` days from 1-1-0001 
+   The `dateTime` that is `ordinal` days from 1-1-0001 
 
-.. method:: proc type datetime.combine(d: date, t: time)
+.. method:: proc type dateTime.combine(d: date, t: time)
 
-   Form a `datetime` value from a given `date` and `time` 
+   Form a `dateTime` value from a given `date` and `time` 
 
-.. method:: proc datetime.getdate()
+.. method:: proc dateTime.getdate()
 
-   Get the `date` portion of the `datetime` value 
+   Get the `date` portion of the `dateTime` value 
 
-.. method:: proc datetime.gettime()
+.. method:: proc dateTime.gettime()
 
-   Get the `time` portion of the `datetime` value, with `tz` = nil 
+   Get the `time` portion of the `dateTime` value, with `tz` = nil 
 
-.. method:: proc datetime.timetz()
+.. method:: proc dateTime.timetz()
 
-   Get the `time` portion of the `datetime` value including the
+   Get the `time` portion of the `dateTime` value including the
    `tz` field
    
 
-.. method:: proc datetime.replace(year = -1, month = -1, day = -1, hour = -1, minute = -1, second = -1, microsecond = -1, in tz = this.timezone)
+.. method:: proc dateTime.replace(year = -1, month = -1, day = -1, hour = -1, minute = -1, second = -1, microsecond = -1, in tz = this.timezone)
 
    Replace the `year`, `month`, `day`, `hour`, `minute`, `second`,
-   `microsecond`, or `tz` to form a new `datetime` object. All
+   `microsecond`, or `tz` to form a new `dateTime` object. All
    arguments are optional.
    
 
-.. method:: proc datetime.astimezone(in tz: shared Timezone)
+.. method:: proc dateTime.astimezone(in tz: shared Timezone)
 
    Return the date and time converted into the timezone in the argument 
 
@@ -432,99 +432,99 @@ performance testing.
 
       tz is unstable; its type may change in the future
 
-.. method:: proc datetime.utcOffset()
+.. method:: proc dateTime.utcOffset()
 
    Return the offset from UTC 
 
-.. method:: proc datetime.dst()
+.. method:: proc dateTime.dst()
 
    Return the daylight saving time offset 
 
-.. method:: proc datetime.tzname()
+.. method:: proc dateTime.tzname()
 
-   Return the name of the timezone for this `datetime` value 
+   Return the name of the timezone for this `dateTime` value 
 
-.. method:: proc datetime.timetuple()
+.. method:: proc dateTime.timetuple()
 
    Return a filled record matching the C `struct tm` type for the given
-   `datetime` 
+   `dateTime` 
 
    .. warning::
 
-      'datetime.timetuple' is unstable
+      'dateTime.timetuple' is unstable
 
-.. method:: proc datetime.utctimetuple()
+.. method:: proc dateTime.utctimetuple()
 
    Return a filled record matching the C `struct tm` type for the given
-   `datetime` in UTC
+   `dateTime` in UTC
    
 
    .. warning::
 
-      'datetime.utctimetuple' is unstable
+      'dateTime.utctimetuple' is unstable
 
-.. method:: proc datetime.toOrdinal()
+.. method:: proc dateTime.toOrdinal()
 
-   Return the number of days since 1-1-0001 this `datetime` represents 
+   Return the number of days since 1-1-0001 this `dateTime` represents 
 
-.. method:: proc datetime.weekday()
+.. method:: proc dateTime.weekday()
 
    Return the day of the week as a `dayOfWeek`.
    `Monday` == 0, `Sunday` == 6
    
 
-.. method:: proc datetime.isoWeekday()
+.. method:: proc dateTime.isoWeekday()
 
    Return the day of the week as an `isoDayOfWeek`.
    `Monday` == 1, `Sunday` == 7
    
 
-.. method:: proc datetime.isoCalendar()
+.. method:: proc dateTime.isoCalendar()
 
    Return the ISO date as a tuple containing the ISO year, ISO week number,
    and ISO day of the week
    
 
-.. method:: proc datetime.isoFormat(sep = "T")
+.. method:: proc dateTime.isoFormat(sep = "T")
 
-   Return the `datetime` as a `string` in ISO format 
+   Return the `dateTime` as a `string` in ISO format 
 
-.. method:: proc type datetime.strptime(date_string: string, format: string)
+.. method:: proc type dateTime.strptime(date_string: string, format: string)
 
-   Create a `datetime` as described by the `date_string` and
+   Create a `dateTime` as described by the `date_string` and
    `format` string.  Note that this routine currently only supports
    the format strings of C's strptime().
    
 
    .. warning::
 
-      'datetime.strptime' is unstable
+      'dateTime.strptime' is unstable
 
-.. method:: proc datetime.strftime(fmt: string)
+.. method:: proc dateTime.strftime(fmt: string)
 
-   Create a `string` from a `datetime` matching the `format` string 
+   Create a `string` from a `dateTime` matching the `format` string 
 
    .. warning::
 
-      'datetime.strftime' is unstable
+      'dateTime.strftime' is unstable
 
-.. method:: proc datetime.ctime()
+.. method:: proc dateTime.ctime()
 
-   Return a `string` from a `datetime` in the form:
+   Return a `string` from a `dateTime` in the form:
    Wed Dec  4 20:30:40 2002
    
 
    .. warning::
 
-      'datetime.ctime' is unstable
+      'dateTime.ctime' is unstable
 
-.. method:: proc datetime.writeThis(f) throws
+.. method:: proc dateTime.writeThis(f) throws
 
-   Writes this `datetime` in ISO format: YYYY-MM-DDThh:mm:ss.sss 
+   Writes this `dateTime` in ISO format: YYYY-MM-DDThh:mm:ss.sss 
 
-.. method:: proc datetime.readThis(f) throws
+.. method:: proc dateTime.readThis(f) throws
 
-   Reads this `datetime` from ISO format: YYYY-MM-DDThh:mm:ss.sss 
+   Reads this `dateTime` from ISO format: YYYY-MM-DDThh:mm:ss.sss 
 
 .. record:: timedelta
 
@@ -596,19 +596,19 @@ performance testing.
    derived from it. 
 
 
-   .. method:: proc utcOffset(dt: datetime): timedelta
+   .. method:: proc utcOffset(dt: dateTime): timedelta
 
       The offset from UTC this class represents 
 
-   .. method:: proc dst(dt: datetime): timedelta
+   .. method:: proc dst(dt: dateTime): timedelta
 
       The `timedelta` for daylight saving time 
 
-   .. method:: proc tzname(dt: datetime): string
+   .. method:: proc tzname(dt: dateTime): string
 
       The name of this time zone 
 
-   .. method:: proc fromUtc(dt: datetime): datetime
+   .. method:: proc fromUtc(dt: dateTime): dateTime
 
       Convert a `time` in UTC to this time zone 
 

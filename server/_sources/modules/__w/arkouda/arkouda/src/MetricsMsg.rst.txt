@@ -225,17 +225,17 @@ or
 
    .. attribute:: var scope: MetricScope
 
-   .. attribute:: var timestamp: datetime
+   .. attribute:: var timestamp: dateTime
 
    .. attribute:: var value: real
 
-   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.GLOBAL, timestamp: datetime = datetime.now(), value: real)
+   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.GLOBAL, timestamp: dateTime = dateTime.now(), value: real)
 
 .. class:: UserMetric : Metric
 
    .. attribute:: var user: string
 
-   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.USER, timestamp: datetime = datetime.now(), value: real, user: string)
+   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.USER, timestamp: dateTime = dateTime.now(), value: real, user: string)
 
 .. class:: ArrayMetric : Metric
 
@@ -245,7 +245,7 @@ or
 
    .. attribute:: var size: int
 
-   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.GLOBAL, timestamp: datetime = datetime.now(), value: real, cmd: string, dType: DType, size: int)
+   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.GLOBAL, timestamp: dateTime = dateTime.now(), value: real, cmd: string, dType: DType, size: int)
 
 .. class:: LocaleInfo
 
@@ -283,7 +283,7 @@ or
 
    .. attribute:: var locale_hostname: string
 
-   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.LOCALE, timestamp: datetime = datetime.now(), value: real, locale_num: int, locale_name: string, locale_hostname: string)
+   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.LOCALE, timestamp: dateTime = dateTime.now(), value: real, locale_num: int, locale_name: string, locale_hostname: string)
 
 .. function:: proc metricsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
 

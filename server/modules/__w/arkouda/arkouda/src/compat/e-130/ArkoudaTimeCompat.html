@@ -165,7 +165,7 @@ performance testing.</p>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ArkoudaTimeCompat.unixEpoch">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">unixEpoch</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">datetime(1970,</span> <span class="pre">1,</span> <span class="pre">1)</span><a class="headerlink" href="#ArkoudaTimeCompat.unixEpoch" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">unixEpoch</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">dateTime(1970,</span> <span class="pre">1,</span> <span class="pre">1)</span><a class="headerlink" href="#ArkoudaTimeCompat.unixEpoch" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Unix Epoch date and time</p>
 </dd></dl>
 
@@ -253,8 +253,8 @@ valid ranges are:</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.date.fromTimestamp">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">date.</span></span><span class="sig-name descname"><span class="pre">fromTimestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">timestamp</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.date.fromTimestamp" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.date.createFromTimestamp">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">date.</span></span><span class="sig-name descname"><span class="pre">createFromTimestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">timestamp</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.date.createFromTimestamp" title="Permalink to this definition">¶</a></dt>
 <dd><p>The date that is <cite>timestamp</cite> seconds from the epoch</p>
 </dd></dl>
 
@@ -483,81 +483,81 @@ and ISO day of the week</p>
 </dd></dl>
 
 <dl class="chpl record">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">datetime</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">dateTime</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>A record representing a combined <cite>date</cite> and <cite>time</cite></p>
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.min">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">min</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.min" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.min">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">min</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.min" title="Permalink to this definition">¶</a></dt>
 <dd><p>The minimum representable <cite>date</cite> and <cite>time</cite></p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.max">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">max</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.max" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.max">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">max</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.max" title="Permalink to this definition">¶</a></dt>
 <dd><p>The maximum representable <cite>date</cite> and <cite>time</cite></p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.resolution">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">resolution</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.resolution" title="Permalink to this definition">¶</a></dt>
-<dd><p>The minimum non-zero difference between two datetimes</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.resolution">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">resolution</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum non-zero difference between two dateTimes</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.year">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">year</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.year" title="Permalink to this definition">¶</a></dt>
-<dd><p>The year represented by this <cite>datetime</cite> value</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.year">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">year</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.year" title="Permalink to this definition">¶</a></dt>
+<dd><p>The year represented by this <cite>dateTime</cite> value</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.month">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">month</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.month" title="Permalink to this definition">¶</a></dt>
-<dd><p>The month represented by this <cite>datetime</cite> value</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.month">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">month</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.month" title="Permalink to this definition">¶</a></dt>
+<dd><p>The month represented by this <cite>dateTime</cite> value</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.day">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">day</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.day" title="Permalink to this definition">¶</a></dt>
-<dd><p>The day represented by this <cite>datetime</cite> value</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.day">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">day</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.day" title="Permalink to this definition">¶</a></dt>
+<dd><p>The day represented by this <cite>dateTime</cite> value</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.hour">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">hour</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.hour" title="Permalink to this definition">¶</a></dt>
-<dd><p>The hour represented by this <cite>datetime</cite> value</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.hour">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">hour</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.hour" title="Permalink to this definition">¶</a></dt>
+<dd><p>The hour represented by this <cite>dateTime</cite> value</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.minute">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">minute</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.minute" title="Permalink to this definition">¶</a></dt>
-<dd><p>The minute represented by this <cite>datetime</cite> value</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.minute">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">minute</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.minute" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minute represented by this <cite>dateTime</cite> value</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.second">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">second</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.second" title="Permalink to this definition">¶</a></dt>
-<dd><p>The second represented by this <cite>datetime</cite> value</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.second">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">second</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.second" title="Permalink to this definition">¶</a></dt>
+<dd><p>The second represented by this <cite>dateTime</cite> value</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.microsecond">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">microsecond</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.microsecond" title="Permalink to this definition">¶</a></dt>
-<dd><p>The microsecond represented by this <cite>datetime</cite> value</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.microsecond">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">microsecond</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.microsecond" title="Permalink to this definition">¶</a></dt>
+<dd><p>The microsecond represented by this <cite>dateTime</cite> value</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.timezone">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">timezone</span></span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.timezone" title="Permalink to this definition">¶</a></dt>
-<dd><p>The timezone represented by this <cite>datetime</cite> value</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.timezone">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">timezone</span></span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.timezone" title="Permalink to this definition">¶</a></dt>
+<dd><p>The timezone represented by this <cite>dateTime</cite> value</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">year:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">month:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">day:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">hour:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">minute:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">second:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">microsecond:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">tz</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize a new <cite>datetime</cite> value from the given <cite>year</cite>, <cite>month</cite>, <cite>day</cite>,
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">year:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">month:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">day:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">hour:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">minute:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">second:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">microsecond:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">tz</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a new <cite>dateTime</cite> value from the given <cite>year</cite>, <cite>month</cite>, <cite>day</cite>,
 <cite>hour</cite>, <cite>minute</cite>, <cite>second</cite>, <cite>microsecond</cite> and timezone.  The <cite>year</cite>,
 <cite>month</cite>, and <cite>day</cite> arguments are required, the rest are optional.</p>
 <div class="admonition warning">
@@ -568,46 +568,46 @@ and ISO day of the week</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">year:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">month:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">day:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">hour:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">minute:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">second:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">microsecond:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><span class="sig-paren">)</span></dt>
-<dd><p>Initialize a new <cite>datetime</cite> value from the given <cite>year</cite>, <cite>month</cite>, <cite>day</cite>,
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">year:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">month:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">day:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">hour:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">minute:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">second:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">microsecond:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Initialize a new <cite>dateTime</cite> value from the given <cite>year</cite>, <cite>month</cite>, <cite>day</cite>,
 <cite>hour</cite>, <cite>minute</cite>, <cite>second</cite>, <cite>microsecond</cite> and timezone.  The <cite>year</cite>,
 <cite>month</cite>, and <cite>day</cite> arguments are required, the rest are optional.</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d:</span> <span class="pre">date</span></em>, <em class="sig-param"><span class="pre">t:</span> <span class="pre">time</span></em><span class="sig-paren">)</span></dt>
-<dd><p>Initialize a new <cite>datetime</cite> value from the given <cite>date</cite> and <cite>time</cite></p>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d:</span> <span class="pre">date</span></em>, <em class="sig-param"><span class="pre">t:</span> <span class="pre">time</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Initialize a new <cite>dateTime</cite> value from the given <cite>date</cite> and <cite>time</cite></p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.now">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">now</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.now" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>datetime</cite> value representing the current time and date</p>
-</dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">now</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">tz:</span> <span class="pre">shared</span> <span class="pre">Timezone?</span></em><span class="sig-paren">)</span></dt>
-<dd><p>Return a <cite>datetime</cite> value representing the current time and date</p>
-</dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.utcNow">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">utcNow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.utcNow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>datetime</cite> value representing the current time and date in UTC</p>
-</dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.fromTimestamp">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">fromTimestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.fromTimestamp" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <cite>datetime</cite> that is <cite>timestamp</cite> seconds from the epoch</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.now">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">now</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.now" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>dateTime</cite> value representing the current time and date</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">fromTimestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">tz:</span> <span class="pre">shared</span> <span class="pre">Timezone?</span></em><span class="sig-paren">)</span></dt>
-<dd><p>The <cite>datetime</cite> that is <cite>timestamp</cite> seconds from the epoch</p>
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">now</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">tz:</span> <span class="pre">shared</span> <span class="pre">Timezone?</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return a <cite>dateTime</cite> value representing the current time and date</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.utcNow">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">utcNow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.utcNow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>dateTime</cite> value representing the current time and date in UTC</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.createFromTimestamp">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">createFromTimestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.createFromTimestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <cite>dateTime</cite> that is <cite>timestamp</cite> seconds from the epoch</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">createFromTimestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">tz:</span> <span class="pre">shared</span> <span class="pre">Timezone?</span></em><span class="sig-paren">)</span></dt>
+<dd><p>The <cite>dateTime</cite> that is <cite>timestamp</cite> seconds from the epoch</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>tz is unstable; its type may change in the future</p>
@@ -615,53 +615,53 @@ and ISO day of the week</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.utcFromTimestamp">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">utcFromTimestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">timestamp</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.utcFromTimestamp" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <cite>datetime</cite> that is <cite>timestamp</cite> seconds from the epoch in UTC</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.utcFromTimestamp">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">utcFromTimestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">timestamp</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.utcFromTimestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <cite>dateTime</cite> that is <cite>timestamp</cite> seconds from the epoch in UTC</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.fromOrdinal">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">fromOrdinal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ordinal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.fromOrdinal" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <cite>datetime</cite> that is <cite>ordinal</cite> days from 1-1-0001</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.fromOrdinal">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">fromOrdinal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ordinal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.fromOrdinal" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <cite>dateTime</cite> that is <cite>ordinal</cite> days from 1-1-0001</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.combine">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d:</span> <span class="pre">date</span></em>, <em class="sig-param"><span class="pre">t:</span> <span class="pre">time</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.combine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Form a <cite>datetime</cite> value from a given <cite>date</cite> and <cite>time</cite></p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.combine">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d:</span> <span class="pre">date</span></em>, <em class="sig-param"><span class="pre">t:</span> <span class="pre">time</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.combine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form a <cite>dateTime</cite> value from a given <cite>date</cite> and <cite>time</cite></p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.getdate">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">getdate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.getdate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the <cite>date</cite> portion of the <cite>datetime</cite> value</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.getdate">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">getdate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.getdate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the <cite>date</cite> portion of the <cite>dateTime</cite> value</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.gettime">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">gettime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.gettime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the <cite>time</cite> portion of the <cite>datetime</cite> value, with <cite>tz</cite> = nil</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.gettime">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">gettime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.gettime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the <cite>time</cite> portion of the <cite>dateTime</cite> value, with <cite>tz</cite> = nil</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.timetz">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">timetz</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.timetz" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the <cite>time</cite> portion of the <cite>datetime</cite> value including the
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.timetz">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">timetz</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.timetz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the <cite>time</cite> portion of the <cite>dateTime</cite> value including the
 <cite>tz</cite> field</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.replace">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">year</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">month</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">day</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">hour</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">minute</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">second</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">microsecond</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">tz</span> <span class="pre">=</span> <span class="pre">this.timezone</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.replace" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.replace">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">year</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">month</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">day</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">hour</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">minute</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">second</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">microsecond</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">tz</span> <span class="pre">=</span> <span class="pre">this.timezone</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.replace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace the <cite>year</cite>, <cite>month</cite>, <cite>day</cite>, <cite>hour</cite>, <cite>minute</cite>, <cite>second</cite>,
-<cite>microsecond</cite>, or <cite>tz</cite> to form a new <cite>datetime</cite> object. All
+<cite>microsecond</cite>, or <cite>tz</cite> to form a new <cite>dateTime</cite> object. All
 arguments are optional.</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.astimezone">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">astimezone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">tz:</span> <span class="pre">shared</span> <span class="pre">Timezone</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.astimezone" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.astimezone">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">astimezone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">tz:</span> <span class="pre">shared</span> <span class="pre">Timezone</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.astimezone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the date and time converted into the timezone in the argument</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -670,121 +670,121 @@ arguments are optional.</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.utcOffset">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">utcOffset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.utcOffset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.utcOffset">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">utcOffset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.utcOffset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the offset from UTC</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.dst">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">dst</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.dst" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.dst">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">dst</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.dst" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the daylight saving time offset</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.tzname">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">tzname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.tzname" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the name of the timezone for this <cite>datetime</cite> value</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.tzname">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">tzname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.tzname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the timezone for this <cite>dateTime</cite> value</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.timetuple">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">timetuple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.timetuple" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.timetuple">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">timetuple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.timetuple" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a filled record matching the C <cite>struct tm</cite> type for the given
-<cite>datetime</cite></p>
+<cite>dateTime</cite></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>‘datetime.timetuple’ is unstable</p>
+<p>‘dateTime.timetuple’ is unstable</p>
 </div>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.utctimetuple">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">utctimetuple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.utctimetuple" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.utctimetuple">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">utctimetuple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.utctimetuple" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a filled record matching the C <cite>struct tm</cite> type for the given
-<cite>datetime</cite> in UTC</p>
+<cite>dateTime</cite> in UTC</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>‘datetime.utctimetuple’ is unstable</p>
+<p>‘dateTime.utctimetuple’ is unstable</p>
 </div>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.toOrdinal">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">toOrdinal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.toOrdinal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of days since 1-1-0001 this <cite>datetime</cite> represents</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.toOrdinal">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">toOrdinal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.toOrdinal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of days since 1-1-0001 this <cite>dateTime</cite> represents</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.weekday">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">weekday</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.weekday" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.weekday">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">weekday</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.weekday" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the day of the week as a <cite>dayOfWeek</cite>.
 <cite>Monday</cite> == 0, <cite>Sunday</cite> == 6</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.isoWeekday">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">isoWeekday</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.isoWeekday" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.isoWeekday">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">isoWeekday</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.isoWeekday" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the day of the week as an <cite>isoDayOfWeek</cite>.
 <cite>Monday</cite> == 1, <cite>Sunday</cite> == 7</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.isoCalendar">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">isoCalendar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.isoCalendar" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.isoCalendar">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">isoCalendar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.isoCalendar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ISO date as a tuple containing the ISO year, ISO week number,
 and ISO day of the week</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.isoFormat">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">isoFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sep</span> <span class="pre">=</span> <span class="pre">&quot;T&quot;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.isoFormat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <cite>datetime</cite> as a <cite>string</cite> in ISO format</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.isoFormat">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">isoFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sep</span> <span class="pre">=</span> <span class="pre">&quot;T&quot;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.isoFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <cite>dateTime</cite> as a <cite>string</cite> in ISO format</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.strptime">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">strptime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">date_string:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">format:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.strptime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a <cite>datetime</cite> as described by the <cite>date_string</cite> and
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.strptime">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">strptime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">date_string:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">format:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.strptime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <cite>dateTime</cite> as described by the <cite>date_string</cite> and
 <cite>format</cite> string.  Note that this routine currently only supports
 the format strings of C’s strptime().</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>‘datetime.strptime’ is unstable</p>
+<p>‘dateTime.strptime’ is unstable</p>
 </div>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.strftime">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">strftime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fmt:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.strftime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a <cite>string</cite> from a <cite>datetime</cite> matching the <cite>format</cite> string</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.strftime">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">strftime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fmt:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.strftime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <cite>string</cite> from a <cite>dateTime</cite> matching the <cite>format</cite> string</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>‘datetime.strftime’ is unstable</p>
+<p>‘dateTime.strftime’ is unstable</p>
 </div>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.ctime">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">ctime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.ctime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>string</cite> from a <cite>datetime</cite> in the form:
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.ctime">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">ctime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.ctime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>string</cite> from a <cite>dateTime</cite> in the form:
 Wed Dec  4 20:30:40 2002</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>‘datetime.ctime’ is unstable</p>
+<p>‘dateTime.ctime’ is unstable</p>
 </div>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.writeThis">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">writeThis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">f</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.writeThis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes this <cite>datetime</cite> in ISO format: YYYY-MM-DDThh:mm:ss.sss</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.writeThis">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">writeThis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">f</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.writeThis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes this <cite>dateTime</cite> in ISO format: YYYY-MM-DDThh:mm:ss.sss</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.datetime.readThis">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">datetime.</span></span><span class="sig-name descname"><span class="pre">readThis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">f</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaTimeCompat.datetime.readThis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads this <cite>datetime</cite> from ISO format: YYYY-MM-DDThh:mm:ss.sss</p>
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.dateTime.readThis">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">dateTime.</span></span><span class="sig-name descname"><span class="pre">readThis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">f</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaTimeCompat.dateTime.readThis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads this <cite>dateTime</cite> from ISO format: YYYY-MM-DDThh:mm:ss.sss</p>
 </dd></dl>
 
 <dl class="chpl record">
@@ -872,25 +872,25 @@ directly, but concrete implementations of time zones should be
 derived from it.</p>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ArkoudaTimeCompat.Timezone.utcOffset">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">utcOffset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">datetime</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">timedelta</span><a class="headerlink" href="#ArkoudaTimeCompat.Timezone.utcOffset" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">utcOffset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">dateTime</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">timedelta</span><a class="headerlink" href="#ArkoudaTimeCompat.Timezone.utcOffset" title="Permalink to this definition">¶</a></dt>
 <dd><p>The offset from UTC this class represents</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ArkoudaTimeCompat.Timezone.dst">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dst</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">datetime</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">timedelta</span><a class="headerlink" href="#ArkoudaTimeCompat.Timezone.dst" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dst</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">dateTime</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">timedelta</span><a class="headerlink" href="#ArkoudaTimeCompat.Timezone.dst" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <cite>timedelta</cite> for daylight saving time</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ArkoudaTimeCompat.Timezone.tzname">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tzname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">datetime</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ArkoudaTimeCompat.Timezone.tzname" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tzname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">dateTime</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ArkoudaTimeCompat.Timezone.tzname" title="Permalink to this definition">¶</a></dt>
 <dd><p>The name of this time zone</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ArkoudaTimeCompat.Timezone.fromUtc">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fromUtc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">datetime</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">datetime</span><a class="headerlink" href="#ArkoudaTimeCompat.Timezone.fromUtc" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fromUtc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">dateTime</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">dateTime</span><a class="headerlink" href="#ArkoudaTimeCompat.Timezone.fromUtc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a <cite>time</cite> in UTC to this time zone</p>
 </dd></dl>
 
