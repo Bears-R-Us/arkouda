@@ -519,12 +519,12 @@ module MetricsMsg {
         var name: string;
         var category: MetricCategory;
         var scope: MetricScope;
-        var timestamp: datetime;
+        var timestamp: dateTime;
         var value: real;
         
         proc init(name: string, category: MetricCategory, 
                                 scope: MetricScope=MetricScope.GLOBAL, 
-                                timestamp: datetime=datetime.now(), 
+                                timestamp: dateTime=dateTime.now(), 
                                 value: real) {
             this.name = name;
             this.category = category;
@@ -540,7 +540,7 @@ module MetricsMsg {
 
         proc init(name: string, category: MetricCategory,
                                 scope: MetricScope=MetricScope.USER,
-                                timestamp: datetime=datetime.now(),
+                                timestamp: dateTime=dateTime.now(),
                                 value: real,
                                 user: string) {
 
@@ -562,7 +562,7 @@ module MetricsMsg {
         proc init(name: string, 
                   category: MetricCategory, 
                   scope: MetricScope=MetricScope.GLOBAL, 
-                  timestamp: datetime=datetime.now(), 
+                  timestamp: dateTime=dateTime.now(), 
                   value: real,
                   cmd: string,
                   dType: DType,
@@ -612,7 +612,7 @@ module MetricsMsg {
 
         proc init(name: string, category: MetricCategory, 
                                 scope: MetricScope=MetricScope.LOCALE, 
-                                timestamp: datetime=datetime.now(), 
+                                timestamp: dateTime=dateTime.now(), 
                                 value: real, 
                                 locale_num: int, 
                                 locale_name: string, 

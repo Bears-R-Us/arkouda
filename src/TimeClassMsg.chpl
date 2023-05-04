@@ -56,7 +56,7 @@ module TimeClassMsg {
 
         forall (v, y, m, d, iso_y, is_ly, woy, doy, dow) in zip(valuesEntry.a, year, month, day, isoYear, is_leap_year, weekOfYear, dayOfYear, dayOfWeek) {
             // convert to seconds and create date
-            var t = date.fromTimestamp(floorDivisionHelper(v, 10**9):int);
+            var t = date.createFromTimestamp(floorDivisionHelper(v, 10**9):int);
             (y, m, d, (iso_y, woy, dow)) = (t.year, t.month, t.day, t.isoCalendar());
             dow -= 1;
             is_ly = isLeapYear(y);
