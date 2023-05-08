@@ -119,7 +119,7 @@
                 var code_vals = toSymEntry(gCode, int);
                 var idxCodeName = dfIdxHelper(idx, code_vals, st, col_name, "", true);
                 
-                var repTup = segPdarrayIndex("str", categories_name, idxCodeName, DType.UInt8, st);
+                var repTup = segPdarrayIndex(ObjType.STRINGS, categories_name, idxCodeName, DType.UInt8, st);
                 
                 if repTup.msgType == MsgType.ERROR {
                     throw new IllegalArgumentError(repTup.msg);
@@ -129,7 +129,7 @@
             }
             else if ele_parts[0] == "Strings"{
                 dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings. Name: %s".format(i, ele_parts[2]));
-                var repTup = segPdarrayIndex("str", ele_parts[2], msgArgs.getValueOf("idx_name"), DType.UInt8, st);
+                var repTup = segPdarrayIndex(ObjType.STRINGS, ele_parts[2], msgArgs.getValueOf("idx_name"), DType.UInt8, st);
                 
                 if repTup.msgType == MsgType.ERROR {
                     throw new IllegalArgumentError(repTup.msg);

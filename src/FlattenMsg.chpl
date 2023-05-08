@@ -14,13 +14,13 @@ module FlattenMsg {
   const fmLogger = new Logger(logLevel, logChannel);
 
   proc segFlattenMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-    const objtype = msgArgs.getValueOf("objtype");
+    const objtype = msgArgs.getValueOf("objtype").toUpper(): ObjType;
     const returnSegs: bool = msgArgs.get("return_segs").getBoolValue();
     const regex: bool = msgArgs.get("regex").getBoolValue();
     const delim: string = msgArgs.getValueOf("delim");
     var repMsg: string;
     select objtype {
-      when "str" {
+      when ObjType.STRINGS {
         const rSegName = st.nextName();
         const rValName = st.nextName();
         const strings = getSegString(msgArgs.getValueOf("values"), st);

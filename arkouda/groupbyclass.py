@@ -113,7 +113,7 @@ def unique(
     # Get all grouping keys
     grouping_keys, nkeys = _get_grouping_keys(pda)
     keynames = [k.name for k in grouping_keys]
-    keytypes = [k.objtype for k in grouping_keys]
+    keytypes = [k.objType for k in grouping_keys]
     effectiveKeys = len(grouping_keys)
     repMsg = generic_msg(
         cmd="unique",
@@ -272,7 +272,7 @@ class GroupBy:
             self.keys = cast(groupable, keys)
             grouping_keys, self.nkeys = _get_grouping_keys(self.keys)
             keynames = [k.name for k in grouping_keys]
-            keytypes = [k.objtype for k in grouping_keys]
+            keytypes = [k.objType for k in grouping_keys]
             repmsg = generic_msg(
                 cmd="createGroupBy",
                 args={
@@ -303,11 +303,11 @@ class GroupBy:
             pass
 
     def to_hdf(
-            self,
-            prefix_path,
-            dataset="groupby",
-            mode="truncate",
-            file_type="distribute",
+        self,
+        prefix_path,
+        dataset="groupby",
+        mode="truncate",
+        file_type="distribute",
     ):
         """
         Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
@@ -345,24 +345,40 @@ class GroupBy:
         if not isinstance(self.keys, Sequence):
             keys = [self.keys]
 
-        dtypes = []
+        objTypes = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
+        dtypes = [k.dtype for k in keys]  # TODO - need to handle categorical case here
 
-        generic_msg(
-            cmd="tohdf",
-            args={
-                "keys": keys,
-                "unique_keys": self.unique_keys,
-                "permutation": self.permutation,
-                "segments": self.segments,
-                "dset": dataset,
-                "write_mode": _mode_str_to_int(mode),
-                "filename": prefix_path,
-                "dtype": self.keys.dtype,
-                "objType": "groupby",
-                "file_format": _file_type_to_int(file_type),
-            },
-        )
-
+        # access the names of the key or names of properties for categorical
+        gb_keys = [
+            k.name
+            if not isinstance(k, Categorical)
+            else json.dumps(
+                # TODO - what if perm and segments set??
+                {"codes": k.codes.name, "categories": k.categories.name, "akNAcode": k._akNAcode.name,
+                 **({'permutation': k.permutation.name} if k.permutation is not None else {}),
+                 **({'segments': k.segments.name} if k.segments is not None else {}),
+                 }
+            )
+            for k in keys
+        ]
+        print(objTypes)
+        print(dtypes)
+        print(gb_keys)
+        # generic_msg(
+        #     cmd="tohdf",
+        #     args={
+        #         "keys": keys,
+        #         "unique_keys": self.unique_keys,
+        #         "permutation": self.permutation,
+        #         "segments": self.segments,
+        #         "dset": dataset,
+        #         "write_mode": _mode_str_to_int(mode),
+        #         "filename": prefix_path,
+        #         "dtype": self.keys.dtype,
+        #         "objType": "groupby",
+        #         "file_format": _file_type_to_int(file_type),
+        #     },
+        # )
 
     def size(self) -> Tuple[groupable, pdarray]:
         """
@@ -1597,16 +1613,16 @@ class GroupBy:
         self.segments.register(f"{user_defined_name}.segments")
 
         if isinstance(self.keys, (Strings, pdarray, Categorical)):
-            self.keys.register(f"{user_defined_name}_{self.keys.objtype}.keys")
-            self.unique_keys.register(f"{user_defined_name}_{self.keys.objtype}.unique_keys")
+            self.keys.register(f"{user_defined_name}_{self.keys.objType}.keys")
+            self.unique_keys.register(f"{user_defined_name}_{self.keys.objType}.unique_keys")
         elif isinstance(self.keys, Sequence):
             for x in range(len(self.keys)):
                 # Possible for multiple types in a sequence, so we have to check each key's
                 # type individually
                 if isinstance(self.keys[x], (Strings, pdarray, Categorical)):
-                    self.keys[x].register(f"{x}_{user_defined_name}_{self.keys[x].objtype}.keys")
+                    self.keys[x].register(f"{x}_{user_defined_name}_{self.keys[x].objType}.keys")
                     self.unique_keys[x].register(
-                        f"{x}_{user_defined_name}_{self.keys[x].objtype}.unique_keys"
+                        f"{x}_{user_defined_name}_{self.keys[x].objType}.unique_keys"
                     )
 
         else:
@@ -1694,7 +1710,7 @@ class GroupBy:
                 f"^\\d+_{self.name}_.+\\.keys$|^\\d+_{self.name}_.+\\.unique_keys$|"
                 f"^\\d+_{self.name}_.+\\.unique_keys(?=\\.categories$)"
             )
-            cat_regEx = compile(f"^\\d+_{self.name}_{Categorical.objtype}\\.keys(?=\\.codes$)")
+            cat_regEx = compile(f"^\\d+_{self.name}_{Categorical.objType}\\.keys(?=\\.codes$)")
 
             simple_registered = list(filter(regEx.match, registry))
             cat_registered = list(filter(cat_regEx.match, registry))
@@ -1767,7 +1783,7 @@ class GroupBy:
         regEx = compile(
             f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
             f"^{user_defined_name}_.+\\.unique_keys$|^\\d+_{user_defined_name}_.+\\.unique_keys$|"
-            f"^(?:\\d+_)?{user_defined_name}_{Categorical.objtype}\\.unique_keys(?=\\.categories$)"
+            f"^(?:\\d+_)?{user_defined_name}_{Categorical.objType}\\.unique_keys(?=\\.categories$)"
         )
         # Using the regex, cycle through the registered items and find all the pieces of
         # the GroupBy's keys
@@ -1782,21 +1798,21 @@ class GroupBy:
 
         for name in matches:
             # Parse the name for the dtype and use the proper create method to create the element
-            if f"_{Strings.objtype}." in name or f"_{pdarray.objtype}." in name:
+            if f"_{Strings.objType}." in name or f"_{pdarray.objType}." in name:
                 keys_resp = cast(str, generic_msg(cmd="attach", args={"name": name}))
                 dtype = keys_resp.split()[2]
                 if ".unique_keys" in name:
-                    if dtype == Strings.objtype:
+                    if dtype == "str":
                         unique_keys.append(Strings.from_return_msg(keys_resp))
                     else:  # pdarray
                         unique_keys.append(create_pdarray(keys_resp))
                 else:
-                    if dtype == Strings.objtype:
+                    if dtype == "str":
                         keys.append(Strings.from_return_msg(keys_resp))
                     else:  # pdarray
                         keys.append(create_pdarray(keys_resp))
 
-            elif f"_{Categorical.objtype}.unique_keys" in name:
+            elif f"_{Categorical.objType}.unique_keys" in name:
                 # Due to unique_keys overwriting keys.categories, we have to use unique_keys.categories
                 # to create the keys Categorical
                 unique_key = Categorical.attach(name)
@@ -1878,8 +1894,8 @@ class GroupBy:
         regEx = compile(
             f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
             f"^{user_defined_name}_.+\\.unique_keys$|^\\d+_{user_defined_name}_.+\\.unique_keys$|"
-            f"^(?:\\d+_)?{user_defined_name}_{Categorical.objtype}\\.unique_keys(?=\\.categories$)|"
-            f"^(\\d+_)?{user_defined_name}_{Categorical.objtype}\\.keys\\.(_)?([A-Z,a-z])+$"
+            f"^(?:\\d+_)?{user_defined_name}_{Categorical.objType}\\.unique_keys(?=\\.categories$)|"
+            f"^(\\d+_)?{user_defined_name}_{Categorical.objType}\\.keys\\.(_)?([A-Z,a-z])+$"
         )
 
         for name in registry:
@@ -1888,7 +1904,7 @@ class GroupBy:
             if x is not None:
                 print(x.group())
                 # Only categorical requires a separate unregister case
-                if f"_{Categorical.objtype}.unique_keys" in x.group():
+                if f"_{Categorical.objType}.unique_keys" in x.group():
                     Categorical.unregister_categorical_by_name(x.group())
                 else:
                     unregister_pdarray_by_name(x.group())

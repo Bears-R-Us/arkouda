@@ -44,8 +44,9 @@ class ArrayView:
         If 'F'/'column_major', read and write data in column_major order
     """
 
+    objType = "ArrayView"
+
     def __init__(self, base: pdarray, shape, order="row_major"):
-        self.objtype = type(self).__name__
         self.shape = array(shape)
         if not isinstance(self.shape, pdarray):
             raise TypeError(f"ArrayView Shape cannot be type {type(self.shape)}. Expecting pdarray.")

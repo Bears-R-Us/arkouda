@@ -70,7 +70,7 @@ def argsort(
         args={
             "name": pda.entry.name if isinstance(pda, Strings) else pda.name,
             "algoName": algorithm.name,
-            "objType": pda.objtype,
+            "objType": pda.objType,
         },
     )
     return create_pdarray(cast(str, repMsg))
@@ -145,12 +145,12 @@ def coargsort(
     for a in expanded_arrays:
         if isinstance(a, pdarray):
             anames.append("+".join(a._list_component_names()))
-            atypes.append(a.objtype)
+            atypes.append(a.objType)
         elif isinstance(a, Categorical):
             anames.append(a.codes.name)
-            atypes.append(a.objtype)
+            atypes.append(a.objType)
         elif isinstance(a, Strings):
-            atypes.append(a.objtype)
+            atypes.append(a.objType)
             anames.append(a.entry.name)
         else:
             raise ValueError("Argument must be an iterable of pdarrays, Strings, or Categoricals")

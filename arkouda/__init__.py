@@ -9,7 +9,6 @@ from arkouda.array_view import *
 from arkouda.client import *
 from arkouda.client_dtypes import *
 from arkouda.dtypes import *
-from arkouda.decorators import *
 from arkouda.pdarrayclass import *
 from arkouda.sorting import *
 from arkouda.pdarraysetops import *

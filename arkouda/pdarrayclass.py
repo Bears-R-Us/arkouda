@@ -168,7 +168,7 @@ class pdarray:
         ]
     )
     OpEqOps = frozenset(["+=", "-=", "*=", "/=", "%=", "//=", "&=", "|=", "^=", "<<=", ">>=", "**="])
-    objtype = "pdarray"
+    objType = "pdarray"
 
     __array_priority__ = 1000
 

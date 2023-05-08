@@ -19,10 +19,9 @@ import numpy as np  # type: ignore
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.decorators import objtypedec
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
+from arkouda.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars, npstr
 from arkouda.groupbyclass import GroupBy, unique
 from arkouda.infoclass import information, list_registry
 from arkouda.logger import getArkoudaLogger
@@ -42,7 +41,6 @@ from arkouda.strings import Strings
 __all__ = ["Categorical"]
 
 
-@objtypedec
 class Categorical:
     """
     Represents an array of values belonging to named categories. Converting a
@@ -83,6 +81,8 @@ class Categorical:
     RequiredPieces = frozenset(["categories", "codes", "_akNAcode"])
     permutation = None
     segments = None
+    objType = "Categorical"
+    dtype = npstr  # this is being set for now because Categoricals only supported on Strings
 
     def __init__(self, values, **kwargs) -> None:
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
@@ -142,10 +142,6 @@ class Categorical:
         self.shape = self.codes.shape
         self.dtype = str_
         self.name: Optional[str] = None
-
-    @property
-    def objtype(self):
-        return self.objtype
 
     @classmethod
     @typechecked

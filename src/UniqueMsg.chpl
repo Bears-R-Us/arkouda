@@ -83,8 +83,8 @@ module UniqueMsg
       // For each input array, gather unique values
       for (name, objtype, i) in zip(names, types, 0..) {
         var newName = st.nextName();
-        select objtype {
-          when "pdarray", "Categorical" {
+        select objtype.toUpper(): ObjType {
+          when ObjType.PDARRAY, ObjType.CATEGORICAL {
             var g = getGenericTypedArrayEntry(name, st);
             // Gathers unique values, stores in SymTab, and returns repMsg chunk
             proc gatherHelper(type t) throws {
@@ -114,7 +114,7 @@ module UniqueMsg
               }
             }
           }
-          when "str" {
+          when ObjType.STRINGS {
             var (myNames, _) = name.splitMsgToTuple('+', 2);
             var g = getSegString(myNames, st);
             var (uSegs, uVals) = g[gatherInds];
@@ -247,8 +247,8 @@ module UniqueMsg
         return (r1, r2);
       }
       for (name, objtype, i) in zip(names, types, 0..) {
-        select objtype {
-          when "pdarray", "Categorical" {
+        select objtype.toUpper(): ObjType {
+          when ObjType.PDARRAY, ObjType.CATEGORICAL {
             var g = getGenericTypedArrayEntry(name, st);
             select g.dtype {
               when DType.Int64 {
@@ -277,7 +277,7 @@ module UniqueMsg
               }
             }
           }
-          when "str" {
+          when ObjType.STRINGS {
             var (myNames, _) = name.splitMsgToTuple('+', 2);
             var g = getSegString(myNames, st);
             hashes ^= rotl(g.siphash(), i);

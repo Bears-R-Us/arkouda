@@ -112,9 +112,9 @@ def _in1d_single(
         repMsg = generic_msg(
             cmd="segmentedIn1d",
             args={
-                "objType": pda1.objtype,
+                "objType": pda1.objType,
                 "obj": pda1.entry,
-                "otherType": pda2.objtype,
+                "otherType": pda2.objType,
                 "other": pda2.entry,
                 "invert": invert,
             },
@@ -323,14 +323,14 @@ def concatenate(
         if not isinstance(a, pdarray) and not isinstance(a, Strings):
             raise TypeError("arrays must be an iterable of pdarrays or Strings")
         if objtype is None:
-            objtype = a.objtype
+            objtype = a.objType
         if objtype == "pdarray":
             if dtype is None:
                 dtype = a.dtype
             elif dtype != a.dtype:
                 raise ValueError("All pdarrays must have same dtype")
             names.append(cast(pdarray, a).name)
-        elif objtype == "str":
+        elif objtype == "Strings":
             names.append(cast(Strings, a).entry.name)
         else:
             raise NotImplementedError(f"concatenate not implemented for object type {objtype}")
@@ -351,7 +351,7 @@ def concatenate(
         })
     if objtype == "pdarray":
         return callback(create_pdarray(cast(str, repMsg)))
-    elif objtype == "str":
+    elif objtype == "Strings":
         # ConcatenateMsg returns created attrib(name)+created nbytes=123
         return Strings.from_return_msg(cast(str, repMsg))
     else:

@@ -69,7 +69,7 @@ class Strings:
     """
 
     BinOps = frozenset(["==", "!="])
-    objtype = "str"
+    objType = "Strings"
 
     @staticmethod
     def from_return_msg(rep_msg: str) -> Strings:
@@ -253,9 +253,9 @@ class Strings:
             cmd = "segmentedBinopvv"
             args = {
                 "op": op,
-                "objType": self.objtype,
+                "objType": self.objType,
                 "obj": self.entry,
-                "otherType": other.objtype,
+                "otherType": other.objType,
                 "other": other.entry,
                 "left": False,  # placeholder for stick
                 "delim": "",  # placeholder for stick
@@ -264,9 +264,9 @@ class Strings:
             cmd = "segmentedBinopvs"
             args = {
                 "op": op,
-                "objType": self.objtype,
+                "objType": self.objType,
                 "obj": self.entry,
-                "otherType": self.objtype,
+                "otherType": "str",
                 "other": other,
             }
         else:
@@ -292,7 +292,7 @@ class Strings:
                     cmd="segmentedIndex",
                     args={
                         "subcmd": "intIndex",
-                        "objType": self.objtype,
+                        "objType": self.objType,
                         "dtype": self.entry.dtype,
                         "obj": self.entry,
                         "key": key,
@@ -309,7 +309,7 @@ class Strings:
                 cmd="segmentedIndex",
                 args={
                     "subcmd": "sliceIndex",
-                    "objType": self.objtype,
+                    "objType": self.objType,
                     "obj": self.entry,
                     "dtype": self.entry.dtype,
                     "key": [start, stop, stride],
@@ -326,7 +326,7 @@ class Strings:
                 cmd="segmentedIndex",
                 args={
                     "subcmd": "pdarrayIndex",
-                    "objType": self.objtype,
+                    "objType": self.objType,
                     "dtype": self.entry.dtype,
                     "obj": self.entry,
                     "key": key,
@@ -351,7 +351,7 @@ class Strings:
             Raised if there is a server-side error thrown
         """
         return create_pdarray(
-            generic_msg(cmd="segmentLengths", args={"objType": self.objtype, "obj": self.entry})
+            generic_msg(cmd="segmentLengths", args={"objType": self.objType, "obj": self.entry})
         )
 
     def encode(self, toEncoding: str, fromEncoding: str = "UTF-8"):
@@ -466,7 +466,7 @@ class Strings:
         array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
         """
         rep_msg = generic_msg(
-            cmd="caseChange", args={"subcmd": "toLower", "objType": self.objtype, "obj": self.entry}
+            cmd="caseChange", args={"subcmd": "toLower", "objType": self.objType, "obj": self.entry}
         )
         return Strings.from_return_msg(cast(str, rep_msg))
 
@@ -500,7 +500,7 @@ class Strings:
         array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
         """
         rep_msg = generic_msg(
-            cmd="caseChange", args={"subcmd": "toUpper", "objType": self.objtype, "obj": self.entry}
+            cmd="caseChange", args={"subcmd": "toUpper", "objType": self.objType, "obj": self.entry}
         )
         return Strings.from_return_msg(cast(str, rep_msg))
 
@@ -533,7 +533,7 @@ class Strings:
         array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
         """
         rep_msg = generic_msg(
-            cmd="caseChange", args={"subcmd": "toTitle", "objType": self.objtype, "obj": self.entry}
+            cmd="caseChange", args={"subcmd": "toTitle", "objType": self.objType, "obj": self.entry}
         )
         return Strings.from_return_msg(cast(str, rep_msg))
 
@@ -569,7 +569,7 @@ class Strings:
         """
         return create_pdarray(
             generic_msg(
-                cmd="checkChars", args={"subcmd": "isLower", "objType": self.objtype, "obj": self.entry}
+                cmd="checkChars", args={"subcmd": "isLower", "objType": self.objType, "obj": self.entry}
             )
         )
 
@@ -605,7 +605,7 @@ class Strings:
         """
         return create_pdarray(
             generic_msg(
-                cmd="checkChars", args={"subcmd": "isUpper", "objType": self.objtype, "obj": self.entry}
+                cmd="checkChars", args={"subcmd": "isUpper", "objType": self.objType, "obj": self.entry}
             )
         )
 
@@ -642,7 +642,7 @@ class Strings:
         """
         return create_pdarray(
             generic_msg(
-                cmd="checkChars", args={"subcmd": "isTitle", "objType": self.objtype, "obj": self.entry}
+                cmd="checkChars", args={"subcmd": "isTitle", "objType": self.objType, "obj": self.entry}
             )
         )
 
@@ -685,7 +685,7 @@ class Strings:
         if isinstance(chars, bytes):
             chars = chars.decode()
         rep_msg = generic_msg(
-            cmd="segmentedStrip", args={"objType": self.objtype, "name": self.entry, "chars": chars}
+            cmd="segmentedStrip", args={"objType": self.objType, "name": self.entry, "chars": chars}
         )
         return Strings.from_return_msg(cast(str, rep_msg))
 
@@ -1083,7 +1083,7 @@ class Strings:
         return create_pdarray(
             generic_msg(
                 cmd="segmentedSearch",
-                args={"objType": self.objtype, "obj": self.entry, "valType": "str", "val": substr},
+                args={"objType": self.objType, "obj": self.entry, "valType": "str", "val": substr},
             )
         )
 
@@ -1253,7 +1253,7 @@ class Strings:
                     cmd=cmd,
                     args={
                         "values": self.entry,
-                        "objtype": self.objtype,
+                        "objtype": self.objType,
                         "return_segs": return_segments,
                         "regex": regex,
                         "delim": delimiter,
@@ -1357,7 +1357,7 @@ class Strings:
             cmd="segmentedPeel",
             args={
                 "subcmd": "peel",
-                "objType": self.objtype,
+                "objType": self.objType,
                 "obj": self.entry,
                 "valType": "str",
                 "times": NUMBER_FORMAT_STRINGS["int64"].format(times),
@@ -1498,9 +1498,9 @@ class Strings:
             cmd="segmentedBinopvv",
             args={
                 "op": "stick",
-                "objType": self.objtype,
+                "objType": self.objType,
                 "obj": self.entry,
-                "otherType": other.objtype,
+                "otherType": other.objType,
                 "other": other.entry,
                 "left": NUMBER_FORMAT_STRINGS["bool"].format(toLeft),
                 "delim": delimiter,
@@ -1586,7 +1586,7 @@ class Strings:
             generic_msg(
                 cmd="segmentedSubstring",
                 args={
-                    "objType": self.objtype,
+                    "objType": self.objType,
                     "name": self,
                     "nChars": n,
                     "returnOrigins": return_origins,
@@ -1635,7 +1635,7 @@ class Strings:
             generic_msg(
                 cmd="segmentedSubstring",
                 args={
-                    "objType": self.objtype,
+                    "objType": self.objType,
                     "name": self,
                     "nChars": n,
                     "returnOrigins": return_origins,
@@ -1670,7 +1670,7 @@ class Strings:
         values is negligible.
         """
         # TODO fix this to return a single pdarray of hashes
-        repMsg = generic_msg(cmd="segmentedHash", args={"objType": self.objtype, "obj": self.entry})
+        repMsg = generic_msg(cmd="segmentedHash", args={"objType": self.objType, "obj": self.entry})
         h1, h2 = cast(str, repMsg).split("+")
         return create_pdarray(h1), create_pdarray(h2)
 
@@ -1705,7 +1705,7 @@ class Strings:
             creating the pdarray encapsulating the return message
         """
         return create_pdarray(
-            generic_msg(cmd="segmentedGroup", args={"objType": self.objtype, "obj": self.entry})
+            generic_msg(cmd="segmentedGroup", args={"objType": self.objType, "obj": self.entry})
         )
 
     def _get_grouping_keys(self) -> List[Strings]:

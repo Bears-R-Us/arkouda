@@ -166,18 +166,18 @@ module AryUtil
       var hasStr = false;
       for (name, objtype, i) in zip(names, types, 1..) {
         var thisSize: int;
-        select objtype {
-          when "pdarray" {
+        select objtype.toUpper(): ObjType {
+          when ObjType.PDARRAY {
             var g = getGenericTypedArrayEntry(name, st);
             thisSize = g.size;
           }
-          when "str" {
+          when ObjType.STRINGS {
             var (myNames, _) = name.splitMsgToTuple('+', 2);
             var g = getSegStringEntry(myNames, st);
             thisSize = g.size;
             hasStr = true;
           }
-          when "Categorical" {
+          when ObjType.CATEGORICAL {
             // passed only Categorical.codes.name to be sorted on
             var g = getGenericTypedArrayEntry(name, st);
             thisSize = g.size;

@@ -2150,7 +2150,7 @@ class DataFrame(UserDict):
         array(self.columns).register(f"df_columns_{user_defined_name}")
 
         for col, data in self.data.items():
-            data.register(f"df_data_{data.objtype}_{col}_{user_defined_name}")
+            data.register(f"df_data_{data.objType}_{col}_{user_defined_name}")
 
         self.name = user_defined_name
         return self
@@ -2262,8 +2262,8 @@ class DataFrame(UserDict):
         columns = dict.fromkeys(json.loads(col_resp))
         matches = []
         regEx = compile(
-            f"^df_data_({pdarray.objtype}|{Strings.objtype}|"
-            f"{Categorical.objtype}|{SegArray.objtype})_.*_{user_defined_name}"
+            f"^df_data_({pdarray.objType}|{Strings.objType}|"
+            f"{Categorical.objType}|{SegArray.objType})_.*_{user_defined_name}"
         )
         # Using the regex, cycle through the registered items and find all the columns in the DataFrame
         for name in list_registry():
@@ -2278,20 +2278,21 @@ class DataFrame(UserDict):
         # loop through
         for name in set(matches):
             colName = DataFrame._parse_col_name(name, user_defined_name)[0]
-            if f"_{Strings.objtype}_" in name:
+            if f"_{Strings.objType}_" in name:
                 columns[colName] = Strings.attach(name)
-            elif f"_{pdarray.objtype}_" in name:
+            elif f"_{pdarray.objType}_" in name:
                 columns[colName] = pd_attach(name)
-            elif f"_{Categorical.objtype}_" in name:
+            elif f"_{Categorical.objType}_" in name:
                 columns[colName] = Categorical.attach(name)
-            elif f"_{SegArray.objtype}_" in name:
+            elif f"_{SegArray.objType}_" in name:
                 columns[colName] = SegArray.attach(name)
 
         index_resp = cast(
             str, generic_msg(cmd="attach", args={"name": f"df_index_{user_defined_name}_key"})
         )
+        print(index_resp)
         dtype = index_resp.split()[2]
-        if dtype == Strings.objtype:
+        if dtype == "str":  # TODO - this should be updated in the future to Strings
             ind = Strings.from_return_msg(index_resp)
         else:  # pdarray
             ind = create_pdarray(index_resp)
@@ -2328,8 +2329,8 @@ class DataFrame(UserDict):
 
         matches = []
         regEx = compile(
-            f"^df_data_({pdarray.objtype}|{Strings.objtype}|"
-            f"{Categorical.objtype}|{SegArray.objtype})_.*_{user_defined_name}"
+            f"^df_data_({pdarray.objType}|{Strings.objType}|"
+            f"{Categorical.objType}|{SegArray.objType})_.*_{user_defined_name}"
         )
         # Using the regex, cycle through the registered items and find all the columns in the DataFrame
         for name in list_registry():
@@ -2342,13 +2343,13 @@ class DataFrame(UserDict):
 
         # Remove duplicates caused by multiple components in categorical and loop through
         for name in set(matches):
-            if f"_{Strings.objtype}_" in name:
+            if f"_{Strings.objType}_" in name:
                 Strings.unregister_strings_by_name(name)
-            elif f"_{pdarray.objtype}_" in name:
+            elif f"_{pdarray.objType}_" in name:
                 unregister_pdarray_by_name(name)
-            elif f"_{Categorical.objtype}_" in name:
+            elif f"_{Categorical.objType}_" in name:
                 Categorical.unregister_categorical_by_name(name)
-            elif f"_{SegArray.objtype}_" in name:
+            elif f"_{SegArray.objType}_" in name:
                 SegArray.unregister_segarray_by_name(name)
 
         unregister_pdarray_by_name(f"df_index_{user_defined_name}_key")
@@ -2374,7 +2375,7 @@ class DataFrame(UserDict):
         """
         nameParts = entryName.split(" ")
         regName = nameParts[1] if len(nameParts) > 1 else nameParts[0]
-
+        print(nameParts)
         colParts = regName.split("_")
         colType = colParts[2]
 
@@ -2413,7 +2414,7 @@ class DataFrame(UserDict):
 
         # index could be a pdarray or a Strings
         idxType = parts[3].split()[2]
-        if idxType == Strings.objtype:
+        if idxType == "str":  # TODO - we should update the create statment to check for Strings.objType here
             idx = Index.factory(Strings.from_return_msg(f"{parts[3]}+{parts[4]}"))
             i = 5
         else:  # pdarray

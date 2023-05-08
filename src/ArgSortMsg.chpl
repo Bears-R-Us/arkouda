@@ -283,7 +283,7 @@ module ArgSortMsg
       // Starting with the last array, incrementally permute the IV by sorting each array
       for (i, j) in zip(names.domain.low..names.domain.high by -1,
                         types.domain.low..types.domain.high by -1) {
-        if (types[j] == "str") {
+        if (types[j].toUpper(): ObjType == ObjType.STRINGS) {
           var strings = getSegString(names[i], st);
           iv.a = incrementalArgSort(strings, iv.a);
         } else {
@@ -349,9 +349,9 @@ module ArgSortMsg
         asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               "cmd: %s name: %s ivname: %s".format(cmd, name, ivname));
 
-        var objtype = msgArgs.getValueOf("objType");
+        var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
         select objtype {
-          when "pdarray" {
+          when ObjType.PDARRAY {
             var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
             // check and throw if over memory limit
             overMemLimit(radixSortLSD_memEst(gEnt.size, gEnt.itemsize));
@@ -379,7 +379,7 @@ module ArgSortMsg
                 }
             }
           }
-          when "str" {
+          when ObjType.STRINGS {
             var strings = getSegString(name, st);
             // check and throw if over memory limit
             overMemLimit((8 * strings.size * 8)
@@ -388,7 +388,7 @@ module ArgSortMsg
             st.addEntry(ivname, new shared SymEntry(iv));
           }
           otherwise {
-              var errorMsg = notImplementedError(pn, objtype);
+              var errorMsg = notImplementedError(pn, objtype: string);
               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                    
               return new MsgTuple(errorMsg, MsgType.ERROR);
           }

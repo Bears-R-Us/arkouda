@@ -26,7 +26,7 @@ class Matcher:
     )
 
     def __init__(self, pattern: str_scalars, parent_entry_name: str) -> None:
-        self.objtype = type(self).__name__
+        self.objType = type(self).__name__
         try:
             self.pattern = pattern
             re.compile(self.pattern)
@@ -59,7 +59,7 @@ class Matcher:
                 generic_msg(
                     cmd="segmentedFindLoc",
                     args={
-                        "objType": self.objtype,
+                        "objType": self.objType,
                         "parent_name": self.parent_entry_name,
                         "groupNum": 0,  # groupNum is 0 for regular matches
                         "pattern": self.pattern,
@@ -123,7 +123,7 @@ class Matcher:
                 cmd=cmd,
                 args={
                     "parent_name": self.parent_entry_name,
-                    "objtype": self.objtype,
+                    "objtype": self.objType,
                     "max": maxsplit,
                     "return_segs": return_segments,
                     "pattern": self.pattern,
@@ -148,7 +148,7 @@ class Matcher:
             generic_msg(
                 cmd="segmentedFindAll",
                 args={
-                    "objType": self.objtype,
+                    "objType": self.objType,
                     "parent_name": self.parent_entry_name,
                     "num_matches": self.num_matches,
                     "starts": self.starts,
@@ -178,7 +178,7 @@ class Matcher:
             generic_msg(
                 cmd="segmentedSub",
                 args={
-                    "objType": self.objtype,
+                    "objType": self.objType,
                     "obj": self.parent_entry_name,
                     "repl": repl,
                     "count": count,

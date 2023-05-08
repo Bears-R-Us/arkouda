@@ -8,7 +8,6 @@ from warnings import warn
 
 import numpy as np  # type: ignore
 
-from arkouda import objtypedec
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
@@ -97,8 +96,9 @@ def segarray(segments: pdarray, values: pdarray, lengths=None, grouping=None):
     return SegArray.from_parts(segments, values, lengths, grouping)
 
 
-@objtypedec
 class SegArray:
+    objType = "SegArray"
+
     def __init__(
         self, name, dtype, size, ndim, shape, itemsize, segments, values, lengths=None, grouping=None
     ):
@@ -280,10 +280,6 @@ class SegArray:
             return cls.from_parts(arange(size) * n, newvals)
 
     @property
-    def objtype(self):
-        return self.objtype
-
-    @property
     def lengths(self):
         """
         Return the pdarray containing the lengths of the segments.
@@ -437,7 +433,7 @@ class SegArray:
                     cmd="segmentedIndex",
                     args={
                         "subcmd": "intIndex",
-                        "objType": self.objtype,
+                        "objType": self.objType,
                         "dtype": self.dtype,
                         "obj": self.name,
                         "key": i,
@@ -453,7 +449,7 @@ class SegArray:
                 cmd="segmentedIndex",
                 args={
                     "subcmd": "sliceIndex",
-                    "objType": self.objtype,
+                    "objType": self.objType,
                     "obj": self.name,
                     "dtype": self.dtype,
                     "key": [start, stop, stride],
@@ -470,7 +466,7 @@ class SegArray:
                 cmd="segmentedIndex",
                 args={
                     "subcmd": "pdarrayIndex",
-                    "objType": self.objtype,
+                    "objType": self.objType,
                     "dtype": self.values.dtype,
                     "obj": self.name,
                     "key": i,
@@ -1640,7 +1636,7 @@ class SegArray:
             cmd="attach",
             args={
                 "name": user_defined_name,
-                "objtype": SegArray.objtype,
+                "objtype": SegArray.objType,
             },
         )
         return cls.from_return_msg(repMsg)
