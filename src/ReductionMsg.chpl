@@ -3,7 +3,7 @@ module ReductionMsg
     use ServerConfig;
 
     use ArkoudaTimeCompat as Time;
-    use Math only;
+    use Math;
     use Reflection only;
     use CommAggregation;
     use BigInteger;
