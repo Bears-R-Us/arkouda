@@ -14,6 +14,7 @@ module SegmentedMsg {
   use IO;
   use GenSymIO;
   use BigInteger;
+  use Math;
 
   use ArkoudaMapCompat;
 

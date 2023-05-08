@@ -4,7 +4,7 @@ module EfuncMsg
     use ServerConfig;
     
     use ArkoudaTimeCompat as Time;
-    use Math only;
+    use Math;
     use BitOps;
     use Reflection;
     use ServerErrors;
