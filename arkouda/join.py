@@ -205,6 +205,12 @@ def inner_join(
     """
     from inspect import signature
 
+    # Reduce processing to codes to prevent groupbys being ran on entire Categorical
+    if isinstance(left, Categorical) and isinstance(right, Categorical):
+        l, r = Categorical.standardize_categories([left, right])
+        left = l.codes
+        right = r.codes
+
     sample = np.min((left.size, right.size, 5))  # type: ignore
     if wherefunc is not None:
         if len(signature(wherefunc).parameters) != 2:
