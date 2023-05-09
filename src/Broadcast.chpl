@@ -1,6 +1,16 @@
 module Broadcast {
   use SymArrayDmap;
   use CommAggregation;
+  use SegmentedString;
+  use MultiTypeSymbolTable;
+  use MultiTypeSymEntry;
+  use Reflection;
+  use Logging;
+  use ServerConfig;
+
+  private config const logLevel = ServerConfig.logLevel;
+  private config const logChannel = ServerConfig.logChannel;
+  const brLogger = new Logger(logLevel, logChannel);
 
   /* 
    * Broadcast a value per segment of a segmented array to the
@@ -135,4 +145,79 @@ module Broadcast {
     expandedVals = (+ scan expandedVals);
     return (expandedVals == 1);
   }
+
+  proc broadcast(segs: [?sD] int, segString: borrowed SegString, size: int) throws {
+    var segOff = segString.offsets.a;
+    var strSize: int;
+    var diffs: [sD] int;
+
+    forall (i, seg, off) in zip (sD, segs, segOff) with (+ reduce strSize) {
+      if i == sD.low {
+        diffs[i] = segOff[i+1] - off;
+        strSize = (segs[i+1] - seg) * segOff[i+1];
+      } else if i == sD.high {
+        strSize += (size - seg) * (segString.nBytes - off);
+        diffs[i] = segString.nBytes - off;
+      } else {
+        strSize += (segs[i+1] - seg) * (segOff[i+1] - off);
+        diffs[i] = segOff[i+1] - off;
+      }
+    }
+
+    var broadDist = broadcast(segs, diffs, size);
+    var offDiff = makeDistArray(size, int);
+    offDiff[1..] = broadDist[..size-2];
+
+    var offsets = (+ scan offDiff);
+    var r: [sD] int = 0..segString.size; 
+    var ind = broadcast(segs, r, size);
+    var expandedVals = makeDistArray(strSize, uint(8));
+
+    forall (i, o, s) in zip(ind, offsets, 0..#size) with (var agg = newDstAggregator(uint(8))) {
+      var inds = if i == sD.high then segOff[i]..segString.nBytes-1 else segOff[i]..segOff[i+1]-1;
+      var offs = if s == size - 1 then o..strSize-1 else o..offsets[s+1]-1;
+      forall (off, idx) in zip(offs, inds) {
+        agg.copy(expandedVals[off], segString.values.a[idx]);
+      }
+    }
+
+    return (expandedVals, offsets);
+  }
+
+  // proc broadcast(segs: [?sD] int, segString: borrowed SegString, size: int) throws {
+  //   var segOff = segString.offsets.a;
+  //   var strSize: int;
+  //   var diffs: [sD] int;
+
+  //   forall (i, seg, off) in zip (sD, segs, segOff) with (+ reduce strSize) {
+  //     if i == sD.low {
+  //       diffs[i] = segOff[i+1] - off;
+  //       strSize = (segs[i+1] - seg) * segOff[i+1];
+  //     } else if i == sD.high {
+  //       strSize += (size - seg) * (segString.nBytes - off);
+  //       diffs[i] = segString.nBytes - off;
+  //     } else {
+  //       strSize += (segs[i+1] - seg) * (segOff[i+1] - off);
+  //       diffs[i] = segOff[i+1] - off;
+  //     }
+  //   }
+
+  //   var broadDist = broadcast(segs, diffs, size);
+  //   var offDiff = makeDistArray(size, int);
+  //   offDiff[1..] = broadDist[..size-2];
+    
+  //   var offsets = (+ scan offDiff);
+  //   var r: [sD] int = 0..segString.size; 
+  //   var ind = broadcast(segs, r, size);
+  //   var expandedVals: [0..#strSize] uint(8);
+
+  //   forall (i, o, s) in zip(ind, offsets, 0..#size) {
+  //     var inds = if i == sD.high then segOff[i]..segString.nBytes-1 else segOff[i]..segOff[i+1]-1;
+  //     var offs = if s == size - 1 then o..strSize-1 else o..offsets[s+1]-1;
+  //     expandedVals[offs] = segString.values.a[inds];
+  //   }
+
+  //   return (expandedVals, offsets);
+  // }
+
 }

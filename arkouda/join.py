@@ -245,9 +245,8 @@ def inner_join(
             rightWhere = whereargs[1][byRight.permutation][ranges]
             # Expand left whereargs
             keep_where = whereargs[0][keep]
-            if isinstance(keep_where, (Strings, Categorical)):
-                leftWhereIdx = broadcast(fullSegs, arange(keep_where.size), ranges.size)
-                leftWhere = keep_where[leftWhereIdx]
+            if isinstance(keep_where, Categorical):
+                leftWhere = broadcast(fullSegs, keep_where.codes, ranges.size)
             else:
                 leftWhere = broadcast(fullSegs, keep_where, ranges.size)
             # Evaluate wherefunc and filter ranges, recompute segments

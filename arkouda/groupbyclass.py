@@ -1543,7 +1543,9 @@ class GroupBy:
         return self.unique_keys, ret  # type: ignore
 
     @typechecked
-    def broadcast(self, values: pdarray, permute: bool = True) -> pdarray:
+    def broadcast(
+        self, values: Union[pdarray, Strings], permute: bool = True
+    ) -> Union[pdarray, Strings]:
         """
         Fill each group's segment with a constant value.
 
@@ -1602,17 +1604,24 @@ class GroupBy:
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
         cmd = "broadcast"
-        repMsg = generic_msg(
-            cmd=cmd,
-            args={
-                "permName": self.permutation.name,
-                "segName": self.segments.name,
-                "valName": values.name,
-                "permute": permute,
-                "size": self.length,
-            },
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd=cmd,
+                args={
+                    "permName": self.permutation.name,
+                    "segName": self.segments.name,
+                    "valName": values.name,
+                    "objType": values.objtype,
+                    "permute": permute,
+                    "size": self.length,
+                },
+            ),
         )
-        return create_pdarray(repMsg)
+        if values.objtype == Strings.objtype:
+            return Strings.from_return_msg(repMsg)
+        else:
+            return create_pdarray(repMsg)
 
     @staticmethod
     def build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy:
@@ -2092,14 +2101,21 @@ def broadcast(
     if size < 1:
         raise ValueError("result size must be greater than zero")
     cmd = "broadcast"
-    repMsg = generic_msg(
-        cmd=cmd,
-        args={
-            "permName": pname,
-            "segName": segments.name,
-            "valName": values.name,
-            "permute": permute,
-            "size": size,
-        },
+    repMsg = cast(
+        str,
+        generic_msg(
+            cmd=cmd,
+            args={
+                "permName": pname,
+                "segName": segments.name,
+                "valName": values.name,
+                "objType": values.objtype,
+                "permute": permute,
+                "size": size,
+            },
+        ),
     )
-    return create_pdarray(repMsg)
+    if values.objtype == Strings.objtype:
+        return Strings.from_return_msg(repMsg)
+    else:
+        return create_pdarray(repMsg)
