@@ -147,20 +147,18 @@ module Broadcast {
   }
 
   proc broadcast(segs: [?sD] int, segString: borrowed SegString, size: int) throws {
-    var segOff = segString.offsets.a;
+    ref segOff = segString.offsets.a;
+    const high = sD.high;
     var strSize: int;
     var diffs: [sD] int;
 
-    forall (i, seg, off) in zip (sD, segs, segOff) with (+ reduce strSize) {
-      if i == sD.low {
-        diffs[i] = segOff[i+1] - off;
-        strSize = (segs[i+1] - seg) * segOff[i+1];
-      } else if i == sD.high {
+    forall (i, d, seg, off) in zip (sD, diffs, segs, segOff) with (+ reduce strSize) {
+      if i == high {
         strSize += (size - seg) * (segString.nBytes - off);
-        diffs[i] = segString.nBytes - off;
+        d = segString.nBytes - off;
       } else {
         strSize += (segs[i+1] - seg) * (segOff[i+1] - off);
-        diffs[i] = segOff[i+1] - off;
+        d = segOff[i+1] - off;
       }
     }
 
@@ -173,11 +171,11 @@ module Broadcast {
     var ind = broadcast(segs, r, size);
     var expandedVals = makeDistArray(strSize, uint(8));
 
-    forall (i, o, s) in zip(ind, offsets, 0..#size) with (var agg = newDstAggregator(uint(8))) {
-      var inds = if i == sD.high then segOff[i]..segString.nBytes-1 else segOff[i]..segOff[i+1]-1;
+    forall (i, o, s) in zip(ind, offsets, 0..#size) with (var agg = newDstAggregator(uint(8)), ref vals = segString.values.a) {
+      var inds = if i == high then segOff[i]..segString.nBytes-1 else segOff[i]..segOff[i+1]-1;
       var offs = if s == size - 1 then o..strSize-1 else o..offsets[s+1]-1;
       forall (off, idx) in zip(offs, inds) {
-        agg.copy(expandedVals[off], segString.values.a[idx]);
+        agg.copy(expandedVals[off], vals[idx]);
       }
     }
 
