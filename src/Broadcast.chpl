@@ -170,11 +170,13 @@ module Broadcast {
     var r: [sD] int = 0..segString.size; 
     var ind = broadcast(segs, r, size);
     var expandedVals = makeDistArray(strSize, uint(8));
+    var agg = newDstAggregator(uint(8));
+    ref vals = segString.values.a;
 
-    forall (i, o, s) in zip(ind, offsets, 0..#size) with (var agg = newDstAggregator(uint(8)), ref vals = segString.values.a) {
+    forall (i, o, s) in zip(ind, offsets, 0..#size) with (ref agg, ref vals) {
       var inds = if i == high then segOff[i]..segString.nBytes-1 else segOff[i]..segOff[i+1]-1;
       var offs = if s == size - 1 then o..strSize-1 else o..offsets[s+1]-1;
-      forall (off, idx) in zip(offs, inds) {
+      forall (off, idx) in zip(offs, inds) with (ref agg, ref vals) {
         agg.copy(expandedVals[off], vals[idx]);
       }
     }
