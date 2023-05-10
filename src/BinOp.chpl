@@ -1161,10 +1161,19 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t <<= ri;
-              if has_max_bits {
-                t &= local_max_size;
+            var too_big = makeDistArray(ra.size, bool);
+            if has_max_bits {
+              too_big = ra >= max_bits;
+            }
+            forall (t, ri, tb) in zip(tmp, ra, too_big) with (var local_max_size = max_size) {
+              if tb {
+                t = 0;
+              }
+              else {
+                t <<= ri;
+                if has_max_bits {
+                  t &= local_max_size;
+                }
               }
             }
             visted = true;
@@ -1173,12 +1182,21 @@ module BinOp
             // workaround for right shift until chapel issue #21206
             // makes it into a release, eventually we can just do
             // tmp = la >> ra;
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              var dB = 1:bigint;
-              dB <<= ri;
-              t /= dB;
-              if has_max_bits {
-                t &= local_max_size;
+            var too_big = makeDistArray(ra.size, bool);
+            if has_max_bits {
+              too_big = ra >= max_bits;
+            }
+            forall (t, ri, tb) in zip(tmp, ra, too_big) with (var local_max_size = max_size) {
+              if tb {
+                t = 0;
+              }
+              else {
+                var dB = 1:bigint;
+                dB <<= ri;
+                t /= dB;
+                if has_max_bits {
+                  t &= local_max_size;
+                }
               }
             }
             visted = true;
@@ -1418,10 +1436,17 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-              t <<= local_val;
-              if has_max_bits {
-                t &= local_max_size;
+            if has_max_bits && val >= max_bits {
+              forall t in tmp with (var local_zero = 0:bigint) {
+                t = local_zero;
+              }
+            }
+            else {
+              forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+                t <<= local_val;
+                if has_max_bits {
+                  t &= local_max_size;
+                }
               }
             }
             visted = true;
@@ -1430,10 +1455,17 @@ module BinOp
             // workaround for right shift until chapel issue #21206
             // makes it into a release, eventually we can just do
             // tmp = la >> ra;
-            forall t in tmp with (var dB = (1:bigint) << val, var local_max_size = max_size) {
-              t /= dB;
-              if has_max_bits {
-                t &= local_max_size;
+            if has_max_bits && val >= max_bits {
+              forall t in tmp with (var local_zero = 0:bigint) {
+                t = local_zero;
+              }
+            }
+            else {
+              forall t in tmp with (var dB = (1:bigint) << val, var local_max_size = max_size) {
+                t /= dB;
+                if has_max_bits {
+                  t &= local_max_size;
+                }
               }
             }
             visted = true;
@@ -1690,10 +1722,19 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t <<= ri;
-              if has_max_bits {
-                t &= local_max_size;
+            var too_big = makeDistArray(ra.size, bool);
+            if has_max_bits {
+              too_big = ra >= max_bits;
+            }
+            forall (t, ri, tb) in zip(tmp, ra, too_big) with (var local_max_size = max_size) {
+              if tb {
+                t = 0;
+              }
+              else {
+                t <<= ri;
+                if has_max_bits {
+                  t &= local_max_size;
+                }
               }
             }
             visted = true;
@@ -1702,12 +1743,21 @@ module BinOp
             // workaround for right shift until chapel issue #21206
             // makes it into a release, eventually we can just do
             // tmp = val >> ra;
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              var dB = 1:bigint;
-              dB <<= ri;
-              t /= dB;
-              if has_max_bits {
-                t &= local_max_size;
+            var too_big = makeDistArray(ra.size, bool);
+            if has_max_bits {
+              too_big = ra >= max_bits;
+            }
+            forall (t, ri, tb) in zip(tmp, ra, too_big) with (var local_max_size = max_size) {
+              if tb {
+                t = 0;
+              }
+              else {
+                var dB = 1:bigint;
+                dB <<= ri;
+                t /= dB;
+                if has_max_bits {
+                  t &= local_max_size;
+                }
               }
             }
             visted = true;
