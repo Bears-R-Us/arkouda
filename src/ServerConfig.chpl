@@ -274,15 +274,17 @@ module ServerConfig
                 if (total > memHighWater) {
                     memHighWater = total;
                     scLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                    "memory high watermark = %i memory limit = %i percentage used = %i%%".format(
+                    "memory high watermark = %i memory limit = %i projected pct memory used of %i%%".format(
                            memHighWater:uint * numLocales:uint, 
                            getMemLimit():uint * numLocales:uint,
-                           AutoMath.round((memHighWater:real / (getMemLimit():real * numLocales)) * 100):uint));
+                           AutoMath.round((memHighWater:real * numLocales / 
+                                         (getMemLimit():real * numLocales)) * 100):uint));
                 }
             }
             if total > getMemLimit() {
-                var msg = "Error: Operation would exceed memory limit ("
-                                             +total:string+","+getMemLimit():string+")";
+                var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
+                var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".format(
+                                   total, getMemLimit(), pct);
                 scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                 throw getErrorWithContext(
                           msg=msg,
