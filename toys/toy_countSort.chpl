@@ -8,7 +8,7 @@ config const VR = 20; // 20 possible values are in [M,M+VR)
 use CyclicDist;
 use CountingSort;
 use AryUtil;
-use Memory;  // for physicalMemory()
+use ArkoudaMemDiagnosticsCompat;  // for physicalMemory()
 
 config const printLocaleInfo = true;  // permit testing to turn this off
 

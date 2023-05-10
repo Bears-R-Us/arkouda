@@ -6,7 +6,6 @@ module ServerDaemon {
     use ServerErrors;
     use ArkoudaTimeCompat as Time;
     use ZMQ only;
-    use Memory;
     use FileSystem;
     use IO;
     use Logging;

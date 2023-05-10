@@ -8,7 +8,7 @@ module MetricsMsg {
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use Message;
-    use Memory.Diagnostics;
+    use ArkoudaMemDiagnosticsCompat;
     use NumPyDType;
     use ArkoudaTimeCompat as Time;
 

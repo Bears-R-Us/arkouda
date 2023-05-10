@@ -216,7 +216,7 @@ module ServerConfig
     chpl_comm_regMemHeapInfo if using a fixed heap, otherwise physical memory
     */ 
     proc getPhysicalMemHere() {
-        use Memory.Diagnostics, CTypes;
+        use ArkoudaMemDiagnosticsCompat, CTypes;
         extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_void_ptr), size: c_ptr(c_size_t)): void;
         var unused: c_void_ptr;
         var heap_size: c_size_t;
@@ -242,7 +242,7 @@ module ServerConfig
     Get the memory used on this locale
     */
     proc getMemUsed() {
-        use Memory.Diagnostics;
+        use ArkoudaMemDiagnosticsCompat;
         return memoryUsed();
     }
 
