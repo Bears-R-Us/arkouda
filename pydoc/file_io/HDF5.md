@@ -26,6 +26,7 @@ While most objects in Arkouda can be saved, there are 3 main datatypes currently
 - Index
 - Categorical
 - SegArray
+- GroupBy
 
 HDF5 is able to contain any number of objects within the same file.
 
@@ -40,6 +41,8 @@ All data within the HDF5 file is expected to contain several attributes that aid
 - 1 = `pdarray`
 - 2 = `Strings`
 - 3 = `SegArray`
+- 4 = `Categorical`
+- 5 = `GroupBy`
 
 `isBool`: `int`
 > Integer value (0 or 1) representing a boolean value that indicates if the data stored contains boolean values. This is only required to be set when the dataset contains boolean values.
@@ -142,6 +145,89 @@ Providing these attributes allows for the ArrayView object to be reconstructed f
 >               4. arkouda_version: 'current_arkouda_version' (Optional)
 >           2. Data - int64 values representing the start index of each segmented value.
 
+### Categorical
+
+`Categorical` objects are stored within an HDF5 group. This group contains datasets storing the components of the Categorical.
+
+>1. Group (user provided dataset name. Defaults to 'categorical')
+>       1. Attributes
+>           1. ObjType: 4
+>           2. file_version: 2.0 (Optional)
+>           3. arkouda_version: 'current_arkouda_version' (Optional)
+>       2. Dataset - Codes
+>           1. Attributes
+>               1. ObjType: 1
+>               2. isBool: 0
+>               3. file_version: 2.0 (Optional)
+>               4. arkouda_version: 'current_arkouda_version' (Optional)
+>           2. Data - int64 values representing our codes of the Categorical.
+>       3. Dataset - Categories
+>           1. Attributes
+>               1. ObjType: 2
+>               2. isBool: 0
+>               3. file_version: 2.0 (Optional)
+>               4. arkouda_version: 'current_arkouda_version' (Optional)
+>           2. Data - Strings group representing the categories of the Categorical.
+>       4. Dataset - NA_Codes
+>           1. Attributes
+>               1. ObjType: 1
+>               2. isBool: 0
+>               3. file_version: 2.0 (Optional)
+>               4. arkouda_version: 'current_arkouda_version' (Optional)
+>           2. Data - int64 values representing the index in of categories with NA value.
+>       5. Dataset - Permutaion (Optional. Only include if Categorical object has permutation property)
+>           1. Attributes
+>               1. ObjType: 1
+>               2. isBool: 0
+>               3. file_version: 2.0 (Optional)
+>               4. arkouda_version: 'current_arkouda_version' (Optional)
+>           2. Data - int64 values representing the permutation of the categories.
+>       6. Dataset - Segments (Optional. Only include if Categorical object has segments property)
+>           1. Attributes
+>               1. ObjType: 1
+>               2. isBool: 0
+>               3. file_version: 2.0 (Optional)
+>               4. arkouda_version: 'current_arkouda_version' (Optional)
+>           2. Data - int64 values representing the start index of category segments.
+
+### GroupBy
+
+`GroupBy` objects are stored within an HDF5 group. This group contains datasets storing the components of the GroupBy.
+
+>1. Group (user provided dataset name. Defaults to 'groupby')
+>       1. Attributes
+>           1. ObjType: 5
+>           2. file_version: 2.0 (Optional)
+>           3. arkouda_version: 'current_arkouda_version' (Optional)
+>       2. Dataset - Permutaion
+>           1. Attributes
+>               1. ObjType: 1
+>               2. isBool: 0
+>               3. file_version: 2.0 (Optional)
+>               4. arkouda_version: 'current_arkouda_version' (Optional)
+>           2. Data - int64 values representing the permutation of the GroupBy.
+>       3. Dataset - Segments
+>           1. Attributes
+>               1. ObjType: 1
+>               2. isBool: 0
+>               3. file_version: 2.0 (Optional)
+>               4. arkouda_version: 'current_arkouda_version' (Optional)
+>           2. Data - int64 values representing the start index of GroupBy segments.
+>       4. Dataset - unique_key_idx
+>           1. Attributes
+>               1. ObjType: 1
+>               2. isBool: 0
+>               3. file_version: 2.0 (Optional)
+>               4. arkouda_version: 'current_arkouda_version' (Optional)
+>           2. Data - int64 values representing the index of Unique keys in the GroupBy.
+>       5. Dataset - KEY_# (multiple keys may be present. They will be numbered accordingly)
+>           1. Attributes
+>               1. ObjType: 1, 2, or 4 (pdarray, Strings, or Categorical)
+>               2. isBool: 0 or 1
+>               3. file_version: 2.0 (Optional)
+>               4. arkouda_version: 'current_arkouda_version' (Optional)
+>           2. Data - Key object used to generate the GroupBy. This will be a dataset or group depending on the object type.
+
 ## Supported Write Modes
 
 **Truncate**
@@ -205,4 +291,10 @@ Older version of Arkouda used different schemas for `pdarray` and `Strings` obje
 ```{eval-rst}  
 - :py:meth:`arkouda.SegArray.to_hdf`
 - :py:meth:`arkouda.SegArray.load`
+```
+
+### GroupBy
+
+```{eval-rst}  
+- :py:meth:`arkouda.Categorical.to_hdf`
 ```

@@ -238,7 +238,7 @@ class GroupBy:
 
     def __init__(
         self,
-        keys: Optional[groupable],
+        keys: Optional[groupable] = None,
         assume_sorted: bool = False,
         **kwargs,
     ):
@@ -252,6 +252,7 @@ class GroupBy:
 
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
+        # TODO - add case where uki provided instead of unique_keys
         if (
             "orig_keys" in kwargs
             and "permutation" in kwargs
@@ -266,6 +267,23 @@ class GroupBy:
             self.nkeys = len(self.keys)
             self.length = self.permutation.size
             self.ngroups = self.segments.size
+        elif (
+                "orig_keys" in kwargs
+                and "permutation" in kwargs
+                and "uki" in kwargs
+                and "segments" in kwargs
+        ):
+            self.keys = cast(groupable, kwargs.get("orig_keys", None))
+            self._uki = kwargs.get("uki", None)
+            self.permutation = kwargs.get("permutation", None)
+            self.segments = kwargs.get("segments", None)
+            self.nkeys = len(self.keys) if isinstance(self.keys, Sequence) else 1
+            self.length = self.permutation.size
+            self.ngroups = self.segments.size
+            if not isinstance(self.keys, Sequence):
+                self.unique_keys = self.keys[self._uki]
+            else:
+                self.unique_keys = tuple(a[self._uki] for a in self.keys)
         elif keys is None:
             raise ValueError("No keys passed to GroupBy.")
         else:
@@ -289,11 +307,11 @@ class GroupBy:
             self.ngroups = int(fields[3])
             self.permutation = create_pdarray(rep_json["permutation"])
             self.segments = create_pdarray(rep_json["segments"])
-            uki = create_pdarray(rep_json["uniqueKeyIdx"])
+            self._uki = create_pdarray(rep_json["uniqueKeyIdx"])
             if self.nkeys == 1:
-                self.unique_keys = self.keys[uki]
+                self.unique_keys = self.keys[self._uki]
             else:
-                self.unique_keys = tuple(a[uki] for a in self.keys)
+                self.unique_keys = tuple(a[self._uki] for a in self.keys)
 
     def __del__(self):
         try:
@@ -301,6 +319,31 @@ class GroupBy:
                 generic_msg(cmd="delete", args={"name": self.name})
         except RuntimeError:
             pass
+
+    @staticmethod
+    def from_return_msg(rep_msg):
+        from arkouda.categorical import Categorical as Categorical_
+        data = json.loads(rep_msg)
+        perm = create_pdarray(data["permutation"])
+        segs = create_pdarray(data["segments"])
+        uki = create_pdarray(data["uki"])
+        keys = []
+        for k, create_data in data.items():
+            if k == "permutation" or k == "segments" or k == "uki":
+                continue
+            comps = create_data.split("+|+")
+            if comps[0] == "pdarray":
+                print(comps[1])
+                keys.append(create_pdarray(comps[1]))
+            elif comps[0] == "seg_string":
+                keys.append(Strings.from_return_msg(comps[1]))
+            elif comps[0] == "categorical":
+                keys.append(Categorical_.from_return_msg(comps[1]))
+        print(keys)
+        if len(keys) == 1:
+            keys = keys[0]
+        return GroupBy(orig_keys=keys, permutation=perm, segments=segs, uki=uki)
+
 
     def to_hdf(
         self,
@@ -340,45 +383,49 @@ class GroupBy:
         GroupBy is not currently supported by Parquet
         """
         from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.categorical import Categorical as Categorical_
 
         keys = self.keys
         if not isinstance(self.keys, Sequence):
             keys = [self.keys]
 
         objTypes = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
-        dtypes = [k.dtype for k in keys]  # TODO - need to handle categorical case here
+        dtypes = [
+            k.categories.dtype if isinstance(k, Categorical_) else k.dtype for k in keys
+        ]
 
         # access the names of the key or names of properties for categorical
         gb_keys = [
             k.name
-            if not isinstance(k, Categorical)
+            if not isinstance(k, Categorical_)
             else json.dumps(
-                # TODO - what if perm and segments set??
-                {"codes": k.codes.name, "categories": k.categories.name, "akNAcode": k._akNAcode.name,
-                 **({'permutation': k.permutation.name} if k.permutation is not None else {}),
-                 **({'segments': k.segments.name} if k.segments is not None else {}),
-                 }
+                {
+                    "codes": k.codes.name,
+                    "categories": k.categories.name,
+                    "NA_codes": k._akNAcode.name,
+                    **({"permutation": k.permutation.name} if k.permutation is not None else {}),
+                    **({"segments": k.segments.name} if k.segments is not None else {}),
+                }
             )
             for k in keys
         ]
-        print(objTypes)
-        print(dtypes)
-        print(gb_keys)
-        # generic_msg(
-        #     cmd="tohdf",
-        #     args={
-        #         "keys": keys,
-        #         "unique_keys": self.unique_keys,
-        #         "permutation": self.permutation,
-        #         "segments": self.segments,
-        #         "dset": dataset,
-        #         "write_mode": _mode_str_to_int(mode),
-        #         "filename": prefix_path,
-        #         "dtype": self.keys.dtype,
-        #         "objType": "groupby",
-        #         "file_format": _file_type_to_int(file_type),
-        #     },
-        # )
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "num_keys": len(gb_keys),
+                "key_names": gb_keys,
+                "key_dtypes": dtypes,
+                "key_objTypes": objTypes,
+                "unique_key_idx": self._uki,
+                "permutation": self.permutation,
+                "segments": self.segments,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int(mode),
+                "filename": prefix_path,
+                "objType": "groupby",
+                "file_format": _file_type_to_int(file_type),
+            },
+        )
 
     def size(self) -> Tuple[groupable, pdarray]:
         """

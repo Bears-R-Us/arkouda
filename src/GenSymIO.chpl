@@ -212,6 +212,9 @@ module GenSymIO {
             else if (akType == "seg_array" || akType == "categorical") {
                 create_str = id;
             } 
+            else if (akType == "groupby") {
+                create_str = id;
+            }
             else {
                 continue;
             }
@@ -227,6 +230,36 @@ module GenSymIO {
             reply.add("file_errors", "%jt".format(fileErrors));
         }
         return "%jt".format(reply);
+    }
+
+    /*
+     * Simple JSON parser to allow creating a map(string, string) for properly formatted JSON string.
+     * REQUIRES THAT 
+    */
+    proc jsonToMap(json: string): map(string, string) throws {
+        // remove components not needed for parsing
+        var clean_json = json.strip().replace("\"", "").replace("{", "").replace("}", ""); // syntax highlight messed up by \".
+
+        // generate the return map
+        var m: map(string, string) = new map(string, string);
+
+        //get each key value pair
+        var key_value = clean_json.split(", ");
+        for kv in key_value  {
+            // split to 2 components key: value
+            var x = kv.split(": ");
+            var key: string;
+            var val: string;
+            for (i, y) in zip(0..#x.size, x){
+                if i == 0 {
+                    key = y; // first component is key
+                } else {
+                    val = y; // 2nd component is value
+                    m.addOrSet(key, val); // add to map
+                }
+            }
+        }
+        return m;
     }
 
 }

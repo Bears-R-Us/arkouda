@@ -9,6 +9,7 @@ from typeguard import typechecked
 
 import arkouda.array_view
 from arkouda.categorical import Categorical
+from arkouda.groupbyclass import GroupBy
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array
@@ -466,6 +467,8 @@ def _parse_obj(
         return arkouda.array_view.ArrayView(flat, shape)
     elif "categorical" == obj["arkouda_type"]:
         return Categorical.from_return_msg(obj["created"])
+    elif "groupby" == obj["arkouda_type"]:
+        return GroupBy.from_return_msg(obj["created"])
     else:
         raise TypeError(f"Unknown arkouda type:{obj['arkouda_type']}")
 
@@ -1848,6 +1851,10 @@ def read_tagged_data(
         SegArray (or other nested Parquet columns) will be ignored.
         Ignored if datasets is not `None`
         Parquet Files only.
+
+    Notes
+    ------
+    Not currently supported for Categorical or GroupBy datasets
 
     Examples
     ---------
