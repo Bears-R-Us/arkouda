@@ -168,9 +168,6 @@ module TransferMsg
       var context: Context;
       var socket = context.socket(ZMQ.PUSH);
       socket.bind("tcp://*:"+port:string);
-      // exchange some data to establish connection
-      var a = 5;
-      socket.send(a);
       const size = intersection.size*c_sizeof(t):int;
       var locBuff = createBytesWithBorrowedBuffer(c_ptrTo(A[intersection.low]):c_ptr(uint(8)), size, size);
       socket.send(locBuff);
@@ -184,8 +181,6 @@ module TransferMsg
         socket.connect("tcp://localhost:"+port:string);
       else
         socket.connect("tcp://"+hostname+":"+port:string);
-      // exchange some data so it works
-      var a = socket.recv(int);
       var locData = socket.recv(bytes);
       var locArr = makeArrayFromPtr(locData.c_str():c_void_ptr:c_ptr(t), intersection.size:uint);
       A[intersection] = locArr;
