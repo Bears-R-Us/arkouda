@@ -1161,42 +1161,35 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            var too_big = makeDistArray(ra.size, bool);
-            if has_max_bits {
-              too_big = ra >= max_bits;
-            }
-            forall (t, ri, tb) in zip(tmp, ra, too_big) with (var local_max_size = max_size) {
-              if tb {
-                t = 0;
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              if has_max_bits {
+                if ri >= max_bits {
+                  t = 0;
+                }
+                else {
+                  t <<= ri;
+                  t &= local_max_size;
+                }
               }
               else {
                 t <<= ri;
-                if has_max_bits {
-                  t &= local_max_size;
-                }
               }
             }
             visted = true;
           }
           when ">>" {
-            // workaround for right shift until chapel issue #21206
-            // makes it into a release, eventually we can just do
-            // tmp = la >> ra;
-            var too_big = makeDistArray(ra.size, bool);
-            if has_max_bits {
-              too_big = ra >= max_bits;
-            }
-            forall (t, ri, tb) in zip(tmp, ra, too_big) with (var local_max_size = max_size) {
-              if tb {
-                t = 0;
-              }
-              else {
-                var dB = 1:bigint;
-                dB <<= ri;
-                t /= dB;
-                if has_max_bits {
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              if has_max_bits {
+                if ri >= max_bits {
+                  t = 0;
+                }
+                else {
+                  rightShiftEq(t, ri);
                   t &= local_max_size;
                 }
+              }
+              else {
+                rightShiftEq(t, ri);
               }
             }
             visted = true;
@@ -1205,31 +1198,14 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotl");
             }
-            // should be as simple as the below, see issue #2006
-            // return (la << ra) | (la >> (max_bits - ra));
             var botBits = la;
-            if r.etype == int {
-              // cant just do botBits >>= shift_amt;
-              forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
-                t <<= modded_shift;
-                var div_by = 1:bigint;
-                var shift_amt = max_bits - modded_shift;
-                div_by <<= shift_amt;
-                bot_bits /= div_by;
-                t += bot_bits;
-                t &= local_max_size;
-              }
-            }
-            else {
-              forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
-                t <<= modded_shift;
-                var shift_amt = max_bits:uint - modded_shift;
-                bot_bits >>= shift_amt;
-                t += bot_bits;
-                t &= local_max_size;
-              }
+            forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
+              var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
+              t <<= modded_shift;
+              var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
+              rightShiftEq(bot_bits, shift_amt);
+              t += bot_bits;
+              t &= local_max_size;
             }
             visted = true;
           }
@@ -1237,15 +1213,10 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotr");
             }
-            // should be as simple as the below, see issue #2006
-            // return (la >> ra) | (la << (max_bits - ra));
-            // cant just do tmp >>= ra;
             var topBits = la;
             forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
               var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
-              var div_by = 1:bigint;
-              div_by <<= modded_shift;
-              t /= div_by;
+              rightShiftEq(t, modded_shift);
               var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
               tB <<= shift_amt;
               t += tB;
@@ -1452,17 +1423,14 @@ module BinOp
             visted = true;
           }
           when ">>" {
-            // workaround for right shift until chapel issue #21206
-            // makes it into a release, eventually we can just do
-            // tmp = la >> ra;
             if has_max_bits && val >= max_bits {
               forall t in tmp with (var local_zero = 0:bigint) {
                 t = local_zero;
               }
             }
             else {
-              forall t in tmp with (var dB = (1:bigint) << val, var local_max_size = max_size) {
-                t /= dB;
+              forall t in tmp with (var local_max_size = max_size) {
+                rightShiftEq(t, val);
                 if has_max_bits {
                   t &= local_max_size;
                 }
@@ -1474,31 +1442,14 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotl");
             }
-            // should be as simple as the below, see issue #2006
-            // return (la << val) | (la >> (max_bits - val));
             var botBits = la;
-            if val.type == int {
-              var modded_shift = val % max_bits;
-              var shift_amt = max_bits - modded_shift;
-              // cant just do botBits >>= shift_amt;
-              forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
-                t <<= local_val;
-                var div_by = 1:bigint;
-                div_by <<= local_shift_amt;
-                bot_bits /= div_by;
-                t += bot_bits;
-                t &= local_max_size;
-              }
-            }
-            else {
-              var modded_shift = val % max_bits:uint;
-              var shift_amt = max_bits:uint - modded_shift;
-              forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
-                t <<= local_val;
-                bot_bits >>= local_shift_amt;
-                t += bot_bits;
-                t &= local_max_size;
-              }
+            var modded_shift = if val.type == int then val % max_bits else val % max_bits:uint;
+            var shift_amt = if val.type == int then max_bits - modded_shift else max_bits:uint - modded_shift;
+            forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
+              t <<= local_val;
+              rightShiftEq(bot_bits, local_shift_amt);
+              t += bot_bits;
+              t &= local_max_size;
             }
             visted = true;
           }
@@ -1506,16 +1457,11 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotr");
             }
-            // should be as simple as the below, see issue #2006
-            // return (la >> val) | (la << (max_bits - val));
-            // cant just do tmp >>= ra;
             var topBits = la;
             var modded_shift = if val.type == int then val % max_bits else val % max_bits:uint;
             var shift_amt = if val.type == int then max_bits - modded_shift else max_bits:uint - modded_shift;
             forall (t, tB) in zip(tmp, topBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
-              var div_by = 1:bigint;
-              div_by <<= local_val;
-              t /= div_by;
+              rightShiftEq(t, local_val);
               tB <<= local_shift_amt;
               t += tB;
               t &= local_max_size;
@@ -1722,42 +1668,35 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            var too_big = makeDistArray(ra.size, bool);
-            if has_max_bits {
-              too_big = ra >= max_bits;
-            }
-            forall (t, ri, tb) in zip(tmp, ra, too_big) with (var local_max_size = max_size) {
-              if tb {
-                t = 0;
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              if has_max_bits {
+                if ri >= max_bits {
+                  t = 0;
+                }
+                else {
+                  t <<= ri;
+                  t &= local_max_size;
+                }
               }
               else {
                 t <<= ri;
-                if has_max_bits {
-                  t &= local_max_size;
-                }
               }
             }
             visted = true;
           }
           when ">>" {
-            // workaround for right shift until chapel issue #21206
-            // makes it into a release, eventually we can just do
-            // tmp = val >> ra;
-            var too_big = makeDistArray(ra.size, bool);
-            if has_max_bits {
-              too_big = ra >= max_bits;
-            }
-            forall (t, ri, tb) in zip(tmp, ra, too_big) with (var local_max_size = max_size) {
-              if tb {
-                t = 0;
-              }
-              else {
-                var dB = 1:bigint;
-                dB <<= ri;
-                t /= dB;
-                if has_max_bits {
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              if has_max_bits {
+                if ri >= max_bits {
+                  t = 0;
+                }
+                else {
+                  rightShiftEq(t, ri);
                   t &= local_max_size;
                 }
+              }
+              else {
+                rightShiftEq(t, ri);
               }
             }
             visted = true;
@@ -1766,32 +1705,15 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotl");
             }
-            // should be as simple as the below, see issue #2006
-            // return (la << ra) | (la >> (max_bits - ra));
             var botBits = makeDistArray(ra.size, bigint);
             botBits = val;
-            if r.etype == int {
-              // cant just do botBits >>= shift_amt;
-              forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
-                t <<= modded_shift;
-                var div_by = 1:bigint;
-                var shift_amt = max_bits - modded_shift;
-                div_by <<= shift_amt;
-                bot_bits /= div_by;
-                t += bot_bits;
-                t &= local_max_size;
-              }
-            }
-            else {
-              forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-                var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
-                t <<= modded_shift;
-                var shift_amt = max_bits:uint - modded_shift;
-                bot_bits >>= shift_amt;
-                t += bot_bits;
-                t &= local_max_size;
-              }
+            forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
+              var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
+              t <<= modded_shift;
+              var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
+              rightShiftEq(bot_bits, shift_amt);
+              t += bot_bits;
+              t &= local_max_size;
             }
             visted = true;
           }
@@ -1799,16 +1721,11 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotr");
             }
-            // should be as simple as the below, see issue #2006
-            // return (la >> ra) | (la << (max_bits - ra));
-            // cant just do tmp >>= ra;
             var topBits = makeDistArray(ra.size, bigint);
             topBits = val;
             forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
               var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
-              var div_by = 1:bigint;
-              div_by <<= modded_shift;
-              t /= div_by;
+              rightShiftEq(t, modded_shift);
               var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
               tB <<= shift_amt;
               t += tB;
