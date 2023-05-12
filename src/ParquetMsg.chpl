@@ -28,13 +28,6 @@ module ParquetMsg {
     LZ4=5
   };
 
-  enum ObjType {
-      ARRAYVIEW=0,
-      PDARRAY=1,
-      STRINGS=2,
-      SEGARRAY=3
-    };
-
 
   // Use reflection for error information
   use Reflection;

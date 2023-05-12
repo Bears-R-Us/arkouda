@@ -912,14 +912,11 @@ class IOTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             g.to_hdf(f"{tmp_dirname}/pd_test")
             g_load = ak.read(f"{tmp_dirname}/pd_test*")
-            print(g.keys)
-            print(g_load.keys)
-            # self.assertEqual(len(g_load.keys), len(g.keys))
-            # self.assertListEqual(g_load.permutation.to_list(), g.permutation.to_list())
-            # self.assertListEqual(g_load.segments.to_list(), g.segments.to_list())
-            # self.assertListEqual(g_load._uki.to_list(), g._uki.to_list())
-            # for k, kload in zip(g_load.keys, g.keys):
-            #     self.assertListEqual(g_load.keys.to_list(), g.keys.to_list())
+            self.assertEqual(len(g_load.keys), len(g.keys))
+            self.assertListEqual(g_load.permutation.to_list(), g.permutation.to_list())
+            self.assertListEqual(g_load.segments.to_list(), g.segments.to_list())
+            self.assertListEqual(g_load._uki.to_list(), g._uki.to_list())
+            self.assertListEqual(g_load.keys.to_list(), g.keys.to_list())
 
     def test_hdf_overwrite_pdarray(self):
         # test repack with a single object
