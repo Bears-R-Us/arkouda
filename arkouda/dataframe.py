@@ -562,7 +562,7 @@ class DataFrame(UserDict):
     def _get_head_tail_server(self):
         if self._empty:
             return pd.DataFrame()
-        # self.update_size()
+        self.update_size()
         maxrows = pd.get_option("display.max_rows")
         if self._size <= maxrows:
             newdf = DataFrame()
