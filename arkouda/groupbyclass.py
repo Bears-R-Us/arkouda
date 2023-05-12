@@ -268,10 +268,10 @@ class GroupBy:
             self.length = self.permutation.size
             self.ngroups = self.segments.size
         elif (
-                "orig_keys" in kwargs
-                and "permutation" in kwargs
-                and "uki" in kwargs
-                and "segments" in kwargs
+            "orig_keys" in kwargs
+            and "permutation" in kwargs
+            and "uki" in kwargs
+            and "segments" in kwargs
         ):
             self.keys = cast(groupable, kwargs.get("orig_keys", None))
             self._uki = kwargs.get("uki", None)
@@ -323,6 +323,7 @@ class GroupBy:
     @staticmethod
     def from_return_msg(rep_msg):
         from arkouda.categorical import Categorical as Categorical_
+
         data = json.loads(rep_msg)
         perm = create_pdarray(data["permutation"])
         segs = create_pdarray(data["segments"])
@@ -343,7 +344,6 @@ class GroupBy:
         if len(keys) == 1:
             keys = keys[0]
         return GroupBy(orig_keys=keys, permutation=perm, segments=segs, uki=uki)
-
 
     def to_hdf(
         self,
@@ -390,9 +390,7 @@ class GroupBy:
             keys = [self.keys]
 
         objTypes = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
-        dtypes = [
-            k.categories.dtype if isinstance(k, Categorical_) else k.dtype for k in keys
-        ]
+        dtypes = [k.categories.dtype if isinstance(k, Categorical_) else k.dtype for k in keys]
 
         # access the names of the key or names of properties for categorical
         gb_keys = [
@@ -426,6 +424,63 @@ class GroupBy:
                 "file_format": _file_type_to_int(file_type),
             },
         )
+
+    def update_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "strings_array",
+        repack: bool = True,
+    ):
+        from arkouda.io import _mode_str_to_int, _file_type_to_int, _get_hdf_filetype, _repack_hdf
+
+        # determine the format (single/distribute) that the file was saved in
+        file_type = _get_hdf_filetype(prefix_path + "*")
+
+        from arkouda.categorical import Categorical as Categorical_
+
+        keys = self.keys
+        if not isinstance(self.keys, Sequence):
+            keys = [self.keys]
+
+        objTypes = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
+        dtypes = [k.categories.dtype if isinstance(k, Categorical_) else k.dtype for k in keys]
+
+        # access the names of the key or names of properties for categorical
+        gb_keys = [
+            k.name
+            if not isinstance(k, Categorical_)
+            else json.dumps(
+                {
+                    "codes": k.codes.name,
+                    "categories": k.categories.name,
+                    "NA_codes": k._akNAcode.name,
+                    **({"permutation": k.permutation.name} if k.permutation is not None else {}),
+                    **({"segments": k.segments.name} if k.segments is not None else {}),
+                }
+            )
+            for k in keys
+        ]
+
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "num_keys": len(gb_keys),
+                "key_names": gb_keys,
+                "key_dtypes": dtypes,
+                "key_objTypes": objTypes,
+                "unique_key_idx": self._uki,
+                "permutation": self.permutation,
+                "segments": self.segments,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int("truncate"),
+                "filename": prefix_path,
+                "objType": "groupby",
+                "file_format": _file_type_to_int(file_type),
+            },
+        )
+
+        if repack:
+            _repack_hdf(prefix_path)
 
     def size(self) -> Tuple[groupable, pdarray]:
         """
