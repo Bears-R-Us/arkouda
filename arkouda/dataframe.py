@@ -278,7 +278,13 @@ class DataFrame(UserDict):
             # convert the lists defining each column into a pdarray
             # pd.DataFrame.values is stored as rows, we need lists to be columns
             for key, val in initialdata.to_dict("list").items():
-                self.data[key] = array(val)
+                if isinstance(val[0], list):
+                    multi_array = []
+                    for r in val:
+                        multi_array.append(array(r))
+                    self.data[key] = SegArray.from_multi_array(multi_array)
+                else:
+                    self.data[key] = array(val)
 
             self.data.update()
             return
@@ -556,7 +562,7 @@ class DataFrame(UserDict):
     def _get_head_tail_server(self):
         if self._empty:
             return pd.DataFrame()
-        self.update_size()
+        # self.update_size()
         maxrows = pd.get_option("display.max_rows")
         if self._size <= maxrows:
             newdf = DataFrame()
@@ -950,7 +956,6 @@ class DataFrame(UserDict):
         """
         Computes the number of bytes on the arkouda server.
         """
-
         sizes = set()
         for key, val in self.items():
             if val is not None:

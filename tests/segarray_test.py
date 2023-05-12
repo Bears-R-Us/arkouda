@@ -35,9 +35,10 @@ class SegArrayTest(ArkoudaTest):
         self.assertTrue(segarr.__eq__(segarr).all())
 
         multi_pd = ak.SegArray.from_multi_array(
-            [ak.array([10, 20, 30]), ak.array([11, 21, 31]), ak.array([12, 22, 32])]
+            [ak.array([10, 11, 12]), ak.array([20, 21, 22]), ak.array([30, 31, 32])]
         )
         self.assertIsInstance(multi_pd, ak.SegArray)
+        print(multi_pd.__str__())
         self.assertEqual(multi_pd.__str__(), "SegArray([\n[10 11 12]\n[20 21 22]\n[30 31 32]\n])")
         with self.assertRaises(TypeError):
             segarr.__getitem__("a")
@@ -120,7 +121,7 @@ class SegArrayTest(ArkoudaTest):
         multi_pd2 = ak.SegArray.from_multi_array(
             [ak.array([13, 23, 33]), ak.array([14, 24, 34]), ak.array([15, 25, 35])]
         )
-        concated = ak.SegArray.concat([multi_pd, multi_pd2], axis=1)
+        concated = ak.SegArray.concat([multi_pd, multi_pd2], axis=0)
 
         test = ak.SegArray.from_multi_array(
             [
@@ -132,8 +133,22 @@ class SegArrayTest(ArkoudaTest):
                 ak.array([15, 25, 35]),
             ]
         )
+        self.assertEqual(concated.size, test.size)
+        for i in range(test.size):
+            self.assertListEqual(concated[i].tolist(), test[i].tolist())
 
-        self.assertEqual(concated.__str__(), test.__str__())
+        concated = ak.SegArray.concat([multi_pd, multi_pd2], axis=1)
+
+        test = ak.SegArray.from_multi_array(
+            [
+                ak.array([10, 20, 30, 13, 23, 33]),
+                ak.array([11, 21, 31, 14, 24, 34]),
+                ak.array([12, 22, 32, 15, 25, 35]),
+            ]
+        )
+        self.assertEqual(concated.size, test.size)
+        for i in range(test.size):
+            self.assertListEqual(concated[i].tolist(), test[i].tolist())
 
     def test_suffixes(self):
         a = [10, 11, 12, 13, 14, 15]
