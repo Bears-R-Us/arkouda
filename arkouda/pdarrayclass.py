@@ -410,9 +410,10 @@ class pdarray:
             a supported dtype
         """
         # hostname is the hostname to send to
-        generic_msg(cmd="sendArray", args={"arg1": self,
-                                           "hostname": hostname,
-                                           "port": port})
+        return generic_msg(cmd="sendArray", args={"arg1": self,
+                                                  "hostname": hostname,
+                                                  "port": port,
+                                                  "objType": "pdarray"})
 
     # overload + for pdarray, other can be {pdarray, int, float}
     def __add__(self, other):

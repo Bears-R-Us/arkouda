@@ -7,8 +7,51 @@ module TransferMsg
     use CTypes;
     use ZMQ;
     use List;
+
+    use SegmentedString;
+    use SegmentedArray;
+
+    enum ObjType {
+      ARRAYVIEW=0,
+      PDARRAY=1,
+      STRINGS=2,
+      SEGARRAY=3,
+      CATEGORICAL=4
+    };
     
     proc sendArrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+      var objType: ObjType = msgArgs.getValueOf("objType").toUpper(): ObjType;
+
+      select objType {
+        when ObjType.ARRAYVIEW {
+          // call handler for arrayview write msg
+          //arrayView_tohdfMsg(msgArgs, st);
+        }
+        when ObjType.PDARRAY {
+          // call handler for pdarray write
+          pdarrayTransfer(msgArgs, st);
+        }
+        when ObjType.STRINGS {
+          // call handler for strings write
+          stringsTransfer(msgArgs, st);
+        }
+        when ObjType.SEGARRAY {
+          // call handler for segarray write
+          //segarrayTransfer(msgArgs, st);
+        }
+        when ObjType.CATEGORICAL {
+          //categoricalTransfer(msgArgs, st);
+        }
+        otherwise {
+          var errorMsg = "Unable to transfer object type %s.".format(objType);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+      }
+      
+      return new MsgTuple("Array sent", MsgType.NORMAL);
+    }
+
+    proc pdarrayTransfer(msgArgs: borrowed MessageArgs, st: borrowed SymTab) throws {
       var hostname = msgArgs.getValueOf("hostname");
       var port = msgArgs.getValueOf("port");
       
@@ -28,8 +71,9 @@ module TransferMsg
           sendData(e, hostname, port);
         }
       }
-      
-      return new MsgTuple("Array sent", MsgType.NORMAL);
+    }
+
+    proc stringsTransfer(msgArgs: borrowed MessageArgs, st: borrowed SymTab) throws {
     }
 
     proc receiveArrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
