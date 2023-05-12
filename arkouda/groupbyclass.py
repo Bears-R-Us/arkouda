@@ -334,13 +334,11 @@ class GroupBy:
                 continue
             comps = create_data.split("+|+")
             if comps[0] == "pdarray":
-                print(comps[1])
                 keys.append(create_pdarray(comps[1]))
             elif comps[0] == "seg_string":
                 keys.append(Strings.from_return_msg(comps[1]))
             elif comps[0] == "categorical":
                 keys.append(Categorical_.from_return_msg(comps[1]))
-        print(keys)
         if len(keys) == 1:
             keys = keys[0]
         return GroupBy(orig_keys=keys, permutation=perm, segments=segs, uki=uki)
@@ -428,7 +426,7 @@ class GroupBy:
     def update_hdf(
         self,
         prefix_path: str,
-        dataset: str = "strings_array",
+        dataset: str = "groupby",
         repack: bool = True,
     ):
         from arkouda.io import _mode_str_to_int, _file_type_to_int, _get_hdf_filetype, _repack_hdf
@@ -476,6 +474,7 @@ class GroupBy:
                 "filename": prefix_path,
                 "objType": "groupby",
                 "file_format": _file_type_to_int(file_type),
+                "overwrite": True,
             },
         )
 
