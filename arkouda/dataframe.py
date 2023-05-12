@@ -2439,7 +2439,7 @@ class DataFrame(UserDict):
 
             elif parts[i] == "categorical":
                 colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
-                cols[colName] = Categorical.from_return_msg(parts[i+2] + "+" + parts[i+3])
+                cols[colName] = Categorical.from_return_msg(parts[i + 2] + "+" + parts[i + 3])
                 i += 3
 
             elif parts[i] == "segarray":

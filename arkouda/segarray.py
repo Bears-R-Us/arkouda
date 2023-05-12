@@ -277,7 +277,7 @@ class SegArray:
             offsets = np.cumsum(sizes) - sizes
             newvals = zeros(sum(sizes), dtype=dtypes.pop())
             for j in range(n):
-                newvals[offsets[j]:(offsets[j]+sizes[j])] = m[j]
+                newvals[offsets[j] : (offsets[j] + sizes[j])] = m[j]
             return cls.from_parts(array(offsets), newvals)
 
     @property
