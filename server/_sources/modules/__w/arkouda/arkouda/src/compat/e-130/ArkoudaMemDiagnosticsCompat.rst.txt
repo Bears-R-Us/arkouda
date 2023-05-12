@@ -1,0 +1,19 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaMemDiagnosticsCompat
+
+ArkoudaMemDiagnosticsCompat
+===========================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaMemDiagnosticsCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaMemDiagnosticsCompat;
+
