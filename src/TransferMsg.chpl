@@ -7,8 +7,6 @@ module TransferMsg
     use CTypes;
     use ZMQ;
     use List;
-
-    config const sports = true;
     
     proc sendArrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var hostname = msgArgs.getValueOf("hostname");
@@ -40,16 +38,8 @@ module TransferMsg
 
       // send number of locales so that the sender knows how to chunk data
       sendLocaleCount(port);
-      
-      var context: Context;
-      var socket = context.socket(ZMQ.PULL);
-      socket.connect("tcp://"+hostname+":"+port);
-      var size = socket.recv(bytes):int;
-      var typeString = socket.recv(string);
 
-      // get names of nodes to receive from in order
-      var nodeNamesStr = socket.recv(string);
-      var nodeNames = nodeNamesStr.split(" ");
+      var (size, typeString, nodeNames) = receiveSetupInfo(hostname, port);
 
       var rname = st.nextName();
       if typeString == "int(64)" {
@@ -111,7 +101,7 @@ module TransferMsg
 
       const nodesToReceiveFrom = getNodeList(intersections, otherSubdoms, nodeNames);
       const ports = getPorts(nodesToReceiveFrom, port:int);
-
+      
       coforall loc in Locales do on loc {
         //TODO: parallelize
         for (intersection,name,p) in zip(intersections, nodesToReceiveFrom, ports) {
@@ -161,24 +151,42 @@ module TransferMsg
       socket.send(namesString);
     }
 
-    proc sendArrChunk(port: int, A: [] ?t, intersection: domain(1)) throws {
-      var locContext: Context;
-      var locSocket = locContext.socket(ZMQ.PUSH);
-      locSocket.bind("tcp://*:"+port:string);
-      // exchange some data to establish connection
-      locSocket.send(5);
-      const size = intersection.size*c_sizeof(t):int;
-      var locBuff = createBytesWithBorrowedBuffer(c_ptrTo(A[intersection.low]):c_ptr(uint(8)), size, size);
-      locSocket.send(locBuff);
+    proc receiveSetupInfo(hostname, port) throws {
+      var context: Context;
+      var socket = context.socket(ZMQ.PULL);
+      socket.connect("tcp://"+hostname+":"+port);
+      var size = socket.recv(bytes):int;
+      var typeString = socket.recv(string);
+
+      // get names of nodes to receive from in order
+      var nodeNamesStr = socket.recv(string);
+      var nodeNames = nodeNamesStr.split(" ");
+      return (size, typeString, nodeNames);
     }
 
-    proc receiveArrChunk(port: int, hostname:string, A: [] ?t, intersection: domain(1)) throws {
-      var locContext: Context;
-      var locSocket = locContext.socket(ZMQ.PULL);
-      locSocket.connect("tcp://"+hostname+":"+port:string);
+    proc sendArrChunk(port: int, A: [] ?t, intersection: domain(1)) throws {
+      var context: Context;
+      var socket = context.socket(ZMQ.PUSH);
+      socket.bind("tcp://*:"+port:string);
+      // exchange some data to establish connection
+      var a = 5;
+      socket.send(a);
+      const size = intersection.size*c_sizeof(t):int;
+      var locBuff = createBytesWithBorrowedBuffer(c_ptrTo(A[intersection.low]):c_ptr(uint(8)), size, size);
+      socket.send(locBuff);
+    }
+
+    proc receiveArrChunk(port, hostname:string, A: [] ?t, intersection: domain(1)) throws {
+      var context: Context;
+      var socket = context.socket(ZMQ.PULL);
+      // if the sending and receiving nodes are the same (sending to self), use localhost
+      if hostname == here.name then
+        socket.connect("tcp://localhost:"+port:string);
+      else
+        socket.connect("tcp://"+hostname+":"+port:string);
       // exchange some data so it works
-      locSocket.recv(int);
-      var locData = locSocket.recv(bytes);
+      var a = socket.recv(int);
+      var locData = socket.recv(bytes);
       var locArr = makeArrayFromPtr(locData.c_str():c_void_ptr:c_ptr(t), intersection.size:uint);
       A[intersection] = locArr;
     }
