@@ -234,7 +234,7 @@ module GenSymIO {
 
     /*
      * Simple JSON parser to allow creating a map(string, string) for properly formatted JSON string.
-     * REQUIRES THAT 
+     * REQUIRES THAT DATA DOES NOT CONTAIN : or ". This will only work on JSON that is not nested.
     */
     proc jsonToMap(json: string): map(string, string) throws {
         // remove components not needed for parsing

@@ -252,7 +252,6 @@ class GroupBy:
 
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
-        # TODO - add case where uki provided instead of unique_keys
         if (
             "orig_keys" in kwargs
             and "permutation" in kwargs
@@ -380,8 +379,8 @@ class GroupBy:
 
         GroupBy is not currently supported by Parquet
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
         from arkouda.categorical import Categorical as Categorical_
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
 
         keys = self.keys
         if not isinstance(self.keys, Sequence):
@@ -429,7 +428,12 @@ class GroupBy:
         dataset: str = "groupby",
         repack: bool = True,
     ):
-        from arkouda.io import _mode_str_to_int, _file_type_to_int, _get_hdf_filetype, _repack_hdf
+        from arkouda.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
@@ -1507,8 +1511,8 @@ class GroupBy:
         TypeError
             Raised if values is or contains Strings or Categorical
         """
-        from arkouda.segarray import SegArray
         from arkouda import Categorical
+        from arkouda.segarray import SegArray
 
         if isinstance(values, (Strings, Categorical)) or (
             isinstance(values, Sequence) and any([isinstance(v, (Strings, Categorical)) for v in values])

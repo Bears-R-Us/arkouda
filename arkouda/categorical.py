@@ -21,7 +21,7 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars, npstr
+from arkouda.dtypes import int_scalars, npstr, resolve_scalar_dtype, str_, str_scalars
 from arkouda.groupbyclass import GroupBy, unique
 from arkouda.infoclass import information, list_registry
 from arkouda.logger import getArkoudaLogger
@@ -810,7 +810,7 @@ class Categorical:
             "filename": prefix_path,
             "objType": "categorical",
             "file_format": _file_type_to_int(file_type),
-            "NA_codes": self._akNAcode
+            "NA_codes": self._akNAcode,
         }
         if self.permutation is not None and self.segments is not None:
             args["permutation"] = self.permutation
@@ -821,12 +821,7 @@ class Categorical:
             args=args,
         )
 
-    def update_hdf(
-        self,
-        prefix_path,
-        dataset="categorical_array",
-        repack=True
-    ):
+    def update_hdf(self, prefix_path, dataset="categorical_array", repack=True):
         """
         Overwrite the dataset with the name provided with this Categorical object. If
         the dataset does not exist it is added.
@@ -861,7 +856,12 @@ class Categorical:
         - Because HDF5 deletes do not release memory, the repack option allows for
           automatic creation of a file without the inaccessible data.
         """
-        from arkouda.io import _get_hdf_filetype, _mode_str_to_int, _file_type_to_int, _repack_hdf
+        from arkouda.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
@@ -875,7 +875,7 @@ class Categorical:
             "objType": "categorical",
             "overwrite": True,
             "file_format": _file_type_to_int(file_type),
-            "NA_codes": self._akNAcode
+            "NA_codes": self._akNAcode,
         }
         if self.permutation is not None and self.segments is not None:
             args["permutation"] = self.permutation
@@ -1244,6 +1244,7 @@ class Categorical:
         register, is_registered, unregister, unregister_categorical_by_name
         """
         from arkouda.util import attach
+
         return attach(user_defined_name, dtype="categorical")
 
     @staticmethod

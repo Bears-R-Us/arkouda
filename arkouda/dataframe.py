@@ -2375,7 +2375,6 @@ class DataFrame(UserDict):
         """
         nameParts = entryName.split(" ")
         regName = nameParts[1] if len(nameParts) > 1 else nameParts[0]
-        print(nameParts)
         colParts = regName.split("_")
         colType = colParts[2]
 
@@ -2414,7 +2413,9 @@ class DataFrame(UserDict):
 
         # index could be a pdarray or a Strings
         idxType = parts[3].split()[2]
-        if idxType == "str":  # TODO - we should update the create statment to check for Strings.objType here
+        if (
+            idxType == "str"
+        ):  # TODO - we should update the create statment to check for Strings.objType here
             idx = Index.factory(Strings.from_return_msg(f"{parts[3]}+{parts[4]}"))
             i = 5
         else:  # pdarray
@@ -2435,7 +2436,7 @@ class DataFrame(UserDict):
 
             elif parts[i] == "categorical":
                 colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
-                cols[colName] = Categorical.from_return_msg(parts[i+2] + "+" + parts[i+3])
+                cols[colName] = Categorical.from_return_msg(parts[i + 2] + "+" + parts[i + 3])
                 i += 3
 
             elif parts[i] == "segarray":

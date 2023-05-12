@@ -8,14 +8,14 @@ import pandas as pd  # type: ignore
 from typeguard import typechecked
 
 import arkouda.array_view
+from arkouda.array_view import ArrayView
 from arkouda.categorical import Categorical
-from arkouda.groupbyclass import GroupBy
 from arkouda.client import generic_msg
+from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
-from arkouda.array_view import ArrayView
 
 __all__ = [
     "get_filetype",

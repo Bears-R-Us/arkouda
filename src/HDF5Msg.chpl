@@ -2084,7 +2084,6 @@ module HDF5Msg {
                         // Not a boolean dataset, so add original SymEntry to SymTable
                         st.addEntry(rname, entryUInt);
                     }
-                    // return (dset, "pdarray", rname);
                 }
                 else {
                     var entryInt = new shared SymEntry(len, int);
@@ -2099,7 +2098,6 @@ module HDF5Msg {
                         // Not a boolean dataset, so add original SymEntry to SymTable
                         st.addEntry(rname, entryInt);
                     }
-                    // return (dset, "pdarray", rname);
                 }
             }
             when C_HDF5.H5T_FLOAT {
@@ -2109,7 +2107,6 @@ module HDF5Msg {
                 read_files_into_distributed_array(entryReal.a, subdoms, filenames, dset, skips);
                 rname = st.nextName();
                 st.addEntry(rname, entryReal);
-                // return (dset, "pdarray", rname);
             }
             otherwise {
                 var errorMsg = "detected unhandled datatype: objType? pdarray, class %i, size %i, " +
