@@ -74,6 +74,13 @@ module TransferMsg
     }
 
     proc stringsTransfer(msgArgs: borrowed MessageArgs, st: borrowed SymTab) throws {
+      var hostname = msgArgs.getValueOf("hostname");
+      var port = msgArgs.getValueOf("port");
+      
+      var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(msgArgs.getValueOf("values")));
+      var segString = new SegString("", entry);
+      sendData(segString.values, hostname, port);
+      sendData(segString.offsets, hostname, port);
     }
 
     proc receiveArrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -102,15 +109,26 @@ module TransferMsg
         var entry = new shared SymEntry(size, bool);
         receiveData(entry.a, nodeNames, port);
         st.addEntry(rname, entry);
+      } else if typeString == "uint(8)" {
+        // this is a strings, so we know there are going to be two receives
+        var values = new shared SymEntry(size, uint(8));
+        receiveData(values.a, nodeNames, port);
+        sendLocaleCount(port);
+        var (offSize, _, _) = receiveSetupInfo(hostname, port);
+        var offsets = new shared SymEntry(offSize, int);
+        receiveData(offsets.a, nodeNames, port);
+        var strings = getSegString(offsets.a, values.a, st);
+        var repMsg = 'created ' + st.attrib(strings.name) + '+created bytes.size %t'.format(strings.nBytes);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
       }
       
       var repMsg = "created " + st.attrib(rname);
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc sendData(e, hostname:string, port:string) throws {
+    proc sendData(e, hostname:string, port) throws {
       // get locale count so that we can chunk data
-      var localeCount = receiveLocaleCount(hostname, port);
+      var localeCount = receiveLocaleCount(hostname, port:string);
 
       // these are the subdoms of the receiving node
       const otherSubdoms = getSubdoms(e.a, localeCount);
@@ -145,7 +163,7 @@ module TransferMsg
 
       const nodesToReceiveFrom = getNodeList(intersections, otherSubdoms, nodeNames);
       const ports = getPorts(nodesToReceiveFrom, port:int);
-      
+
       coforall loc in Locales do on loc {
         //TODO: parallelize
         for (intersection,name,p) in zip(intersections, nodesToReceiveFrom, ports) {
@@ -169,7 +187,10 @@ module TransferMsg
     proc receiveLocaleCount(hostname:string, port:string) throws {
       var context: Context;
       var socket = context.socket(ZMQ.PULL);
-      socket.connect("tcp://"+hostname+":"+port);
+      if hostname == here.name then
+        socket.connect("tcp://localhost:"+port:string);
+      else
+        socket.connect("tcp://"+hostname+":"+port:string);
       return socket.recv(bytes):int;
     }
 
@@ -198,7 +219,10 @@ module TransferMsg
     proc receiveSetupInfo(hostname, port) throws {
       var context: Context;
       var socket = context.socket(ZMQ.PULL);
-      socket.connect("tcp://"+hostname+":"+port);
+      if hostname == here.name then
+        socket.connect("tcp://localhost:"+port:string);
+      else
+        socket.connect("tcp://"+hostname+":"+port:string);
       var size = socket.recv(bytes):int;
       var typeString = socket.recv(string);
 
