@@ -2518,7 +2518,7 @@ class Strings:
 
     def send_array(self, hostname: str, port: int_scalars):
          """
-         Sends a pdarray to a different Arkouda server
+         Sends a strings object to a different Arkouda server
  
          Parameters
          ----------

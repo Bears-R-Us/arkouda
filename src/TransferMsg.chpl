@@ -8,6 +8,8 @@ module TransferMsg
     use ZMQ;
     use List;
     use GenSymIO;
+    use Map;
+    use ServerErrors;
 
     use SegmentedString;
     use SegmentedArray;
@@ -38,7 +40,7 @@ module TransferMsg
         }
         when ObjType.SEGARRAY {
           // call handler for segarray write
-          //segarrayTransfer(msgArgs, st);
+          segarrayTransfer(msgArgs, st);
         }
         when ObjType.CATEGORICAL {
           //categoricalTransfer(msgArgs, st);
@@ -60,16 +62,16 @@ module TransferMsg
       select gEnt.dtype {
         when DType.Int64 {
           var e = toSymEntry(gEnt, int);
-          sendData(e, hostname, port);
+          sendData(e, hostname, port, "pdarray");
         } when DType.UInt64 {
           var e = toSymEntry(gEnt, uint);
-          sendData(e, hostname, port);
+          sendData(e, hostname, port, "pdarray");
         } when DType.Float64 {
           var e = toSymEntry(gEnt, real);
-          sendData(e, hostname, port);
+          sendData(e, hostname, port, "pdarray");
         } when DType.Bool {
           var e = toSymEntry(gEnt, bool);
-          sendData(e, hostname, port);
+          sendData(e, hostname, port, "pdarray");
         }
       }
     }
@@ -80,8 +82,39 @@ module TransferMsg
       
       var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(msgArgs.getValueOf("values")));
       var segString = new SegString("", entry);
-      sendData(segString.values, hostname, port);
-      sendData(segString.offsets, hostname, port);
+      sendData(segString.values, hostname, port, "string");
+      sendData(segString.offsets, hostname, port, "string");
+    }
+
+    proc segarrayTransfer(msgArgs: borrowed MessageArgs, st: borrowed SymTab) throws {
+      var hostname = msgArgs.getValueOf("hostname");
+      var port = msgArgs.getValueOf("port");
+
+      var segarr = msgArgs.getValueOf("seg_name");
+      var dType = str2dtype(msgArgs.getValueOf("dtype"));
+
+      select dType {
+        when (DType.Int64) {
+          var sa:SegArray = getSegArray(segarr, st, int);
+
+          sendData(sa.values, hostname, port, "seg_array");
+          sendData(sa.segments, hostname, port, "seg_array");
+        } when (DType.UInt64) {
+          var sa:SegArray = getSegArray(segarr, st, uint);
+        } when (DType.Float64) {
+          var sa:SegArray = getSegArray(segarr, st, real);
+        } when (DType.Bool) {
+          var sa:SegArray = getSegArray(segarr, st, bool);
+        }
+        otherwise {
+          throw getErrorWithContext(
+                                    msg="Unsupported SegArray DType %s".format(dtype2str(dType)),
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(), 
+                                    moduleName=getModuleName(),
+                                    errorClass="IllegalArgumentError");
+        }
+      }
     }
 
     proc receiveArrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -94,40 +127,87 @@ module TransferMsg
       // send number of locales so that the sender knows how to chunk data
       sendLocaleCount(port);
 
-      var (size, typeString, nodeNames) = receiveSetupInfo(hostname, port);
+      var (size, typeString, nodeNames, objType) = receiveSetupInfo(hostname, port);
 
-      var rname = st.nextName();
-      if typeString == "int(64)" {
-        var entry = new shared SymEntry(size, int);
-        receiveData(entry.a, nodeNames, port);
-        st.addEntry(rname, entry);
-        rnames.append(("single", "pdarray", rname));
-      } else if typeString == "uint(64)" {
-        var entry = new shared SymEntry(size, uint);
-        receiveData(entry.a, nodeNames, port);
-        st.addEntry(rname, entry);
-        rnames.append(("single", "pdarray", rname));
-      } else if typeString == "real(64)" {
-        var entry = new shared SymEntry(size, real);
-        receiveData(entry.a, nodeNames, port);
-        st.addEntry(rname, entry);
-        rnames.append(("single", "pdarray", rname));
-      } else if typeString == "bool" {
-        var entry = new shared SymEntry(size, bool);
-        receiveData(entry.a, nodeNames, port);
-        st.addEntry(rname, entry);
-        rnames.append(("single", "pdarray", rname));
-      } else if typeString == "uint(8)" {
+      if objType == "string" {
         // this is a strings, so we know there are going to be two receives
         var values = new shared SymEntry(size, uint(8));
         receiveData(values.a, nodeNames, port);
         sendLocaleCount(port);
-        var (offSize, _, _) = receiveSetupInfo(hostname, port);
+        var (offSize, _, _, _) = receiveSetupInfo(hostname, port);
         var offsets = new shared SymEntry(offSize, int);
         receiveData(offsets.a, nodeNames, port);
         var stringsEntry = assembleSegStringFromParts(offsets, values, st);
         //getSegString(offsets.a, values.a, st);
         rnames.append(("", "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
+      } else if objType == "seg_array" {
+        var rtnMap: map(string, string) = new map(string, string);
+        if typeString == "int(64)" {
+          var entry = new shared SymEntry(size, int);
+          receiveData(entry.a, nodeNames, port);
+
+          sendLocaleCount(port);
+          var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
+          var segments = new shared SymEntry(segSize, int);
+          receiveData(segments.a, nodeNames, port);
+          
+          var saEntry = getSegArray(segments.a, entry.a, st);
+          saEntry.fillReturnMap(rtnMap, st);
+        } else if typeString == "uint(64)" {
+          var entry = new shared SymEntry(size, uint);
+          receiveData(entry.a, nodeNames, port);
+
+          sendLocaleCount(port);
+          var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
+          var segments = new shared SymEntry(segSize, int);
+          receiveData(segments.a, nodeNames, port);
+          
+          var saEntry = getSegArray(segments.a, entry.a, st);
+          saEntry.fillReturnMap(rtnMap, st);
+        } else if typeString == "real(64)" {
+          var entry = new shared SymEntry(size, real);
+          receiveData(entry.a, nodeNames, port);
+
+          sendLocaleCount(port);
+          var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
+          var segments = new shared SymEntry(segSize, int);
+          receiveData(segments.a, nodeNames, port);
+          
+          var saEntry = getSegArray(segments.a, entry.a, st);
+          saEntry.fillReturnMap(rtnMap, st);
+        } else if typeString == "bool" {
+          var entry = new shared SymEntry(size, bool);
+          receiveData(entry.a, nodeNames, port);
+
+          sendLocaleCount(port);
+          var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
+          var segments = new shared SymEntry(segSize, int);
+          receiveData(segments.a, nodeNames, port);
+          
+          var saEntry = getSegArray(segments.a, entry.a, st);
+          saEntry.fillReturnMap(rtnMap, st);
+        }
+        rnames.append(("", "seg_array", "%jt".format(rtnMap)));
+      } else {
+        var rname = st.nextName();
+        if typeString == "int(64)" {
+          var entry = new shared SymEntry(size, int);
+          receiveData(entry.a, nodeNames, port);
+          st.addEntry(rname, entry);
+        } else if typeString == "uint(64)" {
+          var entry = new shared SymEntry(size, uint);
+          receiveData(entry.a, nodeNames, port);
+          st.addEntry(rname, entry);
+        } else if typeString == "real(64)" {
+          var entry = new shared SymEntry(size, real);
+          receiveData(entry.a, nodeNames, port);
+          st.addEntry(rname, entry);
+        } else if typeString == "bool" {
+          var entry = new shared SymEntry(size, bool);
+          receiveData(entry.a, nodeNames, port);
+          st.addEntry(rname, entry);
+        }
+        rnames.append(("", "pdarray", rname));
       }
 
       var transferErrors: list(string);
@@ -135,7 +215,7 @@ module TransferMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc sendData(e, hostname:string, port) throws {
+    proc sendData(e, hostname:string, port, objType: string) throws {
       // get locale count so that we can chunk data
       var localeCount = receiveLocaleCount(hostname, port:string);
 
@@ -150,7 +230,7 @@ module TransferMsg
       const namesThatWillSendMessages = getNodeList(intersections, hereSubdoms, names);
       const ports = getPorts(namesThatWillSendMessages, port:int);
 
-      sendSetupInfo(port, e.a, names);
+      sendSetupInfo(port, e.a, names, objType);
 
       coforall loc in Locales do on loc {
         var locdom = e.a.localSubdomain();
@@ -203,7 +283,7 @@ module TransferMsg
       return socket.recv(bytes):int;
     }
 
-    proc sendSetupInfo(port:string, A: [] ?t, names) throws {
+    proc sendSetupInfo(port:string, A: [] ?t, names, objType: string) throws {
       var context: Context;
       var socket = context.socket(ZMQ.PUSH);
       socket.bind("tcp://*:"+port);
@@ -223,6 +303,7 @@ module TransferMsg
           namesString += names[i];
       }
       socket.send(namesString);
+      socket.send(objType);
     }
 
     proc receiveSetupInfo(hostname, port) throws {
@@ -238,7 +319,8 @@ module TransferMsg
       // get names of nodes to receive from in order
       var nodeNamesStr = socket.recv(string);
       var nodeNames = nodeNamesStr.split(" ");
-      return (size, typeString, nodeNames);
+      var objType = socket.recv(string);
+      return (size, typeString, nodeNames, objType);
     }
 
     proc sendArrChunk(port: int, A: [] ?t, intersection: domain(1)) throws {
