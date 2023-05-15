@@ -42,6 +42,7 @@ __all__ = [
     "update_hdf",
     "snapshot",
     "restore",
+    "receive_array",
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -2005,3 +2006,44 @@ def restore(filename):
     """
     restore_files = glob.glob(f"{filename}_SNAPSHOT_LOCALE*")
     return read_hdf(sorted(restore_files))
+
+
+def receive_array(hostname : str, port):
+    """
+    Receive a pdarray sent by `pdarray.send_array()`.
+
+    Parameters
+    ----------
+    hostname : str
+        The hostname of the pdarray that sent the array
+    port : int_scalars
+        The port to send the array over. This needs to be an
+        open port (i.e., not one that the Arkouda server is
+        running on). This will open up `numLocales` ports,
+        each of which in succession, so will use ports of the
+        range {port..(port+numLocales)} (e.g., running an
+        Arkouda server of 4 nodes, port 1234 is passed as
+        `port`, Arkouda will use ports 1234, 1235, 1236,
+        and 1237 to send the array data).
+        This port much match the port passed to the call to
+        `pdarray.send_array()`.
+
+    Returns
+    -------
+    pdarray
+        The pdarray sent from the sending server to the current
+        receiving server.
+
+    Raises
+    ------
+    ValueError
+        Raised if the op is not within the pdarray.BinOps set
+    TypeError
+        Raised if other is not a pdarray or the pdarray.dtype is not
+        a supported dtype
+    """
+    rep_msg = generic_msg(cmd="receiveArray", args={"hostname": hostname,
+                                                   "port"    : port})
+    rep = json.loads(rep_msg)
+    return _build_objects(rep)
+

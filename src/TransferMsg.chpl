@@ -7,6 +7,7 @@ module TransferMsg
     use CTypes;
     use ZMQ;
     use List;
+    use GenSymIO;
 
     use SegmentedString;
     use SegmentedArray;
@@ -87,6 +88,9 @@ module TransferMsg
       var hostname = msgArgs.getValueOf("hostname");
       var port = msgArgs.getValueOf("port");
 
+      // tuple (dsetName, item type, id)
+      var rnames: list((string, string, string)); 
+
       // send number of locales so that the sender knows how to chunk data
       sendLocaleCount(port);
 
@@ -97,18 +101,22 @@ module TransferMsg
         var entry = new shared SymEntry(size, int);
         receiveData(entry.a, nodeNames, port);
         st.addEntry(rname, entry);
+        rnames.append(("single", "pdarray", rname));
       } else if typeString == "uint(64)" {
         var entry = new shared SymEntry(size, uint);
         receiveData(entry.a, nodeNames, port);
         st.addEntry(rname, entry);
+        rnames.append(("single", "pdarray", rname));
       } else if typeString == "real(64)" {
         var entry = new shared SymEntry(size, real);
         receiveData(entry.a, nodeNames, port);
         st.addEntry(rname, entry);
+        rnames.append(("single", "pdarray", rname));
       } else if typeString == "bool" {
         var entry = new shared SymEntry(size, bool);
         receiveData(entry.a, nodeNames, port);
         st.addEntry(rname, entry);
+        rnames.append(("single", "pdarray", rname));
       } else if typeString == "uint(8)" {
         // this is a strings, so we know there are going to be two receives
         var values = new shared SymEntry(size, uint(8));
@@ -117,12 +125,13 @@ module TransferMsg
         var (offSize, _, _) = receiveSetupInfo(hostname, port);
         var offsets = new shared SymEntry(offSize, int);
         receiveData(offsets.a, nodeNames, port);
-        var strings = getSegString(offsets.a, values.a, st);
-        var repMsg = 'created ' + st.attrib(strings.name) + '+created bytes.size %t'.format(strings.nBytes);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+        var stringsEntry = assembleSegStringFromParts(offsets, values, st);
+        //getSegString(offsets.a, values.a, st);
+        rnames.append(("", "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
       }
-      
-      var repMsg = "created " + st.attrib(rname);
+
+      var transferErrors: list(string);
+      var repMsg = _buildReadAllMsgJson(rnames, false, 0, transferErrors, st);
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
