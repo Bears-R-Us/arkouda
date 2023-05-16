@@ -278,7 +278,11 @@ class DataFrame(UserDict):
             # convert the lists defining each column into a pdarray
             # pd.DataFrame.values is stored as rows, we need lists to be columns
             for key, val in initialdata.to_dict("list").items():
-                self.data[key] = array(val)
+                self.data[key] = (
+                    SegArray.from_multi_array([array(r) for r in val])
+                    if isinstance(val[0], list)
+                    else array(val)
+                )
 
             self.data.update()
             return
@@ -950,7 +954,6 @@ class DataFrame(UserDict):
         """
         Computes the number of bytes on the arkouda server.
         """
-
         sizes = set()
         for key, val in self.items():
             if val is not None:
@@ -2434,7 +2437,7 @@ class DataFrame(UserDict):
 
             elif parts[i] == "categorical":
                 colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
-                cols[colName] = Categorical.from_return_msg(parts[i+2] + "+" + parts[i+3])
+                cols[colName] = Categorical.from_return_msg(parts[i + 2] + "+" + parts[i + 3])
                 i += 3
 
             elif parts[i] == "segarray":

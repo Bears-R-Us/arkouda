@@ -269,15 +269,16 @@ class SegArray:
         if isinstance(m, pdarray):
             return cls.from_parts(arange(m.size), m)
         else:
-            sd = {(mi.size, mi.dtype) for mi in m}
-            if len(sd) != 1:
-                raise ValueError("All columns must have same length and dtype")
-            size, dtype = sd.pop()
+            sizes = np.array([mi.size for mi in m])
+            dtypes = {mi.dtype for mi in m}
+            if len(dtypes) != 1:
+                raise ValueError("All values must have same dtype")
             n = len(m)
-            newvals = zeros(size * n, dtype=dtype)
+            offsets = np.cumsum(sizes) - sizes
+            newvals = zeros(sum(sizes), dtype=dtypes.pop())
             for j in range(n):
-                newvals[j::n] = m[j]
-            return cls.from_parts(arange(size) * n, newvals)
+                newvals[offsets[j] : (offsets[j] + sizes[j])] = m[j]
+            return cls.from_parts(array(offsets), newvals)
 
     @property
     def objtype(self):
