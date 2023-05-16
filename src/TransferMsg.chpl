@@ -81,8 +81,10 @@ module TransferMsg
           select (gCol.dtype) {
             when (DType.Int64) {
               var col_vals = toSymEntry(gCol, int);
-              sendSetupInfo(port:string, col_vals, "pdarray", localeCount);
-              sendData(col_vals, hostname, port, "pdarray", localeCount);
+
+              var (intersections, ports, names) = calculateSetupInfo(col_vals, localeCount, port);
+              sendSetupInfo(port:string, col_vals.a, names, "pdarray", localeCount);
+              sendData(col_vals, hostname, intersections, ports);
             }
             when (DType.UInt64) {
               var col_vals = toSymEntry(gCol, uint);
@@ -197,16 +199,28 @@ module TransferMsg
       select gEnt.dtype {
         when DType.Int64 {
           var e = toSymEntry(gEnt, int);
-          sendData(e, hostname, port, "pdarray", localeCount);
+
+          var (intersections, ports, names) = calculateSetupInfo(e, localeCount, port);
+          sendSetupInfo(port:string, e.a, names, "pdarray", localeCount);
+          sendData(e, hostname, intersections, ports);
         } when DType.UInt64 {
           var e = toSymEntry(gEnt, uint);
-          sendData(e, hostname, port, "pdarray", localeCount);
+
+          var (intersections, ports, names) = calculateSetupInfo(e, localeCount, port);
+          sendSetupInfo(port:string, e.a, names, "pdarray", localeCount);
+          sendData(e, hostname, intersections, ports);
         } when DType.Float64 {
           var e = toSymEntry(gEnt, real);
-          sendData(e, hostname, port, "pdarray", localeCount);
+
+          var (intersections, ports, names) = calculateSetupInfo(e, localeCount, port);
+          sendSetupInfo(port:string, e.a, names, "pdarray", localeCount);
+          sendData(e, hostname, intersections, ports);
         } when DType.Bool {
           var e = toSymEntry(gEnt, bool);
-          sendData(e, hostname, port, "pdarray", localeCount);
+
+          var (intersections, ports, names) = calculateSetupInfo(e, localeCount, port);
+          sendSetupInfo(port:string, e.a, names, "pdarray", localeCount);
+          sendData(e, hostname, intersections, ports);
         }
       }
     }
@@ -219,8 +233,18 @@ module TransferMsg
       var segString = new SegString("", entry);
       // get locale count so that we can chunk data
       var localeCount = receiveLocaleCount(hostname, port:string);
-      sendData(segString.values, hostname, port, "string", localeCount);
-      sendData(segString.offsets, hostname, port, "string", localeCount);
+
+      {
+        var (intersections, ports, names) = calculateSetupInfo(segString.values, localeCount, port);
+        sendSetupInfo(port:string, segString.values.a, names, "string", localeCount);
+        sendData(segString.values, hostname, intersections, ports);
+      }
+
+      {
+        var (intersections, ports, names) = calculateSetupInfo(segString.offsets, localeCount, port);
+        sendSetupInfo(port:string, segString.offsets.a, names, "pdarray", localeCount);
+        sendData(segString.offsets, hostname, intersections, ports);
+      }
     }
 
     proc segarrayTransfer(msgArgs: borrowed MessageArgs, st: borrowed SymTab) throws {
@@ -236,8 +260,17 @@ module TransferMsg
         when (DType.Int64) {
           var sa:SegArray = getSegArray(segarr, st, int);
 
-          sendData(sa.values, hostname, port, "seg_array", localeCount);
-          sendData(sa.segments, hostname, port, "seg_array", localeCount);
+          {
+            var (intersections, ports, names) = calculateSetupInfo(sa.values, localeCount, port);
+            sendSetupInfo(port:string, sa.values.a, names, "seg_array", localeCount);
+            sendData(sa.values, hostname, intersections, ports);
+          }
+
+          {
+            var (intersections, ports, names) = calculateSetupInfo(sa.segments, localeCount, port);
+            sendSetupInfo(port:string, sa.segments.a, names, "seg_array", localeCount);
+            sendData(sa.segments, hostname, intersections, ports);
+          }
         } when (DType.UInt64) {
           var sa:SegArray = getSegArray(segarr, st, uint);
         } when (DType.Float64) {
@@ -349,7 +382,7 @@ module TransferMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc sendData(e, hostname:string, port, intersections, ports) throws {
+    proc sendData(e, hostname:string, intersections, ports) throws {
       coforall loc in Locales do on loc {
         var locdom = e.a.localSubdomain();
         // TODO: Parallelize by using different ports
@@ -401,7 +434,7 @@ module TransferMsg
       return socket.recv(bytes):int;
     }
 
-    proc calculateSetupInfo(e, localeCount, port) {
+    proc calculateSetupInfo(e, localeCount, port) throws {
       // these are the subdoms of the receiving node
       const otherSubdoms = getSubdoms(e.a, localeCount);
       const hereSubdoms = getSubdoms(e.a, Locales.size);
@@ -412,10 +445,10 @@ module TransferMsg
       const names = Locales.name;
       const namesThatWillSendMessages = getNodeList(intersections, hereSubdoms, names);
       const ports = getPorts(namesThatWillSendMessages, port:int);
-      return (intersections, ports);
+      return (intersections, ports, names);
     }
     
-    proc sendSetupInfo(port:string, A: [] ?t, objType: string, localeCount) throws {
+    proc sendSetupInfo(port:string, A: [] ?t, names, objType: string, localeCount) throws {
       var context: Context;
       var socket = context.socket(ZMQ.PUSH);
       socket.bind("tcp://*:"+port);
