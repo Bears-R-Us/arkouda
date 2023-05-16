@@ -38,7 +38,6 @@ class SegArrayTest(ArkoudaTest):
             [ak.array([10, 11, 12]), ak.array([20, 21, 22]), ak.array([30, 31, 32])]
         )
         self.assertIsInstance(multi_pd, ak.SegArray)
-        print(multi_pd.__str__())
         self.assertEqual(multi_pd.__str__(), "SegArray([\n[10 11 12]\n[20 21 22]\n[30 31 32]\n])")
         with self.assertRaises(TypeError):
             segarr.__getitem__("a")

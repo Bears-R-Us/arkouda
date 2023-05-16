@@ -278,13 +278,18 @@ class DataFrame(UserDict):
             # convert the lists defining each column into a pdarray
             # pd.DataFrame.values is stored as rows, we need lists to be columns
             for key, val in initialdata.to_dict("list").items():
-                if isinstance(val[0], list):
-                    multi_array = []
-                    for r in val:
-                        multi_array.append(array(r))
-                    self.data[key] = SegArray.from_multi_array(multi_array)
-                else:
-                    self.data[key] = array(val)
+                # if isinstance(val[0], list):
+                #     multi_array = []
+                #     for r in val:
+                #         multi_array.append(array(r))
+                #     self.data[key] = SegArray.from_multi_array(multi_array)
+                # else:
+                #     self.data[key] = array(val)
+                self.data[key] = (
+                    SegArray.from_multi_array([array(r) for r in val])
+                    if isinstance(val[0], list)
+                    else array(val)
+                )
 
             self.data.update()
             return
