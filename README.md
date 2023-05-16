@@ -263,15 +263,15 @@ export CHPL_RT_NUM_THREADS_PER_LOCALE=16
 
 The max memory utilized by each locale can be set in one of two ways: percentage of physical memory or a limit set in bytes. By default, the max per-locale memory is set to ninety (90) percent of the physical memory on each Arkouda locale host. If another percentage is desired, this is set via the --perLocaleMemLimit startup parameter. For example, to set max memory utilized by each locale to seventy (70) percent of physical memory, the Arkouda startup command would be as follows:
 
-````
+```
 ./arkouda_server --perLocaleMemLimit=70
 ```
 
 In addition, the max per-locale memory can instead be set to an explicit number of bytes via the --memMax startup parameter. For example, to set the max memory utilized by each locale to 100 GB, the Arkouda startup command would be as follows:
 
-````
-./arkouda_server --memMax=100000000000
-````
+```
+./akouda_server --memMax=100000000000
+```
 
 <<a id="run-ak-connect"></a>
 ### Connecting to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
