@@ -416,7 +416,7 @@ class ParquetTest(ArkoudaTest):
         a = [0, 1, 2]
         b = [1]
         c = [15, 21]
-        s = ak.SegArray.from_parts(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c))
+        s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 
@@ -427,7 +427,7 @@ class ParquetTest(ArkoudaTest):
         # integer with empty segments
         a = [0, 1, 2]
         c = [15, 21]
-        s = ak.SegArray.from_parts(ak.array([0, 0, len(a), len(a), len(a), len(a)+len(c)]), ak.array(a + c))
+        s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a)+len(c)]), ak.array(a + c))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 
@@ -439,7 +439,7 @@ class ParquetTest(ArkoudaTest):
         a = [0, 1, 2]
         b = [1]
         c = [15, 21]
-        s = ak.SegArray.from_parts(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.uint64))
+        s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.uint64))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 
@@ -450,7 +450,7 @@ class ParquetTest(ArkoudaTest):
         # uint with empty segments
         a = [0, 1, 2]
         c = [15, 21]
-        s = ak.SegArray.from_parts(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.uint64))
+        s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.uint64))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 
@@ -462,7 +462,7 @@ class ParquetTest(ArkoudaTest):
         a = [0, 1, 1]
         b = [0]
         c = [1, 0]
-        s = ak.SegArray.from_parts(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.bool))
+        s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.bool))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 
@@ -473,7 +473,7 @@ class ParquetTest(ArkoudaTest):
         # bool with empty segments
         a = [0, 1, 1]
         c = [1, 0]
-        s = ak.SegArray.from_parts(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c,
+        s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c,
                                    dtype=ak.bool))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
@@ -486,7 +486,7 @@ class ParquetTest(ArkoudaTest):
         a = [1.1, 1.1, 2.7]
         b = [1.99]
         c = [15.2, 21.0]
-        s = ak.SegArray.from_parts(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c))
+        s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 
@@ -497,7 +497,7 @@ class ParquetTest(ArkoudaTest):
         # float with empty segments
         a = [1.1, 1.1, 2.7]
         c = [15.2, 21.0]
-        s = ak.SegArray.from_parts(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
+        s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 

@@ -4,7 +4,6 @@ module SegmentedMsg {
   use ServerErrors;
   use Logging;
   use Message;
-  use SegmentedArray;
   use SegmentedString;
   use ServerErrorStrings;
   use ServerConfig;
@@ -21,109 +20,6 @@ module SegmentedMsg {
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const smLogger = new Logger(logLevel, logChannel);
-
-  /**
-  * Build a Segmented Array object based on the segments/values specified.
-  **/
-  proc assembleSegArrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-    var repMsg: string;
-    var segName = msgArgs.getValueOf("segments");
-    var valName = msgArgs.getValueOf("values"); 
-    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s segmentsname: %s valuesName: %s".format(cmd, segName, valName));
-
-    var segments = getGenericTypedArrayEntry(segName, st);
-    var segs = toSymEntry(segments, int);
-
-    var rtnmap: map(string, string) = new map(string, string);
-
-    var valEntry = st.tab[valName];
-    if valEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) { // pdarray
-      var values = getGenericTypedArrayEntry(valName, st);
-      select values.dtype {
-        when (DType.Int64) {
-          var vals = toSymEntry(values, int);
-          var segArray = getSegArray(segs.a, vals.a, st);
-          segArray.fillReturnMap(rtnmap, st);
-        }
-        when (DType.UInt64) {
-          var vals = toSymEntry(values, uint);
-          var segArray = getSegArray(segs.a, vals.a, st);
-          segArray.fillReturnMap(rtnmap, st);
-        }
-        when (DType.Float64) {
-          var vals = toSymEntry(values, real);
-          var segArray = getSegArray(segs.a, vals.a, st);
-          segArray.fillReturnMap(rtnmap, st);
-        }
-        when (DType.Bool) {
-          var vals = toSymEntry(values, bool);
-          var segArray = getSegArray(segs.a, vals.a, st);
-          segArray.fillReturnMap(rtnmap, st);
-        }
-        when (DType.BigInt) {
-          var vals = toSymEntry(values, bigint);
-          var segArray = getSegArray(segs.a, vals.a, st);
-          segArray.fillReturnMap(rtnmap, st);
-        }
-        otherwise {
-            throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(values.dtype:string),
-                                        getLineNumber(),
-                                        getRoutineName(),
-                                        getModuleName(),
-                                        "TypeError");
-        }
-      }
-    }
-    else {
-      repMsg = "Values must be a pdarray.";
-      smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
-      return new MsgTuple(repMsg, MsgType.ERROR);
-    }
-    repMsg = "%jt".format(rtnmap);
-    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
-    return new MsgTuple(repMsg, MsgType.NORMAL);
-  }
-
-  proc getSANonEmptyMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-    var repMsg: string = "";
-    var name = msgArgs.getValueOf("name"): string;
-    var entry = st.tab[name];
-    var genEntry: GenSymEntry = toGenSymEntry(entry);
-    var neName = st.nextName();
-    select genEntry.dtype {
-      when (DType.Int64) {
-        var segArr = getSegArray(name, st, int);
-        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
-      }
-      when (DType.UInt64) {
-        var segArr = getSegArray(name, st, uint);
-        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
-      }
-      when (DType.Float64) {
-        var segArr = getSegArray(name, st, real);
-        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
-      }
-      when (DType.Bool) {
-        var segArr = getSegArray(name, st, bool);
-        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
-      }
-      when (DType.BigInt){
-        var segArr = getSegArray(name, st, bigint);
-        repMsg = "created " + st.attrib(name) + "+" + segArr.getNonEmptyCount():string;
-      }
-      otherwise {
-        throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(genEntry.dtype:string),
-                                      getLineNumber(),
-                                      getRoutineName(),
-                                      getModuleName(),
-                                      "TypeError");
-      }
-    }
-    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
-    return new MsgTuple(repMsg, MsgType.NORMAL);
-  }
-
 
   /**
    * Procedure for assembling disjoint Strings-object / SegString parts
@@ -818,45 +714,6 @@ module SegmentedMsg {
               smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
               return new MsgTuple(repMsg, MsgType.NORMAL);
           }
-          when ObjType.SEGARRAY {
-            var rname = st.nextName();
-            const idx = key: int;  // negative indexes already handled by the client
-            select (dtype) {
-              when (DType.Int64) { 
-                var segarr = getSegArray(objName, st, int);
-                var s = segarr[idx];
-                st.addEntry(rname, new shared SymEntry(s));
-              }
-              when (DType.UInt64) { 
-                var segarr = getSegArray(objName, st, uint);
-                var s = segarr[idx];
-                st.addEntry(rname, new shared SymEntry(s));
-              }
-              when (DType.Float64) { 
-                var segarr = getSegArray(objName, st, real);
-                var s = segarr[idx];
-                st.addEntry(rname, new shared SymEntry(s));
-              }
-              when (DType.Bool) { 
-                var segarr = getSegArray(objName, st, bool);
-                var s = segarr[idx];
-                st.addEntry(rname, new shared SymEntry(s));
-              }
-              when (DType.BigInt) { 
-                var segarr = getSegArray(objName, st, bigint);
-                var s = segarr[idx];
-                st.addEntry(rname, new shared SymEntry(s));
-              }
-              otherwise {
-                var errorMsg = "Unsupported SegArray DType %s".format(dtype2str(dtype));
-                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-              }
-            }
-            var repMsg = "created " + st.attrib(rname);
-            smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-          }
           otherwise { 
               var errorMsg = notImplementedError(pn, objtype: string); 
               smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
@@ -909,53 +766,6 @@ module SegmentedMsg {
             // Store the resulting offsets and bytes arrays
             var newStringsObj = getSegString(newSegs, newVals, st);
             repMsg = "created " + st.attrib(newStringsObj.name) + "+created bytes.size %t".format(newStringsObj.nBytes);
-        }
-        when ObjType.SEGARRAY {
-          var rtnmap: map(string, string);
-          select dtype {
-            when (DType.Int64) { 
-              var segarr = getSegArray(objName, st, int);
-              // Compute the slice
-              var (newSegs, newVals) = segarr[slice];
-              var newSegArr = getSegArray(newSegs, newVals, st);
-              newSegArr.fillReturnMap(rtnmap, st);
-            }
-            when (DType.UInt64) { 
-              var segarr = getSegArray(objName, st, uint);
-              // Compute the slice
-              var (newSegs, newVals) = segarr[slice];
-              var newSegArr = getSegArray(newSegs, newVals, st);
-              newSegArr.fillReturnMap(rtnmap, st);
-            }
-            when (DType.Float64) { 
-              var segarr = getSegArray(objName, st, real);
-              // Compute the slice
-              var (newSegs, newVals) = segarr[slice];
-              var newSegArr = getSegArray(newSegs, newVals, st);
-              newSegArr.fillReturnMap(rtnmap, st);
-            }
-            when (DType.Bool) { 
-              var segarr = getSegArray(objName, st, bool);
-              // Compute the slice
-              var (newSegs, newVals) = segarr[slice];
-              var newSegArr = getSegArray(newSegs, newVals, st);
-              newSegArr.fillReturnMap(rtnmap, st);
-            }
-            when (DType.BigInt) { 
-              var segarr = getSegArray(objName, st, bigint);
-              // Compute the slice
-              var (newSegs, newVals) = segarr[slice];
-              var newSegArr = getSegArray(newSegs, newVals, st);
-              newSegArr.fillReturnMap(rtnmap, st);
-            }
-            otherwise {
-              var errorMsg = "Invalid segarray type";
-                      smLogger.error(getModuleName(),getRoutineName(),
-                                                    getLineNumber(),errorMsg); 
-                      return new MsgTuple(notImplementedError(pn,errorMsg), MsgType.ERROR);
-            }
-          }
-          repMsg = "%jt".format(rtnmap);
         }
         otherwise {
             var errorMsg = notImplementedError(pn, objtype: string);
@@ -1031,162 +841,6 @@ module SegmentedMsg {
                 smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
-        }
-        when ObjType.SEGARRAY {
-          var rtnmap: map(string, string);
-          select dtype {
-            when DType.Int64 {
-              var segArr = getSegArray(objName, st, int);
-              select gIV.dtype {
-                when DType.Int64 {
-                  var iv = toSymEntry(gIV, int);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                when DType.UInt64 {
-                  var iv = toSymEntry(gIV, uint);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                when DType.Bool {
-                  var iv = toSymEntry(gIV, bool);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                otherwise {
-                    var errorMsg = "("+objtype: string+","+dtype2str(gIV.dtype)+")";
-                    smLogger.error(getModuleName(),getRoutineName(),
-                                                  getLineNumber(),errorMsg); 
-                    return new MsgTuple(notImplementedError(pn,errorMsg), MsgType.ERROR);
-                }
-              }
-            }
-            when DType.UInt64 {
-              var segArr = getSegArray(objName, st, uint);
-              select gIV.dtype {
-                when DType.Int64 {
-                  var iv = toSymEntry(gIV, int);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                when DType.UInt64 {
-                  var iv = toSymEntry(gIV, uint);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                when DType.Bool {
-                  var iv = toSymEntry(gIV, bool);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                otherwise {
-                    var errorMsg = "("+objtype: string+","+dtype2str(gIV.dtype)+")";
-                    smLogger.error(getModuleName(),getRoutineName(),
-                                                  getLineNumber(),errorMsg); 
-                    return new MsgTuple(notImplementedError(pn,errorMsg), MsgType.ERROR);
-                }
-              }
-            }
-            when DType.Float64 {
-              var segArr = getSegArray(objName, st, real);
-              select gIV.dtype {
-                when DType.Int64 {
-                  var iv = toSymEntry(gIV, int);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                when DType.UInt64 {
-                  var iv = toSymEntry(gIV, uint);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                when DType.Bool {
-                  var iv = toSymEntry(gIV, bool);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                otherwise {
-                    var errorMsg = "("+objtype: string+","+dtype2str(gIV.dtype)+")";
-                    smLogger.error(getModuleName(),getRoutineName(),
-                                                  getLineNumber(),errorMsg); 
-                    return new MsgTuple(notImplementedError(pn,errorMsg), MsgType.ERROR);
-                }
-              }
-            }
-            when DType.Bool {
-              var segArr = getSegArray(objName, st, bool);
-              select gIV.dtype {
-                when DType.Int64 {
-                  var iv = toSymEntry(gIV, int);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                when DType.UInt64 {
-                  var iv = toSymEntry(gIV, uint);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                when DType.Bool {
-                  var iv = toSymEntry(gIV, bool);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                otherwise {
-                    var errorMsg = "("+objtype: string+","+dtype2str(gIV.dtype)+")";
-                    smLogger.error(getModuleName(),getRoutineName(),
-                                                  getLineNumber(),errorMsg); 
-                    return new MsgTuple(notImplementedError(pn,errorMsg), MsgType.ERROR);
-                }
-              }
-            }
-            when DType.BigInt {
-              var segArr = getSegArray(objName, st, bigint);
-              select gIV.dtype {
-                when DType.Int64 {
-                  var iv = toSymEntry(gIV, int);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                when DType.UInt64 {
-                  var iv = toSymEntry(gIV, uint);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                when DType.Bool {
-                  var iv = toSymEntry(gIV, bool);
-                  var (newSegs, newVals) = segArr[iv.a];
-                  var newSegArr = getSegArray(newSegs, newVals, st);
-                  newSegArr.fillReturnMap(rtnmap, st);
-                }
-                otherwise {
-                    var errorMsg = "("+objtype: string+","+dtype2str(gIV.dtype)+")";
-                    smLogger.error(getModuleName(),getRoutineName(),
-                                                  getLineNumber(),errorMsg); 
-                    return new MsgTuple(notImplementedError(pn,errorMsg), MsgType.ERROR);
-                }
-              }
-            }
-            otherwise {
-                var errorMsg = notImplementedError(pn, objtype: string);
-                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-                return new MsgTuple(errorMsg, MsgType.ERROR);          
-            }
-          }
-          repMsg = "%jt".format(rtnmap);
         }
         otherwise {
             var errorMsg = "unsupported objtype: %t".format(objtype);
@@ -1459,8 +1113,6 @@ module SegmentedMsg {
   registerFunction("segmentedGroup", segGroupMsg, getModuleName());
   registerFunction("segmentedIn1d", segIn1dMsg, getModuleName());
   registerFunction("randomStrings", randomStringsMsg, getModuleName());
-  registerFunction("segArr-assemble", assembleSegArrayMsg, getModuleName());
-  registerFunction("segArr-getNonEmpty", getSANonEmptyMsg, getModuleName());
   registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
   registerFunction("stringsToJSON", stringsToJSONMsg, getModuleName());
   registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());

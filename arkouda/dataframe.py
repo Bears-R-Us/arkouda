@@ -616,7 +616,7 @@ class DataFrame(UserDict):
             elif t == "SegArray":
                 # split creates for segments and values
                 eles = msg[2].split("+")
-                df_dict[msg[1]] = SegArray.from_parts(create_pdarray(eles[0]), create_pdarray(eles[1]))
+                df_dict[msg[1]] = SegArray(create_pdarray(eles[0]), create_pdarray(eles[1]))
             elif t == "Fields":
                 df_dict[msg[1]] = Fields(
                     create_pdarray(msg[2]),

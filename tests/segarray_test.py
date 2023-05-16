@@ -638,7 +638,7 @@ class SegArrayTest(ArkoudaTest):
     def test_filter(self):
         v = ak.randint(0, 5, 100)
         s = ak.arange(0, 100, 2)
-        sa = ak.SegArray.from_parts(s, v)
+        sa = ak.SegArray(s, v)
 
         # test filtering single value retain empties
         filter_result = sa.filter(2, discard_empty=False)

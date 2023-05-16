@@ -102,33 +102,33 @@ module RegistrationMsg
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         } else {
-            if objType == ObjType.SEGARRAY {
-                var a = attrib.split(" ");
-                var dtype = str2dtype(a[1]: string);
-                var rtnmap: map(string, string) = new map(string, string);
+            // if objType.toLower() == "segarray" {
+            //     var a = attrib.split(" ");
+            //     var dtype = str2dtype(a[1]: string);
+            //     var rtnmap: map(string, string) = new map(string, string);
 
-                select dtype {
-                    when (DType.Int64) {
-                        var seg = getSegArray(name, st, int);
-                        seg.fillReturnMap(rtnmap, st);
-                    }
-                    when (DType.UInt64) {
-                        var seg = getSegArray(name, st, uint);
-                        seg.fillReturnMap(rtnmap, st);
-                    }
-                    when (DType.Float64) {
-                        var seg = getSegArray(name, st, real);
-                        seg.fillReturnMap(rtnmap, st);
-                    }
-                    when (DType.Bool) {
-                        var seg = getSegArray(name, st, bool);
-                        seg.fillReturnMap(rtnmap, st);
-                    }
-                }
+            //     select dtype {
+            //         when (DType.Int64) {
+            //             var seg = getSegArray(name, st, int);
+            //             seg.fillReturnMap(rtnmap, st);
+            //         }
+            //         when (DType.UInt64) {
+            //             var seg = getSegArray(name, st, uint);
+            //             seg.fillReturnMap(rtnmap, st);
+            //         }
+            //         when (DType.Float64) {
+            //             var seg = getSegArray(name, st, real);
+            //             seg.fillReturnMap(rtnmap, st);
+            //         }
+            //         when (DType.Bool) {
+            //             var seg = getSegArray(name, st, bool);
+            //             seg.fillReturnMap(rtnmap, st);
+            //         }
+            //     }
 
-                repMsg = "%jt".format(rtnmap);
-            }
-            else if objType == ObjType.UNKNOWN || objType == ObjType.STRINGS || objType == ObjType.PDARRAY {
+            //     repMsg = "%jt".format(rtnmap);
+            // }
+            if objType == "" || objType == "str" || objType == "pdarray" {
                 repMsg = "created %s".format(attrib);
                 if (isStringAttrib(attrib)) {
                     var s = getSegString(name, st);
@@ -352,13 +352,13 @@ module RegistrationMsg
                     var subArgs = new MessageArgs(new list([attParam, ]));
                     msg = attachMsg(cmd, subArgs, st).msg;
                 }
-                when (ObjType.SEGARRAY) {
-                    var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
-                    var objParam =  new ParameterObj("objtype", objtype: string, ObjectType.VALUE, "");
-                    var subArgs = new MessageArgs(new list([attParam, objParam]));
-                    msg = "segarray+%s+%s".format(regName, attachMsg(cmd, subArgs, st).msg);
-                }
-                when (ObjType.CATEGORICAL) {
+                // when ("SegArray") {
+                //     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
+                //     var objParam =  new ParameterObj("objtype", objtype, ObjectType.VALUE, "");
+                //     var subArgs = new MessageArgs(new list([attParam, objParam]));
+                //     msg = "segarray+%s+%s".format(regName, attachMsg(cmd, subArgs, st).msg);
+                // }
+                when ("Categorical") {
                     msg = attachCategoricalMsg(cmd, regName, st).msg;
                 }
                 otherwise {
@@ -476,16 +476,16 @@ module RegistrationMsg
                 repMsg = "simple+%s".format(msg);
                 return new MsgTuple(repMsg, msgType);
             }
-            when ("segarray") {
-                var attParam = new ParameterObj("name", name, ObjectType.VALUE, "");
-                var objParam =  new ParameterObj("objtype", dtype, ObjectType.VALUE, "");
-                var subArgs = new MessageArgs(new list([attParam, objParam]));
-                var aRet = attachMsg(cmd, subArgs, st);
-                var msg = aRet.msg;
-                var msgType = aRet.msgType;
-                repMsg = "segarray+%s".format(msg);
-                return new MsgTuple(repMsg, msgType);
-            }
+            // when ("segarray") {
+            //     var attParam = new ParameterObj("name", name, ObjectType.VALUE, "");
+            //     var objParam =  new ParameterObj("objtype", dtype, ObjectType.VALUE, "");
+            //     var subArgs = new MessageArgs(new list([attParam, objParam]));
+            //     var aRet = attachMsg(cmd, subArgs, st);
+            //     var msg = aRet.msg;
+            //     var msgType = aRet.msgType;
+            //     repMsg = "segarray+%s".format(msg);
+            //     return new MsgTuple(repMsg, msgType);
+            // }
             when ("categorical") {
                 return attachCategoricalMsg(cmd, name, st);
             }

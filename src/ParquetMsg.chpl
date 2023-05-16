@@ -15,7 +15,6 @@ module ParquetMsg {
   use AryUtil;
 
   use SegmentedString;
-  use SegmentedArray;
 
   use ArkoudaMapCompat;
 
@@ -656,40 +655,36 @@ module ParquetMsg {
   }
 
   proc parseListDataset(filenames: [] string, dsetname: string, ty, len: int, sizes: [] int, st: borrowed SymTab) throws {
+    var rtnmap: map(string, string) = new map(string, string);
     // len here is our segment size
     var filedom = filenames.domain;
     var seg_sizes = makeDistArray(len, int);
     var listSizes: [filedom] int = calcListSizesandOffset(seg_sizes, filenames, sizes, dsetname);
     var segments = (+ scan seg_sizes) - seg_sizes; // converts segment sizes into offsets
-    var rtnmap: map(string, string) = new map(string, string);
+    var sname = st.nextName();
+    st.addEntry(sname, new shared SymEntry(segments));
+    rtnmap.add("segments", "created " + st.attrib(sname));
 
+    var vname = st.nextName();
     if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
       var values = makeDistArray((+ reduce listSizes), int);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      var segArray = getSegArray(segments, values, st);
-      segArray.fillReturnMap(rtnmap, st);
-      return "%jt".format(rtnmap);
+      st.addEntry(vname, new shared SymEntry(values));
     }
     else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
       var values = makeDistArray((+ reduce listSizes), uint);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      var segArray = getSegArray(segments, values, st);
-      segArray.fillReturnMap(rtnmap, st);
-      return "%jt".format(rtnmap);
+      st.addEntry(vname, new shared SymEntry(values));
     }
     else if ty == ArrowTypes.double || ty == ArrowTypes.float {
       var values = makeDistArray((+ reduce listSizes), real);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      var segArray = getSegArray(segments, values, st);
-      segArray.fillReturnMap(rtnmap, st);
-      return "%jt".format(rtnmap);
+      st.addEntry(vname, new shared SymEntry(values));
     }
     else if ty == ArrowTypes.boolean {
       var values = makeDistArray((+ reduce listSizes), bool);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      var segArray = getSegArray(segments, values, st);
-      segArray.fillReturnMap(rtnmap, st);
-      return "%jt".format(rtnmap);
+      st.addEntry(vname, new shared SymEntry(values));
     }
     // TODO - add handling for Strings
     else {
@@ -700,6 +695,8 @@ module ParquetMsg {
                  moduleName=getModuleName(), 
                  errorClass='IllegalArgumentError');
     }
+    rtnmap.add("values", "created " + st.attrib(vname));
+    return "%jt".format(rtnmap);
   }
 
   proc populateTagData(A, filenames: [?fD] string, sizes) throws {
@@ -1030,11 +1027,9 @@ module ParquetMsg {
       }
   }
 
-  proc writeSegArrayParquet(filename: string, mode: int, dsetName: string, dtype: string, entry, compression: int): bool throws {
-    var segArray = new SegArray("", entry, entry.etype);
-    // get the array of segments 
-    ref sa = segArray;
-    var segments = sa.segments.a;
+  proc writeSegArrayParquet(filename: string, mode: int, dsetName: string, dtype: string, segments_entry, values_entry, compression: int): bool throws {
+    // get the array of segments
+    var segments = segments_entry.a;
 
     var prefix: string;
     var extension: string;
@@ -1059,12 +1054,12 @@ module ParquetMsg {
                 errorClass='WriteModeError');
     }
     
-    const extraOffset = sa.values.size;
+    const extraOffset = values_entry.size;
     const lastOffset = if segments.size == 0 then 0 else segments[segments.domain.high]; // prevent index error when empty
-    const lastValIdx = sa.values.a.domain.high;
+    const lastValIdx = values_entry.a.domain.high;
 
     // pull values to the locale of the offset
-    coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) with (ref sa) do on loc {
+    coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) do on loc {
       const myFilename = filenames[idx];
 
       const locDom = segments.localSubdomain();
@@ -1088,7 +1083,7 @@ module ParquetMsg {
         var endValIdx = if (lastOffset == localSegments[locDom.high]) then lastValIdx else segments[locDom.high + 1] - 1;
               
         var valIdxRange = startValIdx..endValIdx;
-        ref olda = sa.values.a;
+        ref olda = values_entry.a;
         writeSegArrayComponent(myFilename, dsetName, olda, valIdxRange, segments, locDom, extraOffset, lastOffset, lastValIdx, dtype, compression);
       }
     }
@@ -1104,33 +1099,25 @@ module ParquetMsg {
     var dtype = str2dtype(msgArgs.getValueOf("dtype"));
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
-    // ensure proper symentry configuration
-    if (!entry.isAssignableTo(SymbolEntryType.SegArraySymEntry)) {
-      var errorMsg = "ObjType (SEGARRAY) does not match SymEntry Type: %s".format(entry.entryType);
-      throw getErrorWithContext(
-                   msg=errorMsg,
-                   lineNumber=getLineNumber(), 
-                   routineName=getRoutineName(), 
-                   moduleName=getModuleName(), 
-                   errorClass='TypeError');
-    }
+    // segments is always int64
+    var segments = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("segments"))), int);
     
     var warnFlag: bool;
     select dtype {
       when DType.Int64 {
-        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, int);
-        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
+        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), int);
+        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segments, values, compression:int);
       }
       when DType.UInt64 {
-        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, uint);
-        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
+        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), uint);
+        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segments, values, compression:int);
       }
       when DType.Bool {
-        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, bool);
-        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
+        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), bool);
+        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segments, values, compression:int);
       } when DType.Float64 {
-        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, real);
-        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
+        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), real);
+        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segments, values, compression:int);
       } otherwise {
         var errorMsg = "Writing Parquet files not supported for %s type".format(msgArgs.getValueOf("dtype"));
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1199,7 +1186,7 @@ module ParquetMsg {
   }
 
   proc writeMultiColParquet(filename: string, col_names: [] string, 
-                              ncols: int, sym_names: [] string, targetLocales: [] locale, 
+                              ncols: int, sym_names: [] string, col_objTypes: [] string, targetLocales: [] locale, 
                               compression: int, st: borrowed SymTab): bool throws {
 
     extern proc c_writeMultiColToParquet(filename, column_names, ptr_arr, offset_arr, objTypes,
@@ -1237,9 +1224,24 @@ module ParquetMsg {
       var sections_sizes_int: [0..#ncols] int; // only fill in sizes for int, uint segarray columns
       var sections_sizes_real: [0..#ncols] int; // only fill in sizes for float segarray columns
       var sections_sizes_bool: [0..#ncols] int; // only fill in sizes for bool segarray columns
-      forall (i, column) in zip(0..#ncols, sym_names) {
+      forall (i, column, ot) in zip(0..#ncols, sym_names, col_objTypes) { // TODO - should we make locals of the arrays?
         var x: int;
-        var entry = st.lookup(column);
+        var objType = ot.toUpper(): ObjType;
+
+        if objType == ObjType.STRINGS {
+          var entry = st.lookup(column);
+          var e: SegStringSymEntry = toSegStringSymEntry(entry);
+          var segStr = new SegString("", e);
+          ref ss = segStr;
+          var lens = ss.getLengths();
+          const locDom = ss.offsets.a.localSubdomain();
+          for i in locDom do x += lens[i];
+          sections_sizes_str[i] = x;
+        }
+        else if objType == ObjType.SEGARRAY {
+          // TODO - parse the json in column to get the component pdarrays
+          var components: map(string, string);
+        }
         // need to calculate the total size of Strings on this local
         if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
           var e: SegStringSymEntry = toSegStringSymEntry(entry);
@@ -1629,7 +1631,10 @@ module ParquetMsg {
     var col_names: [0..#ncols] string = msgArgs.get("col_names").getList(ncols);
 
     // get list of sym entry names holding column data
-    var sym_names: [0..#ncols] string = msgArgs.get("columns").getList(ncols);
+    var sym_names: [0..#ncols] string = msgArgs.get("columns").getList(ncols); // note SegArrays will be JSON
+
+    // get list of objTypes for the names 
+    var col_objType_strs: [0..#ncols] string = msgArgs.get("col_objtypes").getList(ncols);
 
     // compression format as integer
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
@@ -1642,7 +1647,7 @@ module ParquetMsg {
     
     var warnFlag: bool;
     try {
-      warnFlag = writeMultiColParquet(filename, col_names, ncols, sym_names, targetLocales, compression:int, st);
+      warnFlag = writeMultiColParquet(filename, col_names, ncols, sym_names, col_objType_strs, targetLocales, compression:int, st);
     } catch e: FileNotFoundError {
       var errorMsg = "Unable to open %s for writing: %s".format(filename,e.message());
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
