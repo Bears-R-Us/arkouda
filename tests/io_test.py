@@ -876,6 +876,47 @@ class IOTest(ArkoudaTest):
             df_load = ak.DataFrame.load(f"{tmp_dirname}/dataframe_segarr")
             self.assertTrue(df.to_pandas().equals(df_load.to_pandas()))
 
+    def test_hdf_groupby(self):
+        # test for categorical and multiple keys
+        string = ak.array(["a", "b", "a", "b", "c"])
+        cat = ak.Categorical(string)
+        cat_from_codes = ak.Categorical.from_codes(
+            codes=ak.array([0, 1, 0, 1, 2]), categories=ak.array(["a", "b", "c"])
+        )
+        cat_grouping = ak.GroupBy([cat, cat_from_codes])
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            cat_grouping.to_hdf(f"{tmp_dirname}/cat_test")
+            cg_load = ak.read(f"{tmp_dirname}/cat_test*")
+            self.assertEqual(len(cg_load.keys), len(cat_grouping.keys))
+            self.assertListEqual(cg_load.permutation.to_list(), cat_grouping.permutation.to_list())
+            self.assertListEqual(cg_load.segments.to_list(), cat_grouping.segments.to_list())
+            self.assertListEqual(cg_load._uki.to_list(), cat_grouping._uki.to_list())
+            for k, kload in zip(cat_grouping.keys, cg_load.keys):
+                self.assertListEqual(k.to_list(), kload.to_list())
+
+        # test Strings GroupBy
+        str_grouping = ak.GroupBy(string)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            str_grouping.to_hdf(f"{tmp_dirname}/str_test")
+            str_load = ak.read(f"{tmp_dirname}/str_test*")
+            self.assertEqual(len(str_load.keys), len(str_grouping.keys))
+            self.assertListEqual(str_load.permutation.to_list(), str_grouping.permutation.to_list())
+            self.assertListEqual(str_load.segments.to_list(), str_grouping.segments.to_list())
+            self.assertListEqual(str_load._uki.to_list(), str_grouping._uki.to_list())
+            self.assertListEqual(str_grouping.keys.to_list(), str_load.keys.to_list())
+
+        # test pdarray GroupBy
+        pda = ak.array([0, 1, 2, 0, 2])
+        g = ak.GroupBy(pda)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            g.to_hdf(f"{tmp_dirname}/pd_test")
+            g_load = ak.read(f"{tmp_dirname}/pd_test*")
+            self.assertEqual(len(g_load.keys), len(g.keys))
+            self.assertListEqual(g_load.permutation.to_list(), g.permutation.to_list())
+            self.assertListEqual(g_load.segments.to_list(), g.segments.to_list())
+            self.assertListEqual(g_load._uki.to_list(), g._uki.to_list())
+            self.assertListEqual(g_load.keys.to_list(), g.keys.to_list())
+
     def test_hdf_overwrite_pdarray(self):
         # test repack with a single object
         a = ak.arange(1000)

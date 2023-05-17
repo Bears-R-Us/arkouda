@@ -29,7 +29,7 @@ module ConcatenateMsg
     proc concatenateMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab) : MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var objtype = msgArgs.getValueOf("objType");
+        var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
         var mode = msgArgs.getValueOf("mode");
         var n = msgArgs.get("nstr").getIntValue(); // number of arrays to sort
         var names = msgArgs.get("names").getList(n);
@@ -54,7 +54,7 @@ module ConcatenateMsg
         for (name, i) in zip(names, 1..) {
             var valSize: int;
             select objtype {
-                when "str" {
+                when ObjType.STRINGS {
                     try {
                         // get the values/bytes portion of strings
                         var segString = getSegString(name, st);
@@ -71,12 +71,12 @@ module ConcatenateMsg
                     cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                              "name: %s".format(name));
                 }
-                when "pdarray" {
+                when ObjType.PDARRAY {
                     cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                  "pdarray name %s".format(name));
                 }
                 otherwise { 
-                    var errorMsg = notImplementedError(pn, objtype); 
+                    var errorMsg = notImplementedError(pn, objtype: string); 
                     cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
                     return new MsgTuple(errorMsg,MsgType.ERROR);                  
                 }
@@ -111,7 +111,7 @@ module ConcatenateMsg
                    * but it also causes an out of bounds array index due to the 
                    * way the low and high of the empty domain are computed. 
                    */
-                  if (objtype == "str") && (mynumsegs > 0) {
+                  if (objtype == ObjType.STRINGS) && (mynumsegs > 0) {
                     const stringEntry = toSegStringSymEntry(abstractEntry);
                     const e = stringEntry.offsetsEntry;
                     const firstSeg = e.a[e.a.domain.localSubdomain().low];
@@ -147,7 +147,7 @@ module ConcatenateMsg
         // allocate a new array in the symboltable
         // and copy in arrays
         select objtype {
-            when "str" {
+            when ObjType.STRINGS {
                 // var segName = st.nextName();
                 // var esegs = st.addEntry(segName, size, int);
                 // var valName = st.nextName();
@@ -213,7 +213,7 @@ module ConcatenateMsg
                                   "created concatenated pdarray %s".format(st.attrib(retString.name)));
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }
-            when "pdarray" {
+            when ObjType.PDARRAY {
                 var rname = st.nextName();
                 cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                              "creating pdarray %s of type %t".format(rname,dtype));
@@ -377,7 +377,7 @@ module ConcatenateMsg
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             otherwise { 
-                var errorMsg = notImplementedError(pn, objtype); 
+                var errorMsg = notImplementedError(pn, objtype: string); 
                 cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }

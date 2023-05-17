@@ -81,9 +81,9 @@ module RegistrationMsg
 
         const name = msgArgs.getValueOf("name");
 
-        var objType: string = "";
+        var objType: ObjType = ObjType.UNKNOWN;
         if msgArgs.contains("objtype") {
-            objType = msgArgs.getValueOf("objtype");
+            objType = msgArgs.getValueOf("objtype").toUpper(): ObjType;
         }
 
         // if verbose print action
@@ -102,7 +102,7 @@ module RegistrationMsg
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         } else {
-            if objType.toLower() == "segarray" {
+            if objType == ObjType.SEGARRAY {
                 var a = attrib.split(" ");
                 var dtype = str2dtype(a[1]: string);
                 var rtnmap: map(string, string) = new map(string, string);
@@ -128,7 +128,7 @@ module RegistrationMsg
 
                 repMsg = "%jt".format(rtnmap);
             }
-            else if objType == "" || objType == "str" || objType == "pdarray" {
+            else if objType == ObjType.UNKNOWN || objType == ObjType.STRINGS || objType == ObjType.PDARRAY {
                 repMsg = "created %s".format(attrib);
                 if (isStringAttrib(attrib)) {
                     var s = getSegString(name, st);
@@ -339,26 +339,26 @@ module RegistrationMsg
         // Use existing attach functionality to build the response message based on the objType of each data column
         forall regName in u with (+ reduce repMsg) {
             var parts = regName.split("_");
-            var objtype: string = parts[2];
+            var objtype: ObjType = parts[2].toUpper(): ObjType;
             var msg: string;
             select (objtype){
-                when ("pdarray") {
+                when (ObjType.PDARRAY) {
                     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
                     var subArgs = new MessageArgs(new list([attParam, ]));
                     msg = attachMsg(cmd, subArgs, st).msg;
                 }
-                when ("str") {
+                when (ObjType.STRINGS) {
                     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
                     var subArgs = new MessageArgs(new list([attParam, ]));
                     msg = attachMsg(cmd, subArgs, st).msg;
                 }
-                when ("SegArray") {
+                when (ObjType.SEGARRAY) {
                     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
-                    var objParam =  new ParameterObj("objtype", objtype, ObjectType.VALUE, "");
+                    var objParam =  new ParameterObj("objtype", objtype: string, ObjectType.VALUE, "");
                     var subArgs = new MessageArgs(new list([attParam, objParam]));
                     msg = "segarray+%s+%s".format(regName, attachMsg(cmd, subArgs, st).msg);
                 }
-                when ("Categorical") {
+                when (ObjType.CATEGORICAL) {
                     msg = attachCategoricalMsg(cmd, regName, st).msg;
                 }
                 otherwise {

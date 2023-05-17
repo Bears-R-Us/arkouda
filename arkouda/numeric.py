@@ -106,10 +106,8 @@ def cast(
 
     if isinstance(pda, pdarray):
         name = pda.name
-        objtype = "pdarray"
     elif isinstance(pda, Strings):
         name = pda.entry.name
-        objtype = "str"
     # typechecked decorator guarantees no other case
 
     dt = _as_dtype(dt)
@@ -118,7 +116,7 @@ def cast(
         cmd=cmd,
         args={
             "name": name,
-            "objType": objtype,
+            "objType": pda.objType,
             "targetDtype": dt.name,
             "opt": errors.name,
         },
@@ -485,7 +483,7 @@ def hash(
             cmd="efuncArr",
             args={
                 "nameslist": [n.name for n in pda],
-                "typeslist": [n.objtype for n in pda],
+                "typeslist": [n.objType for n in pda],
                 "length": len(pda),
                 "size": len(pda[0]),
             },

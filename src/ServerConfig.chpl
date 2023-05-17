@@ -16,6 +16,16 @@ module ServerConfig
     use ArkoudaFileCompat;
     
     enum Deployment {STANDARD,KUBERNETES}
+
+    enum ObjType {
+      UNKNOWN=-1,
+      ARRAYVIEW=0,
+      PDARRAY=1,
+      STRINGS=2,
+      SEGARRAY=3,
+      CATEGORICAL=4,
+      GROUPBY=5
+    };
     
     /*
     Type of deployment, which currently is either STANDARD, meaning

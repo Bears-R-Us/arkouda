@@ -66,7 +66,7 @@ class CategoricalTest(ArkoudaTest):
             cat.categories.to_list(),
         )
         self.assertEqual(10, cat.size)
-        self.assertEqual("Categorical", cat.objtype)
+        self.assertEqual("Categorical", cat.objType)
 
         with self.assertRaises(ValueError):
             ak.Categorical(ak.arange(0, 5, 10))
@@ -260,7 +260,7 @@ class CategoricalTest(ArkoudaTest):
         catTwo = self._getCategorical("string-two", 51)
 
         resultCat = catOne.concatenate([catTwo])
-        self.assertEqual("Categorical", resultCat.objtype)
+        self.assertEqual("Categorical", resultCat.objType)
         self.assertIsInstance(resultCat, ak.Categorical)
         self.assertEqual(100, resultCat.size)
 
@@ -270,7 +270,7 @@ class CategoricalTest(ArkoudaTest):
         self.assertFalse(resultCat.segments)
 
         resultCat = ak.concatenate([catOne, catOne], ordered=False)
-        self.assertEqual("Categorical", resultCat.objtype)
+        self.assertEqual("Categorical", resultCat.objType)
         self.assertIsInstance(resultCat, ak.Categorical)
         self.assertEqual(100, resultCat.size)
 

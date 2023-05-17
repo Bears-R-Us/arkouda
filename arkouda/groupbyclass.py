@@ -113,7 +113,7 @@ def unique(
     # Get all grouping keys
     grouping_keys, nkeys = _get_grouping_keys(pda)
     keynames = [k.name for k in grouping_keys]
-    keytypes = [k.objtype for k in grouping_keys]
+    keytypes = [k.objType for k in grouping_keys]
     effectiveKeys = len(grouping_keys)
     repMsg = generic_msg(
         cmd="unique",
@@ -236,9 +236,11 @@ class GroupBy:
 
     Reductions = GROUPBY_REDUCTION_TYPES
 
+    objType = "GroupBy"
+
     def __init__(
         self,
-        keys: Optional[groupable],
+        keys: Optional[groupable] = None,
         assume_sorted: bool = False,
         **kwargs,
     ):
@@ -266,13 +268,30 @@ class GroupBy:
             self.nkeys = len(self.keys)
             self.length = self.permutation.size
             self.ngroups = self.segments.size
+        elif (
+            "orig_keys" in kwargs
+            and "permutation" in kwargs
+            and "uki" in kwargs
+            and "segments" in kwargs
+        ):
+            self.keys = cast(groupable, kwargs.get("orig_keys", None))
+            self._uki = kwargs.get("uki", None)
+            self.permutation = kwargs.get("permutation", None)
+            self.segments = kwargs.get("segments", None)
+            self.nkeys = len(self.keys) if isinstance(self.keys, Sequence) else 1
+            self.length = self.permutation.size
+            self.ngroups = self.segments.size
+            if not isinstance(self.keys, Sequence):
+                self.unique_keys = self.keys[self._uki]
+            else:
+                self.unique_keys = tuple(a[self._uki] for a in self.keys)
         elif keys is None:
             raise ValueError("No keys passed to GroupBy.")
         else:
             self.keys = cast(groupable, keys)
             grouping_keys, self.nkeys = _get_grouping_keys(self.keys)
             keynames = [k.name for k in grouping_keys]
-            keytypes = [k.objtype for k in grouping_keys]
+            keytypes = [k.objType for k in grouping_keys]
             repmsg = generic_msg(
                 cmd="createGroupBy",
                 args={
@@ -289,11 +308,11 @@ class GroupBy:
             self.ngroups = int(fields[3])
             self.permutation = create_pdarray(rep_json["permutation"])
             self.segments = create_pdarray(rep_json["segments"])
-            uki = create_pdarray(rep_json["uniqueKeyIdx"])
+            self._uki = create_pdarray(rep_json["uniqueKeyIdx"])
             if self.nkeys == 1:
-                self.unique_keys = self.keys[uki]
+                self.unique_keys = self.keys[self._uki]
             else:
-                self.unique_keys = tuple(a[uki] for a in self.keys)
+                self.unique_keys = tuple(a[self._uki] for a in self.keys)
 
     def __del__(self):
         try:
@@ -301,6 +320,165 @@ class GroupBy:
                 generic_msg(cmd="delete", args={"name": self.name})
         except RuntimeError:
             pass
+
+    @staticmethod
+    def from_return_msg(rep_msg):
+        from arkouda.categorical import Categorical as Categorical_
+
+        data = json.loads(rep_msg)
+        perm = create_pdarray(data["permutation"])
+        segs = create_pdarray(data["segments"])
+        uki = create_pdarray(data["uki"])
+        keys = []
+        for k, create_data in data.items():
+            if k == "permutation" or k == "segments" or k == "uki":
+                continue
+            comps = create_data.split("+|+")
+            if comps[0] == "pdarray":
+                keys.append(create_pdarray(comps[1]))
+            elif comps[0] == "seg_string":  # TODO - update to use Strings.objType
+                keys.append(Strings.from_return_msg(comps[1]))
+            elif comps[0] == "categorical":
+                keys.append(Categorical_.from_return_msg(comps[1]))
+        if len(keys) == 1:
+            keys = keys[0]
+        return GroupBy(orig_keys=keys, permutation=perm, segments=segs, uki=uki)
+
+    def to_hdf(
+        self,
+        prefix_path,
+        dataset="groupby",
+        mode="truncate",
+        file_type="distribute",
+    ):
+        """
+        Save the GroupBy to HDF5. The result is a collection of HDF5 files, one file
+        per locale of the arkouda server, where each filename starts with prefix_path.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files will share
+        dataset : str
+            Name prefix for saved data within the HDF5 file
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', add data as a new column to existing files.
+        file_type: str ("single" | "distribute")
+            Default: "distribute"
+            When set to single, dataset is written to a single file.
+            When distribute, dataset is written on a file per locale.
+            This is only supported by HDF5 files and will have no impact of Parquet Files.
+
+        Returns
+        -------
+        None
+
+        GroupBy is not currently supported by Parquet
+        """
+        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
+
+        keys = self.keys if isinstance(self.keys, Sequence) else [self.keys]
+
+        objTypes = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
+        dtypes = [k.categories.dtype if isinstance(k, Categorical_) else k.dtype for k in keys]
+
+        # access the names of the key or names of properties for categorical
+        gb_keys = [
+            k.name
+            if not isinstance(k, Categorical_)
+            else json.dumps(
+                {
+                    "codes": k.codes.name,
+                    "categories": k.categories.name,
+                    "NA_codes": k._akNAcode.name,
+                    **({"permutation": k.permutation.name} if k.permutation is not None else {}),
+                    **({"segments": k.segments.name} if k.segments is not None else {}),
+                }
+            )
+            for k in keys
+        ]
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "num_keys": len(gb_keys),
+                "key_names": gb_keys,
+                "key_dtypes": dtypes,
+                "key_objTypes": objTypes,
+                "unique_key_idx": self._uki,
+                "permutation": self.permutation,
+                "segments": self.segments,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int(mode),
+                "filename": prefix_path,
+                "objType": self.objType,
+                "file_format": _file_type_to_int(file_type),
+            },
+        )
+
+    def update_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "groupby",
+        repack: bool = True,
+    ):
+        from arkouda.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
+
+        # determine the format (single/distribute) that the file was saved in
+        file_type = _get_hdf_filetype(prefix_path + "*")
+
+        from arkouda.categorical import Categorical as Categorical_
+
+        keys = self.keys
+        if not isinstance(self.keys, Sequence):
+            keys = [self.keys]
+
+        objTypes = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
+        dtypes = [k.categories.dtype if isinstance(k, Categorical_) else k.dtype for k in keys]
+
+        # access the names of the key or names of properties for categorical
+        gb_keys = [
+            k.name
+            if not isinstance(k, Categorical_)
+            else json.dumps(
+                {
+                    "codes": k.codes.name,
+                    "categories": k.categories.name,
+                    "NA_codes": k._akNAcode.name,
+                    **({"permutation": k.permutation.name} if k.permutation is not None else {}),
+                    **({"segments": k.segments.name} if k.segments is not None else {}),
+                }
+            )
+            for k in keys
+        ]
+
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "num_keys": len(gb_keys),
+                "key_names": gb_keys,
+                "key_dtypes": dtypes,
+                "key_objTypes": objTypes,
+                "unique_key_idx": self._uki,
+                "permutation": self.permutation,
+                "segments": self.segments,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int("truncate"),
+                "filename": prefix_path,
+                "objType": self.objType,
+                "file_format": _file_type_to_int(file_type),
+                "overwrite": True,
+            },
+        )
+
+        if repack:
+            _repack_hdf(prefix_path)
 
     def size(self) -> Tuple[groupable, pdarray]:
         """
@@ -1328,8 +1506,8 @@ class GroupBy:
         TypeError
             Raised if values is or contains Strings or Categorical
         """
-        from arkouda.segarray import SegArray
         from arkouda import Categorical
+        from arkouda.segarray import SegArray
 
         if isinstance(values, (Strings, Categorical)) or (
             isinstance(values, Sequence) and any([isinstance(v, (Strings, Categorical)) for v in values])
@@ -1535,16 +1713,16 @@ class GroupBy:
         self.segments.register(f"{user_defined_name}.segments")
 
         if isinstance(self.keys, (Strings, pdarray, Categorical)):
-            self.keys.register(f"{user_defined_name}_{self.keys.objtype}.keys")
-            self.unique_keys.register(f"{user_defined_name}_{self.keys.objtype}.unique_keys")
+            self.keys.register(f"{user_defined_name}_{self.keys.objType}.keys")
+            self.unique_keys.register(f"{user_defined_name}_{self.keys.objType}.unique_keys")
         elif isinstance(self.keys, Sequence):
             for x in range(len(self.keys)):
                 # Possible for multiple types in a sequence, so we have to check each key's
                 # type individually
                 if isinstance(self.keys[x], (Strings, pdarray, Categorical)):
-                    self.keys[x].register(f"{x}_{user_defined_name}_{self.keys[x].objtype}.keys")
+                    self.keys[x].register(f"{x}_{user_defined_name}_{self.keys[x].objType}.keys")
                     self.unique_keys[x].register(
-                        f"{x}_{user_defined_name}_{self.keys[x].objtype}.unique_keys"
+                        f"{x}_{user_defined_name}_{self.keys[x].objType}.unique_keys"
                     )
 
         else:
@@ -1632,7 +1810,7 @@ class GroupBy:
                 f"^\\d+_{self.name}_.+\\.keys$|^\\d+_{self.name}_.+\\.unique_keys$|"
                 f"^\\d+_{self.name}_.+\\.unique_keys(?=\\.categories$)"
             )
-            cat_regEx = compile(f"^\\d+_{self.name}_{Categorical.objtype}\\.keys(?=\\.codes$)")
+            cat_regEx = compile(f"^\\d+_{self.name}_{Categorical.objType}\\.keys(?=\\.codes$)")
 
             simple_registered = list(filter(regEx.match, registry))
             cat_registered = list(filter(cat_regEx.match, registry))
@@ -1705,7 +1883,7 @@ class GroupBy:
         regEx = compile(
             f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
             f"^{user_defined_name}_.+\\.unique_keys$|^\\d+_{user_defined_name}_.+\\.unique_keys$|"
-            f"^(?:\\d+_)?{user_defined_name}_{Categorical.objtype}\\.unique_keys(?=\\.categories$)"
+            f"^(?:\\d+_)?{user_defined_name}_{Categorical.objType}\\.unique_keys(?=\\.categories$)"
         )
         # Using the regex, cycle through the registered items and find all the pieces of
         # the GroupBy's keys
@@ -1720,21 +1898,21 @@ class GroupBy:
 
         for name in matches:
             # Parse the name for the dtype and use the proper create method to create the element
-            if f"_{Strings.objtype}." in name or f"_{pdarray.objtype}." in name:
+            if f"_{Strings.objType}." in name or f"_{pdarray.objType}." in name:
                 keys_resp = cast(str, generic_msg(cmd="attach", args={"name": name}))
                 dtype = keys_resp.split()[2]
                 if ".unique_keys" in name:
-                    if dtype == Strings.objtype:
+                    if dtype == "str":
                         unique_keys.append(Strings.from_return_msg(keys_resp))
                     else:  # pdarray
                         unique_keys.append(create_pdarray(keys_resp))
                 else:
-                    if dtype == Strings.objtype:
+                    if dtype == "str":  # TODO - update to use Strings.objType when #2435 is complete
                         keys.append(Strings.from_return_msg(keys_resp))
                     else:  # pdarray
                         keys.append(create_pdarray(keys_resp))
 
-            elif f"_{Categorical.objtype}.unique_keys" in name:
+            elif f"_{Categorical.objType}.unique_keys" in name:
                 # Due to unique_keys overwriting keys.categories, we have to use unique_keys.categories
                 # to create the keys Categorical
                 unique_key = Categorical.attach(name)
@@ -1816,8 +1994,8 @@ class GroupBy:
         regEx = compile(
             f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
             f"^{user_defined_name}_.+\\.unique_keys$|^\\d+_{user_defined_name}_.+\\.unique_keys$|"
-            f"^(?:\\d+_)?{user_defined_name}_{Categorical.objtype}\\.unique_keys(?=\\.categories$)|"
-            f"^(\\d+_)?{user_defined_name}_{Categorical.objtype}\\.keys\\.(_)?([A-Z,a-z])+$"
+            f"^(?:\\d+_)?{user_defined_name}_{Categorical.objType}\\.unique_keys(?=\\.categories$)|"
+            f"^(\\d+_)?{user_defined_name}_{Categorical.objType}\\.keys\\.(_)?([A-Z,a-z])+$"
         )
 
         for name in registry:
@@ -1826,7 +2004,7 @@ class GroupBy:
             if x is not None:
                 print(x.group())
                 # Only categorical requires a separate unregister case
-                if f"_{Categorical.objtype}.unique_keys" in x.group():
+                if f"_{Categorical.objType}.unique_keys" in x.group():
                     Categorical.unregister_categorical_by_name(x.group())
                 else:
                     unregister_pdarray_by_name(x.group())

@@ -7,14 +7,14 @@ from warnings import warn
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
-import arkouda.array_view
+from arkouda.array_view import ArrayView
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
+from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
-from arkouda.array_view import ArrayView
 
 __all__ = [
     "get_filetype",
@@ -435,7 +435,7 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
 
 def _parse_obj(
     obj: Dict,
-) -> Union[Strings, pdarray, arkouda.array_view.ArrayView, SegArray, Categorical]:
+) -> Union[Strings, pdarray, ArrayView, SegArray, Categorical]:
     """
     Helper function to create an Arkouda object from read response
 
@@ -463,9 +463,11 @@ def _parse_obj(
         components = obj["created"].split("+")
         flat = create_pdarray(components[0])
         shape = create_pdarray(components[1])
-        return arkouda.array_view.ArrayView(flat, shape)
+        return ArrayView(flat, shape)
     elif "categorical" == obj["arkouda_type"]:
         return Categorical.from_return_msg(obj["created"])
+    elif "groupby" == obj["arkouda_type"]:
+        return GroupBy.from_return_msg(obj["created"])
     else:
         raise TypeError(f"Unknown arkouda type:{obj['arkouda_type']}")
 
@@ -513,9 +515,9 @@ def _build_objects(
     Strings,
     pdarray,
     SegArray,
-    arkouda.array_view.ArrayView,
+    ArrayView,
     Categorical,
-    Mapping[str, Union[Strings, pdarray, SegArray, arkouda.array_view.ArrayView, Categorical]],
+    Mapping[str, Union[Strings, pdarray, SegArray, ArrayView, Categorical]],
 ]:
     """
     Helper function to create the Arkouda objects from a read operation
@@ -563,9 +565,9 @@ def read_hdf(
     pdarray,
     Strings,
     SegArray,
-    arkouda.array_view.ArrayView,
+    ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView, Categorical]],
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
 ]:
     """
     Read Arkouda objects from HDF5 file/s
@@ -692,9 +694,9 @@ def read_parquet(
     pdarray,
     Strings,
     SegArray,
-    arkouda.array_view.ArrayView,
+    ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView, Categorical]],
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
 ]:
     """
     Read Arkouda objects from Parquet file/s
@@ -819,9 +821,9 @@ def read_csv(
     pdarray,
     Strings,
     SegArray,
-    arkouda.array_view.ArrayView,
+    ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView, Categorical]],
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
 ]:
     """
     Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
@@ -1507,9 +1509,9 @@ def load(
     pdarray,
     Strings,
     SegArray,
-    arkouda.array_view.ArrayView,
+    ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView, Categorical]],
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
 ]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
@@ -1698,9 +1700,9 @@ def read(
     pdarray,
     Strings,
     SegArray,
-    arkouda.array_view.ArrayView,
+    ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView, Categorical]],
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
 ]:
     """
     Read datasets from files.
@@ -1848,6 +1850,10 @@ def read_tagged_data(
         SegArray (or other nested Parquet columns) will be ignored.
         Ignored if datasets is not `None`
         Parquet Files only.
+
+    Notes
+    ------
+    Not currently supported for Categorical or GroupBy datasets
 
     Examples
     ---------

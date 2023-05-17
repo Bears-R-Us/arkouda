@@ -18,14 +18,14 @@ module CastMsg {
   proc castMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     var name = msgArgs.getValueOf("name");
-    var objtype = msgArgs.getValueOf("objType");
+    var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
     var targetDtype = msgArgs.getValueOf("targetDtype");
     var opt = msgArgs.getValueOf("opt");
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
           "name: %s obgtype: %t targetDtype: %t opt: %t".format(
                                                  name,objtype,targetDtype,opt));
     select objtype {
-      when "pdarray" {
+      when ObjType.PDARRAY {
         var gse: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         select (gse.dtype, targetDtype) {
             when (DType.Int64, "int64") {
@@ -146,7 +146,7 @@ module CastMsg {
             }
         }
       }
-      when "str" {
+      when ObjType.STRINGS {
           const strings = getSegString(name, st);
           const errors = opt.toLower() : ErrorMode;
           select targetDtype {
@@ -176,7 +176,7 @@ module CastMsg {
           }
       }
       otherwise {
-        var errorMsg = notImplementedError(pn,objtype);
+        var errorMsg = notImplementedError(pn,objtype:string);
         castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                      
         return new MsgTuple(errorMsg, MsgType.ERROR);
       }
