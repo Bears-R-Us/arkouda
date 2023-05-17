@@ -110,7 +110,7 @@ Functions
 
       
 
-   .. py:attribute:: objtype
+   .. py:attribute:: objType
       :value: 'pdarray'
 
       

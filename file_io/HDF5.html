@@ -306,6 +306,7 @@
 <li><p>Index</p></li>
 <li><p>Categorical</p></li>
 <li><p>SegArray</p></li>
+<li><p>GroupBy</p></li>
 </ul>
 <p>HDF5 is able to contain any number of objects within the same file.</p>
 </section>
@@ -321,6 +322,8 @@
 <li><p>1 = <code class="docutils literal notranslate"><span class="pre">pdarray</span></code></p></li>
 <li><p>2 = <code class="docutils literal notranslate"><span class="pre">Strings</span></code></p></li>
 <li><p>3 = <code class="docutils literal notranslate"><span class="pre">SegArray</span></code></p></li>
+<li><p>4 = <code class="docutils literal notranslate"><span class="pre">Categorical</span></code></p></li>
+<li><p>5 = <code class="docutils literal notranslate"><span class="pre">GroupBy</span></code></p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">isBool</span></code>: <code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 <blockquote>
@@ -484,6 +487,161 @@
 </ol>
 </div></blockquote>
 </section>
+<section id="categorical">
+<h3>Categorical<a class="headerlink" href="#categorical" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Categorical</span></code> objects are stored within an HDF5 group. This group contains datasets storing the components of the Categorical.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Group (user provided dataset name. Defaults to ‘categorical’)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 4</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Dataset - Codes</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - int64 values representing our codes of the Categorical.</p></li>
+</ol>
+</li>
+<li><p>Dataset - Categories</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 2</p></li>
+<li><p>isBool: 0</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - Strings group representing the categories of the Categorical.</p></li>
+</ol>
+</li>
+<li><p>Dataset - NA_Codes</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - int64 values representing the index in of categories with NA value.</p></li>
+</ol>
+</li>
+<li><p>Dataset - Permutation (Optional. Only include if Categorical object has permutation property)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - int64 values representing the permutation of the categories.</p></li>
+</ol>
+</li>
+<li><p>Dataset - Segments (Optional. Only include if Categorical object has segments property)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - int64 values representing the start index of category segments.</p></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</div></blockquote>
+</section>
+<section id="groupby">
+<h3>GroupBy<a class="headerlink" href="#groupby" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GroupBy</span></code> objects are stored within an HDF5 group. This group contains datasets storing the components of the GroupBy.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Group (user provided dataset name. Defaults to ‘groupby’)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 5</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Dataset - Permutation</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - int64 values representing the permutation of the GroupBy.</p></li>
+</ol>
+</li>
+<li><p>Dataset - Segments</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - int64 values representing the start index of GroupBy segments.</p></li>
+</ol>
+</li>
+<li><p>Dataset - unique_key_idx</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - int64 values representing the index of Unique keys in the GroupBy.</p></li>
+</ol>
+</li>
+<li><p>Dataset - KEY_# (multiple keys may be present. They will be numbered accordingly)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1, 2, or 4 (pdarray, Strings, or Categorical)</p></li>
+<li><p>isBool: 0 or 1</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - Key object used to generate the GroupBy. This will be a dataset or group depending on the object type.</p></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</div></blockquote>
+</section>
 </section>
 <section id="supported-write-modes">
 <h2>Supported Write Modes<a class="headerlink" href="#supported-write-modes" title="Permalink to this heading">#</a></h2>
@@ -516,8 +674,8 @@
 <section id="id1">
 <h3>pdarray<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
-<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id551" title="arkouda.pdarray.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.to_hdf()</span></code></a></p></li>
-<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id556" title="arkouda.pdarray.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.save()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id567" title="arkouda.pdarray.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.to_hdf()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id572" title="arkouda.pdarray.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.save()</span></code></a></p></li>
 </ul>
 </section>
 <section id="index">
@@ -538,22 +696,28 @@
 <section id="id2">
 <h3>Strings<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
-<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id676" title="arkouda.Strings.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.to_hdf()</span></code></a></p></li>
-<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id679" title="arkouda.Strings.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.save()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id692" title="arkouda.Strings.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.to_hdf()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id695" title="arkouda.Strings.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.save()</span></code></a></p></li>
 </ul>
 </section>
-<section id="categorical">
-<h3>Categorical<a class="headerlink" href="#categorical" title="Permalink to this heading">#</a></h3>
+<section id="id3">
+<h3>Categorical<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Categorical.to_hdf()</span></code></p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Categorical.save()</span></code></p></li>
 </ul>
 </section>
-<section id="id3">
-<h3>SegArray<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<section id="id4">
+<h3>SegArray<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray.to_hdf" title="arkouda.SegArray.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.SegArray.to_hdf()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray.load" title="arkouda.SegArray.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.SegArray.load()</span></code></a></p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>GroupBy<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/groupby.html#arkouda.GroupBy.to_hdf" title="arkouda.GroupBy.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.GroupBy.to_hdf()</span></code></a></p></li>
 </ul>
 </section>
 </section>
@@ -623,6 +787,8 @@
 <li><a class="reference internal" href="#pdarray">pdarray</a></li>
 <li><a class="reference internal" href="#strings">Strings</a></li>
 <li><a class="reference internal" href="#segarray">SegArray</a></li>
+<li><a class="reference internal" href="#categorical">Categorical</a></li>
+<li><a class="reference internal" href="#groupby">GroupBy</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#supported-write-modes">Supported Write Modes</a></li>
@@ -633,8 +799,9 @@
 <li><a class="reference internal" href="#index">Index</a></li>
 <li><a class="reference internal" href="#dataframe">DataFrame</a></li>
 <li><a class="reference internal" href="#id2">Strings</a></li>
-<li><a class="reference internal" href="#categorical">Categorical</a></li>
-<li><a class="reference internal" href="#id3">SegArray</a></li>
+<li><a class="reference internal" href="#id3">Categorical</a></li>
+<li><a class="reference internal" href="#id4">SegArray</a></li>
+<li><a class="reference internal" href="#id5">GroupBy</a></li>
 </ul>
 </li>
 </ul>

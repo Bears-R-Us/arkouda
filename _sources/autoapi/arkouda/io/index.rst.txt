@@ -801,6 +801,10 @@ Functions
                        Parquet Files only.
    :type read_nested: bool
 
+   .. rubric:: Notes
+
+   Not currently supported for Categorical or GroupBy datasets
+
    .. rubric:: Examples
 
    Read files and return data with tagging corresponding to the Categorical returned

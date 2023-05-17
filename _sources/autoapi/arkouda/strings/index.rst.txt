@@ -78,8 +78,8 @@ Classes
 
       
 
-   .. py:attribute:: objtype
-      :value: 'str'
+   .. py:attribute:: objType
+      :value: 'Strings'
 
       
 

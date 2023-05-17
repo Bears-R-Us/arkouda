@@ -77,9 +77,6 @@ Classes
 
       :type: tuple
 
-   .. py:property:: objtype
-
-
    .. py:attribute:: BinOps
 
       
@@ -97,6 +94,15 @@ Classes
       
 
    .. py:attribute:: segments
+
+      
+
+   .. py:attribute:: objType
+      :value: 'Categorical'
+
+      
+
+   .. py:attribute:: dtype
 
       
 

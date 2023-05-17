@@ -203,6 +203,15 @@
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">_buildReadAllMsgJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rnames:</span> <span class="pre">list(3*(string))</span></em>, <em class="sig-param"><span class="pre">allowErrors:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">fileErrorCount:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">fileErrors:</span> <span class="pre">list(string)</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO._buildReadAllMsgJson" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="GenSymIO.jsonToMap">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">jsonToMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.jsonToMap" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Simple JSON parser to allow creating a map(string, string) for properly formatted JSON string.</p></li>
+<li><p>REQUIRES THAT DATA DOES NOT CONTAIN : or “. This will only work on JSON that is not nested.</p></li>
+</ul>
+</dd></dl>
+
 </div>
 
 

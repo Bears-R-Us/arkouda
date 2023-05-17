@@ -67,6 +67,11 @@ Classes
 
       :type: str {'C'/'row_major' | 'F'/'column_major'}
 
+   .. py:attribute:: objType
+      :value: 'ArrayView'
+
+      
+
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the ArrayView to a np.ndarray, transferring array data from the

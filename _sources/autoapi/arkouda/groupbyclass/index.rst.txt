@@ -73,7 +73,7 @@ Attributes
 
    
 
-.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
 
    Group an array or list of arrays by value, usually in preparation
    for aggregating the within-group values of another array.
@@ -144,6 +144,40 @@ Attributes
    .. py:attribute:: Reductions
 
       
+
+   .. py:attribute:: objType
+      :value: 'GroupBy'
+
+      
+
+   .. py:method:: from_return_msg(rep_msg)
+      :staticmethod:
+
+
+   .. py:method:: to_hdf(prefix_path, dataset='groupby', mode='truncate', file_type='distribute')
+
+      Save the GroupBy to HDF5. The result is a collection of HDF5 files, one file
+      per locale of the arkouda server, where each filename starts with prefix_path.
+
+      :param prefix_path: Directory and filename prefix that all output files will share
+      :type prefix_path: str
+      :param dataset: Name prefix for saved data within the HDF5 file
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', add data as a new column to existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :returns: * *None*
+                * *GroupBy is not currently supported by Parquet*
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'groupby', repack: bool = True)
+
 
    .. py:method:: size() -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 

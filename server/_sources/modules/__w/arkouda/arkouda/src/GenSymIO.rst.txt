@@ -58,3 +58,10 @@ or
 
 .. function:: proc _buildReadAllMsgJson(rnames: list(3*(string)), allowErrors: bool, fileErrorCount: int, fileErrors: list(string), st: borrowed SymTab): string throws
 
+.. function:: proc jsonToMap(json: string): map(string, string) throws
+
+   
+   * Simple JSON parser to allow creating a map(string, string) for properly formatted JSON string.
+   * REQUIRES THAT DATA DOES NOT CONTAIN : or ". This will only work on JSON that is not nested.
+   
+

@@ -378,11 +378,6 @@ start- and end-points.</p>
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.segarray.</span></span><span class="sig-name descname"><span class="pre">SegArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray" title="Permalink to this definition">#</a></dt>
 <dd><dl class="py property">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray.objtype">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objtype</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.objtype" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.lengths">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lengths</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.lengths" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the pdarray containing the lengths of the segments.
@@ -414,6 +409,11 @@ This is configured to prevent the need to move all functionality to server at on
 <li><p>Caches return value to prevent the need to recompute.</p></li>
 </ul>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.objType">
+<span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SegArray'</span></em><a class="headerlink" href="#arkouda.segarray.SegArray.objType" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.valsize">
@@ -878,10 +878,6 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Unlike for ak.Strings, SegArray is saved as two datasets in the top level of
-the HDF5 file, not nested under a group.</p>
-<p>SegArray is not currently supported by Parquet</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.segarray.SegArray.load" title="arkouda.segarray.SegArray.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a></p>
@@ -1215,7 +1211,7 @@ the return SegArray</p></li>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id274" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id282" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1378,10 +1374,10 @@ the return SegArray</p></li>
 <li><a class="reference internal" href="#arkouda.segarray.gen_ranges"><code class="docutils literal notranslate"><span class="pre">gen_ranges()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.segarray"><code class="docutils literal notranslate"><span class="pre">segarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray"><code class="docutils literal notranslate"><span class="pre">SegArray</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.objtype"><code class="docutils literal notranslate"><span class="pre">SegArray.objtype</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.lengths"><code class="docutils literal notranslate"><span class="pre">SegArray.lengths</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.non_empty"><code class="docutils literal notranslate"><span class="pre">SegArray.non_empty</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.non_empty_count"><code class="docutils literal notranslate"><span class="pre">SegArray.non_empty_count</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.objType"><code class="docutils literal notranslate"><span class="pre">SegArray.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.valsize"><code class="docutils literal notranslate"><span class="pre">SegArray.valsize</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_return_msg"><code class="docutils literal notranslate"><span class="pre">SegArray.from_return_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_parts"><code class="docutils literal notranslate"><span class="pre">SegArray.from_parts()</span></code></a></li>

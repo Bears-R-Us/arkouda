@@ -326,7 +326,7 @@ of times each unique value comes up in the input array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id628" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Input array.</p></li>
+<li><p><strong>pda</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id644" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Input array.</p></li>
 <li><p><strong>return_groups</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, also return grouping information for the array.</p></li>
 <li><p><strong>assume_sorted</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, assume pda is sorted and skip sorting step</p></li>
 </ul>
@@ -365,13 +365,13 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.groupbyclass.GroupBy">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.groupbyclass.</span></span><span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.groupbyclass.GroupBy" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.groupbyclass.</span></span><span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.groupbyclass.GroupBy" title="Permalink to this definition">#</a></dt>
 <dd><p>Group an array or list of arrays by value, usually in preparation
 for aggregating the within-group values of another array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id628" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The array to group by value, or if list, the column arrays to group by row</p></li>
+<li><p><strong>keys</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id644" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The array to group by value, or if list, the column arrays to group by row</p></li>
 <li><p><strong>assume_sorted</strong> (<em>bool</em>) – If True, assume keys is already sorted (Default: False)</p></li>
 </ul>
 </dd>
@@ -415,7 +415,7 @@ for aggregating the within-group values of another array.</p>
 <dd><p>The unique values of the keys array(s), in grouped order</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(list of) <a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id628" title="arkouda.Strings">Strings</a>, or <a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a></p>
+<dd class="field-odd"><p>(list of) <a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id644" title="arkouda.Strings">Strings</a>, or <a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -476,6 +476,49 @@ will be used; otherwise, method 1 will be used.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.groupbyclass.GroupBy.Reductions">
 <span class="sig-name descname"><span class="pre">Reductions</span></span><a class="headerlink" href="#arkouda.groupbyclass.GroupBy.Reductions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.groupbyclass.GroupBy.objType">
+<span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GroupBy'</span></em><a class="headerlink" href="#arkouda.groupbyclass.GroupBy.objType" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.groupbyclass.GroupBy.from_return_msg">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.groupbyclass.GroupBy.from_return_msg" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.groupbyclass.GroupBy.to_hdf">
+<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groupby'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.groupbyclass.GroupBy.to_hdf" title="Permalink to this definition">#</a></dt>
+<dd><p>Save the GroupBy to HDF5. The result is a collection of HDF5 files, one file
+per locale of the arkouda server, where each filename starts with prefix_path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files will share</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – Name prefix for saved data within the HDF5 file</p></li>
+<li><p><strong>mode</strong> (<em>str {'truncate'</em><em> | </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
+If ‘append’, add data as a new column to existing files.</p></li>
+<li><p><strong>file_type</strong> (<em>str</em><em> (</em><em>&quot;single&quot;</em><em> | </em><em>&quot;distribute&quot;</em><em>)</em>) – Default: “distribute”
+When set to single, dataset is written to a single file.
+When distribute, dataset is written on a file per locale.
+This is only supported by HDF5 files and will have no impact of Parquet Files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>None</em></p></li>
+<li><p><em>GroupBy is not currently supported by Parquet</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.groupbyclass.GroupBy.update_hdf">
+<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'groupby'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.groupbyclass.GroupBy.update_hdf" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1420,7 +1463,7 @@ Please note you cannot register two different GroupBys with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id274" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the GroupBy with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#id282" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the GroupBy with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -1440,7 +1483,7 @@ they are unregistered.</p>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id274" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id282" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -1467,7 +1510,7 @@ they are unregistered.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id274" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id282" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1495,7 +1538,7 @@ arkouda server which was registered using register()</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.groupbyclass.GroupBy" title="arkouda.groupbyclass.GroupBy">GroupBy</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id274" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id282" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1516,7 +1559,7 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../index.html#id274" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../index.html#id282" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 </dl>
@@ -1661,6 +1704,10 @@ is less than one</p></li>
 <li><a class="reference internal" href="#arkouda.groupbyclass.GroupBy.segments"><code class="docutils literal notranslate"><span class="pre">GroupBy.segments</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.groupbyclass.GroupBy.logger"><code class="docutils literal notranslate"><span class="pre">GroupBy.logger</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.groupbyclass.GroupBy.Reductions"><code class="docutils literal notranslate"><span class="pre">GroupBy.Reductions</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.groupbyclass.GroupBy.objType"><code class="docutils literal notranslate"><span class="pre">GroupBy.objType</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.groupbyclass.GroupBy.from_return_msg"><code class="docutils literal notranslate"><span class="pre">GroupBy.from_return_msg()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.groupbyclass.GroupBy.to_hdf"><code class="docutils literal notranslate"><span class="pre">GroupBy.to_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.groupbyclass.GroupBy.update_hdf"><code class="docutils literal notranslate"><span class="pre">GroupBy.update_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">GroupBy.size()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.groupbyclass.GroupBy.count"><code class="docutils literal notranslate"><span class="pre">GroupBy.count()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.groupbyclass.GroupBy.aggregate"><code class="docutils literal notranslate"><span class="pre">GroupBy.aggregate()</span></code></a></li>

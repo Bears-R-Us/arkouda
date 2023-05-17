@@ -80,9 +80,6 @@ Attributes
 
 .. py:class:: SegArray(name, dtype, size, ndim, shape, itemsize, segments, values, lengths=None, grouping=None)
 
-   .. py:property:: objtype
-
-
    .. py:property:: lengths
 
       Return the pdarray containing the lengths of the segments.
@@ -109,6 +106,11 @@ Attributes
       .. rubric:: Notes
 
       - Caches return value to prevent the need to recompute.
+
+   .. py:attribute:: objType
+      :value: 'SegArray'
+
+      
 
    .. py:attribute:: valsize
 
@@ -442,13 +444,6 @@ Attributes
       :type file_type: str ("single" | "distribute")
 
       :rtype: None
-
-      .. rubric:: Notes
-
-      Unlike for ak.Strings, SegArray is saved as two datasets in the top level of
-      the HDF5 file, not nested under a group.
-
-      SegArray is not currently supported by Parquet
 
       .. seealso:: :obj:`load`
 
