@@ -694,7 +694,7 @@ def read_parquet(
     pdarray,
     Strings,
     SegArray,
-   ArrayView,
+    ArrayView,
     Categorical,
     Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
 ]:
