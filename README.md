@@ -105,6 +105,7 @@ This yielded a >20TB dataframe in Arkouda.
    - [Running the arkouda_server From a Script](#run-server-script)
    - [Sanity check](#run-ak-sanity)
    - [Token-Based Authentication](#run-ak-token-auth)
+   - [Setting Per-Locale Memory and CPU Core Limits](#set-locale-memory-cpu-core-limits)
    - [Connecting to Arkouda](#run-ak-connect)
 5. [Logging](#log-ak)
 6. [Type Checking in Arkouda](#typecheck-ak)
@@ -185,8 +186,6 @@ Memory tracking is turned on by default now, you can run server with memory trac
 ./arkouda_server --memTrack=false
 ```
 
-For situations where it is desirable to limit the amount of memory allocated to each locale, the `--memMax=$MEM_MAX_IN_BYTES` flag sets the max per-locale memory in bytes. 
-
 By default, the server listens on port `5555`. This value can be overridden with the command-line flag 
 `--ServerPort=1234`
 
@@ -251,7 +250,30 @@ tokens.txt file.
 In situations where a user-specified token string is preferred, this can be specified in the ARKOUDA_SERVER_TOKEN environment variable. As is the case with an Arkouda-generated token, the user-supplied token
 is saved to the .arkouda/tokens.txt file for re-use.
 
-<a id="run-ak-connect"></a>
+<a id="set-locale-memory-cpu-core-limits"></a>
+### Setting Per-Locale Memory and CPU Core Limits <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+By default, each Arkouda locale utilizes all available memory and CPU cores on the host machine. However, it is possible to set per-locale limits for both memory as well as CPU cores. 
+
+The max number of CPU cores utilized by each locale is set via the CHPL_RT_NUM_THREADS_PER_LOCALE environment variable. An example below sets the maximum number of cores for each locale to 16:
+
+```
+export CHPL_RT_NUM_THREADS_PER_LOCALE=16
+```
+
+The max memory utilized by each locale can be set in one of two ways: percentage of physical memory or a limit set in bytes. By default, the max per-locale memory is set to ninety (90) percent of the physical memory on each Arkouda locale host. If another percentage is desired, this is set via the --perLocaleMemLimit startup parameter. For example, to set max memory utilized by each locale to seventy (70) percent of physical memory, the Arkouda startup command would be as follows:
+
+```
+./arkouda_server --perLocaleMemLimit=70
+```
+
+In addition, the max per-locale memory can instead be set to an explicit number of bytes via the --memMax startup parameter. For example, to set the max memory utilized by each locale to 100 GB, the Arkouda startup command would be as follows:
+
+```
+./arkouda_server --memMax=100000000000
+```
+
+<<a id="run-ak-connect"></a>
 ### Connecting to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 The client connects to the arkouda\_server either by supplying a host and port or by providing a connect\_url connect string:
