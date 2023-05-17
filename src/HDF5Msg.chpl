@@ -2395,7 +2395,7 @@ module HDF5Msg {
 
         for k in 0..#numkeys {
             //need to determine object type of the key to determine how to read it
-            var keyObjType: ObjType; //= getObjType(file_id, "%s/KEY_%i".format(dset, i));
+            var keyObjType: ObjType;
             var dataclass: C_HDF5.hid_t;
             var bytesize: int;
             var isSigned: bool;
@@ -2408,7 +2408,6 @@ module HDF5Msg {
                     var pda_name = readPdarrayFromFile(filenames, "%s/KEY_%i".format(dset, k), dataclass, bytesize, isSigned, validFiles, st);
                     readObjType = "pdarray";
                     readCreate = "created %s".format(st.attrib(pda_name));
-                    // (readDset, readObjType, readCreate) = pdarray_readhdfMsg(filenames, "%s/KEY_%i".format(dset, k), dataclass, bytesize, isSigned, validFiles, st);
                 }
                 when ObjType.STRINGS {
                     var segString = readStringsFromFile(filenames, "%s/KEY_%i".format(dset, k), dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);

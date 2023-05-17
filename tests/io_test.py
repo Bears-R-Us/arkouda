@@ -899,12 +899,11 @@ class IOTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             str_grouping.to_hdf(f"{tmp_dirname}/str_test")
             str_load = ak.read(f"{tmp_dirname}/str_test*")
-            self.assertEqual(len(cg_load.keys), len(cat_grouping.keys))
-            self.assertListEqual(cg_load.permutation.to_list(), cat_grouping.permutation.to_list())
-            self.assertListEqual(cg_load.segments.to_list(), cat_grouping.segments.to_list())
-            self.assertListEqual(cg_load._uki.to_list(), cat_grouping._uki.to_list())
-            for k, kload in zip(cat_grouping.keys, cg_load.keys):
-                self.assertListEqual(k.to_list(), kload.to_list())
+            self.assertEqual(len(str_load.keys), len(str_grouping.keys))
+            self.assertListEqual(str_load.permutation.to_list(), str_grouping.permutation.to_list())
+            self.assertListEqual(str_load.segments.to_list(), str_grouping.segments.to_list())
+            self.assertListEqual(str_load._uki.to_list(), str_grouping._uki.to_list())
+            self.assertListEqual(str_grouping.keys.to_list(), str_load.keys.to_list())
 
         # test pdarray GroupBy
         pda = ak.array([0, 1, 2, 0, 2])

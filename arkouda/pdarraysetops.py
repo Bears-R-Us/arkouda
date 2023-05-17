@@ -324,13 +324,13 @@ def concatenate(
             raise TypeError("arrays must be an iterable of pdarrays or Strings")
         if objtype is None:
             objtype = a.objType
-        if objtype == "pdarray":
+        if objtype == pdarray.objType:
             if dtype is None:
                 dtype = a.dtype
             elif dtype != a.dtype:
                 raise ValueError("All pdarrays must have same dtype")
             names.append(cast(pdarray, a).name)
-        elif objtype == "Strings":
+        elif objtype == Strings.objType:
             names.append(cast(Strings, a).entry.name)
         else:
             raise NotImplementedError(f"concatenate not implemented for object type {objtype}")
@@ -349,9 +349,9 @@ def concatenate(
             "mode": mode,
             "names": names,
         })
-    if objtype == "pdarray":
+    if objtype == pdarray.objType:
         return callback(create_pdarray(cast(str, repMsg)))
-    elif objtype == "Strings":
+    elif objtype == Strings.objType:
         # ConcatenateMsg returns created attrib(name)+created nbytes=123
         return Strings.from_return_msg(cast(str, repMsg))
     else:

@@ -2290,7 +2290,6 @@ class DataFrame(UserDict):
         index_resp = cast(
             str, generic_msg(cmd="attach", args={"name": f"df_index_{user_defined_name}_key"})
         )
-        print(index_resp)
         dtype = index_resp.split()[2]
         if dtype == "str":  # TODO - this should be updated in the future to Strings
             ind = Strings.from_return_msg(index_resp)

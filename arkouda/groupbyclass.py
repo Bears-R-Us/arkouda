@@ -236,6 +236,8 @@ class GroupBy:
 
     Reductions = GROUPBY_REDUCTION_TYPES
 
+    objType = "GroupBy"
+
     def __init__(
         self,
         keys: Optional[groupable] = None,
@@ -334,7 +336,7 @@ class GroupBy:
             comps = create_data.split("+|+")
             if comps[0] == "pdarray":
                 keys.append(create_pdarray(comps[1]))
-            elif comps[0] == "seg_string":
+            elif comps[0] == "seg_string":  # TODO - update to use Strings.objType
                 keys.append(Strings.from_return_msg(comps[1]))
             elif comps[0] == "categorical":
                 keys.append(Categorical_.from_return_msg(comps[1]))
@@ -350,7 +352,7 @@ class GroupBy:
         file_type="distribute",
     ):
         """
-        Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
+        Save the GroupBy to HDF5. The result is a collection of HDF5 files, one file
         per locale of the arkouda server, where each filename starts with prefix_path.
 
         Parameters
@@ -372,19 +374,12 @@ class GroupBy:
         -------
         None
 
-        Notes
-        -----
-        Unlike for ak.Strings, SegArray is saved as two datasets in the top level of
-        the HDF5 file, not nested under a group.
-
         GroupBy is not currently supported by Parquet
         """
         from arkouda.categorical import Categorical as Categorical_
         from arkouda.io import _file_type_to_int, _mode_str_to_int
 
-        keys = self.keys
-        if not isinstance(self.keys, Sequence):
-            keys = [self.keys]
+        keys = self.keys if isinstance(self.keys, Sequence) else [self.keys]
 
         objTypes = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
         dtypes = [k.categories.dtype if isinstance(k, Categorical_) else k.dtype for k in keys]
@@ -417,7 +412,7 @@ class GroupBy:
                 "dset": dataset,
                 "write_mode": _mode_str_to_int(mode),
                 "filename": prefix_path,
-                "objType": "groupby",
+                "objType": self.objType,
                 "file_format": _file_type_to_int(file_type),
             },
         )
@@ -476,7 +471,7 @@ class GroupBy:
                 "dset": dataset,
                 "write_mode": _mode_str_to_int("truncate"),
                 "filename": prefix_path,
-                "objType": "groupby",
+                "objType": self.objType,
                 "file_format": _file_type_to_int(file_type),
                 "overwrite": True,
             },
@@ -1912,7 +1907,7 @@ class GroupBy:
                     else:  # pdarray
                         unique_keys.append(create_pdarray(keys_resp))
                 else:
-                    if dtype == "str":
+                    if dtype == "str":  # TODO - update to use Strings.objType when #2435 is complete
                         keys.append(Strings.from_return_msg(keys_resp))
                     else:  # pdarray
                         keys.append(create_pdarray(keys_resp))

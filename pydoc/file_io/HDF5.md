@@ -175,7 +175,7 @@ Providing these attributes allows for the ArrayView object to be reconstructed f
 >               3. file_version: 2.0 (Optional)
 >               4. arkouda_version: 'current_arkouda_version' (Optional)
 >           2. Data - int64 values representing the index in of categories with NA value.
->       5. Dataset - Permutaion (Optional. Only include if Categorical object has permutation property)
+>       5. Dataset - Permutation (Optional. Only include if Categorical object has permutation property)
 >           1. Attributes
 >               1. ObjType: 1
 >               2. isBool: 0
@@ -199,7 +199,7 @@ Providing these attributes allows for the ArrayView object to be reconstructed f
 >           1. ObjType: 5
 >           2. file_version: 2.0 (Optional)
 >           3. arkouda_version: 'current_arkouda_version' (Optional)
->       2. Dataset - Permutaion
+>       2. Dataset - Permutation
 >           1. Attributes
 >               1. ObjType: 1
 >               2. isBool: 0
@@ -296,5 +296,5 @@ Older version of Arkouda used different schemas for `pdarray` and `Strings` obje
 ### GroupBy
 
 ```{eval-rst}  
-- :py:meth:`arkouda.Categorical.to_hdf`
+- :py:meth:`arkouda.GroupBy.to_hdf`
 ```

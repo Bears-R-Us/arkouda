@@ -248,16 +248,7 @@ module GenSymIO {
         for kv in key_value  {
             // split to 2 components key: value
             var x = kv.split(": ");
-            var key: string;
-            var val: string;
-            for (i, y) in zip(0..#x.size, x){
-                if i == 0 {
-                    key = y; // first component is key
-                } else {
-                    val = y; // 2nd component is value
-                    m.addOrSet(key, val); // add to map
-                }
-            }
+            m.addOrSet(x[0], x[1]);
         }
         return m;
     }
