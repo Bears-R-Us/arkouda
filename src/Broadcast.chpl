@@ -1,6 +1,7 @@
 module Broadcast {
   use SymArrayDmap;
   use CommAggregation;
+  use BigInteger;
 
   /* 
    * Broadcast a value per segment of a segmented array to the
@@ -29,7 +30,10 @@ module Broadcast {
       agg.copy(expandedVals[s], d);
     }
     // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-    overMemLimit(numBytes(t) * expandedVals.size);
+    // TODO figure out a way to do memory checking for bigint
+    if t != bigint {
+      overMemLimit(numBytes(t) * expandedVals.size);
+    }
     // Integrate to recover full values
     expandedVals = (+ scan expandedVals);
     // Permute to the original array order
@@ -104,7 +108,10 @@ module Broadcast {
       agg.copy(expandedVals[s], d);
     }
     // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-    overMemLimit(numBytes(t) * expandedVals.size);
+    // TODO figure out a way to do memory checking for bigint
+    if t != bigint {
+      overMemLimit(numBytes(t) * expandedVals.size);
+    }
     // Integrate to recover full values
     expandedVals = (+ scan expandedVals);
     return expandedVals;

@@ -7,6 +7,7 @@ module BroadcastMsg {
   use ServerConfig;
   use Logging;
   use Message;
+  use BigInteger;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -71,6 +72,12 @@ module BroadcastMsg {
           var res = st.addEntry(rname, size, real);
           res.a = broadcast(perm.a, segs.a, vals.a);
         }
+        when DType.BigInt {
+          const vals = toSymEntry(gv, bigint);
+          var res = st.addEntry(rname, size, bigint);
+          res.a = broadcast(perm.a, segs.a, vals.a);
+          res.max_bits = vals.max_bits;
+        }
         when DType.Bool {
           const vals = toSymEntry(gv, bool);
           var res = st.addEntry(rname, size, bool);
@@ -101,6 +108,12 @@ module BroadcastMsg {
           const vals = toSymEntry(gv, real);
           var res = st.addEntry(rname, size, real);
           res.a = broadcast(segs.a, vals.a, size);
+        }
+        when DType.BigInt {
+          const vals = toSymEntry(gv, bigint);
+          var res = st.addEntry(rname, size, bigint);
+          res.a = broadcast(segs.a, vals.a, size);
+          res.max_bits = vals.max_bits;
         }
         when DType.Bool {
           const vals = toSymEntry(gv, bool);
