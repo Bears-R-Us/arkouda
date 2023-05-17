@@ -270,7 +270,7 @@ The max memory utilized by each locale can be set in one of two ways: percentage
 In addition, the max per-locale memory can instead be set to an explicit number of bytes via the --memMax startup parameter. For example, to set the max memory utilized by each locale to 100 GB, the Arkouda startup command would be as follows:
 
 ```
-./akouda_server --memMax=100000000000
+./arkouda_server --memMax=100000000000
 ```
 
 <<a id="run-ak-connect"></a>
