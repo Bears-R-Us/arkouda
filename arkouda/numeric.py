@@ -43,6 +43,8 @@ __all__ = [
     "ErrorMode",
 ]
 
+hashable = Union[pdarray, Categorical, SegArray, Strings]  # type: ignore
+
 
 class ErrorMode(Enum):
     strict = "strict"
@@ -425,8 +427,8 @@ def cos(pda: pdarray) -> pdarray:
 
 @typechecked
 def hash(
-    pda: Union[pdarray, Categorical, SegArray, Strings,
-               List[Union[pdarray, Categorical, SegArray, Strings]]], full: bool = True
+    pda: Union[hashable, List[hashable]],
+        full: bool = True
 ) -> Union[Tuple[pdarray, pdarray], pdarray]:
     """
     Return an element-wise hash of the array.
@@ -476,13 +478,13 @@ def hash(
     cancel each other out, hence we do a rotation by the ordinal of
     the array.
     """
-    from arkouda import Categorical
-    from arkouda import SegArray
+    from arkouda import Categorical as _Categorical
+    from arkouda import SegArray as _SegArray
 
-    if isinstance(pda, pdarray) or isinstance(pda, Categorical) or isinstance(pda, SegArray):
-        if isinstance(pda, Categorical):
+    if isinstance(pda, pdarray) or isinstance(pda, _Categorical) or isinstance(pda, _SegArray):
+        if isinstance(pda, _Categorical):
             a = pda.codes
-        elif isinstance(pda, SegArray):
+        elif isinstance(pda, _SegArray):
             a = pda.values
         else:
             a = pda
@@ -495,12 +497,13 @@ def hash(
         typesList = []
         for n in pda:
             objType = n.objType
-            if objType in [Strings.objType, pdarray.objType]:
+            if isinstance(n, Strings) or isinstance(n, pdarray):
                 namesList.append(n.name)
-            elif objType == Categorical.objType:
+                objType = n.objType
+            elif isinstance(n, _Categorical):
                 namesList.append(n.codes.name)
                 objType = n.codes.objType
-            elif objType == SegArray.objType:
+            elif isinstance(n, _SegArray):
                 namesList.append(n.values.name)
                 objType = n.values.objType
 
@@ -514,13 +517,13 @@ def hash(
                     "nameslist": namesList,
                     "typeslist": typesList,
                     "length": len(pda),
-                    "size": len(pda[0].values) if isinstance(pda[0], SegArray) else len(pda[0]),
+                    "size": len(pda[0].values) if isinstance(pda[0], _SegArray) else len(pda[0]),
                 },
             ),
         )
     else:
-        raise TypeError(f"Unsupported type {type(pda)}. Supported types are pdarray, Categorical, SegArray,"
-                        f" Strings, and Lists of these types.")
+        raise TypeError(f"Unsupported type {type(pda)}. Supported types are pdarray,"
+                        f" Categorical, SegArray, Strings, and Lists of these types.")
 
     a, b = repMsg.split("+")
     return create_pdarray(a), create_pdarray(b)
