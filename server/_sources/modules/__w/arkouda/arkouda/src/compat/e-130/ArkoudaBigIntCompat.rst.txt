@@ -27,3 +27,11 @@ or
 
 .. function:: proc powMod(ref result: bigint, const ref base: bigint, exp: uint, const ref mod: bigint)
 
+.. function:: proc rightShift(const ref a: bigint, b: int): bigint
+
+.. function:: proc rightShift(const ref a: bigint, b: uint): bigint
+
+.. function:: proc rightShiftEq(ref a: bigint, b: int)
+
+.. function:: proc rightShiftEq(ref a: bigint, b: uint)
+
