@@ -159,9 +159,6 @@ class SegArray:
         # parse the create for the values pdarray
         values = create_pdarray(eles["values"])
         segments = create_pdarray(eles["segments"])
-        print(eles)
-        print(values)
-        print(segments)
         return cls(segments, values)
 
     @classmethod
@@ -281,10 +278,6 @@ class SegArray:
             return SegArray(newsegs, self.values[inds])
         else:
             raise TypeError(f"Invalid index type: {type(i)}")
-
-    @property
-    def objtype(self):
-        return self.objtype
 
     @classmethod
     def concat(cls, x, axis=0, ordered=True):

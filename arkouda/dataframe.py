@@ -2446,11 +2446,9 @@ class DataFrame(UserDict):
                 colName = DataFrame._parse_col_name(info["segments"], dfName)[0]
                 cols[colName] = SegArray.from_return_msg(parts[i + 1])
                 i += 1
-            print(colName)
 
             i += 1
 
-        print(cols)
         df = DataFrame(cols, idx)
         df.name = dfName
         return df

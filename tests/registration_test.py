@@ -683,10 +683,7 @@ class RegistrationTest(ArkoudaTest):
         ak.clear()
         segarr_2 = ak.SegArray.attach("segarrtest")
 
-        # TODO - talk to pierce about if we should register lengths and grouping... These are regenerated on init.
-
         self.assertEqual(segarr.size, segarr_2.size)
-        # self.assertListEqual(segarr.lengths.to_list(), segarr_2.lengths.to_list())
         self.assertListEqual(segarr.segments.to_list(), segarr_2.segments.to_list())
         self.assertListEqual(segarr.values.to_list(), segarr_2.values.to_list())
 

@@ -1495,7 +1495,7 @@ module ParquetMsg {
               errorClass='WriteModeError'
         );
       }
-      writeln("\n\nFilename: %s\nCol Names: %jt\nOffsetTracking: %jt\nInt Vals: %jt\nReal Vals: %jt\nBool Vals: %jt\n\n".format(fname, my_column_names, offset_tracking, int_vals, real_vals, bool_vals));
+      
       var result: int = c_writeMultiColToParquet(fname.localize().c_str(), c_ptrTo(c_names), c_ptrTo(ptrList), c_ptrTo(offsetPtr), c_ptrTo(objTypes), c_ptrTo(datatypes), c_ptrTo(segarray_sizes), ncols, numelems, ROWGROUPS, compression, c_ptrTo(pqErr.errMsg));
       if result == ARROWERROR {
         pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());

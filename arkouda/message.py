@@ -176,7 +176,6 @@ class ParameterObject:
                         f"does not meet that criteria."
                     )
             t = "mixed"
-        # TODO - update to handle SegArray
         data = [
             str(p) if ParameterObject._is_supported_value(p) else ParameterObject._format_param(p)
             for p in val
