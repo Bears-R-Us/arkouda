@@ -1612,13 +1612,13 @@ class GroupBy:
                     "permName": self.permutation.name,
                     "segName": self.segments.name,
                     "valName": values.name,
-                    "objType": values.objtype,
+                    "objType": values.objType,
                     "permute": permute,
                     "size": self.length,
                 },
             ),
         )
-        if values.objtype == Strings.objtype:
+        if values.objType == Strings.objType:
             return Strings.from_return_msg(repMsg)
         else:
             return create_pdarray(repMsg)
@@ -2109,13 +2109,13 @@ def broadcast(
                 "permName": pname,
                 "segName": segments.name,
                 "valName": values.name,
-                "objType": values.objtype,
+                "objType": values.objType,
                 "permute": permute,
                 "size": size,
             },
         ),
     )
-    if values.objtype == Strings.objtype:
+    if values.objType == Strings.objType:
         return Strings.from_return_msg(repMsg)
     else:
         return create_pdarray(repMsg)
