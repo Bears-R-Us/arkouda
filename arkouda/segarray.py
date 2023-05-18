@@ -11,12 +11,11 @@ import numpy as np  # type: ignore
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import isSupportedInt, str_, translate_np_dtype
+from arkouda.dtypes import isSupportedInt, str_
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import (
-    RegistrationError,
     create_pdarray,
     is_sorted,
     pdarray,
@@ -104,9 +103,7 @@ def segarray(segments: pdarray, values: pdarray, lengths=None, grouping=None):
 class SegArray:
     objType = "SegArray"
 
-    def __init__(
-        self, segments, values, lengths=None, grouping=None
-    ):
+    def __init__(self, segments, values, lengths=None, grouping=None):
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
         self.name = ""
 
@@ -146,7 +143,9 @@ class SegArray:
             else:
                 # Treat each sub-array as a group, for grouped aggregations
                 self.grouping = GroupBy(
-                    broadcast(self.segments[self._non_empty], arange(self._non_empty_count), self.valsize)
+                    broadcast(
+                        self.segments[self._non_empty], arange(self._non_empty_count), self.valsize
+                    )
                 )
         else:
             self.grouping = grouping
@@ -253,7 +252,7 @@ class SegArray:
             offsets = np.cumsum(sizes) - sizes
             newvals = zeros(sum(sizes), dtype=dtypes.pop())
             for j in range(n):
-                newvals[offsets[j]: (offsets[j] + sizes[j])] = m[j]
+                newvals[offsets[j] : (offsets[j] + sizes[j])] = m[j]
             return cls(array(offsets), newvals)
 
     def _get_lengths(self):
@@ -270,7 +269,7 @@ class SegArray:
             end = self.segments[i] + self.lengths[i]
             return self.values[start:end].to_ndarray()
         elif (isinstance(i, pdarray) and (i.dtype == akint64 or i.dtype == akbool)) or isinstance(
-                i, slice
+            i, slice
         ):
             starts = self.segments[i]
             ends = starts + self.lengths[i]
@@ -1498,8 +1497,9 @@ class SegArray:
         register, unregister, is_registered
         """
         from arkouda.pdarrayclass import attach_pdarray
-        segs = attach_pdarray(user_defined_name+SEG_SUFFIX)
-        vals = attach_pdarray(user_defined_name+VAL_SUFFIX)
+
+        segs = attach_pdarray(user_defined_name + SEG_SUFFIX)
+        vals = attach_pdarray(user_defined_name + VAL_SUFFIX)
         return cls(segs, vals)
 
     def is_registered(self) -> bool:
