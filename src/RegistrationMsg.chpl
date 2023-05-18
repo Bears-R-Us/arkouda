@@ -16,7 +16,6 @@ module RegistrationMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use SegmentedString;
-    use SegmentedArray;
     use SegmentedMsg;
 
     use ArkoudaMapCompat;

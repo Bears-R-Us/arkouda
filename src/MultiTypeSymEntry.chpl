@@ -30,7 +30,6 @@ module MultiTypeSymEntry
             GenSymEntry,
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
                 CategoricalSymEntry,  // Categorical
-                SegArraySymEntry,     // Segmented Array
 
             CompositeSymEntry,        // Entries that consist of multiple SymEntries of varying type
                 GroupBySymEntry,      // GroupBy
@@ -411,39 +410,6 @@ module MultiTypeSymEntry
         }
     }
 
-    class SegArraySymEntry:GenSymEntry {
-        type etype;
-
-        var segmentsEntry: shared SymEntry(int);
-        var valuesEntry: shared SymEntry(etype);
-        var lengthsEntry: shared SymEntry(int);
-
-        proc init(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, type etype) {
-            super.init(etype, valuesSymEntry.size);
-            this.entryType = SymbolEntryType.SegArraySymEntry;
-            assignableTypes.add(this.entryType);
-            this.etype = etype;
-            this.segmentsEntry = segmentsSymEntry;
-            this.valuesEntry = valuesSymEntry;
-
-            ref sa = segmentsSymEntry.a;
-            const high = segmentsSymEntry.a.domain.high;
-            var lengths = [(i, s) in zip (segmentsSymEntry.a.domain, sa)] if i == high then valuesSymEntry.size - s else sa[i+1] - s;
-            
-            lengthsEntry = new shared SymEntry(lengths);
-
-            this.dtype = whichDtype(etype);
-            this.itemsize = this.valuesEntry.itemsize;
-            this.size = this.segmentsEntry.size;
-            this.ndim = this.segmentsEntry.ndim;
-            this.shape = this.segmentsEntry.shape;
-        }
-
-        override proc getSizeEstimate(): int {
-            return this.segmentsEntry.getSizeEstimate() + this.valuesEntry.getSizeEstimate();
-        }
-    }
-
     /*
         Symbol Table entry representing a GroupBy object.
     */
@@ -494,10 +460,6 @@ module MultiTypeSymEntry
      */
     proc toSegStringSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed SegStringSymEntry);
-    }
-
-    proc toSegArraySymEntry(entry: borrowed AbstractSymEntry, type t) throws {
-        return (entry: borrowed SegArraySymEntry(t));
     }
 
     /**
