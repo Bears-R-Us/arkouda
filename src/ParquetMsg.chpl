@@ -1239,60 +1239,40 @@ module ParquetMsg {
           sections_sizes_str[i] = x;
         }
         else if objType == ObjType.SEGARRAY {
-          // TODO - parse the json in column to get the component pdarrays
-          var components: map(string, string);
-        }
-        // need to calculate the total size of Strings on this local
-        if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
-          var e: SegStringSymEntry = toSegStringSymEntry(entry);
-          var segStr = new SegString("", e);
-          ref ss = segStr;
-          var lens = ss.getLengths();
-          const locDom = ss.offsets.a.localSubdomain();
+          // parse the json in column to get the component pdarrays
+          var components: map(string, string) = jsonToMap(column);
+          var seg_entry = getGenericTypedArrayEntry(components["segments"], st);
+          var segments = toSymEntry(seg_entry, int);
+          var lens: [0..#segments.size] int;
+          const high = segments.a.domain.high;
+          const locDom = segments.a.localSubdomain();
+          var values = getGenericTypedArrayEntry(components["values"], st);
+          ref sa = segments.a;
+          lens = [(i, s) in zip (segments.a.domain, sa)] if i == high then values.size - s else sa[i+1] - s;
+          offset_ct[i] += locDom.size;
           for i in locDom do x += lens[i];
-          sections_sizes_str[i] = x;
-        }
-        else if (entry.isAssignableTo(SymbolEntryType.SegArraySymEntry)) {
-          var dtype = _identifyDtype(entry, ObjType.SEGARRAY);
-          if dtype == DType.Int64 {
-            var e: SegArraySymEntry = toSegArraySymEntry(entry, int);
-            var segArr = new SegArray("", e, int);
-            ref sa = segArr;
-            var lens = sa.lengths.a;
-            const locDom = sa.segments.a.localSubdomain();
-            for i in locDom do x += lens[i];
-            sections_sizes_int[i] = x;
-            offset_ct[i] += locDom.size;
-          }
-          else if dtype == DType.UInt64 {
-            var e: SegArraySymEntry = toSegArraySymEntry(entry, uint);
-            var segArr = new SegArray("", e, uint);
-            ref sa = segArr;
-            var lens = sa.lengths.a;
-            const locDom = sa.segments.a.localSubdomain();
-            for i in locDom do x += lens[i];
-            sections_sizes_int[i] = x;
-            offset_ct[i] = locDom.size;
-          }
-          else if dtype == DType.Bool {
-            var e: SegArraySymEntry = toSegArraySymEntry(entry, bool);
-            var segArr = new SegArray("", e, bool);
-            ref sa = segArr;
-            var lens = sa.lengths.a;
-            const locDom = sa.segments.a.localSubdomain();
-            for i in locDom do x += lens[i];
-            sections_sizes_bool[i] = x;
-            offset_ct[i] = locDom.size;
-          }
-          else if dtype ==  DType.Float64 {
-            var e: SegArraySymEntry = toSegArraySymEntry(entry, real);
-            var segArr = new SegArray("", e, real);
-            ref sa = segArr;
-            var lens = sa.lengths.a;
-            const locDom = sa.segments.a.localSubdomain();
-            for i in locDom do x += lens[i];
-            sections_sizes_real[i] = x;
-            offset_ct[i] = locDom.size;
+          select values.dtype {
+            when DType.Int64 {
+              sections_sizes_int[i] = x;
+            }
+            when DType.UInt64 {
+              sections_sizes_int[i] = x;
+            }
+            when DType.Float64 {
+              sections_sizes_real[i] = x;
+            }
+            when DType.Bool {
+              sections_sizes_bool[i] = x;
+            }
+            otherwise {
+              throw getErrorWithContext(
+                    msg="Unsupported SegArray DType for writing to Parquet, ".format(values.dtype: string),
+                    lineNumber=getLineNumber(), 
+                    routineName=getRoutineName(), 
+                    moduleName=getModuleName(), 
+                    errorClass='DataTypeError'
+                  );
+            }
           }
         }
       }
@@ -1317,168 +1297,13 @@ module ParquetMsg {
       var bool_idx = (+ scan sections_sizes_bool) - sections_sizes_bool;
 
       // populate data based on object and data types
-      forall (i, column, si, ui, ri, bi, oi) in zip(0..#ncols, sym_names, str_idx, int_idx, real_idx, bool_idx, offset_idx) {
+      forall (i, column, ot, si, ui, ri, bi, oi) in zip(0..#ncols, sym_names, col_objTypes, str_idx, int_idx, real_idx, bool_idx, offset_idx) {
         // generate the local c string list of column names
         c_names[i] = my_column_names[i].localize().c_str();
 
-        var entry = st.lookup(column);
-        var objType = _identifyObjectType(entry);
-        var entryDtype = _identifyDtype(entry, objType);
-        select entryDtype {
-          when DType.Int64 {
-            if objType == ObjType.SEGARRAY {
-              var e: SegArraySymEntry = toSegArraySymEntry(entry, int);
-              var segArray = new SegArray("", e, int);
-              ref sa = segArray;
-              var A = sa.segments.a;
-              const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty;
-              const lastValIdx = sa.values.a.domain.high;
-              const locDom = sa.segments.a.localSubdomain();
-
-              objTypes[i] = ObjType.SEGARRAY: int;
-              datatypes[i] = ARROWINT64;
-
-              if locDom.size > 0 {
-                var localOffsets = A[locDom];
-                var startValIdx = localOffsets[locDom.low];
-                var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else A[locDom.high + 1] - 1;
-                var valIdxRange = startValIdx..endValIdx;
-                ref olda = sa.values.a;
-                int_vals[ui..#valIdxRange.size] = olda[valIdxRange];
-                ptrList[i] = c_ptrTo(int_vals[ui]): c_void_ptr;
-                sizeList[i] = locDom.size;
-                offset_tracking[oi..#locDom.size] = localOffsets - startValIdx;
-                offsetPtr[i] = c_ptrTo(offset_tracking[oi]);
-                segarray_sizes[i] = sections_sizes_int[i];
-              }
-            }
-            else {
-              var e = toSymEntry(toGenSymEntry(entry), int);
-              var locDom = e.a.localSubdomain();
-              objTypes[i] = ObjType.PDARRAY: int;
-              datatypes[i] = ARROWINT64;
-              // set the pointer to the entry array in the list of Pointers
-              if locDom.size > 0 {
-                ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
-                sizeList[i] = locDom.size;
-              }
-            }
-          } when DType.UInt64 {
-            if objType == ObjType.SEGARRAY {
-              var e: SegArraySymEntry = toSegArraySymEntry(entry, uint);
-              var segArray = new SegArray("", e, uint);
-              ref sa = segArray;
-              var A = sa.segments.a;
-              const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty;
-              const lastValIdx = sa.values.a.domain.high;
-              const locDom = sa.segments.a.localSubdomain();
-
-              objTypes[i] = ObjType.SEGARRAY: int;
-              datatypes[i] = ARROWUINT64;
-
-              if locDom.size > 0 {
-                var localOffsets = A[locDom];
-                var startValIdx = localOffsets[locDom.low];
-                var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else A[locDom.high + 1] - 1;
-                var valIdxRange = startValIdx..endValIdx;
-                ref olda = sa.values.a;
-                int_vals[ui..#valIdxRange.size] = olda[valIdxRange]: int;
-                ptrList[i] = c_ptrTo(int_vals[ui]): c_void_ptr;
-                sizeList[i] = locDom.size;
-                offset_tracking[oi..#locDom.size] = localOffsets - startValIdx;
-                offsetPtr[i] = c_ptrTo(offset_tracking[oi]);
-                segarray_sizes[i] = sections_sizes_int[i];
-              }
-            }
-            else {
-              var e = toSymEntry(toGenSymEntry(entry), uint);
-              var locDom = e.a.localSubdomain();
-              objTypes[i] = ObjType.PDARRAY: int;
-              datatypes[i] = ARROWUINT64;
-              // set the pointer to the entry array in the list of Pointers
-              if locDom.size > 0 {
-                ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
-                sizeList[i] = locDom.size;
-              }
-            }
-          } when DType.Bool {
-            if objType == ObjType.SEGARRAY {
-              var e: SegArraySymEntry = toSegArraySymEntry(entry, bool);
-              var segArray = new SegArray("", e, bool);
-              ref sa = segArray;
-              var A = sa.segments.a;
-              const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty
-              const lastValIdx = sa.values.a.domain.high;
-              const locDom = sa.segments.a.localSubdomain();
-
-              objTypes[i] = ObjType.SEGARRAY: int;
-              datatypes[i] = ARROWBOOLEAN;
-
-              if locDom.size > 0 {
-                var localOffsets = A[locDom];
-                var startValIdx = localOffsets[locDom.low];
-                var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else A[locDom.high + 1] - 1;
-                var valIdxRange = startValIdx..endValIdx;
-                ref olda = sa.values.a;
-                bool_vals[bi..#valIdxRange.size] = olda[valIdxRange];
-                ptrList[i] = c_ptrTo(bool_vals[bi]): c_void_ptr;
-                sizeList[i] = locDom.size;
-                offset_tracking[oi..#locDom.size] = localOffsets - startValIdx;
-                offsetPtr[i] = c_ptrTo(offset_tracking[oi]);
-                segarray_sizes[i] = sections_sizes_bool[i];
-              }
-            }
-            else {
-              var e = toSymEntry(toGenSymEntry(entry), bool);
-              var locDom = e.a.localSubdomain();
-              // set the pointer to the entry array in the list of Pointers
-              objTypes[i] = ObjType.PDARRAY: int;
-              datatypes[i] = ARROWBOOLEAN;
-              if locDom.size > 0 {
-                ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
-                sizeList[i] = locDom.size;
-              }
-            }
-          } when DType.Float64 {
-            if objType == ObjType.SEGARRAY {
-              var e: SegArraySymEntry = toSegArraySymEntry(entry, real);
-              var segArray = new SegArray("", e, real);
-              ref sa = segArray;
-              var A = sa.segments.a;
-              const lastOffset = if A.size == 0 then 0 else A[A.domain.high]; // prevent index error when empty
-              const lastValIdx = sa.values.a.domain.high;
-              const locDom = sa.segments.a.localSubdomain();
-
-              objTypes[i] = ObjType.SEGARRAY: int;
-              datatypes[i] = ARROWDOUBLE;
-
-              if locDom.size > 0 {
-                var localOffsets = A[locDom];
-                var startValIdx = localOffsets[locDom.low];
-                var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else A[locDom.high + 1] - 1;
-                var valIdxRange = startValIdx..endValIdx;
-                ref olda = sa.values.a;
-                real_vals[ri..#valIdxRange.size] = olda[valIdxRange];
-                ptrList[i] = c_ptrTo(real_vals[ri]): c_void_ptr;
-                sizeList[i] = locDom.size;
-                offset_tracking[oi..#locDom.size] = localOffsets - startValIdx;
-                offsetPtr[i] = c_ptrTo(offset_tracking[oi]);
-                segarray_sizes[i] = sections_sizes_real[i];
-              }
-            }
-            else {
-              var e = toSymEntry(toGenSymEntry(entry), real);
-              var locDom = e.a.localSubdomain();
-
-              objTypes[i] = ObjType.PDARRAY: int;
-              datatypes[i] = ARROWDOUBLE;
-              // set the pointer to the entry array in the list of Pointers
-              if locDom.size > 0 {
-                ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
-                sizeList[i] = locDom.size;
-              }
-            }
-          } when DType.Strings {
+        select ot.toUpper(): ObjType {
+          when ObjType.STRINGS {
+            var entry = st.lookup(column);
             var e: SegStringSymEntry = toSegStringSymEntry(entry);
             var segStr = new SegString("", e);
             ref ss = segStr;
@@ -1500,9 +1325,157 @@ module ParquetMsg {
               ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
               sizeList[i] = locDom.size;
             }
-          } otherwise {
+          }
+          when ObjType.SEGARRAY {
+            // parse the json in column to get the component pdarrays
+            var components: map(string, string) = jsonToMap(column);
+
+            // access segments symentry
+            var seg_entry = getGenericTypedArrayEntry(components["segments"], st);
+            var segments = toSymEntry(seg_entry, int);
+
+            var S = segments.a;
+            const locDom = segments.a.localSubdomain();
+
+            if locDom.size > 0 {
+              const lastOffset = if S.size == 0 then 0 else S[S.domain.high]; // prevent index error when empty;
+              var localOffsets = S[locDom];
+              var startValIdx = localOffsets[locDom.low];
+              sizeList[i] = locDom.size;
+              offset_tracking[oi..#locDom.size] = localOffsets - startValIdx;
+              offsetPtr[i] = c_ptrTo(offset_tracking[oi]);
+              
+              var valEntry = getGenericTypedArrayEntry(components["values"], st);
+              select valEntry.dtype {
+                when DType.Int64 {
+                  segarray_sizes[i] = sections_sizes_int[i];
+                  var values = toSymEntry(valEntry, int);
+                  const lastValIdx = values.a.domain.high;
+
+                  objTypes[i] = ObjType.SEGARRAY: int;
+                  datatypes[i] = ARROWINT64;
+
+                  var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
+                  var valIdxRange = startValIdx..endValIdx;
+                  ref olda = values.a;
+                  int_vals[ui..#valIdxRange.size] = olda[valIdxRange];
+                  ptrList[i] = c_ptrTo(int_vals[ui]): c_void_ptr;
+                }
+                when DType.UInt64 {
+                  segarray_sizes[i] = sections_sizes_int[i];
+                  var values = toSymEntry(valEntry, uint);
+                  const lastValIdx = values.a.domain.high;
+
+                  objTypes[i] = ObjType.SEGARRAY: int;
+                  datatypes[i] = ARROWUINT64;
+
+                  var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
+                  var valIdxRange = startValIdx..endValIdx;
+                  ref olda = values.a;
+                  int_vals[ui..#valIdxRange.size] = olda[valIdxRange]: int;
+                  ptrList[i] = c_ptrTo(int_vals[ui]): c_void_ptr;
+                }
+                when DType.Float64 {
+                  segarray_sizes[i] = sections_sizes_real[i];
+                  var values = toSymEntry(valEntry, real);
+                  const lastValIdx = values.a.domain.high;
+
+                  objTypes[i] = ObjType.SEGARRAY: int;
+                  datatypes[i] = ARROWDOUBLE;
+
+                  var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
+                  var valIdxRange = startValIdx..endValIdx;
+                  ref olda = values.a;
+                  real_vals[ri..#valIdxRange.size] = olda[valIdxRange];
+                  ptrList[i] = c_ptrTo(real_vals[ri]): c_void_ptr;
+                }
+                when DType.Bool {
+                  segarray_sizes[i] = sections_sizes_bool[i];
+                  var values = toSymEntry(valEntry, bool);
+                  const lastValIdx = values.a.domain.high;
+
+                  objTypes[i] = ObjType.SEGARRAY: int;
+                  datatypes[i] = ARROWBOOLEAN;
+
+                  var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
+                  var valIdxRange = startValIdx..endValIdx;
+                  ref olda = values.a;
+                  bool_vals[bi..#valIdxRange.size] = olda[valIdxRange];
+                  ptrList[i] = c_ptrTo(bool_vals[bi]): c_void_ptr;
+                }
+                otherwise {
+                  throw getErrorWithContext(
+                    msg="Unsupported SegArray DType for writing to Parquet, ".format(valEntry.dtype: string),
+                    lineNumber=getLineNumber(), 
+                    routineName=getRoutineName(), 
+                    moduleName=getModuleName(), 
+                    errorClass='DataTypeError'
+                  );
+                }
+              }
+            }
+          }
+          when ObjType.PDARRAY {
+            var entry = getGenericTypedArrayEntry(column, st);
+            select entry.dtype {
+              when DType.Int64 {
+                var e = toSymEntry(toGenSymEntry(entry), int);
+                var locDom = e.a.localSubdomain();
+                objTypes[i] = ObjType.PDARRAY: int;
+                datatypes[i] = ARROWINT64;
+                // set the pointer to the entry array in the list of Pointers
+                if locDom.size > 0 {
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+                  sizeList[i] = locDom.size;
+                }
+              }
+              when DType.UInt64 {
+                var e = toSymEntry(toGenSymEntry(entry), uint);
+                var locDom = e.a.localSubdomain();
+                objTypes[i] = ObjType.PDARRAY: int;
+                datatypes[i] = ARROWUINT64;
+                // set the pointer to the entry array in the list of Pointers
+                if locDom.size > 0 {
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+                  sizeList[i] = locDom.size;
+                }
+              }
+              when DType.Float64 {
+                var e = toSymEntry(toGenSymEntry(entry), real);
+                var locDom = e.a.localSubdomain();
+                objTypes[i] = ObjType.PDARRAY: int;
+                datatypes[i] = ARROWDOUBLE;
+                // set the pointer to the entry array in the list of Pointers
+                if locDom.size > 0 {
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+                  sizeList[i] = locDom.size;
+                }
+              }
+              when DType.Bool {
+                var e = toSymEntry(toGenSymEntry(entry), bool);
+                var locDom = e.a.localSubdomain();
+                objTypes[i] = ObjType.PDARRAY: int;
+                datatypes[i] = ARROWBOOLEAN;
+                // set the pointer to the entry array in the list of Pointers
+                if locDom.size > 0 {
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+                  sizeList[i] = locDom.size;
+                }
+              }
+              otherwise {
+                throw getErrorWithContext(
+                  msg="Unsupported PDArray DType for writing to Parquet, ".format(entry.dtype: string),
+                  lineNumber=getLineNumber(), 
+                  routineName=getRoutineName(), 
+                  moduleName=getModuleName(), 
+                  errorClass='DataTypeError'
+                );
+              }
+            }
+          }
+          otherwise {
             throw getErrorWithContext(
-              msg="Writing Parquet files (multi-column) does not support columns of type %s".format(entryDtype),
+              msg="Writing Parquet files (multi-column) does not support %s columns.".format(ot),
               lineNumber=getLineNumber(), 
               routineName=getRoutineName(), 
               moduleName=getModuleName(), 
@@ -1522,6 +1495,7 @@ module ParquetMsg {
               errorClass='WriteModeError'
         );
       }
+      writeln("\n\nFilename: %s\nCol Names: %jt\nOffsetTracking: %jt\nInt Vals: %jt\nReal Vals: %jt\nBool Vals: %jt\n\n".format(fname, my_column_names, offset_tracking, int_vals, real_vals, bool_vals));
       var result: int = c_writeMultiColToParquet(fname.localize().c_str(), c_ptrTo(c_names), c_ptrTo(ptrList), c_ptrTo(offsetPtr), c_ptrTo(objTypes), c_ptrTo(datatypes), c_ptrTo(segarray_sizes), ncols, numelems, ROWGROUPS, compression, c_ptrTo(pqErr.errMsg));
       if result == ARROWERROR {
         pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
@@ -1530,89 +1504,58 @@ module ParquetMsg {
     return filesExist;
   }
 
-  proc _identifyObjectType(entry: borrowed AbstractSymEntry): ObjType throws {
-    if (entry.isAssignableTo(SymbolEntryType.SegArraySymEntry)){
-      return ObjType.SEGARRAY;
-    } else if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
-      return ObjType.STRINGS;
-    } else if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
-      return ObjType.PDARRAY;
-    } else {
-      throw getErrorWithContext(
-          msg="Unable to identify object type. Only pdarray, Strings, and SegArray are supported for writing to Parquet.",
-          lineNumber=getLineNumber(), 
-          routineName=getRoutineName(), 
-          moduleName=getModuleName(), 
-          errorClass='ValueError'
-      );
-    }
-  }
-
-  proc _identifyDtype(entry: borrowed AbstractSymEntry, objType: ObjType): DType throws {
-    var entryDtype = DType.UNDEF;
-    if (objType == ObjType.PDARRAY || objType == ObjType.SEGARRAY) {
-      entryDtype = (entry: borrowed GenSymEntry).dtype;
-    }
-    else if (objType == ObjType.STRINGS) {
-      entryDtype = (entry: borrowed SegStringSymEntry).dtype;
-    } 
-    else {
-      throw getErrorWithContext(
-          msg="Unable to identify dtype",
-          lineNumber=getLineNumber(), 
-          routineName=getRoutineName(), 
-          moduleName=getModuleName(), 
-          errorClass='ValueError'
-      );
-    }
-    return entryDtype;
-  }
-
-  proc _identifyTargetLocales(entry: borrowed AbstractSymEntry) throws {
-    var objType = _identifyObjectType(entry);
-    var entryDtype = _identifyDtype(entry, objType);
-    
+  proc _identifyTargetLocales(name: string, objType: string, st: borrowed SymTab) throws {
     var targetLocales;
-    select entryDtype {
-      when DType.Int64 {
-        if objType == ObjType.SEGARRAY {
-          var segArray:SegArraySymEntry = toSegArraySymEntry(entry, int);
-          targetLocales = segArray.segmentsEntry.a.targetLocales();
-        } else {
-          var e = toSymEntry(toGenSymEntry(entry), int);
-          targetLocales = e.a.targetLocales();
-        }
-      } when DType.UInt64 {
-        if objType == ObjType.SEGARRAY {
-          var segArray:SegArraySymEntry = toSegArraySymEntry(entry, uint);
-          targetLocales = segArray.segmentsEntry.a.targetLocales();
-        } else {
-          var e = toSymEntry(toGenSymEntry(entry), uint);
-          targetLocales = e.a.targetLocales();
-        }
-      } when DType.Bool {
-        if objType == ObjType.SEGARRAY {
-          var segArray:SegArraySymEntry = toSegArraySymEntry(entry, bool);
-          targetLocales = segArray.segmentsEntry.a.targetLocales();
-        } else {
-          var e = toSymEntry(toGenSymEntry(entry), bool);
-          targetLocales = e.a.targetLocales();
-        }
-      } when DType.Float64 {
-        if objType == ObjType.SEGARRAY {
-          var segArray:SegArraySymEntry = toSegArraySymEntry(entry, real);
-          targetLocales = segArray.segmentsEntry.a.targetLocales();
-        } else {
-          var e = toSymEntry(toGenSymEntry(entry), real);
-          targetLocales = e.a.targetLocales();
-        }
-      } when DType.Strings {
+    select objType.toUpper(): ObjType {
+      when ObjType.STRINGS {
+        var entry = st.lookup(name);
         var e: SegStringSymEntry = toSegStringSymEntry(entry);
         var segStr = new SegString("", e);
         targetLocales = segStr.offsets.a.targetLocales();
-      } otherwise {
+      }
+      when ObjType.SEGARRAY {
+        // parse the json in column to get the component pdarrays
+        var components: map(string, string) = jsonToMap(name);
+
+        // access segments symentry
+        var seg_entry = getGenericTypedArrayEntry(components["segments"], st);
+        var segments = toSymEntry(seg_entry, int);
+        targetLocales = segments.a.targetLocales();
+      }
+      when ObjType.PDARRAY {
+        var entry = st.lookup(name);
+        var entryDtype = (entry: borrowed GenSymEntry).dtype;
+        select entryDtype {
+          when DType.Int64 {
+            var e = toSymEntry(toGenSymEntry(entry), int);
+            targetLocales = e.a.targetLocales();
+          }
+          when DType.UInt64 {
+            var e = toSymEntry(toGenSymEntry(entry), uint);
+            targetLocales = e.a.targetLocales();
+          }
+          when DType.Float64 {
+            var e = toSymEntry(toGenSymEntry(entry), real);
+            targetLocales = e.a.targetLocales();
+          }
+          when DType.Bool {
+            var e = toSymEntry(toGenSymEntry(entry), bool);
+            targetLocales = e.a.targetLocales();
+          }
+          otherwise {
+            throw getErrorWithContext(
+              msg="Writing Parquet files (multi-column) does not support columns of type %s".format(entryDtype: string),
+              lineNumber=getLineNumber(), 
+              routineName=getRoutineName(), 
+              moduleName=getModuleName(), 
+              errorClass='DataTypeError'
+            );
+          }
+        }
+      }
+      otherwise {
         throw getErrorWithContext(
-          msg="Writing Parquet files (multi-column) does not support columns of type %s".format(entryDtype),
+          msg="Writing Parquet files (multi-column) does not support %s columns.".format(objType),
           lineNumber=getLineNumber(), 
           routineName=getRoutineName(), 
           moduleName=getModuleName(), 
@@ -1639,11 +1582,8 @@ module ParquetMsg {
     // compression format as integer
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
-    // Assuming all columns have same distribution, access the first to get target locales
-    var entry = st.lookup(sym_names[0]);
-
-    // use the first entry to identify target locales.
-    var targetLocales = _identifyTargetLocales(entry);
+    // use the first entry to identify target locales. Assuming all have same distribution
+    var targetLocales = _identifyTargetLocales(sym_names[0], col_objType_strs[0], st);
     
     var warnFlag: bool;
     try {

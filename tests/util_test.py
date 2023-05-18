@@ -52,7 +52,7 @@ class utilTest(ArkoudaTest):
         flat = a + b + c
         akflat = ak.array(flat)
         segments = ak.array([0, len(a), len(a) + len(b)])
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
         segarr.register("segTest")
 
         attached = attach("segTest")
@@ -106,6 +106,7 @@ class utilTest(ArkoudaTest):
             {"username": cat, "user_ID": userid, "item": item, "amount": amount, "visits": segarr}, ind
         )
         df.register("df_test")
+        print(ak.list_registry())
 
         dfAtt = ak.util.attach("df_test")
 

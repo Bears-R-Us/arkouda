@@ -1014,7 +1014,6 @@ module HDF5Msg {
         var file_format = msgArgs.get("file_format").getIntValue();
         var group = msgArgs.getValueOf("dset");
         var val_dType = str2dtype(msgArgs.getValueOf("dtype"));
-        var segarr = msgArgs.getValueOf("seg_name");
         const objType = msgArgs.getValueOf("objType");
 
         // segments is always int64
@@ -1080,7 +1079,7 @@ module HDF5Msg {
             }
             when MULTI_FILE {
                 var filenames = prepFiles(filename, mode, segments.a);
-                select dType {
+                select val_dType {
                     when DType.Int64 {
                         var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), int);
                         writeSegmentedDistDset(filenames, group, objType, overwrite, values.a, segments.a, st, int);

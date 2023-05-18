@@ -102,33 +102,7 @@ module RegistrationMsg
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         } else {
-            // if objType.toLower() == "segarray" {
-            //     var a = attrib.split(" ");
-            //     var dtype = str2dtype(a[1]: string);
-            //     var rtnmap: map(string, string) = new map(string, string);
-
-            //     select dtype {
-            //         when (DType.Int64) {
-            //             var seg = getSegArray(name, st, int);
-            //             seg.fillReturnMap(rtnmap, st);
-            //         }
-            //         when (DType.UInt64) {
-            //             var seg = getSegArray(name, st, uint);
-            //             seg.fillReturnMap(rtnmap, st);
-            //         }
-            //         when (DType.Float64) {
-            //             var seg = getSegArray(name, st, real);
-            //             seg.fillReturnMap(rtnmap, st);
-            //         }
-            //         when (DType.Bool) {
-            //             var seg = getSegArray(name, st, bool);
-            //             seg.fillReturnMap(rtnmap, st);
-            //         }
-            //     }
-
-            //     repMsg = "%jt".format(rtnmap);
-            // }
-            if objType == "" || objType == "str" || objType == "pdarray" {
+            if objType == ObjType.UNKNOWN || objType == ObjType.STRINGS || objType == ObjType.PDARRAY {
                 repMsg = "created %s".format(attrib);
                 if (isStringAttrib(attrib)) {
                     var s = getSegString(name, st);
@@ -347,18 +321,23 @@ module RegistrationMsg
                     var subArgs = new MessageArgs(new list([attParam, ]));
                     msg = attachMsg(cmd, subArgs, st).msg;
                 }
+                when (ObjType.SEGARRAY) {
+                    var sa_map: map(string, string);
+                    var attParam = new ParameterObj("name", regName+"_segments", ObjectType.VALUE, "");
+                    var subArgs = new MessageArgs(new list([attParam, ]));
+                    sa_map.add("segments", attachMsg(cmd, subArgs, st).msg);
+
+                    var attParam2 = new ParameterObj("name", regName+"_values", ObjectType.VALUE, "");
+                    var subArgs2 = new MessageArgs(new list([attParam2, ]));
+                    sa_map.add("values", attachMsg(cmd, subArgs2, st).msg);
+                    msg = "segarray+%jt".format(sa_map); 
+                }
                 when (ObjType.STRINGS) {
                     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
                     var subArgs = new MessageArgs(new list([attParam, ]));
                     msg = attachMsg(cmd, subArgs, st).msg;
                 }
-                // when ("SegArray") {
-                //     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
-                //     var objParam =  new ParameterObj("objtype", objtype, ObjectType.VALUE, "");
-                //     var subArgs = new MessageArgs(new list([attParam, objParam]));
-                //     msg = "segarray+%s+%s".format(regName, attachMsg(cmd, subArgs, st).msg);
-                // }
-                when ("Categorical") {
+                when (ObjType.CATEGORICAL) {
                     msg = attachCategoricalMsg(cmd, regName, st).msg;
                 }
                 otherwise {
@@ -410,19 +389,18 @@ module RegistrationMsg
         if st.contains(name) {
             // SegArray is now also represented in the SymbolTable as a single entry with no extras attached to the name
             var entry = st.lookup(name);
-            if entry.isAssignableTo(SymbolEntryType.SegArraySymEntry) {
-                objtype = "segarray";
-            } else {
-                // pdarray or Strings
-                objtype = "simple";
-            }
+            // pdarray or Strings
+            objtype = "simple";
         } else if st.contains("%s.categories".format(name)) && st.contains("%s.codes".format(name)) {
             objtype = "categorical";
         } else if st.contains("%s_value".format(name)) && (st.contains("%s_key".format(name)) || st.contains("%s_key_0".format(name))) {
             objtype = "series";
         } else if st.contains("df_columns_%s".format(name)) && (st.contains("df_index_%s_key".format(name))) {
             objtype = "dataframe";
-        } else {
+        } else if st.contains("%s_segments".format(name)) && st.contains("%s_values".format(name)) {
+            objtype = "segarray";
+        } 
+        else {
             throw getErrorWithContext(
                                 msg="Unable to determine type for given name: %s".format(name),
                                 lineNumber=getLineNumber(),
@@ -469,23 +447,13 @@ module RegistrationMsg
 
         select (dtype.toLower()) {
             when ("simple") {
-                // pdarray, strings, and segarray can use the attachMsg method
+                // pdarray, strings can use the attachMsg method
                 var aRet = attachMsg(cmd, msgArgs, st);
                 var msg = aRet.msg;
                 var msgType = aRet.msgType;
                 repMsg = "simple+%s".format(msg);
                 return new MsgTuple(repMsg, msgType);
             }
-            // when ("segarray") {
-            //     var attParam = new ParameterObj("name", name, ObjectType.VALUE, "");
-            //     var objParam =  new ParameterObj("objtype", dtype, ObjectType.VALUE, "");
-            //     var subArgs = new MessageArgs(new list([attParam, objParam]));
-            //     var aRet = attachMsg(cmd, subArgs, st);
-            //     var msg = aRet.msg;
-            //     var msgType = aRet.msgType;
-            //     repMsg = "segarray+%s".format(msg);
-            //     return new MsgTuple(repMsg, msgType);
-            // }
             when ("categorical") {
                 return attachCategoricalMsg(cmd, name, st);
             }
@@ -495,9 +463,20 @@ module RegistrationMsg
             when ("dataframe") {
                 return attachDataFrameMsg(cmd, msgArgs, st);
             }
+            when ("segarray"){
+                var sa_map: map(string, string);
+                var attParam = new ParameterObj("name", name+"_segments", ObjectType.VALUE, "");
+                var subArgs = new MessageArgs(new list([attParam, ]));
+                sa_map.add("segments", attachMsg(cmd, subArgs, st).msg);
+
+                var attParam2 = new ParameterObj("name", name+"_values", ObjectType.VALUE, "");
+                var subArgs2 = new MessageArgs(new list([attParam2, ]));
+                sa_map.add("values", attachMsg(cmd, subArgs2, st).msg);
+                return new MsgTuple("segarray+%jt".format(sa_map), MsgType.NORMAL); 
+            }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray, series, and dataframe".format(dtype));
+                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, series, and dataframe".format(dtype));
                 
                 throw getErrorWithContext(
                                     msg="Unknown type (%s) supplied for given name: %s".format(dtype, name),
@@ -558,7 +537,7 @@ module RegistrationMsg
             dtype = findType(cmd, name, st);
         }
 
-        if simpleTypes.contains(dtype.toLower()) || dtype == "segarray" {
+        if simpleTypes.contains(dtype.toLower()) {
             dtype = "simple";
         }
 
@@ -624,7 +603,7 @@ module RegistrationMsg
             }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray, and series".format(dtype));
+                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, and series".format(dtype));
                 
                 throw getErrorWithContext(
                                     msg="Unknown type (%s) supplied for given name: %s".format(dtype, name),

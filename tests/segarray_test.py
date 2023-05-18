@@ -77,25 +77,25 @@ class SegArrayTest(ArkoudaTest):
         akflat = ak.array(flat)
         segments = ak.array([0, len(a)])
 
-        segarr = ak.segarray(segments, akflat)
-        segarr_2 = ak.segarray(ak.array([0]), ak.array(c))
+        segarr = ak.SegArray(segments, akflat)
+        segarr_2 = ak.SegArray(ak.array([0]), ak.array(c))
 
         concated = ak.SegArray.concat([segarr, segarr_2])
         self.assertEqual(concated.__str__(), f"SegArray([\n{a}\n{b}\n{c}\n])".replace(",", ""))
 
         # test concat with empty segments
-        empty_segs = ak.segarray(ak.array([0, 2, 2]), ak.array(b + c))
+        empty_segs = ak.SegArray(ak.array([0, 2, 2]), ak.array(b + c))
         concated = ak.SegArray.concat([segarr, empty_segs])
         self.assertEqual(concated.__str__(), f"SegArray([\n{a}\n{b}\n{b}\n[]\n{c}\n])".replace(",", ""))
 
         flat = ak.array(a)
         segs = ak.array([0, len(a)])
-        segarr = ak.segarray(segs, flat)
+        segarr = ak.SegArray(segs, flat)
         a2 = [10]
         b2 = [20]
         flat2 = ak.array(a2 + b2)
         segments2 = ak.array([0, 1])
-        segarr2 = ak.segarray(segments2, flat2)
+        segarr2 = ak.SegArray(segments2, flat2)
         concated = ak.SegArray.concat([segarr, segarr2], axis=1)
         self.assertListEqual(concated[0].tolist(), [10, 11, 12, 13, 14, 15, 10])
         self.assertListEqual(concated[1].tolist(), [20])
@@ -622,7 +622,7 @@ class SegArrayTest(ArkoudaTest):
         flat = a + b + c
         akflat = ak.array(flat)
         segments = ak.array([0, len(a), len(a) + len(b)])
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         self.assertIsInstance(segarr, ak.SegArray)
         self.assertListEqual(segarr.lengths.to_list(), [2, 2, 1])
@@ -633,7 +633,7 @@ class SegArrayTest(ArkoudaTest):
         )
         self.assertEqual(segarr.__eq__(ak.array([1])), NotImplemented)
         self.assertTrue(segarr.__eq__(segarr).all())
-        self.assertTrue(segarr.non_empty_count == 3)
+        self.assertTrue(segarr._non_empty_count == 3)
 
     def test_filter(self):
         v = ak.randint(0, 5, 100)

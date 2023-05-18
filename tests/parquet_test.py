@@ -508,13 +508,13 @@ class ParquetTest(ArkoudaTest):
     def test_multicol_write(self):
         df_dict = {
             "c_1": ak.arange(3),
-            "c_2": ak.segarray(ak.array([0, 9, 14]), ak.arange(20)),
+            "c_2": ak.SegArray(ak.array([0, 9, 14]), ak.arange(20)),
             "c_3": ak.arange(3, 6, dtype=ak.uint64),
-            "c_4": ak.segarray(ak.array([0, 5, 10]), ak.arange(15, dtype=ak.uint64)),
+            "c_4": ak.SegArray(ak.array([0, 5, 10]), ak.arange(15, dtype=ak.uint64)),
             "c_5": ak.array([False, True, False]),
-            "c_6": ak.segarray(ak.array([0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool)),
+            "c_6": ak.SegArray(ak.array([0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool)),
             "c_7": ak.array(np.random.uniform(0, 100, 3)),
-            "c_8": ak.segarray(ak.array([0, 9, 14]), ak.array(np.random.uniform(0, 100, 20))),
+            "c_8": ak.SegArray(ak.array([0, 9, 14]), ak.array(np.random.uniform(0, 100, 20))),
             "c_9": ak.array(["abc", "123", "xyz"])
         }
         akdf = ak.DataFrame(df_dict)

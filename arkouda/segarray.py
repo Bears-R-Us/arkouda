@@ -108,6 +108,7 @@ class SegArray:
         self, segments, values, lengths=None, grouping=None
     ):
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
+        self.name = ""
 
         # validate inputs
         if not isinstance(segments, pdarray) or segments.dtype != akint64:
@@ -158,7 +159,9 @@ class SegArray:
         # parse the create for the values pdarray
         values = create_pdarray(eles["values"])
         segments = create_pdarray(eles["segments"])
-
+        print(eles)
+        print(values)
+        print(segments)
         return cls(segments, values)
 
     @classmethod
@@ -253,8 +256,8 @@ class SegArray:
             offsets = np.cumsum(sizes) - sizes
             newvals = zeros(sum(sizes), dtype=dtypes.pop())
             for j in range(n):
-                newvals[j::n] = m[j]
-            return cls(arange(size) * n, newvals)
+                newvals[offsets[j]: (offsets[j] + sizes[j])] = m[j]
+            return cls(array(offsets), newvals)
 
     def _get_lengths(self):
         if self.size == 0:
@@ -1427,23 +1430,9 @@ class SegArray:
         --------
         unregister, attach, is_registered
         """
-        try:
-            rep_msg = generic_msg(
-                cmd="register", args={"array": self.name, "user_name": user_defined_name}
-            )
-            if rep_msg != "success":
-                raise RegistrationError
-        except (
-            RuntimeError,
-            RegistrationError,
-        ):  # Registering two objects with the same name is not allowed
-            raise RegistrationError(f"Server was unable to register {user_defined_name}")
-
         self.name = user_defined_name
         self.segments.register(self.name + SEG_SUFFIX)
         self.values.register(self.name + VAL_SUFFIX)
-        self.lengths.register(self.name + LEN_SUFFIX)
-        self.grouping.register(self.name + GROUP_SUFFIX)
         return self
 
     def unregister(self):
@@ -1488,11 +1477,8 @@ class SegArray:
         --------
         register, unregister, attach, is_registered
         """
-        generic_msg(cmd="unregister", args={"name": user_defined_name})
         unregister_pdarray_by_name(user_defined_name + SEG_SUFFIX)
         unregister_pdarray_by_name(user_defined_name + VAL_SUFFIX)
-        unregister_pdarray_by_name(user_defined_name + LEN_SUFFIX)
-        GroupBy.unregister_groupby_by_name(user_defined_name + GROUP_SUFFIX)
 
     @classmethod
     def attach(cls, user_defined_name):
@@ -1518,14 +1504,10 @@ class SegArray:
         --------
         register, unregister, is_registered
         """
-        repMsg = generic_msg(
-            cmd="attach",
-            args={
-                "name": user_defined_name,
-                "objtype": SegArray.objType,
-            },
-        )
-        return cls.from_return_msg(repMsg)
+        from arkouda.pdarrayclass import attach_pdarray
+        segs = attach_pdarray(user_defined_name+SEG_SUFFIX)
+        vals = attach_pdarray(user_defined_name+VAL_SUFFIX)
+        return cls(segs, vals)
 
     def is_registered(self) -> bool:
         """
@@ -1543,8 +1525,6 @@ class SegArray:
         regParts = [
             self.segments.is_registered(),
             self.values.is_registered(),
-            self.lengths.is_registered(),
-            self.grouping.is_registered(),
         ]
 
         if any(regParts) and not all(regParts):
