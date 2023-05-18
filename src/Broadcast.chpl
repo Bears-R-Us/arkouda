@@ -163,13 +163,10 @@ module Broadcast {
     }
 
     var broadDist = broadcast(segs, diffs, size);
-    var offDiff = makeDistArray(size, int);
-    offDiff[1..] = broadDist[..size-2];
-
-    var offsets = (+ scan offDiff);
+    var offsets = (+ scan broadDist) - broadDist;
     var r: [sD] int = 0..segString.size; 
     var ind = broadcast(segs, r, size);
-    var expandedVals: [0..#strSize] uint(8);
+    var expandedVals = makeDistArray(strSize, uint(8));
     ref vals = segString.values.a;
 
     forall (i, o, s) in zip(ind, offsets, 0..#size) with (ref vals) {
