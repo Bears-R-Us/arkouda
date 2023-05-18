@@ -147,8 +147,10 @@ class GroupByTest(ArkoudaTest):
         self.fvalues = ak.randint(0, 1, 10, dtype=float)
         self.ivalues = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
         self.uvalues = ak.cast(self.ivalues, ak.uint64)
+        self.bivalues = ak.cast(self.ivalues, ak.bigint)
         self.igb = ak.GroupBy(self.ivalues)
         self.ugb = ak.GroupBy(self.uvalues)
+        self.bigb = ak.GroupBy(self.bivalues)
 
     def test_groupby_on_one_level(self):
         """
@@ -275,6 +277,54 @@ class GroupByTest(ArkoudaTest):
         u_results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.uint64), 1)
         i_results = ak.broadcast(ak.array([0]), ak.array([1]), 1)
         self.assertListEqual(i_results.to_list(), u_results.to_list())
+
+    def test_broadcast_bigints(self):
+        # use reproducer to verify >64 bits work
+        a = ak.arange(3, dtype=ak.bigint)
+        a += 2**200
+        segs = ak.array([0, 2, 5])
+        bi_broad = ak.groupbyclass.broadcast(segs, a, 8)
+        indices = ak.broadcast(segs, ak.arange(3), 8)
+        self.assertListEqual(bi_broad.to_list(), a[indices].to_list())
+        self.assertEqual(bi_broad.max_bits, a.max_bits)
+
+        # verify max_bits is preserved by broadcast
+        a.max_bits = 201
+        bi_broad = ak.broadcast(segs, a, 8)
+        self.assertListEqual(bi_broad.to_list(), a[indices].to_list())
+        self.assertEqual(bi_broad.max_bits, a.max_bits)
+
+        # do the same tests as uint and compare the results
+        keys, counts = self.bigb.count()
+        self.assertListEqual([1, 4, 2, 1, 2], counts.to_list())
+        self.assertListEqual([1, 2, 3, 4, 5], keys.to_list())
+
+        u_results = self.ugb.broadcast(1 * (counts > 2))
+        bi_results = self.bigb.broadcast(1 * (counts > 2))
+        self.assertListEqual(bi_results.to_list(), u_results.to_list())
+
+        u_results = self.ugb.broadcast(1 * (counts == 2))
+        bi_results = self.bigb.broadcast(1 * (counts == 2))
+        self.assertListEqual(bi_results.to_list(), u_results.to_list())
+
+        u_results = self.ugb.broadcast(1 * (counts < 4))
+        bi_results = self.bigb.broadcast(1 * (counts < 4))
+        self.assertListEqual(bi_results.to_list(), u_results.to_list())
+
+        # test bigint Groupby.broadcast with and without permute with > 64 bit values
+        u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
+        bi_results = self.bigb.broadcast(
+            ak.array([1, 2, 6, 8, 9], dtype=ak.bigint) + 2**200, permute=False
+        )
+        self.assertListEqual((bi_results - 2**200).to_list(), u_results.to_list())
+        u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
+        bi_results = self.bigb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.bigint) + 2**200)
+        self.assertListEqual((bi_results - 2**200).to_list(), u_results.to_list())
+
+        # test bigint broadcast
+        u_results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.uint64), 1)
+        bi_results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.bigint), 1)
+        self.assertListEqual(bi_results.to_list(), u_results.to_list())
 
     def test_broadcast_booleans(self):
         keys, counts = self.igb.count()
