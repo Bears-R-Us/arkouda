@@ -180,7 +180,7 @@ class DataFrameTest(ArkoudaTest):
             "c_2": ak.arange(6, 9, 1),
             "c_3": str_arr,
             "c_4": ak.Categorical(str_arr),
-            "c_5": ak.segarray(ak.array([0, 9, 14]), ak.arange(20)),
+            "c_5": ak.SegArray(ak.array([0, 9, 14]), ak.arange(20)),
             "c_6": ak.arange(2**200, 2**200 + 3),
         }
         akdf = ak.DataFrame(df_dict)
@@ -575,7 +575,7 @@ class DataFrameTest(ArkoudaTest):
             )
 
             # Test for df having seg array col
-            df = ak.DataFrame({"a": ak.arange(10), "b": ak.segarray(ak.arange(10), ak.arange(10))})
+            df = ak.DataFrame({"a": ak.arange(10), "b": ak.SegArray(ak.arange(10), ak.arange(10))})
             df.to_hdf(f"{tmp_dirname}/seg_test.h5")
             self.assertEqual(
                 len(glob.glob(f"{tmp_dirname}/seg_test*.h5")), ak.get_config()["numLocales"]
@@ -587,7 +587,7 @@ class DataFrameTest(ArkoudaTest):
             df_dict = {
                 "c_1": ak.arange(3, 6),
                 "c_2": ak.arange(6, 9),
-                "c_3": ak.segarray(ak.array([0, 9, 14]), ak.arange(20)),
+                "c_3": ak.SegArray(ak.array([0, 9, 14]), ak.arange(20)),
             }
             akdf = ak.DataFrame(df_dict)
             akdf.to_hdf(f"{tmp_dirname}/seg_test.h5")

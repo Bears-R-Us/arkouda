@@ -741,7 +741,7 @@ class SegArray:
 
         Examples
         --------
-        >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
+        >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
         >>> segarr.to_ndarray()
         array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
         >>> type(segarr.to_ndarray())
@@ -769,7 +769,7 @@ class SegArray:
 
         Examples
         --------
-        >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
+        >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
         >>> segarr.to_list()
         [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
         >>> type(segarr.to_list())
@@ -918,7 +918,7 @@ class SegArray:
                     "write_mode": _mode_str_to_int(mode),
                     "filename": prefix_path,
                     "dtype": self.dtype,
-                    "objType": "segarray",
+                    "objType": self.objType,
                     "file_format": _file_type_to_int(file_type),
                 },
             ),
@@ -983,7 +983,7 @@ class SegArray:
                 "write_mode": _mode_str_to_int("append"),
                 "filename": prefix_path,
                 "dtype": self.dtype,
-                "objType": "segarray",
+                "objType": self.objType,
                 "file_format": _file_type_to_int(file_type),
                 "overwrite": True,
             },
@@ -1053,7 +1053,7 @@ class SegArray:
                     "dset": dataset,
                     "mode": _mode_str_to_int(mode),
                     "prefix": prefix_path,
-                    "objType": "segarray",
+                    "objType": self.objType,
                     "dtype": self.dtype,
                     "compression": compression,
                 },

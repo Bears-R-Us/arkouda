@@ -548,7 +548,7 @@ class ParquetTest(ArkoudaTest):
     def test_read_nested(self):
         df = ak.DataFrame({
             "idx": ak.arange(5),
-            "seg": ak.segarray(ak.arange(0, 10, 2), ak.arange(10))
+            "seg": ak.SegArray(ak.arange(0, 10, 2), ak.arange(10))
         })
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             fname = tmp_dirname+"/read_nested_test"
