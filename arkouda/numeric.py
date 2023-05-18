@@ -24,6 +24,7 @@ from arkouda.pdarraycreation import array
 from arkouda.strings import Strings
 
 Categorical = ForwardRef("Categorical")
+SegArray = ForwardRef("SegArray")
 
 __all__ = [
     "cast",
@@ -424,7 +425,8 @@ def cos(pda: pdarray) -> pdarray:
 
 @typechecked
 def hash(
-    pda: Union[pdarray, List[pdarray]], full: bool = True
+    pda: Union[pdarray, Categorical, SegArray, Strings,
+               List[Union[pdarray, Categorical, SegArray, Strings]]], full: bool = True
 ) -> Union[Tuple[pdarray, pdarray], pdarray]:
     """
     Return an element-wise hash of the array.
@@ -474,21 +476,51 @@ def hash(
     cancel each other out, hence we do a rotation by the ordinal of
     the array.
     """
-    if isinstance(pda, pdarray):
-        return _hash_single(pda, full)
+    from arkouda import Categorical
+    from arkouda import SegArray
 
-    repMsg = type_cast(
-        str,
-        generic_msg(
-            cmd="efuncArr",
-            args={
-                "nameslist": [n.name for n in pda],
-                "typeslist": [n.objType for n in pda],
-                "length": len(pda),
-                "size": len(pda[0]),
-            },
-        ),
-    )
+    if isinstance(pda, pdarray) or isinstance(pda, Categorical) or isinstance(pda, SegArray):
+        if isinstance(pda, Categorical):
+            a = pda.codes
+        elif isinstance(pda, SegArray):
+            a = pda.values
+        else:
+            a = pda
+
+        return _hash_single(a, full)
+    if isinstance(pda, Strings):
+        return pda.hash()
+    elif isinstance(pda, List):
+        namesList = []
+        typesList = []
+        for n in pda:
+            objType = n.objType
+            if objType in [Strings.objType, pdarray.objType]:
+                namesList.append(n.name)
+            elif objType == Categorical.objType:
+                namesList.append(n.codes.name)
+                objType = n.codes.objType
+            elif objType == SegArray.objType:
+                namesList.append(n.values.name)
+                objType = n.values.objType
+
+            typesList.append(objType)
+
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efuncArr",
+                args={
+                    "nameslist": namesList,
+                    "typeslist": typesList,
+                    "length": len(pda),
+                    "size": len(pda[0].values) if isinstance(pda[0], SegArray) else len(pda[0]),
+                },
+            ),
+        )
+    else:
+        raise TypeError(f"Unsupported type {type(pda)}. Supported types are pdarray, Categorical, SegArray,"
+                        f" Strings, and Lists of these types.")
 
     a, b = repMsg.split("+")
     return create_pdarray(a), create_pdarray(b)
