@@ -143,18 +143,24 @@ module TransferMsg
       sendLocaleCount(port);
 
       var (numColumns, objNames) = receiveDataFrameSetupInfo(hostname, port);
-      var (size, typeString, nodeNames, objType) = receiveSetupInfo(hostname, port);
+      var rnames: list((string, string, string)); 
 
-      var entry = new shared SymEntry(size, int);
-      receiveData(entry.a, nodeNames, port);
-      var rname = st.nextName();
-      st.addEntry(rname, entry);
-
-      writeln();
-      writeln(entry.a);
-      writeln();
+      for (i, obj) in zip(0..#objNames.size, objNames) {
+        var objParts = obj.split("+");
+        ref currObjType = objParts[0];
+        var rname = st.nextName();
+        if currObjType == "pdarray" {
+          var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
+          var entry = new shared SymEntry(size, int);
+          receiveData(entry.a, nodeNames, port);
+          rnames.append((i:string, "pdarray", rname));
+          st.addEntry(rname, entry);
+        }
+      }
       
-      return new MsgTuple("received", MsgType.NORMAL);
+      var transferErrors: list(string);
+      var repMsg = _buildReadAllMsgJson(rnames, false, 0, transferErrors, st);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     proc sendArrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
