@@ -273,7 +273,7 @@ In addition, the max per-locale memory can instead be set to an explicit number 
 ./arkouda_server --memMax=100000000000
 ```
 
-<<a id="run-ak-connect"></a>
+<a id="run-ak-connect"></a>
 ### Connecting to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 The client connects to the arkouda\_server either by supplying a host and port or by providing a connect\_url connect string:
