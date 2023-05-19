@@ -130,6 +130,23 @@ class JoinTest(ArkoudaTest):
         )
         self.assertListEqual(strLeft[strLWhere].to_list(), strRight[strRWhere].to_list())
 
+        # reproducer from PR
+        int_left = ak.arange(10)
+        int_right = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
+        str_left = ak.array([f'str {i}' for i in int_left.to_list()])
+        str_right = ak.array([f'str {i}' for i in int_right.to_list()])
+
+        sl, sr = ak.join.inner_join(str_left, str_right)
+        self.assertListEqual(str_left[sl].to_list(), str_right[sr].to_list())
+
+        def where_func(x, y):
+            return x % 2 == 0
+
+        il, ir = ak.join.inner_join(int_left, int_right, wherefunc=where_func, whereargs=(int_left, int_right))
+        sl, sr = ak.join.inner_join(str_left, str_right, wherefunc=where_func, whereargs=(int_left, int_right))
+        self.assertListEqual(sl.to_list(), il.to_list())
+        self.assertListEqual(sr.to_list(), ir.to_list())
+
     def test_cat_inner_join(self):
         intLeft = ak.arange(50)
         intRight = ak.randint(0, 50, 50)
@@ -214,8 +231,4 @@ class JoinTest(ArkoudaTest):
 
 
 def join_where(L, R):
-    idx = []
-    for i in range(L.size):
-        idx.append(i % 2 == 0)
-    return ak.array(idx)
-
+    return ak.arange(L.size) % 2 == 0

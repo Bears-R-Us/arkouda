@@ -179,6 +179,7 @@ def inner_join(
     """Perform inner join on values in <left> and <right>,
     using conditions defined by <wherefunc> evaluated on
     <whereargs>, returning indices of left-right pairs.
+
     Parameters
     ----------
     left : pdarray(int64)
@@ -191,25 +192,28 @@ def inner_join(
         which wherefunc is False will be dropped.
     whereargs : 2-tuple of pdarray
         The two pdarray arguments to wherefunc
+
     Returns
     -------
     leftInds : pdarray(int64)
         The left indices of pairs that meet the join condition
     rightInds : pdarray(int64)
         The right indices of pairs that meet the join condition
+
     Notes
     -----
     The return values satisfy the following assertions
+
     `assert (left[leftInds] == right[rightInds]).all()`
     `assert wherefunc(whereargs[0][leftInds], whereargs[1][rightInds]).all()`
+
     """
     from inspect import signature
 
     # Reduce processing to codes to prevent groupbys being ran on entire Categorical
     if isinstance(left, Categorical) and isinstance(right, Categorical):
         l, r = Categorical.standardize_categories([left, right])
-        left = l.codes
-        right = r.codes
+        left, right = l.codes, r.codes
 
     sample = np.min((left.size, right.size, 5))  # type: ignore
     if wherefunc is not None:
@@ -251,10 +255,8 @@ def inner_join(
             rightWhere = whereargs[1][byRight.permutation][ranges]
             # Expand left whereargs
             keep_where = whereargs[0][keep]
-            if isinstance(keep_where, Categorical):
-                leftWhere = broadcast(fullSegs, keep_where.codes, ranges.size)
-            else:
-                leftWhere = broadcast(fullSegs, keep_where, ranges.size)
+            keep_where = keep_where.codes if isinstance(keep_where, Categorical) else keep_where
+            leftWhere = broadcast(fullSegs, keep_where, ranges.size)
             # Evaluate wherefunc and filter ranges, recompute segments
             whereSatisfied = wherefunc(leftWhere, rightWhere)
             filtRanges = ranges[whereSatisfied]

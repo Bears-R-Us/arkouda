@@ -9,7 +9,7 @@ module BroadcastMsg {
   use Message;
   use BigInteger;
   use SegmentedString;
-  
+
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const bmLogger = new Logger(logLevel, logChannel);
@@ -31,8 +31,7 @@ module BroadcastMsg {
                                        "TypeError");
     }
 
-    const objType = msgArgs.getValueOf("objType");
-    if objType != "pdarray" {
+    if msgArgs.getValueOf("objType").toUpper(): ObjType == ObjType.STRINGS {
       return broadcastStrings(cmd, msgArgs, st);
     }
 
@@ -129,10 +128,10 @@ module BroadcastMsg {
         }
         otherwise {
           throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(gv.dtype:string),
-                                          getLineNumber(),
-                                          getRoutineName(),
-                                          getModuleName(),
-                                          "TypeError");
+                                           getLineNumber(),
+                                           getRoutineName(),
+                                           getModuleName(),
+                                           "TypeError");
         }
       }
     }
@@ -148,10 +147,35 @@ module BroadcastMsg {
     const sE = getSegString(msgArgs.getValueOf("valName"), st);
     const size = msgArgs.get("size").getIntValue();
 
-    var (vals, offs) = broadcast(segs.a, sE, size);
-    var res = getSegString(offs, vals, st);
+    const usePerm: bool = msgArgs.get("permute").getBoolValue();
+    var repMsg = "";
+    if usePerm {
+      const gp = getGenericTypedArrayEntry(msgArgs.getValueOf("permName"), st);
+      if gp.dtype != DType.Int64 {
+        throw new owned ErrorWithContext("Permutation array must have dtype int64",
+                                         getLineNumber(),
+                                         getRoutineName(),
+                                         getModuleName(),
+                                         "TypeError");
+      }
+      if gp.size != size {
+        throw new owned ErrorWithContext("Requested result size must match permutation array size",
+                                         getLineNumber(),
+                                         getRoutineName(),
+                                         getModuleName(),
+                                         "ValueError");
+      }
+      const perm = toSymEntry(gp, int);
+      var (vals, offs) = broadcast(perm.a, segs.a, sE);
+      var res = getSegString(offs, vals, st);
+      repMsg = "created %s".format(st.attrib(res.name)) + "+created bytes.size %t".format(res.nBytes);
+    }
+    else {
+      var (vals, offs) = broadcast(segs.a, sE, size);
+      var res = getSegString(offs, vals, st);
+      repMsg = "created %s".format(st.attrib(res.name)) + "+created bytes.size %t".format(res.nBytes);
+    }
 
-    var repMsg = "created %s".format(st.attrib(res.name)) + "+created bytes.size %t".format(res.nBytes);
     bmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }

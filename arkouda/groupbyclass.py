@@ -1544,14 +1544,14 @@ class GroupBy:
 
     @typechecked
     def broadcast(
-        self, values: groupable_element_type, permute: bool = True
-    ) -> groupable_element_type:
+        self, values: Union[pdarray, Strings], permute: bool = True
+    ) -> Union[pdarray, Strings]:
         """
         Fill each group's segment with a constant value.
 
         Parameters
         ----------
-        values : pdarray, Strings, Categorical
+        values : pdarray, Strings
             The values to put in each group's segment
         permute : bool
             If True (default), permute broadcast values back to the ordering
@@ -1560,7 +1560,7 @@ class GroupBy:
 
         Returns
         -------
-        pdarray, Strings, Categorical
+        pdarray, Strings
             The broadcasted values
 
         Raises
@@ -1603,8 +1603,6 @@ class GroupBy:
         """
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
-        if isinstance(values, Categorical):
-            return Categorical.from_codes(self.broadcast(values.codes, permute), values.categories)
         cmd = "broadcast"
         repMsg = cast(
             str,
@@ -2035,7 +2033,7 @@ class GroupBy:
 
 def broadcast(
     segments: pdarray,
-    values: groupable_element_type,
+    values: Union[pdarray, Strings],
     size: Union[int, np.int64, np.uint64] = -1,
     permutation: Union[pdarray, None] = None,
 ):
@@ -2047,7 +2045,7 @@ def broadcast(
     segments : pdarray, int64
         Offsets of the start of each row in the sparse matrix or grouped array.
         Must be sorted in ascending order.
-    values : pdarray, Strings, Categorical
+    values : pdarray, Strings
         The values to broadcast, one per row (or group)
     size : int
         The total number of nonzeros in the matrix. If permutation is given, this
@@ -2061,7 +2059,7 @@ def broadcast(
 
     Returns
     -------
-    pdarray, Strings, Categorical
+    pdarray, Strings
         The broadcast values, one per nonzero
 
     Raises
@@ -2087,8 +2085,6 @@ def broadcast(
     >>> ak.broadcast(row_starts, row_number, permutation=permutation)
     array([2 2 1 1 1 0 0])
     """
-    if isinstance(values, Categorical):
-        return Categorical.from_codes(broadcast(segments, values.codes, size, permutation), values.categories)
     if segments.size != values.size:
         raise ValueError("segments and values arrays must be same size")
     if segments.size == 0:
