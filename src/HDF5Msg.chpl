@@ -26,6 +26,8 @@ module HDF5Msg {
     use SegmentedString;
     use Sort;
 
+    use BigInteger;
+
     use ArkoudaMapCompat;
     use ArkoudaListCompat;
     use ArkoudaStringBytesCompat;
@@ -387,6 +389,76 @@ module HDF5Msg {
         C_HDF5.H5Oclose(obj_id);
     }
 
+    proc writeBigIntMetaData(file_id: C_HDF5.hid_t, objName: string, objType: string, max_bits: int, num_limbs: int) throws {
+        var obj_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, objName.localize().c_str(), C_HDF5.H5P_DEFAULT);
+
+        // Create the attribute space
+        var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+        var attr_id: C_HDF5.hid_t;
+
+        // Create the objectType. This will be important when merging with other read/write functionality.
+        attr_id = C_HDF5.H5Acreate2(obj_id, "ObjType".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+        var t: ObjType = objType.toUpper(): ObjType;
+        var t_int: int = t: int;
+        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(t_int));
+        C_HDF5.H5Aclose(attr_id);
+
+        attr_id = C_HDF5.H5Acreate2(obj_id, "isBigInt".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+        var isBigInt: int = 1;
+        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(isBigInt));
+        C_HDF5.H5Aclose(attr_id);
+
+        attr_id = C_HDF5.H5Acreate2(obj_id, "MaxBits".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+        var mb = max_bits; // need to generate c_ptrTo
+        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(mb));
+        C_HDF5.H5Aclose(attr_id);
+
+        attr_id = C_HDF5.H5Acreate2(obj_id, "NumLimbs".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+        var nl = num_limbs; // need to generate c_ptrTo
+        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(nl));
+        C_HDF5.H5Aclose(attr_id);
+
+        var attrFileVersionType = getHDF5Type(ARKOUDA_HDF5_FILE_VERSION_TYPE);
+        var attrId = C_HDF5.H5Acreate2(obj_id,
+                          ARKOUDA_HDF5_FILE_VERSION_KEY.c_str(),
+                          attrFileVersionType,
+                          attrSpaceId,
+                          C_HDF5.H5P_DEFAULT,
+                          C_HDF5.H5P_DEFAULT);
+        
+        // H5Awrite requires a pointer and we have a const, so we need a variable ref we can turn into a pointer
+        var fileVersion = ARKOUDA_HDF5_FILE_VERSION_VAL;
+        C_HDF5.H5Awrite(attrId, attrFileVersionType, c_ptrTo(fileVersion));
+        C_HDF5.H5Aclose(attrId);
+
+        var attrStringType = C_HDF5.H5Tcopy(C_HDF5.H5T_C_S1): C_HDF5.hid_t;
+        C_HDF5.H5Tset_size(attrStringType, arkoudaVersion.size:uint(64) + 1); // ensure space for NULL terminator
+        C_HDF5.H5Tset_strpad(attrStringType, C_HDF5.H5T_STR_NULLTERM);
+        
+        attrId = C_HDF5.H5Acreate2(obj_id,
+                            ARKOUDA_HDF5_ARKOUDA_VERSION_KEY.c_str(),
+                            attrStringType,
+                            attrSpaceId,
+                            C_HDF5.H5P_DEFAULT,
+                            C_HDF5.H5P_DEFAULT);
+
+        // For the value, we need to build a ptr to a char[]; c_string doesn't work because it is a const char*        
+        var akVersion = c_calloc(c_char, arkoudaVersion.size+1);
+        for (c, i) in zip(arkoudaVersion.codepoints(), 0..<arkoudaVersion.size) {
+            akVersion[i] = c:c_char;
+        }
+        akVersion[arkoudaVersion.size] = 0:c_char; // ensure NULL termination
+
+        C_HDF5.H5Awrite(attrId, attrStringType, akVersion);
+        C_HDF5.H5Aclose(attrId);
+
+        // release ArkoudaVersion HDF5 resources
+        c_free(akVersion);
+        C_HDF5.H5Sclose(attrSpaceId);
+        C_HDF5.H5Tclose(attrStringType);
+        C_HDF5.H5Oclose(obj_id);
+    }
+
     proc writeGroupByMetaData(file_id: C_HDF5.hid_t, objName: string, objType: string, num_keys: int) throws {
         var obj_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, objName.localize().c_str(), C_HDF5.H5P_DEFAULT);
 
@@ -681,6 +753,39 @@ module HDF5Msg {
         }
     }
 
+    proc bigintToUint(entry): list(shared SymEntry(uint)) throws {
+        select entry.dtype {
+            when DType.BigInt {
+                var arr = toSymEntry(entry, bigint);
+                var tmp = arr.a;
+                var limbs: list(shared SymEntry(uint)) = new list(shared SymEntry(uint));
+                var all_zero = false;
+                var low: [tmp.domain] uint;
+                const ushift = 64:uint;
+                while !all_zero { // Note this returns in BigEndian... client reverses for littleEndian
+                    low = tmp:uint;
+                    limbs.append(new shared SymEntry(low));
+
+                    all_zero = true;
+                    forall t in tmp with (&& reduce all_zero) {
+                        t >>= ushift;
+                        all_zero &&= (t == 0 || t == -1);
+                    }
+                }
+                return limbs;
+            }
+            otherwise {
+                var errorMsg = unrecognizedTypeError("bigintToUint", dtype2str(entry.dtype));
+                throw getErrorWithContext(
+                    msg=errorMsg,
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(), 
+                    moduleName=getModuleName(),
+                    errorClass="TypeError");
+            }
+        }
+    }
+
     /*
         Process and write an Arkouda pdarray to HDF5.
     */
@@ -699,6 +804,7 @@ module HDF5Msg {
         var dset_name = msgArgs.getValueOf("dset");
         const objType = msgArgs.getValueOf("objType");
         var dtype: C_HDF5.hid_t;
+        var write_meta: bool = true;
 
         select file_format {
             when SINGLE_FILE {
@@ -747,6 +853,22 @@ module HDF5Msg {
                         writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), flat.size, bool);
                         dtype = C_HDF5.H5T_NATIVE_HBOOL;
                     }
+                    when DType.BigInt {
+                        var limbs = bigintToUint(toGenSymEntry(entry));
+
+                        // create the group
+                        validateGroup(file_id, f, dset_name, overwrite); // stored as group - group uses the dataset name
+                        var max_bits = toSymEntry(toGenSymEntry(entry), bigint).max_bits;
+                        writeBigIntMetaData(file_id, dset_name, objType, max_bits, limbs.size);
+                        write_meta = false; // don't write standard metadata
+
+                        // write limbs
+                        for (i, l) in zip(0..#limbs.size, limbs) {
+                            var local_limb: [0..#l.size] uint = l.a;
+                            writeLocalDset(file_id, "%s/Limb_%i".format(dset_name, i), c_ptrTo(local_limb), l.size, uint);
+                            writeArkoudaMetaData(file_id, "%s/Limb_%i".format(dset_name, i), objType, getDataType(uint));
+                        }
+                    }
                     otherwise {
                         var errorMsg = unrecognizedTypeError("pdarray_tohdfmsg", dtype2str(entryDtype));
                         throw getErrorWithContext(
@@ -757,8 +879,10 @@ module HDF5Msg {
                            errorClass="TypeError");
                     }
                 }
-                // write attributes for arkouda meta info
-                writeArkoudaMetaData(file_id, dset_name, objType, dtype);
+                // write metadata if not bigint
+                if write_meta {
+                    writeArkoudaMetaData(file_id, dset_name, objType, dtype);
+                }
                 C_HDF5.H5Fclose(file_id);
             }
             when MULTI_FILE {
@@ -782,6 +906,34 @@ module HDF5Msg {
                         var e = toSymEntry(toGenSymEntry(entry), bool);
                         var filenames = prepFiles(filename, mode, e.a);
                         writeDistDset(filenames, dset_name, objType, overwrite, e.a, st);
+                    }
+                    when DType.BigInt {
+                        var limbs = bigintToUint(toGenSymEntry(entry));
+                        var filenames = prepFiles(filename, mode, limbs[0].a);
+                        var max_bits = toSymEntry(toGenSymEntry(entry), bigint).max_bits;
+                        var num_limbs = limbs.size;
+
+                        // need to add the group to all files
+                        coforall (loc, idx) in zip(limbs[0].a.targetLocales(), filenames.domain) with (ref max_bits, ref num_limbs) do on loc {
+                            const localeFilename = filenames[idx];
+                            h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "%s exists? %t".format(localeFilename, exists(localeFilename)));
+
+                            var file_id = C_HDF5.H5Fopen(localeFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+                            defer { // Close the file on scope exit
+                                C_HDF5.H5Fclose(file_id);
+                            }
+
+                            // create the group and generate metadata
+                            validateGroup(file_id, localeFilename, dset_name, overwrite);
+                            writeBigIntMetaData(file_id, dset_name, objType, max_bits, num_limbs);
+                        }
+
+                        // write limbs
+                        for (i, l) in zip(0..#limbs.size, limbs) {
+                            var local_limb: [0..#l.size] uint = l.a;
+                            writeDistDset(filenames, "/%s/Limb_%i".format(dset_name, i), "pdarray", overwrite, l.a, st);
+                        }
                     }
                     otherwise {
                         var errorMsg = unrecognizedTypeError("pdarray_tohdfmsg", dtype2str(entryDtype));
@@ -1885,6 +2037,36 @@ module HDF5Msg {
         return boolDataset;
     }
 
+    proc isBigIntPdarray(filename: string, dset: string): bool throws {
+        var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
+                                           C_HDF5.H5P_DEFAULT);
+        defer { // Close the file on exit
+            C_HDF5.H5Fclose(file_id);
+        }
+        var bigIntDataset: bool;
+        try {
+            var dset_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, dset.c_str(), C_HDF5.H5P_DEFAULT);
+            var isBigInt: int;
+            if C_HDF5.H5Aexists_by_name(dset_id, ".".c_str(), "isBigInt", C_HDF5.H5P_DEFAULT) > 0 {
+                var isBigInt_id: C_HDF5.hid_t = C_HDF5.H5Aopen_by_name(dset_id, ".".c_str(), "isBigInt", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+                C_HDF5.H5Aread(isBigInt_id, getHDF5Type(int), c_ptrTo(isBigInt));
+                bigIntDataset = if isBigInt == 1 then true else false;
+            }
+            else{
+                bigIntDataset = false;
+            }
+            C_HDF5.H5Dclose(dset_id);
+        } catch e: Error {
+            /*
+             * If there's an actual error, print it here. :TODO: revisit this
+             * catch block after confirming the best way to handle HDF5 error
+             */
+            h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                        "checking if bigIntDataset %t with file %s".format(e.message()));
+        }
+        return bigIntDataset;
+    }
+
     /**
      * inline proc to validate the range for our domain.
      * Valid domains must be increasing with the lower bound <= upper bound
@@ -2043,10 +2225,89 @@ module HDF5Msg {
         }
     }
 
+    proc readBigIntPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): string throws {
+        // read the number of limbs and max bits attributes
+        var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+        var obj_id: C_HDF5.hid_t;
+        obj_id = C_HDF5.H5Oopen(file_id, dset.c_str(), C_HDF5.H5P_DEFAULT);
+        if obj_id < 0 {
+            throw getErrorWithContext(
+                           msg="Dataset, %s, not found.".format(dset),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="IllegalArgumentError");
+        }
+        var max_bits: int = -1;
+         if C_HDF5.H5Aexists_by_name(obj_id, ".".c_str(), "MaxBits", C_HDF5.H5P_DEFAULT) > 0 {
+            var maxbits_id: C_HDF5.hid_t = C_HDF5.H5Aopen_by_name(obj_id, ".".c_str(), "MaxBits", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+            C_HDF5.H5Aread(maxbits_id, getHDF5Type(int), c_ptrTo(max_bits));
+            C_HDF5.H5Aclose(maxbits_id);
+        }
+
+        var numlimbs: int = -1;
+        if C_HDF5.H5Aexists_by_name(obj_id, ".".c_str(), "NumLimbs", C_HDF5.H5P_DEFAULT) > 0 {
+            var numlimbs_id: C_HDF5.hid_t = C_HDF5.H5Aopen_by_name(obj_id, ".".c_str(), "NumLimbs", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+            C_HDF5.H5Aread(numlimbs_id, getHDF5Type(int), c_ptrTo(numlimbs));
+            C_HDF5.H5Aclose(numlimbs_id);
+        }
+        C_HDF5.H5Oclose(obj_id);
+
+        if numlimbs == -1 {
+            throw getErrorWithContext(
+                           msg="NumKeys attribute not found. Required for GroupBy Reads.",
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="RuntimeError");
+        }
+        C_HDF5.H5Fclose(file_id);
+
+        var limbs: list(shared SymEntry(uint)) = new list(shared SymEntry(uint));
+        for l in 0..#numlimbs {
+            var subdoms: [fD] domain(1);
+            var skips = new set(string);
+            var len: int;
+            (subdoms, len, skips) = get_subdoms(filenames, "%s/Limb_%i".format(dset, l), validFiles);
+            var limb = new shared SymEntry(len, uint);
+            read_files_into_distributed_array(limb.a, subdoms, filenames, "%s/Limb_%i".format(dset, l), skips);
+            limbs.append(limb);
+        }
+
+        var bigIntArray = makeDistArray(limbs[0].size, bigint);
+        for (l, i) in zip(limbs, 0..<numlimbs) {
+            ref uintA = l.a;
+            forall (uA, bA) in zip(uintA, bigIntArray) with (var bigUA: bigint) {
+              bigUA = uA;
+              bigUA <<= (64*i);
+              bA += bigUA;
+            }
+        }
+
+        if max_bits != -1 {
+            // modBy should always be non-zero since we start at 1 and left shift
+            var max_size = 1:bigint;
+            max_size <<= max_bits;
+            max_size -= 1;
+            forall bA in bigIntArray with (var local_max_size = max_size) {
+              bA &= local_max_size;
+            }
+        }
+
+        var rname = st.nextName();
+        st.addEntry(rname, new shared SymEntry(bigIntArray, max_bits));
+        return rname;
+    }
+
     /*
         Read an pdarray object from the files provided into a distributed array
     */
     proc readPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): string throws {
+        // identify the index of the first valid file
+        var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
+        if isBigIntPdarray(filenames[idx], dset) {
+            return readBigIntPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
+        }
         var rname: string;
         var subdoms: [fD] domain(1);
         var skips = new set(string);
@@ -2054,8 +2315,6 @@ module HDF5Msg {
         (subdoms, len, skips) = get_subdoms(filenames, dset, validFiles);
         select dataclass {
             when C_HDF5.H5T_INTEGER {
-                // identify the index of the first valid file
-                var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
                 if (!isSigned && 8 == bytesize) {
                     var entryUInt = new shared SymEntry(len, uint);
                     h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Initialized uint entry for dataset %s".format(dset));
@@ -2377,6 +2636,7 @@ module HDF5Msg {
                            moduleName=getModuleName(),
                            errorClass="RuntimeError");
         }
+        C_HDF5.H5Fclose(file_id);
 
         for k in 0..#numkeys {
             //need to determine object type of the key to determine how to read it
@@ -2413,7 +2673,6 @@ module HDF5Msg {
             }
             rtnMap.add("KEY_%i".format(k), "%s+|+%s".format(readObjType, readCreate));
         }
-        C_HDF5.H5Fclose(file_id);
         return (dset, "groupby", "%jt".format(rtnMap));
     }
 
@@ -2564,7 +2823,12 @@ module HDF5Msg {
                 // for groupby this information will not be used, but needs to be returned for the workflow
                 (dataclass, bytesize, isSigned) = get_dataset_info(file_id, "%s/%s".format(dsetName, PERMUTATION_NAME)); 
             } else {
-                (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
+                if isBigIntPdarray(filename, dsetName) {
+                    // for bigint pdarray this info is the same for all limbs
+                    (dataclass, bytesize, isSigned) = get_dataset_info(file_id, "%s/%s".format(dsetName, "Limb_0"));
+                } else {
+                    (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
+                }
             }
         } catch e : Error {
             //:TODO: recommend revisiting this catch block 
