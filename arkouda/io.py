@@ -12,7 +12,7 @@ from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import array
+from arkouda.pdarraycreation import array, arange
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 
@@ -1871,9 +1871,10 @@ def read_tagged_data(
         cmd="globExpansion",
         args={"file_count": len(filenames), "filenames": filenames},
     )
-    file_list = json.loads(j_str)
-    file_cat = Categorical(
-        array(file_list)
+    file_list = array(json.loads(j_str))
+    file_cat = Categorical.from_codes(
+        arange(file_list.size),
+        file_list
     )  # create a categorical from the ak.Strings representation of the file list
 
     ftype = get_filetype(filenames)
