@@ -168,16 +168,16 @@ module ExternalIntegration {
             var format = this.requestFormat;
             select(format) {     
                 when HttpRequestFormat.JSON {
-                    args.pushBack("Accept: application/json");
+                    args.append("Accept: application/json");
                     if this.requestType == HttpRequestType.PATCH {
-                        args.pushBack('Content-Type: application/json-patch+json');
+                        args.append('Content-Type: application/json-patch+json');
                     } else {
-                        args.pushBack("Content-Type: application/json");    
+                        args.append("Content-Type: application/json");    
                     }               
                 }     
                 when HttpRequestFormat.TEXT {
-                    args.pushBack("Accept: text/plain");
-                    args.pushBack("Content-Type: text/plain; charset=UTF-8");
+                    args.append("Accept: text/plain");
+                    args.append("Content-Type: text/plain; charset=UTF-8");
                 } 
                 otherwise {
                     throw new Error("Unsupported HttpFormat");
