@@ -135,7 +135,6 @@ module CommAggregation {
 
 
   /* "Aggregator" that uses unordered copy instead of actually aggregating */
-  pragma "no doc"
   record DstUnorderedAggregator {
     type elemType;
 
@@ -272,7 +271,6 @@ module CommAggregation {
   }
 
   /* "Aggregator" that uses unordered copy instead of actually aggregating */
-  pragma "no doc"
   record SrcUnorderedAggregator {
     type elemType;
 
