@@ -29,6 +29,8 @@ module HDF5Msg {
 
     use ArkoudaMapCompat;
     use ArkoudaListCompat;
+    use ArkoudaStringBytesCompat;
+
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -1668,7 +1670,7 @@ module HDF5Msg {
         idx_p = 0:C_HDF5.hsize_t; // reset our iteration counter
         C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(_simulate_h5ls), c_field_names);
         var pos = c_strlen(c_field_names):int;
-        var items = createStringWithNewBuffer(c_field_names, pos, pos+1);
+        var items = string.createCopyingBuffer(c_field_names, pos, pos+1);
         c_free(c_field_names);
         return items;
     }

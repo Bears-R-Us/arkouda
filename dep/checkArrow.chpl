@@ -1,4 +1,5 @@
 use CTypes, IO;
+use ArkoudaStringBytesCompat;
 
 require "../src/ArrowFunctions.h";
 require "../src/ArrowFunctions.o";
@@ -13,7 +14,7 @@ proc getVersionInfo() {
   }
   var ret: string;
   try {
-    ret = createStringWithNewBuffer(cVersionString,
+    ret = string.createCopyingBuffer(cVersionString,
                               strlen(cVersionString));
   } catch e {
     ret = "Error converting Arrow version message to Chapel string";

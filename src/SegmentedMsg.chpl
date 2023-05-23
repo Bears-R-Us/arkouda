@@ -17,6 +17,7 @@ module SegmentedMsg {
   use Math;
 
   use ArkoudaMapCompat;
+  use ArkoudaStringBytesCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -180,7 +181,7 @@ module SegmentedMsg {
             var localA = makeArrayFromPtr(ptr, D.size:uint);
             localA = A;
             const size = D.size*c_sizeof(eltType):int;
-            return createBytesWithOwnedBuffer(ptr:c_ptr(uint(8)), size, size);
+            return bytes.createAdoptingBuffer(ptr:c_ptr(uint(8)), size, size);
         }
 
         if entry.dtype == DType.Int64 {
