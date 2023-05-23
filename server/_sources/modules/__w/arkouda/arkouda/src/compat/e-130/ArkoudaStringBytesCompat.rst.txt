@@ -1,0 +1,47 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaStringBytesCompat
+
+ArkoudaStringBytesCompat
+========================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaStringBytesCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaStringBytesCompat;
+
+.. method:: proc type string.createBorrowingBuffer(x: string): string
+
+.. method:: proc type string.createBorrowingBuffer(x: c_string, length = x.size): string throws
+
+.. method:: proc type string.createBorrowingBuffer(x: c_ptr(?t), length: int, size: int): string throws
+
+.. method:: proc type string.createAdoptingBuffer(x: c_string, length = x.size): string throws
+
+.. method:: proc type string.createAdoptingBuffer(x: c_ptr(?t), length: int, size: int): string throws
+
+.. method:: proc type string.createCopyingBuffer(x: c_string, length = x.size, policy = decodePolicy.strict): string throws
+
+.. method:: proc type string.createCopyingBuffer(x: c_ptr(?t), length: int, size = length + 1, policy = decodePolicy.strict): string throws
+
+.. method:: proc type bytes.createBorrowingBuffer(x: bytes): bytes
+
+.. method:: proc type bytes.createBorrowingBuffer(x: c_string, length = x.size): bytes
+
+.. method:: proc type bytes.createBorrowingBuffer(x: c_ptr(?t), length: int, size: int): bytes
+
+.. method:: proc type bytes.createAdoptingBuffer(x: c_string, length = x.size): bytes
+
+.. method:: proc type bytes.createAdoptingBuffer(x: c_ptr(?t), length: int, size: int): bytes
+
+.. method:: proc type bytes.createCopyingBuffer(x: c_string, length = x.size): bytes
+
+.. method:: proc type bytes.createCopyingBuffer(x: c_ptr(?t), length: int, size = length + 1): bytes
+
