@@ -396,13 +396,6 @@ module HDF5Msg {
         var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
         var attr_id: C_HDF5.hid_t;
 
-        // Create the objectType. This will be important when merging with other read/write functionality.
-        // attr_id = C_HDF5.H5Acreate2(obj_id, "ObjType".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-        // var t: ObjType = objType.toUpper(): ObjType;
-        // var t_int: int = t: int;
-        // C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(t_int));
-        // C_HDF5.H5Aclose(attr_id);
-
         attr_id = C_HDF5.H5Acreate2(obj_id, "isBigInt".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         var isBigInt: int = 1;
         C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(isBigInt));
@@ -2222,63 +2215,6 @@ module HDF5Msg {
         st.addEntry(sname, new shared SymEntry(shape));
         var rname = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
         return (dset, "ArrayView", "%s+%s".format(rname, sname));
-        // select dataclass {
-        //     when C_HDF5.H5T_INTEGER {
-        //         // identify the index of the first valid file
-        //         var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
-        //         if (!isSigned && 8 == bytesize) {
-        //             var entryUInt = new shared SymEntry(len, uint);
-        //             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Initialized uint entry for dataset %s".format(dset));
-        //             read_files_into_distributed_array(entryUInt.a, subdoms, filenames, dset, skips);
-        //             var rname = st.nextName();
-        //             if isBoolDataset(filenames[idx], dset) {
-        //                 var entryBool = new shared SymEntry(len, bool);
-        //                 entryBool.a = entryUInt.a:bool;
-        //                 st.addEntry(rname, entryBool);
-        //             } else {
-        //                 // Not a boolean dataset, so add original SymEntry to SymTable
-        //                 st.addEntry(rname, entryUInt);
-        //             }
-        //             st.addEntry(rname, entryUInt);
-        //             return (dset, "ArrayView", "%s+%s".format(rname, sname));
-        //         }
-        //         else {
-        //             var entryInt = new shared SymEntry(len, int);
-        //             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Initialized int entry for dataset %s".format(dset));
-        //             read_files_into_distributed_array(entryInt.a, subdoms, filenames, dset, skips);
-        //             var rname = st.nextName();
-        //             if isBoolDataset(filenames[idx], dset) {
-        //                 var entryBool = new shared SymEntry(len, bool);
-        //                 entryBool.a = entryInt.a:bool;
-        //                 st.addEntry(rname, entryBool);
-        //             } else {
-        //                 // Not a boolean dataset, so add original SymEntry to SymTable
-        //                 st.addEntry(rname, entryInt);
-        //             }
-        //             return (dset, "ArrayView", "%s+%s".format(rname, sname));
-        //         }
-        //     }
-        //     when C_HDF5.H5T_FLOAT {
-        //         var entryReal = new shared SymEntry(len, real);
-        //         h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-        //                                                             "Initialized float entry");
-        //         read_files_into_distributed_array(entryReal.a, subdoms, filenames, dset, skips);
-        //         var rname = st.nextName();
-        //         st.addEntry(rname, entryReal);
-        //         return (dset, "ArrayView", "%s+%s".format(rname, sname));
-        //     }
-        //     otherwise {
-        //         var errorMsg = "detected unhandled datatype: objType? ArrayView, class %i, size %i, " +
-        //                         "signed? %t".format(dataclass, bytesize, isSigned);
-        //         h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-        //         throw getErrorWithContext(
-        //                     msg=errorMsg,
-        //                     lineNumber=getLineNumber(), 
-        //                     routineName=getRoutineName(), 
-        //                     moduleName=getModuleName(), 
-        //                     errorClass='UnhandledDatatypeError');
-        //     }
-        // }
     }
 
     proc readBigIntPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): string throws {
