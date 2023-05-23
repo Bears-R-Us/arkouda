@@ -7,6 +7,8 @@ module ExternalIntegration {
     use ServerConfig;
     use ServerErrors;
 
+    use ArkoudaListCompat;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const eiLogger = new Logger(logLevel, logChannel);
@@ -166,16 +168,16 @@ module ExternalIntegration {
             var format = this.requestFormat;
             select(format) {     
                 when HttpRequestFormat.JSON {
-                    args.append("Accept: application/json");
+                    args.pushBack("Accept: application/json");
                     if this.requestType == HttpRequestType.PATCH {
-                        args.append('Content-Type: application/json-patch+json');
+                        args.pushBack('Content-Type: application/json-patch+json');
                     } else {
-                        args.append("Content-Type: application/json");    
+                        args.pushBack("Content-Type: application/json");    
                     }               
                 }     
                 when HttpRequestFormat.TEXT {
-                    args.append("Accept: text/plain");
-                    args.append("Content-Type: text/plain; charset=UTF-8");
+                    args.pushBack("Accept: text/plain");
+                    args.pushBack("Content-Type: text/plain; charset=UTF-8");
                 } 
                 otherwise {
                     throw new Error("Unsupported HttpFormat");

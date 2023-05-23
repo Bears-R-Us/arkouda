@@ -28,6 +28,7 @@ module HDF5Msg {
     use Sort;
 
     use ArkoudaMapCompat;
+    use ArkoudaListCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -1650,7 +1651,7 @@ module HDF5Msg {
             var obj_type:C_HDF5.H5O_type_t;
             var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));
             if (obj_type == C_HDF5.H5O_TYPE_GROUP || obj_type == C_HDF5.H5O_TYPE_DATASET) {
-                // items.append(obj_name:string); This doesn't work unless items is global
+                // items.pushBack(obj_name:string); This doesn't work unless items is global
                 c_append_HDF5_fieldname(data, obj_name);
             }
             return 0; // to continue iteration
@@ -2800,7 +2801,7 @@ module HDF5Msg {
                 if hadError {
                     // Keep running total, but we'll only report back the first 10
                     if fileErrorCount < 10 {
-                        fileErrors.append(fileErrorMsg.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip());
+                        fileErrors.pushBack(fileErrorMsg.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip());
                     }
                     fileErrorCount += 1;
                     validFiles[i] = false;
@@ -2836,28 +2837,28 @@ module HDF5Msg {
 
             if tagData {
                 h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Tagging Data with File Code");
-                rtnData.append(generateTagData(filenames, dsetName, objType, validFiles, st));
+                rtnData.pushBack(generateTagData(filenames, dsetName, objType, validFiles, st));
                 tagData = false; // turn off so we only run once
             }
 
             select objType {
                 when ObjType.ARRAYVIEW {
-                    rtnData.append(arrayView_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
+                    rtnData.pushBack(arrayView_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
                 }
                 when ObjType.PDARRAY {
-                    rtnData.append(pdarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
+                    rtnData.pushBack(pdarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
                 }
                 when ObjType.STRINGS {
-                    rtnData.append(strings_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st));
+                    rtnData.pushBack(strings_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st));
                 }
                 when ObjType.SEGARRAY {
-                    rtnData.append(segarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
+                    rtnData.pushBack(segarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
                 }
                 when ObjType.CATEGORICAL {
-                    rtnData.append(categorical_readhdfMsg(filenames, dsetName, validFiles, calcStringOffsets, st));
+                    rtnData.pushBack(categorical_readhdfMsg(filenames, dsetName, validFiles, calcStringOffsets, st));
                 }
                 when ObjType.GROUPBY {
-                    rtnData.append(groupby_readhdfMsg(filenames, dsetName, validFiles, calcStringOffsets, st));
+                    rtnData.pushBack(groupby_readhdfMsg(filenames, dsetName, validFiles, calcStringOffsets, st));
                 }
                 otherwise {
                     var errorMsg = "Unknown object type found";

@@ -19,6 +19,7 @@ module GenSymIO {
     use SegmentedString;
 
     use ArkoudaMapCompat;
+    use ArkoudaListCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -219,7 +220,7 @@ module GenSymIO {
                 continue;
             }
             item.add("created", create_str);
-            items.append(item);
+            items.pushBack(item);
         }
         
         var reply: map(string, string) = new map(string, string);
