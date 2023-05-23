@@ -22,6 +22,7 @@ module SegmentedString {
   use FileSystem;
 
   use ArkoudaRegexCompat;
+  use ArkoudaStringBytesCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -1545,11 +1546,11 @@ module SegmentedString {
     try {
       if localSlice.isOwned {
         localSlice.isOwned = false;
-        return createStringWithOwnedBuffer(localSlice.ptr, region.size-1, region.size);
+        return string.createAdoptingBuffer(localSlice.ptr, region.size-1, region.size);
       } else if borrow {
-        return createStringWithBorrowedBuffer(localSlice.ptr, region.size-1, region.size);
+        return string.createBorrowingBuffer(localSlice.ptr, region.size-1, region.size);
       } else {
-        return createStringWithNewBuffer(localSlice.ptr, region.size-1, region.size);
+        return string.createCopyingBuffer(localSlice.ptr, region.size-1, region.size);
       }
     } catch {
       return "<error interpreting bytes as string>";
@@ -1565,11 +1566,11 @@ module SegmentedString {
     try {
       if localSlice.isOwned {
         localSlice.isOwned = false;
-        return createBytesWithOwnedBuffer(localSlice.ptr, region.size-1, region.size);
+        return bytes.createAdoptingBuffer(localSlice.ptr, region.size-1, region.size);
       } else if borrow {
-        return createBytesWithBorrowedBuffer(localSlice.ptr, region.size-1, region.size);
+        return string.createBorrowingBuffer(localSlice.ptr, region.size-1, region.size);
       } else {
-        return createBytesWithNewBuffer(localSlice.ptr, region.size-1, region.size);
+        return bytes.createCopyingBuffer(localSlice.ptr, region.size-1, region.size);
       }
     } catch {
       return b"<error interpreting uint(8) as bytes>";

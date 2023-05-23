@@ -33,6 +33,7 @@
 module ArkoudaTimeCompat {
   import HaltWrappers;
   private use CTypes;
+  private use ArkoudaStringBytesCompat;
 
 // Returns the number of seconds since midnight.  Has the potential for
 // microsecond resolution if supported by the runtime platform
@@ -495,7 +496,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
     strftime(c_ptrTo(buf), bufLen, fmt.c_str(), timeStruct);
     var str: string;
     try! {
-      str = createStringWithNewBuffer(c_ptrTo(buf):c_string);
+      str = string.createCopyingBuffer(c_ptrTo(buf):c_string);
     }
     return str;
   }
@@ -812,7 +813,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
     strftime(c_ptrTo(buf), bufLen, fmt.c_str(), timeStruct);
     var str: string;
     try! {
-      str = createStringWithNewBuffer(c_ptrTo(buf):c_string);
+      str = string.createCopyingBuffer(c_ptrTo(buf):c_string);
     }
 
     return str;
@@ -1430,7 +1431,7 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
 
     var str: string;
     try! {
-      str = createStringWithNewBuffer(c_ptrTo(buf):c_string);
+      str = string.createCopyingBuffer(c_ptrTo(buf):c_string);
     }
 
     return str;

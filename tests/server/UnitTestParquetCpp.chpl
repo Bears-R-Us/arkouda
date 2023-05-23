@@ -1,6 +1,7 @@
 use ParquetMsg, CTypes, FileSystem;
 use UnitTest;
 use TestBase;
+use ArkoudaStringBytesCompat;
 
 proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
   extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
@@ -20,7 +21,7 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
 
   if c_writeColumnToParquet(filename, c_ptrTo(a), 0, dsetname, size, 10000, false, 1, errMsg) < 0 {
     var chplMsg;
-    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
   }
 
@@ -28,7 +29,7 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
 
   if(c_readColumnByName(filename, c_ptrTo(b), dsetname, size, 0, 10000, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
-    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
   }
     
@@ -56,7 +57,7 @@ proc testInt32Read() {
   if(c_readColumnByName("resources/int32.parquet".c_str(), c_ptrTo(a),
                         "array".c_str(), 50, 0, 1, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
-    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
   }
 
@@ -82,7 +83,7 @@ proc testGetNumRows(filename: c_string, expectedSize: int) {
     return 0;
   } else {
     var chplMsg;
-    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
     writeln("FAILED: c_getNumRows");
     return 1;
@@ -106,7 +107,7 @@ proc testGetType(filename: c_string, dsetname: c_string) {
     return 0;
   } else {
     var chplMsg;
-    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
     writeln("FAILED: c_getType with ", arrowType);
     return 1;
@@ -121,7 +122,7 @@ proc testVersionInfo() {
     c_free_string(cVersionString);
   }
   var ret;
-  try! ret = createStringWithNewBuffer(cVersionString);
+  try! ret = string.createCopyingBuffer(cVersionString);
   try {
     // Ensure that version number can be cast to int
     // Not checking version number for compatability
@@ -145,13 +146,13 @@ proc testGetDsets(filename) {
     c_free_string(errMsg);
   }
   var ret;
-  try! ret = createStringWithNewBuffer(cDsetString, strlen(cDsetString));
+  try! ret = string.createCopyingBuffer(cDsetString, strlen(cDsetString));
 
   if st == 0 && ret == "my-dset-name-test" {
     return 0;
   } else if st != 0 {
     var chplMsg;
-    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
     writeln("FAILED: c_getDatasetNames");
     return 1;
@@ -180,7 +181,7 @@ proc testReadStrings(filename, dsetname) {
   var byteSize  = + reduce offsets;
   if byteSize < 0 {
     var chplMsg;
-    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
   }
 
@@ -188,12 +189,12 @@ proc testReadStrings(filename, dsetname) {
 
   if(c_readColumnByName(filename, c_ptrTo(a), dsetname, 3, 0, 1, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
-    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
   }
 
   var localSlice = new lowLevelLocalizingSlice(a, 0..3);
-  var firstElem = createStringWithOwnedBuffer(localSlice.ptr, 3, 4);
+  var firstElem = string.createAdoptingBuffer(localSlice.ptr, 3, 4);
   if firstElem == 'asd' {
     return 0;
   } else {
@@ -217,13 +218,13 @@ proc testMultiDset() {
     c_free_string(errMsg);
   }
   var ret;
-  try! ret = createStringWithNewBuffer(cDsetString, strlen(cDsetString));
+  try! ret = string.createCopyingBuffer(cDsetString, strlen(cDsetString));
 
   if st == 0 && ret == "col1,col2,col3" {
     return 0;
   } else if st != 0 {
     var chplMsg;
-    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
     writeln("FAILED: testMultiDset");
     return 1;

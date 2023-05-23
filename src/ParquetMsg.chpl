@@ -18,6 +18,7 @@ module ParquetMsg {
   use SegmentedArray;
 
   use ArkoudaMapCompat;
+  use ArkoudaStringBytesCompat;
 
   enum CompressionType {
     NONE=0,
@@ -74,7 +75,7 @@ module ParquetMsg {
       extern proc strlen(a): int;
       var err: string;
       try {
-        err = createStringWithNewBuffer(errMsg, strlen(errMsg));
+        err = string.createCopyingBuffer(errMsg, strlen(errMsg));
       } catch e {
         err = "Error converting Parquet error message to Chapel string";
       }
@@ -97,7 +98,7 @@ module ParquetMsg {
     }
     var ret: string;
     try {
-      ret = createStringWithNewBuffer(cVersionString,
+      ret = string.createCopyingBuffer(cVersionString,
                                 strlen(cVersionString));
     } catch e {
       ret = "Error converting Arrow version message to Chapel string";
@@ -917,7 +918,7 @@ module ParquetMsg {
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
     }
     var datasets: string;
-    try! datasets = createStringWithNewBuffer(res, strlen(res));
+    try! datasets = string.createCopyingBuffer(res, strlen(res));
     return new list(datasets.split(","));
   }
 
@@ -1715,7 +1716,7 @@ module ParquetMsg {
                            c_ptrTo(pqErr.errMsg)) == ARROWERROR {
         pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
       }
-      try! repMsg = createStringWithNewBuffer(res, strlen(res));
+      try! repMsg = string.createCopyingBuffer(res, strlen(res));
       var items = new list(repMsg.split(",")); // convert to json
 
       repMsg = "%jt".format(items);
