@@ -13,7 +13,7 @@ module ArkoudaListCompat {
     this.append(other);
   }
 
-  proc list.pushBack(other: range(this.eltType, ?, ?)) {
+  proc list.pushBack(other: range(this.eltType, ?)) {
     this.append(other);
   }
 
