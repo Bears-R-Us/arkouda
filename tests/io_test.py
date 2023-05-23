@@ -667,6 +667,7 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(pda2.to_list(), npa1.tolist())
 
     def testBigIntHdf5(self):
+        # pdarray
         a = ak.arange(3, dtype=ak.bigint)
         a += 2 ** 200
         a.max_bits = 201
@@ -676,6 +677,32 @@ class IOTest(ArkoudaTest):
             rd_a = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
             self.assertListEqual(a.to_list(), rd_a.to_list())
             self.assertEqual(a.max_bits, rd_a.max_bits)
+
+        # arrayview
+        a = ak.arange(27, dtype=ak.bigint)
+        a += 2**200
+        a.max_bits = 201
+
+        av = a.reshape((3, 3, 3))
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            av.to_hdf(f"{tmp_dirname}/bigint_test")
+            rd_av = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
+            self.assertListEqual(av.base.to_list(), rd_av.base.to_list())
+            self.assertEqual(av.base.max_bits, rd_av.base.max_bits)
+
+        # groupby
+        a = ak.arange(5, dtype=ak.bigint)
+        g = ak.GroupBy(a)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            g.to_hdf(f"{tmp_dirname}/bigint_test")
+            rd_g = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
+            self.assertListEqual(g.keys.to_list(), g.keys.to_list())
+            self.assertListEqual(g.unique_keys.to_list(), g.unique_keys.to_list())
+            self.assertListEqual(g.permutation.to_list(), g.permutation.to_list())
+            self.assertListEqual(g.segments.to_list(), g.segments.to_list())
+
+        # TODO - add testing for bigint segarray
 
     def testUint64ToFromArray(self):
         """

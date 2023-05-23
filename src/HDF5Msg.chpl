@@ -417,49 +417,8 @@ module HDF5Msg {
         var nl = num_limbs; // need to generate c_ptrTo
         C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(nl));
         C_HDF5.H5Aclose(attr_id);
-
-        // var attrFileVersionType = getHDF5Type(ARKOUDA_HDF5_FILE_VERSION_TYPE);
-        // var attrId = C_HDF5.H5Acreate2(obj_id,
-        //                   ARKOUDA_HDF5_FILE_VERSION_KEY.c_str(),
-        //                   attrFileVersionType,
-        //                   attrSpaceId,
-        //                   C_HDF5.H5P_DEFAULT,
-        //                   C_HDF5.H5P_DEFAULT);
-        
-        // // H5Awrite requires a pointer and we have a const, so we need a variable ref we can turn into a pointer
-        // var fileVersion = ARKOUDA_HDF5_FILE_VERSION_VAL;
-        // C_HDF5.H5Awrite(attrId, attrFileVersionType, c_ptrTo(fileVersion));
-        // C_HDF5.H5Aclose(attrId);
-
-        // var attrStringType = C_HDF5.H5Tcopy(C_HDF5.H5T_C_S1): C_HDF5.hid_t;
-        // C_HDF5.H5Tset_size(attrStringType, arkoudaVersion.size:uint(64) + 1); // ensure space for NULL terminator
-        // C_HDF5.H5Tset_strpad(attrStringType, C_HDF5.H5T_STR_NULLTERM);
-        
-        // attrId = C_HDF5.H5Acreate2(obj_id,
-        //                     ARKOUDA_HDF5_ARKOUDA_VERSION_KEY.c_str(),
-        //                     attrStringType,
-        //                     attrSpaceId,
-        //                     C_HDF5.H5P_DEFAULT,
-        //                     C_HDF5.H5P_DEFAULT);
-
-        // // For the value, we need to build a ptr to a char[]; c_string doesn't work because it is a const char*        
-        // var akVersion = c_calloc(c_char, arkoudaVersion.size+1);
-        // for (c, i) in zip(arkoudaVersion.codepoints(), 0..<arkoudaVersion.size) {
-        //     akVersion[i] = c:c_char;
-        // }
-        // akVersion[arkoudaVersion.size] = 0:c_char; // ensure NULL termination
-
-        // C_HDF5.H5Awrite(attrId, attrStringType, akVersion);
-        // C_HDF5.H5Aclose(attrId);
-
-        // release ArkoudaVersion HDF5 resources
-        // c_free(akVersion);
         C_HDF5.H5Sclose(attrSpaceId);
-        // C_HDF5.H5Tclose(attrStringType);
         C_HDF5.H5Oclose(obj_id);
-
-        // add arkouda meta data attributes
-        // writeArkoudaMetaData(file_id, dset_name, objType, dtype);
     }
 
     proc writeGroupByMetaData(file_id: C_HDF5.hid_t, objName: string, objType: string, num_keys: int) throws {
@@ -533,7 +492,7 @@ module HDF5Msg {
         h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         "Writing ArrayView Attrs");
         //open the created dset so we can add attributes.
-        var dset_id: C_HDF5.hid_t = C_HDF5.H5Dopen(file_id, dset_name.localize().c_str(), C_HDF5.H5P_DEFAULT);
+        var dset_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, dset_name.localize().c_str(), C_HDF5.H5P_DEFAULT);
 
         // Create the attribute space
         var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
@@ -557,7 +516,7 @@ module HDF5Msg {
 
         // close the space and the dataset
         C_HDF5.H5Sclose(attrSpaceId);
-        C_HDF5.H5Dclose(dset_id);
+        C_HDF5.H5Oclose(dset_id);
 
         // add arkouda meta data attributes
         writeArkoudaMetaData(file_id, dset_name, objType, dtype);
@@ -771,6 +730,9 @@ module HDF5Msg {
                             // create the group and generate metadata
                             validateGroup(file_id, localeFilename, dset_name, overwrite);
                             writeBigIntMetaData(file_id, dset_name, max_bits, num_limbs);
+                            var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("shape"), st);
+                            var shape = toSymEntry(shape_sym, int);
+                            writeArrayViewAttrs(file_id, dset_name, objType, shape, getHDF5Type(uint));
                         }
 
                         // write limbs
@@ -2147,7 +2109,7 @@ module HDF5Msg {
             else{
                 bigIntDataset = false;
             }
-            C_HDF5.H5Dclose(dset_id);
+            C_HDF5.H5Oclose(dset_id);
         } catch e: Error {
             /*
              * If there's an actual error, print it here. :TODO: revisit this
@@ -2213,7 +2175,7 @@ module HDF5Msg {
 
         var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);
-        var dset_id: C_HDF5.hid_t = C_HDF5.H5Dopen(file_id, dset.c_str(), C_HDF5.H5P_DEFAULT);
+        var dset_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, dset.c_str(), C_HDF5.H5P_DEFAULT);
 
         // check if rank is attr and then get.
         var rank: int;
@@ -2253,7 +2215,7 @@ module HDF5Msg {
                              errorClass='AttributeNotFoundError');
         }
 
-        C_HDF5.H5Dclose(dset_id);
+        C_HDF5.H5Oclose(dset_id);
         C_HDF5.H5Fclose(file_id);
         
         var sname = st.nextName();
@@ -3213,6 +3175,7 @@ module HDF5Msg {
             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                 "allowErrors:true, fileErrorCount:%t".format(fileErrorCount));
         }
+        writeln("\n\n%jt\n\n".format(rtnData));
         var repMsg: string = _buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
         h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg,MsgType.NORMAL);
