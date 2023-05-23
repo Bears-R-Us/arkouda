@@ -1,19 +1,19 @@
 module ArkoudaListCompat {
   use List;
 
-  proc ref list.pushBack(x: this.eltType): int {
+  proc ref list.pushBack(in x: this.eltType): int {
     return this.append(x);
   }
 
-  proc ref list.pushBack(other: list(this.eltType)) {
+  proc ref list.pushBack(other: list(this.eltType)) lifetime this < other {
     this.append(other);
   }
 
-  proc ref list.pushBack(other: [] this.elType) {
+  proc ref list.pushBack(other: [] this.elType) lifetime this < other {
     this.append(other);
   }
 
-  proc ref list.pushBack(other: range(this.eltType, ?)) {
+  proc ref list.pushBack(other: range(this.eltType, ?)) lifetime this < other {
     this.append(other);
   }
 
