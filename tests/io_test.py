@@ -666,6 +666,17 @@ class IOTest(ArkoudaTest):
             self.assertEqual(18446744073709551500, pda2[0])
             self.assertListEqual(pda2.to_list(), npa1.tolist())
 
+    def testBigIntHdf5(self):
+        a = ak.arange(3, dtype=ak.bigint)
+        a += 2 ** 200
+        a.max_bits = 201
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            a.to_hdf(f"{tmp_dirname}/bigint_test", dataset="bigint_test")
+            rd_a = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
+            self.assertListEqual(a.to_list(), rd_a.to_list())
+            self.assertEqual(a.max_bits, rd_a.max_bits)
+
     def testUint64ToFromArray(self):
         """
         Test conversion to and from numpy array / pdarray using unsigned 64bit integer (uint64)
