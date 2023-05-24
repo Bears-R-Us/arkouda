@@ -19,7 +19,7 @@ or
 
 .. data:: const genLogger = new Logger(logLevel, logChannel)
 
-.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GenSymEntry, SegStringSymEntry, CategoricalSymEntry, SegArraySymEntry, CompositeSymEntry, GroupBySymEntry, AnythingSymEntry, UnknownSymEntry, None }
+.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GenSymEntry, SegStringSymEntry, CategoricalSymEntry, CompositeSymEntry, GroupBySymEntry, AnythingSymEntry, UnknownSymEntry, None }
 
    *
    * Internal Types we can use to build our Symbol type hierarchy.
@@ -309,20 +309,6 @@ or
       * :returns: s (string) containing the array data
       
 
-.. class:: SegArraySymEntry : GenSymEntry
-
-   .. attribute:: type etype
-
-   .. attribute:: var segmentsEntry: shared SymEntry(int)
-
-   .. attribute:: var valuesEntry: shared SymEntry(etype)
-
-   .. attribute:: var lengthsEntry: shared SymEntry(int)
-
-   .. method:: proc init(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, type etype)
-
-   .. method:: override proc getSizeEstimate(): int
-
 .. class:: GroupBySymEntry : CompositeSymEntry
 
    
@@ -361,8 +347,6 @@ or
    *
    * Helper proc to cast AbstractSymEntry to SegStringSymEntry
    
-
-.. function:: proc toSegArraySymEntry(entry: borrowed AbstractSymEntry, type t) throws
 
 .. function:: proc getArraySpecFromEntry(entry: borrowed AbstractSymEntry) throws
 

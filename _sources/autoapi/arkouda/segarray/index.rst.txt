@@ -34,7 +34,6 @@ Attributes
    arkouda.segarray.SEG_SUFFIX
    arkouda.segarray.VAL_SUFFIX
    arkouda.segarray.LEN_SUFFIX
-   arkouda.segarray.GROUP_SUFFIX
 
 
 .. py:data:: SEG_SUFFIX
@@ -49,11 +48,6 @@ Attributes
 
 .. py:data:: LEN_SUFFIX
    :value: '_lengths'
-
-   
-
-.. py:data:: GROUP_SUFFIX
-   :value: '_grouping'
 
    
 
@@ -75,57 +69,31 @@ Attributes
 
 .. py:function:: segarray(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, lengths=None, grouping=None)
 
-   Alias for the from_parts function. Prevents user from needing to call `ak.SegArray.from_parts`
+   Alias for the from_parts function. Prevents user from needing to call `ak.SegArray` constructor
+   DEPRECATED
 
 
-.. py:class:: SegArray(name, dtype, size, ndim, shape, itemsize, segments, values, lengths=None, grouping=None)
-
-   .. py:property:: lengths
-
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
+.. py:class:: SegArray(segments, values, lengths=None, grouping=None)
 
    .. py:property:: non_empty
 
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
 
-      .. rubric:: Notes
+   .. py:property:: grouping
 
-      - Caches return value to prevent the need to recompute.
-
-   .. py:property:: non_empty_count
-
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
 
    .. py:attribute:: objType
       :value: 'SegArray'
 
       
 
-   .. py:attribute:: valsize
-
-      Note - if lengths is provided, it will need to be sent to the
-      server in the future (or deprecated).
-      Since no computation is currently done on the server,
-      we will not be sending lengths right now
-
-   .. py:method:: from_return_msg(rep_msg, lengths=None, grouping=None) -> SegArray
+   .. py:method:: from_return_msg(rep_msg) -> SegArray
       :classmethod:
 
 
    .. py:method:: from_parts(segments, values, lengths=None, grouping=None) -> SegArray
       :classmethod:
 
+      DEPRECATED
       Construct a SegArray object from its parts
 
       :param segments: Start index of each sub-array in the flattened values array
@@ -345,7 +313,7 @@ Attributes
 
       .. rubric:: Examples
 
-      >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
+      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
       >>> segarr.to_ndarray()
       array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
       >>> type(segarr.to_ndarray())
@@ -363,7 +331,7 @@ Attributes
 
       .. rubric:: Examples
 
-      >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
+      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
       >>> segarr.to_list()
       [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
       >>> type(segarr.to_list())

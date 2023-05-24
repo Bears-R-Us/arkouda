@@ -198,7 +198,6 @@ Functions
    arkouda.list_symbol_table
    arkouda.pretty_print_information
    arkouda.isSupportedInt
-   arkouda.translate_np_dtype
    arkouda.broadcast
    arkouda.getArkoudaLogger
    arkouda.cumsum
@@ -315,7 +314,6 @@ Attributes
    arkouda.SEG_SUFFIX
    arkouda.VAL_SUFFIX
    arkouda.LEN_SUFFIX
-   arkouda.GROUP_SUFFIX
    arkouda.akbool
    arkouda.akfloat64
    arkouda.akint64
@@ -10892,15 +10890,6 @@ Attributes
 
    
 
-.. py:function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[str, int]
-
-   Split numpy dtype dt into its kind and byte size, raising
-   TypeError for unsupported dtypes.
-
-   :raises TypeError: Raised if the dtype is not in supported dtypes or if
-       dt is not a np.dtype
-
-
 .. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
 
    Group an array or list of arrays by value, usually in preparation
@@ -11918,13 +11907,6 @@ Attributes
 
    >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
    array([0, 1, 1, 2, 3])
-
-
-.. py:exception:: RegistrationError
-
-   Bases: :py:obj:`Exception`
-
-   Error/Exception used when the Arkouda Server cannot register an object
 
 
 .. py:function:: create_pdarray(repMsg: str, max_bits=None) -> pdarray
@@ -13054,11 +13036,6 @@ Attributes
 
    
 
-.. py:data:: GROUP_SUFFIX
-   :value: '_grouping'
-
-   
-
 .. py:function:: gen_ranges(starts, ends, stride=1)
 
    Generate a segmented array of variable-length, contiguous ranges between pairs of
@@ -13077,57 +13054,31 @@ Attributes
 
 .. py:function:: segarray(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, lengths=None, grouping=None)
 
-   Alias for the from_parts function. Prevents user from needing to call `ak.SegArray.from_parts`
+   Alias for the from_parts function. Prevents user from needing to call `ak.SegArray` constructor
+   DEPRECATED
 
 
-.. py:class:: SegArray(name, dtype, size, ndim, shape, itemsize, segments, values, lengths=None, grouping=None)
-
-   .. py:property:: lengths
-
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
+.. py:class:: SegArray(segments, values, lengths=None, grouping=None)
 
    .. py:property:: non_empty
 
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
 
-      .. rubric:: Notes
+   .. py:property:: grouping
 
-      - Caches return value to prevent the need to recompute.
-
-   .. py:property:: non_empty_count
-
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
 
    .. py:attribute:: objType
       :value: 'SegArray'
 
       
 
-   .. py:attribute:: valsize
-
-      Note - if lengths is provided, it will need to be sent to the
-      server in the future (or deprecated).
-      Since no computation is currently done on the server,
-      we will not be sending lengths right now
-
-   .. py:method:: from_return_msg(rep_msg, lengths=None, grouping=None) -> SegArray
+   .. py:method:: from_return_msg(rep_msg) -> SegArray
       :classmethod:
 
 
    .. py:method:: from_parts(segments, values, lengths=None, grouping=None) -> SegArray
       :classmethod:
 
+      DEPRECATED
       Construct a SegArray object from its parts
 
       :param segments: Start index of each sub-array in the flattened values array
@@ -13347,7 +13298,7 @@ Attributes
 
       .. rubric:: Examples
 
-      >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
+      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
       >>> segarr.to_ndarray()
       array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
       >>> type(segarr.to_ndarray())
@@ -13365,7 +13316,7 @@ Attributes
 
       .. rubric:: Examples
 
-      >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
+      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
       >>> segarr.to_list()
       [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
       >>> type(segarr.to_list())

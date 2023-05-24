@@ -299,7 +299,7 @@
 <td><p>Generate a segmented array of variable-length, contiguous ranges between pairs of</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.segarray.segarray" title="arkouda.segarray.segarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segarray</span></code></a>(segments, values[, lengths, grouping])</p></td>
-<td><p>Alias for the from_parts function. Prevents user from needing to call <cite>ak.SegArray.from_parts</cite></p></td>
+<td><p>Alias for the from_parts function. Prevents user from needing to call <cite>ak.SegArray</cite> constructor</p></td>
 </tr>
 </tbody>
 </table>
@@ -319,9 +319,6 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.segarray.LEN_SUFFIX" title="arkouda.segarray.LEN_SUFFIX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LEN_SUFFIX</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.segarray.GROUP_SUFFIX" title="arkouda.segarray.GROUP_SUFFIX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GROUP_SUFFIX</span></code></a></p></td>
-<td><p></p></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -338,11 +335,6 @@
 <dl class="py data">
 <dt class="sig sig-object py" id="arkouda.segarray.LEN_SUFFIX">
 <span class="sig-prename descclassname"><span class="pre">arkouda.segarray.</span></span><span class="sig-name descname"><span class="pre">LEN_SUFFIX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'_lengths'</span></em><a class="headerlink" href="#arkouda.segarray.LEN_SUFFIX" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="arkouda.segarray.GROUP_SUFFIX">
-<span class="sig-prename descclassname"><span class="pre">arkouda.segarray.</span></span><span class="sig-name descname"><span class="pre">GROUP_SUFFIX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'_grouping'</span></em><a class="headerlink" href="#arkouda.segarray.GROUP_SUFFIX" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -371,68 +363,38 @@ start- and end-points.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.segarray.segarray">
 <span class="sig-prename descclassname"><span class="pre">arkouda.segarray.</span></span><span class="sig-name descname"><span class="pre">segarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.segarray" title="Permalink to this definition">#</a></dt>
-<dd><p>Alias for the from_parts function. Prevents user from needing to call <cite>ak.SegArray.from_parts</cite></p>
+<dd><p>Alias for the from_parts function. Prevents user from needing to call <cite>ak.SegArray</cite> constructor
+DEPRECATED</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.segarray.</span></span><span class="sig-name descname"><span class="pre">SegArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.segarray.</span></span><span class="sig-name descname"><span class="pre">SegArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray" title="Permalink to this definition">#</a></dt>
 <dd><dl class="py property">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray.lengths">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lengths</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.lengths" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the pdarray containing the lengths of the segments.
-This is configured to prevent the need to move all functionality to server at once.</p>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Caches return value to prevent the need to recompute.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.non_empty">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">non_empty</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.non_empty" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the pdarray containing the lengths of the segments.
-This is configured to prevent the need to move all functionality to server at once.</p>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Caches return value to prevent the need to recompute.</p></li>
-</ul>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray.non_empty_count">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">non_empty_count</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.non_empty_count" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the pdarray containing the lengths of the segments.
-This is configured to prevent the need to move all functionality to server at once.</p>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Caches return value to prevent the need to recompute.</p></li>
-</ul>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.grouping">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">grouping</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.grouping" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.objType">
 <span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SegArray'</span></em><a class="headerlink" href="#arkouda.segarray.SegArray.objType" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray.valsize">
-<span class="sig-name descname"><span class="pre">valsize</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.valsize" title="Permalink to this definition">#</a></dt>
-<dd><p>Note - if lengths is provided, it will need to be sent to the
-server in the future (or deprecated).
-Since no computation is currently done on the server,
-we will not be sending lengths right now</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.from_return_msg">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray"><span class="pre">SegArray</span></a></span></span><a class="headerlink" href="#arkouda.segarray.SegArray.from_return_msg" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray"><span class="pre">SegArray</span></a></span></span><a class="headerlink" href="#arkouda.segarray.SegArray.from_return_msg" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.from_parts">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_parts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray"><span class="pre">SegArray</span></a></span></span><a class="headerlink" href="#arkouda.segarray.SegArray.from_parts" title="Permalink to this definition">#</a></dt>
-<dd><p>Construct a SegArray object from its parts</p>
+<dd><p>DEPRECATED
+Construct a SegArray object from its parts</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -732,7 +694,7 @@ each value in the returned SegArray was repeated in the original SegArray.</p></
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="#arkouda.segarray.SegArray.to_list" title="arkouda.segarray.SegArray.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">segarray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">SegArray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
 <span class="go">array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">segarr</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
@@ -758,7 +720,7 @@ each value in the returned SegArray was repeated in the original SegArray.</p></
 <p><a class="reference internal" href="#arkouda.segarray.SegArray.to_ndarray" title="arkouda.segarray.SegArray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">segarray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">SegArray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
 <span class="go">[[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">segarr</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
@@ -1211,7 +1173,7 @@ the return SegArray</p></li>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id282" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1370,15 +1332,12 @@ the return SegArray</p></li>
 <li><a class="reference internal" href="#arkouda.segarray.SEG_SUFFIX"><code class="docutils literal notranslate"><span class="pre">SEG_SUFFIX</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.VAL_SUFFIX"><code class="docutils literal notranslate"><span class="pre">VAL_SUFFIX</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.LEN_SUFFIX"><code class="docutils literal notranslate"><span class="pre">LEN_SUFFIX</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.GROUP_SUFFIX"><code class="docutils literal notranslate"><span class="pre">GROUP_SUFFIX</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.gen_ranges"><code class="docutils literal notranslate"><span class="pre">gen_ranges()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.segarray"><code class="docutils literal notranslate"><span class="pre">segarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray"><code class="docutils literal notranslate"><span class="pre">SegArray</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.lengths"><code class="docutils literal notranslate"><span class="pre">SegArray.lengths</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.non_empty"><code class="docutils literal notranslate"><span class="pre">SegArray.non_empty</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.non_empty_count"><code class="docutils literal notranslate"><span class="pre">SegArray.non_empty_count</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.grouping"><code class="docutils literal notranslate"><span class="pre">SegArray.grouping</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.objType"><code class="docutils literal notranslate"><span class="pre">SegArray.objType</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.valsize"><code class="docutils literal notranslate"><span class="pre">SegArray.valsize</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_return_msg"><code class="docutils literal notranslate"><span class="pre">SegArray.from_return_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_parts"><code class="docutils literal notranslate"><span class="pre">SegArray.from_parts()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_multi_array"><code class="docutils literal notranslate"><span class="pre">SegArray.from_multi_array()</span></code></a></li>
