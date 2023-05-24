@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ArkoudaBigIntCompat &mdash; chpldoc 0.0.1 documentation</title>
+  <title>ArkoudaListCompat &mdash; chpldoc 0.0.1 documentation</title>
       <link rel="stylesheet" href="../../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     <script src="../../../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="ArkoudaBitOpsCompat" href="ArkoudaBitOpsCompat.html" />
-    <link rel="prev" title="ArkoudaArrayCompat" href="ArkoudaArrayCompat.html" /> 
+    <link rel="next" title="ArkoudaMapCompat" href="ArkoudaMapCompat.html" />
+    <link rel="prev" title="ArkoudaFileCompat" href="ArkoudaFileCompat.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -75,11 +75,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../../Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../arkouda_server.html">arkouda_server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaArrayCompat.html">ArkoudaArrayCompat</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaBigIntCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaBitOpsCompat.html">ArkoudaBitOpsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaListCompat.html">ArkoudaListCompat</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaListCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
@@ -101,9 +101,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ArkoudaBigIntCompat</li>
+      <li>ArkoudaListCompat</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaBigIntCompat.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaListCompat.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -111,59 +111,44 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-ArkoudaBigIntCompat"></span><div class="section" id="arkoudabigintcompat">
-<h1>ArkoudaBigIntCompat<a class="headerlink" href="#arkoudabigintcompat" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-ArkoudaListCompat"></span><div class="section" id="arkoudalistcompat">
+<h1>ArkoudaListCompat<a class="headerlink" href="#arkoudalistcompat" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaBigIntCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaListCompat</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaBigIntCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaListCompat</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaBigIntCompat.mod">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">result:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">b:</span> <span class="pre">bigint</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaBigIntCompat.mod" title="Permalink to this definition">¶</a></dt>
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ArkoudaListCompat.list.pushBack">
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">pushBack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">x:</span> <span class="pre">this.eltType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#ArkoudaListCompat.list.pushBack" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="chpl function">
+<dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">result:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">integral</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">pushBack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">other:</span> <span class="pre">list(this.eltType)</span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaBigIntCompat.powMod">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">powMod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">result:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">base:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">exp:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">mod:</span> <span class="pre">bigint</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaBigIntCompat.powMod" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
+<dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">powMod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">result:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">base:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">exp:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">mod:</span> <span class="pre">bigint</span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">pushBack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">other:</span> <span class="pre">[]</span> <span class="pre">this.elType</span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
-<dl class="chpl function">
+<dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">powMod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">result:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">base:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">exp:</span> <span class="pre">uint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">mod:</span> <span class="pre">bigint</span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">pushBack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">other:</span> <span class="pre">range(this.eltType</span></em>, <em class="sig-param"><span class="pre">?)</span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaBigIntCompat.rightShift">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">rightShift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bigint</span><a class="headerlink" href="#ArkoudaBigIntCompat.rightShift" title="Permalink to this definition">¶</a></dt>
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ArkoudaListCompat.list.popBack">
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">popBack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">this.elType</span><a class="headerlink" href="#ArkoudaListCompat.list.popBack" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">rightShift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">uint</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bigint</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaBigIntCompat.rightShiftEq">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">rightShiftEq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaBigIntCompat.rightShiftEq" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">rightShiftEq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">uint</span></em><span class="sig-paren">)</span></dt>
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ArkoudaListCompat.list.replace">
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">i:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">x:</span> <span class="pre">this.eltType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span><a class="headerlink" href="#ArkoudaListCompat.list.replace" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -172,8 +157,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ArkoudaArrayCompat.html" class="btn btn-neutral float-left" title="ArkoudaArrayCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ArkoudaBitOpsCompat.html" class="btn btn-neutral float-right" title="ArkoudaBitOpsCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ArkoudaFileCompat.html" class="btn btn-neutral float-left" title="ArkoudaFileCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ArkoudaMapCompat.html" class="btn btn-neutral float-right" title="ArkoudaMapCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
