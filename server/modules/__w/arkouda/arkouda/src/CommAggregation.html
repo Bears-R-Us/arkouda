@@ -227,6 +227,32 @@
 </dd></dl>
 
 <dl class="chpl record">
+<dt class="sig sig-object chpl" id="CommAggregation.DstUnorderedAggregator">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">DstUnorderedAggregator</span></span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>“Aggregator” that uses unordered copy instead of actually aggregating</p>
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="CommAggregation.DstUnorderedAggregator.elemType">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.elemType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="CommAggregation.DstUnorderedAggregator.deinit">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.deinit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="CommAggregation.DstUnorderedAggregator.flush">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.flush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="CommAggregation.DstUnorderedAggregator.copy">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">in</span> <span class="pre">srcVal:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl record">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator">
 <em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">SrcAggregator</span></span><a class="headerlink" href="#CommAggregation.SrcAggregator" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
@@ -317,6 +343,32 @@
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator._flushBuffer">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">_flushBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">bufferIdx</span></em>, <em class="sig-param"><span class="pre">freeData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator._flushBuffer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl record">
+<dt class="sig sig-object chpl" id="CommAggregation.SrcUnorderedAggregator">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">SrcUnorderedAggregator</span></span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>“Aggregator” that uses unordered copy instead of actually aggregating</p>
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="CommAggregation.SrcUnorderedAggregator.elemType">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.elemType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="CommAggregation.SrcUnorderedAggregator.deinit">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.deinit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="CommAggregation.SrcUnorderedAggregator.flush">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.flush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="CommAggregation.SrcUnorderedAggregator.copy">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">src:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.copy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

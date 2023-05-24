@@ -72,6 +72,19 @@ or
 
    .. method:: proc _flushBuffer(loc: int, ref bufferIdx, freeData)
 
+.. record:: DstUnorderedAggregator
+
+   "Aggregator" that uses unordered copy instead of actually aggregating 
+
+
+   .. attribute:: type elemType
+
+   .. method:: proc deinit()
+
+   .. method:: proc flush()
+
+   .. method:: proc copy(ref dst: elemType, const in srcVal: elemType)
+
 .. record:: SrcAggregator
 
    
@@ -114,6 +127,19 @@ or
    .. method:: proc copy(ref dst: elemType, const ref src: elemType)
 
    .. method:: proc _flushBuffer(loc: int, ref bufferIdx, freeData)
+
+.. record:: SrcUnorderedAggregator
+
+   "Aggregator" that uses unordered copy instead of actually aggregating 
+
+
+   .. attribute:: type elemType
+
+   .. method:: proc deinit()
+
+   .. method:: proc flush()
+
+   .. method:: proc copy(ref dst: elemType, const ref src: elemType)
 
 .. record:: remoteBuffer
 
