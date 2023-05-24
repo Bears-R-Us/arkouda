@@ -143,7 +143,6 @@ module BroadcastMsg {
   proc broadcastStrings(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     const gs = getGenericTypedArrayEntry(msgArgs.getValueOf("segName"), st);
     const segs = toSymEntry(gs, int);
-    // Check that values exists (can be any dtype)
     const sE = getSegString(msgArgs.getValueOf("valName"), st);
     const size = msgArgs.get("size").getIntValue();
 
