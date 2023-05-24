@@ -1057,9 +1057,10 @@ module ParquetMsg {
     const extraOffset = values_entry.size;
     const lastOffset = if segments.size == 0 then 0 else segments[segments.domain.high]; // prevent index error when empty
     const lastValIdx = values_entry.a.domain.high;
+    ref olda = values_entry.a;
 
     // pull values to the locale of the offset
-    coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) do on loc {
+    coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) with (ref olda) do on loc {
       const myFilename = filenames[idx];
 
       const locDom = segments.localSubdomain();
@@ -1083,7 +1084,6 @@ module ParquetMsg {
         var endValIdx = if (lastOffset == localSegments[locDom.high]) then lastValIdx else segments[locDom.high + 1] - 1;
               
         var valIdxRange = startValIdx..endValIdx;
-        ref olda = values_entry.a;
         writeSegArrayComponent(myFilename, dsetName, olda, valIdxRange, segments, locDom, extraOffset, lastOffset, lastValIdx, dtype, compression);
       }
     }
@@ -1243,12 +1243,14 @@ module ParquetMsg {
           var components: map(string, string) = jsonToMap(column);
           var seg_entry = getGenericTypedArrayEntry(components["segments"], st);
           var segments = toSymEntry(seg_entry, int);
-          var lens: [0..#segments.size] int;
-          const high = segments.a.domain.high;
-          const locDom = segments.a.localSubdomain();
-          var values = getGenericTypedArrayEntry(components["values"], st);
           ref sa = segments.a;
-          lens = [(i, s) in zip (segments.a.domain, sa)] if i == high then values.size - s else sa[i+1] - s;
+          const saD = sa.domain;
+          var lens: [saD] int;
+          const high = saD.high;
+          const locDom = sa.localSubdomain();
+          var values = getGenericTypedArrayEntry(components["values"], st);
+          
+          lens = [(i, s) in zip (saD, sa)] if i == high then values.size - s else sa[i+1] - s;
           offset_ct[i] += locDom.size;
           for i in locDom do x += lens[i];
           select values.dtype {
@@ -1334,13 +1336,13 @@ module ParquetMsg {
             var seg_entry = getGenericTypedArrayEntry(components["segments"], st);
             var segments = toSymEntry(seg_entry, int);
 
-            var S = segments.a;
+            ref S = segments.a;
             const locDom = segments.a.localSubdomain();
 
             if locDom.size > 0 {
               const lastOffset = if S.size == 0 then 0 else S[S.domain.high]; // prevent index error when empty;
-              var localOffsets = S[locDom];
-              var startValIdx = localOffsets[locDom.low];
+              const localOffsets = S[locDom];
+              const startValIdx = localOffsets[locDom.low];
               sizeList[i] = locDom.size;
               offset_tracking[oi..#locDom.size] = localOffsets - startValIdx;
               offsetPtr[i] = c_ptrTo(offset_tracking[oi]);
@@ -1355,7 +1357,7 @@ module ParquetMsg {
                   objTypes[i] = ObjType.SEGARRAY: int;
                   datatypes[i] = ARROWINT64;
 
-                  var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
+                  const endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   int_vals[ui..#valIdxRange.size] = olda[valIdxRange];
@@ -1571,16 +1573,16 @@ module ParquetMsg {
     const ncols: int = msgArgs.get("num_cols").getIntValue();
 
     // get list of the names for the columns
-    var col_names: [0..#ncols] string = msgArgs.get("col_names").getList(ncols);
+    const col_names: [0..#ncols] string = msgArgs.get("col_names").getList(ncols);
 
     // get list of sym entry names holding column data
-    var sym_names: [0..#ncols] string = msgArgs.get("columns").getList(ncols); // note SegArrays will be JSON
+    const sym_names: [0..#ncols] string = msgArgs.get("columns").getList(ncols); // note SegArrays will be JSON
 
     // get list of objTypes for the names 
-    var col_objType_strs: [0..#ncols] string = msgArgs.get("col_objtypes").getList(ncols);
+    const col_objType_strs: [0..#ncols] string = msgArgs.get("col_objtypes").getList(ncols);
 
     // compression format as integer
-    var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
+    const compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
     // use the first entry to identify target locales. Assuming all have same distribution
     var targetLocales = _identifyTargetLocales(sym_names[0], col_objType_strs[0], st);

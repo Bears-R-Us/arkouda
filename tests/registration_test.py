@@ -684,6 +684,7 @@ class RegistrationTest(ArkoudaTest):
         segarr_2 = ak.SegArray.attach("segarrtest")
 
         self.assertEqual(segarr.size, segarr_2.size)
+        self.assertListEqual(segarr.lengths.to_list(), segarr_2.lengths.to_list())
         self.assertListEqual(segarr.segments.to_list(), segarr_2.segments.to_list())
         self.assertListEqual(segarr.values.to_list(), segarr_2.values.to_list())
 

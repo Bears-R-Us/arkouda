@@ -329,6 +329,11 @@ module RegistrationMsg
                     var attParam2 = new ParameterObj("name", regName+"_values", ObjectType.VALUE, "");
                     var subArgs2 = new MessageArgs(new list([attParam2, ]));
                     sa_map.add("values", attachMsg(cmd, subArgs2, st).msg);
+
+                    // attach to lengths
+                    var attParam3 = new ParameterObj("name", regName+"_lengths", ObjectType.VALUE, "");
+                    var subArgs3 = new MessageArgs(new list([attParam3, ]));
+                    sa_map.add("lengths", attachMsg(cmd, subArgs3, st).msg);
                     msg = "segarray+%jt".format(sa_map); 
                 }
                 when (ObjType.STRINGS) {
@@ -463,19 +468,27 @@ module RegistrationMsg
                 return attachDataFrameMsg(cmd, msgArgs, st);
             }
             when ("segarray"){
+                // attach to segments
                 var sa_map: map(string, string);
                 var attParam = new ParameterObj("name", name+"_segments", ObjectType.VALUE, "");
                 var subArgs = new MessageArgs(new list([attParam, ]));
                 sa_map.add("segments", attachMsg(cmd, subArgs, st).msg);
 
+                // attach to values
                 var attParam2 = new ParameterObj("name", name+"_values", ObjectType.VALUE, "");
                 var subArgs2 = new MessageArgs(new list([attParam2, ]));
                 sa_map.add("values", attachMsg(cmd, subArgs2, st).msg);
+
+                // attach to lengths
+                var attParam3 = new ParameterObj("name", name+"_lengths", ObjectType.VALUE, "");
+                var subArgs3 = new MessageArgs(new list([attParam3, ]));
+                sa_map.add("lengths", attachMsg(cmd, subArgs3, st).msg);
+
                 return new MsgTuple("segarray+%jt".format(sa_map), MsgType.NORMAL); 
             }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, series, and dataframe".format(dtype));
+                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray, series, and dataframe".format(dtype));
                 
                 throw getErrorWithContext(
                                     msg="Unknown type (%s) supplied for given name: %s".format(dtype, name),
@@ -602,7 +615,7 @@ module RegistrationMsg
             }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, and series".format(dtype));
+                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray and series".format(dtype));
                 
                 throw getErrorWithContext(
                                     msg="Unknown type (%s) supplied for given name: %s".format(dtype, name),

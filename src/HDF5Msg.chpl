@@ -2181,6 +2181,7 @@ module HDF5Msg {
         st.addEntry(sname, new shared SymEntry(segDist));
         rtnMap.add("segments", "created " + st.attrib(sname));
 
+        var vname = st.nextName();
         select dataclass {
             when C_HDF5.H5T_INTEGER {
                 var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
@@ -2189,29 +2190,23 @@ module HDF5Msg {
                     var valDist = makeDistArray(len, int);
                     read_files_into_distributed_array(valDist, valSubdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
 
-                    var vname = st.nextName();
                     if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
                         var boolDist = makeDistArray(len, bool);
                         boolDist = valDist:bool;
                         st.addEntry(vname, new shared SymEntry(boolDist));
-                        rtnMap.add("values", "created " + st.attrib(vname));
                     } else {
                         st.addEntry(vname, new shared SymEntry(valDist));
-                        rtnMap.add("values", "created " + st.attrib(vname));
                     }                   
                 } else {
                     var valDist = makeDistArray(len, uint);
                     read_files_into_distributed_array(valDist, valSubdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
 
-                    var vname = st.nextName();
                     if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
                         var boolDist = makeDistArray(len, bool);
                         boolDist = valDist:bool;
                         st.addEntry(vname, new shared SymEntry(boolDist));
-                        rtnMap.add("values", "created " + st.attrib(vname));
                     } else {
                         st.addEntry(vname, new shared SymEntry(valDist));
-                        rtnMap.add("values", "created " + st.attrib(vname));
                     } 
                 }
             }
@@ -2219,9 +2214,7 @@ module HDF5Msg {
                 var valDist = makeDistArray(len, real);
                 read_files_into_distributed_array(valDist, valSubdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
                 
-                var vname = st.nextName();
                 st.addEntry(vname, new shared SymEntry(valDist));
-                rtnMap.add("values", "created " + st.attrib(vname));
             }
             otherwise {
                 var errorMsg = "detected unhandled datatype: objType? segarray, class %i, size %i, " +
@@ -2235,6 +2228,7 @@ module HDF5Msg {
                             errorClass='UnhandledDatatypeError');
             }
         }
+        rtnMap.add("values", "created " + st.attrib(vname));
         
         return (dset, "seg_array", "%jt".format(rtnMap));
     }

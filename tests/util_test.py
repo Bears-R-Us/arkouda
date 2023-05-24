@@ -106,7 +106,6 @@ class utilTest(ArkoudaTest):
             {"username": cat, "user_ID": userid, "item": item, "amount": amount, "visits": segarr}, ind
         )
         df.register("df_test")
-        print(ak.list_registry())
 
         dfAtt = ak.util.attach("df_test")
 

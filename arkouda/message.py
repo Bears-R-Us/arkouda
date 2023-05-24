@@ -114,7 +114,7 @@ class ParameterObject:
         key : str
             key from the dictionary object
         val
-            SegArray object ot load from the symbol table
+            SegArray object to load from the symbol table
 
         Returns
         -------

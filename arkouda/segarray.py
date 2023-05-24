@@ -27,7 +27,6 @@ from arkouda.pdarraysetops import concatenate
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"
-GROUP_SUFFIX = "_grouping"
 
 
 def gen_ranges(starts, ends, stride=1):
@@ -115,8 +114,8 @@ class SegArray:
         if not is_sorted(segments):
             raise ValueError("Segments must be unique and in sorted order")
         if segments.size > 0:
-            if segments.min() != 0:
-                raise ValueError("Segments must start at zero and be less than values.size")
+            if segments[0] != 0:
+                raise ValueError("Segments must start at zero.")
         elif values.size > 0:
             raise ValueError("Cannot have non-empty values with empty segments")
 
@@ -133,22 +132,22 @@ class SegArray:
             self.lengths = lengths
 
         self._non_empty = self.lengths > 0
-        self._non_empty_count = self._non_empty.sum()
+        self._non_empty_count = self.non_empty.sum()
 
         # grouping object computation. (This will need to be moved to the server)
         # GroupBy computation left here because of lack of server obj. May need to move in Future
         if grouping is None:
             if self.size == 0 or self._non_empty_count == 0:
-                self.grouping = GroupBy(zeros(0, dtype=akint64))
+                self._grouping = GroupBy(zeros(0, dtype=akint64))
             else:
                 # Treat each sub-array as a group, for grouped aggregations
-                self.grouping = GroupBy(
+                self._grouping = GroupBy(
                     broadcast(
-                        self.segments[self._non_empty], arange(self._non_empty_count), self.valsize
+                        self.segments[self.non_empty], arange(self._non_empty_count), self.valsize
                     )
                 )
         else:
-            self.grouping = grouping
+            self._grouping = grouping
 
     @classmethod
     def from_return_msg(cls, rep_msg) -> SegArray:
@@ -158,7 +157,8 @@ class SegArray:
         # parse the create for the values pdarray
         values = create_pdarray(eles["values"])
         segments = create_pdarray(eles["segments"])
-        return cls(segments, values)
+        lengths = create_pdarray(eles["lengths"]) if "lengths" in eles else None
+        return cls(segments, values, lengths=lengths)
 
     @classmethod
     def from_parts(cls, segments, values, lengths=None, grouping=None) -> SegArray:
@@ -195,37 +195,6 @@ class SegArray:
         return cls(segments, values, lengths=lengths, grouping=grouping)
 
     @classmethod
-    def _from_attach_return_msg(cls, repMsg) -> SegArray:
-        """
-        Return a SegArray instance pointing to components created by the arkouda server.
-        The user should not call this function directly.
-
-        Parameters
-        ----------
-        repMsg : str
-            + delimited string containing the segments, values, and lengths details
-
-        Returns
-        -------
-        SegArray
-            A SegArray representing a set of pdarray components on the server
-
-        Raises
-        ------
-        RuntimeError
-            Raised if a server-side error is thrown in the process of creating
-            the categorical instance
-        """
-        # parts[0] is "segarray". Used by the generic attach method to identify the
-        # response message as a SegArray
-        parts = repMsg.split("+")
-        segments = create_pdarray(parts[1])
-        values = create_pdarray(parts[2])
-        lengths = create_pdarray(parts[3])
-
-        return cls(segments, values, lengths=lengths)
-
-    @classmethod
     def from_multi_array(cls, m):
         """
         Construct a SegArray from a list of columns. This essentially transposes the input,
@@ -254,6 +223,29 @@ class SegArray:
             for j in range(n):
                 newvals[offsets[j] : (offsets[j] + sizes[j])] = m[j]
             return cls(array(offsets), newvals)
+
+    @property
+    def non_empty(self):
+        from arkouda.infoclass import list_symbol_table
+        if self._non_empty.name not in list_symbol_table():
+            self._non_empty = self.lengths > 0
+            self._non_empty_count = self._non_empty.sum()
+        return self._non_empty
+
+    @property
+    def grouping(self):
+        from arkouda.infoclass import list_symbol_table
+        if self._grouping.name not in list_symbol_table():
+            if self.size == 0 or self._non_empty_count == 0:
+                self._grouping = GroupBy(zeros(0, dtype=akint64))
+            else:
+                # Treat each sub-array as a group, for grouped aggregations
+                self._grouping = GroupBy(
+                    broadcast(
+                        self.segments[self.non_empty], arange(self._non_empty_count), self.valsize
+                    )
+                )
+        return self._grouping
 
     def _get_lengths(self):
         if self.size == 0:
@@ -483,7 +475,7 @@ class SegArray:
 
         ngrams = []
         notsegstart = ones(self.valsize, dtype=akbool)
-        notsegstart[self.segments[self._non_empty]] = False
+        notsegstart[self.segments[self.non_empty]] = False
         valid = ones(self.valsize - n + 1, dtype=akbool)
         for i in range(n):
             end = self.valsize - n + i + 1
@@ -493,7 +485,7 @@ class SegArray:
         ngrams = [char[valid] for char in ngrams]
         if return_origins:
             # set the proper indexes for broadcasting. Needed to alot for empty segments
-            seg_idx = arange(self.size)[self._non_empty]
+            seg_idx = arange(self.size)[self.non_empty]
             origin_indices = self.grouping.broadcast(seg_idx, permute=True)[: valid.size][valid]
             return ngrams, origin_indices
         else:
@@ -691,20 +683,20 @@ class SegArray:
         """
         isrepeat = zeros(self.values.size, dtype=akbool)
         isrepeat[1:] = self.values[:-1] == self.values[1:]
-        isrepeat[self.segments[self._non_empty]] = False
+        isrepeat[self.segments[self.non_empty]] = False
         truepaths = self.values[~isrepeat]
         nhops = self.grouping.sum(~isrepeat)[1]
         truesegs = cumsum(nhops) - nhops
         # Correct segments to properly assign empty lists - prevents dropping empty segments
-        if not self._non_empty.all():
+        if not self.non_empty.all():
             truelens = concatenate((truesegs[1:], array([truepaths.size]))) - truesegs
-            len_diff = self.lengths[self._non_empty] - truelens
+            len_diff = self.lengths[self.non_empty] - truelens
 
             x = 0  # tracking which non-empty segment length we need
             truesegs = zeros(self.size, dtype=akint64)
             for i in range(1, self.size):
                 truesegs[i] = self.segments[i] - len_diff[: x + 1].sum()
-                if self._non_empty[i]:
+                if self.non_empty[i]:
                     x += 1
 
         norepeats = SegArray(truesegs, truepaths)
@@ -1179,8 +1171,8 @@ class SegArray:
         """
         from arkouda.pdarraysetops import intersect1d
 
-        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
-        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
         (new_seg_inds, new_values) = intersect1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
         # This method does not return any empty resulting segments
@@ -1233,8 +1225,8 @@ class SegArray:
         """
         from arkouda.pdarraysetops import union1d
 
-        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
-        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
         (new_seg_inds, new_values) = union1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
         # This method does not return any empty resulting segments
@@ -1287,8 +1279,8 @@ class SegArray:
         """
         from arkouda.pdarraysetops import setdiff1d
 
-        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
-        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
         (new_seg_inds, new_values) = setdiff1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
         # This method does not return any empty resulting segments
@@ -1341,8 +1333,8 @@ class SegArray:
         """
         from arkouda.pdarraysetops import setxor1d
 
-        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
-        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
         (new_seg_inds, new_values) = setxor1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
         # This method does not return any empty resulting segments
@@ -1397,7 +1389,7 @@ class SegArray:
         new_segs = cumsum(seg_cts) - seg_cts
 
         new_segarray = SegArray(new_segs, new_vals)
-        return new_segarray[new_segarray._non_empty] if discard_empty else new_segarray
+        return new_segarray[new_segarray.non_empty] if discard_empty else new_segarray
 
     def register(self, user_defined_name):
         """
@@ -1425,6 +1417,7 @@ class SegArray:
         self.name = user_defined_name
         self.segments.register(self.name + SEG_SUFFIX)
         self.values.register(self.name + VAL_SUFFIX)
+        self.lengths.register(self.name + LEN_SUFFIX)
         return self
 
     def unregister(self):
@@ -1471,6 +1464,7 @@ class SegArray:
         """
         unregister_pdarray_by_name(user_defined_name + SEG_SUFFIX)
         unregister_pdarray_by_name(user_defined_name + VAL_SUFFIX)
+        unregister_pdarray_by_name(user_defined_name + LEN_SUFFIX)
 
     @classmethod
     def attach(cls, user_defined_name):
@@ -1500,7 +1494,8 @@ class SegArray:
 
         segs = attach_pdarray(user_defined_name + SEG_SUFFIX)
         vals = attach_pdarray(user_defined_name + VAL_SUFFIX)
-        return cls(segs, vals)
+        lengths = attach_pdarray(user_defined_name + LEN_SUFFIX)
+        return cls(segs, vals, lengths=lengths)
 
     def is_registered(self) -> bool:
         """
@@ -1518,6 +1513,7 @@ class SegArray:
         regParts = [
             self.segments.is_registered(),
             self.values.is_registered(),
+            self.lengths.is_registered()
         ]
 
         if any(regParts) and not all(regParts):
