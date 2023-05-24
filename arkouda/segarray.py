@@ -11,12 +11,11 @@ import numpy as np  # type: ignore
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import isSupportedInt, str_, translate_np_dtype
+from arkouda.dtypes import isSupportedInt, str_
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import (
-    RegistrationError,
     create_pdarray,
     is_sorted,
     pdarray,
@@ -28,7 +27,6 @@ from arkouda.pdarraysetops import concatenate
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"
-GROUP_SUFFIX = "_grouping"
 
 
 def gen_ranges(starts, ends, stride=1):
@@ -91,88 +89,81 @@ def _aggregator(func):
 
 def segarray(segments: pdarray, values: pdarray, lengths=None, grouping=None):
     """
-    Alias for the from_parts function. Prevents user from needing to call `ak.SegArray.from_parts`
+    Alias for the from_parts function. Prevents user from needing to call `ak.SegArray` constructor
+    DEPRECATED
     """
-    return SegArray.from_parts(segments, values, lengths, grouping)
+    warn(
+        "ak.segarray has been deprecated. Please use ak.SegArray constructor moving forward",
+        DeprecationWarning,
+    )
+    return SegArray(segments, values, lengths, grouping)
 
 
 class SegArray:
     objType = "SegArray"
 
-    def __init__(
-        self, name, dtype, size, ndim, shape, itemsize, segments, values, lengths=None, grouping=None
-    ):
-        self.name = name
-        self.dtype = dtype
-        self.size = size
-        self.ndim = ndim
-        self.shape = shape
-        self.itemsize = itemsize
-
+    def __init__(self, segments, values, lengths=None, grouping=None):
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
+        self.name = ""
+
+        # validate inputs
+        if not isinstance(segments, pdarray) or segments.dtype != akint64:
+            raise TypeError("Segments must be int64 pdarray")
+        if not isinstance(values, pdarray):
+            raise TypeError("Values must be a pdarray.")
+        if not is_sorted(segments):
+            raise ValueError("Segments must be unique and in sorted order")
+        if segments.size > 0:
+            if segments[0] != 0:
+                raise ValueError("Segments must start at zero.")
+        elif values.size > 0:
+            raise ValueError("Cannot have non-empty values with empty segments")
 
         # references to supporting pdarrays
         self.values = values
         self.segments = segments
+        self.size = segments.size
         self.valsize = values.size
+        self.dtype = values.dtype
 
-        """
-        Note - if lengths is provided, it will need to be sent to the
-        server in the future (or deprecated).
-        Since no computation is currently done on the server,
-        we will not be sending lengths right now
-        """
-        self._lengths = lengths  # cache - use .lengths to access/set. If passed, do not recompute
-        # the following is to maintain support for lengths being passed in
-        # (since not currently passed to server)
-        if self._lengths is not None:
-            self._non_empty = lengths > 0
-            self._non_empty_count = self._non_empty.sum()
+        if lengths is None:
+            self.lengths = self._get_lengths()
         else:
-            self._non_empty = None  # cache - use .non_empty to access/set
-            self._non_empty_count = None  # cache - use .non_empty_count to access/set
+            self.lengths = lengths
+
+        self._non_empty = self.lengths > 0
+        self._non_empty_count = self.non_empty.sum()
 
         # grouping object computation. (This will need to be moved to the server)
         # GroupBy computation left here because of lack of server obj. May need to move in Future
         if grouping is None:
-            if self.size == 0 or self.non_empty_count == 0:
-                self.grouping = GroupBy(zeros(0, dtype=akint64))
+            if self.size == 0 or self._non_empty_count == 0:
+                self._grouping = GroupBy(zeros(0, dtype=akint64))
             else:
                 # Treat each sub-array as a group, for grouped aggregations
-                self.grouping = GroupBy(
-                    broadcast(self.segments[self.non_empty], arange(self.non_empty_count), self.valsize)
+                self._grouping = GroupBy(
+                    broadcast(
+                        self.segments[self.non_empty], arange(self._non_empty_count), self.valsize
+                    )
                 )
         else:
-            self.grouping = grouping
+            self._grouping = grouping
 
     @classmethod
-    def from_return_msg(cls, rep_msg, lengths=None, grouping=None) -> SegArray:
+    def from_return_msg(cls, rep_msg) -> SegArray:
         # parse return json
         eles = json.loads(rep_msg)
-
-        # parse the create statement for segarray
-        fields = eles["segarray"].split()
-        name = fields[1]
-        dtype = fields[2]
-        size = int(fields[3])
-        ndim = int(fields[4])
-
-        # remove comma from 1 tuple with trailing comma
-        if fields[5][-2] == ",":
-            fields[5] = fields[5].replace(",", "")
-        shape = [int(el) for el in fields[5][1:-1].split(",")]
-        itemsize = int(fields[6])
 
         # parse the create for the values pdarray
         values = create_pdarray(eles["values"])
         segments = create_pdarray(eles["segments"])
-        lengths = create_pdarray(eles["lengths"]) if lengths is None else lengths
-
-        return cls(name, dtype, size, ndim, shape, itemsize, segments, values, lengths, grouping)
+        lengths = create_pdarray(eles["lengths"]) if "lengths" in eles else None
+        return cls(segments, values, lengths=lengths)
 
     @classmethod
     def from_parts(cls, segments, values, lengths=None, grouping=None) -> SegArray:
         """
+        DEPRECATED
         Construct a SegArray object from its parts
 
         Parameters
@@ -196,59 +187,12 @@ class SegArray:
         Keyword args 'lengths' and 'grouping' are not user-facing. They are used by the
         attach method.
         """
-        # validate inputs
-        if not isinstance(segments, pdarray) or segments.dtype != akint64:
-            raise TypeError("Segments must be int64 pdarray")
-        if not isinstance(values, pdarray):
-            raise TypeError("Values must be a pdarray.")
-        if not is_sorted(segments):
-            raise ValueError("Segments must be unique and in sorted order")
-        if segments.size > 0:
-            if segments.min() != 0:
-                raise ValueError("Segments must start at zero and be less than values.size")
-        elif values.size > 0:
-            raise ValueError("Cannot have non-empty values with empty segments")
-
-        # create the server message
-        rep_msg = generic_msg(
-            cmd="segArr-assemble",
-            args={
-                "segments": segments,
-                "values": values,
-            },
+        warn(
+            "ak.SegArray.from_parts has been deprecated. Please use ak.SegArray constructor to "
+            "generate SegArray objects.",
+            DeprecationWarning,
         )
-        return cls.from_return_msg(rep_msg, lengths, grouping)
-
-    @classmethod
-    def _from_attach_return_msg(cls, repMsg) -> SegArray:
-        """
-        Return a SegArray instance pointing to components created by the arkouda server.
-        The user should not call this function directly.
-
-        Parameters
-        ----------
-        repMsg : str
-            + delimited string containing the segments, values, and lengths details
-
-        Returns
-        -------
-        SegArray
-            A SegArray representing a set of pdarray components on the server
-
-        Raises
-        ------
-        RuntimeError
-            Raised if a server-side error is thrown in the process of creating
-            the categorical instance
-        """
-        # parts[0] is "segarray". Used by the generic attach method to identify the
-        # response message as a SegArray
-        parts = repMsg.split("+")
-        segments = create_pdarray(parts[1])
-        values = create_pdarray(parts[2])
-        lengths = create_pdarray(parts[3])
-
-        return cls.from_parts(segments, values, lengths=lengths)
+        return cls(segments, values, lengths=lengths, grouping=grouping)
 
     @classmethod
     def from_multi_array(cls, m):
@@ -267,7 +211,7 @@ class SegArray:
             Array of rows of input
         """
         if isinstance(m, pdarray):
-            return cls.from_parts(arange(m.size), m)
+            return cls(arange(m.size), m)
         else:
             sizes = np.array([mi.size for mi in m])
             dtypes = {mi.dtype for mi in m}
@@ -278,66 +222,53 @@ class SegArray:
             newvals = zeros(sum(sizes), dtype=dtypes.pop())
             for j in range(n):
                 newvals[offsets[j] : (offsets[j] + sizes[j])] = m[j]
-            return cls.from_parts(array(offsets), newvals)
-
-    @property
-    def lengths(self):
-        """
-        Return the pdarray containing the lengths of the segments.
-        This is configured to prevent the need to move all functionality to server at once.
-
-        Notes
-        ------
-        - Caches return value to prevent the need to recompute.
-        """
-        if self._lengths is None:
-            rep_msg = generic_msg(
-                cmd="segArr-getLengths",
-                args={
-                    "name": self.name,
-                },
-            )
-            self._lengths = create_pdarray(rep_msg)
-        return self._lengths
-
-    def _compute_non_empty(self):
-        rep_msg = generic_msg(
-            cmd="segArr-getNonEmpty",
-            args={
-                "name": self.name,
-            },
-        )
-        parts = rep_msg.split("+")
-        self._non_empty = create_pdarray(parts[0])
-        self._non_empty_count = int(parts[1])
+            return cls(array(offsets), newvals)
 
     @property
     def non_empty(self):
-        """
-        Return the pdarray containing the lengths of the segments.
-        This is configured to prevent the need to move all functionality to server at once.
-
-        Notes
-        ------
-        - Caches return value to prevent the need to recompute.
-        """
-        if self._non_empty is None:
-            self._compute_non_empty()
+        from arkouda.infoclass import list_symbol_table
+        if self._non_empty.name not in list_symbol_table():
+            self._non_empty = self.lengths > 0
+            self._non_empty_count = self._non_empty.sum()
         return self._non_empty
 
     @property
-    def non_empty_count(self):
-        """
-        Return the pdarray containing the lengths of the segments.
-        This is configured to prevent the need to move all functionality to server at once.
+    def grouping(self):
+        from arkouda.infoclass import list_symbol_table
+        if self._grouping.name not in list_symbol_table():
+            if self.size == 0 or self._non_empty_count == 0:
+                self._grouping = GroupBy(zeros(0, dtype=akint64))
+            else:
+                # Treat each sub-array as a group, for grouped aggregations
+                self._grouping = GroupBy(
+                    broadcast(
+                        self.segments[self.non_empty], arange(self._non_empty_count), self.valsize
+                    )
+                )
+        return self._grouping
 
-        Notes
-        ------
-        - Caches return value to prevent the need to recompute.
-        """
-        if self._non_empty_count is None:
-            self._compute_non_empty()
-        return self._non_empty_count
+    def _get_lengths(self):
+        if self.size == 0:
+            return zeros(0, dtype=akint64)
+        elif self.size == 1:
+            return array([self.valsize])
+        else:
+            return concatenate((self.segments[1:], array([self.valsize]))) - self.segments
+
+    def __getitem__(self, i):
+        if isSupportedInt(i):
+            start = self.segments[i]
+            end = self.segments[i] + self.lengths[i]
+            return self.values[start:end].to_ndarray()
+        elif (isinstance(i, pdarray) and (i.dtype == akint64 or i.dtype == akbool)) or isinstance(
+            i, slice
+        ):
+            starts = self.segments[i]
+            ends = starts + self.lengths[i]
+            newsegs, inds = gen_ranges(starts, ends)
+            return SegArray(newsegs, self.values[inds])
+        else:
+            raise TypeError(f"Invalid index type: {type(i)}")
 
     @classmethod
     def concat(cls, x, axis=0, ordered=True):
@@ -379,7 +310,7 @@ class SegArray:
                 ctr += xi.valsize
                 # Values can just be concatenated
                 vals.append(xi.values)
-            return cls.from_parts(concatenate(segs), concatenate(vals))
+            return cls(concatenate(segs), concatenate(vals))
         elif axis == 1:
             sizes = {xi.size for xi in x}
             if len(sizes) != 1:
@@ -403,7 +334,7 @@ class SegArray:
                 fromself = cumsum(fromself[:-1]) == 1
                 newvals[fromself] = xi.values
                 nzsegs += nzlens
-            return cls.from_parts(newsegs, newvals)
+            return cls(newsegs, newvals)
         else:
             raise ValueError(
                 "Supported values for axis are 0 (vertical concat) or 1 (horizontal concat)"
@@ -413,69 +344,7 @@ class SegArray:
         """
         Return a deep copy.
         """
-        return SegArray.from_parts(self.segments, self.values)
-
-    def __del__(self):
-        try:
-            if self.name:
-                generic_msg(cmd="delete", args={"name": self.name})
-        except RuntimeError:
-            pass
-
-    def __getitem__(self, i):
-        if isSupportedInt(i):
-            orig_key = i  # used for error message if out of bounds on negative index
-            # interpret -i as offset from end of array
-            if i < 0:
-                i += self.size
-
-            if i >= 0 and i < self.size:
-                repMsg = generic_msg(
-                    cmd="segmentedIndex",
-                    args={
-                        "subcmd": "intIndex",
-                        "objType": self.objType,
-                        "dtype": self.dtype,
-                        "obj": self.name,
-                        "key": i,
-                    },
-                )
-                return create_pdarray(type_cast(str, repMsg)).to_ndarray()
-            else:
-                raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
-        elif isinstance(i, slice):
-            (start, stop, stride) = i.indices(self.size)
-            self.logger.debug(f"start: {start}; stop: {stop}; stride: {stride}")
-            repMsg = generic_msg(
-                cmd="segmentedIndex",
-                args={
-                    "subcmd": "sliceIndex",
-                    "objType": self.objType,
-                    "obj": self.name,
-                    "dtype": self.dtype,
-                    "key": [start, stop, stride],
-                },
-            )
-            return SegArray.from_return_msg(repMsg)
-        elif isinstance(i, pdarray):
-            kind, _ = translate_np_dtype(i.dtype)
-            if kind not in ("bool", "int", "uint"):
-                raise TypeError(f"unsupported pdarray index type {i.dtype}")
-            if kind == "bool" and self.size != i.size:
-                raise ValueError(f"size mismatch {self.size} {i.size}")
-            repMsg = generic_msg(
-                cmd="segmentedIndex",
-                args={
-                    "subcmd": "pdarrayIndex",
-                    "objType": self.objType,
-                    "dtype": self.values.dtype,
-                    "obj": self.name,
-                    "key": i,
-                },
-            )
-            return SegArray.from_return_msg(repMsg)
-        else:
-            raise TypeError(f"unsupported segarray index type {i.__class__.__name__}")
+        return SegArray(self.segments[:], self.values[:])
 
     def __eq__(self, other):
         if not isinstance(other, SegArray):
@@ -785,12 +654,12 @@ class SegArray:
             lastscatter = newsegs + newlens - 1
         newvals[lastscatter] = x
         origscatter = arange(self.valsize) + self.grouping.broadcast(
-            arange(self.non_empty_count), permute=True
+            arange(self._non_empty_count), permute=True
         )
         if prepend:
             origscatter += 1
         newvals[origscatter] = self.values
-        return SegArray.from_parts(newsegs, newvals)
+        return SegArray(newsegs, newvals)
 
     def prepend_single(self, x):
         return self.append_single(x, prepend=True)
@@ -830,13 +699,13 @@ class SegArray:
                 if self.non_empty[i]:
                     x += 1
 
-        norepeats = SegArray.from_parts(truesegs, truepaths)
+        norepeats = SegArray(truesegs, truepaths)
         if return_multiplicity:
             truehopinds = arange(self.valsize)[~isrepeat]
             multiplicity = zeros(truepaths.size, dtype=akint64)
             multiplicity[:-1] = truehopinds[1:] - truehopinds[:-1]
             multiplicity[-1] = self.valsize - truehopinds[-1]
-            return norepeats, SegArray.from_parts(truesegs, multiplicity)
+            return norepeats, SegArray(truesegs, multiplicity)
         else:
             return norepeats
 
@@ -856,7 +725,7 @@ class SegArray:
 
         Examples
         --------
-        >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
+        >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
         >>> segarr.to_ndarray()
         array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
         >>> type(segarr.to_ndarray())
@@ -884,7 +753,7 @@ class SegArray:
 
         Examples
         --------
-        >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
+        >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
         >>> segarr.to_list()
         [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
         >>> type(segarr.to_list())
@@ -984,7 +853,7 @@ class SegArray:
         ukey, uval = GroupBy([keyidx, x]).unique_keys
         g = GroupBy(ukey, assume_sorted=True)
         _, lengths = g.count()
-        return SegArray.from_parts(g.segments, uval, grouping=g, lengths=lengths)
+        return SegArray(g.segments, uval, grouping=g, lengths=lengths)
 
     def to_hdf(
         self,
@@ -1027,12 +896,13 @@ class SegArray:
             generic_msg(
                 cmd="tohdf",
                 args={
-                    "seg_name": self.name,
+                    "values": self.values.name,
+                    "segments": self.segments.name,
                     "dset": dataset,
                     "write_mode": _mode_str_to_int(mode),
                     "filename": prefix_path,
                     "dtype": self.dtype,
-                    "objType": "segarray",
+                    "objType": self.objType,
                     "file_format": _file_type_to_int(file_type),
                 },
             ),
@@ -1091,12 +961,13 @@ class SegArray:
         generic_msg(
             cmd="tohdf",
             args={
-                "seg_name": self.name,
+                "values": self.values.name,
+                "segments": self.segments.name,
                 "dset": dataset,
                 "write_mode": _mode_str_to_int("append"),
                 "filename": prefix_path,
                 "dtype": self.dtype,
-                "objType": "segarray",
+                "objType": self.objType,
                 "file_format": _file_type_to_int(file_type),
                 "overwrite": True,
             },
@@ -1161,11 +1032,12 @@ class SegArray:
             generic_msg(
                 "writeParquet",
                 {
-                    "values": self.name,
+                    "values": self.values.name,
+                    "segments": self.segments.name,
                     "dset": dataset,
                     "mode": _mode_str_to_int(mode),
                     "prefix": prefix_path,
-                    "objType": "segarray",
+                    "objType": self.objType,
                     "dtype": self.dtype,
                     "compression": compression,
                 },
@@ -1306,7 +1178,7 @@ class SegArray:
         # This method does not return any empty resulting segments
         # We need to add these if they are missing
         if g.segments.size == self.size:
-            return SegArray.from_parts(g.segments, new_values[g.permutation])
+            return SegArray(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
@@ -1317,7 +1189,7 @@ class SegArray:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
-            return SegArray.from_parts(segments, new_values[g.permutation])
+            return SegArray(segments, new_values[g.permutation])
 
     def union(self, other):
         """
@@ -1360,7 +1232,7 @@ class SegArray:
         # This method does not return any empty resulting segments
         # We need to add these if they are missing
         if g.segments.size == self.size:
-            return SegArray.from_parts(g.segments, new_values[g.permutation])
+            return SegArray(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
@@ -1371,7 +1243,7 @@ class SegArray:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
-            return SegArray.from_parts(segments, new_values[g.permutation])
+            return SegArray(segments, new_values[g.permutation])
 
     def setdiff(self, other):
         """
@@ -1414,7 +1286,7 @@ class SegArray:
         # This method does not return any empty resulting segments
         # We need to add these if they are missing
         if g.segments.size == self.size:
-            return SegArray.from_parts(g.segments, new_values[g.permutation])
+            return SegArray(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
@@ -1425,7 +1297,7 @@ class SegArray:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
-            return SegArray.from_parts(segments, new_values[g.permutation])
+            return SegArray(segments, new_values[g.permutation])
 
     def setxor(self, other):
         """
@@ -1468,7 +1340,7 @@ class SegArray:
         # This method does not return any empty resulting segments
         # We need to add these if they are missing
         if g.segments.size == self.size:
-            return SegArray.from_parts(g.segments, new_values[g.permutation])
+            return SegArray(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
@@ -1479,7 +1351,7 @@ class SegArray:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
-            return SegArray.from_parts(segments, new_values[g.permutation])
+            return SegArray(segments, new_values[g.permutation])
 
     def filter(self, filter, discard_empty: bool = False):
         """
@@ -1516,7 +1388,7 @@ class SegArray:
         seg_cts = self.grouping.sum(keep)[1]
         new_segs = cumsum(seg_cts) - seg_cts
 
-        new_segarray = SegArray.from_parts(new_segs, new_vals)
+        new_segarray = SegArray(new_segs, new_vals)
         return new_segarray[new_segarray.non_empty] if discard_empty else new_segarray
 
     def register(self, user_defined_name):
@@ -1542,23 +1414,10 @@ class SegArray:
         --------
         unregister, attach, is_registered
         """
-        try:
-            rep_msg = generic_msg(
-                cmd="register", args={"array": self.name, "user_name": user_defined_name}
-            )
-            if rep_msg != "success":
-                raise RegistrationError
-        except (
-            RuntimeError,
-            RegistrationError,
-        ):  # Registering two objects with the same name is not allowed
-            raise RegistrationError(f"Server was unable to register {user_defined_name}")
-
         self.name = user_defined_name
         self.segments.register(self.name + SEG_SUFFIX)
         self.values.register(self.name + VAL_SUFFIX)
         self.lengths.register(self.name + LEN_SUFFIX)
-        self.grouping.register(self.name + GROUP_SUFFIX)
         return self
 
     def unregister(self):
@@ -1603,11 +1462,9 @@ class SegArray:
         --------
         register, unregister, attach, is_registered
         """
-        generic_msg(cmd="unregister", args={"name": user_defined_name})
         unregister_pdarray_by_name(user_defined_name + SEG_SUFFIX)
         unregister_pdarray_by_name(user_defined_name + VAL_SUFFIX)
         unregister_pdarray_by_name(user_defined_name + LEN_SUFFIX)
-        GroupBy.unregister_groupby_by_name(user_defined_name + GROUP_SUFFIX)
 
     @classmethod
     def attach(cls, user_defined_name):
@@ -1633,14 +1490,12 @@ class SegArray:
         --------
         register, unregister, is_registered
         """
-        repMsg = generic_msg(
-            cmd="attach",
-            args={
-                "name": user_defined_name,
-                "objtype": SegArray.objType,
-            },
-        )
-        return cls.from_return_msg(repMsg)
+        from arkouda.pdarrayclass import attach_pdarray
+
+        segs = attach_pdarray(user_defined_name + SEG_SUFFIX)
+        vals = attach_pdarray(user_defined_name + VAL_SUFFIX)
+        lengths = attach_pdarray(user_defined_name + LEN_SUFFIX)
+        return cls(segs, vals, lengths=lengths)
 
     def is_registered(self) -> bool:
         """
@@ -1658,8 +1513,7 @@ class SegArray:
         regParts = [
             self.segments.is_registered(),
             self.values.is_registered(),
-            self.lengths.is_registered(),
-            self.grouping.is_registered(),
+            self.lengths.is_registered()
         ]
 
         if any(regParts) and not all(regParts):

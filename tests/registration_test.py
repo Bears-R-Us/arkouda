@@ -677,7 +677,7 @@ class RegistrationTest(ArkoudaTest):
         a = [1, 2, 3]
         b = [6, 7, 8]
 
-        segarr = ak.segarray(ak.array([0, len(a)]), ak.array(a + b))
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
         # register the seg array
         segarr.register("segarrtest")
         ak.clear()
@@ -697,7 +697,7 @@ class RegistrationTest(ArkoudaTest):
         a = [1, 2, 3]
         b = [6, 7, 8]
 
-        segarr = ak.segarray(ak.array([0, len(a)]), ak.array(a + b))
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
         # register the seg array
         segarr.register("segarr_unreg_name_test")
         ak.clear()
@@ -728,7 +728,7 @@ class RegistrationTest(ArkoudaTest):
         cat = None
         self.assertEqual(len(ak.list_symbol_table()), 0)
 
-        seg = ak.segarray(
+        seg = ak.SegArray(
             ak.array([0, 6, 8]), ak.array([10, 11, 12, 13, 14, 15, 20, 21, 30, 31, 32, 33])
         )
         self.assertTrue(len(ak.list_symbol_table()) > 0)
@@ -747,7 +747,7 @@ class RegistrationTest(ArkoudaTest):
                 "pda": ak.arange(3),
                 "s": ak.array(["a", "b", "c"]),
                 "cat": ak.Categorical(ak.array(["a", "b", "c"])),
-                "seg": ak.segarray(
+                "seg": ak.SegArray(
                     ak.array([0, 6, 8]), ak.array([10, 11, 12, 13, 14, 15, 20, 21, 30, 31, 32, 33])
                 ),
             }

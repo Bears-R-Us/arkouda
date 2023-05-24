@@ -616,7 +616,7 @@ class DataFrame(UserDict):
             elif t == "SegArray":
                 # split creates for segments and values
                 eles = msg[2].split("+")
-                df_dict[msg[1]] = SegArray.from_parts(create_pdarray(eles[0]), create_pdarray(eles[1]))
+                df_dict[msg[1]] = SegArray(create_pdarray(eles[0]), create_pdarray(eles[1]))
             elif t == "Fields":
                 df_dict[msg[1]] = Fields(
                     create_pdarray(msg[2]),
@@ -2442,9 +2442,10 @@ class DataFrame(UserDict):
                 i += 3
 
             elif parts[i] == "segarray":
-                colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
-                cols[colName] = SegArray.from_return_msg(parts[i + 2])
-                i += 2
+                info = json.loads(parts[i+1])
+                colName = DataFrame._parse_col_name(info["segments"], dfName)[0]
+                cols[colName] = SegArray.from_return_msg(parts[i + 1])
+                i += 1
 
             i += 1
 

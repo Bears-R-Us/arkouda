@@ -812,7 +812,7 @@ class IOTest(ArkoudaTest):
         segments = ak.array([0, len(a), len(a) + len(b)])
         dtype = ak.dtypes.int64
         akflat = ak.array(flat, dtype)
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             segarr.to_hdf(f"{tmp_dirname}/segarray_int")
@@ -824,7 +824,7 @@ class IOTest(ArkoudaTest):
         # uint64 test
         dtype = ak.dtypes.uint64
         akflat = ak.array(flat, dtype)
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             segarr.to_hdf(f"{tmp_dirname}/segarray_uint")
@@ -836,7 +836,7 @@ class IOTest(ArkoudaTest):
         # float64 test
         dtype = ak.dtypes.float64
         akflat = ak.array(flat, dtype)
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             segarr.to_hdf(f"{tmp_dirname}/segarray_float")
@@ -848,7 +848,7 @@ class IOTest(ArkoudaTest):
         # bool test
         dtype = ak.dtypes.bool
         akflat = ak.array(flat, dtype)
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             segarr.to_hdf(f"{tmp_dirname}/segarray_bool")
@@ -867,7 +867,7 @@ class IOTest(ArkoudaTest):
         segments = ak.array([0, len(a), len(a) + len(b)])
         dtype = ak.dtypes.int64
         akflat = ak.array(flat, dtype)
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         s = ak.array(["abc","def","ghi"])
         df = ak.DataFrame([segarr, s])
@@ -1048,8 +1048,8 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(data["d"].to_list(), df["d"].to_list())
 
     def test_overwrite_segarray(self):
-        sa1 = ak.segarray(ak.arange(0, 1000, 5), ak.arange(1000))
-        sa2 = ak.segarray(ak.arange(0, 100, 5), ak.arange(100))
+        sa1 = ak.SegArray(ak.arange(0, 1000, 5), ak.arange(1000))
+        sa2 = ak.SegArray(ak.arange(0, 100, 5), ak.arange(100))
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             sa1.to_hdf(f"{tmp_dirname}/segarray_test")
             sa1.to_hdf(f"{tmp_dirname}/segarray_test", dataset="seg2", mode="append")

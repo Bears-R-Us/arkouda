@@ -24,7 +24,6 @@ module HDF5Msg {
     use ServerErrors;
     use ServerErrorStrings;
     use SegmentedString;
-    use SegmentedArray;
     use Sort;
 
     use ArkoudaMapCompat;
@@ -1018,8 +1017,10 @@ module HDF5Msg {
         var file_format = msgArgs.get("file_format").getIntValue();
         var group = msgArgs.getValueOf("dset");
         var val_dType = str2dtype(msgArgs.getValueOf("dtype"));
-        var segarr = msgArgs.getValueOf("seg_name");
         const objType = msgArgs.getValueOf("objType");
+
+        // segments is always int64
+        var segments = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("segments"))), int);
 
         select file_format {
             when SINGLE_FILE {
@@ -1042,36 +1043,28 @@ module HDF5Msg {
 
                 select val_dType {
                     when (DType.Int64) {
-                        var sa:SegArray = getSegArray(segarr, st, int);
-                        var valEntry = sa.values;
-                        var segEntry = sa.segments;
+                        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), int);
 
                         //localize values and write dataset
-                        writeSegmentedLocalDset(file_id, group, valEntry, segEntry, true, int);
+                        writeSegmentedLocalDset(file_id, group, values, segments, true, int);
                         dtype = getDataType(int);
                     } when (DType.UInt64) {
-                        var sa:SegArray = getSegArray(segarr, st, uint);
-                        var valEntry = sa.values;
-                        var segEntry = sa.segments;
+                        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), uint);
 
                          //localize values and write dataset
-                        writeSegmentedLocalDset(file_id, group, valEntry, segEntry, true, uint);
+                        writeSegmentedLocalDset(file_id, group, values, segments, true, uint);
                         dtype = getDataType(uint);
                     } when (DType.Float64) {
-                        var sa:SegArray = getSegArray(segarr, st, real);
-                        var valEntry = sa.values;
-                        var segEntry = sa.segments;
+                        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), real);
 
                          //localize values and write dataset
-                        writeSegmentedLocalDset(file_id, group, valEntry, segEntry, true, real);
+                        writeSegmentedLocalDset(file_id, group, values, segments, true, real);
                         dtype = getDataType(real);
                     } when (DType.Bool) {
-                        var sa:SegArray = getSegArray(segarr, st, bool);
-                        var valEntry = sa.values;
-                        var segEntry = sa.segments;
+                        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), bool);
 
                          //localize values and write dataset
-                        writeSegmentedLocalDset(file_id, group, valEntry, segEntry, true, bool);
+                        writeSegmentedLocalDset(file_id, group, values, segments, true, bool);
                         dtype = getDataType(bool);
                     }
                     otherwise {
@@ -1088,34 +1081,23 @@ module HDF5Msg {
                 C_HDF5.H5Fclose(file_id);
             }
             when MULTI_FILE {
+                var filenames = prepFiles(filename, mode, segments.a);
                 select val_dType {
                     when DType.Int64 {
-                        var sa:SegArray = getSegArray(segarr, st, int);
-                        var valEntry = sa.values;
-                        var segEntry = sa.segments;
-                        var filenames = prepFiles(filename, mode, segEntry.a);
-                        writeSegmentedDistDset(filenames, group, objType, overwrite, valEntry.a, segEntry.a, st, int);
+                        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), int);
+                        writeSegmentedDistDset(filenames, group, objType, overwrite, values.a, segments.a, st, int);
                     }
                     when DType.UInt64 {
-                        var sa:SegArray = getSegArray(segarr, st, uint);
-                        var valEntry = sa.values;
-                        var segEntry = sa.segments;
-                        var filenames = prepFiles(filename, mode, segEntry.a);
-                        writeSegmentedDistDset(filenames, group, objType, overwrite, valEntry.a, segEntry.a, st, uint);
+                        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), uint);
+                        writeSegmentedDistDset(filenames, group, objType, overwrite, values.a, segments.a, st, uint);
                     }
                     when DType.Float64 {
-                        var sa:SegArray = getSegArray(segarr, st, real);
-                        var valEntry = sa.values;
-                        var segEntry = sa.segments;
-                        var filenames = prepFiles(filename, mode, segEntry.a);
-                        writeSegmentedDistDset(filenames, group, objType, overwrite, valEntry.a, segEntry.a, st, real);
+                        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), real);
+                        writeSegmentedDistDset(filenames, group, objType, overwrite, values.a, segments.a, st, real);
                     }
                     when DType.Bool {
-                        var sa:SegArray = getSegArray(segarr, st, bool);
-                        var valEntry = sa.values;
-                        var segEntry = sa.segments;
-                        var filenames = prepFiles(filename, mode, segEntry.a);
-                        writeSegmentedDistDset(filenames, group, objType, overwrite, valEntry.a, segEntry.a, st, bool);
+                        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), bool);
+                        writeSegmentedDistDset(filenames, group, objType, overwrite, values.a, segments.a, st, bool);
                     }
                     otherwise {
                         throw getErrorWithContext(
@@ -2193,12 +2175,16 @@ module HDF5Msg {
         (segSubdoms, nSeg, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_OFFSET_NAME, validFiles);
         (valSubdoms, len, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_VALUE_NAME, validFiles);
 
+        var rtnMap: map(string, string) = new map(string, string);
+
         var segDist = makeDistArray(nSeg, int);
         read_files_into_distributed_array(segDist, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
         fixupSegBoundaries(segDist, segSubdoms, valSubdoms);
+        var sname = st.nextName();
+        st.addEntry(sname, new shared SymEntry(segDist));
+        rtnMap.add("segments", "created " + st.attrib(sname));
 
-        var rtnMap: map(string, string) = new map(string, string);
-
+        var vname = st.nextName();
         select dataclass {
             when C_HDF5.H5T_INTEGER {
                 var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
@@ -2210,11 +2196,9 @@ module HDF5Msg {
                     if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
                         var boolDist = makeDistArray(len, bool);
                         boolDist = valDist:bool;
-                        var saEntry = getSegArray(segDist, boolDist, st);
-                        saEntry.fillReturnMap(rtnMap, st);
+                        st.addEntry(vname, new shared SymEntry(boolDist));
                     } else {
-                        var saEntry = getSegArray(segDist, valDist, st);
-                        saEntry.fillReturnMap(rtnMap, st);
+                        st.addEntry(vname, new shared SymEntry(valDist));
                     }                   
                 } else {
                     var valDist = makeDistArray(len, uint);
@@ -2223,20 +2207,17 @@ module HDF5Msg {
                     if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
                         var boolDist = makeDistArray(len, bool);
                         boolDist = valDist:bool;
-                        var saEntry = getSegArray(segDist, boolDist, st);
-                        saEntry.fillReturnMap(rtnMap, st);
+                        st.addEntry(vname, new shared SymEntry(boolDist));
                     } else {
-                        var saEntry = getSegArray(segDist, valDist, st);
-                        saEntry.fillReturnMap(rtnMap, st);
+                        st.addEntry(vname, new shared SymEntry(valDist));
                     } 
                 }
             }
             when C_HDF5.H5T_FLOAT {
                 var valDist = makeDistArray(len, real);
                 read_files_into_distributed_array(valDist, valSubdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
-
-                var saEntry = getSegArray(segDist, valDist, st);
-                saEntry.fillReturnMap(rtnMap, st);
+                
+                st.addEntry(vname, new shared SymEntry(valDist));
             }
             otherwise {
                 var errorMsg = "detected unhandled datatype: objType? segarray, class %i, size %i, " +
@@ -2250,6 +2231,7 @@ module HDF5Msg {
                             errorClass='UnhandledDatatypeError');
             }
         }
+        rtnMap.add("values", "created " + st.attrib(vname));
         
         return (dset, "seg_array", "%jt".format(rtnMap));
     }

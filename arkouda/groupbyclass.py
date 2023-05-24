@@ -1533,11 +1533,11 @@ class GroupBy:
         # Values are the unique elements of the values arg
         if len(unique_values) == 1:
             # Squeeze singleton results
-            ret = SegArray.from_parts(g2.segments, unique_values[0])
+            ret = SegArray(g2.segments, unique_values[0])
             if reorder:
                 ret = ret[perm]
         else:
-            ret = [SegArray.from_parts(g2.segments, uv) for uv in unique_values]  # type: ignore
+            ret = [SegArray(g2.segments, uv) for uv in unique_values]  # type: ignore
             if reorder:
                 ret = [r[perm] for r in ret]  # type: ignore
         return self.unique_keys, ret  # type: ignore

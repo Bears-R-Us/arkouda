@@ -493,7 +493,7 @@ def _dict_recombine_segarrays_categoricals(df_dict):
     # update dict to contain segarrays where applicable if any exist
     if len(seg_cols) > 0 or len(cat_cols) > 0:
         df_dict = {
-            col: SegArray.from_parts(df_dict[col + "_segments"], df_dict[col + "_values"])
+            col: SegArray(df_dict[col + "_segments"], df_dict[col + "_values"])
             if col in seg_cols
             else Categorical.from_codes(
                 df_dict[f"{col}.codes"],
@@ -1074,7 +1074,9 @@ def _bulk_write_prep(
     if len(data) == 0:
         raise RuntimeError("No data was found.")
 
-    return datasetNames, data
+    col_objtypes = [c.objType for c in data]
+
+    return datasetNames, data, col_objtypes
 
 
 def to_parquet(
@@ -1155,10 +1157,10 @@ def to_parquet(
             DeprecationWarning,
         )
 
-    datasetNames, pdarrays = _bulk_write_prep(columns, names)
+    datasetNames, data, col_objtypes = _bulk_write_prep(columns, names)
     # append or single column use the old logic
-    if mode.lower() == "append" or len(pdarrays) == 1:
-        for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
+    if mode.lower() == "append" or len(data) == 1:
+        for arr, name in zip(data, cast(List[str], datasetNames)):
             arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compression=compression)
     else:
         print(
@@ -1167,10 +1169,11 @@ def to_parquet(
                 generic_msg(
                     cmd="toParquet_multi",
                     args={
-                        "columns": pdarrays,
+                        "columns": data,
                         "col_names": datasetNames,
+                        "col_objtypes": col_objtypes,
                         "filename": prefix_path,
-                        "num_cols": len(pdarrays),
+                        "num_cols": len(data),
                         "compression": compression,
                     },
                 ),
@@ -1247,7 +1250,7 @@ def to_hdf(
     if mode.lower() not in ["append", "truncate"]:
         raise ValueError("Allowed modes are 'truncate' and 'append'")
 
-    datasetNames, pdarrays = _bulk_write_prep(columns, names)
+    datasetNames, pdarrays, _ = _bulk_write_prep(columns, names)
 
     for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
         arr.to_hdf(
@@ -1333,7 +1336,7 @@ def update_hdf(
     - This workflow is slightly different from `to_hdf` to prevent reading and
       creating a copy of the file for each dataset
     """
-    datasetNames, pdarrays = _bulk_write_prep(columns, names)
+    datasetNames, pdarrays, _ = _bulk_write_prep(columns, names)
 
     for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
         # overwrite the data without repacking. Repack done once at end if set
@@ -1401,7 +1404,7 @@ def to_csv(
     - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
       bytes as uint(8).
     """
-    datasetNames, pdarrays = _bulk_write_prep(columns, names)  # type: ignore
+    datasetNames, pdarrays, _ = _bulk_write_prep(columns, names)  # type: ignore
     dtypes = [a.dtype.name for a in pdarrays]
 
     generic_msg(
