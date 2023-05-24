@@ -10,7 +10,6 @@ module MultiTypeSymEntry
 
     public use NumPyDType;
     public use SymArrayDmap;
-    use MultiTypeSymbolTable;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -32,7 +31,6 @@ module MultiTypeSymEntry
                 CategoricalSymEntry,  // Categorical
 
             CompositeSymEntry,        // Entries that consist of multiple SymEntries of varying type
-                GroupBySymEntry,      // GroupBy
 
             AnythingSymEntry, // Placeholder to stick aritrary things in the map
             UnknownSymEntry,
@@ -407,37 +405,6 @@ module MultiTypeSymEntry
             genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
             var s = "DType: %s, itemsize: %t, size: %t".format(this.dtype, this.itemsize, this.size);
             return prefix + s + suffix;
-        }
-    }
-
-    /*
-        Symbol Table entry representing a GroupBy object.
-    */
-    class GroupBySymEntry:CompositeSymEntry {
-
-        var keyNamesEntry: shared SymEntry(string);
-        var keyTypesEntry: shared SymEntry(string);
-        var segmentsEntry: shared SymEntry(int);
-        var permEntry: shared SymEntry(int);
-        var ukIndEntry: shared SymEntry(int);
-        
-        proc init(keyNamesEntry: shared SymEntry, keyTypesEntry: shared SymEntry, segmentsSymEntry: shared SymEntry, 
-                    permSymEntry: shared SymEntry, ukIndSymEntry: shared SymEntry, itemsize: int) {
-            super.init(permSymEntry.size); // sets this.size = permEntry.size
-            this.entryType = SymbolEntryType.GroupBySymEntry;
-            assignableTypes.add(this.entryType);
-            this.keyNamesEntry = keyNamesEntry;
-            this.keyTypesEntry = keyTypesEntry;
-            this.segmentsEntry = segmentsSymEntry;
-            this.permEntry = permSymEntry;
-            this.ukIndEntry = ukIndSymEntry;
-
-            this.ndim = this.segmentsEntry.size; // used as the number of groups
-        }
-
-        override proc getSizeEstimate(): int {
-            return this.keyNamesEntry.getSizeEstimate() + this.keyTypesEntry.getSizeEstimate() + 
-            this.segmentsEntry.getSizeEstimate() + this.permEntry.getSizeEstimate() + this.ukIndEntry.getSizeEstimate();
         }
     }
 
