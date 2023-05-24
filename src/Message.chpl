@@ -9,6 +9,7 @@ module Message {
 
     use ArkoudaFileCompat;
     use ArkoudaMapCompat;
+    use ArkoudaListCompat;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
@@ -397,7 +398,7 @@ module Message {
         var pArr = jsonToPdArray(json_str, size);
         var param_list = new list(ParameterObj, parSafe=true);
         forall j_str in pArr with (ref param_list) {
-            param_list.append(parseParameter(j_str));
+            param_list.pushBack(parseParameter(j_str));
         }
         return new owned MessageArgs(param_list);
     }

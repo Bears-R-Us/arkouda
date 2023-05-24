@@ -11,6 +11,8 @@ module BigIntMsg {
     use BigInteger;
     use List;
 
+    use ArkoudaListCompat;
+
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -72,7 +74,7 @@ module BigIntMsg {
                   low = tmp:uint;
                   var retname = st.nextName();
                   st.addEntry(retname, new shared SymEntry(low));
-                  retList.append("created %s".format(st.attrib(retname)));
+                  retList.pushBack("created %s".format(st.attrib(retname)));
 
                   all_zero = true;
                   forall t in tmp with (&& reduce all_zero) {

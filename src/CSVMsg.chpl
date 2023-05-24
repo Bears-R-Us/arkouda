@@ -19,6 +19,7 @@ module CSVMsg {
 
     use ArkoudaFileCompat;
     use ArkoudaArrayCompat;
+    use ArkoudaListCompat;
 
     const CSV_HEADER_OPEN = "**HEADER**";
     const CSV_HEADER_CLOSE = "*/HEADER/*";
@@ -402,7 +403,7 @@ module CSVMsg {
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
-                    rtnData.append((dset, "pdarray", rname));
+                    rtnData.pushBack((dset, "pdarray", rname));
                 }
                 when DType.UInt64 {
                     var a = makeDistArray(record_count, uint);
@@ -410,7 +411,7 @@ module CSVMsg {
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
-                    rtnData.append((dset, "pdarray", rname));
+                    rtnData.pushBack((dset, "pdarray", rname));
                 }
                 when DType.Float64 {
                     var a = makeDistArray(record_count, real);
@@ -418,7 +419,7 @@ module CSVMsg {
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
-                    rtnData.append((dset, "pdarray", rname));
+                    rtnData.pushBack((dset, "pdarray", rname));
                 }
                 when DType.Bool {
                     var a = makeDistArray(record_count, bool);
@@ -426,7 +427,7 @@ module CSVMsg {
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
-                    rtnData.append((dset, "pdarray", rname));
+                    rtnData.pushBack((dset, "pdarray", rname));
                 }
                 when DType.Strings {
                     var a = makeDistArray(record_count, string);
@@ -448,7 +449,7 @@ module CSVMsg {
                     }
                     var ss = getSegString(str_offsets, data, st);
                     var rst = (dset, "seg_string", "%s+%t".format(ss.name, ss.nBytes));
-                    rtnData.append(rst);
+                    rtnData.pushBack(rst);
                 }
                 otherwise {
                     throw getErrorWithContext(
@@ -490,7 +491,7 @@ module CSVMsg {
             }
             var ss = getSegString(str_offsets, data, st);
             var rst = (dset, "seg_string", "%s+%t".format(ss.name, ss.nBytes));
-            rtnData.append(rst);
+            rtnData.pushBack(rst);
         }
         return rtnData;
     }
@@ -569,7 +570,7 @@ module CSVMsg {
             try {
                 var dtypes: list(string);
                 (row_cts[i], headers[i], dtypes) = get_info(fname, dsetlist, col_delim);
-                data_types.append(dtypes);
+                data_types.pushBack(dtypes);
             } catch e: FileNotFoundError {
                 fileErrorMsg = "File %s not found".format(fname);
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
@@ -600,7 +601,7 @@ module CSVMsg {
             if hadError {
                 // Keep running total, but we'll only report back the first 10
                 if fileErrorCount < 10 {
-                    fileErrors.append(fileErrorMsg.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip());
+                    fileErrors.pushBack(fileErrorMsg.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip());
                 }
                 fileErrorCount += 1;
                 validFiles[i] = false;
