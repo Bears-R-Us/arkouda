@@ -41,7 +41,7 @@ class ObjectType(Enum):
 
 
 class ParameterObject:
-    __slots = ("key", "objType", "dtype", "val")
+    __slots__ = ("key", "objType", "dtype", "val")
 
     key: str
     objType: MessageFormat
@@ -322,7 +322,7 @@ context of an Arkouda server request.
 
 @dataclass(frozen=True)
 class RequestMessage:
-    __slots = ("user", "token", "cmd", "format", "args", "size")
+    __slots__ = ("user", "token", "cmd", "format", "args", "size")
 
     user: str
     token: str
