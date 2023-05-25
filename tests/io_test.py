@@ -688,6 +688,7 @@ class IOTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             av.to_hdf(f"{tmp_dirname}/bigint_test")
             rd_av = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
+            self.assertIsInstance(rd_av, ak.ArrayView)
             self.assertListEqual(av.base.to_list(), rd_av.base.to_list())
             self.assertEqual(av.base.max_bits, rd_av.base.max_bits)
 
@@ -697,12 +698,24 @@ class IOTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             g.to_hdf(f"{tmp_dirname}/bigint_test")
             rd_g = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
-            self.assertListEqual(g.keys.to_list(), g.keys.to_list())
-            self.assertListEqual(g.unique_keys.to_list(), g.unique_keys.to_list())
-            self.assertListEqual(g.permutation.to_list(), g.permutation.to_list())
-            self.assertListEqual(g.segments.to_list(), g.segments.to_list())
+            self.assertIsInstance(rd_g, ak.GroupBy)
+            self.assertListEqual(g.keys.to_list(), rd_g.keys.to_list())
+            self.assertListEqual(g.unique_keys.to_list(), rd_g.unique_keys.to_list())
+            self.assertListEqual(g.permutation.to_list(), rd_g.permutation.to_list())
+            self.assertListEqual(g.segments.to_list(), rd_g.segments.to_list())
 
-        # TODO - add testing for bigint segarray
+        # bigint segarray
+        a = ak.arange(10, dtype=ak.bigint)
+        a += 2 ** 200
+        a.max_bits = 212
+        s = ak.arange(0, 10, 2)
+        sa = ak.SegArray(s, a)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            sa.to_hdf(f"{tmp_dirname}/bigint_test")
+            rd_sa = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
+            self.assertIsInstance(rd_sa, ak.SegArray)
+            self.assertListEqual(sa.values.to_list(), rd_sa.values.to_list())
+            self.assertListEqual(sa.segments.to_list(), rd_sa.segments.to_list())
 
     def testUint64ToFromArray(self):
         """
