@@ -764,7 +764,7 @@ module HDF5Msg {
                 var all_zero = false;
                 var low: [tmp.domain] uint;
                 const ushift = 64:uint;
-                while !all_zero { // Note this returns in BigEndian... client reverses for littleEndian
+                while !all_zero {
                     low = tmp:uint;
                     limbs.append(new shared SymEntry(low));
 
@@ -794,7 +794,7 @@ module HDF5Msg {
         var low: [D] uint;
         const ushift = 64:uint;
         var tmp = arr;
-        while !all_zero { // Note this returns in BigEndian... client reverses for littleEndian
+        while !all_zero {
             low = tmp:uint;
             limbs.append(low);
 
@@ -881,7 +881,7 @@ module HDF5Msg {
 
                         // create the group
                         validateGroup(file_id, f, dset_name, overwrite); // stored as group - group uses the dataset name
-                        var max_bits = symEnt.max_bits;
+                        const max_bits = symEnt.max_bits;
                         writeBigIntMetaData(file_id, dset_name, max_bits, limbs.size);
 
                         // write limbs
@@ -1112,15 +1112,31 @@ module HDF5Msg {
         }
     }
 
-    proc writeSegmentedLocalDset(file_id: C_HDF5.hid_t, group: string, vals, segs, write_offsets: bool, type t) throws {
+    proc writeSegmentedLocalDset(file_id: C_HDF5.hid_t, group: string, vals, segs, write_offsets: bool, type t, max_bits: int = -1) throws {
         h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             "Writing group, %s".format(group));
 
-        var dtype_id: C_HDF5.hid_t = getDataType(t);
-        var localVals: [0..#vals.size] t = vals.a;
+        var dtype_id: C_HDF5.hid_t = if t == bigint then getDataType(uint) else getDataType(t);
+        // var localVals: [0..#vals.size] t = vals.a;
         var vd = vals.size:C_HDF5.hsize_t;
-        C_HDF5.H5LTmake_dataset(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, vd, dtype_id, c_ptrTo(localVals));
-        writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), "pdarray", dtype_id);
+
+        if t == bigint {
+            var limbs = bigintToUint(vals);
+            writeBigIntMetaData(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), max_bits, limbs.size);
+            writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), "pdarray", dtype_id);
+
+            // write limbs
+            for (i, l) in zip(0..#limbs.size, limbs) {
+                var local_limb: [0..#l.size] uint = l.a;
+                writeLocalDset(file_id, "%s/%s/Limb_%i".format(group, SEGMENTED_VALUE_NAME, i), c_ptrTo(local_limb), l.size, uint);
+                writeArkoudaMetaData(file_id, "%s/%s/Limb_%i".format(group, SEGMENTED_VALUE_NAME, i), "pdarray", getDataType(uint));
+            }
+        }
+        else {
+            var localVals: [0..#vals.size] t = vals.a;
+            C_HDF5.H5LTmake_dataset(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, vd, dtype_id, c_ptrTo(localVals));
+            writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), "pdarray", dtype_id);
+        }
 
         if write_offsets {
             var localSegs: [0..#segs.size] int = segs.a;
@@ -1135,8 +1151,6 @@ module HDF5Msg {
     proc writeSegmentedDistDset(filenames: [] string, group: string, objType: string, overwrite: bool, values, segments, st: borrowed SymTab, type t, max_bits: int = -1) throws {
         const lastSegIdx = segments.domain.high;
         const lastValIdx = values.domain.high;
-        // ref va = values.a;
-        // ref sa = segments.a;
         coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) do on loc {
             var dtype: C_HDF5.hid_t = if t == bigint then getDataType(uint) else getDataType(t);
             const localeFilename = filenames[idx];
@@ -1259,31 +1273,17 @@ module HDF5Msg {
                     } when (DType.Bool) {
                         var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), bool);
 
-                         //localize values and write dataset
+                        //localize values and write dataset
                         writeSegmentedLocalDset(file_id, group, values, segments, true, bool);
                         dtype = getDataType(bool);
                     }
                     when (DType.BigInt) {
-                        var symEnt = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), bigint);
-                        var limbs = bigintToUint(symEnt);
-
+                        var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), bigint);
                         // create the group
                         validateGroup(file_id, f, "%s/%s".format(group, SEGMENTED_VALUE_NAME), overwrite); // stored as group - group uses the dataset name
-                        var max_bits = symEnt.max_bits;
-                        writeBigIntMetaData(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), max_bits, limbs.size);
-                        writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), "pdarray", getDataType(uint));
-
-                        // write limbs
-                        for (i, l) in zip(0..#limbs.size, limbs) {
-                            var local_limb: [0..#l.size] uint = l.a;
-                            writeLocalDset(file_id, "%s/%s/Limb_%i".format(group, SEGMENTED_VALUE_NAME, i), c_ptrTo(local_limb), l.size, uint);
-                            writeArkoudaMetaData(file_id, "%s/%s/Limb_%i".format(group, SEGMENTED_VALUE_NAME, i), objType, getDataType(uint));
-                        }
-                        // write segments
-                        var localSegs: [0..#segments.size] int = segments.a;
-                        var sd = segments.size:C_HDF5.hsize_t;
-                        C_HDF5.H5LTmake_dataset(file_id, "%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1:c_int, sd, getDataType(int), c_ptrTo(localSegs));
-                        writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_OFFSET_NAME), "pdarray", getDataType(int));
+                        //localize values and write dataset
+                        writeSegmentedLocalDset(file_id, group, values, segments, true, bigint);
+                        dtype = getDataType(uint);
                     }
                     otherwise {
                         throw getErrorWithContext(
