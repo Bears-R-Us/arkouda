@@ -43,7 +43,7 @@ __all__ = [
     "ErrorMode",
 ]
 
-hashable = Union[pdarray, Categorical, SegArray, Strings]  # type: ignore
+hashable = Union[pdarray, Categorical, Strings]  # type: ignore
 
 
 class ErrorMode(Enum):
@@ -425,6 +425,15 @@ def cos(pda: pdarray) -> pdarray:
     return create_pdarray(repMsg)
 
 
+def _hash_helper(a):
+    from arkouda import Categorical as _Categorical
+
+    if isinstance(a, _Categorical):
+        return a.categories[a.codes]
+    else:
+        return a
+
+
 @typechecked
 def hash(
     pda: Union[hashable, List[hashable]],
@@ -479,35 +488,14 @@ def hash(
     the array.
     """
     from arkouda import Categorical as _Categorical
-    from arkouda import SegArray as _SegArray
 
-    if isinstance(pda, pdarray) or isinstance(pda, _Categorical) or isinstance(pda, _SegArray):
-        if isinstance(pda, _Categorical):
-            a = pda.codes
-        elif isinstance(pda, _SegArray):
-            a = pda.values
-        else:
-            a = pda
-
-        return _hash_single(a, full)
-    if isinstance(pda, Strings):
-        return pda.hash()
+    if isinstance(pda, (pdarray, _Categorical, Strings)):
+        pda = _hash_helper(pda)
+        return pda.hash() if isinstance(pda, Strings) else _hash_single(pda, full)
     elif isinstance(pda, List):
-        namesList = []
-        typesList = []
-        for n in pda:
-            objType = n.objType
-            if isinstance(n, Strings) or isinstance(n, pdarray):
-                namesList.append(n.name)
-                objType = n.objType
-            elif isinstance(n, _Categorical):
-                namesList.append(n.codes.name)
-                objType = n.codes.objType
-            elif isinstance(n, _SegArray):
-                namesList.append(n.values.name)
-                objType = n.values.objType
-
-            typesList.append(objType)
+        ready = [_hash_helper(a) for a in pda]
+        namesList = [n.name for n in ready]
+        typesList = [n.objType for n in ready]
 
         repMsg = type_cast(
             str,
@@ -517,7 +505,7 @@ def hash(
                     "nameslist": namesList,
                     "typeslist": typesList,
                     "length": len(pda),
-                    "size": len(pda[0].values) if isinstance(pda[0], _SegArray) else len(pda[0]),
+                    "size": len(pda[0]),
                 },
             ),
         )

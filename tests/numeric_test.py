@@ -227,6 +227,24 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(h[0].dtype, ak.uint64)
         self.assertEqual(h[1].dtype, ak.uint64)
 
+        s = ak.random_strings_uniform(4, 8, 10)
+        h = ak.hash(s)
+        rh = ak.hash(s[rev])
+        self.assertListEqual(h[0].to_list(), rh[0][rev].to_list())
+        self.assertListEqual(h[1].to_list(), rh[1][rev].to_list())
+
+        # Two Categoricals with different categories, but identical codes
+        c1 = ak.Categorical(ak.array(["a", "a", "b", "b", "c"]))
+        c2 = ak.Categorical(ak.array(["d", "d", "e", "e", "f"]))
+        h1 = ak.hash(c1)
+        h2 = ak.hash(c2)
+        self.assertNotEqual(h1[0].to_list(), h2[0].to_list())
+        self.assertNotEqual(h1[1].to_list(), h2[1].to_list())
+
+        c3 = ak.Categorical(ak.array(["a", "a", "b", "b", "c", "d", "d", "e", "e", "f"]))
+        arrhash = ak.hash([ak.randint(0, 10, 10), s, c3])
+        self.assertEqual(arrhash[0].size, 10)
+
     def testValueCounts(self):
         pda = ak.ones(100, dtype=ak.int64)
         result = ak.value_counts(pda)
