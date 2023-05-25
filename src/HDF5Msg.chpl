@@ -805,7 +805,6 @@ module HDF5Msg {
             }
         }
         return limbs;
-
     }
 
     /*
@@ -826,7 +825,6 @@ module HDF5Msg {
         var dset_name = msgArgs.getValueOf("dset");
         const objType = msgArgs.getValueOf("objType");
         var dtype: C_HDF5.hid_t;
-        // var write_meta: bool = true;
 
         select file_format {
             when SINGLE_FILE {
@@ -1117,7 +1115,6 @@ module HDF5Msg {
                             "Writing group, %s".format(group));
 
         var dtype_id: C_HDF5.hid_t = if t == bigint then getDataType(uint) else getDataType(t);
-        // var localVals: [0..#vals.size] t = vals.a;
         var vd = vals.size:C_HDF5.hsize_t;
 
         if t == bigint {
@@ -2230,11 +2227,6 @@ module HDF5Msg {
         Read an ArrayView object from the files provided into a distributed array
     */
     proc arrayView_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {
-        // var subdoms: [fD] domain(1);
-        // var skips = new set(string);
-        // var len: int;
-        // (subdoms, len, skips) = get_subdoms(filenames, dset, validFiles);
-
         var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);
         var dset_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, dset.c_str(), C_HDF5.H5P_DEFAULT);
@@ -3141,7 +3133,6 @@ module HDF5Msg {
             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                 "allowErrors:true, fileErrorCount:%t".format(fileErrorCount));
         }
-        writeln("\n\n%jt\n\n".format(rtnData));
         var repMsg: string = _buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
         h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg,MsgType.NORMAL);
