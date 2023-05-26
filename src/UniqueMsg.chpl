@@ -29,6 +29,7 @@ module UniqueMsg
     use Unique;
     use SipHash;
     use CommAggregation;
+    use SegmentedArray;
     
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -253,25 +254,29 @@ module UniqueMsg
             select g.dtype {
               when DType.Int64 {
                 var e = toSymEntry(g, int);
-                forall (h, x) in zip(hashes, e.a) {
+                ref ea = e.a;
+                forall (h, x) in zip(hashes, ea) {
                   h ^= rotl(sipHash128(x), i);
                 }
               }
               when DType.UInt64 {
                 var e = toSymEntry(g, uint);
-                forall (h, x) in zip(hashes, e.a) {
+                ref ea = e.a;
+                forall (h, x) in zip(hashes, ea) {
                   h ^= rotl(sipHash128(x), i);
                 }
               }
               when DType.Float64 {
                 var e = toSymEntry(g, real);
-                forall (h, x) in zip(hashes, e.a) {
+                ref ea = e.a;
+                forall (h, x) in zip(hashes, ea) {
                   h ^= rotl(sipHash128(x), i);
                 }
               }
               when DType.Bool {
                 var e = toSymEntry(g, bool);
-                forall (h, x) in zip(hashes, e.a) {
+                ref ea = e.a;
+                forall (h, x) in zip(hashes, ea) {
                   h ^= rotl((0:uint, x:uint), i);
                 }
               }
@@ -281,6 +286,13 @@ module UniqueMsg
             var (myNames, _) = name.splitMsgToTuple('+', 2);
             var g = getSegString(myNames, st);
             hashes ^= rotl(g.siphash(), i);
+          }
+          when ObjType.SEGARRAY {
+            var (segName, valName, valObjType) = name.splitMsgToTuple('+', 3);
+            var (upper, lower) = segarrayHash(segName, valName, valObjType, st);
+            forall (h, u, l) in zip(hashes, upper, lower) {
+              h ^= rotl((u,l), i);
+            }
           }
         }
       }

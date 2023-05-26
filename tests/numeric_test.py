@@ -227,6 +227,52 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(h[0].dtype, ak.uint64)
         self.assertEqual(h[1].dtype, ak.uint64)
 
+        # test strings hash
+        s = ak.random_strings_uniform(4, 8, 10)
+        h1, h2 = ak.hash(s)
+        rh1, rh2 = ak.hash(s[rev])
+        self.assertListEqual(h1.to_list(), rh1[rev].to_list())
+        self.assertListEqual(h2.to_list(), rh2[rev].to_list())
+
+        # verify all the ways to hash strings match
+        h3, h4 = ak.hash([s])
+        self.assertListEqual(h1.to_list(), h3.to_list())
+        self.assertListEqual(h2.to_list(), h4.to_list())
+        h5, h6 = s.hash()
+        self.assertListEqual(h1.to_list(), h5.to_list())
+        self.assertListEqual(h2.to_list(), h6.to_list())
+
+        # test segarray hash with int and string values
+        segs = ak.array([0, 3, 6, 9])
+        vals = ak.array([0, 1, 2, 3, 4, 5, 0, 1, 2, 5, 5, 5, 5])
+        sa = ak.SegArray(segs, vals)
+        str_vals = ak.array([f"str {i}" for i in vals.to_list()])
+        str_sa = ak.SegArray(segs, str_vals)
+        a = ak.array([-10, 4, -10, 17])
+        s = ak.array([f"str {i}" for i in a.to_list()])
+        for h in [sa, str_sa, [sa, a], [str_sa, a], [sa, str_sa], [s, sa, str_sa], [str_sa, s, sa, a]]:
+            h1, h2 = ak.hash(h)
+            if isinstance(h, ak.SegArray):
+                # verify all the ways to hash segarrays match
+                h3, h4 = ak.hash([h])
+                self.assertListEqual(h1.to_list(), h3.to_list())
+                self.assertListEqual(h2.to_list(), h4.to_list())
+                h5, h6 = h.hash()
+                self.assertListEqual(h1.to_list(), h5.to_list())
+                self.assertListEqual(h2.to_list(), h6.to_list())
+            # the first and third position are identical and should hash to the same thing
+            self.assertEqual(h1[0], h1[2])
+            self.assertEqual(h2[0], h2[2])
+            # make sure the last position didn't get zeroed out by XOR
+            self.assertNotEqual(h1[3], 0)
+            self.assertNotEqual(h2[3], 0)
+
+        sa = ak.SegArray(ak.array([0, 2]), ak.array([1, 1, 2, 2]))
+        h1, h2 = sa.hash()
+        # verify these segments don't collide (this is why we rehash)
+        self.assertNotEqual(h1[0], h1[1])
+        self.assertNotEqual(h2[0], h2[1])
+
     def testValueCounts(self):
         pda = ak.ones(100, dtype=ak.int64)
         result = ak.value_counts(pda)

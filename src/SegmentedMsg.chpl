@@ -14,6 +14,7 @@ module SegmentedMsg {
   use GenSymIO;
   use BigInteger;
   use Math;
+  use SegmentedArray;
 
   use ArkoudaMapCompat;
   use ArkoudaStringBytesCompat;
@@ -611,13 +612,11 @@ module SegmentedMsg {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     const objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
-    const name = msgArgs.getValueOf("obj");
-
-    // check to make sure symbols defined
-    st.checkTable(name);
-
     select objtype {
         when ObjType.STRINGS {
+            const name = msgArgs.getValueOf("obj");
+            // check to make sure symbols defined
+            st.checkTable(name);
             var strings = getSegString(name, st);
             var hashes = strings.siphash();
             var name1 = st.nextName();
@@ -627,9 +626,21 @@ module SegmentedMsg {
             forall (h, h1, h2) in zip(hashes, hash1.a, hash2.a) {
                 (h1,h2) = h:(uint,uint);
             }
-            var repMsg = "created " + st.attrib(name1) + "+created " + st.attrib(name2);
-            smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
+            repMsg = "created " + st.attrib(name1) + "+created " + st.attrib(name2);
+        }
+        when ObjType.SEGARRAY {
+            // check to make sure symbols defined
+            const segName = msgArgs.getValueOf("segments");
+            const valName = msgArgs.getValueOf("values");
+            const valObjType = msgArgs.getValueOf("valObjType");
+            st.checkTable(segName);
+            st.checkTable(valName);
+            var (upper, lower) = segarrayHash(segName, valName, valObjType, st);
+            var upperName = st.nextName();
+            st.addEntry(upperName, new shared SymEntry(upper));
+            var lowerName = st.nextName();
+            st.addEntry(lowerName, new shared SymEntry(lower));
+            repMsg = "created %s+created %s".format(st.attrib(upperName), st.attrib(lowerName));
         }
         otherwise {
             var errorMsg = notImplementedError(pn, objtype: string);
@@ -637,6 +648,8 @@ module SegmentedMsg {
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
     }
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
 

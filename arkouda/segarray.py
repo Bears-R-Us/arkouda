@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import warnings
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Tuple
 from typing import cast as type_cast
 from warnings import warn
 
@@ -360,6 +360,9 @@ class SegArray:
             intersection = self.all(selfcmp.values == othercmp.values)
             eq[leneq] = intersection
         return eq
+
+    def __len__(self) -> int:
+        return self.segments.size
 
     def __str__(self):
         if self.size <= 6:
@@ -863,6 +866,31 @@ class SegArray:
         g = GroupBy(ukey, assume_sorted=True)
         _, lengths = g.count()
         return SegArray(g.segments, uval, grouping=g, lengths=lengths)
+
+    def hash(self) -> Tuple[pdarray, pdarray]:
+        """
+        Compute a 128-bit hash of each segment.
+
+        Returns
+        -------
+        Tuple[pdarray,pdarray]
+            A tuple of two int64 pdarrays. The ith hash value is the concatenation
+            of the ith values from each array.
+        """
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="segmentedHash",
+                args={
+                    "objType": self.objType,
+                    "values": self.values,
+                    "segments": self.segments,
+                    "valObjType": self.values.objType,
+                },
+            ),
+        )
+        h1, h2 = repMsg.split("+")
+        return create_pdarray(h1), create_pdarray(h2)
 
     def to_hdf(
         self,

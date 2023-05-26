@@ -184,6 +184,12 @@ module AryUtil
             var g = getGenericTypedArrayEntry(name, st);
             thisSize = g.size;
           }
+          when ObjType.SEGARRAY {
+            var (segName, valName, _) = name.splitMsgToTuple('+', 3);
+            var segs = getGenericTypedArrayEntry(segName, st);
+            var vals = getGenericTypedArrayEntry(valName, st);
+            thisSize = segs.size;
+          }
           otherwise {
               var errorMsg = "Unrecognized object type: %s".format(objtype);
               auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
