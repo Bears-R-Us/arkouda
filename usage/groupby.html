@@ -706,22 +706,22 @@ arkouda server which was registered using register()</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.broadcast">
-<span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">permute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.broadcast" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">permute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.broadcast" title="Permalink to this definition">#</a></dt>
 <dd><p>Fill each group’s segment with a constant value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to put in each group’s segment</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id642" title="arkouda.Strings"><em>Strings</em></a>) – The values to put in each group’s segment</p></li>
 <li><p><strong>permute</strong> (<em>bool</em>) – If True (default), permute broadcast values back to the ordering
 of the original array on which GroupBy was called. If False, the
 broadcast values are grouped by value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The broadcast values</p>
+<dd class="field-even"><p>The broadcasted values</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id642" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">

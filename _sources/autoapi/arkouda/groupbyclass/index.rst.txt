@@ -834,19 +834,19 @@ Attributes
       :raises TypeError: Raised if values is or contains Strings or Categorical
 
 
-   .. py:method:: broadcast(values: arkouda.pdarrayclass.pdarray, permute: bool = True) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: broadcast(values: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], permute: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
       Fill each group's segment with a constant value.
 
       :param values: The values to put in each group's segment
-      :type values: pdarray
+      :type values: pdarray, Strings
       :param permute: If True (default), permute broadcast values back to the ordering
                       of the original array on which GroupBy was called. If False, the
                       broadcast values are grouped by value.
       :type permute: bool
 
-      :returns: The broadcast values
-      :rtype: pdarray
+      :returns: The broadcasted values
+      :rtype: pdarray, Strings
 
       :raises TypeError: Raised if value is not a pdarray object
       :raises ValueError: Raised if the values array does not have one
@@ -993,7 +993,7 @@ Attributes
 
 
 
-.. py:function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, size: Union[int, numpy.int64, numpy.uint64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
+.. py:function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], size: Union[int, numpy.int64, numpy.uint64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
 
    Broadcast a dense column vector to the rows of a sparse matrix or grouped array.
 
@@ -1001,7 +1001,7 @@ Attributes
                     Must be sorted in ascending order.
    :type segments: pdarray, int64
    :param values: The values to broadcast, one per row (or group)
-   :type values: pdarray
+   :type values: pdarray, Strings
    :param size: The total number of nonzeros in the matrix. If permutation is given, this
                 argument is ignored and the size is inferred from the permutation array.
    :type size: int
@@ -1013,7 +1013,7 @@ Attributes
    :type permutation: pdarray, int64
 
    :returns: The broadcast values, one per nonzero
-   :rtype: pdarray
+   :rtype: pdarray, Strings
 
    :raises ValueError: - If segments and values are different sizes
        - If segments are empty
