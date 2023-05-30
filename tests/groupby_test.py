@@ -147,9 +147,11 @@ class GroupByTest(ArkoudaTest):
         self.fvalues = ak.randint(0, 1, 10, dtype=float)
         self.ivalues = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
         self.uvalues = ak.cast(self.ivalues, ak.uint64)
+        self.svalues = ak.cast(self.ivalues, str)
         self.bivalues = ak.cast(self.ivalues, ak.bigint)
         self.igb = ak.GroupBy(self.ivalues)
         self.ugb = ak.GroupBy(self.uvalues)
+        self.sgb = ak.GroupBy(self.svalues)
         self.bigb = ak.GroupBy(self.bivalues)
 
     def test_groupby_on_one_level(self):
@@ -277,6 +279,31 @@ class GroupByTest(ArkoudaTest):
         u_results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.uint64), 1)
         i_results = ak.broadcast(ak.array([0]), ak.array([1]), 1)
         self.assertListEqual(i_results.to_list(), u_results.to_list())
+
+    def test_broadcast_strings(self):
+        keys, counts = self.sgb.count()
+        self.assertListEqual([1, 4, 2, 1, 2], counts.to_list())
+        self.assertListEqual(['1', '2', '3', '4', '5'], keys.to_list())
+
+        s_results = self.sgb.broadcast(1 * (counts > 2))
+        i_results = self.igb.broadcast(1 * (counts > 2))
+        self.assertListEqual(i_results.to_list(), s_results.to_list())
+
+        s_results = self.sgb.broadcast(1 * (counts == 2))
+        i_results = self.igb.broadcast(1 * (counts == 2))
+        self.assertListEqual(i_results.to_list(), s_results.to_list())
+
+        s_results = self.sgb.broadcast(1 * (counts < 4))
+        i_results = self.igb.broadcast(1 * (counts < 4))
+        self.assertListEqual(i_results.to_list(), s_results.to_list())
+
+        # test str Groupby.broadcast with and without permute
+        s_results = self.sgb.broadcast(ak.array(['1', '2', '6', '8', '9']), permute=False)
+        i_results = self.igb.broadcast(ak.array(['1', '2', '6', '8', '9']), permute=False)
+        self.assertListEqual(i_results.to_list(), s_results.to_list())
+        s_results = self.sgb.broadcast(ak.array(['1', '2', '6', '8', '9']))
+        i_results = self.igb.broadcast(ak.array(['1', '2', '6', '8', '9']))
+        self.assertListEqual(i_results.to_list(), s_results.to_list())
 
     def test_broadcast_bigints(self):
         # use reproducer to verify >64 bits work

@@ -95,6 +95,11 @@ class JoinTest(ArkoudaTest):
         l, r = ak.join.inner_join(left, right)
         self.assertListEqual(left[l].to_list(), right[r].to_list())
 
+        l, r = ak.join.inner_join(
+            left, right, wherefunc=join_where, whereargs=(left, right)
+        )
+        self.assertListEqual(left[l].to_list(), right[r].to_list())
+
         with self.assertRaises(ValueError):
             l, r = ak.join.inner_join(left, right, wherefunc=ak.unique)
 
@@ -110,6 +115,77 @@ class JoinTest(ArkoudaTest):
             l, r = ak.join.inner_join(
                 left, right, wherefunc=ak.intersect1d, whereargs=(ak.arange(10), ak.arange(5))
             )
+
+    def test_str_inner_join(self):
+        intLeft = ak.arange(50)
+        intRight = ak.randint(0, 50, 50)
+        strLeft = ak.array([f"str {i}" for i in intLeft.to_list()])
+        strRight = ak.array([f"str {i}" for i in intRight.to_list()])
+
+        strL, strR = ak.join.inner_join(strLeft, strRight)
+        self.assertListEqual(strLeft[strL].to_list(), strRight[strR].to_list())
+
+        strLWhere, strRWhere = ak.join.inner_join(
+            strLeft, strRight, wherefunc=join_where, whereargs=(strLeft, strRight)
+        )
+        self.assertListEqual(strLeft[strLWhere].to_list(), strRight[strRWhere].to_list())
+
+        # reproducer from PR
+        int_left = ak.arange(10)
+        int_right = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
+        str_left = ak.array([f'str {i}' for i in int_left.to_list()])
+        str_right = ak.array([f'str {i}' for i in int_right.to_list()])
+
+        sl, sr = ak.join.inner_join(str_left, str_right)
+        self.assertListEqual(str_left[sl].to_list(), str_right[sr].to_list())
+
+        def where_func(x, y):
+            return x % 2 == 0
+
+        il, ir = ak.join.inner_join(int_left, int_right, wherefunc=where_func, whereargs=(int_left, int_right))
+        sl, sr = ak.join.inner_join(str_left, str_right, wherefunc=where_func, whereargs=(int_left, int_right))
+        self.assertListEqual(sl.to_list(), il.to_list())
+        self.assertListEqual(sr.to_list(), ir.to_list())
+
+    def test_cat_inner_join(self):
+        intLeft = ak.arange(50)
+        intRight = ak.randint(0, 50, 50)
+        strLeft = ak.array([f"str {i}" for i in intLeft.to_list()])
+        strRight = ak.array([f"str {i}" for i in intRight.to_list()])
+        catLeft = ak.Categorical(strLeft)
+        catRight = ak.Categorical(strRight)
+
+        # Base Case
+        catL, catR = ak.join.inner_join(catLeft, catRight)
+        self.assertListEqual(catLeft[catL].to_list(), catRight[catR].to_list())
+
+        catLWhere, catRWhere = ak.join.inner_join(
+            catLeft, catRight, wherefunc=join_where, whereargs=(catLeft, catRight)
+        )
+        self.assertListEqual(catLeft[catLWhere].to_list(), catRight[catRWhere].to_list())
+
+    def test_mixed_inner_join_where(self):
+        intLeft = ak.arange(50)
+        intRight = ak.randint(0, 50, 50)
+        strLeft = ak.array([f"str {i}" for i in intLeft.to_list()])
+        strRight = ak.array([f"str {i}" for i in intRight.to_list()])
+        catLeft = ak.Categorical(strLeft)
+        catRight = ak.Categorical(strRight)
+
+        L, R = ak.join.inner_join(
+            intLeft, intRight, wherefunc=join_where, whereargs=(catLeft, strRight)
+        )
+        self.assertListEqual(catLeft[L].to_list(), catRight[R].to_list())
+
+        L, R = ak.join.inner_join(
+            strLeft, strRight, wherefunc=join_where, whereargs=(catLeft, intRight)
+        )
+        self.assertListEqual(catLeft[L].to_list(), catRight[R].to_list())
+
+        L, R = ak.join.inner_join(
+            catLeft, catRight, wherefunc=join_where, whereargs=(strLeft, intRight)
+        )
+        self.assertListEqual(catLeft[L].to_list(), catRight[R].to_list())
 
     def test_lookup(self):
         keys = ak.arange(5)
@@ -152,3 +228,7 @@ class JoinTest(ArkoudaTest):
             ak.join_on_eq_with_dt(self.a1, self.a1, self.t1, self.t1 * 10, 8, "ab_dt")
         with self.assertRaises(ValueError):
             ak.join_on_eq_with_dt(self.a1, self.a1, self.t1, self.t1 * 10, 8, "abs_dt", -1)
+
+
+def join_where(L, R):
+    return ak.arange(L.size) % 2 == 0

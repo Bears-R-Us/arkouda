@@ -1543,13 +1543,15 @@ class GroupBy:
         return self.unique_keys, ret  # type: ignore
 
     @typechecked
-    def broadcast(self, values: pdarray, permute: bool = True) -> pdarray:
+    def broadcast(
+        self, values: Union[pdarray, Strings], permute: bool = True
+    ) -> Union[pdarray, Strings]:
         """
         Fill each group's segment with a constant value.
 
         Parameters
         ----------
-        values : pdarray
+        values : pdarray, Strings
             The values to put in each group's segment
         permute : bool
             If True (default), permute broadcast values back to the ordering
@@ -1558,8 +1560,8 @@ class GroupBy:
 
         Returns
         -------
-        pdarray
-            The broadcast values
+        pdarray, Strings
+            The broadcasted values
 
         Raises
         ------
@@ -1602,17 +1604,24 @@ class GroupBy:
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
         cmd = "broadcast"
-        repMsg = generic_msg(
-            cmd=cmd,
-            args={
-                "permName": self.permutation.name,
-                "segName": self.segments.name,
-                "valName": values.name,
-                "permute": permute,
-                "size": self.length,
-            },
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd=cmd,
+                args={
+                    "permName": self.permutation.name,
+                    "segName": self.segments.name,
+                    "valName": values.name,
+                    "objType": values.objType,
+                    "permute": permute,
+                    "size": self.length,
+                },
+            ),
         )
-        return create_pdarray(repMsg)
+        if values.objType == Strings.objType:
+            return Strings.from_return_msg(repMsg)
+        else:
+            return create_pdarray(repMsg)
 
     @staticmethod
     def build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy:
@@ -2024,7 +2033,7 @@ class GroupBy:
 
 def broadcast(
     segments: pdarray,
-    values: pdarray,
+    values: Union[pdarray, Strings],
     size: Union[int, np.int64, np.uint64] = -1,
     permutation: Union[pdarray, None] = None,
 ):
@@ -2036,7 +2045,7 @@ def broadcast(
     segments : pdarray, int64
         Offsets of the start of each row in the sparse matrix or grouped array.
         Must be sorted in ascending order.
-    values : pdarray
+    values : pdarray, Strings
         The values to broadcast, one per row (or group)
     size : int
         The total number of nonzeros in the matrix. If permutation is given, this
@@ -2050,7 +2059,7 @@ def broadcast(
 
     Returns
     -------
-    pdarray
+    pdarray, Strings
         The broadcast values, one per nonzero
 
     Raises
@@ -2092,14 +2101,21 @@ def broadcast(
     if size < 1:
         raise ValueError("result size must be greater than zero")
     cmd = "broadcast"
-    repMsg = generic_msg(
-        cmd=cmd,
-        args={
-            "permName": pname,
-            "segName": segments.name,
-            "valName": values.name,
-            "permute": permute,
-            "size": size,
-        },
+    repMsg = cast(
+        str,
+        generic_msg(
+            cmd=cmd,
+            args={
+                "permName": pname,
+                "segName": segments.name,
+                "valName": values.name,
+                "objType": values.objType,
+                "permute": permute,
+                "size": size,
+            },
+        ),
     )
-    return create_pdarray(repMsg)
+    if values.objType == Strings.objType:
+        return Strings.from_return_msg(repMsg)
+    else:
+        return create_pdarray(repMsg)

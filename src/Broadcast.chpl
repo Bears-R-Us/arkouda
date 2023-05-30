@@ -1,7 +1,18 @@
 module Broadcast {
+  use AryUtil;
   use SymArrayDmap;
   use CommAggregation;
   use BigInteger;
+  use SegmentedString;
+  use MultiTypeSymbolTable;
+  use MultiTypeSymEntry;
+  use Reflection;
+  use Logging;
+  use ServerConfig;
+
+  private config const logLevel = ServerConfig.logLevel;
+  private config const logChannel = ServerConfig.logChannel;
+  const brLogger = new Logger(logLevel, logChannel);
 
   /* 
    * Broadcast a value per segment of a segmented array to the
@@ -83,6 +94,39 @@ module Broadcast {
     return permutedVals;
   }
 
+  proc broadcast(perm: [?D] int, segs: [?sD] int, segString: borrowed SegString) throws {
+    ref offs = segString.offsets.a;
+    ref vals = segString.values.a;
+    const size = perm.size;
+    const high = sD.high;
+    var strLens: [sD] int;
+    var segLens: [sD] int;
+    var expandedLen: int;
+
+    forall (i, off, str_len, seg, seg_len) in zip (sD, offs, strLens, segs, segLens) with (+ reduce expandedLen) {
+      if i == high {
+        (seg_len, str_len) = (size - seg, vals.size - off);
+      } else {
+        (seg_len, str_len) = (segs[i+1] - seg, offs[i+1] - off);
+      }
+      expandedLen += seg_len * str_len;
+    }
+    var broadDist = broadcast(perm, segs, strLens);
+    const offsets = (+ scan broadDist) - broadDist;
+    var expandedVals = makeDistArray(expandedLen, uint(8));
+
+    forall (off, str_len, seg, seg_len) in zip(offs, strLens, segs, segLens) with (var valAgg = newDstAggregator(uint(8))) {
+      var localizedVals = new lowLevelLocalizingSlice(vals, off..#str_len);
+      for i in seg..#seg_len {
+        var expValOff = offsets[i];
+        for k in 0..#str_len {
+          valAgg.copy(expandedVals[expValOff+k], localizedVals.ptr[k]);
+        }
+      }
+    }
+    return (expandedVals, offsets);
+  }
+
   /* 
    * Broadcast a value per segment of a segmented array to the
    * full size of the array. For example, if the segmented array
@@ -141,5 +185,37 @@ module Broadcast {
     // Integrate to recover full values
     expandedVals = (+ scan expandedVals);
     return (expandedVals == 1);
+  }
+
+  proc broadcast(segs: [?sD] int, segString: borrowed SegString, size: int) throws {
+    ref offs = segString.offsets.a;
+    ref vals = segString.values.a;
+    const high = sD.high;
+    var strLens: [sD] int;
+    var segLens: [sD] int;
+    var expandedLen: int;
+
+    forall (i, off, str_len, seg, seg_len) in zip (sD, offs, strLens, segs, segLens) with (+ reduce expandedLen) {
+      if i == high {
+        (seg_len, str_len) = (size - seg, vals.size - off);
+      } else {
+        (seg_len, str_len) = (segs[i+1] - seg, offs[i+1] - off);
+      }
+      expandedLen += seg_len * str_len;
+    }
+    var broadDist = broadcast(segs, strLens, size);
+    const offsets = (+ scan broadDist) - broadDist;
+    var expandedVals = makeDistArray(expandedLen, uint(8));
+
+    forall (off, str_len, seg, seg_len) in zip(offs, strLens, segs, segLens) with (var valAgg = newDstAggregator(uint(8))) {
+      var localizedVals = new lowLevelLocalizingSlice(vals, off..#str_len);
+      for i in seg..#seg_len {
+        var expValOff = offsets[i];
+        for k in 0..#str_len {
+          valAgg.copy(expandedVals[expValOff+k], localizedVals.ptr[k]);
+        }
+      }
+    }
+    return (expandedVals, offsets);
   }
 }
