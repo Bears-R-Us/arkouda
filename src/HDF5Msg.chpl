@@ -766,7 +766,7 @@ module HDF5Msg {
                 const ushift = 64:uint;
                 while !all_zero {
                     low = tmp:uint;
-                    limbs.append(new shared SymEntry(low));
+                    limbs.pushBack(new shared SymEntry(low));
 
                     all_zero = true;
                     forall t in tmp with (&& reduce all_zero) {
@@ -796,7 +796,7 @@ module HDF5Msg {
         var tmp = arr;
         while !all_zero {
             low = tmp:uint;
-            limbs.append(low);
+            limbs.pushBack(low);
 
             all_zero = true;
             forall t in tmp with (&& reduce all_zero) {
@@ -2488,7 +2488,12 @@ module HDF5Msg {
         var nSeg: int;
 
         (segSubdoms, nSeg, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_OFFSET_NAME, validFiles);
-        (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s/Limb_0".format(dset, SEGMENTED_VALUE_NAME), validFiles);
+        if isBigIntPdarray(filenames[0], "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
+            (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s/Limb_0".format(dset, SEGMENTED_VALUE_NAME), validFiles);
+        }
+        else {
+            (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s".format(dset, SEGMENTED_VALUE_NAME), validFiles);
+        }
 
         var rtnMap: map(string, string) = new map(string, string);
 
