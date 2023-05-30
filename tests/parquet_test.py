@@ -307,7 +307,7 @@ class ParquetTest(ArkoudaTest):
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 8)
             for i in range(8):
-                self.assertListEqual(combo["ListCol"][i], ak_data[i].tolist())
+                self.assertListEqual(combo["ListCol"][i], ak_data[i].to_list())
 
         #test for handling empty segments
         df = pd.DataFrame({
@@ -327,7 +327,7 @@ class ParquetTest(ArkoudaTest):
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 5)
             for i in range(5):
-                self.assertListEqual(df["ListCol"][i], ak_data[i].tolist())
+                self.assertListEqual(df["ListCol"][i], ak_data[i].to_list())
 
         # test for handling empty segments
         df = pd.DataFrame({
@@ -347,7 +347,7 @@ class ParquetTest(ArkoudaTest):
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 5)
             for i in range(5):
-                self.assertListEqual(df["ListCol"][i], ak_data[i].tolist())
+                self.assertListEqual(df["ListCol"][i], ak_data[i].to_list())
 
         # multi-file with empty segs
         df = pd.DataFrame({
@@ -378,7 +378,7 @@ class ParquetTest(ArkoudaTest):
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 9)
             for i in range(9):
-                self.assertListEqual(combo["ListCol"][i], ak_data[i].tolist())
+                self.assertListEqual(combo["ListCol"][i], ak_data[i].to_list())
 
         # multi-file with empty segs
         df = pd.DataFrame({
@@ -409,7 +409,7 @@ class ParquetTest(ArkoudaTest):
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 9)
             for i in range(9):
-                self.assertListEqual(combo["ListCol"][i], ak_data[i].tolist())
+                self.assertListEqual(combo["ListCol"][i], ak_data[i].to_list())
 
     def test_segarray_write(self):
         # integer test
@@ -422,7 +422,7 @@ class ParquetTest(ArkoudaTest):
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
             for i in range(3):
-                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+                self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
         # integer with empty segments
         a = [0, 1, 2]
@@ -433,7 +433,7 @@ class ParquetTest(ArkoudaTest):
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
             for i in range(6):
-                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+                self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
         # uint test
         a = [0, 1, 2]
@@ -445,7 +445,7 @@ class ParquetTest(ArkoudaTest):
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
             for i in range(3):
-                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+                self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
         # uint with empty segments
         a = [0, 1, 2]
@@ -456,7 +456,7 @@ class ParquetTest(ArkoudaTest):
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
             for i in range(6):
-                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+                self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
         # bool test
         a = [0, 1, 1]
@@ -468,7 +468,7 @@ class ParquetTest(ArkoudaTest):
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
             for i in range(3):
-                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+                self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
         # bool with empty segments
         a = [0, 1, 1]
@@ -480,7 +480,7 @@ class ParquetTest(ArkoudaTest):
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
             for i in range(6):
-                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+                self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
         # float test
         a = [1.1, 1.1, 2.7]
@@ -492,7 +492,7 @@ class ParquetTest(ArkoudaTest):
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
             for i in range(3):
-                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+                self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
         # float with empty segments
         a = [1.1, 1.1, 2.7]
@@ -503,7 +503,7 @@ class ParquetTest(ArkoudaTest):
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
             for i in range(6):
-                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+                self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
     def test_multicol_write(self):
         df_dict = {

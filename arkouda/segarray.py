@@ -259,7 +259,7 @@ class SegArray:
         if isSupportedInt(i):
             start = self.segments[i]
             end = self.segments[i] + self.lengths[i]
-            return self.values[start:end].to_ndarray()
+            return self.values[start:end]
         elif (isinstance(i, pdarray) and (i.dtype == akint64 or i.dtype == akbool)) or isinstance(
             i, slice
         ):
