@@ -93,7 +93,7 @@ Functions
    array(['one', 'two', 'three', 'four', 'five'])
 
 
-.. py:function:: union1d(pda1: Union[arkouda.pdarrayclass.pdarray, Sequence[arkouda.groupbyclass.groupable_element_type]], pda2: Union[arkouda.pdarrayclass.pdarray, Sequence[arkouda.groupbyclass.groupable_element_type]]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: union1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
 
    Find the union of two arrays/List of Arrays.
 

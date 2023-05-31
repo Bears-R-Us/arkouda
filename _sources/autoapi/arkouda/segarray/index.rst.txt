@@ -121,7 +121,7 @@ Attributes
       resulting in an array of rows.
 
       :param m: List of columns, the rows of which will form the sub-arrays of the output
-      :type m: list of pdarray
+      :type m: list of pdarray or Strings
 
       :returns: Array of rows of input
       :rtype: SegArray
@@ -226,6 +226,10 @@ Attributes
                   compressed=True: The j-th values of only the sub-arrays where j is
                   in bounds
                 * **origin_indices** (*pdarray, bool*) -- A Boolean array that is True where j is in bounds for the sub-array.
+
+      .. rubric:: Notes
+
+      If values are Strings, only the compressed format is supported.
 
 
    .. py:method:: set_jth(i, j, v)
