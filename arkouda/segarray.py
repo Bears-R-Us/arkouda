@@ -23,6 +23,7 @@ from arkouda.pdarrayclass import (
 )
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate
+from arkouda.strings import Strings
 
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
@@ -109,7 +110,7 @@ class SegArray:
         # validate inputs
         if not isinstance(segments, pdarray) or segments.dtype != akint64:
             raise TypeError("Segments must be int64 pdarray")
-        if not isinstance(values, pdarray):
+        if not isinstance(values, pdarray) and not isinstance(values, Strings):
             raise TypeError("Values must be a pdarray.")
         if not is_sorted(segments):
             raise ValueError("Segments must be unique and in sorted order")
@@ -142,9 +143,7 @@ class SegArray:
             else:
                 # Treat each sub-array as a group, for grouped aggregations
                 self._grouping = GroupBy(
-                    broadcast(
-                        self.segments[self.non_empty], arange(self._non_empty_count), self.valsize
-                    )
+                    broadcast(self.segments[self.non_empty], arange(self._non_empty_count), self.valsize)
                 )
         else:
             self._grouping = grouping
@@ -155,7 +154,11 @@ class SegArray:
         eles = json.loads(rep_msg)
 
         # parse the create for the values pdarray
-        values = create_pdarray(eles["values"])
+        values = (
+            Strings.from_return_msg(eles["values"])
+            if eles["values"].split()[2] == "str"
+            else create_pdarray(eles["values"])
+        )
         segments = create_pdarray(eles["segments"])
         lengths = create_pdarray(eles["lengths"]) if "lengths" in eles else None
         return cls(segments, values, lengths=lengths)
@@ -202,7 +205,7 @@ class SegArray:
 
         Parameters
         ----------
-        m : list of pdarray
+        m : list of pdarray or Strings
             List of columns, the rows of which will form the sub-arrays of the output
 
         Returns
@@ -227,6 +230,7 @@ class SegArray:
     @property
     def non_empty(self):
         from arkouda.infoclass import list_symbol_table
+
         if self._non_empty.name not in list_symbol_table():
             self._non_empty = self.lengths > 0
             self._non_empty_count = self._non_empty.sum()
@@ -235,15 +239,14 @@ class SegArray:
     @property
     def grouping(self):
         from arkouda.infoclass import list_symbol_table
+
         if self._grouping.name not in list_symbol_table():
             if self.size == 0 or self._non_empty_count == 0:
                 self._grouping = GroupBy(zeros(0, dtype=akint64))
             else:
                 # Treat each sub-array as a group, for grouped aggregations
                 self._grouping = GroupBy(
-                    broadcast(
-                        self.segments[self.non_empty], arange(self._non_empty_count), self.valsize
-                    )
+                    broadcast(self.segments[self.non_empty], arange(self._non_empty_count), self.valsize)
                 )
         return self._grouping
 
@@ -529,10 +532,14 @@ class SegArray:
             in bounds
         origin_indices : pdarray, bool
             A Boolean array that is True where j is in bounds for the sub-array.
+
+        Notes
+        ------
+        If values are Strings, only the compressed format is supported.
         """
         longenough, newj = self._normalize_index(j)
         ind = (self.segments + newj)[longenough]
-        if compressed:
+        if compressed or self.dtype == str_: # Strings not supported by uncompressed version
             res = self.values[ind]
         else:
             res = zeros(self.size, dtype=self.dtype) + default
@@ -640,6 +647,8 @@ class SegArray:
         SegArray
             Copy of original SegArray with values from x appended to each sub-array
         """
+        if self.dtype == str_:
+            raise TypeError("String elements are immutable and cannot accept a single value")
         if hasattr(x, "size"):
             if x.size != self.size:
                 raise ValueError("Argument must be scalar or same size as SegArray")
@@ -762,7 +771,7 @@ class SegArray:
         return [arr.tolist() for arr in self.to_ndarray()]
 
     def sum(self, x=None):
-        if x is None:
+        if x is None:  # TODO when values are Strings, supplying None does not work, should it?
             x = self.values
         return self.grouping.sum(x)[1]
 
@@ -891,6 +900,10 @@ class SegArray:
         """
         from arkouda.io import _file_type_to_int, _mode_str_to_int
 
+        if self.dtype == str_:
+            # Support will be added by Issue #2443
+            raise TypeError("SegArrays with Strings values are not yet supported by HDF5")
+
         return type_cast(
             str,
             generic_msg(
@@ -954,6 +967,10 @@ class SegArray:
             _mode_str_to_int,
             _repack_hdf,
         )
+
+        if self.dtype == str_:
+            # Support will be added by Issue #2443
+            raise TypeError("SegArrays with Strings values are not yet supported by HDF5")
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
@@ -1023,6 +1040,10 @@ class SegArray:
         determine the file format.
         """
         from arkouda.io import _mode_str_to_int
+
+        if self.dtype == str_:
+            # Support will be added by Issue #2444
+            raise TypeError("SegArrays with Strings values are not yet supported by Parquet")
 
         if mode.lower() == "append":
             raise ValueError("Append mode is not supported for SegArray.")
@@ -1189,6 +1210,7 @@ class SegArray:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
+            # print(g.permutation)
             return SegArray(segments, new_values[g.permutation])
 
     def union(self, other):
@@ -1378,7 +1400,7 @@ class SegArray:
         # create boolean index for values to keep
         keep = (
             in1d(self.values, filter, invert=True)
-            if isinstance(filter, pdarray)
+            if isinstance(filter, pdarray) or isinstance(filter, Strings)
             else self.values != filter
         )
 
@@ -1513,7 +1535,7 @@ class SegArray:
         regParts = [
             self.segments.is_registered(),
             self.values.is_registered(),
-            self.lengths.is_registered()
+            self.lengths.is_registered(),
         ]
 
         if any(regParts) and not all(regParts):

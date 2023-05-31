@@ -11,7 +11,7 @@ from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.dtypes import bigint
-from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, unique
+from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, unique, is_groupable_element
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array, ones, zeros, zeros_like
@@ -380,8 +380,8 @@ def multiarray_setop_validation(
 # (A1 | A2) Set Union: elements are in one or the other or both
 @typechecked
 def union1d(
-    pda1: Union[pdarray, Sequence[groupable_element_type]],
-    pda2: Union[pdarray, Sequence[groupable_element_type]],
+    pda1: groupable,
+    pda2: groupable,
 ) -> Union[pdarray, groupable]:
     """
     Find the union of two arrays/List of Arrays.
@@ -432,7 +432,7 @@ def union1d(
     >>> ak.union1d(multia, multib)
     [array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 5, 4, 2, 5]]
     """
-    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+    if is_groupable_element(pda1) and is_groupable_element(pda2) and type(pda1) == type(pda2):
         if pda1.size == 0:
             return pda2  # union is pda2
         if pda2.size == 0:
@@ -523,7 +523,7 @@ def intersect1d(
     >>> ak.intersect1d(multia, multib)
     [array([1, 3]), array([1, 3]), array([1, 3])]
     """
-    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+    if is_groupable_element(pda1) and is_groupable_element(pda2) and type(pda1) == type(pda2):
         if pda1.size == 0:
             return pda1  # nothing in the intersection
         if pda2.size == 0:
@@ -635,7 +635,7 @@ def setdiff1d(
     >>> ak.setdiff1d(multia, multib)
     [array([2, 4, 5]), array([2, 4, 5]), array([2, 4, 5])]
     """
-    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+    if is_groupable_element(pda1) and is_groupable_element(pda2) and type(pda1) == type(pda2):
         if pda1.size == 0:
             return pda1  # return a zero length pdarray
         if pda2.size == 0:
@@ -743,7 +743,7 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
     >>> ak.setxor1d(multia, multib)
     [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]
     """
-    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+    if is_groupable_element(pda1) and is_groupable_element(pda2) and type(pda1) == type(pda2):
         if pda1.size == 0:
             return pda2  # return other pdarray if pda1 is empty
         if pda2.size == 0:
