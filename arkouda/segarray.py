@@ -539,7 +539,7 @@ class SegArray:
         """
         longenough, newj = self._normalize_index(j)
         ind = (self.segments + newj)[longenough]
-        if compressed or self.dtype == str_: # Strings not supported by uncompressed version
+        if compressed or self.dtype == str_:  # Strings not supported by uncompressed version
             res = self.values[ind]
         else:
             res = zeros(self.size, dtype=self.dtype) + default

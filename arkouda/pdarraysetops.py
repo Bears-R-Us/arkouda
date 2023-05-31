@@ -433,14 +433,14 @@ def union1d(
     [array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 5, 4, 2, 5]]
     """
     if is_groupable_element(pda1) and is_groupable_element(pda2) and type(pda1) == type(pda2):
-        if pda1.size == 0:
+        if pda1.size == 0:  # type: ignore
             return pda2  # union is pda2
-        if pda2.size == 0:
+        if pda2.size == 0:  # type: ignore
             return pda1  # union is pda1
         if (
-            pda1.dtype == int
-            and pda2.dtype == int
-            or (pda1.dtype == akuint64 and pda2.dtype == akuint64)
+            pda1.dtype == int  # type: ignore
+            and pda2.dtype == int  # type: ignore
+            or (pda1.dtype == akuint64 and pda2.dtype == akuint64)  # type: ignore
         ):
             repMsg = generic_msg(cmd="union1d", args={
                 "arg1": pda1,
@@ -524,12 +524,12 @@ def intersect1d(
     [array([1, 3]), array([1, 3]), array([1, 3])]
     """
     if is_groupable_element(pda1) and is_groupable_element(pda2) and type(pda1) == type(pda2):
-        if pda1.size == 0:
+        if pda1.size == 0:  # type: ignore
             return pda1  # nothing in the intersection
-        if pda2.size == 0:
+        if pda2.size == 0:  # type: ignore
             return pda2  # nothing in the intersection
-        if (pda1.dtype == int and pda2.dtype == int) or (
-            pda1.dtype == akuint64 and pda2.dtype == akuint64
+        if (pda1.dtype == int and pda2.dtype == int) or (  # type: ignore
+            pda1.dtype == akuint64 and pda2.dtype == akuint64  # type: ignore
         ):
             repMsg = generic_msg(
                 cmd="intersect1d", args={"arg1": pda1, "arg2": pda2, "assume_unique": assume_unique}
@@ -636,12 +636,12 @@ def setdiff1d(
     [array([2, 4, 5]), array([2, 4, 5]), array([2, 4, 5])]
     """
     if is_groupable_element(pda1) and is_groupable_element(pda2) and type(pda1) == type(pda2):
-        if pda1.size == 0:
+        if pda1.size == 0:  # type: ignore
             return pda1  # return a zero length pdarray
-        if pda2.size == 0:
+        if pda2.size == 0:  # type: ignore
             return pda1  # subtracting nothing return orig pdarray
-        if (pda1.dtype == int and pda2.dtype == int) or (
-            pda1.dtype == akuint64 and pda2.dtype == akuint64
+        if (pda1.dtype == int and pda2.dtype == int) or (  # type: ignore
+            pda1.dtype == akuint64 and pda2.dtype == akuint64  # type: ignore
         ):
             repMsg = generic_msg(
                 cmd="setdiff1d", args={
@@ -744,12 +744,12 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
     [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]
     """
     if is_groupable_element(pda1) and is_groupable_element(pda2) and type(pda1) == type(pda2):
-        if pda1.size == 0:
+        if pda1.size == 0:  # type: ignore
             return pda2  # return other pdarray if pda1 is empty
-        if pda2.size == 0:
+        if pda2.size == 0:  # type: ignore
             return pda1  # return other pdarray if pda2 is empty
-        if (pda1.dtype == int and pda2.dtype == int) or (
-            pda1.dtype == akuint64 and pda2.dtype == akuint64
+        if (pda1.dtype == int and pda2.dtype == int) or (  # type: ignore
+            pda1.dtype == akuint64 and pda2.dtype == akuint64  # type: ignore
         ):
             repMsg = generic_msg(
                 cmd="setxor1d", args={
