@@ -1210,7 +1210,6 @@ class SegArray:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
-            # print(g.permutation)
             return SegArray(segments, new_values[g.permutation])
 
     def union(self, other):
