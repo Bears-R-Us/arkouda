@@ -37,13 +37,6 @@ groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
 # the circular import with Categorical
 
 
-def is_groupable_element(obj):
-    from arkouda.categorical import Categorical
-    if isinstance(obj, pdarray) or isinstance(obj, Strings) or isinstance(obj, Categorical):
-        return True
-    return False
-
-
 def _get_grouping_keys(pda: groupable):
     nkeys = 1
     if hasattr(pda, "_get_grouping_keys"):
