@@ -193,9 +193,14 @@ ifneq ($(SANITIZER),none)
 ARROW_SANITIZE=-fsanitize=$(SANITIZER)
 endif
 
+CHPL_CXX = $(shell $(CHPL_HOME)/util/config/compileline --compile-c++ 2>/dev/null)
+ifeq ($(CHPL_CXX),none)
+CHPL_CXX=$(CXX)
+endif
+
 .PHONY: compile-arrow-cpp
 compile-arrow-cpp:
-	$(CXX) -O3 -std=c++17 -c $(ARROW_CPP) -o $(ARROW_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
+	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_CPP) -o $(ARROW_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
 
 $(ARROW_O): $(ARROW_CPP) $(ARROW_H)
 	make compile-arrow-cpp
