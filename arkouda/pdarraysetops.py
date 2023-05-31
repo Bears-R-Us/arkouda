@@ -237,7 +237,6 @@ def concatenate(
     arrays: Sequence[Union[pdarray, Strings, "Categorical", ]],  # type: ignore
     ordered: bool = True,
 ) -> Union[pdarray, Strings, "Categorical"]:  # type: ignore
-    # fmt:on
     """
     Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
     one ``pdarray`` or ``Strings`` object, respectively.
@@ -356,6 +355,7 @@ def concatenate(
         return Strings.from_return_msg(cast(str, repMsg))
     else:
         raise TypeError("arrays must be an array of pdarray or Strings objects")
+# fmt:on
 
 
 def multiarray_setop_validation(
@@ -433,10 +433,11 @@ def union1d(
     [array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 5, 4, 2, 5]]
     """
     from arkouda.categorical import Categorical as Categorical_
+
     if (
-            isinstance(pda1, (pdarray, Strings, Categorical_)) and
-            isinstance(pda2, (pdarray, Strings, Categorical_)) and
-            type(pda1) == type(pda2)
+        isinstance(pda1, (pdarray, Strings, Categorical_))
+        and isinstance(pda2, (pdarray, Strings, Categorical_))
+        and type(pda1) == type(pda2)
     ):
         if pda1.size == 0:
             return pda2  # union is pda2
@@ -447,10 +448,7 @@ def union1d(
             and pda2.dtype == int
             or (pda1.dtype == akuint64 and pda2.dtype == akuint64)
         ):
-            repMsg = generic_msg(cmd="union1d", args={
-                "arg1": pda1,
-                "arg2": pda2
-            })
+            repMsg = generic_msg(cmd="union1d", args={"arg1": pda1, "arg2": pda2})
             return cast(pdarray, create_pdarray(repMsg))
         return cast(
             pdarray, unique(cast(pdarray, concatenate((unique(pda1), unique(pda2)), ordered=False)))
@@ -529,9 +527,12 @@ def intersect1d(
     [array([1, 3]), array([1, 3]), array([1, 3])]
     """
     from arkouda.categorical import Categorical as Categorical_
-    if (isinstance(pda1, (pdarray, Strings, Categorical_)) and
-            isinstance(pda2, (pdarray, Strings, Categorical_)) and
-            type(pda1) == type(pda2)):
+
+    if (
+        isinstance(pda1, (pdarray, Strings, Categorical_))
+        and isinstance(pda2, (pdarray, Strings, Categorical_))
+        and type(pda1) == type(pda2)
+    ):
         if pda1.size == 0:
             return pda1  # nothing in the intersection
         if pda2.size == 0:
@@ -644,9 +645,12 @@ def setdiff1d(
     [array([2, 4, 5]), array([2, 4, 5]), array([2, 4, 5])]
     """
     from arkouda.categorical import Categorical as Categorical_
-    if (isinstance(pda1, (pdarray, Strings, Categorical_)) and
-            isinstance(pda2, (pdarray, Strings, Categorical_)) and
-            type(pda1) == type(pda2)):
+
+    if (
+        isinstance(pda1, (pdarray, Strings, Categorical_))
+        and isinstance(pda2, (pdarray, Strings, Categorical_))
+        and type(pda1) == type(pda2)
+    ):
         if pda1.size == 0:
             return pda1  # return a zero length pdarray
         if pda2.size == 0:
@@ -655,11 +659,7 @@ def setdiff1d(
             pda1.dtype == akuint64 and pda2.dtype == akuint64
         ):
             repMsg = generic_msg(
-                cmd="setdiff1d", args={
-                    "arg1": pda1,
-                    "arg2": pda2,
-                    "assume_unique": assume_unique
-                }
+                cmd="setdiff1d", args={"arg1": pda1, "arg2": pda2, "assume_unique": assume_unique}
             )
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
@@ -755,9 +755,12 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
     [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]
     """
     from arkouda.categorical import Categorical as Categorical_
-    if (isinstance(pda1, (pdarray, Strings, Categorical_)) and
-            isinstance(pda2, (pdarray, Strings, Categorical_)) and
-            type(pda1) == type(pda2)):
+
+    if (
+        isinstance(pda1, (pdarray, Strings, Categorical_))
+        and isinstance(pda2, (pdarray, Strings, Categorical_))
+        and type(pda1) == type(pda2)
+    ):
         if pda1.size == 0:
             return pda2  # return other pdarray if pda1 is empty
         if pda2.size == 0:
@@ -766,11 +769,8 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
             pda1.dtype == akuint64 and pda2.dtype == akuint64
         ):
             repMsg = generic_msg(
-                cmd="setxor1d", args={
-                    "arg1": pda1,
-                    "arg2": pda2,
-                    "assume_unique": assume_unique
-                })
+                cmd="setxor1d", args={"arg1": pda1, "arg2": pda2, "assume_unique": assume_unique}
+            )
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
             pda1 = cast(pdarray, unique(pda1))
