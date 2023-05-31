@@ -111,7 +111,7 @@ class SegArray:
         if not isinstance(segments, pdarray) or segments.dtype != akint64:
             raise TypeError("Segments must be int64 pdarray")
         if not isinstance(values, pdarray) and not isinstance(values, Strings):
-            raise TypeError("Values must be a pdarray.")
+            raise TypeError("Values must be a pdarray or Strings.")
         if not is_sorted(segments):
             raise ValueError("Segments must be unique and in sorted order")
         if segments.size > 0:
@@ -771,7 +771,7 @@ class SegArray:
         return [arr.tolist() for arr in self.to_ndarray()]
 
     def sum(self, x=None):
-        if x is None:  # TODO when values are Strings, supplying None does not work, should it?
+        if x is None:
             x = self.values
         return self.grouping.sum(x)[1]
 
