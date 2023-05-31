@@ -9,7 +9,7 @@ module ArkoudaListCompat {
     this.append(other);
   }
 
-  proc ref list.pushBack(other: [] this.elType) lifetime this < other {
+  proc ref list.pushBack(other: [] this.eltType) lifetime this < other {
     this.append(other);
   }
 
@@ -17,7 +17,7 @@ module ArkoudaListCompat {
     this.append(other);
   }
 
-  proc ref list.popBack(): this.elType {
+  proc ref list.popBack(): this.eltType {
     return this.pop();
   }
 
