@@ -126,25 +126,22 @@ module ParquetMsg {
       var locFiledoms = subdoms;
       var locOffsets = fileOffsets;
       
-      try {
-        forall (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
-          for locdom in A.localSubdomains() {
-            const intersection = domain_intersection(locdom, filedom);
+      forall (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
+        for locdom in A.localSubdomains() {
+          const intersection = domain_intersection(locdom, filedom);
 
-            if intersection.size > 0 {
-              var pqErr = new parquetErrorMsg();
-              if c_readColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
-                                    dsetname.localize().c_str(), intersection.size, intersection.low - off,
-                                    batchSize,
-                                    c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-              }
+          if intersection.size > 0 {
+            var pqErr = new parquetErrorMsg();
+            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
+                                  dsetname.localize().c_str(), intersection.size, intersection.low - off,
+                                  batchSize,
+                                  c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+              pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
           }
         }
-      } catch e {
-        throw e;
       }
+      
     }
   }
 
@@ -156,26 +153,22 @@ module ParquetMsg {
       var locFiles = filenames;
       var locFiledoms = subdoms;
 
-      try {
-        forall (filedom, filename) in zip(locFiledoms, locFiles) {
-          for locdom in A.localSubdomains() {
-            const intersection = domain_intersection(locdom, filedom);
+      forall (filedom, filename) in zip(locFiledoms, locFiles) {
+        for locdom in A.localSubdomains() {
+          const intersection = domain_intersection(locdom, filedom);
 
-            if intersection.size > 0 {
-              var pqErr = new parquetErrorMsg();
-              var col: [filedom] t;
+          if intersection.size > 0 {
+            var pqErr = new parquetErrorMsg();
+            var col: [filedom] t;
 
-              if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                    dsetname.localize().c_str(), intersection.size, 0,
-                                    batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-              }
-              A[filedom] = col;
+            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                  dsetname.localize().c_str(), intersection.size, 0,
+                                  batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+              pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
+            A[filedom] = col;
           }
         }
-      } catch e {
-        throw e;
       }
     }
   }
@@ -208,27 +201,23 @@ module ParquetMsg {
       var locOffsets = fileOffsets; // value count offset
       var locSegOffsets = segmentOffsets; // indicates which segment index is first for the file
 
-      try {
-        forall (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
-          for locdom in A.localSubdomains() {
-            const intersection = domain_intersection(locdom, filedom);
+      forall (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
+        for locdom in A.localSubdomains() {
+          const intersection = domain_intersection(locdom, filedom);
 
-            if intersection.size > 0 {
-              var pqErr = new parquetErrorMsg();
+          if intersection.size > 0 {
+            var pqErr = new parquetErrorMsg();
 
-              var shift = computeEmptySegs(seg_sizes, offsets, s, intersection, off); // compute the shift to account for any empty segments in the file before the current section.
+            var shift = computeEmptySegs(seg_sizes, offsets, s, intersection, off); // compute the shift to account for any empty segments in the file before the current section.
 
 
-              if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
-                                    dsetname.localize().c_str(), intersection.size, (intersection.low - off) + shift,
-                                    batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-              }
+            if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
+                                  dsetname.localize().c_str(), intersection.size, (intersection.low - off) + shift,
+                                  batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+              pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
           }
         }
-      } catch e {
-        throw e;
       }
     }
   }
@@ -242,19 +231,15 @@ module ParquetMsg {
       var locFiles = filenames;
       var locFiledoms = subdoms;
       
-      try {
-        forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
-          for locdom in seg_sizes.localSubdomains() {
-            const intersection = domain_intersection(locdom, filedom);
-            if intersection.size > 0 {
-              var col: [filedom] t;
-              listSizes[i] = getListColSize(filename, dsetname, col);
-              seg_sizes[filedom] = col; // this is actually segment sizes here
-            }
+      forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
+        for locdom in seg_sizes.localSubdomains() {
+          const intersection = domain_intersection(locdom, filedom);
+          if intersection.size > 0 {
+            var col: [filedom] t;
+            listSizes[i] = getListColSize(filename, dsetname, col);
+            seg_sizes[filedom] = col; // this is actually segment sizes here
           }
         }
-      } catch e {
-        throw e;
       }
     }
     return listSizes;
@@ -269,19 +254,15 @@ module ParquetMsg {
       var locFiles = filenames;
       var locFiledoms = subdoms;
       
-      try {
-        forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
-          for locdom in offsets.localSubdomains() {
-            const intersection = domain_intersection(locdom, filedom);
-            if intersection.size > 0 {
-              var col: [filedom] t;
-              byteSizes[i] = getStrColSize(filename, dsetname, col);
-              offsets[filedom] = col;
-            }
+      forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
+        for locdom in offsets.localSubdomains() {
+          const intersection = domain_intersection(locdom, filedom);
+          if intersection.size > 0 {
+            var col: [filedom] t;
+            byteSizes[i] = getStrColSize(filename, dsetname, col);
+            offsets[filedom] = col;
           }
         }
-      } catch e {
-        throw e;
       }
     }
     return byteSizes;
@@ -295,24 +276,20 @@ module ParquetMsg {
       var locFiles = filenames;
       var locFiledoms = subdoms;
       
-      try {
-        forall (filedom, filename) in zip(locFiledoms, locFiles) {
-          for locdom in A.localSubdomains() {
-            const intersection = domain_intersection(locdom, filedom);
-            
-            if intersection.size > 0 {
-              var pqErr = new parquetErrorMsg();
-              var col: [filedom] t;
-              if c_getStringColumnNullIndices(filename.localize().c_str(), dsetname.localize().c_str(),
-                                              c_ptrTo(col), pqErr.errMsg) {
-                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-              }
-              A[filedom] = col;
+      forall (filedom, filename) in zip(locFiledoms, locFiles) {
+        for locdom in A.localSubdomains() {
+          const intersection = domain_intersection(locdom, filedom);
+          
+          if intersection.size > 0 {
+            var pqErr = new parquetErrorMsg();
+            var col: [filedom] t;
+            if c_getStringColumnNullIndices(filename.localize().c_str(), dsetname.localize().c_str(),
+                                            c_ptrTo(col), pqErr.errMsg) {
+              pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
+            A[filedom] = col;
           }
         }
-      } catch e {
-        throw e;
       }
     }
   }
@@ -437,14 +414,7 @@ module ParquetMsg {
                                         dsetname, numelems,
                                         dtype, compression,
                                         errMsg): int;
-    // var filenames: [0..#A.targetLocales().size] string;
     var dtypeRep = toCDtype(dtype);
-    // for i in 0..#A.targetLocales().size {
-    //   var suffix = '%04i'.format(i): string;
-    //   filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
-    // }
-    
-    // var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
     var prefix: string;
     var extension: string;
   
@@ -512,14 +482,6 @@ module ParquetMsg {
     var segString = new SegString("", entry);
     ref ss = segString;
     var A = ss.offsets.a;
-
-    // var filenames: [0..#A.targetLocales().size] string;
-    // for i in 0..#A.targetLocales().size {
-    //   var suffix = '%04i'.format(i): string;
-    //   filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
-    // }
-    
-    // var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
 
     var prefix: string;
     var extension: string;
