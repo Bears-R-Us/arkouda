@@ -21,11 +21,11 @@ or
 
 .. method:: proc ref list.pushBack(other: list(this.eltType))
 
-.. method:: proc ref list.pushBack(other: [] this.elType)
+.. method:: proc ref list.pushBack(other: [] this.eltType)
 
 .. method:: proc ref list.pushBack(other: range(this.eltType, ?))
 
-.. method:: proc ref list.popBack(): this.elType
+.. method:: proc ref list.popBack(): this.eltType
 
 .. method:: proc ref list.replace(i: int, x: this.eltType): bool
 
