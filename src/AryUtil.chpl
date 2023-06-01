@@ -9,7 +9,6 @@ module AryUtil
     use MultiTypeSymEntry;
     use ServerErrors;
     use BitOps;
-    use OS.POSIX;
 
     use ArkoudaPOSIXCompat;
 
