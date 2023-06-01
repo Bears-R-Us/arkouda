@@ -34,7 +34,7 @@ Attributes
    arkouda.groupbyclass.GROUPBY_REDUCTION_TYPES
 
 
-.. py:function:: unique(pda: groupable, return_groups: bool = False, assume_sorted: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
+.. py:function:: unique(pda: groupable, return_groups: bool = False, assume_sorted: bool = False, return_indices: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
 
    Find the unique elements of an array.
 
@@ -46,6 +46,9 @@ Attributes
    :type pda: (list of) pdarray, Strings, or Categorical
    :param return_groups: If True, also return grouping information for the array.
    :type return_groups: bool, optional
+   :param return_indices: Only applicable if return_groups is True.
+                          If True, return unique key indices along with other groups
+   :type return_indices: bool, optional
    :param assume_sorted: If True, assume pda is sorted and skip sorting step
    :type assume_sorted: bool, optional
 

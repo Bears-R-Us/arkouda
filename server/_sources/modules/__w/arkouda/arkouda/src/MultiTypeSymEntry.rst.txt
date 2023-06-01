@@ -19,7 +19,7 @@ or
 
 .. data:: const genLogger = new Logger(logLevel, logChannel)
 
-.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GenSymEntry, SegStringSymEntry, CategoricalSymEntry, CompositeSymEntry, GroupBySymEntry, AnythingSymEntry, UnknownSymEntry, None }
+.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GenSymEntry, SegStringSymEntry, CategoricalSymEntry, CompositeSymEntry, AnythingSymEntry, UnknownSymEntry, None }
 
    *
    * Internal Types we can use to build our Symbol type hierarchy.
@@ -308,27 +308,6 @@ or
       *
       * :returns: s (string) containing the array data
       
-
-.. class:: GroupBySymEntry : CompositeSymEntry
-
-   
-   Symbol Table entry representing a GroupBy object.
-   
-
-
-   .. attribute:: var keyNamesEntry: shared SymEntry(string)
-
-   .. attribute:: var keyTypesEntry: shared SymEntry(string)
-
-   .. attribute:: var segmentsEntry: shared SymEntry(int)
-
-   .. attribute:: var permEntry: shared SymEntry(int)
-
-   .. attribute:: var ukIndEntry: shared SymEntry(int)
-
-   .. method:: proc init(keyNamesEntry: shared SymEntry, keyTypesEntry: shared SymEntry, segmentsSymEntry: shared SymEntry, permSymEntry: shared SymEntry, ukIndSymEntry: shared SymEntry, itemsize: int)
-
-   .. method:: override proc getSizeEstimate(): int
 
 .. function:: proc toGenSymEntry(entry: borrowed AbstractSymEntry) throws
 
