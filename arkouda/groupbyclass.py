@@ -57,7 +57,10 @@ def _get_grouping_keys(pda: groupable):
 
 
 def unique(
-    pda: groupable, return_groups: bool = False, assume_sorted: bool = False  # type: ignore
+    pda: groupable,
+    return_groups: bool = False,
+    assume_sorted: bool = False,
+    return_indices: bool = False,
 ) -> Union[
     groupable, Tuple[groupable, pdarray, pdarray, int]  # type: ignore
 ]:  # type: ignore
@@ -74,6 +77,9 @@ def unique(
         Input array.
     return_groups : bool, optional
         If True, also return grouping information for the array.
+    return_indices: bool, optional
+        Only applicable if return_groups is True.
+        If True, return unique key indices along with other groups
     assume_sorted : bool, optional
         If True, assume pda is sorted and skip sorting step
 
@@ -138,7 +144,8 @@ def unique(
     else:
         unique_keys = tuple(a[unique_key_indices] for a in pda)
     if return_groups:
-        return (unique_keys, permutation, segments, nkeys)
+        groups = unique_keys, permutation, segments, nkeys
+        return *groups, unique_key_indices if return_indices else groups
     else:
         return unique_keys
 
@@ -248,7 +255,7 @@ class GroupBy:
         # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
         # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
         # See Issue #1267
-        self.name = None
+        self.name: Optional[str] = None
         if not isinstance(assume_sorted, bool):
             raise TypeError("assume_sorted must be of type bool.")
 
@@ -266,8 +273,6 @@ class GroupBy:
             self.permutation = kwargs.get("permutation", None)
             self.segments = kwargs.get("segments", None)
             self.nkeys = len(self.keys)
-            self.length = self.permutation.size
-            self.ngroups = self.segments.size
         elif (
             "orig_keys" in kwargs
             and "permutation" in kwargs
@@ -279,8 +284,6 @@ class GroupBy:
             self.permutation = kwargs.get("permutation", None)
             self.segments = kwargs.get("segments", None)
             self.nkeys = len(self.keys) if isinstance(self.keys, Sequence) else 1
-            self.length = self.permutation.size
-            self.ngroups = self.segments.size
             if not isinstance(self.keys, Sequence):
                 self.unique_keys = self.keys[self._uki]
             else:
@@ -289,30 +292,17 @@ class GroupBy:
             raise ValueError("No keys passed to GroupBy.")
         else:
             self.keys = cast(groupable, keys)
-            grouping_keys, self.nkeys = _get_grouping_keys(self.keys)
-            keynames = [k.name for k in grouping_keys]
-            keytypes = [k.objType for k in grouping_keys]
-            repmsg = generic_msg(
-                cmd="createGroupBy",
-                args={
-                    "assumeSortedStr": assume_sorted,
-                    "nkeys": len(grouping_keys),
-                    "keynames": keynames,
-                    "keytypes": keytypes,
-                },
+            (
+                self.unique_keys,
+                self.permutation,
+                self.segments,
+                self.nkeys,
+                self._uki,
+            ) = unique(  # type: ignore
+                self.keys, return_groups=True, return_indices=True, assume_sorted=self.assume_sorted
             )
-            rep_json = json.loads(repmsg)
-            fields = rep_json["groupby"].split()
-            self.name = fields[1]
-            self.length = int(fields[2])
-            self.ngroups = int(fields[3])
-            self.permutation = create_pdarray(rep_json["permutation"])
-            self.segments = create_pdarray(rep_json["segments"])
-            self._uki = create_pdarray(rep_json["uniqueKeyIdx"])
-            if self.nkeys == 1:
-                self.unique_keys = self.keys[self._uki]
-            else:
-                self.unique_keys = tuple(a[self._uki] for a in self.keys)
+        self.length = self.permutation.size
+        self.ngroups = self.segments.size
 
     def __del__(self):
         try:
@@ -1533,23 +1523,25 @@ class GroupBy:
         # Values are the unique elements of the values arg
         if len(unique_values) == 1:
             # Squeeze singleton results
-            ret = SegArray.from_parts(g2.segments, unique_values[0])
+            ret = SegArray(g2.segments, unique_values[0])
             if reorder:
                 ret = ret[perm]
         else:
-            ret = [SegArray.from_parts(g2.segments, uv) for uv in unique_values]  # type: ignore
+            ret = [SegArray(g2.segments, uv) for uv in unique_values]  # type: ignore
             if reorder:
                 ret = [r[perm] for r in ret]  # type: ignore
         return self.unique_keys, ret  # type: ignore
 
     @typechecked
-    def broadcast(self, values: pdarray, permute: bool = True) -> pdarray:
+    def broadcast(
+        self, values: Union[pdarray, Strings], permute: bool = True
+    ) -> Union[pdarray, Strings]:
         """
         Fill each group's segment with a constant value.
 
         Parameters
         ----------
-        values : pdarray
+        values : pdarray, Strings
             The values to put in each group's segment
         permute : bool
             If True (default), permute broadcast values back to the ordering
@@ -1558,8 +1550,8 @@ class GroupBy:
 
         Returns
         -------
-        pdarray
-            The broadcast values
+        pdarray, Strings
+            The broadcasted values
 
         Raises
         ------
@@ -1602,17 +1594,24 @@ class GroupBy:
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
         cmd = "broadcast"
-        repMsg = generic_msg(
-            cmd=cmd,
-            args={
-                "permName": self.permutation.name,
-                "segName": self.segments.name,
-                "valName": values.name,
-                "permute": permute,
-                "size": self.length,
-            },
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd=cmd,
+                args={
+                    "permName": self.permutation.name,
+                    "segName": self.segments.name,
+                    "valName": values.name,
+                    "objType": values.objType,
+                    "permute": permute,
+                    "size": self.length,
+                },
+            ),
         )
-        return create_pdarray(repMsg)
+        if values.objType == Strings.objType:
+            return Strings.from_return_msg(repMsg)
+        else:
+            return create_pdarray(repMsg)
 
     @staticmethod
     def build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy:
@@ -2024,7 +2023,7 @@ class GroupBy:
 
 def broadcast(
     segments: pdarray,
-    values: pdarray,
+    values: Union[pdarray, Strings],
     size: Union[int, np.int64, np.uint64] = -1,
     permutation: Union[pdarray, None] = None,
 ):
@@ -2036,7 +2035,7 @@ def broadcast(
     segments : pdarray, int64
         Offsets of the start of each row in the sparse matrix or grouped array.
         Must be sorted in ascending order.
-    values : pdarray
+    values : pdarray, Strings
         The values to broadcast, one per row (or group)
     size : int
         The total number of nonzeros in the matrix. If permutation is given, this
@@ -2050,7 +2049,7 @@ def broadcast(
 
     Returns
     -------
-    pdarray
+    pdarray, Strings
         The broadcast values, one per nonzero
 
     Raises
@@ -2092,14 +2091,21 @@ def broadcast(
     if size < 1:
         raise ValueError("result size must be greater than zero")
     cmd = "broadcast"
-    repMsg = generic_msg(
-        cmd=cmd,
-        args={
-            "permName": pname,
-            "segName": segments.name,
-            "valName": values.name,
-            "permute": permute,
-            "size": size,
-        },
+    repMsg = cast(
+        str,
+        generic_msg(
+            cmd=cmd,
+            args={
+                "permName": pname,
+                "segName": segments.name,
+                "valName": values.name,
+                "objType": values.objType,
+                "permute": permute,
+                "size": size,
+            },
+        ),
     )
-    return create_pdarray(repMsg)
+    if values.objType == Strings.objType:
+        return Strings.from_return_msg(repMsg)
+    else:
+        return create_pdarray(repMsg)

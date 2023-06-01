@@ -27,6 +27,7 @@ module ServerDaemon {
     use NumPyDType;
 
     use ArkoudaFileCompat;
+    use ArkoudaListCompat;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
@@ -50,7 +51,7 @@ module ServerDaemon {
         for rt in rawTypes {
             var daemonType: ServerDaemonType;
             daemonType = rt: ServerDaemonType;
-            types.append(daemonType);
+            types.pushBack(daemonType);
         }
         return types;
     }    
@@ -854,7 +855,7 @@ module ServerDaemon {
         var daemons = new list(shared ArkoudaServerDaemon);
 
         for (daemonType,i) in zip(serverDaemonTypes,0..serverDaemonTypes.size-1) {
-            daemons.append(getServerDaemon(daemonType));
+            daemons.pushBack(getServerDaemon(daemonType));
         }
         return daemons;
     }

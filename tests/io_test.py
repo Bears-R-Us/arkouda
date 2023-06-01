@@ -666,6 +666,57 @@ class IOTest(ArkoudaTest):
             self.assertEqual(18446744073709551500, pda2[0])
             self.assertListEqual(pda2.to_list(), npa1.tolist())
 
+    def testBigIntHdf5(self):
+        # pdarray
+        a = ak.arange(3, dtype=ak.bigint)
+        a += 2 ** 200
+        a.max_bits = 201
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            a.to_hdf(f"{tmp_dirname}/bigint_test", dataset="bigint_test")
+            rd_a = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
+            self.assertListEqual(a.to_list(), rd_a.to_list())
+            self.assertEqual(a.max_bits, rd_a.max_bits)
+
+        # arrayview
+        a = ak.arange(27, dtype=ak.bigint)
+        a += 2**200
+        a.max_bits = 201
+
+        av = a.reshape((3, 3, 3))
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            av.to_hdf(f"{tmp_dirname}/bigint_test")
+            rd_av = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
+            self.assertIsInstance(rd_av, ak.ArrayView)
+            self.assertListEqual(av.base.to_list(), rd_av.base.to_list())
+            self.assertEqual(av.base.max_bits, rd_av.base.max_bits)
+
+        # groupby
+        a = ak.arange(5, dtype=ak.bigint)
+        g = ak.GroupBy(a)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            g.to_hdf(f"{tmp_dirname}/bigint_test")
+            rd_g = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
+            self.assertIsInstance(rd_g, ak.GroupBy)
+            self.assertListEqual(g.keys.to_list(), rd_g.keys.to_list())
+            self.assertListEqual(g.unique_keys.to_list(), rd_g.unique_keys.to_list())
+            self.assertListEqual(g.permutation.to_list(), rd_g.permutation.to_list())
+            self.assertListEqual(g.segments.to_list(), rd_g.segments.to_list())
+
+        # bigint segarray
+        a = ak.arange(10, dtype=ak.bigint)
+        a += 2 ** 200
+        a.max_bits = 212
+        s = ak.arange(0, 10, 2)
+        sa = ak.SegArray(s, a)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            sa.to_hdf(f"{tmp_dirname}/bigint_test")
+            rd_sa = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
+            self.assertIsInstance(rd_sa, ak.SegArray)
+            self.assertListEqual(sa.values.to_list(), rd_sa.values.to_list())
+            self.assertListEqual(sa.segments.to_list(), rd_sa.segments.to_list())
+
     def testUint64ToFromArray(self):
         """
         Test conversion to and from numpy array / pdarray using unsigned 64bit integer (uint64)
@@ -812,7 +863,7 @@ class IOTest(ArkoudaTest):
         segments = ak.array([0, len(a), len(a) + len(b)])
         dtype = ak.dtypes.int64
         akflat = ak.array(flat, dtype)
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             segarr.to_hdf(f"{tmp_dirname}/segarray_int")
@@ -824,7 +875,7 @@ class IOTest(ArkoudaTest):
         # uint64 test
         dtype = ak.dtypes.uint64
         akflat = ak.array(flat, dtype)
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             segarr.to_hdf(f"{tmp_dirname}/segarray_uint")
@@ -836,7 +887,7 @@ class IOTest(ArkoudaTest):
         # float64 test
         dtype = ak.dtypes.float64
         akflat = ak.array(flat, dtype)
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             segarr.to_hdf(f"{tmp_dirname}/segarray_float")
@@ -848,7 +899,7 @@ class IOTest(ArkoudaTest):
         # bool test
         dtype = ak.dtypes.bool
         akflat = ak.array(flat, dtype)
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             segarr.to_hdf(f"{tmp_dirname}/segarray_bool")
@@ -867,7 +918,7 @@ class IOTest(ArkoudaTest):
         segments = ak.array([0, len(a), len(a) + len(b)])
         dtype = ak.dtypes.int64
         akflat = ak.array(flat, dtype)
-        segarr = ak.segarray(segments, akflat)
+        segarr = ak.SegArray(segments, akflat)
 
         s = ak.array(["abc","def","ghi"])
         df = ak.DataFrame([segarr, s])
@@ -1048,8 +1099,8 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(data["d"].to_list(), df["d"].to_list())
 
     def test_overwrite_segarray(self):
-        sa1 = ak.segarray(ak.arange(0, 1000, 5), ak.arange(1000))
-        sa2 = ak.segarray(ak.arange(0, 100, 5), ak.arange(100))
+        sa1 = ak.SegArray(ak.arange(0, 1000, 5), ak.arange(1000))
+        sa2 = ak.SegArray(ak.arange(0, 100, 5), ak.arange(100))
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             sa1.to_hdf(f"{tmp_dirname}/segarray_test")
             sa1.to_hdf(f"{tmp_dirname}/segarray_test", dataset="seg2", mode="append")

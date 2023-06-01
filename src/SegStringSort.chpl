@@ -12,6 +12,7 @@ module SegStringSort {
   use BlockDist;
 
   use ArkoudaBlockCompat;
+  use ArkoudaStringBytesCompat;
 
   private config const SSS_v = false;
   private const vv = SSS_v;
@@ -150,7 +151,7 @@ module SegStringSort {
       const l = lengths[i];
       var buf: [0..#(l+1)] uint(8);
       buf[{0..#l}] = va[{oa[i]..#l}];
-      si = (try! createStringWithBorrowedBuffer(c_ptrTo(buf), l, l+1), i);
+      si = (try! string.createBorrowingBuffer(c_ptrTo(buf), l, l+1), i);
     }
     return stringsWithInds;
   }

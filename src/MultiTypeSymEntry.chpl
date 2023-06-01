@@ -10,7 +10,6 @@ module MultiTypeSymEntry
 
     public use NumPyDType;
     public use SymArrayDmap;
-    use MultiTypeSymbolTable;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -30,10 +29,8 @@ module MultiTypeSymEntry
             GenSymEntry,
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
                 CategoricalSymEntry,  // Categorical
-                SegArraySymEntry,     // Segmented Array
 
             CompositeSymEntry,        // Entries that consist of multiple SymEntries of varying type
-                GroupBySymEntry,      // GroupBy
 
             AnythingSymEntry, // Placeholder to stick aritrary things in the map
             UnknownSymEntry,
@@ -411,70 +408,6 @@ module MultiTypeSymEntry
         }
     }
 
-    class SegArraySymEntry:GenSymEntry {
-        type etype;
-
-        var segmentsEntry: shared SymEntry(int);
-        var valuesEntry: shared SymEntry(etype);
-        var lengthsEntry: shared SymEntry(int);
-
-        proc init(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, type etype) {
-            super.init(etype, valuesSymEntry.size);
-            this.entryType = SymbolEntryType.SegArraySymEntry;
-            assignableTypes.add(this.entryType);
-            this.etype = etype;
-            this.segmentsEntry = segmentsSymEntry;
-            this.valuesEntry = valuesSymEntry;
-
-            ref sa = segmentsSymEntry.a;
-            const high = segmentsSymEntry.a.domain.high;
-            var lengths = [(i, s) in zip (segmentsSymEntry.a.domain, sa)] if i == high then valuesSymEntry.size - s else sa[i+1] - s;
-            
-            lengthsEntry = new shared SymEntry(lengths);
-
-            this.dtype = whichDtype(etype);
-            this.itemsize = this.valuesEntry.itemsize;
-            this.size = this.segmentsEntry.size;
-            this.ndim = this.segmentsEntry.ndim;
-            this.shape = this.segmentsEntry.shape;
-        }
-
-        override proc getSizeEstimate(): int {
-            return this.segmentsEntry.getSizeEstimate() + this.valuesEntry.getSizeEstimate();
-        }
-    }
-
-    /*
-        Symbol Table entry representing a GroupBy object.
-    */
-    class GroupBySymEntry:CompositeSymEntry {
-
-        var keyNamesEntry: shared SymEntry(string);
-        var keyTypesEntry: shared SymEntry(string);
-        var segmentsEntry: shared SymEntry(int);
-        var permEntry: shared SymEntry(int);
-        var ukIndEntry: shared SymEntry(int);
-        
-        proc init(keyNamesEntry: shared SymEntry, keyTypesEntry: shared SymEntry, segmentsSymEntry: shared SymEntry, 
-                    permSymEntry: shared SymEntry, ukIndSymEntry: shared SymEntry, itemsize: int) {
-            super.init(permSymEntry.size); // sets this.size = permEntry.size
-            this.entryType = SymbolEntryType.GroupBySymEntry;
-            assignableTypes.add(this.entryType);
-            this.keyNamesEntry = keyNamesEntry;
-            this.keyTypesEntry = keyTypesEntry;
-            this.segmentsEntry = segmentsSymEntry;
-            this.permEntry = permSymEntry;
-            this.ukIndEntry = ukIndSymEntry;
-
-            this.ndim = this.segmentsEntry.size; // used as the number of groups
-        }
-
-        override proc getSizeEstimate(): int {
-            return this.keyNamesEntry.getSizeEstimate() + this.keyTypesEntry.getSizeEstimate() + 
-            this.segmentsEntry.getSizeEstimate() + this.permEntry.getSizeEstimate() + this.ukIndEntry.getSizeEstimate();
-        }
-    }
-
     /**
      * Helper proc to cast AbstrcatSymEntry to GenSymEntry
      */
@@ -494,10 +427,6 @@ module MultiTypeSymEntry
      */
     proc toSegStringSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed SegStringSymEntry);
-    }
-
-    proc toSegArraySymEntry(entry: borrowed AbstractSymEntry, type t) throws {
-        return (entry: borrowed SegArraySymEntry(t));
     }
 
     /**

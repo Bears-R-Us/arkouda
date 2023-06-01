@@ -13,6 +13,7 @@ module MetricsMsg {
     use ArkoudaTimeCompat as Time;
 
     use ArkoudaMapCompat;
+    use ArkoudaListCompat;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,TOTAL_RESPONSE_TIME,
                         TOTAL_MEMORY_USED,SYSTEM,SERVER,SERVER_INFO};
@@ -132,7 +133,7 @@ module MetricsMsg {
             var userMetrics = this.getUserMetrics(this.users.getUser(userName));
             var metrics = new list(owned UserMetric?);
             for (metric, value) in userMetrics.items() {
-                metrics.append(new UserMetric(name=metric,
+                metrics.pushBack(new UserMetric(name=metric,
                                               scope=MetricScope.USER,
                                               category=MetricCategory.NUM_REQUESTS,
                                               value=value,
@@ -145,7 +146,7 @@ module MetricsMsg {
             var metrics = new list(owned UserMetric?);
             for userName in this.users.getUserNames() {
                 for metric in this.getPerUserNumRequestsPerCommandMetrics(userName) {
-                    metrics.append(metric);
+                    metrics.pushBack(metric);
                 }
             }
 
@@ -334,28 +335,28 @@ module MetricsMsg {
         var metrics = new list(owned Metric?);
 
         for metric in getNumRequestMetrics() {
-            metrics.append(metric);
+            metrics.pushBack(metric);
         }
         for metric in getResponseTimeMetrics() {
-            metrics.append(metric);
+            metrics.pushBack(metric);
         }        
         for metric in getAvgResponseTimeMetrics() {
-            metrics.append(metric);
+            metrics.pushBack(metric);
         }
         for metric in getTotalResponseTimeMetrics() {
-            metrics.append(metric);
+            metrics.pushBack(metric);
         }
         for metric in getTotalMemoryUsedMetrics() {
-            metrics.append(metric);
+            metrics.pushBack(metric);
         }
         for metric in getSystemMetrics() {
-            metrics.append(metric);
+            metrics.pushBack(metric);
         }
         for metric in getServerMetrics() {
-            metrics.append(metric);
+            metrics.pushBack(metric);
         }
         for metric in getAllUserRequestMetrics() {
-            metrics.append(metric);
+            metrics.pushBack(metric);
         }
 
         return metrics.toArray();
@@ -373,7 +374,7 @@ module MetricsMsg {
         var metrics: list(owned Metric?);
          
         for item in serverMetrics.items(){
-            metrics.append(new Metric(name=item[0], category=MetricCategory.SERVER, 
+            metrics.pushBack(new Metric(name=item[0], category=MetricCategory.SERVER, 
                                           value=item[1]));
         }
 
@@ -384,12 +385,12 @@ module MetricsMsg {
         var metrics = new list(owned Metric?);
 
         for item in requestMetrics.items() {
-            metrics.append(new Metric(name=item[0], 
+            metrics.pushBack(new Metric(name=item[0], 
                                       category=MetricCategory.NUM_REQUESTS,
                                       value=item[1]));
         }
         
-        metrics.append(new Metric(name='total', 
+        metrics.pushBack(new Metric(name='total', 
                                   category=MetricCategory.NUM_REQUESTS, 
                                   value=requestMetrics.total()));
         return metrics;
@@ -399,12 +400,12 @@ module MetricsMsg {
         var metrics = new list(owned Metric?);
 
         for item in userMetrics.items() {
-            metrics.append(new Metric(name=item[0],
+            metrics.pushBack(new Metric(name=item[0],
                                       category=MetricCategory.NUM_REQUESTS,
                                       value=item[1]));
         }
 
-        metrics.append(new Metric(name='total',
+        metrics.pushBack(new Metric(name='total',
                                   category=MetricCategory.NUM_REQUESTS,
                                   value=requestMetrics.total()));
         return metrics;
@@ -415,7 +416,7 @@ module MetricsMsg {
         var metrics = new list(owned Metric?);
 
         for item in responseTimeMetrics.items() {
-            metrics.append(new Metric(name=item[0], 
+            metrics.pushBack(new Metric(name=item[0], 
                                       category=MetricCategory.RESPONSE_TIME,
                                       value=item[1]));
         }
@@ -427,7 +428,7 @@ module MetricsMsg {
         var metrics = new list(owned Metric?);
 
         for item in avgResponseTimeMetrics.items() {
-            metrics.append(new Metric(name=item[0], 
+            metrics.pushBack(new Metric(name=item[0], 
                                       category=MetricCategory.AVG_RESPONSE_TIME,
                                       value=item[1]));
         }
@@ -439,7 +440,7 @@ module MetricsMsg {
         var metrics = new list(owned Metric?);
 
         for item in totalResponseTimeMetrics.items() {
-            metrics.append(new Metric(name=item[0], 
+            metrics.pushBack(new Metric(name=item[0], 
                                       category=MetricCategory.TOTAL_RESPONSE_TIME,
                                       value=item[1]));
         }
@@ -451,7 +452,7 @@ module MetricsMsg {
         var metrics = new list(owned Metric?);
 
         for item in totalMemoryUsedMetrics.items() {
-            metrics.append(new Metric(name=item[0], 
+            metrics.pushBack(new Metric(name=item[0], 
                                       category=MetricCategory.TOTAL_MEMORY_USED,
                                       value=item[1]));
         }
@@ -476,13 +477,13 @@ module MetricsMsg {
             mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               'memoryUsed: %i physicalMemory: %i'.format(used,total));
 
-            metrics.append(new LocaleMetric(name="arkouda_memory_used_per_locale",
+            metrics.pushBack(new LocaleMetric(name="arkouda_memory_used_per_locale",
                              category=MetricCategory.SYSTEM,
                              locale_num=loc.id,
                              locale_name=loc.name,
                              locale_hostname = loc.hostname,
                              value=used):Metric);
-            metrics.append(new LocaleMetric(name="arkouda_percent_memory_used_per_locale",
+            metrics.pushBack(new LocaleMetric(name="arkouda_percent_memory_used_per_locale",
                              category=MetricCategory.SYSTEM,
                              locale_num=loc.id,
                              locale_name=loc.name,
@@ -505,7 +506,7 @@ module MetricsMsg {
                                       number_of_processing_units=loc.numPUs(),
                                       physical_memory=loc.physicalMemory():int,
                                       max_number_of_tasks=loc.maxTaskPar);   
-            localeInfos.append(info);                                                                                                                  
+            localeInfos.pushBack(info);                                                                                                                  
         }  
  
         var serverInfo = new ServerInfo(hostname=serverHostname, 

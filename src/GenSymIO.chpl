@@ -19,6 +19,9 @@ module GenSymIO {
     use SegmentedString;
 
     use ArkoudaMapCompat;
+    use ArkoudaListCompat;
+    use ArkoudaStringBytesCompat;
+
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -148,7 +151,7 @@ module GenSymIO {
             var localA = makeArrayFromPtr(ptr, D.size:uint);
             localA = A;
             const size = D.size*c_sizeof(eltType):int;
-            return createBytesWithOwnedBuffer(ptr:c_ptr(uint(8)), size, size);
+            return bytes.createAdoptingBuffer(ptr:c_ptr(uint(8)), size, size);
         }
 
         if entry.dtype == DType.Int64 {
@@ -219,7 +222,7 @@ module GenSymIO {
                 continue;
             }
             item.add("created", create_str);
-            items.append(item);
+            items.pushBack(item);
         }
         
         var reply: map(string, string) = new map(string, string);

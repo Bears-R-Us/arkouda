@@ -18,6 +18,7 @@ class ObjectType(Enum):
 
     PDARRAY = "PDARRAY"
     STRINGS = "SEGSTRING"
+    SEGARRAY = "SEGARRAY"
     LIST = "LIST"
     DICT = "DICT"
     VALUE = "VALUE"
@@ -40,7 +41,7 @@ class ObjectType(Enum):
 
 
 class ParameterObject:
-    __slots = ("key", "objType", "dtype", "val")
+    __slots__ = ("key", "objType", "dtype", "val")
 
     key: str
     objType: MessageFormat
@@ -103,13 +104,40 @@ class ParameterObject:
         return ParameterObject(key, ObjectType.STRINGS, "str", name)
 
     @staticmethod
+    @typechecked
+    def _build_segarray_param(key: str, val) -> ParameterObject:
+        """
+        Create a ParameterObject from a SegArray value
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val
+            SegArray object to load from the symbol table
+
+        Returns
+        -------
+        ParameterObject
+        """
+        data = json.dumps({"segments": val.segments.name, "values": val.values.name})
+        return ParameterObject(key, ObjectType.SEGARRAY, str(val.values.dtype), data)
+
+    @staticmethod
     def _is_supported_value(val):
         import builtins
         import numpy as np
 
+        return isinstance(val, (str, np.str_, builtins.bool, np.bool_)) or isSupportedNumber(val)
+
+    @staticmethod
+    def _format_param(p):
+        from arkouda.segarray import SegArray
+
         return (
-            isinstance(val, (str, np.str_, builtins.bool, np.bool_))
-            or isSupportedNumber(val)
+            json.dumps({"segments": p.segments.name, "values": p.values.name})
+            if isinstance(p, SegArray)
+            else p.name
         )
 
     @staticmethod
@@ -140,8 +168,7 @@ class ParameterObject:
         else:
             for p in val:
                 if not (
-                    isinstance(p, (pdarray, Strings, SegArray))
-                    or ParameterObject._is_supported_value(p)
+                    isinstance(p, (pdarray, Strings, SegArray)) or ParameterObject._is_supported_value(p)
                 ):
                     raise TypeError(
                         f"List parameters must be pdarray, Strings, SegArray, str or a type "
@@ -149,7 +176,10 @@ class ParameterObject:
                         f"does not meet that criteria."
                     )
             t = "mixed"
-        data = [str(p) if ParameterObject._is_supported_value(p) else p.name for p in val]
+        data = [
+            str(p) if ParameterObject._is_supported_value(p) else ParameterObject._format_param(p)
+            for p in val
+        ]
         return ParameterObject(key, ObjectType.LIST, t, json.dumps(data))
 
     @staticmethod
@@ -195,9 +225,11 @@ class ParameterObject:
         Dictionary - mapping the parameter type to the build function
         """
         from arkouda.strings import Strings
+        from arkouda.segarray import SegArray
 
         return {
             Strings.__name__: ParameterObject._build_strings_param,
+            SegArray.__name__: ParameterObject._build_segarray_param,
             list.__name__: ParameterObject._build_list_param,
             dict.__name__: ParameterObject._build_dict_param,
         }
@@ -290,7 +322,7 @@ context of an Arkouda server request.
 
 @dataclass(frozen=True)
 class RequestMessage:
-    __slots = ("user", "token", "cmd", "format", "args", "size")
+    __slots__ = ("user", "token", "cmd", "format", "args", "size")
 
     user: str
     token: str
