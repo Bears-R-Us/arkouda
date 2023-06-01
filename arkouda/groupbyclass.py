@@ -57,7 +57,10 @@ def _get_grouping_keys(pda: groupable):
 
 
 def unique(
-    pda: groupable, return_groups: bool = False, assume_sorted: bool = False  # type: ignore
+    pda: groupable,
+    return_groups: bool = False,
+    assume_sorted: bool = False,
+    return_indices: bool = False,
 ) -> Union[
     groupable, Tuple[groupable, pdarray, pdarray, int]  # type: ignore
 ]:  # type: ignore
@@ -74,6 +77,9 @@ def unique(
         Input array.
     return_groups : bool, optional
         If True, also return grouping information for the array.
+    return_indices: bool, optional
+        Only applicable if return_groups is True.
+        If True, return unique key indices along with other groups
     assume_sorted : bool, optional
         If True, assume pda is sorted and skip sorting step
 
@@ -138,7 +144,8 @@ def unique(
     else:
         unique_keys = tuple(a[unique_key_indices] for a in pda)
     if return_groups:
-        return (unique_keys, permutation, segments, nkeys)
+        groups = unique_keys, permutation, segments, nkeys
+        return *groups, unique_key_indices if return_indices else groups
     else:
         return unique_keys
 
@@ -248,7 +255,7 @@ class GroupBy:
         # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
         # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
         # See Issue #1267
-        self.name = None
+        self.name: Optional[str] = None
         if not isinstance(assume_sorted, bool):
             raise TypeError("assume_sorted must be of type bool.")
 
@@ -266,8 +273,6 @@ class GroupBy:
             self.permutation = kwargs.get("permutation", None)
             self.segments = kwargs.get("segments", None)
             self.nkeys = len(self.keys)
-            self.length = self.permutation.size
-            self.ngroups = self.segments.size
         elif (
             "orig_keys" in kwargs
             and "permutation" in kwargs
@@ -279,8 +284,6 @@ class GroupBy:
             self.permutation = kwargs.get("permutation", None)
             self.segments = kwargs.get("segments", None)
             self.nkeys = len(self.keys) if isinstance(self.keys, Sequence) else 1
-            self.length = self.permutation.size
-            self.ngroups = self.segments.size
             if not isinstance(self.keys, Sequence):
                 self.unique_keys = self.keys[self._uki]
             else:
@@ -289,30 +292,17 @@ class GroupBy:
             raise ValueError("No keys passed to GroupBy.")
         else:
             self.keys = cast(groupable, keys)
-            grouping_keys, self.nkeys = _get_grouping_keys(self.keys)
-            keynames = [k.name for k in grouping_keys]
-            keytypes = [k.objType for k in grouping_keys]
-            repmsg = generic_msg(
-                cmd="createGroupBy",
-                args={
-                    "assumeSortedStr": assume_sorted,
-                    "nkeys": len(grouping_keys),
-                    "keynames": keynames,
-                    "keytypes": keytypes,
-                },
+            (
+                self.unique_keys,
+                self.permutation,
+                self.segments,
+                self.nkeys,
+                self._uki,
+            ) = unique(  # type: ignore
+                self.keys, return_groups=True, return_indices=True, assume_sorted=self.assume_sorted
             )
-            rep_json = json.loads(repmsg)
-            fields = rep_json["groupby"].split()
-            self.name = fields[1]
-            self.length = int(fields[2])
-            self.ngroups = int(fields[3])
-            self.permutation = create_pdarray(rep_json["permutation"])
-            self.segments = create_pdarray(rep_json["segments"])
-            self._uki = create_pdarray(rep_json["uniqueKeyIdx"])
-            if self.nkeys == 1:
-                self.unique_keys = self.keys[self._uki]
-            else:
-                self.unique_keys = tuple(a[self._uki] for a in self.keys)
+        self.length = self.permutation.size
+        self.ngroups = self.segments.size
 
     def __del__(self):
         try:
