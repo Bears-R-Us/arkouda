@@ -5,7 +5,9 @@ module SipHash {
   use ServerErrors;
   use Reflection;
   use Logging;
-  
+
+  use ArkoudaPOSIXCompat;
+
   param cROUNDS = 2;
   param dROUNDS = 4;
 
@@ -58,9 +60,9 @@ module SipHash {
   private inline proc XTO64_LE(in x: ?t) {
     var y: uint(64);
     if isSubtype(t, c_ptr) {
-      c_memcpy(c_ptrTo(y), x, c_sizeof(t));
+      memcpy(c_ptrTo(y), x, c_sizeof(t));
     } else if numBytes(t) == 8 {
-      c_memcpy(c_ptrTo(y), c_ptrTo(x), numBytes(t));
+      memcpy(c_ptrTo(y), c_ptrTo(x), numBytes(t).safeCast(c_size_t));
     } else {
       compilerError("input must have 64 bit values");
     }
