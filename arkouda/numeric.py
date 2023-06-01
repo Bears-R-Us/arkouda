@@ -1,11 +1,14 @@
 import json
 from enum import Enum
-from typing import ForwardRef, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, ForwardRef, List, Optional, Tuple, Union
 from typing import cast as type_cast
 from typing import no_type_check
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
+
+if TYPE_CHECKING:
+    from arkouda.segarray import SegArray
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import (
@@ -25,7 +28,6 @@ from arkouda.pdarraycreation import array
 from arkouda.strings import Strings
 
 Categorical = ForwardRef("Categorical")
-SegArray = ForwardRef("SegArray")
 
 __all__ = [
     "cast",
@@ -44,7 +46,7 @@ __all__ = [
     "ErrorMode",
 ]
 
-hashable = Union[pdarray, Strings, SegArray]  # type: ignore
+hashable = Union[pdarray, Strings, "SegArray"]
 
 
 class ErrorMode(Enum):
@@ -437,7 +439,6 @@ def _hash_helper(a):
         return a.name
 
 
-@typechecked
 def hash(
     pda: Union[hashable, List[hashable]], full: bool = True
 ) -> Union[Tuple[pdarray, pdarray], pdarray]:
@@ -494,6 +495,11 @@ def hash(
     if isinstance(pda, (pdarray, Strings, Segarray_)):
         return _hash_single(pda, full) if isinstance(pda, pdarray) else pda.hash()
     elif isinstance(pda, List):
+        if any(wrong_type := [not isinstance(a, (pdarray, Strings, Segarray_)) for a in pda]):
+            raise TypeError(
+                f"Unsupported type {type(pda[np.argmin(wrong_type)])}. Supported types are pdarray,"
+                f" SegArray, Strings, and Lists of these types."
+            )
         types_list = [a.objType for a in pda]
         names_list = [_hash_helper(a) for a in pda]
         repMsg = type_cast(
