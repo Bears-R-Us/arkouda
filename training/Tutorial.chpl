@@ -108,7 +108,17 @@
 */
 
 /*
-  Example 10: Absolute Value Ternary
+  Example 10: `coforall` loop
+*/
+// const numTasks = 8;
+
+// coforall tid in 1..numTasks do
+//   writeln("Hello from task ", tid, " of ", numTasks);
+
+// writeln("Signing off...");
+
+/*
+  Example 11: Absolute Value Ternary
 */
 // proc absoluteVal(n:int) {
 //   return if n >= 0 then n else -n;
@@ -117,7 +127,7 @@
 // writeln(absoluteVal(7));
 
 /*
-  Example 11: Ternary and `forall` Expression
+  Example 12: Ternary and `forall` Expression
 */
 // writeln([i in 0..#10] if i%2 == 0 then i+10 else -100);
 
@@ -138,7 +148,7 @@
 
 
 /*
-  Example 12: Introspection
+  Example 13: Introspection
 */
 // proc absoluteVal(a: [?D] ?t): [D] t {
 //   return [i in D] if a[i] >= 0 then a[i] else -a[i];
@@ -150,7 +160,7 @@
 // writeln(absoluteVal(i));
 
 /*
-  Example 13: Promotion
+  Example 14: Promotion
 */
 // proc factorial(n: int) {
 //   return * reduce [i in 1..#n] i;
@@ -159,7 +169,38 @@
 // writeln(factorial([1, 2, 3, 4, 5]));
 
 /*
-  Example 14: Simple Zippered Interation
+  Example 15: Filtering
+*/
+// writeln([i in 0..#10] if i%2 == 0 then -i);
+
+/*
+  Try It Yourself 3: Sum Odd Perfect Squares <=25
+  Use filtering and reduce to sum all odd perfect squares less than or equal to `25`
+
+  Expected output:
+  35
+*/
+
+/*
+  Example 16: Looping Locales with `coforall`
+*/
+// use BlockDist;
+
+// // we create a block distributed array and populate with values from 1 to 16
+// var A = Block.createArray({1..16}, int);
+// A = 1..16;
+
+// // we use a coforall to iterate over the Locales creating one task per
+// coforall loc in Locales {
+//   on loc {  // Then we use an `on` clause to execute on Locale `loc`
+//     // Next we create `localA` by slicing `A` at it's local subdomain
+//     const localA = A[A.localSubdomain()];
+//     writeln("The chunk of A owned by Locale ", loc.id, " is: ", localA);
+//   }
+// }
+
+/*
+  Example 17: Simple Zippered Iteration
 */
 // var A: [1..5] real;
 // for (a, i, j) in zip(A, 1.., [3, 0, 1, 2, 4]) {
@@ -168,7 +209,7 @@
 // writeln(A); 
 
 /*
-  Example 15: Zippered Interation in Arkouda
+  Example 18: Zippered Interation in Arkouda
   based on `getLengths` in `SegmentedString`
 */
 // const values: [0..#12] string = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00'],
@@ -203,7 +244,7 @@
 // writeln(getLengths());
 
 /*
-  Example 16: Aggregation in Arkouda
+  Example 19: Aggregation in Arkouda
   based on `upper` in `SegmentedString`
   This example uses `getLengths` from Example 15, so be sure to uncomment that example as well.
 */
@@ -232,7 +273,7 @@
 
 
 /*
-  Try It Yourself 3: `title`
+  Try It Yourself 4: `title`
   Use Aggregation to transform the SegString from [example 15](#ex15) into title case.
   Be sure to use the chapel builtin [`toTitle`](https://chapel-lang.org/docs/language/spec/strings.html?highlight=totitle#String.string.toTitle)
   and `getLengths` from example 15.
@@ -246,20 +287,7 @@
 // writeln(title());
 
 /*
-  Example 17: Filtering
-*/
-// writeln([i in 0..#10] if i%2 == 0 then -i);
-
-/*
-  Try It Yourself 4: Sum Odd Perfect Squares <=25
-  Use filtering and reduce to sum all odd perfect squares less than or equal to `25`
-
-  Expected output:
-  35
-*/
-
-/*
-  Example 18: Boolean Compression Indexing
+  Example 20: Boolean Compression Indexing
 */
 // var X = [1, 2, 5, 5, 1, 5, 2, 5, 3, 1];
 // writeln("X = ", X, "\n");
@@ -296,7 +324,7 @@
 // writeln("Y = ", Y);
 
 /*
-  Example 19: Boolean Expansion Indexing
+  Example 21: Boolean Expansion Indexing
 */
 // var X = [1, 2, 5, 5, 1, 5, 2, 5, 3, 1];
 // var Y = [-9, -8, -7, -6];
@@ -355,3 +383,202 @@
 
 // writeln(arrayEvenReplace([8, 9, 7, 2, 4, 3], [17, 19, 21]));
 // writeln(arrayEvenReplace([4, 4, 7, 4, 4, 4], [9, 9, 9, 9, 9]));
+
+/*
+  Example 22: Variable Declarations
+*/
+// // pretend myBool is determined during runtime
+// var myBool = true;
+
+// proc helper(myBool: bool) {
+//     return if myBool then 5 else 10;
+// }
+
+// // use a var if you expect a value to change
+// var myVar = [0, 1, 2];
+// // we use a const because we don't know the value at compilation time
+// const myConst = helper(myBool);
+// // we use a param becasue we know what the value is at compilation time
+// param myParam = 17;
+
+// // if we want a copy of myVar we can create a new var based on it
+// // this results in more memory usage (because we are creating a new array)
+// // but changes to myCopy won't change myVar
+// var myCopy = myVar;
+// myCopy[1] = 100;
+// // we see myVar is unchanged
+// writeln("myVar: ", myVar);
+
+// // we use a ref if we do want changes to myRef to update myVar
+// // This save us from having to create a whole new array
+// ref myRef = myVar;
+// myRef[1] = -2000;
+// writeln("myVar: ", myVar);
+
+/*
+  Example 23: Diagnostics
+*/
+// use BlockDist, CommDiagnostics, Time;
+
+// var A: [Block.createDomain({0..7})] int = 0..15 by 2;
+// var B: [Block.createDomain({0..15})] int = 0..15;
+// writeln("A = ", A);
+// writeln();
+// writeln("B = ", B);
+// writeln();
+
+// resetCommDiagnostics();
+// startCommDiagnostics();
+// var t1 = Time.timeSinceEpoch().totalSeconds();
+
+// forall (a, i) in zip(A, A.domain) {
+//   B[B.size - (2*i + 1)] = a;
+// }
+
+// var t2 = Time.timeSinceEpoch().totalSeconds() - t1;
+// stopCommDiagnostics();
+// writeln("Copy without aggregation time = ", t2);
+// writeln();
+// printCommDiagnosticsTable();
+// writeln("B = ", B);
+
+/*
+  Example 24: Aggregation Reducing Communication
+*/
+// use BlockDist, CommDiagnostics, Time, CopyAggregation;
+
+// config param SIZE = 1000000;
+// var A: [Block.createDomain({0..#(SIZE / 2)})] int = 0..#SIZE by 2;
+// var B: [Block.createDomain({0..#SIZE})] int = 0..#SIZE;
+
+// resetCommDiagnostics();
+// startCommDiagnostics();
+// var t1 = Time.timeSinceEpoch().totalSeconds();
+
+// forall (a, i) in zip(A, A.domain) {
+//   B[B.size - (2*i + 1)] = a;
+// }
+
+// var t2 = Time.timeSinceEpoch().totalSeconds() - t1;
+// stopCommDiagnostics();
+// writeln("Copy without aggregation time = ", t2);
+// writeln();
+// printCommDiagnosticsTable();
+
+// resetCommDiagnostics();
+// startCommDiagnostics();
+// t1 = Time.timeSinceEpoch().totalSeconds();
+
+// forall (a, i) in zip(A, A.domain) with (var agg = new DstAggregator(int)) {
+//   agg.copy(B[B.size - (2*i + 1)], a);
+// }
+
+// t2 = Time.timeSinceEpoch().totalSeconds() - t1;
+// stopCommDiagnostics();
+// writeln("Copy with aggregation time = ", t2);
+// writeln();
+// printCommDiagnosticsTable();
+
+/*
+  Example 25: Common Pitfalls
+*/
+// use BlockDist, CommDiagnostics, Time;
+
+// // simplified symenty class
+// class SymEntry {
+//     type etype;
+//     var a;
+
+//     proc init(len: int, type etype) {
+//         this.etype = etype;
+//         this.a = Block.createArray({0..#len}, etype);
+//     }
+
+//     proc init(in a: [?D] ?etype) {
+//         this.etype = etype;
+//         this.a = a;
+//     }
+// }
+
+// config param SIZE = 1000000;
+// const distDom = Block.createDomain({0..#SIZE});
+
+// // create a array containing tuples of uints
+// var hashes: [distDom] (uint, uint) = (1, 1):(uint, uint);
+
+// var upperEntry = new SymEntry(SIZE, uint);
+// var lowerEntry = new SymEntry(SIZE, uint);
+
+// resetCommDiagnostics();
+// startCommDiagnostics();
+// var t1 = Time.timeSinceEpoch().totalSeconds();
+
+// // the leading iterator is a range, so all the computation happens on locale 0
+// forall (i, (up, low)) in zip(0..#SIZE, hashes) {
+//   upperEntry.a[i] = up;
+//   lowerEntry.a[i] = low;
+// }
+
+// var t2 = Time.timeSinceEpoch().totalSeconds() - t1;
+// stopCommDiagnostics();
+// writeln("leading iterator not distributed time = ", t2);
+// writeln();
+// printCommDiagnosticsTable();
+
+// resetCommDiagnostics();
+// startCommDiagnostics();
+// t1 = Time.timeSinceEpoch().totalSeconds();
+
+// // leading iterator is distributed
+// // but every iteration access the `.a` component
+// forall (i, (up, low)) in zip(hashes.domain, hashes) {
+//   upperEntry.a[i] = up;
+//   lowerEntry.a[i] = low;
+// }
+
+// t2 = Time.timeSinceEpoch().totalSeconds() - t1;
+// stopCommDiagnostics();
+// writeln("leading iterator is distributed, but .a accesses time = ", t2);
+// writeln();
+// printCommDiagnosticsTable();
+
+// resetCommDiagnostics();
+// startCommDiagnostics();
+// t1 = Time.timeSinceEpoch().totalSeconds();
+
+// // use refs to avoid repeated accesses
+// ref ua = upperEntry.a;
+// ref la = lowerEntry.a;
+// forall (i, (up, low)) in zip(hashes.domain, hashes) {
+//   ua[i] = up;
+//   la[i] = low;
+// }
+
+// t2 = Time.timeSinceEpoch().totalSeconds() - t1;
+// stopCommDiagnostics();
+// writeln("using refs time = ", t2);
+// writeln();
+// printCommDiagnosticsTable();
+
+
+// var upper: [distDom] uint;
+// var lower: [distDom] uint;
+// resetCommDiagnostics();
+// startCommDiagnostics();
+// t1 = Time.timeSinceEpoch().totalSeconds();
+
+// // iterate over arrays directly:
+// // since they are distributed the same way,
+// // the looping variables will always be local to each other
+// forall (up, low, h) in zip(upper, lower, hashes) {
+//   (up, low) = h;
+// }
+
+// t2 = Time.timeSinceEpoch().totalSeconds() - t1;
+// stopCommDiagnostics();
+// writeln("looping over arrays directly time = ", t2);
+// writeln();
+// printCommDiagnosticsTable();
+
+// upperEntry = new SymEntry(upper);
+// lowerEntry = new SymEntry(lower);
