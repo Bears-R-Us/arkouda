@@ -9,6 +9,9 @@ module AryUtil
     use MultiTypeSymEntry;
     use ServerErrors;
     use BitOps;
+    use OS.POSIX;
+
+    use ArkoudaPOSIXCompat;
 
     param bitsPerDigit = RSLSD_bitsPerDigit;
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
@@ -278,7 +281,7 @@ module AryUtil
     inline proc getDigit(in key: real, rshift: int, last: bool, negs: bool): int {
       const invertSignBit = last && negs;
       var keyu: uint;
-      c_memcpy(c_ptrTo(keyu), c_ptrTo(key), numBytes(key.type));
+      memcpy(c_ptrTo(keyu), c_ptrTo(key), numBytes(key.type).safeCast(c_size_t));
       var signbitSet = keyu >> (numBits(keyu.type)-1) == 1;
       var xor = 0:uint;
       if signbitSet {
