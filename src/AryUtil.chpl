@@ -9,6 +9,7 @@ module AryUtil
     use MultiTypeSymEntry;
     use ServerErrors;
     use BitOps;
+    use GenSymIO;
 
     use ArkoudaPOSIXCompat;
 
@@ -185,7 +186,8 @@ module AryUtil
             thisSize = g.size;
           }
           when ObjType.SEGARRAY {
-            var (segName, valName, _) = name.splitMsgToTuple('+', 3);
+            var segComps = jsonToMap(name);
+            var (segName, valName) = (segComps["segments"], segComps["values"]);
             var segs = getGenericTypedArrayEntry(segName, st);
             var vals = getGenericTypedArrayEntry(valName, st);
             thisSize = segs.size;

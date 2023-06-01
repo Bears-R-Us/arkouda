@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 from typing import ForwardRef, List, Optional, Tuple, Union
 from typing import cast as type_cast
@@ -426,11 +427,12 @@ def cos(pda: pdarray) -> pdarray:
 
 
 def _hash_helper(a):
-    from arkouda import SegArray as _Segarray
+    from arkouda import SegArray as Segarray_
 
-    # TODO move to JSON (see issue #2464), right now we '+' as a delimiter
-    if isinstance(a, _Segarray):
-        return f"{a.segments.name}+{a.values.name}+{a.values.objType}"
+    if isinstance(a, Segarray_):
+        return json.dumps(
+            {"segments": a.segments.name, "values": a.values.name, "valObjType": a.values.objType}
+        )
     else:
         return a.name
 
@@ -487,9 +489,9 @@ def hash(
     because equivalent values will cancel each other out, hence we
     do a rotation by the ordinal of the array.
     """
-    from arkouda import SegArray as _Segarray
+    from arkouda import SegArray as Segarray_
 
-    if isinstance(pda, (pdarray, Strings, _Segarray)):
+    if isinstance(pda, (pdarray, Strings, Segarray_)):
         return _hash_single(pda, full) if isinstance(pda, pdarray) else pda.hash()
     elif isinstance(pda, List):
         types_list = [a.objType for a in pda]

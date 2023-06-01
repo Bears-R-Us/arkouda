@@ -362,7 +362,7 @@ class SegArray:
         return eq
 
     def __len__(self) -> int:
-        return self.segments.size
+        return self.size
 
     def __str__(self):
         if self.size <= 6:

@@ -19,6 +19,7 @@ module UniqueMsg
     use ServerErrors;
     use Logging;
     use Message;
+    use GenSymIO;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -288,8 +289,8 @@ module UniqueMsg
             hashes ^= rotl(g.siphash(), i);
           }
           when ObjType.SEGARRAY {
-            var (segName, valName, valObjType) = name.splitMsgToTuple('+', 3);
-            var (upper, lower) = segarrayHash(segName, valName, valObjType, st);
+            var segComps = jsonToMap(name);
+            var (upper, lower) = segarrayHash(segComps["segments"], segComps["values"], segComps["valObjType"], st);
             forall (h, u, l) in zip(hashes, upper, lower) {
               h ^= rotl((u,l), i);
             }
