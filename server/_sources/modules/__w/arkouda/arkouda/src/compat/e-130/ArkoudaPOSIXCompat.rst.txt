@@ -1,0 +1,21 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaPOSIXCompat
+
+ArkoudaPOSIXCompat
+==================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaPOSIXCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaPOSIXCompat;
+
+.. function:: proc memcpy(dest: c_void_ptr, const src: c_void_ptr, n: c_size_t)
+
