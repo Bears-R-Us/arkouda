@@ -6,10 +6,10 @@ from typing import List, Mapping, Union
 
 import h5py
 import numpy as np
-import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
+import pytest
 from arkouda import io_util
 
 """
@@ -91,7 +91,6 @@ class IOTest(ArkoudaTest):
             ak.to_hdf(columns=columns, prefix_path=prefix_path, names=names)
 
     def testSaveAllLoadAllWithDict(self):
-
         """
         Creates 2..n files from an input columns dict depending upon the number of
         arkouda_server locales, retrieves all datasets and correspoding pdarrays,
@@ -669,7 +668,7 @@ class IOTest(ArkoudaTest):
     def testBigIntHdf5(self):
         # pdarray
         a = ak.arange(3, dtype=ak.bigint)
-        a += 2 ** 200
+        a += 2**200
         a.max_bits = 201
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
@@ -706,7 +705,7 @@ class IOTest(ArkoudaTest):
 
         # bigint segarray
         a = ak.arange(10, dtype=ak.bigint)
-        a += 2 ** 200
+        a += 2**200
         a.max_bits = 212
         s = ak.arange(0, 10, 2)
         sa = ak.SegArray(s, a)
@@ -920,7 +919,7 @@ class IOTest(ArkoudaTest):
         akflat = ak.array(flat, dtype)
         segarr = ak.SegArray(segments, akflat)
 
-        s = ak.array(["abc","def","ghi"])
+        s = ak.array(["abc", "def", "ghi"])
         df = ak.DataFrame([segarr, s])
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             df.to_hdf(f"{tmp_dirname}/dataframe_segarr")
@@ -985,7 +984,7 @@ class IOTest(ArkoudaTest):
             # ensure that the column was actually overwritten
             self.assertLess(new_size, orig_size)
             data = ak.read_hdf(f"{tmp_dirname}/pda_test_*")
-            self.assertListEqual(data['array'].to_list(), c.to_list())
+            self.assertListEqual(data["array"].to_list(), c.to_list())
 
         # test with repack off - file should get larger
         b = ak.arange(1000)
@@ -1001,7 +1000,9 @@ class IOTest(ArkoudaTest):
             new_size = sum(os.path.getsize(f) for f in f_list)
 
             # ensure that the column was actually overwritten
-            self.assertGreaterEqual(new_size, orig_size)  # ensure that overwritten data mem is not released
+            self.assertGreaterEqual(
+                new_size, orig_size
+            )  # ensure that overwritten data mem is not released
             data = ak.read_hdf(f"{tmp_dirname}/pda_test_*")
             self.assertListEqual(data["array"].to_list(), c.to_list())
 
@@ -1056,16 +1057,20 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(data["test_set"].to_list(), c.to_list())
 
     def test_hdf_overwrite_dataframe(self):
-        df = ak.DataFrame({
-            "a": ak.arange(1000),
-            "b": ak.random_strings_uniform(0, 16, 1000),
-            "c": ak.arange(1000, dtype=bool),
-            "d": ak.randint(0, 50, 1000)
-        })
-        odf = ak.DataFrame({
-            "b": ak.randint(0, 25, 50),
-            "c": ak.arange(50, dtype=bool),
-        })
+        df = ak.DataFrame(
+            {
+                "a": ak.arange(1000),
+                "b": ak.random_strings_uniform(0, 16, 1000),
+                "c": ak.arange(1000, dtype=bool),
+                "d": ak.randint(0, 50, 1000),
+            }
+        )
+        odf = ak.DataFrame(
+            {
+                "b": ak.randint(0, 25, 50),
+                "c": ak.arange(50, dtype=bool),
+            }
+        )
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             df.to_hdf(f"{tmp_dirname}/df_test")
             f_list = glob.glob(f"{tmp_dirname}/df_test_*")
@@ -1142,14 +1147,15 @@ class IOTest(ArkoudaTest):
             data = ak.read_hdf(f"{tmp_dirname}/array_view_test_*")
             self.assertListEqual(av2.to_list(), data.to_list())
 
-
     def test_overwrite(self):
-        df = ak.DataFrame({
-            "a": ak.arange(1000),
-            "b": ak.random_strings_uniform(0, 16, 1000),
-            "c": ak.arange(1000, dtype=bool),
-            "d": ak.randint(0, 50, 1000)
-        })
+        df = ak.DataFrame(
+            {
+                "a": ak.arange(1000),
+                "b": ak.random_strings_uniform(0, 16, 1000),
+                "c": ak.arange(1000, dtype=bool),
+                "d": ak.randint(0, 50, 1000),
+            }
+        )
         replace = {
             "b": ak.randint(0, 25, 50),
             "c": ak.arange(50, dtype=bool),
@@ -1200,9 +1206,9 @@ class IOTest(ArkoudaTest):
             self.assertEqual(f1_size, f2_size)
 
     def test_segarray_str_hdf5(self):
-        language = ak.array(['english', 'spanish'])
-        words = ak.array(['one,two,three', 'uno,dos,tres'])
-        strs, segs = words.split(',', return_segments=True)
+        language = ak.array(["english", "spanish"])
+        words = ak.array(["one,two,three", "uno,dos,tres"])
+        strs, segs = words.split(",", return_segments=True)
 
         x = ak.SegArray(segs, strs)
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
