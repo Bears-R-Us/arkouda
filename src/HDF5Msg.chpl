@@ -2287,6 +2287,16 @@ module HDF5Msg {
         return bigIntDataset;
     }
 
+    proc isStringsObject(filename: string, dset: string): bool throws {
+        var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
+                                           C_HDF5.H5P_DEFAULT);
+        defer { // Close the file on exit
+            C_HDF5.H5Fclose(file_id);
+        }
+        var objType = getObjType(file_id: C_HDF5.hid_t, dset);
+        return if objType == ObjType.STRINGS then true else false;
+    }
+
     /**
      * inline proc to validate the range for our domain.
      * Valid domains must be increasing with the lower bound <= upper bound
@@ -2586,33 +2596,38 @@ module HDF5Msg {
         return (dset, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes));
     }
 
-    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {        
-        var valSubdoms: [fD] domain(1);
+    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {        
         var segSubdoms: [fD] domain(1);
         var skips = new set(string);
+        var nSeg: int;
+        var valSubdoms: [fD] domain(1);
         var vskips = new set(string);
         var len: int;
-        var nSeg: int;
-
-        (segSubdoms, nSeg, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_OFFSET_NAME, validFiles);
-        if isBigIntPdarray(filenames[0], "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
-            (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s/Limb_0".format(dset, SEGMENTED_VALUE_NAME), validFiles);
-        }
-        else {
-            (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s".format(dset, SEGMENTED_VALUE_NAME), validFiles);
-        }
-
         var rtnMap: map(string, string) = new map(string, string);
 
+        if isStringsObject(filenames[0], "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
+            (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s/%s".format(dset, SEGMENTED_VALUE_NAME, SEGMENTED_OFFSET_NAME), validFiles);
+            var stringsEntry = readStringsFromFile(filenames, "%s/%s".format(dset, SEGMENTED_VALUE_NAME), dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
+            rtnMap.add("values", "created %s+created bytes.size %t".format(st.attrib(stringsEntry.name), stringsEntry.nBytes));
+        }
+        else {
+            if isBigIntPdarray(filenames[0], "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
+                (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s/Limb_0".format(dset, SEGMENTED_VALUE_NAME), validFiles);
+            }
+            else {
+                (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s".format(dset, SEGMENTED_VALUE_NAME), validFiles);
+            }
+            var vname = readPdarrayFromFile(filenames, "%s/%s".format(dset, SEGMENTED_VALUE_NAME), dataclass, bytesize, isSigned, validFiles, st);
+            rtnMap.add("values", "created " + st.attrib(vname));
+        }
+
+        (segSubdoms, nSeg, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_OFFSET_NAME, validFiles);
         var segDist = makeDistArray(nSeg, int);
         read_files_into_distributed_array(segDist, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
         fixupSegBoundaries(segDist, segSubdoms, valSubdoms);
         var sname = st.nextName();
         st.addEntry(sname, new shared SymEntry(segDist));
         rtnMap.add("segments", "created " + st.attrib(sname));
-
-        var vname = readPdarrayFromFile(filenames, "%s/%s".format(dset, SEGMENTED_VALUE_NAME), dataclass, bytesize, isSigned, validFiles, st);
-        rtnMap.add("values", "created " + st.attrib(vname));
         
         return (dset, "seg_array", "%jt".format(rtnMap));
     }
@@ -2937,7 +2952,10 @@ module HDF5Msg {
                     }
                 }
                 var valueDset = dsetName + "/" + SEGMENTED_VALUE_NAME;
-                if isBigIntPdarray(filename, valueDset) {
+                if isStringsObject(filename, valueDset){
+                    (dataclass, bytesize, isSigned) = get_dataset_info(file_id, "%s/%s".format(valueDset, SEGMENTED_VALUE_NAME));
+                }
+                else if isBigIntPdarray(filename, valueDset) {
                     (dataclass, bytesize, isSigned) = get_dataset_info(file_id, "%s/%s".format(valueDset, "Limb_0"));
                 } else {
                     try (dataclass, bytesize, isSigned) = 
@@ -3226,7 +3244,7 @@ module HDF5Msg {
                     rtnData.pushBack(strings_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st));
                 }
                 when ObjType.SEGARRAY {
-                    rtnData.pushBack(segarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
+                    rtnData.pushBack(segarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st));
                 }
                 when ObjType.CATEGORICAL {
                     rtnData.pushBack(categorical_readhdfMsg(filenames, dsetName, validFiles, calcStringOffsets, st));

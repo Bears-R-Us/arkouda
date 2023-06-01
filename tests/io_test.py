@@ -1199,6 +1199,19 @@ class IOTest(ArkoudaTest):
 
             self.assertEqual(f1_size, f2_size)
 
+    def test_segarray_str_hdf5(self):
+        language = ak.array(['english', 'spanish'])
+        words = ak.array(['one,two,three', 'uno,dos,tres'])
+        strs, segs = words.split(',', return_segments=True)
+
+        x = ak.SegArray(segs, strs)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            x.to_hdf(f"{tmp_dirname}/test_file")
+            rd = ak.read_hdf(f"{tmp_dirname}/test_file*")
+            self.assertIsInstance(rd, ak.SegArray)
+            self.assertListEqual(x.segments.to_list(), rd.segments.to_list())
+            self.assertListEqual(x.values.to_list(), rd.values.to_list())
+
     def tearDown(self):
         super(IOTest, self).tearDown()
         for f in glob.glob("{}/*".format(IOTest.io_test_dir)):
