@@ -765,7 +765,6 @@ module ParquetMsg {
     var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
     
     for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
-        writeln("\n\n Getting Type Info For %s\n\n".format(dsetname));
         types[dsetidx] = getArrType(filenames[0], dsetname);
         for (i, fname) in zip(filedom, filenames) {
             var hadError = false;
@@ -789,10 +788,9 @@ module ParquetMsg {
               fileErrorCount += 1;
             }
         }
-        writeln("\n\nFound Typing for %s\n\n".format(dsetname));
+        
         var len = + reduce sizes;
         var ty = types[dsetidx];
-        writeln("\n\nLens and type identified\n\n");
 
         // If tagging is turned on, tag the data
         if tagData {
@@ -805,12 +803,9 @@ module ParquetMsg {
           tagData = false; // turn off so we only run once
         }
 
-        writeln("\n\nTagging Handled\n\n");
-
         // Only integer is implemented for now, do nothing if the Parquet
         // file has a different type
         if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
-          writeln("\n\nInteger Case\n\n");
           var entryVal = new shared SymEntry(len, int);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
@@ -851,14 +846,11 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.pushBack((dsetname, "pdarray", valName));
         } else if ty == ArrowTypes.list {
-          writeln("\n\nPrepping to find List Type!\n\n");
           var list_ty = getListData(filenames[0], dsetname);
-          writeln("\n\nFound List Type!\n\n");
           if list_ty == ArrowTypes.notimplemented { // check for and skip further nested datasets
             pqLogger.info(getModuleName(),getRoutineName(),getLineNumber(),"Invalid list datatype found in %s. Skipping.".format(dsetname));
           }
           else {
-            writeln("\n\nPrepping to Read LIST Dset.\n\n");
             var create_str: string = parseListDataset(filenames, dsetname, list_ty, len, sizes, st);
             rnames.pushBack((dsetname, "seg_array", create_str));
           }
