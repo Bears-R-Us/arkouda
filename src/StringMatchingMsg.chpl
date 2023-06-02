@@ -21,19 +21,25 @@ module StringMatchingMsg {
 
         var repMsg = "";
 
-        select algo {
-            when "levenshtein" {
-                select mode {
-                    when "single" {
+        select mode {
+            when "single" {
+                select algo {
+                    when "levenshtein" {
                         repMsg = "%i".format(match_levenshtein(query, data, 0, 0));
                     }
-                    when "multi" {
-                        repMsg = segstring_match_levenshtein(query, data, st);
+                    when "jaro" {
+                        repMsg = "%r".format(match_jaro(query, data));
                     }
-                    when "many" {
-                        repMsg = segstring_many_match_levenshtein(query, data, st);
+                    when "jaccard" {
+                        repMsg = "%r".format(match_jaccard(query, data));
                     }
                 }
+            }
+            when "multi" {
+                repMsg = segstring_match(query, data, algo, st);
+            }
+            when "many" {
+                repMsg = segstring_match_many(query, data, algo, st);
             }
         }
 
