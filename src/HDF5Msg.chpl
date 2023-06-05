@@ -2342,7 +2342,7 @@ module HDF5Msg {
     /*
         Read an ArrayView object from the files provided into a distributed array
     */
-    proc arrayView_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {
+    proc arrayView_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);
         var dset_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, dset.c_str(), C_HDF5.H5P_DEFAULT);
@@ -2391,7 +2391,7 @@ module HDF5Msg {
         var sname = st.nextName();
         st.addEntry(sname, new shared SymEntry(shape));
         var rname = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
-        return (dset, "ArrayView", "%s+%s".format(rname, sname));
+        return (dset, ObjType.ARRAYVIEW, "%s+%s".format(rname, sname));
     }
 
     proc readBigIntPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): string throws {
@@ -2538,9 +2538,9 @@ module HDF5Msg {
         return rname;
     }
 
-    proc pdarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {
+    proc pdarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var pda_name = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
-        return (dset, "pdarray", pda_name);
+        return (dset, ObjType.PDARRAY, pda_name);
     }
 
     /*
@@ -2590,12 +2590,12 @@ module HDF5Msg {
         return assembleSegStringFromParts(entrySeg, entryVal, st);
     }
 
-    proc strings_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {
+    proc strings_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var stringsEntry = readStringsFromFile(filenames, dset, dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
-        return (dset, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes));
+        return (dset, ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes));
     }
 
-    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {        
+    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {        
         var segSubdoms: [fD] domain(1);
         var skips = new set(string);
         var nSeg: int;
@@ -2628,10 +2628,10 @@ module HDF5Msg {
         st.addEntry(sname, new shared SymEntry(segDist));
         rtnMap.add("segments", "created " + st.attrib(sname));
         
-        return (dset, "seg_array", "%jt".format(rtnMap));
+        return (dset, ObjType.SEGARRAY, "%jt".format(rtnMap));
     }
 
-    proc categorical_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, string, string) throws {
+    proc categorical_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var rtnMap: map(string, string);
         // domain and size info for codes
         var subdoms: [fD] domain(1);
@@ -2701,10 +2701,10 @@ module HDF5Msg {
             rtnMap.add("segments", "created " + st.attrib(segEntry.name));
             rtnMap.add("permutation", "created " + st.attrib(permEntry.name));
         }
-        return (dset, "categorical", "%jt".format(rtnMap));
+        return (dset, ObjType.CATEGORICAL, "%jt".format(rtnMap));
     }
 
-    proc groupby_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, string, string) throws {
+    proc groupby_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var rtnMap: map(string, string);
         // domain and size info for codes
         var perm_subdoms: [fD] domain(1);
@@ -2781,22 +2781,19 @@ module HDF5Msg {
             var bytesize: int;
             var isSigned: bool;
             var readDset: string;
-            var readObjType: string;
             var readCreate: string;
             (keyObjType, dataclass, bytesize, isSigned) = get_info(filenames[0], "%s/KEY_%i".format(dset, k), calcStringOffsets);
             select keyObjType {
                 when ObjType.PDARRAY {
                     var pda_name = readPdarrayFromFile(filenames, "%s/KEY_%i".format(dset, k), dataclass, bytesize, isSigned, validFiles, st);
-                    readObjType = "pdarray";
                     readCreate = "created %s".format(st.attrib(pda_name));
                 }
                 when ObjType.STRINGS {
                     var segString = readStringsFromFile(filenames, "%s/KEY_%i".format(dset, k), dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
-                    readObjType = "seg_string";
                     readCreate = "created %s+created %t".format(st.attrib(segString.name), segString.nBytes);
                 }
                 when ObjType.CATEGORICAL {
-                    (readDset, readObjType, readCreate) = categorical_readhdfMsg(filenames, "%s/KEY_%i".format(dset, k), validFiles, calcStringOffsets, st);
+                    (readDset, _, readCreate) = categorical_readhdfMsg(filenames, "%s/KEY_%i".format(dset, k), validFiles, calcStringOffsets, st);
                 }
                 otherwise {
                     throw getErrorWithContext(
@@ -2807,9 +2804,9 @@ module HDF5Msg {
                            errorClass="TypeError");
                 }
             }
-            rtnMap.add("KEY_%i".format(k), "%s+|+%s".format(readObjType, readCreate));
+            rtnMap.add("KEY_%i".format(k), "%s+|+%s".format(keyObjType: string, readCreate));
         }
-        return (dset, "groupby", "%jt".format(rtnMap));
+        return (dset, ObjType.GROUPBY, "%jt".format(rtnMap));
     }
 
     /*
@@ -3063,7 +3060,7 @@ module HDF5Msg {
         assign_tags(tagEntry.a, subdoms, filenames, dset, skips);
         var rname = st.nextName();
         st.addEntry(rname, tagEntry);
-        return ("Filename_Codes", "pdarray", rname);
+        return ("Filename_Codes", ObjType.PDARRAY, rname);
     }
 
     /*
@@ -3144,7 +3141,7 @@ module HDF5Msg {
         var bytesizes: [filedom] int;
         var signFlags: [filedom] bool;
         var validFiles: [filedom] bool = true;
-        var rtnData: list((string, string, string));
+        var rtnData: list((string, ObjType, string));
         var fileErrors: list(string);
         var fileErrorCount:int = 0;
         var fileErrorMsg:string = "";

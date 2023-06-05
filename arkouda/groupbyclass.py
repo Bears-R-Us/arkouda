@@ -324,11 +324,11 @@ class GroupBy:
             if k == "permutation" or k == "segments" or k == "uki":
                 continue
             comps = create_data.split("+|+")
-            if comps[0] == "pdarray":
+            if comps[0] == pdarray.objType.upper():
                 keys.append(create_pdarray(comps[1]))
-            elif comps[0] == "seg_string":  # TODO - update to use Strings.objType
+            elif comps[0] == Strings.objType.upper():
                 keys.append(Strings.from_return_msg(comps[1]))
-            elif comps[0] == "categorical":
+            elif comps[0] == Categorical_.objType.upper():
                 keys.append(Categorical_.from_return_msg(comps[1]))
         if len(keys) == 1:
             keys = keys[0]

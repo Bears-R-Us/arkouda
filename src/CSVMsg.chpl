@@ -388,9 +388,9 @@ module CSVMsg {
         return (subdoms, offsets, skips);
     }
 
-    proc readTypedCSV(filenames: [] string, datasets: [?D] string, dtypes: list(string), row_counts: [] int, validFiles: [] bool, col_delim: string, st: borrowed SymTab): list((string, string, string)) throws {
+    proc readTypedCSV(filenames: [] string, datasets: [?D] string, dtypes: list(string), row_counts: [] int, validFiles: [] bool, col_delim: string, st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file has header since we were able to access type info
-        var rtnData: list((string, string, string));
+        var rtnData: list((string, ObjType, string));
         var record_count = + reduce row_counts;
         var (subdoms, offsets, skips) = generate_subdoms(filenames, row_counts, validFiles);
 
@@ -403,7 +403,7 @@ module CSVMsg {
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
-                    rtnData.pushBack((dset, "pdarray", rname));
+                    rtnData.pushBack((dset, ObjType.PDARRAY, rname));
                 }
                 when DType.UInt64 {
                     var a = makeDistArray(record_count, uint);
@@ -411,7 +411,7 @@ module CSVMsg {
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
-                    rtnData.pushBack((dset, "pdarray", rname));
+                    rtnData.pushBack((dset, ObjType.PDARRAY, rname));
                 }
                 when DType.Float64 {
                     var a = makeDistArray(record_count, real);
@@ -419,7 +419,7 @@ module CSVMsg {
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
-                    rtnData.pushBack((dset, "pdarray", rname));
+                    rtnData.pushBack((dset, ObjType.PDARRAY, rname));
                 }
                 when DType.Bool {
                     var a = makeDistArray(record_count, bool);
@@ -427,7 +427,7 @@ module CSVMsg {
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
-                    rtnData.pushBack((dset, "pdarray", rname));
+                    rtnData.pushBack((dset, ObjType.PDARRAY, rname));
                 }
                 when DType.Strings {
                     var a = makeDistArray(record_count, string);
@@ -448,7 +448,7 @@ module CSVMsg {
                         data[low..#vbytes.size] = vbytes;
                     }
                     var ss = getSegString(str_offsets, data, st);
-                    var rst = (dset, "seg_string", "%s+%t".format(ss.name, ss.nBytes));
+                    var rst = (dset, ObjType.STRINGS, "%s+%t".format(ss.name, ss.nBytes));
                     rtnData.pushBack(rst);
                 }
                 otherwise {
@@ -465,9 +465,9 @@ module CSVMsg {
         return rtnData;
     }
 
-    proc readGenericCSV(filenames: [] string, datasets: [?D] string, row_counts: [] int, validFiles: [] bool, col_delim: string, st: borrowed SymTab): list((string, string, string)) throws {
+    proc readGenericCSV(filenames: [] string, datasets: [?D] string, row_counts: [] int, validFiles: [] bool, col_delim: string, st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file does not have a header since we were not able to access type info
-        var rtnData: list((string, string, string));
+        var rtnData: list((string, ObjType, string));
         var record_count = + reduce row_counts;
         var (subdoms, offsets, skips) = generate_subdoms(filenames, row_counts, validFiles);
 
@@ -490,7 +490,7 @@ module CSVMsg {
                 data[low..#vbytes.size] = vbytes;
             }
             var ss = getSegString(str_offsets, data, st);
-            var rst = (dset, "seg_string", "%s+%t".format(ss.name, ss.nBytes));
+            var rst = (dset, ObjType.STRINGS, "%s+%t".format(ss.name, ss.nBytes));
             rtnData.pushBack(rst);
         }
         return rtnData;
@@ -560,7 +560,7 @@ module CSVMsg {
         var row_cts: [filedom] int;
         var data_types: list(list(string));
         var headers: [filedom] bool;
-        var rtnData: list((string, string, string));
+        var rtnData: list((string, ObjType, string));
         var fileErrors: list(string);
         var fileErrorCount:int = 0;
         var fileErrorMsg:string = "";
