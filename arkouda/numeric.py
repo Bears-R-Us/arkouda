@@ -428,7 +428,7 @@ def cos(pda: pdarray) -> pdarray:
     return create_pdarray(repMsg)
 
 
-def _hash_helper(a):
+def _hash_helper(a: hashable):
     from arkouda import SegArray as Segarray_
 
     if isinstance(a, Segarray_):
