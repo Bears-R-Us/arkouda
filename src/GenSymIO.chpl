@@ -201,25 +201,20 @@ module GenSymIO {
             item.add("dataset_name", dsetName.replace(Q, ESCAPED_QUOTES, -1));
             item.add("arkouda_type", akType: string);
             var create_str: string;
-            // if (akType == "ArrayView") {
             if akType == ObjType.ARRAYVIEW {
                 var (valName, segName) = id.splitMsgToTuple("+", 2);
                 create_str = "created " + st.attrib(valName) + "+created " + st.attrib(segName);
             }
-            // else if (akType == "pdarray") {
             else if akType == ObjType.PDARRAY {
                 create_str = "created " + st.attrib(id);
             }
-            // else if (akType == "seg_string") {
             else if akType == ObjType.STRINGS {
                 var (segName, nBytes) = id.splitMsgToTuple("+", 2);
                 create_str = "created " + st.attrib(segName) + "+created bytes.size " + nBytes;
             }
-            // else if (akType == "seg_array" || akType == "categorical") {
             else if (akType == ObjType.SEGARRAY || akType == ObjType.CATEGORICAL) {
                 create_str = id;
-            } 
-            // else if (akType == "groupby") {
+            }
             else if akType == ObjType.GROUPBY {
                 create_str = id;
             }
