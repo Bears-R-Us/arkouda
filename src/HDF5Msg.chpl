@@ -1240,7 +1240,6 @@ module HDF5Msg {
     * value of the string can be read.
     */
     proc writeNestedSegmentedDistDset(filenames: [] string, group: string, objType: string, overwrite: bool, values, segments, st: borrowed SymTab, type t) throws {
-        // TODO - better variable naming
         ref strSegs = values.offsetsEntry.a;
         ref strVals = values.bytesEntry.a;
         const lastSegIdx = segments.domain.high;

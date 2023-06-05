@@ -1206,7 +1206,6 @@ class IOTest(ArkoudaTest):
             self.assertEqual(f1_size, f2_size)
 
     def test_segarray_str_hdf5(self):
-        language = ak.array(["english", "spanish"])
         words = ak.array(["one,two,three", "uno,dos,tres"])
         strs, segs = words.split(",", return_segments=True)
 
