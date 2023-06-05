@@ -674,7 +674,7 @@
 <td><p>Return the element-wise cosine of the array.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.hash" title="arkouda.hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hash</span></code></a>(→ Union[Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
-<td><p>Return an element-wise hash of the array.</p></td>
+<td><p>Return an element-wise hash of the array or list of arrays.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.where" title="arkouda.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Returns an array with elements chosen from A and B based upon a</p></td>
@@ -9299,12 +9299,12 @@ of the original pdarray</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.hash">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.hash" title="Permalink to this definition">#</a></dt>
-<dd><p>Return an element-wise hash of the array.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">hashable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">hashable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.hash" title="Permalink to this definition">#</a></dt>
+<dd><p>Return an element-wise hash of the array or list of arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>list</em><em>[</em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>pda</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id786" title="arkouda.Strings"><em>Strings</em></a><em>, </em><em>Segarray</em><em>]</em><em>, </em><em>List</em><em>[</em><em>Union</em><em>[</em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id786" title="arkouda.Strings"><em>Strings</em></a><em>, </em><em>Segarray</em><em>]</em><em>]</em><em>]</em>) – </p></li>
 <li><p><strong>full</strong> (<em>bool</em>) – This is only used when a single pdarray is passed into hash
 By default, a 128-bit hash is computed and returned as
 two int64 arrays. If full=False, then a 64-bit hash
@@ -9337,11 +9337,11 @@ any cryptographic application. Not only is SIPhash not
 intended for such uses, but this implementation employs a
 fixed key for the hash, which makes it possible for an
 adversary with control over input to engineer collisions.</p>
-<p>In the case of a list of pdrrays being passed, a non-linear
-function must be applied to each array since hashes of subsequent
-arrays cannot be simply XORed because equivalent values will
-cancel each other out, hence we do a rotation by the ordinal of
-the array.</p>
+<p>In the case of a list of pdrrays, Strings, or Segarrays
+being passed, a non-linear function must be applied to each
+array since hashes of subsequent arrays cannot be simply XORed
+because equivalent values will cancel each other out, hence we
+do a rotation by the ordinal of the array.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -20252,6 +20252,21 @@ are unique and in sorted order.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.SegArray.hash">
+<span class="sig-name descname"><span class="pre">hash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.SegArray.hash" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute a 128-bit hash of each segment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple of two int64 pdarrays. The ith hash value is the concatenation
+of the ith values from each array.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple[<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -35361,6 +35376,7 @@ creating a copy of the file for each dataset</p></li>
 <li><a class="reference internal" href="#arkouda.SegArray.mean"><code class="docutils literal notranslate"><span class="pre">SegArray.mean()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.aggregate"><code class="docutils literal notranslate"><span class="pre">SegArray.aggregate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.unique"><code class="docutils literal notranslate"><span class="pre">SegArray.unique()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.SegArray.hash"><code class="docutils literal notranslate"><span class="pre">SegArray.hash()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.to_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.to_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.update_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.update_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.to_parquet"><code class="docutils literal notranslate"><span class="pre">SegArray.to_parquet()</span></code></a></li>

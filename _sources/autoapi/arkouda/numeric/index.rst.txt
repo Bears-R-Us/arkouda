@@ -263,12 +263,12 @@ Functions
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: hash(pda: Union[arkouda.pdarrayclass.pdarray, List[arkouda.pdarrayclass.pdarray]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
+.. py:function:: hash(pda: Union[hashable, List[hashable]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
 
-   Return an element-wise hash of the array.
+   Return an element-wise hash of the array or list of arrays.
 
    :param pda:
-   :type pda: Union[pdarray, list[pdarray]]
+   :type pda: Union[pdarray, Strings, Segarray], List[Union[pdarray, Strings, Segarray]]]
    :param full: This is only used when a single pdarray is passed into hash
                 By default, a 128-bit hash is computed and returned as
                 two int64 arrays. If full=False, then a 64-bit hash
@@ -299,11 +299,11 @@ Functions
    fixed key for the hash, which makes it possible for an
    adversary with control over input to engineer collisions.
 
-   In the case of a list of pdrrays being passed, a non-linear
-   function must be applied to each array since hashes of subsequent
-   arrays cannot be simply XORed because equivalent values will
-   cancel each other out, hence we do a rotation by the ordinal of
-   the array.
+   In the case of a list of pdrrays, Strings, or Segarrays
+   being passed, a non-linear function must be applied to each
+   array since hashes of subsequent arrays cannot be simply XORed
+   because equivalent values will cancel each other out, hence we
+   do a rotation by the ordinal of the array.
 
 
 .. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]

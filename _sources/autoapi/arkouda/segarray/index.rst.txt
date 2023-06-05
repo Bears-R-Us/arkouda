@@ -397,6 +397,15 @@ Attributes
       :rtype: SegArray
 
 
+   .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+
+      Compute a 128-bit hash of each segment.
+
+      :returns: A tuple of two int64 pdarrays. The ith hash value is the concatenation
+                of the ith values from each array.
+      :rtype: Tuple[pdarray,pdarray]
+
+
    .. py:method:: to_hdf(prefix_path, dataset='segarray', mode='truncate', file_type='distribute')
 
       Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
