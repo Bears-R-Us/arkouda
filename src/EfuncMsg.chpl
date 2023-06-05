@@ -745,7 +745,7 @@ module EfuncMsg
         return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
 
-    proc efuncArrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc hashArraysMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var n = msgArgs.get("length").getIntValue();
         var s = msgArgs.get("size").getIntValue();
         var namesList = msgArgs.get("nameslist").getList(n);
@@ -872,5 +872,5 @@ module EfuncMsg
     registerFunction("efunc3vs", efunc3vsMsg, getModuleName());
     registerFunction("efunc3sv", efunc3svMsg, getModuleName());
     registerFunction("efunc3ss", efunc3ssMsg, getModuleName());
-    registerFunction("efuncArr", efuncArrMsg, getModuleName());
+    registerFunction("hashList", hashArraysMsg, getModuleName());
 }

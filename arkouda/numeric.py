@@ -1,10 +1,14 @@
+import json
 from enum import Enum
-from typing import ForwardRef, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, ForwardRef, List, Optional, Tuple, Union
 from typing import cast as type_cast
 from typing import no_type_check
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
+
+if TYPE_CHECKING:
+    from arkouda.segarray import SegArray
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import (
@@ -41,6 +45,8 @@ __all__ = [
     "isnan",
     "ErrorMode",
 ]
+
+hashable = Union[pdarray, Strings, "SegArray"]
 
 
 class ErrorMode(Enum):
@@ -422,16 +428,26 @@ def cos(pda: pdarray) -> pdarray:
     return create_pdarray(repMsg)
 
 
-@typechecked
+def _hash_helper(a: hashable):
+    from arkouda import SegArray as Segarray_
+
+    if isinstance(a, Segarray_):
+        return json.dumps(
+            {"segments": a.segments.name, "values": a.values.name, "valObjType": a.values.objType}
+        )
+    else:
+        return a.name
+
+
 def hash(
-    pda: Union[pdarray, List[pdarray]], full: bool = True
+    pda: Union[hashable, List[hashable]], full: bool = True
 ) -> Union[Tuple[pdarray, pdarray], pdarray]:
     """
-    Return an element-wise hash of the array.
+    Return an element-wise hash of the array or list of arrays.
 
     Parameters
     ----------
-    pda : Union[pdarray, list[pdarray]]
+    pda : Union[pdarray, Strings, Segarray], List[Union[pdarray, Strings, Segarray]]]
 
     full : bool
         This is only used when a single pdarray is passed into hash
@@ -468,30 +484,43 @@ def hash(
     fixed key for the hash, which makes it possible for an
     adversary with control over input to engineer collisions.
 
-    In the case of a list of pdrrays being passed, a non-linear
-    function must be applied to each array since hashes of subsequent
-    arrays cannot be simply XORed because equivalent values will
-    cancel each other out, hence we do a rotation by the ordinal of
-    the array.
+    In the case of a list of pdrrays, Strings, or Segarrays
+    being passed, a non-linear function must be applied to each
+    array since hashes of subsequent arrays cannot be simply XORed
+    because equivalent values will cancel each other out, hence we
+    do a rotation by the ordinal of the array.
     """
-    if isinstance(pda, pdarray):
-        return _hash_single(pda, full)
+    from arkouda import SegArray as Segarray_
 
-    repMsg = type_cast(
-        str,
-        generic_msg(
-            cmd="efuncArr",
-            args={
-                "nameslist": [n.name for n in pda],
-                "typeslist": [n.objType for n in pda],
-                "length": len(pda),
-                "size": len(pda[0]),
-            },
-        ),
-    )
-
-    a, b = repMsg.split("+")
-    return create_pdarray(a), create_pdarray(b)
+    if isinstance(pda, (pdarray, Strings, Segarray_)):
+        return _hash_single(pda, full) if isinstance(pda, pdarray) else pda.hash()
+    elif isinstance(pda, List):
+        if any(wrong_type := [not isinstance(a, (pdarray, Strings, Segarray_)) for a in pda]):
+            raise TypeError(
+                f"Unsupported type {type(pda[np.argmin(wrong_type)])}. Supported types are pdarray,"
+                f" SegArray, Strings, and Lists of these types."
+            )
+        types_list = [a.objType for a in pda]
+        names_list = [_hash_helper(a) for a in pda]
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="hashList",
+                args={
+                    "nameslist": names_list,
+                    "typeslist": types_list,
+                    "length": len(pda),
+                    "size": len(pda[0]),
+                },
+            ),
+        )
+        a, b = repMsg.split("+")
+        return create_pdarray(a), create_pdarray(b)
+    else:
+        raise TypeError(
+            f"Unsupported type {type(pda)}. Supported types are pdarray,"
+            f" SegArray, Strings, and Lists of these types."
+        )
 
 
 @typechecked

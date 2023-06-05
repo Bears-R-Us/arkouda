@@ -9,6 +9,7 @@ module AryUtil
     use MultiTypeSymEntry;
     use ServerErrors;
     use BitOps;
+    use GenSymIO;
 
     use ArkoudaPOSIXCompat;
 
@@ -183,6 +184,13 @@ module AryUtil
             // passed only Categorical.codes.name to be sorted on
             var g = getGenericTypedArrayEntry(name, st);
             thisSize = g.size;
+          }
+          when ObjType.SEGARRAY {
+            var segComps = jsonToMap(name);
+            var (segName, valName) = (segComps["segments"], segComps["values"]);
+            var segs = getGenericTypedArrayEntry(segName, st);
+            var vals = getGenericTypedArrayEntry(valName, st);
+            thisSize = segs.size;
           }
           otherwise {
               var errorMsg = "Unrecognized object type: %s".format(objtype);
