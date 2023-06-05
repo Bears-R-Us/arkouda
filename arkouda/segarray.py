@@ -900,10 +900,6 @@ class SegArray:
         """
         from arkouda.io import _file_type_to_int, _mode_str_to_int
 
-        if self.dtype == str_:
-            # Support will be added by Issue #2443
-            raise TypeError("SegArrays with Strings values are not yet supported by HDF5")
-
         return type_cast(
             str,
             generic_msg(
