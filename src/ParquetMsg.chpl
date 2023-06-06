@@ -762,7 +762,7 @@ module ParquetMsg {
     var types: [dsetdom] ArrowTypes;
     var byteSizes: [filedom] int;
 
-    var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
+    var rnames: list((string, ObjType, string)); // tuple (dsetName, item type, id)
     
     for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
         types[dsetidx] = getArrType(filenames[0], dsetname);
@@ -798,7 +798,7 @@ module ParquetMsg {
           populateTagData(tagEntry.a, filenames, sizes);
           var rname = st.nextName();
           st.addEntry(rname, tagEntry);
-          rnames.pushBack(("Filename_Codes", "pdarray", rname));
+          rnames.pushBack(("Filename_Codes", ObjType.PDARRAY, rname));
           tagData = false; // turn off so we only run once
         }
 
@@ -809,7 +809,7 @@ module ParquetMsg {
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
-          rnames.pushBack((dsetname, "pdarray", valName));
+          rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
           var entryVal = new shared SymEntry(len, uint);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
@@ -821,13 +821,13 @@ module ParquetMsg {
           }
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
-          rnames.pushBack((dsetname, "pdarray", valName));
+          rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.boolean {
           var entryVal = new shared SymEntry(len, bool);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
-          rnames.pushBack((dsetname, "pdarray", valName));
+          rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.stringArr {
           var entrySeg = new shared SymEntry(len, int);
           byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
@@ -837,13 +837,13 @@ module ParquetMsg {
           readStrFilesByName(entryVal.a, filenames, byteSizes, dsetname, ty);
           
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
-          rnames.pushBack((dsetname, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
+          rnames.pushBack((dsetname, ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
         } else if ty == ArrowTypes.double || ty == ArrowTypes.float {
           var entryVal = new shared SymEntry(len, real);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
-          rnames.pushBack((dsetname, "pdarray", valName));
+          rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.list {
           var list_ty = getListData(filenames[0], dsetname);
           if list_ty == ArrowTypes.notimplemented { // check for and skip further nested datasets
@@ -851,7 +851,7 @@ module ParquetMsg {
           }
           else {
             var create_str: string = parseListDataset(filenames, dsetname, list_ty, len, sizes, st);
-            rnames.pushBack((dsetname, "seg_array", create_str));
+            rnames.pushBack((dsetname, ObjType.SEGARRAY, create_str));
           }
         } else {
           var errorMsg = "DType %s not supported for Parquet reading".format(ty);
@@ -1727,7 +1727,7 @@ module ParquetMsg {
     var types: [dsetdom] ArrowTypes;
     var byteSizes: [filedom] int;
 
-    var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
+    var rnames: list((string, ObjType, string)); // tuple (dsetName, item type, id)
     
     for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
         for (i, fname) in zip(filedom, filenames) {
@@ -1760,7 +1760,7 @@ module ParquetMsg {
           getNullIndices(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
-          rnames.pushBack((dsetname, "pdarray", valName));
+          rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else {
           var errorMsg = "Null indices only supported on Parquet string columns, not {} columns".format(ty);
           pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

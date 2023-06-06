@@ -453,20 +453,20 @@ def _parse_obj(
     TypeError
         - If return object is an unsupported type
     """
-    if "seg_string" == obj["arkouda_type"]:
+    if Strings.objType.upper() == obj["arkouda_type"]:
         return Strings.from_return_msg(obj["created"])
-    elif "seg_array" == obj["arkouda_type"]:
+    elif SegArray.objType.upper() == obj["arkouda_type"]:
         return SegArray.from_return_msg(obj["created"])
-    elif "pdarray" == obj["arkouda_type"]:
+    elif pdarray.objType.upper() == obj["arkouda_type"]:
         return create_pdarray(obj["created"])
-    elif "ArrayView" == obj["arkouda_type"]:
+    elif ArrayView.objType.upper() == obj["arkouda_type"]:
         components = obj["created"].split("+")
         flat = create_pdarray(components[0])
         shape = create_pdarray(components[1])
         return ArrayView(flat, shape)
-    elif "categorical" == obj["arkouda_type"]:
+    elif Categorical.objType.upper() == obj["arkouda_type"]:
         return Categorical.from_return_msg(obj["created"])
-    elif "groupby" == obj["arkouda_type"]:
+    elif GroupBy.objType.upper() == obj["arkouda_type"]:
         return GroupBy.from_return_msg(obj["created"])
     else:
         raise TypeError(f"Unknown arkouda type:{obj['arkouda_type']}")
