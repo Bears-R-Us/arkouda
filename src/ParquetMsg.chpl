@@ -765,10 +765,10 @@ module ParquetMsg {
     var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
     
     for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
+        types[dsetidx] = getArrType(filenames[0], dsetname);
         for (i, fname) in zip(filedom, filenames) {
             var hadError = false;
             try {
-                types[dsetidx] = getArrType(fname, dsetname);
                 sizes[i] = getArrSize(fname);
             } catch e : Error {
                 // This is only type of error thrown by Parquet
@@ -787,6 +787,7 @@ module ParquetMsg {
               fileErrorCount += 1;
             }
         }
+        
         var len = + reduce sizes;
         var ty = types[dsetidx];
 
@@ -1188,7 +1189,7 @@ module ParquetMsg {
       var sections_sizes_int: [0..#ncols] int; // only fill in sizes for int, uint segarray columns
       var sections_sizes_real: [0..#ncols] int; // only fill in sizes for float segarray columns
       var sections_sizes_bool: [0..#ncols] int; // only fill in sizes for bool segarray columns
-      forall (i, column, ot) in zip(0..#ncols, sym_names, col_objTypes) { // TODO - should we make locals of the arrays?
+      forall (i, column, ot) in zip(0..#ncols, sym_names, col_objTypes) {
         var x: int;
         var objType = ot.toUpper(): ObjType;
 
@@ -1302,6 +1303,7 @@ module ParquetMsg {
 
             ref S = segments.a;
             const locDom = segments.a.localSubdomain();
+            objTypes[i] = ObjType.SEGARRAY: int;            
 
             if locDom.size > 0 {
               const lastOffset = if S.size == 0 then 0 else S[S.domain.high]; // prevent index error when empty;
@@ -1318,7 +1320,6 @@ module ParquetMsg {
                   var values = toSymEntry(valEntry, int);
                   const lastValIdx = values.a.domain.high;
 
-                  objTypes[i] = ObjType.SEGARRAY: int;
                   datatypes[i] = ARROWINT64;
 
                   const endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
@@ -1332,7 +1333,6 @@ module ParquetMsg {
                   var values = toSymEntry(valEntry, uint);
                   const lastValIdx = values.a.domain.high;
 
-                  objTypes[i] = ObjType.SEGARRAY: int;
                   datatypes[i] = ARROWUINT64;
 
                   var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
@@ -1346,7 +1346,6 @@ module ParquetMsg {
                   var values = toSymEntry(valEntry, real);
                   const lastValIdx = values.a.domain.high;
 
-                  objTypes[i] = ObjType.SEGARRAY: int;
                   datatypes[i] = ARROWDOUBLE;
 
                   var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
@@ -1360,7 +1359,6 @@ module ParquetMsg {
                   var values = toSymEntry(valEntry, bool);
                   const lastValIdx = values.a.domain.high;
 
-                  objTypes[i] = ObjType.SEGARRAY: int;
                   datatypes[i] = ARROWBOOLEAN;
 
                   var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
@@ -1368,6 +1366,33 @@ module ParquetMsg {
                   ref olda = values.a;
                   bool_vals[bi..#valIdxRange.size] = olda[valIdxRange];
                   ptrList[i] = c_ptrTo(bool_vals[bi]): c_void_ptr;
+                }
+                otherwise {
+                  throw getErrorWithContext(
+                    msg="Unsupported SegArray DType for writing to Parquet, ".format(valEntry.dtype: string),
+                    lineNumber=getLineNumber(), 
+                    routineName=getRoutineName(), 
+                    moduleName=getModuleName(), 
+                    errorClass='DataTypeError'
+                  );
+                }
+              }
+            }
+            else {
+              // set the datatype for empty locales to ensure that metadata is correct in all files
+              var valEntry = getGenericTypedArrayEntry(components["values"], st);
+              select valEntry.dtype {
+                when DType.Int64 {
+                  datatypes[i] = ARROWINT64;
+                }
+                when DType.UInt64 {
+                  datatypes[i] = ARROWUINT64;
+                }
+                when DType.Float64 {
+                  datatypes[i] = ARROWDOUBLE;
+                }
+                when DType.Bool {
+                  datatypes[i] = ARROWBOOLEAN;
                 }
                 otherwise {
                   throw getErrorWithContext(
