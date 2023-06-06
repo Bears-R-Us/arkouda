@@ -46,8 +46,6 @@ __all__ = [
     "ErrorMode",
 ]
 
-hashable = Union[pdarray, Strings, "SegArray"]
-
 
 class ErrorMode(Enum):
     strict = "strict"
@@ -428,26 +426,34 @@ def cos(pda: pdarray) -> pdarray:
     return create_pdarray(repMsg)
 
 
-def _hash_helper(a: hashable):
-    from arkouda import SegArray as Segarray_
+def _hash_helper(a: Union[pdarray, Strings, "SegArray", Categorical]):  # type: ignore
+    from arkouda import Categorical as Categorical_
+    from arkouda import SegArray as SegArray_
 
-    if isinstance(a, Segarray_):
+    if isinstance(a, SegArray_):
         return json.dumps(
             {"segments": a.segments.name, "values": a.values.name, "valObjType": a.values.objType}
         )
+    elif isinstance(a, Categorical_):
+        return json.dumps({"categories": a.categories.name, "codes": a.codes.name})
     else:
         return a.name
 
 
 def hash(
-    pda: Union[hashable, List[hashable]], full: bool = True
+    pda: Union[  # type: ignore
+        Union[pdarray, Strings, "SegArray", Categorical],
+        List[Union[pdarray, Strings, "SegArray", Categorical]],
+    ],
+    full: bool = True,
 ) -> Union[Tuple[pdarray, pdarray], pdarray]:
     """
     Return an element-wise hash of the array or list of arrays.
 
     Parameters
     ----------
-    pda : Union[pdarray, Strings, Segarray], List[Union[pdarray, Strings, Segarray]]]
+    pda : Union[pdarray, Strings, Segarray, Categorical],
+     List[Union[pdarray, Strings, Segarray, Categorical]]]
 
     full : bool
         This is only used when a single pdarray is passed into hash
@@ -484,21 +490,24 @@ def hash(
     fixed key for the hash, which makes it possible for an
     adversary with control over input to engineer collisions.
 
-    In the case of a list of pdrrays, Strings, or Segarrays
+    In the case of a list of pdrrays, Strings, Categoricals, or Segarrays
     being passed, a non-linear function must be applied to each
     array since hashes of subsequent arrays cannot be simply XORed
     because equivalent values will cancel each other out, hence we
     do a rotation by the ordinal of the array.
     """
-    from arkouda import SegArray as Segarray_
+    from arkouda import Categorical as Categorical_
+    from arkouda import SegArray as SegArray_
 
-    if isinstance(pda, (pdarray, Strings, Segarray_)):
+    if isinstance(pda, (pdarray, Strings, SegArray_, Categorical_)):
         return _hash_single(pda, full) if isinstance(pda, pdarray) else pda.hash()
     elif isinstance(pda, List):
-        if any(wrong_type := [not isinstance(a, (pdarray, Strings, Segarray_)) for a in pda]):
+        if any(
+            wrong_type := [not isinstance(a, (pdarray, Strings, SegArray_, Categorical_)) for a in pda]
+        ):
             raise TypeError(
                 f"Unsupported type {type(pda[np.argmin(wrong_type)])}. Supported types are pdarray,"
-                f" SegArray, Strings, and Lists of these types."
+                f" SegArray, Strings, Categoricals, and Lists of these types."
             )
         types_list = [a.objType for a in pda]
         names_list = [_hash_helper(a) for a in pda]
@@ -519,7 +528,7 @@ def hash(
     else:
         raise TypeError(
             f"Unsupported type {type(pda)}. Supported types are pdarray,"
-            f" SegArray, Strings, and Lists of these types."
+            f" SegArray, Strings, Categoricals, and Lists of these types."
         )
 
 

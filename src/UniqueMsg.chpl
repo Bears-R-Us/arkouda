@@ -31,6 +31,7 @@ module UniqueMsg
     use SipHash;
     use CommAggregation;
     use SegmentedArray;
+    use HashMsg;
     
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -250,7 +251,7 @@ module UniqueMsg
       }
       for (name, objtype, i) in zip(names, types, 0..) {
         select objtype.toUpper(): ObjType {
-          when ObjType.PDARRAY, ObjType.CATEGORICAL {
+          when ObjType.PDARRAY {
             var g = getGenericTypedArrayEntry(name, st);
             select g.dtype {
               when DType.Int64 {
@@ -291,6 +292,13 @@ module UniqueMsg
           when ObjType.SEGARRAY {
             var segComps = jsonToMap(name);
             var (upper, lower) = segarrayHash(segComps["segments"], segComps["values"], segComps["valObjType"], st);
+            forall (h, u, l) in zip(hashes, upper, lower) {
+              h ^= rotl((u,l), i);
+            }
+          }
+          when ObjType.CATEGORICAL {
+            var catComps = jsonToMap(name);
+            var (upper, lower) = categoricalHash(catComps["categories"], catComps["codes"], st);
             forall (h, u, l) in zip(hashes, upper, lower) {
               h ^= rotl((u,l), i);
             }

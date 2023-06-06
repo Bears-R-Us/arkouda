@@ -659,6 +659,30 @@ class Categorical:
             arange(self._categories_used.size), self._categories_used, NAvalue=self.NAvalue
         )
 
+    def hash(self) -> Tuple[pdarray, pdarray]:
+        """
+        Compute a 128-bit hash of each element of the Categorical.
+
+        Returns
+        -------
+        Tuple[pdarray,pdarray]
+            A tuple of two int64 pdarrays. The ith hash value is the concatenation
+            of the ith values from each array.
+
+        Notes
+        -----
+        The implementation uses SipHash128, a fast and balanced hash function (used
+        by Python for dictionaries and sets). For realistic numbers of strings (up
+        to about 10**15), the probability of a collision between two 128-bit hash
+        values is negligible.
+        """
+        repMsg = generic_msg(
+            cmd="categoricalHash",
+            args={"objType": self.objType, "categories": self.categories, "codes": self.codes},
+        )
+        h1, h2 = cast(str, repMsg).split("+")
+        return create_pdarray(h1), create_pdarray(h2)
+
     def group(self) -> pdarray:
         """
         Return the permutation that groups the array, placing equivalent

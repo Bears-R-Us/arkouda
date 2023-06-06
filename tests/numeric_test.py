@@ -250,7 +250,18 @@ class NumericTest(ArkoudaTest):
         str_sa = ak.SegArray(segs, str_vals)
         a = ak.array([-10, 4, -10, 17])
         s = ak.array([f"str {i}" for i in a.to_list()])
-        for h in [sa, str_sa, [sa, a], [str_sa, a], [sa, str_sa], [s, sa, str_sa], [str_sa, s, sa, a]]:
+        c = ak.Categorical(s)
+        for h in [
+            sa,
+            str_sa,
+            [sa, a],
+            [str_sa, a],
+            [sa, str_sa],
+            [sa, str_sa, c],
+            [s, sa, str_sa],
+            [str_sa, s, sa, a],
+            [c, str_sa, s, sa, a],
+        ]:
             h1, h2 = ak.hash(h)
             if isinstance(h, ak.SegArray):
                 # verify all the ways to hash segarrays match
@@ -272,6 +283,29 @@ class NumericTest(ArkoudaTest):
         # verify these segments don't collide (this is why we rehash)
         self.assertNotEqual(h1[0], h1[1])
         self.assertNotEqual(h2[0], h2[1])
+
+        # test categorical hash
+        categories, codes = ak.array([f"str {i}" for i in range(3)]), ak.randint(0, 3, 10**5)
+        my_cat = ak.Categorical.from_codes(codes=codes, categories=categories)
+        h1, h2 = ak.hash(my_cat)
+        rev = ak.arange(10**5)[::-1]
+        rh1, rh2 = ak.hash(my_cat[rev])
+        self.assertListEqual(h1.to_list(), rh1[rev].to_list())
+        self.assertListEqual(h2.to_list(), rh2[rev].to_list())
+
+        # verify all the ways to hash strings match
+        h3, h4 = ak.hash([my_cat])
+        self.assertListEqual(h1.to_list(), h3.to_list())
+        self.assertListEqual(h2.to_list(), h4.to_list())
+        h5, h6 = my_cat.hash()
+        self.assertListEqual(h1.to_list(), h5.to_list())
+        self.assertListEqual(h2.to_list(), h6.to_list())
+
+        # verify it matches hashing the categories and then indexing with codes
+        sh1, sh2 = my_cat.categories.hash()
+        h7, h8 = sh1[my_cat.codes], sh2[my_cat.codes]
+        self.assertListEqual(h1.to_list(), h7.to_list())
+        self.assertListEqual(h2.to_list(), h8.to_list())
 
     def testValueCounts(self):
         pda = ak.ones(100, dtype=ak.int64)
