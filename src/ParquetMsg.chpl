@@ -769,7 +769,6 @@ module ParquetMsg {
         for (i, fname) in zip(filedom, filenames) {
             var hadError = false;
             try {
-                // types[dsetidx] = getArrType(fname, dsetname);
                 sizes[i] = getArrSize(fname);
             } catch e : Error {
                 // This is only type of error thrown by Parquet
