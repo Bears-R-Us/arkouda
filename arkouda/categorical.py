@@ -676,12 +676,12 @@ class Categorical:
         to about 10**15), the probability of a collision between two 128-bit hash
         values is negligible.
         """
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="categoricalHash",
             args={"objType": self.objType, "categories": self.categories, "codes": self.codes},
         )
-        h1, h2 = cast(str, repMsg).split("+")
-        return create_pdarray(h1), create_pdarray(h2)
+        hashes = json.loads(rep_msg)
+        return create_pdarray(hashes["upperHash"]), create_pdarray(hashes["lowerHash"])
 
     def group(self) -> pdarray:
         """

@@ -511,7 +511,7 @@ def hash(
             )
         types_list = [a.objType for a in pda]
         names_list = [_hash_helper(a) for a in pda]
-        repMsg = type_cast(
+        rep_msg = type_cast(
             str,
             generic_msg(
                 cmd="hashList",
@@ -523,8 +523,8 @@ def hash(
                 },
             ),
         )
-        a, b = repMsg.split("+")
-        return create_pdarray(a), create_pdarray(b)
+        hashes = json.loads(rep_msg)
+        return create_pdarray(hashes["upperHash"]), create_pdarray(hashes["lowerHash"])
     else:
         raise TypeError(
             f"Unsupported type {type(pda)}. Supported types are pdarray,"

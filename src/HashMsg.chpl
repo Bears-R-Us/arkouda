@@ -12,6 +12,7 @@ module HashMsg {
   use SegmentedString;
   use AryUtil;
   use UniqueMsg;
+  use ArkoudaMapCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -40,26 +41,24 @@ module HashMsg {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     const objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
-    select objtype {
-      when ObjType.CATEGORICAL {
-        // check to make sure symbols defined
-        const categoriesName = msgArgs.getValueOf("categories");
-        const codesName = msgArgs.getValueOf("codes");
-        st.checkTable(categoriesName);
-        st.checkTable(codesName);
-        var (upper, lower) = categoricalHash(categoriesName, codesName, st);
-        var upperName = st.nextName();
-        st.addEntry(upperName, new shared SymEntry(upper));
-        var lowerName = st.nextName();
-        st.addEntry(lowerName, new shared SymEntry(lower));
-        repMsg = "created " + st.attrib(upperName) + "+created " + st.attrib(lowerName);
-      }
-      otherwise {
-        var errorMsg = notImplementedError(pn, objtype: string);
-        hmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg, MsgType.ERROR);
-      }
+    if objtype != ObjType.CATEGORICAL {
+      var errorMsg = notImplementedError(pn, objtype: string);
+      hmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
     }
+    const categoriesName = msgArgs.getValueOf("categories");
+    const codesName = msgArgs.getValueOf("codes");
+    st.checkTable(categoriesName);
+    st.checkTable(codesName);
+    var (upper, lower) = categoricalHash(categoriesName, codesName, st);
+    var upperName = st.nextName();
+    st.addEntry(upperName, new shared SymEntry(upper));
+    var lowerName = st.nextName();
+    st.addEntry(lowerName, new shared SymEntry(lower));
+    var createdMap = new map(keyType=string,valType=string);
+    createdMap.add("upperHash", "created %s".format(st.attrib(upperName)));
+    createdMap.add("lowerHash", "created %s".format(st.attrib(lowerName)));
+    repMsg = "%jt".format(createdMap);
     hmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
@@ -86,7 +85,10 @@ module HashMsg {
     var lowerName = st.nextName();
     st.addEntry(lowerName, new shared SymEntry(lower));
 
-    var repMsg = "created %s+created %s".format(st.attrib(upperName), st.attrib(lowerName));
+    var createdMap = new map(keyType=string,valType=string);
+    createdMap.add("upperHash", "created %s".format(st.attrib(upperName)));
+    createdMap.add("lowerHash", "created %s".format(st.attrib(lowerName)));
+    var repMsg = "%jt".format(createdMap);
     hmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
