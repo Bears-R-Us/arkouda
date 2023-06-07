@@ -209,7 +209,7 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
     auto offsets = (int64_t*)chpl_offsets;
     int64_t byteSize = 0;
 
-    if(ty == ARROWSTRING) {
+    if(ty == ARROWLIST || ty == ARROWSTRING) {
       std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
         parquet::ParquetFileReader::OpenFile(filename, false);
 
@@ -225,7 +225,12 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
 
         std::shared_ptr<parquet::ColumnReader> column_reader;
 
-        auto idx = file_metadata -> schema() -> ColumnIndex(colname);
+        int64_t idx;
+        if (ty == ARROWLIST) {
+          idx = file_metadata -> schema() -> group_node() -> FieldIndex(colname);
+        } else {
+          idx = file_metadata -> schema() -> ColumnIndex(colname);
+        }
 
         if(idx < 0) {
           std::string dname(colname);
@@ -349,6 +354,29 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
               }
             }
             if (!int_reader->HasNext()){
+              seg_sizes[i] = seg_size;
+            }
+          }
+        } else if (lty == ARROWSTRING) {
+          parquet::ByteArrayReader* reader =
+            static_cast<parquet::ByteArrayReader*>(column_reader.get());
+
+          while (reader->HasNext()) {
+            parquet::ByteArray value;
+            (void)reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
+            if (values_read == 0 || (!first && rep_lvl == 0)) {
+              seg_sizes[i] = seg_size;
+              i++;
+              seg_size = 0;
+            }
+            if (values_read != 0) {
+              seg_size++;
+              vct++;
+              if (first) {
+                first = false;
+              }
+            }
+            if (!reader->HasNext()){
               seg_sizes[i] = seg_size;
             }
           }
@@ -548,6 +576,24 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             i+=values_read;
           }
           free(tmpArr);
+        } else if (lty == ARROWSTRING) {
+          int16_t definition_level; // nullable type and only reading single records in batch
+          auto chpl_ptr = (unsigned char*)chpl_arr;
+          parquet::ByteArrayReader* reader =
+            static_cast<parquet::ByteArrayReader*>(column_reader.get());
+
+          while (reader->HasNext()) {
+            parquet::ByteArray value;
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+            // if values_read is 0, that means that it was a null value
+            if(values_read > 0) {
+              for(int j = 0; j < value.len; j++) {
+                chpl_ptr[i] = value.ptr[j];
+                i++;
+              }
+            }
+            i++; // skip one space so the strings are null terminated with a 0
+          }
         } else if(lty == ARROWBOOLEAN) {
           auto chpl_ptr = (bool*)chpl_arr;
           parquet::BoolReader* reader =
@@ -1324,8 +1370,7 @@ int cpp_writeStrListColumnToParquet(const char* filename, void* chpl_segs, void*
       }
 
       file_writer->Close();
-        ARROWSTATUS_OK(out_file->Close());
-
+      ARROWSTATUS_OK(out_file->Close());
       return 0;
     } else {
       return ARROWERROR;

@@ -374,7 +374,7 @@ module ParquetMsg {
     else if t == ARROWUINT32 then return ArrowTypes.uint32;
     else if t == ARROWUINT64 then return ArrowTypes.uint64;
     else if t == ARROWBOOLEAN then return ArrowTypes.boolean;
-    // else if t == ARROWSTRING then return ArrowTypes.stringArr; // TODO - add handling for this case
+    else if t == ARROWSTRING then return ArrowTypes.stringArr;
     else if t == ARROWDOUBLE then return ArrowTypes.double;
     else if t == ARROWFLOAT then return ArrowTypes.float;
     return ArrowTypes.notimplemented;
@@ -634,23 +634,36 @@ module ParquetMsg {
       var values = makeDistArray((+ reduce listSizes), int);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
       st.addEntry(vname, new shared SymEntry(values));
+      rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
       var values = makeDistArray((+ reduce listSizes), uint);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
       st.addEntry(vname, new shared SymEntry(values));
+      rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.double || ty == ArrowTypes.float {
       var values = makeDistArray((+ reduce listSizes), real);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
       st.addEntry(vname, new shared SymEntry(values));
+      rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.boolean {
       var values = makeDistArray((+ reduce listSizes), bool);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
       st.addEntry(vname, new shared SymEntry(values));
+      rtnmap.add("values", "created " + st.attrib(vname));
     }
-    // TODO - add handling for Strings
+    else if ty == ArrowTypes.stringArr {
+      var entrySeg = new shared SymEntry((+ reduce listSizes), int);
+      var byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, listSizes, dsetname);
+      entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
+      
+      var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
+      readListFilesByName(entryVal.a, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
+      var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
+      rtnmap.add("values", "created %s+created bytes.size %t".format(st.attrib(stringsEntry.name), stringsEntry.nBytes));
+    }
     else {
       throw getErrorWithContext(
                  msg="Invalid Arrow Type",
@@ -659,7 +672,6 @@ module ParquetMsg {
                  moduleName=getModuleName(), 
                  errorClass='IllegalArgumentError');
     }
-    rtnmap.add("values", "created " + st.attrib(vname));
     return "%jt".format(rtnmap);
   }
 
@@ -1095,7 +1107,6 @@ module ParquetMsg {
         var valIdxRange = startValIdx..endValIdx;
         var localVals: [valIdxRange] uint(8) = oldVal[valIdxRange];
         
-        // TODO - C call to C++ to perform write. Each segment is made of ByteArrays where each array is a word
         var locSegments: [0..#locDom.size+1] int;
         locSegments[0..#locDom.size] = segments[locDom];
         if locDom.high == segments.domain.high then
@@ -1109,11 +1120,10 @@ module ParquetMsg {
           locOffsets[locOffsets.domain.high] = extraOffset;
         else
           locOffsets[locOffsets.domain.high] = oldOff[offIdxRange.high+1];
-        writeln("\n\nlocSegments: %jt\nlocOffsets: %jt\n\n".format(locSegments, locOffsets));
 
         var pqErr = new parquetErrorMsg();
         var dtypeRep = ARROWSTRING;
-        if c_writeStrListColumnToParquet(filename.localize().c_str(), c_ptrTo(locSegments), c_ptrTo(locOffsets), 
+        if c_writeStrListColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locSegments), c_ptrTo(locOffsets), 
                                       c_ptrTo(localVals), dsetName.localize().c_str(), locSegments.size-1, 
                                       ROWGROUPS, dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
           pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
