@@ -1079,7 +1079,7 @@ class SegArray:
                     "mode": _mode_str_to_int(mode),
                     "prefix": prefix_path,
                     "objType": self.objType,
-                    "dtype": self.values.dtype,
+                    "dtype": self.dtype,
                     "compression": compression,
                 },
             ),
