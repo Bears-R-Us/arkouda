@@ -394,7 +394,7 @@ module AryUtil
     record lowLevelLocalizingSlice {
         type t;
         /* Pointer to localized memory */
-        var ptr: c_ptr(t) = c_nil;
+        var ptr: c_ptr(t) = nil;
         /* Do we own the memory? */
         var isOwned: bool = false;
 
@@ -404,7 +404,7 @@ module AryUtil
 
             this.t = t;
             if region.isEmpty() {
-                this.ptr = c_nil;
+                this.ptr = nil;
                 this.isOwned = false;
                 return;
             }

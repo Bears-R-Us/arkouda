@@ -63,7 +63,7 @@ module ParquetMsg {
   record parquetErrorMsg {
     var errMsg: c_ptr(uint(8));
     proc init() {
-      errMsg = c_nil;
+      errMsg = nil;
     }
     
     proc deinit() {

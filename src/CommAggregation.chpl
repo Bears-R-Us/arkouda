@@ -299,7 +299,7 @@ module CommAggregation {
     // Allocate a buffer on loc if we haven't already. Return a c_ptr to the
     // remote locales buffer
     proc cachedAlloc(): c_ptr(elemType) {
-      if data == c_nil {
+      if data == nil {
         const rvf_size = size;
         on Locales[loc] do {
           data = allocate(elemType, rvf_size);
@@ -314,7 +314,7 @@ module CommAggregation {
       if boundsChecking {
         assert(this.loc == here.id);
         assert(this.data == data);
-        assert(data != c_nil);
+        assert(data != nil);
       }
       for i in 0..<size {
         yield data[i];
@@ -329,7 +329,7 @@ module CommAggregation {
       if boundsChecking {
         assert(this.loc == here.id);
         assert(this.data == data);
-        assert(data != c_nil);
+        assert(data != nil);
       }
       deallocate(data);
     }
@@ -340,7 +340,7 @@ module CommAggregation {
       if boundsChecking {
         assert(this.locale.id == here.id);
       }
-      data = c_nil;
+      data = nil;
     }
 
     // Copy size elements from lArr to the remote buffer. Must be running on
@@ -376,7 +376,7 @@ module CommAggregation {
     }
 
     proc deinit() {
-      if data != c_nil {
+      if data != nil {
         const rvf_data=data;
         on Locales[loc] {
           localFree(rvf_data);
