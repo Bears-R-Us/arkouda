@@ -206,10 +206,17 @@ int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
 int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
+    int64_t dty; // used to store the type of data so we can handle lists
+    if (ty == ARROWLIST) { // get the type of the list so we can verify it is ARROWSTRING
+      dty = cpp_getListType(filename, colname, errMsg);
+    }
+    else {
+      dty = ty;
+    }
     auto offsets = (int64_t*)chpl_offsets;
     int64_t byteSize = 0;
 
-    if(ty == ARROWLIST || ty == ARROWSTRING) {
+    if(dty == ARROWSTRING) {
       std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
         parquet::ParquetFileReader::OpenFile(filename, false);
 

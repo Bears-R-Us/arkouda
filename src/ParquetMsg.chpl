@@ -210,7 +210,6 @@ module ParquetMsg {
 
             var shift = computeEmptySegs(seg_sizes, offsets, s, intersection, off); // compute the shift to account for any empty segments in the file before the current section.
 
-
             if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
                                   dsetname.localize().c_str(), intersection.size, (intersection.low - off) + shift,
                                   batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
@@ -660,7 +659,7 @@ module ParquetMsg {
       entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
       
       var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
-      readListFilesByName(entryVal.a, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
+      readListFilesByName(entryVal.a, sizes, seg_sizes, segments, filenames, byteSizes, dsetname, ty);
       var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
       rtnmap.add("values", "created %s+created bytes.size %t".format(st.attrib(stringsEntry.name), stringsEntry.nBytes));
     }
