@@ -439,7 +439,7 @@ def _hash_helper(a):
 
 
 # this is # type: ignored and doesn't actually do any type checking
-# it's there as a reference to show which types are expected
+# the type hints are there as a reference to show which types are expected
 # type validation is done within the function
 def hash(
     pda: Union[  # type: ignore
