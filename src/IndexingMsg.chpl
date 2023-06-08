@@ -20,6 +20,7 @@ module IndexingMsg
     use ArkoudaMapCompat;
     use ArkoudaFileCompat;
     use ArkoudaBigIntCompat;
+    use ArkoudaRangeCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -67,7 +68,7 @@ module IndexingMsg
                 }
                 when "slice" {
                     var (start, stop, stride) = jsonToTuple(typeCoords[i+1], 3*int);
-                    var slice: range(stridable=true) = convertSlice(start, stop, stride);
+                    var slice: stridableRange = convertSlice(start, stop, stride);
                     var scaled: [0..#slice.size] int = slice * dimProdEntry.a[i/2];
                     for j in 0..#slice.size {
                         scaledCoords[offsets[i/2]+j] = scaled[j];
@@ -267,8 +268,8 @@ module IndexingMsg
     }
 
     /* convert python slice to chapel slice */
-    proc convertSlice(start: int, stop: int, stride: int): range(stridable=true) {
-        var slice: range(stridable=true);
+    proc convertSlice(start: int, stop: int, stride: int): stridableRange {
+        var slice: stridableRange;
         // backwards iteration with negative stride
         if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
         // forward iteration with positive stride
@@ -285,7 +286,7 @@ module IndexingMsg
         const start = msgArgs.get("start").getIntValue();
         const stop = msgArgs.get("stop").getIntValue();
         const stride = msgArgs.get("stride").getIntValue();
-        var slice: range(stridable=true) = convertSlice(start, stop, stride);
+        var slice: stridableRange = convertSlice(start, stop, stride);
 
         // get next symbol name
         var rname = st.nextName();
@@ -1061,7 +1062,7 @@ module IndexingMsg
         const stop = msgArgs.get("stop").getIntValue();
         const stride = msgArgs.get("stride").getIntValue();
         const dtype = str2dtype(msgArgs.getValueOf("dtype"));
-        var slice: range(stridable=true) = convertSlice(start, stop, stride);
+        var slice: stridableRange = convertSlice(start, stop, stride);
         var value = msgArgs.get("value");
 
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1206,7 +1207,7 @@ module IndexingMsg
         const start = msgArgs.get("start").getIntValue();
         const stop = msgArgs.get("stop").getIntValue();
         const stride = msgArgs.get("stride").getIntValue();
-        var slice: range(stridable=true);
+        var slice: stridableRange;
 
         const name = msgArgs.getValueOf("array");
         const yname = msgArgs.getValueOf("value");

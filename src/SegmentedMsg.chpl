@@ -791,7 +791,7 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc convertPythonSliceToChapel(start:int, stop:int): range(stridable=false) {
+  proc convertPythonSliceToChapel(start:int, stop:int): range() {
     if (start <= stop) {
       return start..(stop-1);
     } else {
