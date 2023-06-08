@@ -981,11 +981,7 @@ module ParquetMsg {
     extern proc c_writeListColumnToParquet(filename, chpl_arr, chpl_offsets,
                                           dsetname, numelems, rowGroupSize,
                                           dtype, compression, errMsg): int;
-    var localVals: [valIdxRange] t;
-    forall (localVal, valIdx) in zip(localVals, valIdxRange) with (var agg = newSrcAggregator(t)) {
-      // Copy the remote value at index position valIdx to our local array
-      agg.copy(localVal, distVals[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
-    }
+    var localVals: [valIdxRange] t = distVals[valIdxRange];
     var locOffsets: [0..#locDom.size+1] int;
     locOffsets[0..#locDom.size] = segments[locDom];
     if locDom.high == segments.domain.high then
@@ -1044,7 +1040,6 @@ module ParquetMsg {
         var endValIdx = if (lastOffset == localSegments[locDom.high]) then lastValIdx else segments[locDom.high + 1] - 1;
               
         var valIdxRange = startValIdx..endValIdx;
-        // TODO - simplify this code into this function and remove aggregation.
         writeSegArrayComponent(myFilename, dsetName, olda, valIdxRange, segments, locDom, extraOffset, lastOffset, lastValIdx, dtype, compression);
       }
     }
