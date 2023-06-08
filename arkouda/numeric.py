@@ -1,14 +1,11 @@
 import json
 from enum import Enum
-from typing import TYPE_CHECKING, ForwardRef, List, Optional, Tuple, Union
+from typing import ForwardRef, List, Optional, Tuple, Union
 from typing import cast as type_cast
 from typing import no_type_check
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
-
-if TYPE_CHECKING:
-    from arkouda.segarray import SegArray
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import (
@@ -28,6 +25,7 @@ from arkouda.pdarraycreation import array
 from arkouda.strings import Strings
 
 Categorical = ForwardRef("Categorical")
+SegArray = ForwardRef("SegArray")
 
 __all__ = [
     "cast",
@@ -426,7 +424,7 @@ def cos(pda: pdarray) -> pdarray:
     return create_pdarray(repMsg)
 
 
-def _hash_helper(a: Union[pdarray, Strings, "SegArray", Categorical]):  # type: ignore
+def _hash_helper(a):
     from arkouda import Categorical as Categorical_
     from arkouda import SegArray as SegArray_
 
@@ -440,10 +438,13 @@ def _hash_helper(a: Union[pdarray, Strings, "SegArray", Categorical]):  # type: 
         return a.name
 
 
+# this is # type: ignored and doesn't actually do any type checking
+# it's there as a reference to show which types are expected
+# type validation is done within the function
 def hash(
     pda: Union[  # type: ignore
-        Union[pdarray, Strings, "SegArray", Categorical],
-        List[Union[pdarray, Strings, "SegArray", Categorical]],
+        Union[pdarray, Strings, SegArray, Categorical],
+        List[Union[pdarray, Strings, SegArray, Categorical]],
     ],
     full: bool = True,
 ) -> Union[Tuple[pdarray, pdarray], pdarray]:
