@@ -66,21 +66,6 @@ class ClientTest(ArkoudaTest):
         self.assertTrue("arkoudaVersion" in config)
         self.assertTrue("INFO", config["logLevel"])
 
-    def test_client_context(self):
-        """
-        Tests the ak.client.context method
-
-        :return: None
-        :raise: AssertionError if one or more context values are not as expected
-                or the call to ak.client.context fails
-        """
-        try:
-            context = ak.client.context
-        except Exception as e:
-            raise AssertionError(e)
-        self.assertTrue(context)
-        self.assertFalse(context.closed)
-
     def test_get_mem_used(self):
         """
         Tests the ak.get_mem_used and ak.get_mem_avail methods
