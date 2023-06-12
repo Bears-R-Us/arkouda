@@ -1,14 +1,11 @@
 import json
 from enum import Enum
-from typing import TYPE_CHECKING, ForwardRef, List, Optional, Tuple, Union
+from typing import ForwardRef, List, Optional, Tuple, Union
 from typing import cast as type_cast
 from typing import no_type_check
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
-
-if TYPE_CHECKING:
-    from arkouda.segarray import SegArray
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import (
@@ -28,6 +25,7 @@ from arkouda.pdarraycreation import array
 from arkouda.strings import Strings
 
 Categorical = ForwardRef("Categorical")
+SegArray = ForwardRef("SegArray")
 
 __all__ = [
     "cast",
@@ -45,8 +43,6 @@ __all__ = [
     "isnan",
     "ErrorMode",
 ]
-
-hashable = Union[pdarray, Strings, "SegArray"]
 
 
 class ErrorMode(Enum):
@@ -428,26 +424,37 @@ def cos(pda: pdarray) -> pdarray:
     return create_pdarray(repMsg)
 
 
-def _hash_helper(a: hashable):
-    from arkouda import SegArray as Segarray_
+def _hash_helper(a):
+    from arkouda import Categorical as Categorical_
+    from arkouda import SegArray as SegArray_
 
-    if isinstance(a, Segarray_):
+    if isinstance(a, SegArray_):
         return json.dumps(
             {"segments": a.segments.name, "values": a.values.name, "valObjType": a.values.objType}
         )
+    elif isinstance(a, Categorical_):
+        return json.dumps({"categories": a.categories.name, "codes": a.codes.name})
     else:
         return a.name
 
 
+# this is # type: ignored and doesn't actually do any type checking
+# the type hints are there as a reference to show which types are expected
+# type validation is done within the function
 def hash(
-    pda: Union[hashable, List[hashable]], full: bool = True
+    pda: Union[  # type: ignore
+        Union[pdarray, Strings, SegArray, Categorical],
+        List[Union[pdarray, Strings, SegArray, Categorical]],
+    ],
+    full: bool = True,
 ) -> Union[Tuple[pdarray, pdarray], pdarray]:
     """
     Return an element-wise hash of the array or list of arrays.
 
     Parameters
     ----------
-    pda : Union[pdarray, Strings, Segarray], List[Union[pdarray, Strings, Segarray]]]
+    pda : Union[pdarray, Strings, Segarray, Categorical],
+     List[Union[pdarray, Strings, Segarray, Categorical]]]
 
     full : bool
         This is only used when a single pdarray is passed into hash
@@ -484,25 +491,28 @@ def hash(
     fixed key for the hash, which makes it possible for an
     adversary with control over input to engineer collisions.
 
-    In the case of a list of pdrrays, Strings, or Segarrays
+    In the case of a list of pdrrays, Strings, Categoricals, or Segarrays
     being passed, a non-linear function must be applied to each
     array since hashes of subsequent arrays cannot be simply XORed
     because equivalent values will cancel each other out, hence we
     do a rotation by the ordinal of the array.
     """
-    from arkouda import SegArray as Segarray_
+    from arkouda import Categorical as Categorical_
+    from arkouda import SegArray as SegArray_
 
-    if isinstance(pda, (pdarray, Strings, Segarray_)):
+    if isinstance(pda, (pdarray, Strings, SegArray_, Categorical_)):
         return _hash_single(pda, full) if isinstance(pda, pdarray) else pda.hash()
     elif isinstance(pda, List):
-        if any(wrong_type := [not isinstance(a, (pdarray, Strings, Segarray_)) for a in pda]):
+        if any(
+            wrong_type := [not isinstance(a, (pdarray, Strings, SegArray_, Categorical_)) for a in pda]
+        ):
             raise TypeError(
                 f"Unsupported type {type(pda[np.argmin(wrong_type)])}. Supported types are pdarray,"
-                f" SegArray, Strings, and Lists of these types."
+                f" SegArray, Strings, Categoricals, and Lists of these types."
             )
         types_list = [a.objType for a in pda]
         names_list = [_hash_helper(a) for a in pda]
-        repMsg = type_cast(
+        rep_msg = type_cast(
             str,
             generic_msg(
                 cmd="hashList",
@@ -514,12 +524,12 @@ def hash(
                 },
             ),
         )
-        a, b = repMsg.split("+")
-        return create_pdarray(a), create_pdarray(b)
+        hashes = json.loads(rep_msg)
+        return create_pdarray(hashes["upperHash"]), create_pdarray(hashes["lowerHash"])
     else:
         raise TypeError(
             f"Unsupported type {type(pda)}. Supported types are pdarray,"
-            f" SegArray, Strings, and Lists of these types."
+            f" SegArray, Strings, Categoricals, and Lists of these types."
         )
 
 

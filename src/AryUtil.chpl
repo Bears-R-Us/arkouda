@@ -181,9 +181,17 @@ module AryUtil
             hasStr = true;
           }
           when ObjType.CATEGORICAL {
-            // passed only Categorical.codes.name to be sorted on
-            var g = getGenericTypedArrayEntry(name, st);
-            thisSize = g.size;
+            if st.contains(name) {
+              // passed only Categorical.codes.name to be sorted on
+              var g = getGenericTypedArrayEntry(name, st);
+              thisSize = g.size;
+            }
+            else {
+              var catComps = jsonToMap(name);
+              var codesName = catComps["codes"];
+              var codes = getGenericTypedArrayEntry(codesName, st);
+              thisSize = codes.size;
+            }
           }
           when ObjType.SEGARRAY {
             var segComps = jsonToMap(name);
