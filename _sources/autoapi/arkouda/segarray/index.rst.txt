@@ -75,6 +75,7 @@ Attributes
 
 .. py:class:: SegArray(segments, values, lengths=None, grouping=None)
 
+
    .. py:property:: non_empty
 
 

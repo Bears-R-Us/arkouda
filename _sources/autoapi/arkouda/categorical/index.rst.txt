@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: Categorical(values, **kwargs)
 
+
    Represents an array of values belonging to named categories. Converting a
    Strings object to Categorical often saves memory and speeds up operations,
    especially if there are many repeated values, at the cost of some one-time
@@ -331,6 +332,22 @@ Classes
 
 
    .. py:method:: unique() -> Categorical
+
+
+   .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+
+      Compute a 128-bit hash of each element of the Categorical.
+
+      :returns: A tuple of two int64 pdarrays. The ith hash value is the concatenation
+                of the ith values from each array.
+      :rtype: Tuple[pdarray,pdarray]
+
+      .. rubric:: Notes
+
+      The implementation uses SipHash128, a fast and balanced hash function (used
+      by Python for dictionaries and sets). For realistic numbers of strings (up
+      to about 10**15), the probability of a collision between two 128-bit hash
+      values is negligible.
 
 
    .. py:method:: group() -> arkouda.pdarrayclass.pdarray

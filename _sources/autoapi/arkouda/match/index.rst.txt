@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: Match(matched: arkouda.pdarrayclass.pdarray, starts: arkouda.pdarrayclass.pdarray, lengths: arkouda.pdarrayclass.pdarray, indices: arkouda.pdarrayclass.pdarray, parent_entry_name: str, match_type: MatchType, pattern: str)
 
+
    .. py:method:: matched() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean array indiciating whether each element matched

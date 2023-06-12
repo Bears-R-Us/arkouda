@@ -56,6 +56,7 @@ Functions
 
 .. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars, max_bits: Optional[int] = None)
 
+
    The basic arkouda array class. This class contains only the
    attributies of the array; the data resides on the arkouda
    server. When a server operation results in a new array, arkouda
@@ -1588,6 +1589,7 @@ Functions
 
 
 .. py:exception:: RegistrationError
+
 
    Bases: :py:obj:`Exception`
 

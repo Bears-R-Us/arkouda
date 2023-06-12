@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: ArrayView(base: arkouda.pdarrayclass.pdarray, shape, order='row_major')
 
+
    A multi-dimensional view of a pdarray. Arkouda ``ArraryView`` behaves similarly to numpy's ndarray.
    The base pdarray is stored in 1-dimension but can be indexed and treated logically
    as if it were multi-dimensional

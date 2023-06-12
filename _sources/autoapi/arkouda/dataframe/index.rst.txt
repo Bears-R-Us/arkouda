@@ -30,6 +30,7 @@ Functions
 
 .. py:class:: DataFrame(initialdata=None, index=None)
 
+
    Bases: :py:obj:`collections.UserDict`
 
    A DataFrame structure based on arkouda arrays.

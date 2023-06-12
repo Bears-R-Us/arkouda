@@ -29,6 +29,7 @@ Functions
 
 .. py:class:: LogLevel
 
+
    Bases: :py:obj:`enum.Enum`
 
    Generic enumeration.

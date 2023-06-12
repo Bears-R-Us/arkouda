@@ -48,6 +48,7 @@ Functions
 
 .. py:class:: BitVector(values, width=64, reverse=False)
 
+
    Bases: :py:obj:`arkouda.pdarrayclass.pdarray`
 
    Represent integers as bit vectors, e.g. a set of flags.
@@ -94,6 +95,7 @@ Functions
 
 
 .. py:class:: Fields(values, names, MSB_left=True, pad='-', separator='', show_int=True)
+
 
    Bases: :py:obj:`BitVector`
 
@@ -159,6 +161,7 @@ Functions
 
 
 .. py:class:: IPv4(values)
+
 
    Bases: :py:obj:`arkouda.pdarrayclass.pdarray`
 

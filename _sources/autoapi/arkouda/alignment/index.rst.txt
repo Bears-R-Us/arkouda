@@ -74,6 +74,7 @@ Functions
 
 .. py:exception:: NonUniqueError
 
+
    Bases: :py:obj:`ValueError`
 
    Inappropriate argument value (of correct type).

@@ -20,6 +20,7 @@ Classes
 
 .. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index], name: Optional[str] = None)
 
+
    .. py:property:: index
 
       This is maintained to support older code
@@ -279,6 +280,7 @@ Classes
 
 
 .. py:class:: MultiIndex(values)
+
 
    Bases: :py:obj:`Index`
 

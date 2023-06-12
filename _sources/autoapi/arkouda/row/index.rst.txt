@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: Row(dict=None, /, **kwargs)
 
+
    Bases: :py:obj:`collections.UserDict`
 
    This class is useful for printing and working with individual rows of a

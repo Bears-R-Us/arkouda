@@ -29,6 +29,7 @@ Functions
 
 .. py:class:: Datetime(pda, unit: str = _BASE_UNIT)
 
+
    Bases: :py:obj:`_AbstractBaseTime`
 
    Represents a date and/or time.
@@ -160,6 +161,7 @@ Functions
 
 
 .. py:class:: Timedelta(pda, unit: str = _BASE_UNIT)
+
 
    Bases: :py:obj:`_AbstractBaseTime`
 
