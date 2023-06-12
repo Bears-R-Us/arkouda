@@ -12,6 +12,7 @@ from arkouda.dtypes import (
     BigInt,
     DTypes,
     _as_dtype,
+    bigint,
     int_scalars,
     isSupportedNumber,
     numeric_scalars,
@@ -510,8 +511,15 @@ def hash(
                 f"Unsupported type {type(pda[np.argmin(wrong_type)])}. Supported types are pdarray,"
                 f" SegArray, Strings, Categoricals, and Lists of these types."
             )
-        types_list = [a.objType for a in pda]
-        names_list = [_hash_helper(a) for a in pda]
+        # replace bigint pdarrays with the uint limbs
+        expanded_pda = []
+        for a in pda:
+            if isinstance(a, pdarray) and a.dtype == bigint:
+                expanded_pda.extend(a.bigint_to_uint_arrays())
+            else:
+                expanded_pda.append(a)
+        types_list = [a.objType for a in expanded_pda]
+        names_list = [_hash_helper(a) for a in expanded_pda]
         rep_msg = type_cast(
             str,
             generic_msg(
@@ -519,8 +527,8 @@ def hash(
                 args={
                     "nameslist": names_list,
                     "typeslist": types_list,
-                    "length": len(pda),
-                    "size": len(pda[0]),
+                    "length": len(expanded_pda),
+                    "size": len(expanded_pda[0]),
                 },
             ),
         )
@@ -535,6 +543,8 @@ def hash(
 
 @typechecked
 def _hash_single(pda: pdarray, full: bool = True):
+    if pda.dtype == bigint:
+        return hash(pda.bigint_to_uint_arrays())
     repMsg = type_cast(
         str,
         generic_msg(
