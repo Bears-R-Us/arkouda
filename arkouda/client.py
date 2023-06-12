@@ -380,7 +380,7 @@ class ZmqChannel(Channel):
         self.socket.send(payload, copy=False)
 
         if recv_binary:
-            frame = socket.recv(copy=False)
+            frame = self.socket.recv(copy=False)
             view = frame.buffer
             # raise errors sent back from the server
             if bytes(view[0 : len(b"Error:")]) == b"Error:":
@@ -433,8 +433,7 @@ channelType = ChannelType.ZMQ
 
 def get_channel(server: str = 'localhost', port: int = 5555, token: str = None) -> Channel:
     def establishChannel() -> Channel:
-        if channelType == ChannelType.ZMQ:
-            return ZmqChannel(server=server, port=port, user=username, token=token)
+        return ZmqChannel(server=server, port=port, user=username, token=token)
 
     return channel if channel else establishChannel()
 
@@ -627,10 +626,10 @@ def disconnect() -> None:
         # send disconnect message to server
         message = "disconnect"
         logger.debug(f"[Python] Sending request: {message}")
-        return_message = cast(str, channel.send_string_message(message))
+        return_message = cast(str, cast(Channel, channel).send_string_message(message))
         logger.debug(f"[Python] Received response: {return_message}")
         try:
-            channel.disconnect()
+            cast(Channel, channel).disconnect()
         except Exception as e:
             raise ConnectionError(e)
         connected = False
@@ -667,11 +666,11 @@ def shutdown() -> None:
     message = "shutdown"
 
     logger.debug(f"[Python] Sending request: {message}")
-    return_message = cast(str, channel.send_string_message(message))
+    return_message = cast(str, cast(Channel, channel).send_string_message(message))
     logger.debug(f"[Python] Received response: {return_message}")
 
     try:
-        channel.disconnect()
+        cast(Channel, channel).disconnect()
     except Exception as e:
         raise RuntimeError(e)
     connected = False
@@ -770,18 +769,17 @@ def generic_msg(
     try:
         if send_binary:
             assert payload is not None
-            return channel.send_binary_message(
+            return cast(Channel, channel).send_binary_message(
                 cmd=cmd, payload=payload, recv_binary=recv_binary, args=msg_args, size=size
             )
         else:
             assert payload is None
-            return channel.send_string_message(cmd=cmd, args=msg_args, size=size,
-                                               recv_binary=recv_binary)
+            return cast(Channel, channel).send_string_message(cmd=cmd, args=msg_args,
+                                                              size=size, recv_binary=recv_binary)
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out
         # of sync reset the socket before raising the interrupt exception
-
-        channel.connect(channel.timeout)
+        cast(Channel, channel).connect(timeout=0)
         raise e
 
 
