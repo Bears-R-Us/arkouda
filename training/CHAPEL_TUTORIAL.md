@@ -739,7 +739,7 @@ Nice! We'll use `getLengths`, `values`, and `offsets` in the next section as wel
 
 [Aggregation](https://chapel-lang.org/docs/modules/packages/CopyAggregation.html#copyaggregation) is used to copy
 local values into a remote array (`DstAggregator`) or copy values from a remote array into local variables (`SrcAggregator`).
-This provides a significant speed-up and lower communication when doing batch assignments.
+This provides a significant speed-up and reduces communication when doing batch assignments.
 
 Syntax:
 ```chapel
