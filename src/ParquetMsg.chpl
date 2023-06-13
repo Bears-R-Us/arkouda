@@ -1087,8 +1087,6 @@ module ParquetMsg {
       const myFilename = filenames[idx];
 
       const locDom = segments.localSubdomain();
-      var dims: [0..#1] int;
-      dims[0] = locDom.size: int;
 
       if (locDom.isEmpty() || locDom.size <= 0) {
         // we know append is not supported so creating new empty file
