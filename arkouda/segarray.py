@@ -1594,7 +1594,8 @@ class SegArray:
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
-        return generic_msg(cmd="sendArray", args={"seg_name": self.name,
+        return generic_msg(cmd="sendArray", args={"segments": self.segments,
+                                                  "values": self.vales,
                                                   "hostname": hostname,
                                                   "port": port,
                                                   "dtype": self.dtype,
