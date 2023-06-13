@@ -567,7 +567,8 @@ Expected Output:
 [Locales](https://chapel-lang.org/docs/users-guide/locality/localesInChapel.html)
 can be thought of as chunk of memory that can do computation. Things that are co-located within a single locale
 are close to each other in the system and can interact with one another relatively cheaply. Things that are in distinct
-locales can still interact with each other in the same ways, but this is more expensive.
+locales can still interact with each other in the same ways, but this is more expensive since transferring data between
+the locales will result in more communication.
 
 Say `x` and `y` are both on `locale_i`. When on `locale_i`, we say both `x` and `y` are local.
 
