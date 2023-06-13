@@ -60,9 +60,6 @@ _memunit2factor = {
 }
 
 
-channel = None
-
-
 def _mem_get_factor(unit: str) -> int:
 
     unit = unit.lower()
@@ -78,7 +75,7 @@ def _mem_get_factor(unit: str) -> int:
         )
 
 
-logger = getArkoudaLogger(name="Arkouda Client", logLevel=LogLevel.DEBUG)
+logger = getArkoudaLogger(name="Arkouda Client", logLevel=LogLevel.INFO)
 clientLogger = getArkoudaLogger(name="Arkouda User Logger", logFormat="%(message)s")
 
 
@@ -131,7 +128,23 @@ def set_defaults() -> None:
 
 
 class ChannelType(Enum):
+    """
+    The ChannelType Enum specifies which Channel implementation is
+    to be used for an Arkouda client deployment.
+    """
     ZMQ = 'ZMQ'
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
 
 
 class Channel():
@@ -141,31 +154,36 @@ class Channel():
     """
     __slots__ = ('url', 'user', 'token', 'logger')
 
-    def __init__(self, user: str, server: str, port: int, token: str = None) -> None:
-        self.url = self._generate_url(server, port)
+    def __init__(self, user: str, server: str, port: int, token: str = None,
+                 connect_url: str = None) -> None:
+        self._set_url(server, port, connect_url)
         self.user = user
-        self.token = self._set_access_token(server, port, token)
+        self.token = self._get_access_token(server, port, token)
         self.logger = getArkoudaLogger(name="Arkouda Client")
 
-    def _generate_url(self, server: str, port: int) -> str:
+    def _set_url(self, server: str, port: int, connect_url: str = None) -> None:
         """
-        Generates a url per the Channel protocol as well as host and port
+        Generates a url per the Channel protocol as well as host and port and sets the
+        url to the generated value if connect_url is None. Otherwise, sets the url to
+        the connect_url value.
 
         Parameters
         ----------
         server : str
-            The Arkouda server hostname, ip address, or service name
+            Arkouda server hostname, ip address, or service name
         port : int
-            The Arkouda server host port
+            Arkouda server host port
+        connect_url : str, o
+            The complete url in the format of tcp://server:port?token=<token_value>
+            where the token is optional
 
         Returns
         -------
-        str
-            The generated url
+        None
         """
-        return f'tcp://{server}:{port}'
+        self.url = connect_url if connect_url else f'tcp://{server}:{port}'
 
-    def _set_access_token(self, server: str, port: int, token: Optional[str]) -> Optional[str]:
+    def _get_access_token(self, server: str, port: int, token: Optional[str]) -> Optional[str]:
         """
         Sets the access_token for the connect request by doing the following:
 
@@ -189,8 +207,8 @@ class Channel():
         Returns
         -------
         str
-        The access token configured for the host:port, None if there is no
-        token configured for the host:port
+            The access token configured for the host:port, None if there is no
+            token configured for the host:port
 
         Raises
         ------
@@ -428,14 +446,52 @@ class ZmqChannel(Channel):
             raise RuntimeError(e)
 
 
-channelType = ChannelType.ZMQ
+# Global Channel object reference
+channel = None
 
 
-def get_channel(server: str = 'localhost', port: int = 5555, token: str = None) -> Channel:
-    def establishChannel() -> Channel:
-        return ZmqChannel(server=server, port=port, user=username, token=token)
+# Get ChannelType, defaulting to ZMQ
+channelType = ChannelType(os.getenv('ARKOUDA_CHANNEL_TYPE', 'ZMQ').upper())
 
-    return channel if channel else establishChannel()
+
+def get_channel(server: str = 'localhost', port: int = 5555, token: str = None,
+                connect_url: str = None) -> Channel:
+    """
+    Returns the configured Channel implementation, instantiating it if None
+
+    Parameters
+    ----------
+    server : str, optional
+        The hostname of the server (must be visible to the current
+        machine). Defaults to `localhost`.
+    port : int, optional
+        The port of the server. Defaults to 5555.
+    access_token : str, optional
+        The token used to connect to an existing socket to enable access to
+        an Arkouda server where authentication is enabled. Defaults to None.
+    connect_url : str, optional
+        The complete url in the format of tcp://server:port?token=<token_value>
+        where the token is optional
+
+    Returns
+    -------
+    Channel
+        The Channel implementation configured with the ARKOUDA_CHANNEL_TYPE
+        env variable
+
+    Raises
+    ------
+    EnvironmentError
+        Raised if the ARKOUDA_CHANNEL_TYPE references an invalid ChannelType
+    """
+    def establish_channel() -> Channel:
+        if channelType == ChannelType.ZMQ:
+            return ZmqChannel(server=server, port=port, user=username, token=token,
+                              connect_url=connect_url)
+        else:
+            raise EnvironmentError(f'Invalid channelType {channelType}')
+
+    return channel if channel else establish_channel()
 
 
 def connect(
@@ -489,10 +545,13 @@ def connect(
     cmd = "connect"
     logger.debug(f"[Python] Sending request: {cmd}")
 
+    # get channel and connect via channel
+    channel = get_channel(server=server, port=port, token=access_token,
+                          connect_url=connect_url)
+    channel.connect(timeout)
+
     # send connect request to server and get the response confirming if
     # the connect request succeeded and, if not not, the error message
-    channel = get_channel(server=server, port=port, token=access_token)
-    channel.connect(timeout)
     return_message = channel.send_string_message(cmd=cmd)
     logger.debug(f"[Python] Received response: {str(return_message)}")
     connected = True
