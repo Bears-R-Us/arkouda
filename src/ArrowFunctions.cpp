@@ -460,7 +460,6 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
             }
           }
         }
-        // TODO - add string case
       }
       return vct;
     }

@@ -204,16 +204,25 @@ module ParquetMsg {
       forall (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
         for locdom in A.localSubdomains() {
           const intersection = domain_intersection(locdom, filedom);
-
           if intersection.size > 0 {
             var pqErr = new parquetErrorMsg();
 
-            var shift = computeEmptySegs(seg_sizes, offsets, s, intersection, off); // compute the shift to account for any empty segments in the file before the current section.
-
-            if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
-                                  dsetname.localize().c_str(), intersection.size, (intersection.low - off) + shift,
+            if ty == ArrowTypes.stringArr {
+              var col: [filedom] t;
+              if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                  dsetname.localize().c_str(), intersection.size, 0,
                                   batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-              pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+              }
+              A[filedom] = col;
+            }
+            else {
+              var shift = computeEmptySegs(seg_sizes, offsets, s, intersection, off); // compute the shift to account for any empty segments in the file before the current section.
+              if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
+                                    dsetname.localize().c_str(), intersection.size, (intersection.low - off) + shift,
+                                    batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+              }
             }
           }
         }
@@ -1112,7 +1121,7 @@ module ParquetMsg {
           locOffsets[locOffsets.domain.high] = extraOffset;
         else
           locOffsets[locOffsets.domain.high] = oldOff[offIdxRange.high+1];
-
+          
         var pqErr = new parquetErrorMsg();
         var dtypeRep = ARROWSTRING;
         if c_writeStrListColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locSegments), c_ptrTo(locOffsets), 
