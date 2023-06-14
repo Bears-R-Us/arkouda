@@ -1,6 +1,5 @@
 module GenSymIO {
     use IO;
-    use CTypes;
     use Path;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -21,6 +20,7 @@ module GenSymIO {
     use ArkoudaMapCompat;
     use ArkoudaListCompat;
     use ArkoudaStringBytesCompat;
+    use ArkoudaCTypesCompat;
 
 
     private config const logLevel = ServerConfig.logLevel;
@@ -147,7 +147,7 @@ module GenSymIO {
         overMemLimit(2 * entry.getSizeEstimate());
 
         proc distArrToBytes(A: [?D] ?eltType) {
-            var ptr = c_malloc(eltType, D.size);
+            var ptr = allocate(eltType, D.size);
             var localA = makeArrayFromPtr(ptr, D.size:uint);
             localA = A;
             const size = D.size*c_sizeof(eltType):int;

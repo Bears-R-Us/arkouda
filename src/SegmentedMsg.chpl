@@ -1,5 +1,4 @@
 module SegmentedMsg {
-  use CTypes;
   use Reflection;
   use ServerErrors;
   use Logging;
@@ -18,6 +17,7 @@ module SegmentedMsg {
 
   use ArkoudaMapCompat;
   use ArkoudaStringBytesCompat;
+  use ArkoudaCTypesCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -74,7 +74,7 @@ module SegmentedMsg {
         var arrayBytes: bytes;
 
         proc distArrToBytes(A: [?D] ?eltType) {
-            var ptr = c_malloc(eltType, D.size);
+            var ptr = allocate(eltType, D.size);
             var localA = makeArrayFromPtr(ptr, D.size:uint);
             localA = A;
             const size = D.size*c_sizeof(eltType):int;
@@ -791,7 +791,7 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc convertPythonSliceToChapel(start:int, stop:int): range(stridable=false) {
+  proc convertPythonSliceToChapel(start:int, stop:int): range() {
     if (start <= stop) {
       return start..(stop-1);
     } else {

@@ -1,6 +1,5 @@
 module AryUtil
 {
-    use CTypes;
     use Random;
     use Reflection;
     use Logging;
@@ -12,6 +11,7 @@ module AryUtil
     use GenSymIO;
 
     use ArkoudaPOSIXCompat;
+    use ArkoudaCTypesCompat;
 
     param bitsPerDigit = RSLSD_bitsPerDigit;
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
@@ -402,17 +402,17 @@ module AryUtil
     record lowLevelLocalizingSlice {
         type t;
         /* Pointer to localized memory */
-        var ptr: c_ptr(t) = c_nil;
+        var ptr: c_ptr(t) = nil;
         /* Do we own the memory? */
         var isOwned: bool = false;
 
-        proc init(A: [] ?t, region: range(stridable=false)) {
+        proc init(A: [] ?t, region: range()) {
             use CommPrimitives;
             use CTypes;
 
             this.t = t;
             if region.isEmpty() {
-                this.ptr = c_nil;
+                this.ptr = nil;
                 this.isOwned = false;
                 return;
             }
@@ -430,7 +430,7 @@ module AryUtil
                 } else {
                     // If data is contiguous on a single remote node,
                     // alloc+bulk GET and return owned c_ptr
-                    this.ptr = c_malloc(t, region.size);
+                    this.ptr = allocate(t, region.size);
                     this.isOwned = true;
                     const byteSize = region.size:c_size_t * c_sizeof(t);
                     GET(ptr, startLocale, getAddr(start), byteSize);
@@ -438,7 +438,7 @@ module AryUtil
             } else {
                 // If data is non-contiguous or split across nodes, get element
                 // at a time and return owned c_ptr (slow, expected to be rare)
-                this.ptr = c_malloc(t, region.size);
+                this.ptr = allocate(t, region.size);
                 this.isOwned = true;
                 for i in 0..<region.size {
                     this.ptr[i] = A[region.low + i];
@@ -448,7 +448,7 @@ module AryUtil
 
         proc deinit() {
             if isOwned {
-                c_free(ptr);
+                deallocate(ptr);
             }
         }
     }

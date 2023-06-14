@@ -13,6 +13,7 @@ module FileIO {
 
     use ArkoudaFileCompat;
     use ArkoudaMapCompat;
+    use ArkoudaRangeCompat;
 
     use ServerConfig, Logging, CommandMap;
     private config const logLevel = ServerConfig.logLevel;
@@ -220,7 +221,7 @@ module FileIO {
             //TODO: change this to throw
             halt("At least one domain must have stride 1");
         }
-        if !d1.stridable && !d2.stridable {
+        if !stridable(d1) && !stridable(d2) {
             return {low..high};
         } else {
             var stride = max(d1.stride, d2.stride);

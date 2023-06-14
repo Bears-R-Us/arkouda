@@ -1,5 +1,4 @@
 module HDF5Msg {
-    use CTypes;
     use FileSystem;
     use HDF5;
     use IO;
@@ -31,6 +30,7 @@ module HDF5Msg {
     use ArkoudaMapCompat;
     use ArkoudaListCompat;
     use ArkoudaStringBytesCompat;
+    use ArkoudaCTypesCompat;
 
 
     private config const logLevel = ServerConfig.logLevel;
@@ -373,7 +373,7 @@ module HDF5Msg {
                             C_HDF5.H5P_DEFAULT);
 
         // For the value, we need to build a ptr to a char[]; c_string doesn't work because it is a const char*        
-        var akVersion = c_calloc(c_char, arkoudaVersion.size+1);
+        var akVersion = allocate(c_char, arkoudaVersion.size+1, clear=true);
         for (c, i) in zip(arkoudaVersion.codepoints(), 0..<arkoudaVersion.size) {
             akVersion[i] = c:c_char;
         }
@@ -383,7 +383,7 @@ module HDF5Msg {
         C_HDF5.H5Aclose(attrId);
 
         // release ArkoudaVersion HDF5 resources
-        c_free(akVersion);
+        deallocate(akVersion);
         C_HDF5.H5Sclose(attrSpaceId);
         C_HDF5.H5Tclose(attrStringType);
         C_HDF5.H5Oclose(obj_id);
@@ -458,7 +458,7 @@ module HDF5Msg {
                             C_HDF5.H5P_DEFAULT);
 
         // For the value, we need to build a ptr to a char[]; c_string doesn't work because it is a const char*        
-        var akVersion = c_calloc(c_char, arkoudaVersion.size+1);
+        var akVersion = allocate(c_char, arkoudaVersion.size+1, clear=true);
         for (c, i) in zip(arkoudaVersion.codepoints(), 0..<arkoudaVersion.size) {
             akVersion[i] = c:c_char;
         }
@@ -468,7 +468,7 @@ module HDF5Msg {
         C_HDF5.H5Aclose(attrId);
 
         // release ArkoudaVersion HDF5 resources
-        c_free(akVersion);
+        deallocate(akVersion);
         C_HDF5.H5Sclose(attrSpaceId);
         C_HDF5.H5Tclose(attrStringType);
         C_HDF5.H5Oclose(obj_id);
@@ -2019,12 +2019,12 @@ module HDF5Msg {
         C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(_get_item_count), c_ptrTo(nfields));
         
         // Allocate space for array of strings
-        var c_field_names = c_calloc(c_char, 255 * nfields);
+        var c_field_names = allocate(c_char, 255 * nfields, clear=true);
         idx_p = 0:C_HDF5.hsize_t; // reset our iteration counter
         C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(_simulate_h5ls), c_field_names);
         var pos = c_strlen(c_field_names):int;
         var items = string.createCopyingBuffer(c_field_names, pos, pos+1);
-        c_free(c_field_names);
+        deallocate(c_field_names);
         return items;
     }
 
@@ -2440,7 +2440,7 @@ module HDF5Msg {
             (subdoms, len, skips) = get_subdoms(filenames, "%s/Limb_%i".format(dset, l), validFiles);
             var limb = new shared SymEntry(len, uint);
             read_files_into_distributed_array(limb.a, subdoms, filenames, "%s/Limb_%i".format(dset, l), skips);
-            limbs.append(limb);
+            limbs.pushBack(limb);
         }
 
         var bigIntArray = makeDistArray(limbs[0].size, bigint);
