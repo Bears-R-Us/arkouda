@@ -151,6 +151,18 @@ class Channel():
     """
     The Channel class defines methods for connecting to and communicating with
     the Arkouda server.
+
+    Attributes
+    ----------
+    url : str
+        Channel url used to connect to the Arkouda server which is either set
+        to the connect_url or generated from supplied server and port values
+    user : str
+        Arkouda user who will use the Channel to connect to the arkouda_server
+    token : str, optional
+        Token used to connect to the arkouda_server if authentication is enabled
+    logger : ArkoudaLogger
+        ArkoudaLogger used for logging
     """
     __slots__ = ('url', 'user', 'token', 'logger')
 
@@ -158,14 +170,14 @@ class Channel():
                  connect_url: str = None) -> None:
         self._set_url(server, port, connect_url)
         self.user = user
-        self.token = self._get_access_token(server, port, token)
+        self._set_access_token(server, port, token)
         self.logger = getArkoudaLogger(name="Arkouda Client")
 
     def _set_url(self, server: str, port: int, connect_url: str = None) -> None:
         """
-        Generates a url per the Channel protocol as well as host and port and sets the
-        url to the generated value if connect_url is None. Otherwise, sets the url to
-        the connect_url value.
+        If the connect_url is None, generates and sets the Channel url per the
+        Channel protocol as well as host and port. Otherwise, sets the Channel url
+        to the supplied connect_url value.
 
         Parameters
         ----------
@@ -173,7 +185,7 @@ class Channel():
             Arkouda server hostname, ip address, or service name
         port : int
             Arkouda server host port
-        connect_url : str, o
+        connect_url : str, optional
             The complete url in the format of tcp://server:port?token=<token_value>
             where the token is optional
 
@@ -183,32 +195,32 @@ class Channel():
         """
         self.url = connect_url if connect_url else f'tcp://{server}:{port}'
 
-    def _get_access_token(self, server: str, port: int, token: Optional[str]) -> Optional[str]:
+    def _set_access_token(self, server: str, port: int, token: Optional[str]) -> None:
         """
-        Sets the access_token for the connect request by doing the following:
+        Sets the token for the Channel by doing the following:
 
         1. retrieves the token configured for the connect_string from the
            .arkouda/tokens.txt file, if any
-        2. if access_token is None, returns the retrieved token
-        3. if access_token is not None, replaces retrieved token with the access_token
-           to account for situations where the token can change for a url (for example,
+        2. if token is None, returns the retrieved token
+        3. if token is not None, replaces retrieved token with the token to account
+           for situations where the token can change for a url (for example,
            the arkouda_server is restarted and a corresponding new token is generated).
 
         Parameters
         ----------
+        server : str
+            The hostname of the server (must be visible to the current machine)
+        port : int
+            The port of the server
         username : str
             The username retrieved from the user's home directory
-         : str
-            The access_token supplied by the user, which is required if authentication
+        token : str, optional
+            The token supplied by the user, which is required if authentication
             is enabled, defaults to None
-        url : str
-            The arkouda_server host:port connect string, defaults to localhost:5555
 
         Returns
         -------
-        str
-            The access token configured for the host:port, None if there is no
-            token configured for the host:port
+        None
 
         Raises
         ------
@@ -229,16 +241,17 @@ class Channel():
             if saved_token is None or saved_token != token:
                 tokens[url] = cast(str, token)
                 try:
-                    io_util.dict_to_delimited_file(values=tokens, path=path, delimiter=",")
+                    io_util.dict_to_delimited_file(values=tokens,
+                                                   path=path, delimiter=",")
                 except Exception as e:
                     raise IOError(e)
-            return token
+            self.token = token
         else:
             try:
                 tokens = io_util.delimited_file_to_dict(path)
             except Exception as e:
                 raise IOError(e)
-            return tokens.get(url)
+            self.token = tokens.get(url)
 
     def send_string_message(self, cmd: str, recv_binary: bool = False, args: str = None,
                             size: int = -1) -> Union[str, memoryview]:
@@ -461,10 +474,10 @@ def get_channel(server: str = 'localhost', port: int = 5555, token: str = None,
 
     Parameters
     ----------
-    server : str, optional
+    server : str
         The hostname of the server (must be visible to the current
         machine). Defaults to `localhost`.
-    port : int, optional
+    port : int
         The port of the server. Defaults to 5555.
     access_token : str, optional
         The token used to connect to an existing socket to enable access to
