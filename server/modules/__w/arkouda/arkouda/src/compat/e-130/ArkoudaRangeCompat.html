@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ArkoudaMemDiagnosticsCompat &mdash; chpldoc 0.0.1 documentation</title>
+  <title>ArkoudaRangeCompat &mdash; chpldoc 0.0.1 documentation</title>
       <link rel="stylesheet" href="../../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     <script src="../../../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="ArkoudaPOSIXCompat" href="ArkoudaPOSIXCompat.html" />
-    <link rel="prev" title="ArkoudaMapCompat" href="ArkoudaMapCompat.html" /> 
+    <link rel="next" title="ArkoudaRegexCompat" href="ArkoudaRegexCompat.html" />
+    <link rel="prev" title="ArkoudaPOSIXCompat" href="ArkoudaPOSIXCompat.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -82,9 +82,9 @@
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaListCompat.html">ArkoudaListCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaMemDiagnosticsCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaRangeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
@@ -104,9 +104,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ArkoudaMemDiagnosticsCompat</li>
+      <li>ArkoudaRangeCompat</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaMemDiagnosticsCompat.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaRangeCompat.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -114,24 +114,34 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-ArkoudaMemDiagnosticsCompat"></span><div class="section" id="arkoudamemdiagnosticscompat">
-<h1>ArkoudaMemDiagnosticsCompat<a class="headerlink" href="#arkoudamemdiagnosticscompat" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-ArkoudaRangeCompat"></span><div class="section" id="arkoudarangecompat">
+<h1>ArkoudaRangeCompat<a class="headerlink" href="#arkoudarangecompat" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaMemDiagnosticsCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaRangeCompat</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaMemDiagnosticsCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaRangeCompat</span><span class="p">;</span>
 </pre></div>
 </div>
+<dl class="chpl type">
+<dt class="sig sig-object chpl" id="ArkoudaRangeCompat.stridableRange">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">stridableRange</span></span> <span class="pre">=</span> <span class="pre">range(stridable</span> <span class="pre">=</span> <span class="pre">true)</span><a class="headerlink" href="#ArkoudaRangeCompat.stridableRange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaRangeCompat.stridable">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stridable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a</span></em><span class="sig-paren">)</span> <span class="pre">param</span><a class="headerlink" href="#ArkoudaRangeCompat.stridable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ArkoudaMapCompat.html" class="btn btn-neutral float-left" title="ArkoudaMapCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ArkoudaPOSIXCompat.html" class="btn btn-neutral float-right" title="ArkoudaPOSIXCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ArkoudaPOSIXCompat.html" class="btn btn-neutral float-left" title="ArkoudaPOSIXCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ArkoudaRegexCompat.html" class="btn btn-neutral float-right" title="ArkoudaRegexCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

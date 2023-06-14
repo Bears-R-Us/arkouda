@@ -94,7 +94,7 @@ or
 
       Retrieve one string from the array 
 
-   .. method:: proc this(const slice: range(stridable = false)) throws
+   .. method:: proc this(const slice: range()) throws
 
       Take a slice of strings from the array. The slice must be a 
       Chapel range, i.e. low..high by stride, not a Python slice.

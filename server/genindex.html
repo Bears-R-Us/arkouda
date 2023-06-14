@@ -76,11 +76,13 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaBitOpsCompat.html">ArkoudaBitOpsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaListCompat.html">ArkoudaListCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
@@ -312,6 +314,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.akMsgSign">akMsgSign() (in module CommandMap)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaCTypesCompat.html#ArkoudaCTypesCompat.allocate">allocate() (in module ArkoudaCTypesCompat)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.FileChannel.append">append (ExternalIntegration.FileChannel attribute)</a>
 
       <ul>
@@ -344,6 +348,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaBlockCompat.html#module-ArkoudaBlockCompat">ArkoudaBlockCompat (module)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaCTypesCompat.html#module-ArkoudaCTypesCompat">ArkoudaCTypesCompat (module)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaFileCompat.html#module-ArkoudaFileCompat">ArkoudaFileCompat (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaListCompat.html#module-ArkoudaListCompat">ArkoudaListCompat (module)</a>
@@ -353,6 +359,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaMemDiagnosticsCompat.html#module-ArkoudaMemDiagnosticsCompat">ArkoudaMemDiagnosticsCompat (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaPOSIXCompat.html#module-ArkoudaPOSIXCompat">ArkoudaPOSIXCompat (module)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaRangeCompat.html#module-ArkoudaRangeCompat">ArkoudaRangeCompat (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaRegexCompat.html#module-ArkoudaRegexCompat">ArkoudaRegexCompat (module)</a>
 </li>
@@ -725,6 +733,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.timedelta.days">days() (ArkoudaTimeCompat.timedelta method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.daysInMonth">daysInMonth() (in module ArkoudaTimeCompat)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaCTypesCompat.html#ArkoudaCTypesCompat.deallocate">deallocate() (in module ArkoudaCTypesCompat)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.debug">debug() (Logging.Logger method)</a>
 </li>
@@ -2266,6 +2276,10 @@
         <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.time.strftime">(ArkoudaTimeCompat.time method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaRangeCompat.html#ArkoudaRangeCompat.stridable">stridable() (in module ArkoudaRangeCompat)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaRangeCompat.html#ArkoudaRangeCompat.stridableRange">stridableRange (in module ArkoudaRangeCompat)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.stringBytesToUintArr">stringBytesToUintArr() (in module SegmentedString)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.stringCompareLiteralEq">stringCompareLiteralEq() (in module SegmentedString)</a>

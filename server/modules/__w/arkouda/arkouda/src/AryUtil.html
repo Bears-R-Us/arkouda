@@ -78,11 +78,13 @@
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaBitOpsCompat.html">ArkoudaBitOpsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaListCompat.html">ArkoudaListCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
@@ -336,7 +338,7 @@ a local buffer and <cite>isOwned</cite> is true.</p>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="AryUtil.lowLevelLocalizingSlice.ptr">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ptr</span></span><span class="pre">:</span> <span class="pre">c_ptr(t)</span> <span class="pre">=</span> <span class="pre">c_nil</span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.ptr" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ptr</span></span><span class="pre">:</span> <span class="pre">c_ptr(t)</span> <span class="pre">=</span> <span class="pre">nil</span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.ptr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pointer to localized memory</p>
 </dd></dl>
 
@@ -348,7 +350,7 @@ a local buffer and <cite>isOwned</cite> is true.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="AryUtil.lowLevelLocalizingSlice.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">region:</span> <span class="pre">range(stridable</span> <span class="pre">=</span> <span class="pre">false)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.init" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">region:</span> <span class="pre">range()</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">

@@ -1,0 +1,23 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaRangeCompat
+
+ArkoudaRangeCompat
+==================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaRangeCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaRangeCompat;
+
+.. type:: type stridableRange = range(stridable = true)
+
+.. function:: proc stridable(a) param
+

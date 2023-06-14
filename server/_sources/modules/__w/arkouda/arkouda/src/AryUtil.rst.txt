@@ -143,7 +143,7 @@ or
 
    .. attribute:: type t
 
-   .. attribute:: var ptr: c_ptr(t) = c_nil
+   .. attribute:: var ptr: c_ptr(t) = nil
 
       Pointer to localized memory 
 
@@ -151,7 +151,7 @@ or
 
       Do we own the memory? 
 
-   .. method:: proc init(A: [] ?t, region: range(stridable = false))
+   .. method:: proc init(A: [] ?t, region: range())
 
    .. method:: proc deinit()
 
