@@ -243,12 +243,14 @@ class NumericTest(ArkoudaTest):
         self.assertListEqual(h2.to_list(), h6.to_list())
 
         # test segarray hash with int and string values
+        # along with strings, categorical, and pdarrays
         segs = ak.array([0, 3, 6, 9])
         vals = ak.array([0, 1, 2, 3, 4, 5, 0, 1, 2, 5, 5, 5, 5])
         sa = ak.SegArray(segs, vals)
         str_vals = ak.array([f"str {i}" for i in vals.to_list()])
         str_sa = ak.SegArray(segs, str_vals)
         a = ak.array([-10, 4, -10, 17])
+        bi = a + 2**200
         s = ak.array([f"str {i}" for i in a.to_list()])
         c = ak.Categorical(s)
         for h in [
@@ -256,11 +258,14 @@ class NumericTest(ArkoudaTest):
             str_sa,
             [sa, a],
             [str_sa, a],
+            [str_sa, bi],
             [sa, str_sa],
             [sa, str_sa, c],
+            [sa, bi, str_sa, c],
             [s, sa, str_sa],
             [str_sa, s, sa, a],
             [c, str_sa, s, sa, a],
+            [bi, c, str_sa, s, sa, a],
         ]:
             h1, h2 = ak.hash(h)
             if isinstance(h, ak.SegArray):
@@ -293,7 +298,7 @@ class NumericTest(ArkoudaTest):
         self.assertListEqual(h1.to_list(), rh1[rev].to_list())
         self.assertListEqual(h2.to_list(), rh2[rev].to_list())
 
-        # verify all the ways to hash strings match
+        # verify all the ways to hash Categoricals match
         h3, h4 = ak.hash([my_cat])
         self.assertListEqual(h1.to_list(), h3.to_list())
         self.assertListEqual(h2.to_list(), h4.to_list())
@@ -306,6 +311,12 @@ class NumericTest(ArkoudaTest):
         h7, h8 = sh1[my_cat.codes], sh2[my_cat.codes]
         self.assertListEqual(h1.to_list(), h7.to_list())
         self.assertListEqual(h2.to_list(), h8.to_list())
+
+        # verify all the ways to hash bigint pdarrays match
+        h1, h2 = ak.hash(bi)
+        h3, h4 = ak.hash([bi])
+        self.assertListEqual(h1.to_list(), h3.to_list())
+        self.assertListEqual(h2.to_list(), h4.to_list())
 
     def testValueCounts(self):
         pda = ak.ones(100, dtype=ak.int64)
