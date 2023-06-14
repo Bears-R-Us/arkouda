@@ -1946,6 +1946,7 @@ def read_tagged_data(
         raise RuntimeError(f"Invalid File Type detected, {ftype}")
 
 
+
 def snapshot(filename):
     """
     Create a snapshot of the current Arkouda namespace. All currently accessible variables containing
@@ -2043,7 +2044,6 @@ def receive_array(hostname : str, port):
         a supported dtype
     """
     rep_msg = generic_msg(cmd="receiveArray", args={"hostname": hostname,
-                                                   "port"    : port})
+                                                    "port"    : port})
     rep = json.loads(rep_msg)
     return _build_objects(rep)
-

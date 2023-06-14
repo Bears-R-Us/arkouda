@@ -2653,6 +2653,7 @@ def invert_permutation(perm):
         raise ValueError("The array is not a permutation.")
     return coargsort([perm, arange(perm.size)])
 
+
 def receive_dataframe(hostname : str, port):
     """
     Receive a pdarray sent by `pdarray.send_array()`.

@@ -11,7 +11,7 @@ import numpy as np  # type: ignore
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import isSupportedInt, str_
+from arkouda.dtypes import isSupportedInt, str_, int_scalars
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.join import gen_ranges
@@ -1564,7 +1564,7 @@ class SegArray:
     def send_array(self, hostname: str, port: int_scalars):
         """
         Sends a pdarray to a different Arkouda server
-        
+
         Parameters
         ----------
         hostname : str
@@ -1581,7 +1581,6 @@ class SegArray:
             This port much match the port passed to the call to
             `ak.receive_array()`.
 
-
         Returns
         -------
         None
@@ -1595,7 +1594,7 @@ class SegArray:
             a supported dtype
         """
         return generic_msg(cmd="sendArray", args={"segments": self.segments,
-                                                  "values": self.vales,
+                                                  "values": self.values,
                                                   "hostname": hostname,
                                                   "port": port,
                                                   "dtype": self.dtype,
