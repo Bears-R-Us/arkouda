@@ -833,8 +833,7 @@ S s s 0  S s 1  S 2
 
 <a id="bool_expand_and_compress"></a>
 ## Boolean Compression and Expansion Indexing
-[Boolean compression and expansion indexing](https://github.com/Bears-R-Us/ArkoudaWeeklyCall/blob/main/Indexing/ArkoudaBooleanIndexing.pdf)
-is an application of `reduce scan op`, `forall`, and filtering. It was covered in an [Arkouda Weekly Call](https://github.com/Bears-R-Us/ArkoudaWeeklyCall).
+Boolean compression and expansion indexing is an application of `reduce scan op`, `forall`, and filtering.
 
 <a id="ex20"></a>
 #### Example 20: Boolean Compression Indexing
