@@ -498,8 +498,10 @@ def _dict_recombine_segarrays_categoricals(df_dict):
             else Categorical.from_codes(
                 df_dict[f"{col}.codes"],
                 df_dict[f"{col}.categories"],
-                permutation=df_dict[f"{col}.permutation"],
-                segments=df_dict[f"{col}.segments"],
+                permutation=df_dict[f"{col}.permutation"]
+                if f"{col}.permutation" in df_dict_keys
+                else None,
+                segments=df_dict[f"{col}.segments"] if f"{col}.segments" in df_dict_keys else None,
                 _akNAcode=df_dict[f"{col}._akNAcode"],
             )
             if col in cat_cols
@@ -1876,8 +1878,7 @@ def read_tagged_data(
     )
     file_list = array(json.loads(j_str))
     file_cat = Categorical.from_codes(
-        arange(file_list.size),
-        file_list
+        arange(file_list.size), file_list
     )  # create a categorical from the ak.Strings representation of the file list
 
     ftype = get_filetype(filenames)
