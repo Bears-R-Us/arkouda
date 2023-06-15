@@ -56,9 +56,9 @@ module TransferMsg
       sendDataFrameSetupInfo(port:string, numColumns, eleList: string);
 
       var colNames = "";
-      for ele in eleList { 
+      for ele in eleList {
         var ele_parts = ele.split("+");
-        colNames += ele_parts[1] + "-";
+        sendColumnName(port, ele_parts[1]);
         if ele_parts[0] == "Categorical" {
           ref codes_name = ele_parts[2];
           ref categories_name = ele_parts[3];
@@ -154,23 +154,23 @@ module TransferMsg
       return new MsgTuple("DataFrame sent", MsgType.NORMAL);
     }
 
-    proc sendColumnNames(port:string, colNames: string) throws {
+    proc sendColumnName(port:string, colName: string) throws {
       var context: Context;
       var socket = context.socket(ZMQ.PUSH);
       socket.bind("tcp://*:"+port);
 
-      socket.send(colNames);
+      socket.send(colName);
     }
 
-    proc receiveColumnNames(hostname, port) throws {
+    proc receiveColumnName(hostname, port) throws {
       var context: Context;
       var socket = context.socket(ZMQ.PULL);
       if hostname == here.name then
         socket.connect("tcp://localhost:"+port:string);
       else
         socket.connect("tcp://"+hostname+":"+port:string);
-      var columnNames = socket.recv(string);
-      return columnNames;
+      var columnName = socket.recv(string);
+      return columnName;
     }
     
     proc receiveDataFrameMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -183,13 +183,14 @@ module TransferMsg
       var (numColumns, objNames) = receiveDataFrameSetupInfo(hostname, port);
       var rnames: list((string, ObjType, string)); 
 
-      private proc receiveInto(entry, nodeNames, port, i, rname, st) throws {
+      private proc receiveInto(entry, nodeNames, port, colName, rname, st) throws {
         receiveData(entry.a, nodeNames, port);
-        rnames.append((i:string, ObjType.PDARRAY, rname));
+        rnames.append((colName, ObjType.PDARRAY, rname));
         st.addEntry(rname, entry);
       }
       
       for (i, obj) in zip(0..#objNames.size, objNames) {
+        var colName = receiveColumnName(hostname, port);
         var objParts = obj.split("+");
         ref currObjType = objParts[0];
         if currObjType == "pdarray" {
@@ -197,16 +198,16 @@ module TransferMsg
           var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
           if typeString == "int(64)" {
             var entry = new shared SymEntry(size, int);
-            receiveInto(entry, nodeNames, port, i, rname, st);
+            receiveInto(entry, nodeNames, port, colName, rname, st);
           } else if typeString == "uint(64)" {
             var entry = new shared SymEntry(size, uint);
-            receiveInto(entry, nodeNames, port, i, rname, st);
+            receiveInto(entry, nodeNames, port, colName, rname, st);
           } else if typeString == "real(64)" {
             var entry = new shared SymEntry(size, real);
-            receiveInto(entry, nodeNames, port, i, rname, st);
+            receiveInto(entry, nodeNames, port, colName, rname, st);
           } else if typeString == "bool" {
             var entry = new shared SymEntry(size, bool);
-            receiveInto(entry, nodeNames, port, i, rname, st);
+            receiveInto(entry, nodeNames, port, colName, rname, st);
           }
         } else if currObjType == "Strings" {
           var (size, typeString, nodeNames, objType) = receiveSetupInfo(hostname, port);
@@ -216,14 +217,14 @@ module TransferMsg
           var offsets = new shared SymEntry(offSize, int);
           receiveData(offsets.a, nodeNames, port);
           var stringsEntry = assembleSegStringFromParts(offsets, values, st);
-          rnames.append(("", ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
+          rnames.append((colName, ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
+        } else if currObjType == "Categorical" {
+          writeln("receiving categorical");
         }
       }
-      //var colNames = receiveColumnNames(hostname, port);
       
       var transferErrors: list(string);
       var repMsg = _buildReadAllMsgJson(rnames, false, 0, transferErrors, st);
-      //repMsg += "--" + colNames;
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
@@ -248,7 +249,7 @@ module TransferMsg
           segarrayTransfer(msgArgs, st);
         }
         when ObjType.CATEGORICAL {
-          //categoricalTransfer(msgArgs, st);
+          categoricalTransfer(msgArgs, st);
         }
         otherwise {
           var errorMsg = "Unable to transfer object type %s.".format(objType);
@@ -292,6 +293,45 @@ module TransferMsg
           sendSetupInfo(port:string, e.a, names, "pdarray", localeCount);
           sendData(e, hostname, intersections, ports);
         }
+      }
+    }
+
+    proc categoricalTransfer(msgArgs: borrowed MessageArgs, st: borrowed SymTab) throws {
+      var hostname = msgArgs.getValueOf("hostname");
+      var port = msgArgs.getValueOf("port");
+      
+      var codes_entry = st.lookup(msgArgs.getValueOf("codes"));
+      var codes = toSymEntry(toGenSymEntry(codes_entry), int);
+      
+      var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(msgArgs.getValueOf("categories")));
+      var cats = new SegString("", cat_entry);
+      
+      var naCodes_entry = st.lookup(msgArgs.getValueOf("NA_codes"));
+      var naCodes = toSymEntry(toGenSymEntry(naCodes_entry), int);
+
+      var localeCount = receiveLocaleCount(hostname, port:string);
+
+      {
+        var (intersections, ports, names) = calculateSetupInfo(codes, localeCount, port);
+        sendSetupInfo(port:string, codes.a, names, "categorical", localeCount);
+        sendData(codes, hostname, intersections, ports);
+      }
+
+      {
+        var (intersections, ports, names) = calculateSetupInfo(cats.values, localeCount, port);
+        sendSetupInfo(port:string, cats.values.a, names, "string", localeCount);
+        sendData(cats.values, hostname, intersections, ports);
+      }
+      {
+        var (intersections, ports, names) = calculateSetupInfo(cats.offsets, localeCount, port);
+        sendSetupInfo(port:string, cats.offsets.a, names, "pdarray", localeCount);
+        sendData(cats.offsets, hostname, intersections, ports);
+      }
+      
+      {
+        var (intersections, ports, names) = calculateSetupInfo(naCodes, localeCount, port);
+        sendSetupInfo(port:string, naCodes.a, names, "pdarray", localeCount);
+        sendData(naCodes, hostname, intersections, ports);
       }
     }
 
@@ -445,6 +485,34 @@ module TransferMsg
           rtnMap.add("values", "created " + st.attrib(vname));
         }
         rnames.append(("", ObjType.SEGARRAY, "%jt".format(rtnMap)));
+      } else if objType == "categorical" {
+        var rtnMap: map(string, string) = new map(string, string);
+        // GET CODES
+        var codes = new shared SymEntry(size, int);
+        receiveData(codes.a, nodeNames, port);
+        var cname = st.nextName();
+        st.addEntry(cname, codes);
+        
+        // GET CATS STRING
+        var (valSize, _, _, _) = receiveSetupInfo(hostname, port);
+        var values = new shared SymEntry(valSize, uint(8));
+        receiveData(values.a, nodeNames, port);
+        var (offSize, _, _, _) = receiveSetupInfo(hostname, port);
+        var offsets = new shared SymEntry(offSize, int);
+        receiveData(offsets.a, nodeNames, port);
+        var cats = assembleSegStringFromParts(offsets, values, st);
+
+        // GET NACODES
+        var (naCodesSize, _, _, _) = receiveSetupInfo(hostname, port);
+        var naCodes = new shared SymEntry(naCodesSize, int);
+        receiveData(naCodes.a, nodeNames, port);
+        var nname = st.nextName();
+        st.addEntry(nname, naCodes);
+
+        rtnMap.add("codes", "created " + st.attrib(codes.name));
+        rtnMap.add("categories", "created %s+created %t".format(st.attrib(cats.name), cats.nBytes));
+        rtnMap.add("_akNAcode", "created " + st.attrib(naCodes.name));
+        rnames.append(("", ObjType.CATEGORICAL, "%jt".format(rtnMap)));
       } else {
         var rname = st.nextName();
         if typeString == "int(64)" {
