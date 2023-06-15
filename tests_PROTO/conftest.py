@@ -18,6 +18,14 @@ def pytest_addoption(parser):
         help="Number of Locales to run Arkouda with. "
              "Defaults to 2. If Arkouda is not configured for multi_locale, 1 locale is used"
     )
+    parser.addoption(
+        "--size", action="store", default="10**8",
+        help="Problem size: length of array to use for benchmarks."
+    )
+    parser.addoption(
+        "--seed", action="store", default="",
+        help="Value to initialize random number generator."
+    )
 
 
 def _get_test_locales(config):
@@ -31,6 +39,8 @@ def _get_test_locales(config):
 
 def pytest_configure(config):
     pytest.nl = _get_test_locales(config)
+    pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
+    pytest.prob_size = eval(config.getoption("size"))
 
 
 @pytest.fixture(scope="session", autouse=True)
