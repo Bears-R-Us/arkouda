@@ -15,20 +15,19 @@ def run_tests(verbose):
     global pdarrays
     pdarrays = {
         "int64": ak.arange(0, SIZE, 1),
-        "uint64": ak.array(np.arange(0, SIZE, 1, dtype=np.uint64)),
+        "uint64": ak.array(np.arange(2**64 - SIZE, 2**64, 1, dtype=np.uint64)),
         "float64": ak.linspace(0, 2, SIZE),
         "bool": (ak.arange(0, SIZE, 1) % 2) == 0,
     }
     global ndarrays
     ndarrays = {
         "int64": np.arange(0, SIZE, 1),
-        "uint64": np.arange(0, SIZE, 1, dtype=np.uint64),
+        "uint64": np.arange(2**64 - SIZE, 2**64, 1, dtype=np.uint64),
         "float64": np.linspace(0, 2, SIZE),
         "bool": (np.arange(0, SIZE, 1) % 2) == 0,
     }
     global scalars
-    # scalars = {k: v[SIZE//2] for k, v in ndarrays.items()}
-    scalars = {"int64": 5, "uint64": np.uint64(5), "float64": 3.14159, "bool": True}
+    scalars = {"int64": 5, "uint64": np.uint64(2**63 + 1), "float64": 3.14159, "bool": True}
     dtypes = pdarrays.keys()
     if verbose:
         print("Operators: ", ak.pdarray.BinOps)
@@ -146,7 +145,7 @@ def run_tests(verbose):
     execerrors = []
     dtypeerrors = []
     valueerrors = []
-    for (expression, res, ex, dt, val) in results["both_implement"]:
+    for expression, res, ex, dt, val in results["both_implement"]:
         matches += not any((ex, dt, val))
         if ex:
             execerrors.append((expression, res))
@@ -882,12 +881,20 @@ class OperatorsTest(ArkoudaTest):
 
         # rotate by scalar
         for i in range(10):
-            self.assertEqual(ak.array([10], dtype=ak.bigint, max_bits=4).rotl(i), 10 if i % 2 == 0 else 5)
-            self.assertEqual(ak.array([10], dtype=ak.bigint, max_bits=4).rotr(i), 10 if i % 2 == 0 else 5)
+            self.assertEqual(
+                ak.array([10], dtype=ak.bigint, max_bits=4).rotl(i), 10 if i % 2 == 0 else 5
+            )
+            self.assertEqual(
+                ak.array([10], dtype=ak.bigint, max_bits=4).rotr(i), 10 if i % 2 == 0 else 5
+            )
 
         # rotate by array
-        left_rot = ak.bigint_from_uint_arrays([ak.full(10, 10, ak.uint64)], max_bits=4).rotl(ak.arange(10))
-        right_rot = ak.bigint_from_uint_arrays([ak.full(10, 10, ak.uint64)], max_bits=4).rotr(ak.arange(10))
+        left_rot = ak.bigint_from_uint_arrays([ak.full(10, 10, ak.uint64)], max_bits=4).rotl(
+            ak.arange(10)
+        )
+        right_rot = ak.bigint_from_uint_arrays([ak.full(10, 10, ak.uint64)], max_bits=4).rotr(
+            ak.arange(10)
+        )
         ans = [10 if i % 2 == 0 else 5 for i in range(10)]
         self.assertListEqual(left_rot.to_list(), ans)
         self.assertListEqual(right_rot.to_list(), ans)
@@ -919,7 +926,7 @@ class OperatorsTest(ArkoudaTest):
         self.assertTrue(np.allclose((akf % u).to_ndarray(), npf % u, equal_nan=True))
         self.assertTrue(np.allclose((u % akf).to_ndarray(), u % npf, equal_nan=True))
 
-        #opequal
+        # opequal
         npf_copy = npf
         akf_copy = ak.array(npf_copy)
         npf_copy %= npf2

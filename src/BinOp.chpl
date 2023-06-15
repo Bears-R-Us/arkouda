@@ -681,7 +681,25 @@ module BinOp
         }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
-    } else if ((l.etype == uint && val.type == real) || (l.etype == real && val.type == uint)) {
+    }
+    else if e.etype == real && ((l.etype == uint && val.type == int) || (l.etype == int && val.type == uint)) {
+      select op {
+          when "+" {
+            e.a = l.a: real + val: real;
+          }
+          when "-" {
+            e.a = l.a: real - val: real;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    else if ((l.etype == uint && val.type == real) || (l.etype == real && val.type == uint)) {
       select op {
           when "+" {
             e.a = l.a: real + val: real;
@@ -946,29 +964,31 @@ module BinOp
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
-    } else if (val.type == int && r.etype == uint) {
+    }
+    else if (e.etype == int && val.type == uint) ||
+            (e.etype == uint && val.type == int) {
       select op {
         when ">>" {
           ref ea = e.a;
           ref ra = r.a;
-          [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:uint >> ri:uint;
+          [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:r.etype >> ri;
         }
         when "<<" {
           ref ea = e.a;
           ref ra = r.a;
-          [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:uint << ri:uint;
+          [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:r.etype << ri;
         }
         when ">>>" {
-          e.a = rotr(val:uint, r.a:uint);
+          e.a = rotr(val:r.etype, r.a);
         }
         when "<<<" {
-          e.a = rotl(val:uint, r.a:uint);
+          e.a = rotl(val:r.etype, r.a);
         }
         when "+" {
-          e.a = val:uint + r.a:uint;
+          e.a = val:r.etype + r.a;
         }
         when "-" {
-          e.a = val:uint - r.a:uint;
+          e.a = val:r.etype - r.a;
         }
         otherwise {
           var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
@@ -1015,7 +1035,25 @@ module BinOp
         }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
-    } else if ((r.etype == uint && val.type == real) || (r.etype == real && val.type == uint)) {
+    }
+    else if e.etype == real && ((r.etype == uint && val.type == int) || (r.etype == int && val.type == uint)) {
+      select op {
+          when "+" {
+            e.a = val:real + r.a:real;
+          }
+          when "-" {
+            e.a = val:real - r.a:real;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    else if ((r.etype == uint && val.type == real) || (r.etype == real && val.type == uint)) {
       select op {
           when "+" {
             e.a = val:real + r.a:real;

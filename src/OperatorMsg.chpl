@@ -23,7 +23,7 @@ module OperatorMsg
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const omLogger = new Logger(logLevel, logChannel);
-    
+
     /*
       Parse and respond to binopvv message.
       vv == vector op vector
@@ -555,9 +555,15 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
-            // isn't + or -, so we can use LHS to determine type
-            var e = st.addEntry(rname, l.size, uint);
-            return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            // + and - both result in real outputs to match NumPy
+            if op == "+" || op == "-" {
+              var e = st.addEntry(rname, l.size, real);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            } else {
+              // isn't + or -, so we can use LHS to determine type
+              var e = st.addEntry(rname, l.size, uint);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
           }
           when (DType.Int64, DType.UInt64) {
             var l = toSymEntry(left,int);
@@ -566,8 +572,15 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
-            var e = st.addEntry(rname, l.size, int);
-            return doBinOpvs(l, val, e, op, dtype, rname, pn, st); 
+            // + and - both result in real outputs to match NumPy
+            if op == "+" || op == "-" {
+              var e = st.addEntry(rname, l.size, real);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            } else {
+              // isn't + or -, so we can use LHS to determine type
+              var e = st.addEntry(rname, l.size, int);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
           }
           when (DType.BigInt, DType.BigInt) {
             var l = toSymEntry(left,bigint);
@@ -894,8 +907,15 @@ module OperatorMsg
               var e = st.addEntry(rname, r.size, bool);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             }
-            var e = st.addEntry(rname, r.size, uint);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            // + and - both result in real outputs to match NumPy
+            if op == "+" || op == "-" {
+              var e = st.addEntry(rname, r.size, real);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            } else {
+              // isn't + or -, so we can use LHS to determine type
+              var e = st.addEntry(rname, r.size, int);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
           }
           when (DType.BigInt, DType.BigInt) {
             var val = value.getBigIntValue();

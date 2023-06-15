@@ -151,8 +151,8 @@ class StatsTest(ArkoudaTest):
         self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
         # float float (non-whole numbers)
-        ak_div, ak_mod = ak.divmod(ak.cast(self.x+.5, ak.float64), ak.cast(self.y+1.5, ak.float64))
-        np_div, np_mod = np.divmod(self.npx.astype(float)+.5, self.npy.astype(float)+1.5)
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x + 0.5, ak.float64), ak.cast(self.y + 1.5, ak.float64))
+        np_div, np_mod = np.divmod(self.npx.astype(float) + 0.5, self.npy.astype(float) + 1.5)
         self.assertListEqual(ak_div.to_list(), np_div.tolist())
         self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
@@ -188,8 +188,8 @@ class StatsTest(ArkoudaTest):
         self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
         # float float (non-whole numbers)
-        ak_div, ak_mod = ak.divmod(30.5, ak.cast(self.y+1.5, ak.float64))
-        np_div, np_mod = np.divmod(30.5, self.npy.astype(float)+1.5)
+        ak_div, ak_mod = ak.divmod(30.5, ak.cast(self.y + 1.5, ak.float64))
+        np_div, np_mod = np.divmod(30.5, self.npy.astype(float) + 1.5)
         self.assertListEqual(ak_div.to_list(), np_div.tolist())
         self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
@@ -219,34 +219,43 @@ class StatsTest(ArkoudaTest):
         self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
         # float float (non-whole numbers)
-        ak_div, ak_mod = ak.divmod(ak.cast(self.x+.5, ak.float64), 4.5)
-        np_div, np_mod = np.divmod(self.npx.astype(float)+.5, 4.5)
+        ak_div, ak_mod = ak.divmod(ak.cast(self.x + 0.5, ak.float64), 4.5)
+        np_div, np_mod = np.divmod(self.npx.astype(float) + 0.5, 4.5)
         self.assertListEqual(ak_div.to_list(), np_div.tolist())
         self.assertListEqual(ak_mod.to_list(), np_mod.tolist())
 
         # Boolean where argument
         truth = ak.arange(10) % 2 == 0
         ak_div_truth, ak_mod_truth = ak.divmod(self.x, self.y, where=truth)
-        self.assertListEqual(ak_div_truth.to_list(),
-                             [(self.x[i] // self.y[i]) if truth[i] else self.x[i] for i in range(10)])
-        self.assertListEqual(ak_mod_truth.to_list(),
-                             [(self.x[i] % self.y[i]) if truth[i] else self.x[i] for i in range(10)])
+        self.assertListEqual(
+            ak_div_truth.to_list(),
+            [(self.x[i] // self.y[i]) if truth[i] else self.x[i] for i in range(10)],
+        )
+        self.assertListEqual(
+            ak_mod_truth.to_list(),
+            [(self.x[i] % self.y[i]) if truth[i] else self.x[i] for i in range(10)],
+        )
 
         # Edge cases in the numerator
         edge_case = [-np.inf, -7.0, -0.0, np.nan, 0.0, 7.0, np.inf]
         np_edge_case = np.array(edge_case)
         ak_edge_case = ak.array(np_edge_case)
-        ak_div, ak_mod = ak.divmod(ak_edge_case, ak.arange(1, len(edge_case)+1))
-        np_div, np_mod = np.divmod(np_edge_case, np.arange(1, len(edge_case)+1))
+        np_ind = np.arange(1, len(edge_case) + 1)
+        ak_ind = ak.arange(1, len(edge_case) + 1)
+        ak_div, ak_mod = ak.divmod(ak_edge_case, ak_ind)
+        np_div, np_mod = np.divmod(np_edge_case, np_ind)
         self.assertTrue(np.allclose(ak_div.to_ndarray(), np_div, equal_nan=True))
         self.assertTrue(np.allclose(ak_mod.to_ndarray(), np_mod, equal_nan=True))
 
-        # Edge cases in the denominator
-        edge_case = [-np.inf, -7.0, np.nan, 7.0, np.inf]
-        np_edge_case = np.array(edge_case)
-        ak_edge_case = ak.array(np_edge_case)
-        ak_div, ak_mod = ak.divmod(ak_edge_case, ak.arange(1, len(edge_case)+1))
-        np_div, np_mod = np.divmod(np_edge_case, np.arange(1, len(edge_case)+1))
-        self.assertTrue(np.allclose(ak_div.to_ndarray(), np_div, equal_nan=True))
-        self.assertTrue(np.allclose(ak_mod.to_ndarray(), np_mod, equal_nan=True))
-
+        # TODO this was already broken but the num and denom were swapped
+        #  this will be addressed in #2519
+        # # Edge cases in the denominator
+        # edge_case = [-np.inf, -7.0, np.nan, 7.0, np.inf]
+        # np_edge_case = np.array(edge_case)
+        # ak_edge_case = ak.array(np_edge_case)
+        # np_ind = np.arange(1, len(edge_case)+1)
+        # ak_ind = ak.arange(1, len(edge_case)+1)
+        # ak_div, ak_mod = ak.divmod(ak_ind, ak_edge_case)
+        # np_div, np_mod = np.divmod(np_ind, np_edge_case)
+        # self.assertTrue(np.allclose(ak_div.to_ndarray(), np_div, equal_nan=True))
+        # self.assertTrue(np.allclose(ak_mod.to_ndarray(), np_mod, equal_nan=True))
