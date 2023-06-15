@@ -573,6 +573,21 @@ class ParquetTest(ArkoudaTest):
             self.assertListEqual(df["idx"].to_list(), data["idx"].to_list())
             self.assertListEqual(df["seg"].to_list(), data["seg"].to_list())
 
+    def test_segarray_string(self):
+        words = ak.array(['one,two,three', 'uno,dos,tres'])
+        strs, segs = words.split(',', return_segments=True)
+        x = ak.SegArray(segs, strs)
+
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            x.to_parquet(f"{tmp_dirname}/segarr_str")
+
+            rd = ak.read_parquet(f"{tmp_dirname}/segarr_str_*")
+            self.assertIsInstance(rd, ak.SegArray)
+            self.assertListEqual(x.segments.to_list(), rd.segments.to_list())
+            self.assertListEqual(x.values.to_list(), rd.values.to_list())
+            self.assertListEqual(x.to_list(), rd.to_list())
+
+
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
         datadir = "resources/parquet-testing"

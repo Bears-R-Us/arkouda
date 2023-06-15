@@ -1065,10 +1065,6 @@ class SegArray:
         """
         from arkouda.io import _mode_str_to_int
 
-        if self.dtype == str_:
-            # Support will be added by Issue #2444
-            raise TypeError("SegArrays with Strings values are not yet supported by Parquet")
-
         if mode.lower() == "append":
             raise ValueError("Append mode is not supported for SegArray.")
 
@@ -1083,7 +1079,6 @@ class SegArray:
                     "mode": _mode_str_to_int(mode),
                     "prefix": prefix_path,
                     "objType": self.objType,
-                    "dtype": self.dtype,
                     "compression": compression,
                 },
             ),
