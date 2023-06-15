@@ -55,9 +55,10 @@ module TransferMsg
       
       sendDataFrameSetupInfo(port:string, numColumns, eleList: string);
 
+      var colNames = "";
       for ele in eleList { 
         var ele_parts = ele.split("+");
-        ref col_name = ele_parts[1];
+        colNames += ele_parts[1] + "-";
         if ele_parts[0] == "Categorical" {
           ref codes_name = ele_parts[2];
           ref categories_name = ele_parts[3];
@@ -66,26 +67,51 @@ module TransferMsg
           var code_vals = toSymEntry(gCode, int);
         }
         else if ele_parts[0] == "Strings"{
+          var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(ele_parts[2]));
+          var segString = new SegString("", entry);
+
+          {
+            var (intersections, ports, names) = calculateSetupInfo(segString.values, localeCount, port);
+            sendSetupInfo(port:string, segString.values.a, names, "string", localeCount);
+            sendData(segString.values, hostname, intersections, ports);
+          }
+
+          {
+            var (intersections, ports, names) = calculateSetupInfo(segString.offsets, localeCount, port);
+            sendSetupInfo(port:string, segString.offsets.a, names, "pdarray", localeCount);
+            sendData(segString.offsets, hostname, intersections, ports);
+          }
         }
         else if ele_parts[0] == "pdarray" || ele_parts[0] == "IPv4" || 
           ele_parts[0] == "Fields" || ele_parts[0] == "Datetime" || ele_parts[0] == "BitVector"{
           var gCol: borrowed GenSymEntry = getGenericTypedArrayEntry(ele_parts[2], st);
+
+          proc sendCol(col_vals, localeCount, port, hostname) throws {
+            var (intersections, ports, names) = calculateSetupInfo(col_vals, localeCount, port);
+            sendSetupInfo(port:string, col_vals.a, names, "pdarray", localeCount);
+            sendData(col_vals, hostname, intersections, ports);
+          }
+          
           select (gCol.dtype) {
             when (DType.Int64) {
               var col_vals = toSymEntry(gCol, int);
 
-              var (intersections, ports, names) = calculateSetupInfo(col_vals, localeCount, port);
-              sendSetupInfo(port:string, col_vals.a, names, "pdarray", localeCount);
-              sendData(col_vals, hostname, intersections, ports);
+              sendCol(col_vals, localeCount, port, hostname);
             }
             when (DType.UInt64) {
               var col_vals = toSymEntry(gCol, uint);
+
+              sendCol(col_vals, localeCount, port, hostname);
             }
             when (DType.Bool) {
               var col_vals = toSymEntry(gCol, bool);
+
+              sendCol(col_vals, localeCount, port, hostname);
             }
             when (DType.Float64){
               var col_vals = toSymEntry(gCol, real);
+              
+              sendCol(col_vals, localeCount, port, hostname);
             }
             otherwise {
               var errorMsg = notImplementedError(pn,dtype2str(gCol.dtype));
@@ -124,7 +150,27 @@ module TransferMsg
           throw new IllegalArgumentError(errorMsg);
         }
       }
+      //sendColumnNames(port, colNames);
       return new MsgTuple("DataFrame sent", MsgType.NORMAL);
+    }
+
+    proc sendColumnNames(port:string, colNames: string) throws {
+      var context: Context;
+      var socket = context.socket(ZMQ.PUSH);
+      socket.bind("tcp://*:"+port);
+
+      socket.send(colNames);
+    }
+
+    proc receiveColumnNames(hostname, port) throws {
+      var context: Context;
+      var socket = context.socket(ZMQ.PULL);
+      if hostname == here.name then
+        socket.connect("tcp://localhost:"+port:string);
+      else
+        socket.connect("tcp://"+hostname+":"+port:string);
+      var columnNames = socket.recv(string);
+      return columnNames;
     }
     
     proc receiveDataFrameMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -137,21 +183,47 @@ module TransferMsg
       var (numColumns, objNames) = receiveDataFrameSetupInfo(hostname, port);
       var rnames: list((string, ObjType, string)); 
 
+      private proc receiveInto(entry, nodeNames, port, i, rname, st) throws {
+        receiveData(entry.a, nodeNames, port);
+        rnames.append((i:string, ObjType.PDARRAY, rname));
+        st.addEntry(rname, entry);
+      }
+      
       for (i, obj) in zip(0..#objNames.size, objNames) {
         var objParts = obj.split("+");
         ref currObjType = objParts[0];
-        var rname = st.nextName();
         if currObjType == "pdarray" {
+          var rname = st.nextName();
           var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
-          var entry = new shared SymEntry(size, int);
-          receiveData(entry.a, nodeNames, port);
-          rnames.append((i:string, ObjType.PDARRAY, rname));
-          st.addEntry(rname, entry);
+          if typeString == "int(64)" {
+            var entry = new shared SymEntry(size, int);
+            receiveInto(entry, nodeNames, port, i, rname, st);
+          } else if typeString == "uint(64)" {
+            var entry = new shared SymEntry(size, uint);
+            receiveInto(entry, nodeNames, port, i, rname, st);
+          } else if typeString == "real(64)" {
+            var entry = new shared SymEntry(size, real);
+            receiveInto(entry, nodeNames, port, i, rname, st);
+          } else if typeString == "bool" {
+            var entry = new shared SymEntry(size, bool);
+            receiveInto(entry, nodeNames, port, i, rname, st);
+          }
+        } else if currObjType == "Strings" {
+          var (size, typeString, nodeNames, objType) = receiveSetupInfo(hostname, port);
+          var values = new shared SymEntry(size, uint(8));
+          receiveData(values.a, nodeNames, port);
+          var (offSize, _, _, _) = receiveSetupInfo(hostname, port);
+          var offsets = new shared SymEntry(offSize, int);
+          receiveData(offsets.a, nodeNames, port);
+          var stringsEntry = assembleSegStringFromParts(offsets, values, st);
+          rnames.append(("", ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
         }
       }
+      //var colNames = receiveColumnNames(hostname, port);
       
       var transferErrors: list(string);
       var repMsg = _buildReadAllMsgJson(rnames, false, 0, transferErrors, st);
+      //repMsg += "--" + colNames;
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
@@ -249,7 +321,7 @@ module TransferMsg
       var hostname = msgArgs.getValueOf("hostname");
       var port = msgArgs.getValueOf("port");
 
-      var segarr = msgArgs.getValueOf("seg_name");
+      var segarr = msgArgs.getValueOf("segments");
       var dType = str2dtype(msgArgs.getValueOf("dtype"));
       // get locale count so that we can chunk data
       var localeCount = receiveLocaleCount(hostname, port:string);
