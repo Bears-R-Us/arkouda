@@ -40,7 +40,7 @@ def _get_test_locales(config):
 def pytest_configure(config):
     pytest.nl = _get_test_locales(config)
     pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
-    pytest.prob_size = eval(config.getoption("size"))
+    pytest.prob_size = [eval(x) for x in config.getoption("size").split(",")]
 
 
 @pytest.fixture(scope="session", autouse=True)
