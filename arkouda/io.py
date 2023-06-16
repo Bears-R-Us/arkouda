@@ -4,6 +4,7 @@ import os
 from typing import Dict, List, Mapping, Optional, Union, cast
 from warnings import warn
 
+import dill
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
@@ -38,6 +39,8 @@ __all__ = [
     "load",
     "load_all",
     "update_hdf",
+    "snapshot",
+    "restore",
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -1921,3 +1924,46 @@ def read_tagged_data(
         raise RuntimeError("CSV does not support tagging data with file name associated.")
     else:
         raise RuntimeError(f"Invalid File Type detected, {ftype}")
+
+
+# TODO - decide if filename should just be path and we autogenerate epoch_snapshot or use a user defined name _SNAPSHOT
+# TODO - do we want to allow users to overwrite snapshots?
+def snapshot(filename):
+    import inspect
+    from types import ModuleType
+    from arkouda.dataframe import DataFrame
+
+    filename = filename + "_SNAPSHOT"
+    mode = "TRUNCATE"
+    callers_local_vars = inspect.currentframe().f_back.f_locals.items()
+    for name, val in [
+        (n, v) for n, v in callers_local_vars if not n.startswith("__") and not isinstance(v, ModuleType)
+    ]:
+        # TODO - should dataframe save format be updated so we don't need separate files
+        if isinstance(val, (pdarray, Categorical, SegArray, Strings, DataFrame)):
+            # currently save dataframes to own files so they can be recreated as dataframe
+            if isinstance(val, DataFrame):
+                val.to_hdf(filename+"_DATAFRAME_"+name)
+            else:
+                val.to_hdf(filename, dataset=name, mode=mode)
+            mode = "APPEND"
+
+
+def restore(filename):
+    import inspect
+    from arkouda.dataframe import DataFrame
+    restore_files = glob.glob(f"{filename}_SNAPSHOT_LOCALE*")
+    restore_data = read_hdf(restore_files)
+
+    # TODO - if we update dataframe save format, this needs to be removed
+    # TODO - this only works if variable name does not contain "_"
+    restore_df = glob.glob(f"{filename}_SNAPSHOT_DATAFRAME_*_LOCALE0000")
+    print(restore_df)
+    dfs = [f.replace("_LOCALE0000", "") for f in restore_df]
+    for df_file in dfs:
+        name = df_file.split("/")[-1].split("_")[-1]
+        restore_data[name] = DataFrame.load(df_file)
+
+    for name, obj in restore_data.items():
+        inspect.currentframe().f_back.f_locals[name] = obj
+    return restore_data.keys()
