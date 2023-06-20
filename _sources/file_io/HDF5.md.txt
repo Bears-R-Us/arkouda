@@ -132,7 +132,7 @@ Providing these attributes allows for the ArrayView object to be reconstructed f
 >           3. arkouda_version: 'current_arkouda_version' (Optional)
 >       2. Dataset - Values
 >           1. Attributes
->               1. ObjType: 1
+>               1. ObjType: 1 or 2
 >               2. isBool: 0 or 1
 >               3. file_version: 2.0 (Optional)
 >               4. arkouda_version: 'current_arkouda_version' (Optional)

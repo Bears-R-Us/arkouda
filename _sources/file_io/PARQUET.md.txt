@@ -13,7 +13,7 @@ More information on Parquet can be found [here](https://parquet.apache.org/).
 - DataFrame
 - Strings
 - SegArray
-  - Strings dtype not yet supported. Track [here](https://github.com/Bears-R-Us/arkouda/issues/2121)
+  - Strings values are only supported in the single instance case. Track updates on support when writing multiple columns [here](https://github.com/Bears-R-Us/arkouda/issues/2493)
 
 ## Compression
 
