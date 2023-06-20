@@ -402,6 +402,7 @@ module CommAggregation {
     use CommPrimitives;
     use CommAggregation;
     use BigInteger, GMP;
+    use ArkoudaPOSIXCompat;
 
     proc bigint._serializedSize() {
       extern proc chpl_gmp_mpz_struct_sign_size(from: __mpz_struct) : mp_size_t;
