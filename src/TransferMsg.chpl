@@ -123,21 +123,41 @@ module TransferMsg
           ref segments_name = ele_parts[2];
           ref values_name = ele_parts[3];
 
-          var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
-          var segments = toSymEntry(gSeg, int);
+          var segments = toSymEntry(toGenSymEntry(st.lookup(segments_name)), int);
+          
+          //var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
           var gVal: borrowed GenSymEntry = getGenericTypedArrayEntry(values_name, st);
+
+          proc sendSegArray(values, localeCount, port, hostname) throws {
+            {
+              var (intersections, ports, names) = calculateSetupInfo(values, localeCount, port);
+              sendSetupInfo(port:string, values.a, names, "seg_array", localeCount);
+              sendData(values, hostname, intersections, ports);
+            }
+
+            {
+              var (intersections, ports, names) = calculateSetupInfo(segments, localeCount, port);
+              sendSetupInfo(port:string, segments.a, names, "seg_array", localeCount);
+              sendData(segments, hostname, intersections, ports);
+            }
+          }
+          
           select(gVal.dtype){
             when(DType.Int64){
               var values = toSymEntry(gVal, int);
+              sendSegArray(values, localeCount, port, hostname);
             }
             when(DType.UInt64){
               var values = toSymEntry(gVal, uint);
+              sendSegArray(values, localeCount, port, hostname);
             }
             when(DType.Float64){
               var values = toSymEntry(gVal, real);
+              sendSegArray(values, localeCount, port, hostname);
             }
             when(DType.Bool){
               var values = toSymEntry(gVal, bool);
+              sendSegArray(values, localeCount, port, hostname);
             }
             otherwise {
               var errorMsg = notImplementedError(pn,dtype2str(gVal.dtype));
@@ -193,6 +213,9 @@ module TransferMsg
         var colName = receiveColumnName(hostname, port);
         var objParts = obj.split("+");
         ref currObjType = objParts[0];
+        writeln();
+        writeln(objParts);
+        writeln();
         if currObjType == "pdarray" {
           var rname = st.nextName();
           var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
@@ -220,6 +243,69 @@ module TransferMsg
           rnames.append((colName, ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
         } else if currObjType == "Categorical" {
           writeln("receiving categorical");
+        } else if currObjType == "SegArray" {
+          var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
+          var rtnMap: map(string, string) = new map(string, string);
+          if typeString == "int(64)" {
+            var entry = new shared SymEntry(size, int);
+            var vname = st.nextName();
+            receiveData(entry.a, nodeNames, port);
+
+            var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
+            var segments = new shared SymEntry(segSize, int);
+            var sname = st.nextName();
+            receiveData(segments.a, nodeNames, port);
+
+            st.addEntry(sname, segments);
+            st.addEntry(vname, entry);
+          
+            rtnMap.add("segments", "created " + st.attrib(sname));
+            rtnMap.add("values", "created " + st.attrib(vname));
+          } else if typeString == "uint(64)" {
+            var entry = new shared SymEntry(size, uint);
+            var vname = st.nextName();
+            receiveData(entry.a, nodeNames, port);
+
+            var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
+            var segments = new shared SymEntry(segSize, int);
+            var sname = st.nextName();
+            st.addEntry(sname, segments);
+            st.addEntry(vname, entry);
+          
+            rtnMap.add("segments", "created " + st.attrib(sname));
+            rtnMap.add("values", "created " + st.attrib(vname));
+          } else if typeString == "real(64)" {
+            var entry = new shared SymEntry(size, real);
+            var vname = st.nextName();
+            receiveData(entry.a, nodeNames, port);
+
+            var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
+            var segments = new shared SymEntry(segSize, int);
+            var sname = st.nextName();
+            receiveData(segments.a, nodeNames, port);
+          
+            st.addEntry(sname, segments);
+            st.addEntry(vname, entry);
+          
+            rtnMap.add("segments", "created " + st.attrib(sname));
+            rtnMap.add("values", "created " + st.attrib(vname));
+          } else if typeString == "bool" {
+            var entry = new shared SymEntry(size, bool);
+            receiveData(entry.a, nodeNames, port);
+            var vname = st.nextName();
+
+            var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
+            var segments = new shared SymEntry(segSize, int);
+            receiveData(segments.a, nodeNames, port);
+            var sname = st.nextName();
+          
+            st.addEntry(sname, segments);
+            st.addEntry(vname, entry);
+          
+            rtnMap.add("segments", "created " + st.attrib(sname));
+            rtnMap.add("values", "created " + st.attrib(vname));
+          }
+          rnames.append(("", ObjType.SEGARRAY, "%jt".format(rtnMap)));
         }
       }
       
