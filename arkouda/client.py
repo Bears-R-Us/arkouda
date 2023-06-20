@@ -470,7 +470,7 @@ channelType = ChannelType(os.getenv('ARKOUDA_CHANNEL_TYPE', 'ZMQ').upper())
 def get_channel(server: str = 'localhost', port: int = 5555, token: str = None,
                 connect_url: str = None) -> Channel:
     """
-    Returns the configured Channel implementation, instantiating it if None
+    Returns the configured Channel implementation
 
     Parameters
     ----------
@@ -497,14 +497,11 @@ def get_channel(server: str = 'localhost', port: int = 5555, token: str = None,
     EnvironmentError
         Raised if the ARKOUDA_CHANNEL_TYPE references an invalid ChannelType
     """
-    def establish_channel() -> Channel:
-        if channelType == ChannelType.ZMQ:
-            return ZmqChannel(server=server, port=port, user=username, token=token,
-                              connect_url=connect_url)
-        else:
-            raise EnvironmentError(f'Invalid channelType {channelType}')
-
-    return channel if channel else establish_channel()
+    if channelType == ChannelType.ZMQ:
+        return ZmqChannel(server=server, port=port, user=username, token=token,
+                          connect_url=connect_url)
+    else:
+        raise EnvironmentError(f'Invalid channelType {channelType}')
 
 
 def connect(
