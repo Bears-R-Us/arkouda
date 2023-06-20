@@ -5,6 +5,7 @@ module CommAggregation {
   use ChplConfig;
 
   use ArkoudaCTypesCompat;
+  use ArkoudaPOSIXCompat;
 
   // TODO should tune these values at startup
   param defaultBuffSize = if CHPL_COMM == "ugni" then 4096 else 8192;
@@ -401,6 +402,7 @@ module CommAggregation {
     use CommPrimitives;
     use CommAggregation;
     use BigInteger, GMP;
+    use ArkoudaPOSIXCompat;
 
     proc bigint._serializedSize() {
       extern proc chpl_gmp_mpz_struct_sign_size(from: __mpz_struct) : mp_size_t;
@@ -424,8 +426,8 @@ module CommAggregation {
 
       var limb_ptr = chpl_gmp_mpz_struct_limbs(this.getImpl());
 
-      c_memcpy(x, c_ptrTo(sign_size), size_bytes);
-      c_memcpy(x+size_bytes, limb_ptr, limb_bytes);
+      memcpy(x, c_ptrTo(sign_size), size_bytes);
+      memcpy(x+size_bytes, limb_ptr, limb_bytes);
     }
 
     proc bigint._deserializeFrom(x: c_ptr(uint(8))) {
@@ -437,14 +439,14 @@ module CommAggregation {
 
       var size_bytes = c_sizeof(mp_size_t);
 
-      c_memcpy(c_ptrTo(sign_size), x, size_bytes);
+      memcpy(c_ptrTo(sign_size), x, size_bytes);
 
       var nlimbs = AutoMath.abs(sign_size:int);
       var limb_bytes = nlimbs * c_sizeof(mp_limb_t):int;
 
       _mpz_realloc(this.mpz, nlimbs);
       var xp = chpl_gmp_mpz_struct_limbs(this.getImpl());
-      c_memcpy(xp, x+size_bytes, limb_bytes);
+      memcpy(xp, x+size_bytes, limb_bytes);
 
       chpl_gmp_mpz_set_sign_size(this.mpz, sign_size);
 
@@ -516,7 +518,7 @@ module CommAggregation {
         }
 
         // Buffer the address and the serialized value
-        c_memcpy(c_ptrTo(lBuffers[loc][bufferIdx]), c_ptrTo(dstAddr), addr_bytes);
+        memcpy(c_ptrTo(lBuffers[loc][bufferIdx]), c_ptrTo(dstAddr), addr_bytes);
         src._serializeInto(c_ptrTo(lBuffers[loc][bufferIdx+addr_bytes]));
         bufferIdx += addr_bytes + serialize_bytes;
 
@@ -549,7 +551,7 @@ module CommAggregation {
             var addr_bytes = c_sizeof(c_ptr(bigint)): int;
 
             // Copy addr out of buffer
-            c_memcpy(c_ptrTo(dstAddr), c_ptrTo(remBufferPtr[curBufferIdx]), addr_bytes);
+            memcpy(c_ptrTo(dstAddr), c_ptrTo(remBufferPtr[curBufferIdx]), addr_bytes);
             // assert that record locality matches mpz locality
             if boundsChecking { assert(dstAddr.deref().localeId == here.id); }
             // deserialize into bigint
