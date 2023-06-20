@@ -183,7 +183,7 @@ module TransferMsg
       var (numColumns, objNames) = receiveDataFrameSetupInfo(hostname, port);
       var rnames: list((string, ObjType, string)); 
 
-      private proc receiveInto(entry, nodeNames, port, colName, rname, st) throws {
+      proc receiveInto(entry, nodeNames, port, colName, rname, st) throws {
         receiveData(entry.a, nodeNames, port);
         rnames.append((colName, ObjType.PDARRAY, rname));
         st.addEntry(rname, entry);
@@ -368,27 +368,37 @@ module TransferMsg
 
       var segments = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("segments"))), int);
 
+      proc sendSegArray(values, localeCount, port, hostname) throws {
+        {
+          var (intersections, ports, names) = calculateSetupInfo(values, localeCount, port);
+          sendSetupInfo(port:string, values.a, names, "seg_array", localeCount);
+          sendData(values, hostname, intersections, ports);
+        }
+
+        {
+          var (intersections, ports, names) = calculateSetupInfo(segments, localeCount, port);
+          sendSetupInfo(port:string, segments.a, names, "seg_array", localeCount);
+          sendData(segments, hostname, intersections, ports);
+        }
+      }
+      
       select dType {
         when (DType.Int64) {
           var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), int);
 
-          {
-            var (intersections, ports, names) = calculateSetupInfo(values, localeCount, port);
-            sendSetupInfo(port:string, values.a, names, "seg_array", localeCount);
-            sendData(values, hostname, intersections, ports);
-          }
-
-          {
-            var (intersections, ports, names) = calculateSetupInfo(segments, localeCount, port);
-            sendSetupInfo(port:string, segments.a, names, "seg_array", localeCount);
-            sendData(segments, hostname, intersections, ports);
-          }
+          sendSegArray(values, localeCount, port, hostname);
         } when (DType.UInt64) {
           var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), uint);
+          
+          sendSegArray(values, localeCount, port, hostname);
         } when (DType.Float64) {
           var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), real);
+
+          sendSegArray(values, localeCount, port, hostname);
         } when (DType.Bool) {
           var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), bool);
+          
+          sendSegArray(values, localeCount, port, hostname);
         }
         otherwise {
           throw getErrorWithContext(
