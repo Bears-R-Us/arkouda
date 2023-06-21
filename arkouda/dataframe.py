@@ -596,6 +596,39 @@ class DataFrame(UserDict):
         return new_df.to_pandas(retain_index=True)[self._columns]
 
     def transfer(self, hostname, port):
+        """
+        Sends a DataFrame to a different Arkouda server
+
+        Parameters
+        ----------
+        hostname : str
+            The hostname where the Arkouda server intended to
+            receive the DataFrame is running.
+        port : int_scalars
+            The port to send the array over. This needs to be an
+            open port (i.e., not one that the Arkouda server is
+            running on). This will open up `numLocales` ports,
+            each of which in succession, so will use ports of the
+            range {port..(port+numLocales)} (e.g., running an
+            Arkouda server of 4 nodes, port 1234 is passed as
+            `port`, Arkouda will use ports 1234, 1235, 1236,
+            and 1237 to send the array data).
+            This port much match the port passed to the call to
+            `ak.receive_array()`.
+
+
+        Returns
+        -------
+        A message indicating a complete transfer
+
+        Raises
+        ------
+        ValueError
+            Raised if the op is not within the pdarray.BinOps set
+        TypeError
+            Raised if other is not a pdarray or the pdarray.dtype is not
+            a supported dtype
+        """
         self.update_size()
         idx = self._index
         msg_list = []

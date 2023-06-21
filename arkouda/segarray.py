@@ -1563,12 +1563,13 @@ class SegArray:
 
     def send_array(self, hostname: str, port: int_scalars):
         """
-        Sends a pdarray to a different Arkouda server
+        Sends a Segmented Array to a different Arkouda server
 
         Parameters
         ----------
         hostname : str
-            The hostname of the pdarray to receive the array
+            The hostname where the Arkouda server intended to
+            receive the Segmented Array is running.
         port : int_scalars
             The port to send the array over. This needs to be an
             open port (i.e., not one that the Arkouda server is
@@ -1583,7 +1584,7 @@ class SegArray:
 
         Returns
         -------
-        None
+        A message indicating a complete transfer
 
         Raises
         ------

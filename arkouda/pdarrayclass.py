@@ -382,7 +382,8 @@ class pdarray:
         Parameters
         ----------
         hostname : str
-            The hostname of the pdarray to receive the array
+            The hostname where the Arkouda server intended to
+            receive the pdarray is running.
         port : int_scalars
             The port to send the array over. This needs to be an
             open port (i.e., not one that the Arkouda server is
@@ -398,7 +399,7 @@ class pdarray:
 
         Returns
         -------
-        None
+        A message indicating a complete transfer
 
         Raises
         ------
