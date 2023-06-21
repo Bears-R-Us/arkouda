@@ -417,24 +417,24 @@ class NumericTest(ArkoudaTest):
         pda2 = ak.array(na2)
 
         self.assertTrue(
-            np.allclose(np.arctan2(na1, na2).tolist(), ak.arctan2(pda1, pda2).to_list(), equal_nan=True)
+            np.allclose(np.arctan2(na1, na2), ak.arctan2(pda1, pda2).to_ndarray(), equal_nan=True)
         )
         self.assertTrue(
-            np.allclose(np.arctan2(na2, na1).tolist(), ak.arctan2(pda2, pda1).to_list(), equal_nan=True)
+            np.allclose(np.arctan2(na2, na1), ak.arctan2(pda2, pda1).to_ndarray(), equal_nan=True)
         )
         self.assertTrue(
-            np.allclose(np.arctan2(na1, 5).tolist(), ak.arctan2(pda1, 5).to_list(), equal_nan=True)
+            np.allclose(np.arctan2(na1, 5), ak.arctan2(pda1, 5).to_ndarray(), equal_nan=True)
         )
         self.assertTrue(
-            np.allclose(np.arctan2(5, na1).tolist(), ak.arctan2(5, pda1).to_list(), equal_nan=True)
+            np.allclose(np.arctan2(5, na1), ak.arctan2(5, pda1).to_ndarray(), equal_nan=True)
         )
         self.assertTrue(
-            np.allclose(np.arctan2(na1, 0).tolist(), ak.arctan2(pda1, 0).to_list(), equal_nan=True)
+            np.allclose(np.arctan2(na1, 0), ak.arctan2(pda1, 0).to_ndarray(), equal_nan=True)
         )
         self.assertTrue(
-            np.allclose(np.arctan2(0, na1).tolist(), ak.arctan2(0, pda1).to_list(), equal_nan=True)
+            np.allclose(np.arctan2(0, na1), ak.arctan2(0, pda1).to_ndarray(), equal_nan=True)
         )
-
+    
     def testSinh(self):
         na = np.arange(0, 10, dtype="int64")
         pda = ak.array(na)
@@ -454,7 +454,8 @@ class NumericTest(ArkoudaTest):
         # Edge case: infinities
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.sinh(na).tolist(), ak.sinh(pda).to_list(), equal_nan=True))
+        self.assertTrue(np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray(), equal_nan=True))
+
 
     def testCosh(self):
         na = np.arange(0, 10, dtype="int64")
@@ -475,7 +476,8 @@ class NumericTest(ArkoudaTest):
         # Edge case: infinities
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.cosh(na).tolist(), ak.cosh(pda).to_list(), equal_nan=True))
+        self.assertTrue(np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray(), equal_nan=True))
+
 
     def testTanh(self):
         na = np.arange(0, 10, dtype="int64")
@@ -496,7 +498,8 @@ class NumericTest(ArkoudaTest):
         # Edge case: infinities
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.tanh(na).tolist(), ak.tanh(pda).to_list(), equal_nan=True))
+        self.assertTrue(np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray(), equal_nan=True))
+    
 
     def testArcsinh(self):
         na = np.arange(0, 10, dtype="int64")
@@ -517,7 +520,8 @@ class NumericTest(ArkoudaTest):
         # Edge case: infinities
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arcsinh(na).tolist(), ak.arcsinh(pda).to_list(), equal_nan=True))
+        self.assertTrue(np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray(), equal_nan=True))
+
 
     def testArccosh(self):
         na = np.arange(1, 10, dtype="int64")
@@ -539,6 +543,8 @@ class NumericTest(ArkoudaTest):
         na = np.array([1, np.inf])
         pda = ak.array(na)
         self.assertTrue(np.allclose(np.arccosh(na).tolist(), ak.arccosh(pda).to_list(), equal_nan=True))
+        self.assertTrue(np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray(), equal_nan=True))
+
 
     def testArctanh(self):
         na = np.arange(-1, 2, dtype="int64")
