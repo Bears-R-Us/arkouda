@@ -20,7 +20,8 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--size", action="store", default="10**8",
-        help="Problem size: length of array to use for benchmarks."
+        help="Problem size: length of array to use for tests/benchmarks. For some cases, this will "
+             "be multiplied by the number of locales."
     )
     parser.addoption(
         "--seed", action="store", default="",
@@ -60,9 +61,8 @@ def startup_teardown():
             )
         except Exception as e:
             raise RuntimeError(
-                "in configuring or starting the arkouda_server: {}, check "
-                + "environment and/or arkouda_server installation",
-                e,
+                f"in configuring or starting the arkouda_server: {e}, check "
+                + "environment and/or arkouda_server installation"
             )
     else:
         print(

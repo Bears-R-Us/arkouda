@@ -5,9 +5,12 @@ import numpy as np
 from arkouda.dtypes import npstr
 
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64]
-CAST_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64, npstr]
+NO_BOOL = [ak.int64, ak.float64, ak.uint64]
+NO_FLOAT = [ak.int64, ak.bool, ak.uint64]
+INT_FLOAT = [ak.int64, ak.float64]
+CAST_TYPES = [ak.dtype(t) for t in ak.DTypes]
 
-VALID_CAST = [
+ROUNDTRIP_CAST = [
     (ak.bool, ak.bool),
     (ak.int64, ak.int64),
     (ak.int64, ak.float64),
@@ -30,12 +33,12 @@ class TestNumeric:
         # Make sure unseeded runs differ
         a = ak.randint(0, 2**32, prob_size, dtype=numeric_type)
         b = ak.randint(0, 2**32, prob_size, dtype=numeric_type)
-        assert not ((a == b).all())
+        assert not (a == b).all()
 
         # Make sure seeded results are same
         a = ak.randint(0, 2**32, prob_size, dtype=numeric_type, seed=seed)
         b = ak.randint(0, 2**32, prob_size, dtype=numeric_type, seed=seed)
-        assert a.to_list() == b.to_list()
+        assert (a == b).all()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_seeded_rng_general(self, prob_size):
@@ -43,26 +46,27 @@ class TestNumeric:
         # Uniform
         assert not (ak.uniform(prob_size) == ak.uniform(prob_size)).all()
         assert (
-            ak.uniform(prob_size, seed=seed).to_list()
-            == ak.uniform(prob_size, seed=seed).to_list()
-        )
+            ak.uniform(prob_size, seed=seed)
+            == ak.uniform(prob_size, seed=seed)
+        ).all()
 
         # Standard Normal
         assert not (ak.standard_normal(prob_size) == ak.standard_normal(prob_size)).all()
         assert (
-            ak.standard_normal(prob_size, seed=seed).to_list()
-            == ak.standard_normal(prob_size, seed=seed).to_list()
-        )
+            ak.standard_normal(prob_size, seed=seed)
+            == ak.standard_normal(prob_size, seed=seed)
+        ).all()
 
         # Strings (uniformly distributed length)
         assert not (
             ak.random_strings_uniform(1, 10, prob_size)
             == ak.random_strings_uniform(1, 10, prob_size)
         ).all()
+
         assert (
-            ak.random_strings_uniform(1, 10, prob_size, seed=seed).to_list()
-            == ak.random_strings_uniform(1, 10, prob_size, seed=seed).to_list()
-        )
+            ak.random_strings_uniform(1, 10, prob_size, seed=seed)
+            == ak.random_strings_uniform(1, 10, prob_size, seed=seed)
+        ).all()
 
         # Strings (log-normally distributed length)
         assert not (
@@ -70,9 +74,9 @@ class TestNumeric:
             == ak.random_strings_lognormal(2, 1, prob_size)
         ).all()
         assert (
-            ak.random_strings_lognormal(2, 1, prob_size, seed=seed).to_list()
-            == ak.random_strings_lognormal(2, 1, prob_size, seed=seed).to_list()
-        )
+            ak.random_strings_lognormal(2, 1, prob_size, seed=seed)
+            == ak.random_strings_lognormal(2, 1, prob_size, seed=seed)
+        ).all()
 
     @pytest.mark.parametrize("cast_to", CAST_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -84,9 +88,12 @@ class TestNumeric:
         }
 
         for t1, orig in arrays.items():
+            if t1 == ak.float64 and cast_to == ak.bigint:
+                # we don't support casting a float to a bigint
+                continue
             other = ak.cast(orig, cast_to)
             assert orig.size == other.size
-            if (t1, cast_to) in VALID_CAST:
+            if (t1, cast_to) in ROUNDTRIP_CAST:
                 roundtrip = ak.cast(other, t1)
                 assert (orig == roundtrip).all()
 
@@ -121,8 +128,9 @@ class TestNumeric:
         assert valid.to_list() == validans.to_list()
         assert np.allclose(ans, res.to_ndarray(), equal_nan=True)
 
-    def test_histogram(self):
-        pda = ak.randint(10, 30, 40)
+    @pytest.mark.parametrize("num_type", INT_FLOAT)
+    def test_histogram(self, num_type):
+        pda = ak.randint(10, 30, 40, dtype=num_type)
         bins, result = ak.histogram(pda, bins=20)
 
         assert isinstance(result, ak.pdarray)
@@ -131,90 +139,89 @@ class TestNumeric:
         assert int == result.dtype
 
         with pytest.raises(TypeError):
-            ak.histogram([range(0, 10)], bins=1)
+            ak.histogram(np.array([range(0, 10)]).astype(num_type), bins=1)
 
         with pytest.raises(TypeError):
             ak.histogram(pda, bins="1")
 
         with pytest.raises(TypeError):
-            ak.histogram([range(0, 10)], bins="1")
+            ak.histogram(np.array([range(0, 10)]).astype(num_type), bins="1")
 
-    def test_log(self):
-        na = np.linspace(1, 10, 10)
-        pda = ak.array(na)
+    @pytest.mark.parametrize("num_type", NO_BOOL)
+    def test_log(self, num_type):
+        na = np.linspace(1, 10, 10).astype(num_type)
+        pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.log(na), ak.log(pda).to_ndarray())
         with pytest.raises(TypeError):
-            ak.log([range(0, 10)])
+            ak.log(np.array([range(0, 10)]).astype(num_type))
 
-    def test_exp(self):
-        na = np.linspace(1, 10, 10)
-        pda = ak.array(na)
+    @pytest.mark.parametrize("num_type", NO_BOOL)
+    def test_exp(self, num_type):
+        na = np.linspace(1, 10, 10).astype(num_type)
+        pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.exp(na), ak.exp(pda).to_ndarray())
         with pytest.raises(TypeError):
-            ak.exp([range(0, 10)])
+            ak.exp(np.array([range(0, 10)]).astype(num_type))
 
-    def test_abs(self):
-        na = np.linspace(1, 10, 10)
-        pda = ak.array(na)
+    @pytest.mark.parametrize("num_type", INT_FLOAT)
+    def test_abs(self, num_type):
+        na = np.linspace(1, 10, 10).astype(num_type)
+        pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.abs(na), ak.abs(pda).to_ndarray())
-        assert ak.arange(5, 1, -1).to_list() == ak.abs(ak.arange(-5, -1)).to_list()
-        assert (
-            [5, 4, 3, 2, 1]
-            == ak.abs(ak.linspace(-5, -1, 5)).to_list(),
-        )
+
+        assert ak.arange(5, 0, -1, dtype=num_type).to_list() == ak.abs(ak.arange(-5, 0, dtype=num_type)).to_list()
 
         with pytest.raises(TypeError):
-            ak.abs([range(0, 10)])
+            ak.abs(np.array([range(0, 10)]).astype(num_type))
 
-    def test_cumsum(self):
-        na = np.linspace(1, 10, 10)
-        pda = ak.array(na)
-
-        assert np.allclose(np.cumsum(na), ak.cumsum(pda).to_ndarray())
-
-        # Test uint case
-        na = np.linspace(1, 10, 10, "uint64")
-        pda = ak.cast(pda, ak.uint64)
+    @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
+    def test_cumsum(self, num_type):
+        na = np.linspace(1, 10, 10).astype(num_type)
+        pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.cumsum(na), ak.cumsum(pda).to_ndarray())
-
         with pytest.raises(TypeError):
-            ak.cumsum([range(0, 10)])
+            ak.cumsum(np.array([range(0, 10)]).astype(num_type))
 
-    def test_cumprod(self):
-        na = np.linspace(1, 10, 10)
-        pda = ak.array(na)
+    @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
+    def test_cumprod(self, num_type):
+        na = np.linspace(1, 10, 10).astype(num_type)
+        pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.cumprod(na), ak.cumprod(pda).to_ndarray())
         with pytest.raises(TypeError):
-            ak.cumprod([range(0, 10)])
+            ak.cumprod(np.array([range(0, 10)]).astype(num_type))
 
-    def test_sin(self):
-        na = np.linspace(1, 10, 10)
-        pda = ak.array(na)
+    @pytest.mark.parametrize("num_type", NO_BOOL)
+    def test_sin(self, num_type):
+        na = np.linspace(1, 10, 10).astype(num_type)
+        pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.sin(na), ak.sin(pda).to_ndarray())
         with pytest.raises(TypeError):
-            ak.cos([range(0, 10)])
+            ak.sin(np.array([range(0, 10)]).astype(num_type))
 
-    def test_cos(self):
-        na = np.linspace(1, 10, 10)
-        pda = ak.array(na)
+    @pytest.mark.parametrize("num_type", NO_BOOL)
+    def test_cos(self, num_type):
+        na = np.linspace(1, 10, 10).astype(num_type)
+        pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.cos(na), ak.cos(pda).to_ndarray())
         with pytest.raises(TypeError):
-            ak.cos([range(0, 10)])
+            ak.cos(np.array([range(0, 10)]).astype(num_type))
 
-    def test_value_counts(self):
-        pda = ak.ones(100, dtype=ak.int64)
+    @pytest.mark.parametrize("num_type", NO_FLOAT)
+    def test_value_counts(self, num_type):
+        pda = ak.ones(100, dtype=num_type)
         result = ak.value_counts(pda)
 
-        assert ak.array([1]) ==  result[0]
+        assert ak.array([1]) == result[0]
         assert ak.array([100]) == result[1]
 
+    def test_value_counts_error(self):
         pda = ak.linspace(1, 10, 10)
         with pytest.raises(TypeError):
             ak.value_counts(pda)
