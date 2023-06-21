@@ -353,10 +353,6 @@ module TransferMsg
       var objType: ObjType = msgArgs.getValueOf("objType").toUpper(): ObjType;
 
       select objType {
-        when ObjType.ARRAYVIEW {
-          // call handler for arrayview write msg
-          //arrayView_tohdfMsg(msgArgs, st);
-        }
         when ObjType.PDARRAY {
           // call handler for pdarray write
           pdarrayTransfer(msgArgs, st);
