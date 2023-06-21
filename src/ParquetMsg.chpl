@@ -1265,7 +1265,7 @@ module ParquetMsg {
       const fname = filenames[idx];
 
       var ptrList: [0..#ncols] c_void_ptr;
-      var offsetPtr: [0..#ncols] c_void_ptr; // ptrs to offsets for SegArray. Know number of rows so we know where to stop
+      var segmentPtr: [0..#ncols] c_void_ptr; // ptrs to offsets for SegArray. Know number of rows so we know where to stop
       var objTypes: [0..#ncols] int; // ObjType enum integer values
       var datatypes: [0..#ncols] int;
       var sizeList: [0..#ncols] int;
@@ -1274,11 +1274,12 @@ module ParquetMsg {
       var my_column_names = col_names;
       var c_names: [0..#ncols] c_string;
 
-      var offset_ct: [0..#ncols] int;
-      var sections_sizes_str: [0..#ncols] int; // only fill in sizes for str columns
-      var sections_sizes_int: [0..#ncols] int; // only fill in sizes for int, uint segarray columns
-      var sections_sizes_real: [0..#ncols] int; // only fill in sizes for float segarray columns
-      var sections_sizes_bool: [0..#ncols] int; // only fill in sizes for bool segarray columns
+      var segment_ct: [0..#ncols] int;
+      var seg_sizes_str: [0..#ncols] int; // Track the sizes of string columns and # of segments in segarray str column
+      var val_sizes_str: [0..#ncols] int; // Track # of values making strings coming to locale
+      var seg_sizes_int: [0..#ncols] int; // only fill in sizes for int, uint segarray columns
+      var seg_sizes_real: [0..#ncols] int; // only fill in sizes for float segarray columns
+      var seg_sizes_bool: [0..#ncols] int; // only fill in sizes for bool segarray columns
       forall (i, column, ot) in zip(0..#ncols, sym_names, col_objTypes) {
         var x: int;
         var objType = ot.toUpper(): ObjType;
@@ -1291,7 +1292,7 @@ module ParquetMsg {
           var lens = ss.getLengths();
           const locDom = ss.offsets.a.localSubdomain();
           for i in locDom do x += lens[i];
-          sections_sizes_str[i] = x;
+          seg_sizes_str[i] = x;
         }
         else if objType == ObjType.SEGARRAY {
           // parse the json in column to get the component pdarrays
@@ -1304,22 +1305,43 @@ module ParquetMsg {
           const high = saD.high;
           const locDom = sa.localSubdomain();
           var values = getGenericTypedArrayEntry(components["values"], st);
-          
+
+          segment_ct[i] += locDom.size;
+          if values.dtype == DType.Strings && locDom.size > 0 { // TODO - add locdom size check here
+            var e: SegStringSymEntry = toSegStringSymEntry(values);
+            var segStr = new SegString("", e);
+            ref ss = segStr;
+            var lens = ss.getLengths();
+            const lastOffset = if sa.size == 0 then 0 else sa[high];
+            const lastOffsetIdx = segStr.offsets.a.domain.high;
+            var startOffsetIdx = sa[locDom.low];
+            var endOffsetIdx = if (lastOffset == sa[locDom.high]) then lastOffsetIdx else sa[locDom.high + 1] - 1;
+            var offIdxRange = startOffsetIdx..endOffsetIdx;
+            var str_bytes: int;
+            for i in offIdxRange do str_bytes += lens[i];
+
+            // TODO - I think we need to look at the # bytes in each string, not just the # of segments
+            seg_sizes_str[i] = str_bytes;
+            writeln("\n\nLocale: %jt\nOffset Range: %jt\n Lengths: %jt\nx: %i".format(idx, offIdxRange, lens, str_bytes));
+          }
+
           lens = [(i, s) in zip (saD, sa)] if i == high then values.size - s else sa[i+1] - s;
-          offset_ct[i] += locDom.size;
           for i in locDom do x += lens[i];
           select values.dtype {
             when DType.Int64 {
-              sections_sizes_int[i] = x;
+              seg_sizes_int[i] = x;
             }
             when DType.UInt64 {
-              sections_sizes_int[i] = x;
+              seg_sizes_int[i] = x;
             }
             when DType.Float64 {
-              sections_sizes_real[i] = x;
+              seg_sizes_real[i] = x;
             }
             when DType.Bool {
-              sections_sizes_bool[i] = x;
+              seg_sizes_bool[i] = x;
+            }
+            when DType.Strings {
+              val_sizes_str[i] = x;
             }
             otherwise {
               throw getErrorWithContext(
@@ -1334,27 +1356,27 @@ module ParquetMsg {
         }
       }
 
-      var numoffsets: int = + reduce offset_ct; // total # of offsets on locale
-      var offset_tracking: [0..#numoffsets] int; // array to write offset values into after adjusting for locale
-      var offset_idx = (+ scan offset_ct) - offset_ct; // offset start indexes for each column
+      var totalSegs: int = + reduce segment_ct; // total # of offsets on locale
+      var segment_tracking: [0..#totalSegs] int; // array to write offset values into after adjusting for locale
+      var segment_idx = (+ scan segment_ct) - segment_ct; // offset start indexes for each column
 
-      var locSize_str: int = + reduce sections_sizes_str;
+      var locSize_str: int = + reduce seg_sizes_str;
       var str_vals: [0..#locSize_str] uint(8);
-      var locSize_int: int = + reduce sections_sizes_int;
+      var locSize_int: int = + reduce seg_sizes_int;
       var int_vals: [0..#locSize_int] int; //int and uint written the same so no conversions will be needed
-      var locSize_real: int = + reduce sections_sizes_real;
+      var locSize_real: int = + reduce seg_sizes_real;
       var real_vals: [0..#locSize_real] real;
-      var locSize_bool: int = + reduce sections_sizes_bool;
+      var locSize_bool: int = + reduce seg_sizes_bool;
       var bool_vals: [0..#locSize_bool] bool;
 
       // indexes for which values go to which columns
-      var str_idx = (+ scan sections_sizes_str) - sections_sizes_str;
-      var int_idx = (+ scan sections_sizes_int) - sections_sizes_int;
-      var real_idx = (+ scan sections_sizes_real) - sections_sizes_real;
-      var bool_idx = (+ scan sections_sizes_bool) - sections_sizes_bool;
+      var str_idx = (+ scan seg_sizes_str) - seg_sizes_str;
+      var int_idx = (+ scan seg_sizes_int) - seg_sizes_int;
+      var real_idx = (+ scan seg_sizes_real) - seg_sizes_real;
+      var bool_idx = (+ scan seg_sizes_bool) - seg_sizes_bool;
 
       // populate data based on object and data types
-      forall (i, column, ot, si, ui, ri, bi, oi) in zip(0..#ncols, sym_names, col_objTypes, str_idx, int_idx, real_idx, bool_idx, offset_idx) {
+      forall (i, column, ot, si, ui, ri, bi, segidx) in zip(0..#ncols, sym_names, col_objTypes, str_idx, int_idx, real_idx, bool_idx, segment_idx) {
         // generate the local c string list of column names
         c_names[i] = my_column_names[i].localize().c_str();
 
@@ -1396,66 +1418,95 @@ module ParquetMsg {
             objTypes[i] = ObjType.SEGARRAY: int;            
 
             if locDom.size > 0 {
-              const lastOffset = if S.size == 0 then 0 else S[S.domain.high]; // prevent index error when empty;
-              const localOffsets = S[locDom];
-              const startValIdx = localOffsets[locDom.low];
+              const lastSegment = if S.size == 0 then 0 else S[S.domain.high]; // prevent index error when empty;
+              const localSegments = S[locDom];
+              const startValIdx = localSegments[locDom.low];
               sizeList[i] = locDom.size;
-              offset_tracking[oi..#locDom.size] = localOffsets - startValIdx;
-              offsetPtr[i] = c_ptrTo(offset_tracking[oi]);
+              segment_tracking[segidx..#locDom.size] = localSegments - startValIdx;
+              segmentPtr[i] = c_ptrTo(segment_tracking[segidx]);
               
               var valEntry = getGenericTypedArrayEntry(components["values"], st);
               select valEntry.dtype {
                 when DType.Int64 {
-                  segarray_sizes[i] = sections_sizes_int[i];
+                  segarray_sizes[i] = seg_sizes_int[i];
                   var values = toSymEntry(valEntry, int);
                   const lastValIdx = values.a.domain.high;
 
                   datatypes[i] = ARROWINT64;
 
-                  const endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
+                  const endValIdx = if (lastSegment == localSegments[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   int_vals[ui..#valIdxRange.size] = olda[valIdxRange];
                   ptrList[i] = c_ptrTo(int_vals[ui]): c_void_ptr;
                 }
                 when DType.UInt64 {
-                  segarray_sizes[i] = sections_sizes_int[i];
+                  segarray_sizes[i] = seg_sizes_int[i];
                   var values = toSymEntry(valEntry, uint);
                   const lastValIdx = values.a.domain.high;
 
                   datatypes[i] = ARROWUINT64;
 
-                  var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
+                  var endValIdx = if (lastSegment == localSegments[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   int_vals[ui..#valIdxRange.size] = olda[valIdxRange]: int;
                   ptrList[i] = c_ptrTo(int_vals[ui]): c_void_ptr;
                 }
                 when DType.Float64 {
-                  segarray_sizes[i] = sections_sizes_real[i];
+                  segarray_sizes[i] = seg_sizes_real[i];
                   var values = toSymEntry(valEntry, real);
                   const lastValIdx = values.a.domain.high;
 
                   datatypes[i] = ARROWDOUBLE;
 
-                  var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
+                  var endValIdx = if (lastSegment == localSegments[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   real_vals[ri..#valIdxRange.size] = olda[valIdxRange];
                   ptrList[i] = c_ptrTo(real_vals[ri]): c_void_ptr;
                 }
                 when DType.Bool {
-                  segarray_sizes[i] = sections_sizes_bool[i];
+                  segarray_sizes[i] = seg_sizes_bool[i];
                   var values = toSymEntry(valEntry, bool);
                   const lastValIdx = values.a.domain.high;
 
                   datatypes[i] = ARROWBOOLEAN;
 
-                  var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
+                  var endValIdx = if (lastSegment == localSegments[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   bool_vals[bi..#valIdxRange.size] = olda[valIdxRange];
                   ptrList[i] = c_ptrTo(bool_vals[bi]): c_void_ptr;
+                }
+                when DType.Strings {
+                  segarray_sizes[i] = val_sizes_str[i];
+                  var values = toSegStringSymEntry(valEntry);
+                  ref oldOff = values.offsetsEntry.a;
+                  ref oldVal = values.bytesEntry.a;
+
+                  const extraSegment = oldOff.size;
+                  const extraOffset = oldVal.size;
+                  const lastSegment = if S.size == 0 then 0 else S[S.domain.high];
+                  const lastOffsetIdx = oldOff.domain.high;
+                  const lastValIdx = oldVal.domain.high;
+
+                  datatypes[i] = ARROWSTRING;
+                  
+                  var startOffsetIdx = localSegments[locDom.low];
+                  var endOffsetIdx = if (lastSegment == localSegments[locDom.high]) then lastOffsetIdx else S[locDom.high + 1] - 1;
+                  var offIdxRange = startOffsetIdx..endOffsetIdx;
+
+                  var localOffsets: [offIdxRange] int = oldOff[offIdxRange];
+                  var startValIdx = localOffsets[offIdxRange.low];
+                  // TODO - idk if we want -1 at end here
+                  var endValIdx = if (lastOffsetIdx == offIdxRange.high) then lastValIdx else oldOff[offIdxRange.high + 1] - 1;
+                  var valIdxRange = startValIdx..endValIdx;
+                  str_vals[si..#valIdxRange.size] = oldVal[valIdxRange];
+                  ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
+
+                  // reset offset tracking for string values
+                  writeln("\n\nLocale: %i\nLocalSegments: %jt\nLocalOffsets: %jt\nValueRange: %jt\nValues: %jt\n\n".format(idx, localSegments, localOffsets, valIdxRange, str_vals));
                 }
                 otherwise {
                   throw getErrorWithContext(
@@ -1483,6 +1534,9 @@ module ParquetMsg {
                 }
                 when DType.Bool {
                   datatypes[i] = ARROWBOOLEAN;
+                }
+                when DType.Strings {
+                  datatypes[i] = ARROWSTRING;
                 }
                 otherwise {
                   throw getErrorWithContext(
@@ -1577,7 +1631,7 @@ module ParquetMsg {
         );
       }
       
-      var result: int = c_writeMultiColToParquet(fname.localize().c_str(), c_ptrTo(c_names), c_ptrTo(ptrList), c_ptrTo(offsetPtr), c_ptrTo(objTypes), c_ptrTo(datatypes), c_ptrTo(segarray_sizes), ncols, numelems, ROWGROUPS, compression, c_ptrTo(pqErr.errMsg));
+      var result: int = c_writeMultiColToParquet(fname.localize().c_str(), c_ptrTo(c_names), c_ptrTo(ptrList), c_ptrTo(segmentPtr), c_ptrTo(objTypes), c_ptrTo(datatypes), c_ptrTo(segarray_sizes), ncols, numelems, ROWGROUPS, compression, c_ptrTo(pqErr.errMsg));
       if result == ARROWERROR {
         pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
       }

@@ -862,7 +862,13 @@ std::shared_ptr<parquet::schema::GroupNode> SetupSchema(void* column_names, void
         fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
       }
     } else if(dtypes_ptr[i] == ARROWSTRING) {
-      fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::BYTE_ARRAY, parquet::ConvertedType::NONE));
+      if (objType_ptr[i] == SEGARRAY) {
+        auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::BYTE_ARRAY, parquet::ConvertedType::NONE);
+        auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+        fields.push_back(parquet::schema::GroupNode::Make(cname_ptr[i], parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+      } else {
+        fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::BYTE_ARRAY, parquet::ConvertedType::NONE));
+      }
     }
   }
   return std::static_pointer_cast<parquet::schema::GroupNode>(
@@ -1078,31 +1084,89 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
           auto data_ptr = (uint8_t*)ptr_arr[i];
           parquet::ByteArrayWriter* ba_writer =
           static_cast<parquet::ByteArrayWriter*>(rg_writer->NextColumn());
-          int64_t count = 0;
-          int64_t byteIdx = 0;
+          if (objType_ptr[i] == SEGARRAY) {
+            int64_t byteIdx = 0;
 
-          // identify the starting byte index
-          if (x > 0){
-            byteIdx = idxQueue_str.front();
-            idxQueue_str.pop();
-          }
-          
-          while(count < batchSize) {
-            parquet::ByteArray value;
-            int16_t definition_level = 1;
-            value.ptr = reinterpret_cast<const uint8_t*>(&data_ptr[byteIdx]);
-            int64_t nextIdx = byteIdx;
-            while (data_ptr[nextIdx] != 0x00){
-              nextIdx++;
+            // identify the starting byte index
+            if (x > 0){
+              byteIdx = idxQueue_str.front();
+              idxQueue_str.pop();
             }
-            // subtract 1 since we have the null terminator
-            value.len = nextIdx - byteIdx;
-            ba_writer->WriteBatch(1, &definition_level, nullptr, &value);
-            count++;
-            byteIdx = nextIdx + 1;
+            
+            auto offset_ptr = (int64_t*)offset_arr[i];
+            int64_t offIdx = 0; // index into offsets
+
+            if (x > 0){
+              offIdx = idxQueue_segarray.front();
+              idxQueue_segarray.pop();
+            }
+            int64_t count = 0;
+            while (count < batchSize) { // ensures rowGroupSize maintained
+              int64_t segSize;
+              if (offIdx == numelems - 1) {
+                segSize = saSizes_ptr[i] - offset_ptr[offIdx];
+              }
+              else {
+                segSize = offset_ptr[offIdx+1] - offset_ptr[offIdx];
+              }
+              if (segSize > 0) {
+
+                for (int64_t s=0; s<segSize; s++) {
+                  int16_t def_lvl = 3;
+                  int16_t rep_lvl = (s == 0) ? 0 : 1;
+                  parquet::ByteArray value;
+                  value.ptr = reinterpret_cast<const uint8_t*>(&data_ptr[byteIdx]);
+                  int64_t nextIdx = byteIdx;
+                  while (data_ptr[nextIdx] != 0x00){
+                    nextIdx++;
+                  }
+                  value.len = nextIdx - byteIdx;
+                  ba_writer->WriteBatch(1, &def_lvl, &rep_lvl, &value);
+                  byteIdx = nextIdx + 1; // increment to start of next word
+                }
+              }
+              else {
+                // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
+                segSize = 1; // even though segment is length=0, write null to hold the empty segment
+                int16_t* def_lvl = new int16_t[segSize] { 1 };
+                int16_t* rep_lvl = new int16_t[segSize] { 0 };
+                ba_writer->WriteBatch(segSize, def_lvl, rep_lvl, nullptr);
+              }
+              offIdx++;
+              count++;
+            }
+            if (numLeft - count > 0) {
+              idxQueue_segarray.push(byteIdx);
+              idxQueue_segarray.push(offIdx);
+            }
           }
-          if (numLeft - count > 0) {
-            idxQueue_str.push(byteIdx);
+          else {
+            int64_t count = 0;
+            int64_t byteIdx = 0;
+
+            // identify the starting byte index
+            if (x > 0){
+              byteIdx = idxQueue_str.front();
+              idxQueue_str.pop();
+            }
+            
+            while(count < batchSize) {
+              parquet::ByteArray value;
+              int16_t definition_level = 1;
+              value.ptr = reinterpret_cast<const uint8_t*>(&data_ptr[byteIdx]);
+              int64_t nextIdx = byteIdx;
+              while (data_ptr[nextIdx] != 0x00){
+                nextIdx++;
+              }
+              // subtract 1 since we have the null terminator
+              value.len = nextIdx - byteIdx;
+              ba_writer->WriteBatch(1, &definition_level, nullptr, &value);
+              count++;
+              byteIdx = nextIdx + 1;
+            }
+            if (numLeft - count > 0) {
+              idxQueue_str.push(byteIdx);
+            }
           }
         } else {
           return ARROWERROR;
