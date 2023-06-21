@@ -434,7 +434,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(np.arctan2(0, na1), ak.arctan2(0, pda1).to_ndarray(), equal_nan=True)
         )
-    
+
     def testSinh(self):
         na = np.arange(0, 10, dtype="int64")
         pda = ak.array(na)
@@ -455,7 +455,6 @@ class NumericTest(ArkoudaTest):
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
         self.assertTrue(np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray(), equal_nan=True))
-
 
     def testCosh(self):
         na = np.arange(0, 10, dtype="int64")
@@ -478,7 +477,6 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         self.assertTrue(np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray(), equal_nan=True))
 
-
     def testTanh(self):
         na = np.arange(0, 10, dtype="int64")
         pda = ak.array(na)
@@ -499,7 +497,6 @@ class NumericTest(ArkoudaTest):
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
         self.assertTrue(np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray(), equal_nan=True))
-    
 
     def testArcsinh(self):
         na = np.arange(0, 10, dtype="int64")
@@ -522,7 +519,6 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         self.assertTrue(np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray(), equal_nan=True))
 
-
     def testArccosh(self):
         na = np.arange(1, 10, dtype="int64")
         pda = ak.array(na)
@@ -544,7 +540,6 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         self.assertTrue(np.allclose(np.arccosh(na).tolist(), ak.arccosh(pda).to_list(), equal_nan=True))
         self.assertTrue(np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray(), equal_nan=True))
-
 
     def testArctanh(self):
         na = np.arange(-1, 2, dtype="int64")
