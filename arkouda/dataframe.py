@@ -2690,8 +2690,5 @@ def receive_dataframe(hostname : str, port):
     """
     rep_msg = generic_msg(cmd="receiveDataframe", args={"hostname": hostname,
                                                         "port"    : port})
-    #ret = rep_msg.split('--')
     rep = json.loads(rep_msg)
-    #rep = json.loads(ret[0])
-    #vals = ret[1].split('-')
     return DataFrame(_build_objects(rep))

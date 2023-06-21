@@ -1446,5 +1446,3 @@ class Categorical:
             cmd="sendArray",
             args=args,
         )
-
-    
