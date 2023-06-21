@@ -195,7 +195,10 @@ class Categorical:
         eles = json.loads(rep_msg)
         codes = create_pdarray(eles["codes"])
         cats = Strings.from_return_msg(eles["categories"])
-        na_code = create_pdarray(eles["_akNAcode"])
+        if "_akNAcode" in eles:
+            na_code = create_pdarray(eles["_akNAcode"])
+        else:
+            na_code = None
 
         segments = None
         perm = None

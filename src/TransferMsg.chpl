@@ -64,7 +64,27 @@ module TransferMsg
           ref categories_name = ele_parts[3];
 
           var gCode: borrowed GenSymEntry = getGenericTypedArrayEntry(codes_name, st);
-          var code_vals = toSymEntry(gCode, int);
+          var codes = toSymEntry(gCode, int);
+
+          var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(categories_name));
+          var cats = new SegString("", cat_entry);
+
+          {
+            var (intersections, ports, names) = calculateSetupInfo(codes, localeCount, port);
+            sendSetupInfo(port:string, codes.a, names, "categorical", localeCount);
+            sendData(codes, hostname, intersections, ports);
+          }
+
+          {
+            var (intersections, ports, names) = calculateSetupInfo(cats.values, localeCount, port);
+            sendSetupInfo(port:string, cats.values.a, names, "string", localeCount);
+            sendData(cats.values, hostname, intersections, ports);
+          }
+          {
+            var (intersections, ports, names) = calculateSetupInfo(cats.offsets, localeCount, port);
+            sendSetupInfo(port:string, cats.offsets.a, names, "pdarray", localeCount);
+            sendData(cats.offsets, hostname, intersections, ports);
+          }
         }
         else if ele_parts[0] == "Strings"{
           var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(ele_parts[2]));
@@ -164,8 +184,7 @@ module TransferMsg
               throw new IllegalArgumentError(errorMsg);
             }
           }
-        }
-        else {
+        } else {
           var errorMsg = notImplementedError(pn, ele_parts[0]);
           throw new IllegalArgumentError(errorMsg);
         }
@@ -213,9 +232,6 @@ module TransferMsg
         var colName = receiveColumnName(hostname, port);
         var objParts = obj.split("+");
         ref currObjType = objParts[0];
-        writeln();
-        writeln(objParts);
-        writeln();
         if currObjType == "pdarray" {
           var rname = st.nextName();
           var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
@@ -242,7 +258,26 @@ module TransferMsg
           var stringsEntry = assembleSegStringFromParts(offsets, values, st);
           rnames.append((colName, ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
         } else if currObjType == "Categorical" {
-          writeln("receiving categorical");
+          var (size, typeString, nodeNames, objType) = receiveSetupInfo(hostname, port);
+          var rtnMap: map(string, string) = new map(string, string);
+          // GET CODES
+          var codes = new shared SymEntry(size, int);
+          receiveData(codes.a, nodeNames, port);
+          var cname = st.nextName();
+          st.addEntry(cname, codes);
+        
+          // GET CATS STRING
+          var (valSize, _, _, _) = receiveSetupInfo(hostname, port);
+          var values = new shared SymEntry(valSize, uint(8));
+          receiveData(values.a, nodeNames, port);
+          var (offSize, _, _, _) = receiveSetupInfo(hostname, port);
+          var offsets = new shared SymEntry(offSize, int);
+          receiveData(offsets.a, nodeNames, port);
+          var cats = assembleSegStringFromParts(offsets, values, st);
+
+          rtnMap.add("codes", "created " + st.attrib(codes.name));
+          rtnMap.add("categories", "created %s+created %t".format(st.attrib(cats.name), cats.nBytes));
+          rnames.append((colName, ObjType.CATEGORICAL, "%jt".format(rtnMap)));
         } else if currObjType == "SegArray" {
           var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
           var rtnMap: map(string, string) = new map(string, string);
@@ -305,7 +340,7 @@ module TransferMsg
             rtnMap.add("segments", "created " + st.attrib(sname));
             rtnMap.add("values", "created " + st.attrib(vname));
           }
-          rnames.append(("", ObjType.SEGARRAY, "%jt".format(rtnMap)));
+          rnames.append((colName, ObjType.SEGARRAY, "%jt".format(rtnMap)));
         }
       }
       
