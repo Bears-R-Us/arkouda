@@ -584,39 +584,54 @@ def arctan2(num: Union[numeric_scalars, pdarray], denom: Union[numeric_scalars, 
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if (isinstance(num, pdarray) or isSupportedNumber(num)) and (
-        isinstance(denom, pdarray) or isSupportedNumber(denom)
-    ):
-        if isinstance(num, pdarray) and isinstance(denom, pdarray):
-            repMsg = generic_msg(
-                cmd="efunc2vv",
-                args={
-                    "func": "arctan2",
-                    "num": num,
-                    "denom": denom,
-                },
+    if isinstance(num, pdarray) and isinstance(denom, pdarray):
+        return create_pdarray(
+            type_cast(
+                str,
+                generic_msg(
+                    cmd="efunc2vv",
+                    args={
+                        "func": "arctan2",
+                        "num": num,
+                        "denom": denom,
+                    },
+                ),
             )
-        if isinstance(num, pdarray) and isSupportedNumber(denom):
-            repMsg = generic_msg(
-                cmd="efunc2vs",
-                args={
-                    "func": "arctan2",
-                    "num": num,
-                    "scalar": denom,
-                    "dtype": resolve_scalar_dtype(denom),
-                },
+        )
+    if isinstance(num, pdarray) and isSupportedNumber(denom):
+        return create_pdarray(
+            type_cast(
+                str,
+                generic_msg(
+                    cmd="efunc2vs",
+                    args={
+                        "func": "arctan2",
+                        "num": num,
+                        "scalar": denom,
+                        "dtype": resolve_scalar_dtype(denom),
+                    },
+                ),
             )
-        if isSupportedNumber(num) and isinstance(denom, pdarray):
-            repMsg = generic_msg(
-                cmd="efunc2sv",
-                args={
-                    "func": "arctan2",
-                    "scalar": num,
-                    "denom": denom,
-                    "dtype": resolve_scalar_dtype(num),
-                },
+        )
+    if isSupportedNumber(num) and isinstance(denom, pdarray):
+        return create_pdarray(
+            type_cast(
+                str,
+                generic_msg(
+                    cmd="efunc2sv",
+                    args={
+                        "func": "arctan2",
+                        "scalar": num,
+                        "denom": denom,
+                        "dtype": resolve_scalar_dtype(num),
+                    },
+                ),
             )
-        return create_pdarray(type_cast(str, repMsg))
+        )
+    if isSupportedNumber(num) and isSupportedNumber(denom):
+        raise TypeError(
+            "Scalar-scalar case is not supported. At least one argument must be a pdarray."
+        )
     else:
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
