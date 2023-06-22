@@ -247,15 +247,13 @@ class StatsTest(ArkoudaTest):
         self.assertTrue(np.allclose(ak_div.to_ndarray(), np_div, equal_nan=True))
         self.assertTrue(np.allclose(ak_mod.to_ndarray(), np_mod, equal_nan=True))
 
-        # TODO this was already broken but the num and denom were swapped
-        #  this will be addressed in #2519
-        # # Edge cases in the denominator
-        # edge_case = [-np.inf, -7.0, np.nan, 7.0, np.inf]
-        # np_edge_case = np.array(edge_case)
-        # ak_edge_case = ak.array(np_edge_case)
-        # np_ind = np.arange(1, len(edge_case)+1)
-        # ak_ind = ak.arange(1, len(edge_case)+1)
-        # ak_div, ak_mod = ak.divmod(ak_ind, ak_edge_case)
-        # np_div, np_mod = np.divmod(np_ind, np_edge_case)
-        # self.assertTrue(np.allclose(ak_div.to_ndarray(), np_div, equal_nan=True))
-        # self.assertTrue(np.allclose(ak_mod.to_ndarray(), np_mod, equal_nan=True))
+        # Edge cases in the denominator
+        edge_case = [-np.inf, -7.0, np.nan, 7.0, np.inf]
+        np_edge_case = np.array(edge_case)
+        ak_edge_case = ak.array(np_edge_case)
+        np_ind = np.arange(1, len(edge_case)+1)
+        ak_ind = ak.arange(1, len(edge_case)+1)
+        ak_div, ak_mod = ak.divmod(ak_ind, ak_edge_case)
+        np_div, np_mod = np.divmod(np_ind, np_edge_case)
+        self.assertTrue(np.allclose(ak_div.to_ndarray(), np_div, equal_nan=True))
+        self.assertTrue(np.allclose(ak_mod.to_ndarray(), np_mod, equal_nan=True))

@@ -1197,7 +1197,11 @@ module OperatorMsg
                         [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
                     }
                     when "**=" { l.a **= r.a; }
-                    when "%=" {l.a = AutoMath.mod(l.a, r.a);}
+                    when "%=" {
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(li,ri) in zip(la,ra)] li = modHelper(li, ri);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1220,7 +1224,11 @@ module OperatorMsg
                         [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
                     }
                     when "**=" { l.a **= r.a; }
-                    when "%=" {l.a = AutoMath.mod(l.a, r.a:real);}
+                    when "%=" {
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(li,ri) in zip(la,ra)] li = modHelper(li, ri);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1242,7 +1250,11 @@ module OperatorMsg
                         [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
                     }
                     when "**=" { l.a **= r.a; }
-                    when "%=" {l.a = AutoMath.mod(l.a, r.a);}
+                    when "%=" {
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(li,ri) in zip(la,ra)] li = modHelper(li, ri);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1762,7 +1774,10 @@ module OperatorMsg
                         [li in la] li = floorDivisionHelper(li, val);
                     }
                     when "**=" { l.a **= val; }
-                    when "%=" {l.a = AutoMath.mod(l.a, val);}
+                    when "%=" {
+                        ref la = l.a;
+                        [li in la] li = modHelper(li, val);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1784,7 +1799,10 @@ module OperatorMsg
                     when "**=" {
                         l.a **= val;
                     }
-                    when "%=" {l.a = AutoMath.mod(l.a, val:real);}
+                    when "%=" {
+                        ref la = l.a;
+                        [li in la] li = modHelper(li, val);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1805,7 +1823,10 @@ module OperatorMsg
                         [li in la] li = floorDivisionHelper(li, val);
                     }
                     when "**=" { l.a **= val; }
-                    when "%=" {l.a = AutoMath.mod(l.a, val);}
+                    when "%=" {
+                        ref la = l.a;
+                        [li in la] li = modHelper(li, val);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

@@ -404,7 +404,7 @@ class NumericTest(ArkoudaTest):
         )
 
         with self.assertRaises(TypeError):
-            ak.arctan2(5,10)
+            ak.arctan2(5, 10)
         with self.assertRaises(TypeError):
             ak.arctan2(1, [range(0, 10)])
         with self.assertRaises(TypeError):
