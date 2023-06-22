@@ -32,6 +32,8 @@ dependencies:
   - mypy>=0.931,<0.990
   - black
   - isort
+  - pytest-json-report
+  - pytest-benchmark
   
   - pip:
     # Developer dependencies
@@ -39,5 +41,4 @@ dependencies:
     - furo # sphinx theme
     - myst-parser
     - linkify-it-py
-    - pytest-benchmark
   
