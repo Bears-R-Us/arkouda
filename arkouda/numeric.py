@@ -598,7 +598,7 @@ def arctan2(num: Union[numeric_scalars, pdarray], denom: Union[numeric_scalars, 
                 ),
             )
         )
-    if isinstance(num, pdarray) and isSupportedNumber(denom):
+    elif isinstance(num, pdarray) and isSupportedNumber(denom):
         return create_pdarray(
             type_cast(
                 str,
@@ -613,7 +613,7 @@ def arctan2(num: Union[numeric_scalars, pdarray], denom: Union[numeric_scalars, 
                 ),
             )
         )
-    if isSupportedNumber(num) and isinstance(denom, pdarray):
+    elif isSupportedNumber(num) and isinstance(denom, pdarray):
         return create_pdarray(
             type_cast(
                 str,
@@ -628,14 +628,10 @@ def arctan2(num: Union[numeric_scalars, pdarray], denom: Union[numeric_scalars, 
                 ),
             )
         )
-    if isSupportedNumber(num) and isSupportedNumber(denom):
-        raise TypeError(
-            "Scalar-scalar case is not supported. At least one argument must be a pdarray."
-        )
     else:
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
-            f"types are numeric scalars and pdarrays"
+            f"types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
 
 
