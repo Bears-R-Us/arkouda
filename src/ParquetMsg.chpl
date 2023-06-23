@@ -66,10 +66,10 @@ module ParquetMsg {
       errMsg = nil;
     }
     
-    // proc deinit() {
-    //   extern proc c_free_string(ptr);
-    //   c_free_string(errMsg);
-    // }
+    proc deinit() {
+      extern proc c_free_string(ptr);
+      c_free_string(errMsg);
+    }
 
     proc parquetError(lineNumber, routineName, moduleName) throws {
       extern proc strlen(a): int;
