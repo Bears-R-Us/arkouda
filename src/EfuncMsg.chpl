@@ -55,19 +55,17 @@ module EfuncMsg
         select (gEnt.dtype) {
             when (DType.Int64) {
                 var e = toSymEntry(gEnt,int);
+                ref ea = e.a;
                 select efunc
                 {
                     when "abs" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = abs(e.a);
+                        st.addEntry(rname, new shared SymEntry(abs(ea)));
                     }
                     when "log" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = log(e.a);
+                        st.addEntry(rname, new shared SymEntry(log(ea)));
                     }
                     when "exp" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = exp(e.a);
+                        st.addEntry(rname, new shared SymEntry(exp(ea)));
                     }
                     when "cumsum" {
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -80,12 +78,40 @@ module EfuncMsg
                         st.addEntry(rname, new shared SymEntry(* scan e.a));
                     }
                     when "sin" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = sin(e.a);
+                        st.addEntry(rname, new shared SymEntry(sin(ea)));
                     }
                     when "cos" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = cos(e.a);
+                        st.addEntry(rname, new shared SymEntry(cos(ea)));
+                    }
+                    when "tan" {
+                        st.addEntry(rname, new shared SymEntry(tan(ea)));
+                    }
+                    when "arcsin" {
+                        st.addEntry(rname, new shared SymEntry(asin(ea)));
+                    }
+                    when "arccos" {
+                        st.addEntry(rname, new shared SymEntry(acos(ea)));
+                    }
+                    when "arctan" {
+                        st.addEntry(rname, new shared SymEntry(atan(ea)));
+                    }
+                    when "sinh" {
+                        st.addEntry(rname, new shared SymEntry(sinh(ea)));
+                    }
+                    when "cosh" {
+                        st.addEntry(rname, new shared SymEntry(cosh(ea)));
+                    }
+                    when "tanh" {
+                        st.addEntry(rname, new shared SymEntry(tanh(ea)));
+                    }
+                    when "arcsinh" {
+                        st.addEntry(rname, new shared SymEntry(asinh(ea)));
+                    }
+                    when "arccosh" {
+                        st.addEntry(rname, new shared SymEntry(acosh(ea)));
+                    }
+                    when "arctanh" {
+                        st.addEntry(rname, new shared SymEntry(atanh(ea)));
                     }
                     when "hash64" {
                         overMemLimit(numBytes(int) * e.size);
@@ -107,20 +133,16 @@ module EfuncMsg
                         repMsg += "created " + st.attrib(rname2) + "+";
                     }
                     when "popcount" {
-                        var a = st.addEntry(rname, e.size, int);
-                        a.a = popCount(e.a);
+                        st.addEntry(rname, new shared SymEntry(popCount(ea)));
                     }
                     when "parity" {
-                        var a = st.addEntry(rname, e.size, int);
-                        a.a = parity(e.a);
+                        st.addEntry(rname, new shared SymEntry(parity(ea)));
                     }
                     when "clz" {
-                        var a = st.addEntry(rname, e.size, int);
-                        a.a = clz(e.a);
+                        st.addEntry(rname, new shared SymEntry(clz(ea)));
                     }
                     when "ctz" {
-                        var a = st.addEntry(rname, e.size, int);
-                        a.a = ctz(e.a);
+                        st.addEntry(rname, new shared SymEntry(ctz(ea)));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
@@ -131,19 +153,17 @@ module EfuncMsg
             }
             when (DType.Float64) {
                 var e = toSymEntry(gEnt,real);
+                ref ea = e.a;
                 select efunc
                 {
                     when "abs" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = abs(e.a);
+                        st.addEntry(rname, new shared SymEntry(abs(ea)));
                     }
                     when "log" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = log(e.a);
+                        st.addEntry(rname, new shared SymEntry(log(ea)));
                     }
                     when "exp" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = exp(e.a);
+                        st.addEntry(rname, new shared SymEntry(exp(ea)));
                     }
                     when "cumsum" {
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -156,16 +176,43 @@ module EfuncMsg
                         st.addEntry(rname, new shared SymEntry(* scan e.a));
                     }
                     when "sin" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = sin(e.a);
+                        st.addEntry(rname, new shared SymEntry(sin(ea)));
                     }
                     when "cos" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = cos(e.a);
+                        st.addEntry(rname, new shared SymEntry(cos(ea)));
+                    }
+                    when "tan" {
+                        st.addEntry(rname, new shared SymEntry(tan(ea)));
+                    }
+                    when "arcsin" {
+                        st.addEntry(rname, new shared SymEntry(asin(ea)));
+                    }
+                    when "arccos" {
+                        st.addEntry(rname, new shared SymEntry(acos(ea)));
+                    }
+                    when "arctan" {
+                        st.addEntry(rname, new shared SymEntry(atan(ea)));
+                    }
+                    when "sinh" {
+                        st.addEntry(rname, new shared SymEntry(sinh(ea)));
+                    }
+                    when "cosh" {
+                        st.addEntry(rname, new shared SymEntry(cosh(ea)));
+                    }
+                    when "tanh" {
+                        st.addEntry(rname, new shared SymEntry(tanh(ea)));
+                    }
+                    when "arcsinh" {
+                        st.addEntry(rname, new shared SymEntry(asinh(ea)));
+                    }
+                    when "arccosh" {
+                        st.addEntry(rname, new shared SymEntry(acosh(ea)));
+                    }
+                    when "arctanh" {
+                        st.addEntry(rname, new shared SymEntry(atanh(ea)));
                     }
                     when "isnan" {
-                        var a = st.addEntry(rname, e.size, bool);
-                        a.a = isnan(e.a);
+                        st.addEntry(rname, new shared SymEntry(isnan(ea)));
                     }
                     when "hash64" {
                         overMemLimit(numBytes(real) * e.size);
@@ -218,19 +265,17 @@ module EfuncMsg
             }
             when (DType.UInt64) {
                 var e = toSymEntry(gEnt,uint);
+                ref ea = e.a;
                 select efunc
                 {
                     when "popcount" {
-                        var a = st.addEntry(rname, e.size, uint);
-                        a.a = popCount(e.a);
+                        st.addEntry(rname, new shared SymEntry(popCount(ea)));
                     }
                     when "clz" {
-                        var a = st.addEntry(rname, e.size, uint);
-                        a.a = clz(e.a);
+                        st.addEntry(rname, new shared SymEntry(clz(ea)));
                     }
                     when "ctz" {
-                        var a = st.addEntry(rname, e.size, uint);
-                        a.a = ctz(e.a);
+                        st.addEntry(rname, new shared SymEntry(ctz(ea)));
                     }
                     when "cumsum" {
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -243,16 +288,43 @@ module EfuncMsg
                         st.addEntry(rname, new shared SymEntry(* scan e.a));
                     }
                     when "sin" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = sin(e.a);
+                        st.addEntry(rname, new shared SymEntry(sin(ea)));
                     }
                     when "cos" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = cos(e.a);
+                        st.addEntry(rname, new shared SymEntry(cos(ea)));
+                    }
+                    when "tan" {
+                        st.addEntry(rname, new shared SymEntry(tan(ea)));
+                    }
+                    when "arcsin" {
+                        st.addEntry(rname, new shared SymEntry(asin(ea)));
+                    }
+                    when "arccos" {
+                        st.addEntry(rname, new shared SymEntry(acos(ea)));
+                    }
+                    when "arctan" {
+                        st.addEntry(rname, new shared SymEntry(atan(ea)));
+                    }
+                    when "sinh" {
+                        st.addEntry(rname, new shared SymEntry(sinh(ea)));
+                    }
+                    when "cosh" {
+                        st.addEntry(rname, new shared SymEntry(cosh(ea)));
+                    }
+                    when "tanh" {
+                        st.addEntry(rname, new shared SymEntry(tanh(ea)));
+                    }
+                    when "arcsinh" {
+                        st.addEntry(rname, new shared SymEntry(asinh(ea)));
+                    }
+                    when "arccosh" {
+                        st.addEntry(rname, new shared SymEntry(acosh(ea)));
+                    }
+                    when "arctanh" {
+                        st.addEntry(rname, new shared SymEntry(atanh(ea)));
                     }
                     when "parity" {
-                        var a = st.addEntry(rname, e.size, uint);
-                        a.a = parity(e.a);
+                        st.addEntry(rname, new shared SymEntry(parity(ea)));
                     }
                     when "hash64" {
                         overMemLimit(numBytes(uint) * e.size);
@@ -274,12 +346,10 @@ module EfuncMsg
                         repMsg += "created " + st.attrib(rname2) + "+";
                     }
                     when "log" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = log(e.a);
+                        st.addEntry(rname, new shared SymEntry(log(ea)));
                     }
                     when "exp" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = exp(e.a);
+                        st.addEntry(rname, new shared SymEntry(exp(ea)));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
@@ -298,6 +368,390 @@ module EfuncMsg
         repMsg += "created " + st.attrib(rname);
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
         return new MsgTuple(repMsg, MsgType.NORMAL);         
+    }
+
+    /*
+    These are functions which take two arrays and produce an array.
+    vector = efunc(vector, vector)
+
+    :arg reqMsg: request containing (cmd,efunc,num,denom)
+    :type reqMsg: string 
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: (MsgTuple)
+    :throws: `UndefinedSymbolError(name)`
+    */
+    proc efunc2vvMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        var repMsg: string; // response message
+        // split request into fields
+        var rname = st.nextName();
+        var efunc = msgArgs.getValueOf("func");
+        var num: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("num"), st);
+        var denom: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("denom"), st);
+        if !(num.size == denom.size) {
+            var errorMsg = "size mismatch in arguments to "+pn;
+            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+            return new MsgTuple(errorMsg, MsgType.ERROR); 
+        }
+        select (num.dtype, denom.dtype) {
+            when (DType.Int64, DType.Int64) {
+                var en = toSymEntry(num, int);
+                var ed = toSymEntry(denom, int);
+                select efunc {
+                    when "arctan2" {
+                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }               
+                } 
+            }
+            when (DType.Int64, DType.UInt64) {
+                var en = toSymEntry(num, int);
+                var ed = toSymEntry(denom, uint);
+                select efunc {
+                    when "arctan2" {
+                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }
+                }
+            }
+            when (DType.Int64, DType.Float64) {
+                var en = toSymEntry(num, int);
+                var ed = toSymEntry(denom, real);
+                select efunc {
+                    when "arctan2" {
+                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }
+                }
+            }
+            when (DType.UInt64, DType.Int64) {
+                var en = toSymEntry(num, uint);
+                var ed = toSymEntry(denom, int);
+                select efunc {
+                    when "arctan2" {
+                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }               
+                } 
+            }
+            when (DType.UInt64, DType.UInt64) {
+                var en = toSymEntry(num, uint);
+                var ed = toSymEntry(denom, uint);
+                select efunc {
+                    when "arctan2" {
+                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }
+                }
+            }
+            when (DType.UInt64, DType.Float64) {
+                var en = toSymEntry(num, uint);
+                var ed = toSymEntry(denom, real);
+                select efunc {
+                    when "arctan2" {
+                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }
+                }
+            }
+            when (DType.Float64, DType.Int64) {
+                var en = toSymEntry(num, real);
+                var ed = toSymEntry(denom, int);
+                select efunc {
+                    when "arctan2" {
+                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }               
+                } 
+            }
+            when (DType.Float64, DType.UInt64) {
+                var en = toSymEntry(num, real);
+                var ed = toSymEntry(denom, uint);
+                select efunc {
+                    when "arctan2" {
+                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }
+                }
+            }
+            when (DType.Float64, DType.Float64) {
+                var en = toSymEntry(num, real);
+                var ed = toSymEntry(denom, real);
+                select efunc {
+                    when "arctan2" {
+                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }
+                }
+            }
+            otherwise {
+               var errorMsg = notImplementedError(pn,efunc,num.dtype,denom.dtype);
+               eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);       
+               return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+        repMsg = "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+        return new MsgTuple(repMsg, MsgType.NORMAL); 
+    }
+
+    /*
+    vector = efunc(vector, scalar)
+
+    :arg reqMsg: request containing (cmd,efunc,num,scalar,dtype)
+    :type reqMsg: string 
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: (MsgTuple)
+    :throws: `UndefinedSymbolError(name)`
+    */
+    proc efunc2vsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        var repMsg: string; // response message
+        var efunc = msgArgs.getValueOf("func");
+        var rname = st.nextName();
+        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
+
+        var name = msgArgs.getValueOf("num");
+        var num: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s efunc: %s scalar: %s dtype: %s name: %s rname: %s".format(
+             cmd,efunc,msgArgs.getValueOf("dtype"),dtype,name,rname));
+        
+        select (num.dtype, dtype) {
+            when (DType.Int64, DType.Int64) {
+                var en = toSymEntry(num, int);
+                ref ena = en.a;
+                var val = msgArgs.get("scalar").getIntValue();
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
+                    }
+                } 
+            }
+            when (DType.Int64, DType.UInt64) {
+                var en = toSymEntry(num, int);
+                ref ena = en.a;
+                var val = msgArgs.get("scalar").getUIntValue();
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
+                    }
+                } 
+            }
+            when (DType.Int64, DType.Float64) {
+                var en = toSymEntry(num, int);
+                ref ena = en.a;
+                var val = msgArgs.get("scalar").getRealValue();
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
+                    }
+                } 
+            }
+            when (DType.UInt64, DType.Int64) {
+                var en = toSymEntry(num, uint);
+                ref ena = en.a;
+                var val = msgArgs.get("scalar").getIntValue();
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
+                    }
+                } 
+            }
+            when (DType.UInt64, DType.UInt64) {
+                var en = toSymEntry(num, uint);
+                ref ena = en.a;
+                var val = msgArgs.get("scalar").getUIntValue();
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
+                    }
+                } 
+            }
+            when (DType.UInt64, DType.Float64) {
+                var en = toSymEntry(num, uint);
+                ref ena = en.a;
+                var val = msgArgs.get("scalar").getRealValue();
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
+                    }
+                } 
+            }
+            when (DType.Float64, DType.Int64) {
+                var en = toSymEntry(num, real);
+                ref ena = en.a;
+                var val = msgArgs.get("scalar").getIntValue();
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
+                    }
+                } 
+            }
+            when (DType.Float64, DType.UInt64) {
+                var en = toSymEntry(num, real);
+                ref ena = en.a;
+                var val = msgArgs.get("scalar").getUIntValue();
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
+                    }
+                } 
+            }
+            when (DType.Float64, DType.Float64) {
+                var en = toSymEntry(num, real);
+                ref ena = en.a;
+                var val = msgArgs.get("scalar").getRealValue();
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
+                    }
+                } 
+            }
+            otherwise {
+                var errorMsg = notImplementedError(pn,efunc,num.dtype,dtype);
+                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                return new MsgTuple(errorMsg, MsgType.ERROR);            
+            }
+        }
+        repMsg = "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+        return new MsgTuple(repMsg, MsgType.NORMAL); 
+    }
+
+    /*
+    vector = efunc(scalar, vector)
+
+    :arg reqMsg: request containing (cmd,efunc,scalar,denom,dtype)
+    :type reqMsg: string 
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: (MsgTuple)
+    :throws: `UndefinedSymbolError(name)`
+    */
+    proc efunc2svMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        var repMsg: string; // response message
+        var efunc = msgArgs.getValueOf("func");
+        var rname = st.nextName();
+        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
+
+        var name = msgArgs.getValueOf("denom");
+        var denom: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s efunc: %s scalar: %s dtype: %s name: %s rname: %s".format(
+             cmd,efunc,msgArgs.getValueOf("scalar"),dtype,name,rname));
+
+        select (dtype, denom.dtype) {
+            when (DType.Int64, DType.Int64) {
+                var val = msgArgs.get("scalar").getIntValue();
+                var ed = toSymEntry(denom, int);
+                ref eda = ed.a;
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
+                    } 
+                } 
+            }
+            when (DType.Int64, DType.UInt64) {
+                var val = msgArgs.get("scalar").getIntValue();
+                var ed = toSymEntry(denom, uint);
+                ref eda = ed.a;
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
+                    } 
+                } 
+            }
+            when (DType.Int64, DType.Float64) {
+                var val = msgArgs.get("scalar").getIntValue();
+                var ed = toSymEntry(denom, real);
+                ref eda = ed.a;
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
+                    } 
+                } 
+            }
+            when (DType.UInt64, DType.Int64) {
+                var val = msgArgs.get("scalar").getUIntValue();
+                var ed = toSymEntry(denom, int);
+                ref eda = ed.a;
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
+                    } 
+                } 
+            }
+            when (DType.UInt64, DType.UInt64) {
+                var val = msgArgs.get("scalar").getUIntValue();
+                var ed = toSymEntry(denom, uint);
+                ref eda = ed.a;
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
+                    } 
+                } 
+            }
+            when (DType.UInt64, DType.Float64) {
+                var val = msgArgs.get("scalar").getUIntValue();
+                var ed = toSymEntry(denom, real);
+                ref eda = ed.a;
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
+                    } 
+                } 
+            }
+            when (DType.Float64, DType.Int64) {
+                var val = msgArgs.get("scalar").getRealValue();
+                var ed = toSymEntry(denom, int);
+                ref eda = ed.a;
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
+                    } 
+                } 
+            }
+            when (DType.Float64, DType.UInt64) {
+                var val = msgArgs.get("scalar").getRealValue();
+                var ed = toSymEntry(denom, uint);
+                ref eda = ed.a;
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
+                    } 
+                } 
+            }
+            when (DType.Float64, DType.Float64) {
+                var val = msgArgs.get("scalar").getRealValue();
+                var ed = toSymEntry(denom, real);
+                ref eda = ed.a;
+                select efunc {
+                    when "arctan2" {
+                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
+                    } 
+                } 
+            }
+            otherwise {
+                var errorMsg = notImplementedError(pn,efunc,dtype,denom.dtype);
+                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                                 
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+        repMsg = "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+        return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
 
     /*
@@ -403,7 +857,6 @@ module EfuncMsg
                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-
         repMsg = "created " + st.attrib(rname);
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
         return new MsgTuple(repMsg, MsgType.NORMAL); 
@@ -840,6 +1293,9 @@ module EfuncMsg
 
     use CommandMap;
     registerFunction("efunc", efuncMsg, getModuleName());
+    registerFunction("efunc2vv", efunc2vvMsg, getModuleName());
+    registerFunction("efunc2vs", efunc2vsMsg, getModuleName());
+    registerFunction("efunc2sv", efunc2svMsg, getModuleName());
     registerFunction("efunc3vv", efunc3vvMsg, getModuleName());
     registerFunction("efunc3vs", efunc3vsMsg, getModuleName());
     registerFunction("efunc3sv", efunc3svMsg, getModuleName());

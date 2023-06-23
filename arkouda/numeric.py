@@ -37,6 +37,19 @@ __all__ = [
     "cumprod",
     "sin",
     "cos",
+    "tan",
+    "arcsin",
+    "arccos",
+    "arctan",
+    "arctan2",
+    "sinh",
+    "cosh",
+    "tanh",
+    "arcsinh",
+    "arccosh",
+    "arctanh",
+    "rad2deg",
+    "deg2rad",
     "hash",
     "where",
     "histogram",
@@ -423,6 +436,429 @@ def cos(pda: pdarray) -> pdarray:
         ),
     )
     return create_pdarray(repMsg)
+
+
+@typechecked
+def tan(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise tangent of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing tangent for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "tan",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def arcsin(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise inverse sine of the array. The result is between -pi/2 and pi/2.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse sine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "arcsin",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def arccos(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise inverse cosine of the array. The result is between 0 and pi.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse cosine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "arccos",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def arctan(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise inverse tangent of the array. The result is between -pi/2 and pi/2.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse tangent for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "arctan",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def arctan2(num: Union[numeric_scalars, pdarray], denom: Union[numeric_scalars, pdarray]) -> pdarray:
+    """
+    Return the element-wise inverse tangent of the array pair. The result chosen is the
+    signed angle in radians between the ray ending at the origin and passing through the
+    point (1,0), and the ray ending at the origin and passing through the point (denom, num).
+    The result is between -pi and pi.
+
+    Parameters
+    ----------
+    num : Union[numeric_scalars, pdarray]
+        Numerator of the arctan2 argument.
+    denom : Union[numeric_scalars, pdarray]
+        Denominator of the arctan2 argument.
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse tangent for each corresponding element pair
+        of the original pdarray, using the signed values or the numerator and
+        denominator to get proper placement on unit circle.
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    if isinstance(num, pdarray) and isinstance(denom, pdarray):
+        return create_pdarray(
+            type_cast(
+                str,
+                generic_msg(
+                    cmd="efunc2vv",
+                    args={
+                        "func": "arctan2",
+                        "num": num,
+                        "denom": denom,
+                    },
+                ),
+            )
+        )
+    elif isinstance(num, pdarray) and isSupportedNumber(denom):
+        return create_pdarray(
+            type_cast(
+                str,
+                generic_msg(
+                    cmd="efunc2vs",
+                    args={
+                        "func": "arctan2",
+                        "num": num,
+                        "scalar": denom,
+                        "dtype": resolve_scalar_dtype(denom),
+                    },
+                ),
+            )
+        )
+    elif isSupportedNumber(num) and isinstance(denom, pdarray):
+        return create_pdarray(
+            type_cast(
+                str,
+                generic_msg(
+                    cmd="efunc2sv",
+                    args={
+                        "func": "arctan2",
+                        "scalar": num,
+                        "denom": denom,
+                        "dtype": resolve_scalar_dtype(num),
+                    },
+                ),
+            )
+        )
+    else:
+        raise TypeError(
+            f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
+            f"types are numeric scalars and pdarrays. At least one argument must be a pdarray."
+        )
+
+
+@typechecked
+def sinh(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise hyperbolic sine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing hyperbolic sine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "sinh",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def cosh(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise hyperbolic cosine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing hyperbolic cosine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "cosh",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def tanh(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise hyperbolic tangent of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing hyperbolic tangent for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "tanh",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def arcsinh(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise inverse hyperbolic sine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse hyperbolic sine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "arcsinh",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def arccosh(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise inverse hyperbolic cosine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse hyperbolic cosine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "arccosh",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def arctanh(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise inverse hyperbolic tangent of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse hyperbolic tangent for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameters are not a pdarray or numeric scalar.
+    """
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "arctanh",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def rad2deg(pda: pdarray) -> pdarray:
+    """
+    Converts angles element-wise from radians to degrees.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing an angle converted to degrees, from radians, for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    return 180 * pda / np.pi
+
+
+@typechecked
+def deg2rad(pda: pdarray) -> pdarray:
+    """
+    Converts angles element-wise from degrees to radians.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing an angle converted to radians, from degrees, for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    """
+    return np.pi * pda / 180
 
 
 def _hash_helper(a):
