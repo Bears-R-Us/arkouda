@@ -517,15 +517,21 @@ class ParquetTest(ArkoudaTest):
             "c_8": ak.SegArray(ak.array([0, 9, 14]), ak.array(np.random.uniform(0, 100, 20))),
             "c_9": ak.array(["abc", "123", "xyz"]),
             "c_10": ak.SegArray(ak.array([0, 2, 5]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])),
+            "c_11": ak.SegArray(ak.array([0, 2, 2]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])),
+            "c_12": ak.SegArray(ak.array([0, 0, 2]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])),
+            "c_13": ak.SegArray(ak.array([0, 5, 8]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])),
         }
         akdf = ak.DataFrame(df_dict)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             # use multicolumn write to generate parquet file
             akdf.to_parquet(f"{tmp_dirname}/multicol_parquet")
-
+            print(ak.read_parquet(f"{tmp_dirname}/multicol_parquet*", datasets="c_12"))
             # read files and ensure that all resulting fields are as expected
             rd_data = ak.read_parquet(f"{tmp_dirname}/multicol_parquet*")
             for k, v in rd_data.items():
+                # print(v)
+                # print(akdf[k])
+                # print("")
                 self.assertListEqual(v.to_list(), akdf[k].to_list())
 
             # extra insurance, check dataframes are equivalent
@@ -578,6 +584,7 @@ class ParquetTest(ArkoudaTest):
         words = ak.array(['one,two,three', 'uno,dos,tres'])
         strs, segs = words.split(',', return_segments=True)
         x = ak.SegArray(segs, strs)
+        # x = ak.SegArray(ak.array([0, 0, 2]), ak.array(["a", "b", "c", "d"]))
 
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             x.to_parquet(f"{tmp_dirname}/segarr_str")

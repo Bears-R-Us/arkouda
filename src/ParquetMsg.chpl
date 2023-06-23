@@ -66,10 +66,10 @@ module ParquetMsg {
       errMsg = nil;
     }
     
-    proc deinit() {
-      extern proc c_free_string(ptr);
-      c_free_string(errMsg);
-    }
+    // proc deinit() {
+    //   extern proc c_free_string(ptr);
+    //   c_free_string(errMsg);
+    // }
 
     proc parquetError(lineNumber, routineName, moduleName) throws {
       extern proc strlen(a): int;
@@ -206,7 +206,6 @@ module ParquetMsg {
           const intersection = domain_intersection(locdom, filedom);
           if intersection.size > 0 {
             var pqErr = new parquetErrorMsg();
-
             if ty == ArrowTypes.stringArr {
               var col: [filedom] t;
               if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(col),
@@ -774,14 +773,14 @@ module ParquetMsg {
     } else {
         filenames = filelist;
     }
-
+    
     var fileErrors: list(string);
     var fileErrorCount:int = 0;
     var fileErrorMsg:string = "";
     var sizes: [filedom] int;
     var types: [dsetdom] ArrowTypes;
     var byteSizes: [filedom] int;
-
+    
     var rnames: list((string, ObjType, string)); // tuple (dsetName, item type, id)
     
     for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
@@ -1307,7 +1306,7 @@ module ParquetMsg {
           var values = getGenericTypedArrayEntry(components["values"], st);
 
           segment_ct[i] += locDom.size;
-          if values.dtype == DType.Strings && locDom.size > 0 { // TODO - add locdom size check here
+          if values.dtype == DType.Strings && locDom.size > 0 {
             var e: SegStringSymEntry = toSegStringSymEntry(values);
             var segStr = new SegString("", e);
             ref ss = segStr;
@@ -1320,9 +1319,7 @@ module ParquetMsg {
             var str_bytes: int;
             for i in offIdxRange do str_bytes += lens[i];
 
-            // TODO - I think we need to look at the # bytes in each string, not just the # of segments
             seg_sizes_str[i] = str_bytes;
-            writeln("\n\nLocale: %jt\nOffset Range: %jt\n Lengths: %jt\nx: %i".format(idx, offIdxRange, lens, str_bytes));
           }
 
           lens = [(i, s) in zip (saD, sa)] if i == high then values.size - s else sa[i+1] - s;
@@ -1496,17 +1493,16 @@ module ParquetMsg {
                   var startOffsetIdx = localSegments[locDom.low];
                   var endOffsetIdx = if (lastSegment == localSegments[locDom.high]) then lastOffsetIdx else S[locDom.high + 1] - 1;
                   var offIdxRange = startOffsetIdx..endOffsetIdx;
+                  if offIdxRange.size > 0 {
 
-                  var localOffsets: [offIdxRange] int = oldOff[offIdxRange];
-                  var startValIdx = localOffsets[offIdxRange.low];
-                  // TODO - idk if we want -1 at end here
-                  var endValIdx = if (lastOffsetIdx == offIdxRange.high) then lastValIdx else oldOff[offIdxRange.high + 1] - 1;
-                  var valIdxRange = startValIdx..endValIdx;
-                  str_vals[si..#valIdxRange.size] = oldVal[valIdxRange];
-                  ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
-
-                  // reset offset tracking for string values
-                  writeln("\n\nLocale: %i\nLocalSegments: %jt\nLocalOffsets: %jt\nValueRange: %jt\nValues: %jt\n\n".format(idx, localSegments, localOffsets, valIdxRange, str_vals));
+                    var localOffsets: [offIdxRange] int = oldOff[offIdxRange];
+                    var startValIdx = localOffsets[offIdxRange.low];
+                    
+                    var endValIdx = if (lastOffsetIdx == offIdxRange.high) then lastValIdx else oldOff[offIdxRange.high + 1] - 1;
+                    var valIdxRange = startValIdx..endValIdx;
+                    str_vals[si..#valIdxRange.size] = oldVal[valIdxRange];
+                    ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
+                  }
                 }
                 otherwise {
                   throw getErrorWithContext(

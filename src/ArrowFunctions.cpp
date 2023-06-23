@@ -256,17 +256,18 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
         while (ba_reader->HasNext() && numRead < numElems) {
           parquet::ByteArray value;
           (void)ba_reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-          if(values_read > 0) {
-            offsets[i] = value.len + 1;
-            byteSize += value.len + 1;
-            numRead += values_read;
-          } else {
-            offsets[i] = 1;
-            byteSize+=1;
-            numRead+=1;
+          if ((ty == ARROWLIST && definition_level == 3) || ty == ARROWSTRING) {
+            if(values_read > 0) {
+              offsets[i] = value.len + 1;
+              byteSize += value.len + 1;
+              numRead += values_read;
+            } else {
+              offsets[i] = 1;
+              byteSize+=1;
+              numRead+=1;
+            }
+            i++;
           }
-          i++;
-
         }
       }
       return byteSize;
@@ -552,7 +553,6 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
         int16_t definition_level; // needed for any type that is nullable
 
         std::shared_ptr<parquet::ColumnReader> column_reader = row_group_reader->Column(idx);
-
         if(lty == ARROWINT64 || lty == ARROWUINT64) {
           auto chpl_ptr = (int64_t*)chpl_arr;
           parquet::Int64Reader* reader =
@@ -592,13 +592,13 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             parquet::ByteArray value;
             (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
             // if values_read is 0, that means that it was a null value
-            if(values_read > 0) {
+            if(values_read > 0 && definition_level == 3) {
               for(int j = 0; j < value.len; j++) {
                 chpl_ptr[i] = value.ptr[j];
                 i++;
               }
+              i++; // skip one space so the strings are null terminated with a 0
             }
-            i++; // skip one space so the strings are null terminated with a 0
           }
         } else if(lty == ARROWBOOLEAN) {
           auto chpl_ptr = (bool*)chpl_arr;
@@ -1110,7 +1110,6 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
                 segSize = offset_ptr[offIdx+1] - offset_ptr[offIdx];
               }
               if (segSize > 0) {
-
                 for (int64_t s=0; s<segSize; s++) {
                   int16_t def_lvl = 3;
                   int16_t rep_lvl = (s == 0) ? 0 : 1;
