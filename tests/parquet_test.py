@@ -525,13 +525,9 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             # use multicolumn write to generate parquet file
             akdf.to_parquet(f"{tmp_dirname}/multicol_parquet")
-            print(ak.read_parquet(f"{tmp_dirname}/multicol_parquet*", datasets="c_12"))
             # read files and ensure that all resulting fields are as expected
             rd_data = ak.read_parquet(f"{tmp_dirname}/multicol_parquet*")
             for k, v in rd_data.items():
-                # print(v)
-                # print(akdf[k])
-                # print("")
                 self.assertListEqual(v.to_list(), akdf[k].to_list())
 
             # extra insurance, check dataframes are equivalent
