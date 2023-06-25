@@ -166,21 +166,21 @@ class Channel():
     """
     __slots__ = ('url', 'user', 'token', 'logger')
 
-    def __init__(self, user: str, server: str='localhost', port: int=5555, token: str = None,
+    def __init__(self, user: str, server: str = 'localhost', port: int = 5555, token: str = None,
                  connect_url: str = None) -> None:
         '''
         user : str
             Arkouda user who will use the Channel to connect to the arkouda_server
         server : str, optional
-            The hostname of the server (must be visible to the current machine). 
+            The hostname of the server (must be visible to the current machine).
             Defaults to `localhost`.
         port : int, optional
-            The port of the server. Defaults to 5555. 
+            The port of the server. Defaults to 5555.
         token : str, optional
             Token used to connect to the arkouda_server if authentication is enabled
         connect_url : str, optional
             The complete url in the format of tcp://server:port?token=<token_value>
-            where the token is optional              
+            where the token is optional
         '''
         self._set_url(server, port, connect_url)
         self.user = user
@@ -523,8 +523,8 @@ def connect(
     port: int = 5555,
     timeout: int = 0,
     access_token: str = None,
-    connect_url = None,
-    access_channel: Channel =  None
+    connect_url: str = None,
+    access_channel: Channel = None
 ) -> None:
     """
     Connect to a running arkouda server.
@@ -544,7 +544,7 @@ def connect(
         an Arkouda server where authentication is enabled. Defaults to None.
     connect_url : str, optional
         The complete url in the format of tcp://server:port?token=<token_value>
-        where the token is optional 
+        where the token is optional
     access_channel : Channel, optional
         The desired Channel implementation that differs from the default ZmqChannel
 
@@ -580,8 +580,8 @@ def connect(
         channel = access_channel
     else:
         channel = get_channel(server=server, port=port, token=access_token,
-                          connect_url=connect_url)
-    
+                              connect_url=connect_url)
+
     # connect via the channel
     channel.connect(timeout)
 
