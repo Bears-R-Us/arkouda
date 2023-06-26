@@ -25,7 +25,7 @@ Functions
 
 
 
-.. py:function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: str = None, connect_url=None) -> None
+.. py:function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: str = None, connect_url: str = None, access_channel: Channel = None) -> None
 
    Connect to a running arkouda server.
 
@@ -43,6 +43,8 @@ Functions
    :param connect_url: The complete url in the format of tcp://server:port?token=<token_value>
                        where the token is optional
    :type connect_url: str, optional
+   :param access_channel: The desired Channel implementation that differs from the default ZmqChannel
+   :type access_channel: Channel, optional
 
    :rtype: None
 
