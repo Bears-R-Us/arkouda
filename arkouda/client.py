@@ -166,8 +166,22 @@ class Channel():
     """
     __slots__ = ('url', 'user', 'token', 'logger')
 
-    def __init__(self, user: str, server: str, port: int, token: str = None,
+    def __init__(self, user: str, server: str = 'localhost', port: int = 5555, token: str = None,
                  connect_url: str = None) -> None:
+        '''
+        user : str
+            Arkouda user who will use the Channel to connect to the arkouda_server
+        server : str, optional
+            The hostname of the server (must be visible to the current machine).
+            Defaults to `localhost`.
+        port : int, optional
+            The port of the server. Defaults to 5555.
+        token : str, optional
+            Token used to connect to the arkouda_server if authentication is enabled
+        connect_url : str, optional
+            The complete url in the format of tcp://server:port?token=<token_value>
+            where the token is optional
+        '''
         self._set_url(server, port, connect_url)
         self.user = user
         self._set_access_token(server, port, token)
@@ -509,7 +523,8 @@ def connect(
     port: int = 5555,
     timeout: int = 0,
     access_token: str = None,
-    connect_url=None,
+    connect_url: str = None,
+    access_channel: Channel = None
 ) -> None:
     """
     Connect to a running arkouda server.
@@ -530,6 +545,8 @@ def connect(
     connect_url : str, optional
         The complete url in the format of tcp://server:port?token=<token_value>
         where the token is optional
+    access_channel : Channel, optional
+        The desired Channel implementation that differs from the default ZmqChannel
 
     Returns
     -------
@@ -555,9 +572,17 @@ def connect(
     cmd = "connect"
     logger.debug(f"[Python] Sending request: {cmd}")
 
-    # get channel and connect via channel
-    channel = get_channel(server=server, port=port, token=access_token,
-                          connect_url=connect_url)
+    '''
+    If access-channel is not None, set global channel to access_channel. If not,
+    set the global channel object via the get_channel factory method
+    '''
+    if access_channel:
+        channel = access_channel
+    else:
+        channel = get_channel(server=server, port=port, token=access_token,
+                              connect_url=connect_url)
+
+    # connect via the channel
     channel.connect(timeout)
 
     # send connect request to server and get the response confirming if
