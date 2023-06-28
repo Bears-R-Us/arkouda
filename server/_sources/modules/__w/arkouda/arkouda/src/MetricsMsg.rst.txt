@@ -87,7 +87,7 @@ or
 
    .. attribute:: var users = new Users()
 
-   .. method:: proc getUserMetrics(user: User)
+   .. method:: proc getUserMetrics(user: User): borrowed CounterTable
 
    .. method:: proc incrementPerUserRequestMetrics(userName: string, metricName: string, increment: int = 1)
 
