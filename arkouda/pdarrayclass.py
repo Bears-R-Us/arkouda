@@ -314,10 +314,6 @@ class pdarray:
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
             other = self.dtype.type(other)
-        else:
-            # see if other is a bigint
-            if isSupportedInt(other) and other >= 2**64:
-                dt = bigint.name
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
@@ -363,10 +359,6 @@ class pdarray:
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
             other = self.dtype.type(other)
-        else:
-            # see if other is a bigint
-            if isSupportedInt(other) and other >= 2**64:
-                dt = bigint.name
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(

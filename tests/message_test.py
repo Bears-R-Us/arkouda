@@ -114,7 +114,7 @@ class JSONArgs(ArkoudaTest):
         self.assertListEqual(
             [
                 '{"key": "arg1", "objType": "VALUE", "dtype": "str", "val": "Test"}',
-                '{"key": "arg2", "objType": "VALUE", "dtype": "int", "val": "5"}',
+                '{"key": "arg2", "objType": "VALUE", "dtype": "int64", "val": "5"}',
             ],
             json.loads(args),
         )
@@ -124,7 +124,7 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 1)
         self.assertListEqual(
             [
-                '{"key": "list1", "objType": "LIST", "dtype": "int", "val": "[\\"3\\", \\"2\\", \\"4\\"]"}'
+                '{"key": "list1", "objType": "LIST", "dtype": "int64", "val": "[\\"3\\", \\"2\\", \\"4\\"]"}'
             ],
             json.loads(args),
         )
@@ -168,7 +168,6 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(msgArgs["objType"], "PDARRAY")
         self.assertEqual(msgArgs["dtype"], "uint64")
         self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d+$")
-
 
         # test list of pdarray
         pd1 = arange(3)
@@ -214,7 +213,7 @@ class JSONArgs(ArkoudaTest):
             self.assertEqual(p["key"], f"param{i+1}")
             if i == 0:
                 self.assertEqual(p["objType"], "VALUE")
-                self.assertEqual(p["dtype"], "int")
+                self.assertEqual(p["dtype"], "int64")
                 self.assertEqual(p["val"], "1")
             elif i == 1:
                 self.assertEqual(p["objType"], "VALUE")
@@ -222,5 +221,5 @@ class JSONArgs(ArkoudaTest):
                 self.assertEqual(p["val"], "abc")
             else:
                 self.assertEqual(p["objType"], "LIST")
-                self.assertEqual(p["dtype"], "int")
+                self.assertEqual(p["dtype"], "int64")
                 self.assertListEqual(json.loads(p["val"]), ["1", "2", "3"])
