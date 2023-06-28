@@ -96,6 +96,10 @@ module MemoryMgmt {
             if newArkoudaMemory:int <= availMemory {
                 return true;
             } else {
+                var msg = "memory exceeded on locale %s with new arkouda memory %i exceeding availMemory: %i".format(here.id,
+                                                                                                                     newArkoudaMemory,
+                                                                                                                     availMemory);
+                mmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
                 return false;
             }
         }
