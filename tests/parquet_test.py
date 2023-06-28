@@ -580,7 +580,6 @@ class ParquetTest(ArkoudaTest):
         words = ak.array(['one,two,three', 'uno,dos,tres'])
         strs, segs = words.split(',', return_segments=True)
         x = ak.SegArray(segs, strs)
-        # x = ak.SegArray(ak.array([0, 0, 2]), ak.array(["a", "b", "c", "d"]))
 
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             x.to_parquet(f"{tmp_dirname}/segarr_str")
