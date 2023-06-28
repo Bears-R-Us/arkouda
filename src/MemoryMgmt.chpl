@@ -1,7 +1,32 @@
 module MemoryMgmt {
 
     use Subprocess;
-    use Memory;
+    use Memory.Diagnostics;
+    use Logging;
+    
+    private config const logLevel = LogLevel.DEBUG;
+    private config const logChannel = LogChannel.CONSOLE;
+    const mmLogger = new Logger(logLevel,logChannel);
+
+    /*
+     * Indicates whether static locale host memory or dynamically-captured
+     * memory allocated to the Arkouda process is used to estimate whether
+     * sufficient memory is available to execute the requested command.
+     */
+    enum MemMgmtType {STATIC,DYNAMIC}
+
+    /*
+     * The percentage of currently available memory on each locale host 
+     * that is the limit for memory allocated to each Arkouda locale.
+     */
+    config const availableMemoryPct: real = 90;
+
+    /*
+     * Config param that indicates whether the static memory mgmt logic in
+     * ServerConfig or dynamic memory mgmt in this module will be used. The
+     * default is static memory mgmt.
+     */
+    config const memMgmtType = MemMgmtType.STATIC;
 
     proc getArkoudaPid() : string throws {
         var pid = spawn(["pgrep","arkouda"], stdout=pipeStyle.pipe);
@@ -17,7 +42,7 @@ module MemoryMgmt {
         return pid_string;
     }
 
-    proc getArkoudaMemAlloc() : string throws {
+    proc getArkoudaMemAlloc() : uint(64) throws {
         var pid = getArkoudaPid();
 
         var sub = spawn(["pmap", pid], stdout=pipeStyle.pipe);
@@ -33,35 +58,42 @@ module MemoryMgmt {
         }
 
         sub.close();
-        return malloc_string;
+        return malloc_string:uint(64) * 1000;
     }
     
-    proc getAvailMemory() : int throws {
+    proc getAvailMemory() : uint(64) throws {
         var aFile = open('/proc/meminfo', ioMode.r);
         var lines = aFile.reader().lines();
         var line : string;
 
-        var memAvail:int;
+        var memAvail:uint(64);
 
         for line in lines do {
             if line.find('MemAvailable:') >= 0 {
                 var splits = line.split('MemAvailable:');
-                memAvail = splits[1].strip().strip(' kB'):int;
+                memAvail = splits[1].strip().strip(' kB'):uint(64);
             }
         }
-        
-        return memAvail;
+
+        return (AutoMath.round(availableMemoryPct/100 * memAvail)*1000):uint(64);
     }
 
-    proc localeMemAvailable(reqMemory: int, memLimitPct: int) : bool throws {
+    proc localeMemAvailable(reqMemory) : bool throws {
         var arkMemAlloc = getArkoudaMemAlloc();
-        var arkMemUsed = getMemory()/1000;
+        var arkMemUsed = memoryUsed();
         var availMemory = getAvailMemory();
 
-        if reqMemory + arkMemUsed <= arkMemAlloc {
+        mmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                 "reqMemory: %i arkMemAlloc: %i arkMemUsed: %i availMemory: %i".format(reqMemory,
+                                                                                       arkMemAlloc,
+                                                                                       arkMemUsed,
+                                                                                       availMemory));
+        var newArkoudaMemory = reqMemory:int + arkMemUsed:int;
+        
+        if newArkoudaMemory:int <= arkMemAlloc:int {
             return true;
         } else {
-            if reqMemory + arkMemUsed <= availMemory {
+            if newArkoudaMemory:int <= availMemory {
                 return true;
             } else {
                 return false;
@@ -69,12 +101,22 @@ module MemoryMgmt {
         }
     }
     
-    proc memAvailable(reqMemory: int, memLimitPct: int) : bool throws {
+    /*
+     * Returns a boolean indicating whether there is either sufficient memory within the
+     * memory allocated to Arkouda on each locale host; if true for all locales, returns true. 
+     * 
+     * If the reqMemory exceeds the memory currently allocated to at least one locale, each locale 
+     * host is checked to see if there is memory available to allocate more memory to each
+     * corresponding locale. If there is insufficient memory available on at least one locale,
+     * returns false. If there is sufficient memory on all locales to allocate sufficient, 
+     * additional memory to Arkouda to execute the command, returns true.
+     */
+    proc isMemAvailable(reqMemory) : bool throws {
       var overMemLimit : bool = false;
 
-      coforall loc in Locales {
+      coforall loc in Locales with (ref overMemLimit) {
         on loc {
-            if !localeMemAvailable(reqMemory, memLimitPct) {
+            if !localeMemAvailable(reqMemory) {
                 overMemLimit = true;
             }
         }
@@ -85,10 +127,9 @@ module MemoryMgmt {
 
     proc main() {
       try {
-          var availMem = getAvailMemory();
-          writeln("availMem %s".format(availMem));
+          writeln("is mem available: %t".format(isMemAvailable(10000000)));
       } catch e: Error{
-          try! writeln("error: %s".format(e));
+          try! writeln("error: %t".format(e));
       }
    }
 }
