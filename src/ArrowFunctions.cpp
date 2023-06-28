@@ -328,6 +328,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
             (void)int_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
             if (values_read == 0 || (!first && rep_lvl == 0)) {
               seg_sizes[i] = seg_size;
+              std::cout << "\n\ni: "<<i<<"\nseg_sizes[i]: "<<seg_sizes[i]<<"\n\n";
               i++;
               seg_size = 0;
             }
@@ -338,8 +339,9 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
                 first = false;
               }
             }
-            if (!int_reader->HasNext()){
+            if (values_read != 0 && !int_reader->HasNext()){
               seg_sizes[i] = seg_size;
+              std::cout << "\n\ni: "<<i<<"\nseg_sizes[i]: "<<seg_sizes[i]<<"\n\n";
             }
           }
         } else if(lty == ARROWINT32 || lty == ARROWUINT32) {
@@ -557,13 +559,13 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           auto chpl_ptr = (int64_t*)chpl_arr;
           parquet::Int64Reader* reader =
             static_cast<parquet::Int64Reader*>(column_reader.get());
-          startIdx -= reader->Skip(startIdx);
+          // startIdx -= reader->Skip(startIdx);
 
           while (reader->HasNext() && i < numElems) {
             if((numElems - i) < batchSize)
               batchSize = numElems - i;
             (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-            i+=values_read;
+            i+=1;
           }
         } else if(lty == ARROWINT32 || lty == ARROWUINT32) {
           auto chpl_ptr = (int64_t*)chpl_arr;
@@ -621,7 +623,6 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           while (reader->HasNext() && i < numElems) {
             if((numElems - i) < batchSize) // adjust batchSize if needed
               batchSize = numElems - i;
-            
             // unlike the base case, the list stores NaN values and is able to read them out. 
             // This prevents the need for any additional processing
             // setting nullptr for def and rep levels allows use to ignore the empty segments since we only care about values here.
@@ -633,6 +634,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
               chpl_ptr[i+j] = (double)tmpArr[j];
             }
             i += values_read;
+            delete[] tmpArr;
           }
         } else if(lty == ARROWDOUBLE) {
           auto chpl_ptr = (double*)chpl_arr;
@@ -643,7 +645,6 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           while (reader->HasNext() && i < numElems) {
             if((numElems - i) < batchSize) // adjust batchSize if needed
               batchSize = numElems - i;
-              
             // unlike the base case, the list stores NaN values and is able to read them out. 
             // This prevents the need for any additional processing
             // setting nullptr for def and rep levels allows use to ignore the empty segments since we only care about values here.
@@ -783,6 +784,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
             }
             i++;
           }
+          delete[] def_lvl;
+          delete[] rep_lvl;
         }
       } else if(ty == ARROWDOUBLE) {
         auto chpl_ptr = (double*)chpl_arr;
@@ -812,6 +815,9 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
             }
             i++;
           }
+          delete[] tmpArr;
+          delete[] def_lvl;
+          delete[] rep_lvl;
         }
       }
     }
@@ -963,6 +969,8 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
                 }
                 int64_t valIdx = offset_ptr[offIdx];
                 writer->WriteBatch(segSize, def_lvl, rep_lvl, &data_ptr[valIdx]);
+                delete[] def_lvl;
+                delete[] rep_lvl;
               }
               else {
                 // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
@@ -970,6 +978,8 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
                 int16_t* def_lvl = new int16_t[segSize] { 1 };
                 int16_t* rep_lvl = new int16_t[segSize] { 0 };
                 writer->WriteBatch(segSize, def_lvl, rep_lvl, nullptr);
+                delete[] def_lvl;
+                delete[] rep_lvl;
               }
               offIdx++;
               count++;
@@ -1013,6 +1023,8 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
                 }
                 int64_t valIdx = offset_ptr[offIdx];
                 writer->WriteBatch(segSize, def_lvl, rep_lvl, &data_ptr[valIdx]);
+                delete[] def_lvl;
+                delete[] rep_lvl;
               }
               else {
                 // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
@@ -1020,6 +1032,8 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
                 int16_t* def_lvl = new int16_t[segSize] { 1 };
                 int16_t* rep_lvl = new int16_t[segSize] { 0 };
                 writer->WriteBatch(segSize, def_lvl, rep_lvl, nullptr);
+                delete[] def_lvl;
+                delete[] rep_lvl;
               }
               offIdx++;
               count++;
@@ -1063,6 +1077,8 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
                 }
                 int64_t valIdx = offset_ptr[offIdx];
                 writer->WriteBatch(segSize, def_lvl, rep_lvl, &data_ptr[valIdx]);
+                delete[] def_lvl;
+                delete[] rep_lvl;
               }
               else {
                 // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
@@ -1070,6 +1086,8 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
                 int16_t* def_lvl = new int16_t[segSize] { 1 };
                 int16_t* rep_lvl = new int16_t[segSize] { 0 };
                 writer->WriteBatch(segSize, def_lvl, rep_lvl, nullptr);
+                delete[] def_lvl;
+                delete[] rep_lvl;
               }
               offIdx++;
               count++;
@@ -1512,9 +1530,7 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_segs, void* ch
     int64_t valIdx = 0; // index into chpl_arr
     int64_t segIdx = 0; // index into offsets
 
-    if(dtype == ARROWINT64 || dtype == ARROWUINT64) {
-      auto chpl_ptr = (int64_t*)chpl_arr;
-      
+    if(dtype == ARROWINT64 || dtype == ARROWUINT64) {     
       while(numLeft > 0) { // write all local values to the file
         parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
         parquet::Int64Writer* writer =
@@ -1523,23 +1539,25 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_segs, void* ch
         while (numLeft > 0 && count < rowGroupSize) { // ensures rowGroupSize maintained
           int64_t batchSize = segments[segIdx+1] - segments[segIdx];
           if (batchSize > 0) {
-            int16_t* def_lvl = new int16_t[batchSize] { 3 };
+            auto chpl_ptr = (int64_t*)chpl_arr;
+            int16_t* def_lvl = new int16_t[batchSize] { 3 }; // all values defined at the item level (3)
             int16_t* rep_lvl = new int16_t[batchSize] { 0 };
             for (int64_t x = 0; x < batchSize; x++){
               // if the value is first in the segment rep_lvl = 0, otherwise 1
-              // all values defined at the item level (3)
               rep_lvl[x] = (x == 0) ? 0 : 1;
               def_lvl[x] = 3;
             }
             writer->WriteBatch(batchSize, def_lvl, rep_lvl, &chpl_ptr[valIdx]);
             valIdx += batchSize;
+            delete[] def_lvl;
+            delete[] rep_lvl;
           }
           else {
             // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
             batchSize = 1; // even though segment is length=0, write null to hold the empty segment
-            int16_t* def_lvl = new int16_t[batchSize] { 1 };
-            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
-            writer->WriteBatch(batchSize, def_lvl, rep_lvl, nullptr);
+            int16_t def_lvl = 1;
+            int16_t rep_lvl = 0;
+            writer->WriteBatch(batchSize, &def_lvl, &rep_lvl, nullptr);
           }
           count++;
           segIdx++;
@@ -1548,8 +1566,6 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_segs, void* ch
       }
     }
     else if (dtype == ARROWBOOLEAN) {
-      auto chpl_ptr = (bool*)chpl_arr;
-      
       while(numLeft > 0) {
         parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
         parquet::BoolWriter* writer =
@@ -1558,6 +1574,7 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_segs, void* ch
         while (numLeft > 0 && count < rowGroupSize) {
           int64_t batchSize = segments[segIdx+1] - segments[segIdx];
           if (batchSize > 0) {
+            auto chpl_ptr = (bool*)chpl_arr;
             // if the value is first in the segment rep_lvl = 0, otherwise 1
             // all values defined at the item level (3)
             int16_t* def_lvl = new int16_t[batchSize] { 3 };
@@ -1568,13 +1585,15 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_segs, void* ch
             }
             writer->WriteBatch(batchSize, def_lvl, rep_lvl, &chpl_ptr[valIdx]);
             valIdx += batchSize;
+            delete[] def_lvl;
+            delete[] rep_lvl;
           }
           else {
             // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
             batchSize = 1; // even though segment is length=0, write null to hold the empty segment
-            int16_t* def_lvl = new int16_t[batchSize] { 1 };
-            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
-            writer->WriteBatch(batchSize, def_lvl, rep_lvl, nullptr);
+            int16_t def_lvl = 1;
+            int16_t rep_lvl = 0;
+            writer->WriteBatch(batchSize, &def_lvl, &rep_lvl, nullptr);
           }
           count++;
           segIdx++;
@@ -1582,9 +1601,7 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_segs, void* ch
         }
       }
     }
-    else if (dtype == ARROWDOUBLE) {
-      auto chpl_ptr = (double*)chpl_arr;
-      
+    else if (dtype == ARROWDOUBLE) {      
       while(numLeft > 0) {
         parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
         parquet::DoubleWriter* writer =
@@ -1593,6 +1610,7 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_segs, void* ch
         while (numLeft > 0 && count < rowGroupSize) {
           int64_t batchSize = segments[segIdx+1] - segments[segIdx];
           if (batchSize > 0) {
+            auto chpl_ptr = (double*)chpl_arr;
             // if the value is first in the segment rep_lvl = 0, otherwise 1
             // all values defined at the item level (3)
             int16_t* def_lvl = new int16_t[batchSize] { 3 };
@@ -1603,13 +1621,15 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_segs, void* ch
             }
             writer->WriteBatch(batchSize, def_lvl, rep_lvl, &chpl_ptr[valIdx]);
             valIdx += batchSize;
+            delete[] def_lvl;
+            delete[] rep_lvl;
           }
           else {
             // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
             batchSize = 1; // even though segment is length=0, write null to hold the empty segment
-            int16_t* def_lvl = new int16_t[batchSize] { 1 };
-            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
-            writer->WriteBatch(batchSize, def_lvl, rep_lvl, nullptr);
+            int16_t def_lvl = 1;
+            int16_t rep_lvl = 0;
+            writer->WriteBatch(batchSize, &def_lvl, &rep_lvl, nullptr);
           }
           count++;
           segIdx++;

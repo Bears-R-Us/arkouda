@@ -195,15 +195,18 @@ module ParquetMsg {
     var fileOffsets = (+ scan sizes) - sizes;
     var segmentOffsets = (+ scan rows_per_file) - rows_per_file;
     
-    coforall loc in A.targetLocales() do on loc {
+    coforall loc in A.targetLocales() do on loc { // TODO return to coforall
       var locFiles = filenames;
       var locFiledoms = subdoms;
       var locOffsets = fileOffsets; // value count offset
       var locSegOffsets = segmentOffsets; // indicates which segment index is first for the file
+      var pqErr = new parquetErrorMsg();
 
-      forall (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
+      // forall (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
+      for (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
         for locdom in A.localSubdomains() {
           const intersection = domain_intersection(locdom, filedom);
+          
           if intersection.size > 0 {
             var pqErr = new parquetErrorMsg();
             if ty == ArrowTypes.stringArr {
@@ -216,12 +219,19 @@ module ParquetMsg {
               A[filedom] = col;
             }
             else {
-              var shift = computeEmptySegs(seg_sizes, offsets, s, intersection, off); // compute the shift to account for any empty segments in the file before the current section.
-              if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
-                                    dsetname.localize().c_str(), intersection.size, (intersection.low - off) + shift,
+              // var shift = computeEmptySegs(seg_sizes, offsets, s, intersection, off); // compute the shift to account for any empty segments in the file before the current section.
+              var col: [filedom] t;
+              // if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
+              //                       dsetname.localize().c_str(), intersection.size, (intersection.low - off) + shift,
+              //                       batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+              //   pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+              // }
+              if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                    dsetname.localize().c_str(), filedom.size, 0,
                                     batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
                 pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
               }
+              A[filedom] = col;
             }
           }
         }
@@ -328,6 +338,7 @@ module ParquetMsg {
     
     if listSize == ARROWERROR then
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    writeln("\n\nListSize: %jt\nSeg_Sizes: %jt\n\n".format(listSize, seg_sizes));
     return listSize;
   }
   
@@ -665,7 +676,7 @@ module ParquetMsg {
       var entrySeg = new shared SymEntry((+ reduce listSizes), int);
       var byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, listSizes, dsetname);
       entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
-      
+
       var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
       readListFilesByName(entryVal.a, sizes, seg_sizes, segments, filenames, byteSizes, dsetname, ty);
       var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
@@ -753,23 +764,23 @@ module ParquetMsg {
     dsetnames = dsetlist;
 
     if filelist.size == 1 {
-        if filelist[0].strip().size == 0 {
-            var errorMsg = "filelist was empty.";
-            pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
-        var tmp = glob(filelist[0]);
-        pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "glob expanded %s to %i files".format(filelist[0], tmp.size));
-        if tmp.size == 0 {
-            var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
-            pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
-        // Glob returns filenames in weird order. Sort for consistency
-        sort(tmp);
-        filedom = tmp.domain;
-        filenames = tmp;
+      if filelist[0].strip().size == 0 {
+          var errorMsg = "filelist was empty.";
+          pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+      var tmp = glob(filelist[0]);
+      pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "glob expanded %s to %i files".format(filelist[0], tmp.size));
+      if tmp.size == 0 {
+          var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
+          pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+      // Glob returns filenames in weird order. Sort for consistency
+      sort(tmp);
+      filedom = tmp.domain;
+      filenames = tmp;
     } else {
         filenames = filelist;
     }
@@ -999,7 +1010,12 @@ module ParquetMsg {
 
     var pqErr = new parquetErrorMsg();
 
-    if c_writeListColumnToParquet(filename.localize().c_str(), c_ptrTo(locOffsets), c_ptrTo(localVals),
+    var valPtr: c_void_ptr = nil;
+    if localVals.size != 0 {
+      valPtr = c_ptrTo(localVals);
+    }
+
+    if c_writeListColumnToParquet(filename.localize().c_str(), c_ptrTo(locOffsets), valPtr,
                                    dsetname.localize().c_str(), locOffsets.size-1, ROWGROUPS,
                                    c_dtype, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
         pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
@@ -1031,7 +1047,6 @@ module ParquetMsg {
     // pull values to the locale of the offset
     coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) with (ref olda) do on loc {
       const myFilename = filenames[idx];
-
       const locDom = segments.localSubdomain();
       var dims: [0..#1] int;
       dims[0] = locDom.size: int;
