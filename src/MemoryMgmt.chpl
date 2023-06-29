@@ -29,7 +29,7 @@ module MemoryMgmt {
     config const memMgmtType = MemMgmtType.STATIC;
 
     proc getArkoudaPid() : string throws {
-        var pid = spawn(["pgrep","arkouda"], stdout=pipeStyle.pipe);
+        var pid = spawn(["pgrep","arkouda_server"], stdout=pipeStyle.pipe);
 
         var pid_string:string;
         var line:string;
@@ -129,12 +129,4 @@ module MemoryMgmt {
       
       return if overMemLimit then false else true;
     }
-
-    proc main() {
-      try {
-          writeln("is mem available: %t".format(isMemAvailable(10000000)));
-      } catch e: Error{
-          try! writeln("error: %t".format(e));
-      }
-   }
 }
