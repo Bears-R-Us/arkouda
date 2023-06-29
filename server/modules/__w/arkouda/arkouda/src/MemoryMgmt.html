@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CommPrimitives &mdash; chpldoc 0.0.1 documentation</title>
+  <title>MemoryMgmt &mdash; chpldoc 0.0.1 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="CommandMap" href="CommandMap.html" />
-    <link rel="prev" title="BigIntegerAggregation" href="CommAggregation/BigIntegerAggregation.html" /> 
+    <link rel="next" title="Message" href="Message.html" />
+    <link rel="prev" title="Logging" href="Logging.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,14 +48,14 @@
 <li class="toctree-l1"><a class="reference internal" href="Cast.html">Cast</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommAggregation/BigIntegerAggregation.html">BigIntegerAggregation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">CommPrimitives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MemoryMgmt.html">MemoryMgmt</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MemoryMgmt</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Message.html">Message</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MetricsMsg.html">MetricsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
@@ -105,9 +105,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>CommPrimitives</li>
+      <li>MemoryMgmt</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/CommPrimitives.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/MemoryMgmt.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -115,30 +115,84 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-CommPrimitives"></span><div class="section" id="commprimitives">
-<h1>CommPrimitives<a class="headerlink" href="#commprimitives" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-MemoryMgmt"></span><div class="section" id="memorymgmt">
+<h1>MemoryMgmt<a class="headerlink" href="#memorymgmt" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">CommPrimitives</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">MemoryMgmt</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">CommPrimitives</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">MemoryMgmt</span><span class="p">;</span>
 </pre></div>
 </div>
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="MemoryMgmt.mmLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">mmLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span><a class="headerlink" href="#MemoryMgmt.mmLogger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="MemoryMgmt.MemMgmtType">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MemMgmtType</span></span> <span class="pre">{</span> <span class="pre">STATIC,</span> <span class="pre">DYNAMIC</span> <span class="pre">}</span><a class="headerlink" href="#MemoryMgmt.MemMgmtType" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Indicates whether static locale host memory or dynamically-captured</p></li>
+<li><p>memory allocated to the Arkouda process is used to estimate whether</p></li>
+<li><p>sufficient memory is available to execute the requested command.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="MemoryMgmt.availableMemoryPct">
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">availableMemoryPct</span></span><span class="pre">:</span> <span class="pre">real</span> <span class="pre">=</span> <span class="pre">90</span><a class="headerlink" href="#MemoryMgmt.availableMemoryPct" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>The percentage of currently available memory on each locale host</p></li>
+<li><p>that is the limit for memory allocated to each Arkouda locale.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="MemoryMgmt.memMgmtType">
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">memMgmtType</span></span> <span class="pre">=</span> <span class="pre">MemMgmtType.STATIC</span><a class="headerlink" href="#MemoryMgmt.memMgmtType" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Config param that indicates whether the static memory mgmt logic in</p></li>
+<li><p>ServerConfig or dynamic memory mgmt in this module will be used. The</p></li>
+<li><p>default is static memory mgmt.</p></li>
+</ul>
+</dd></dl>
+
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="CommPrimitives.getAddr">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getAddr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">p</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">c_ptr(p.type)</span><a class="headerlink" href="#CommPrimitives.getAddr" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="MemoryMgmt.getArkoudaPid">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArkoudaPid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#MemoryMgmt.getArkoudaPid" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="CommPrimitives.GET">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">GET</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">addr</span></em>, <em class="sig-param"><span class="pre">node</span></em>, <em class="sig-param"><span class="pre">rAddr</span></em>, <em class="sig-param"><span class="pre">size</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommPrimitives.GET" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="MemoryMgmt.getArkoudaMemAlloc">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArkoudaMemAlloc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(64)</span> <span class="pre">throws</span><a class="headerlink" href="#MemoryMgmt.getArkoudaMemAlloc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="CommPrimitives.PUT">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">PUT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">addr</span></em>, <em class="sig-param"><span class="pre">node</span></em>, <em class="sig-param"><span class="pre">rAddr</span></em>, <em class="sig-param"><span class="pre">size</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommPrimitives.PUT" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="MemoryMgmt.getAvailMemory">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getAvailMemory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(64)</span> <span class="pre">throws</span><a class="headerlink" href="#MemoryMgmt.getAvailMemory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MemoryMgmt.localeMemAvailable">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">localeMemAvailable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">reqMemory</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#MemoryMgmt.localeMemAvailable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MemoryMgmt.isMemAvailable">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isMemAvailable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">reqMemory</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#MemoryMgmt.isMemAvailable" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Returns a boolean indicating whether there is either sufficient memory within the</p></li>
+<li><p>memory allocated to Arkouda on each locale host; if true for all locales, returns true.</p></li>
+<li></li>
+<li><p>If the reqMemory exceeds the memory currently allocated to at least one locale, each locale</p></li>
+<li><p>host is checked to see if there is memory available to allocate more memory to each</p></li>
+<li><p>corresponding locale. If there is insufficient memory available on at least one locale,</p></li>
+<li><p>returns false. If there is sufficient memory on all locales to allocate sufficient,</p></li>
+<li><p>additional memory to Arkouda to execute the command, returns true.</p></li>
+</ul>
+</dd></dl>
 
 </div>
 
@@ -146,8 +200,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CommAggregation/BigIntegerAggregation.html" class="btn btn-neutral float-left" title="BigIntegerAggregation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CommandMap.html" class="btn btn-neutral float-right" title="CommandMap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Logging.html" class="btn btn-neutral float-left" title="Logging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Message.html" class="btn btn-neutral float-right" title="Message" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

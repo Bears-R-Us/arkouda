@@ -1,0 +1,66 @@
+.. default-domain:: chpl
+
+.. module:: MemoryMgmt
+
+MemoryMgmt
+==========
+**Usage**
+
+.. code-block:: chapel
+
+   use MemoryMgmt;
+
+
+or
+
+.. code-block:: chapel
+
+   import MemoryMgmt;
+
+.. data:: const mmLogger = new Logger(logLevel, logChannel)
+
+.. enum:: enum MemMgmtType { STATIC, DYNAMIC }
+
+   
+   * Indicates whether static locale host memory or dynamically-captured
+   * memory allocated to the Arkouda process is used to estimate whether
+   * sufficient memory is available to execute the requested command.
+   
+
+
+.. data:: config const availableMemoryPct: real = 90
+
+   
+   * The percentage of currently available memory on each locale host 
+   * that is the limit for memory allocated to each Arkouda locale.
+   
+
+.. data:: config const memMgmtType = MemMgmtType.STATIC
+
+   
+   * Config param that indicates whether the static memory mgmt logic in
+   * ServerConfig or dynamic memory mgmt in this module will be used. The
+   * default is static memory mgmt.
+   
+
+.. function:: proc getArkoudaPid(): string throws
+
+.. function:: proc getArkoudaMemAlloc(): uint(64) throws
+
+.. function:: proc getAvailMemory(): uint(64) throws
+
+.. function:: proc localeMemAvailable(reqMemory): bool throws
+
+.. function:: proc isMemAvailable(reqMemory): bool throws
+
+   
+   * Returns a boolean indicating whether there is either sufficient memory within the
+   * memory allocated to Arkouda on each locale host; if true for all locales, returns true. 
+   * 
+   * If the reqMemory exceeds the memory currently allocated to at least one locale, each locale 
+   * host is checked to see if there is memory available to allocate more memory to each
+   * corresponding locale. If there is insufficient memory available on at least one locale,
+   * returns false. If there is sufficient memory on all locales to allocate sufficient, 
+   * additional memory to Arkouda to execute the command, returns true.
+   
+
