@@ -372,8 +372,6 @@ class ParquetTest(ArkoudaTest):
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
-        print("Finished UInt")
-
         # uint with empty segments
         a = [0, 1, 2]
         c = [15, 21]
@@ -386,7 +384,6 @@ class ParquetTest(ArkoudaTest):
             rd_data = ak.read_parquet(f"{tmp_dirname}/uint_test_empty*")
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
-        print("Finished UInt Empty")
 
         # bool test
         a = [0, 1, 1]
@@ -399,7 +396,6 @@ class ParquetTest(ArkoudaTest):
             rd_data = ak.read_parquet(f"{tmp_dirname}/bool_test*")
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
-        print("Finished Bool")
 
         # bool with empty segments
         a = [0, 1, 1]
@@ -413,7 +409,6 @@ class ParquetTest(ArkoudaTest):
             rd_data = ak.read_parquet(f"{tmp_dirname}/bool_test_empty*")
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
-        print("Finished Bool Empty")
 
         # float test
         a = [1.1, 1.1, 2.7]
@@ -426,7 +421,6 @@ class ParquetTest(ArkoudaTest):
             rd_data = ak.read_parquet(f"{tmp_dirname}/float_test*")
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
-        print("Finished Float")
 
         # float with empty segments
         a = [1.1, 1.1, 2.7]
@@ -438,7 +432,6 @@ class ParquetTest(ArkoudaTest):
             rd_data = ak.read_parquet(f"{tmp_dirname}/float_test_empty*")
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
-        print("Finished Float Empty")
 
     def test_multicol_write(self):
         df_dict = {

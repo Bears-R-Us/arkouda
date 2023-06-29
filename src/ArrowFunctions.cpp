@@ -1236,6 +1236,7 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
     int64_t numLeft = numelems;
 
     if (chpl_arr == NULL) {
+      // early out to prevent bad memory access
       return 0;
     }
 
@@ -1764,6 +1765,7 @@ int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
                               char** errMsg) {
   try {
     if (chpl_arr == NULL){
+      // early out to prevent bad memory access
       return 0;
     }
     std::shared_ptr<arrow::io::ReadableFile> infile;
