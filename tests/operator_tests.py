@@ -15,20 +15,19 @@ def run_tests(verbose):
     global pdarrays
     pdarrays = {
         "int64": ak.arange(0, SIZE, 1),
-        "uint64": ak.array(np.arange(0, SIZE, 1, dtype=np.uint64)),
+        "uint64": ak.array(np.arange(2**64 - SIZE, 2**64, 1, dtype=np.uint64)),
         "float64": ak.linspace(0, 2, SIZE),
         "bool": (ak.arange(0, SIZE, 1) % 2) == 0,
     }
     global ndarrays
     ndarrays = {
         "int64": np.arange(0, SIZE, 1),
-        "uint64": np.arange(0, SIZE, 1, dtype=np.uint64),
+        "uint64": np.arange(2**64 - SIZE, 2**64, 1, dtype=np.uint64),
         "float64": np.linspace(0, 2, SIZE),
         "bool": (np.arange(0, SIZE, 1) % 2) == 0,
     }
     global scalars
-    # scalars = {k: v[SIZE//2] for k, v in ndarrays.items()}
-    scalars = {"int64": 5, "uint64": np.uint64(5), "float64": 3.14159, "bool": True}
+    scalars = {"int64": 5, "uint64": np.uint64(2**63 + 1), "float64": 3.14159, "bool": True}
     dtypes = pdarrays.keys()
     if verbose:
         print("Operators: ", ak.pdarray.BinOps)
@@ -146,7 +145,7 @@ def run_tests(verbose):
     execerrors = []
     dtypeerrors = []
     valueerrors = []
-    for (expression, res, ex, dt, val) in results["both_implement"]:
+    for expression, res, ex, dt, val in results["both_implement"]:
         matches += not any((ex, dt, val))
         if ex:
             execerrors.append((expression, res))
@@ -712,7 +711,7 @@ class OperatorsTest(ArkoudaTest):
         # Test ak,histogram against unsupported dtype
         # with self.assertRaises(ValueError) as cm:
         #    ak.histogram((ak.randint(0, 1, 100, dtype=ak.bool)))
-        with self.assertRaises(RuntimeError) as cm:
+        with self.assertRaises(RuntimeError):
             ak.concatenate([ak.array([True]), ak.array([True])]).is_sorted()
 
         with self.assertRaises(TypeError):
@@ -882,44 +881,71 @@ class OperatorsTest(ArkoudaTest):
 
         # rotate by scalar
         for i in range(10):
-            self.assertEqual(ak.array([10], dtype=ak.bigint, max_bits=4).rotl(i), 10 if i % 2 == 0 else 5)
-            self.assertEqual(ak.array([10], dtype=ak.bigint, max_bits=4).rotr(i), 10 if i % 2 == 0 else 5)
+            self.assertEqual(
+                ak.array([10], dtype=ak.bigint, max_bits=4).rotl(i), 10 if i % 2 == 0 else 5
+            )
+            self.assertEqual(
+                ak.array([10], dtype=ak.bigint, max_bits=4).rotr(i), 10 if i % 2 == 0 else 5
+            )
 
         # rotate by array
-        left_rot = ak.bigint_from_uint_arrays([ak.full(10, 10, ak.uint64)], max_bits=4).rotl(ak.arange(10))
-        right_rot = ak.bigint_from_uint_arrays([ak.full(10, 10, ak.uint64)], max_bits=4).rotr(ak.arange(10))
+        left_rot = ak.bigint_from_uint_arrays([ak.full(10, 10, ak.uint64)], max_bits=4).rotl(
+            ak.arange(10)
+        )
+        right_rot = ak.bigint_from_uint_arrays([ak.full(10, 10, ak.uint64)], max_bits=4).rotr(
+            ak.arange(10)
+        )
         ans = [10 if i % 2 == 0 else 5 for i in range(10)]
         self.assertListEqual(left_rot.to_list(), ans)
         self.assertListEqual(right_rot.to_list(), ans)
 
-    def test_fmod(self):
-        # Note - uint/float and float/uint handles in another test case
+    def test_float_mods(self):
+        edge_cases = [np.nan, -np.inf, -7.0, -3.14, -0.0, 0.0, 3.14, 7.0, np.inf, np.nan]
+
+        # get 2 random permutations of edgecases
+        rand_edge_cases1 = np.random.permutation(edge_cases)
+        rand_edge_cases2 = np.random.permutation(edge_cases)
+        # floats containing negatives and repeating decimals
+        float_arr = np.linspace(-3.5, 3.5, 10)
+        # ints containing negatives and 0
+        int_arr = np.arange(-5, 5)
+        i_scal = -17
+        # uints > 2**63
+        uint_arr = np.arange(2**64 - 10, 2**64, dtype=np.uint64)
+        u_scal = np.uint(2**63 + 1)
+
+        args = [rand_edge_cases1, rand_edge_cases2, float_arr, int_arr, uint_arr, i_scal, u_scal]
+        # add all the float edge cases as scalars
+        args.extend(edge_cases)
+
+        def type_helper(x):
+            return ak.resolve_scalar_dtype(x) if ak.isSupportedNumber(x) else x.dtype.name
+
+        # take the product of args (i.e. every possible combination)
+        for a, b in product(args, args):
+            if all(ak.isSupportedNumber(arg) for arg in [a, b]):
+                # we don't support scalar scalar
+                continue
+            if not any(type_helper(arg) == "float64" for arg in [a, b]):
+                # at least one must be float to do fmod
+                continue
+
+            # convert ndarrays to pdarray and leave scalars as is
+            ak_a = a if ak.isSupportedNumber(a) else ak.array(a)
+            ak_b = b if ak.isSupportedNumber(b) else ak.array(b)
+
+            # verify mod and fmod match numpy
+            self.assertTrue(np.allclose(ak.mod(ak_a, ak_b).to_ndarray(), np.mod(a, b), equal_nan=True))
+            self.assertTrue(np.allclose(ak.fmod(ak_a, ak_b).to_ndarray(), np.fmod(a, b), equal_nan=True))
+
         npf = np.array([2.23, 3.14, 3.08, 5.7])
         npf2 = np.array([3.14, 2.23, 1.1, 4.1])
         npi = np.array([1, 4, 1, 5])
 
-        akf = ak.array(npf)
         akf2 = ak.array(npf2)
         aki = ak.array(npi)
 
-        # vector-vector operations
-        self.assertTrue(np.allclose((akf % akf2).to_ndarray(), npf % npf2, equal_nan=True))
-        self.assertTrue(np.allclose((akf2 % akf).to_ndarray(), npf2 % npf, equal_nan=True))
-        self.assertTrue(np.allclose((akf % aki).to_ndarray(), npf % npi, equal_nan=True))
-        self.assertTrue(np.allclose((aki % akf).to_ndarray(), npi % npf, equal_nan=True))
-        self.assertTrue(np.allclose((akf2 % aki).to_ndarray(), npf2 % npi, equal_nan=True))
-        self.assertTrue(np.allclose((aki % akf2).to_ndarray(), npi % npf2, equal_nan=True))
-
-        # vector scalar and scalar vector
-        self.assertTrue(np.allclose((akf % 2).to_ndarray(), npf % 2, equal_nan=True))
-        self.assertTrue(np.allclose((2 % akf).to_ndarray(), 2 % npf, equal_nan=True))
-        self.assertTrue(np.allclose((akf % 2.14).to_ndarray(), npf % 2.14, equal_nan=True))
-        self.assertTrue(np.allclose((2.14 % akf).to_ndarray(), 2.14 % npf, equal_nan=True))
-        u = np.array([4]).astype(np.uint64)[0]
-        self.assertTrue(np.allclose((akf % u).to_ndarray(), npf % u, equal_nan=True))
-        self.assertTrue(np.allclose((u % akf).to_ndarray(), u % npf, equal_nan=True))
-
-        #opequal
+        # opequal
         npf_copy = npf
         akf_copy = ak.array(npf_copy)
         npf_copy %= npf2

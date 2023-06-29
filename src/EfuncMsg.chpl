@@ -23,7 +23,10 @@ module EfuncMsg
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const eLogger = new Logger(logLevel, logChannel);
-    
+
+    extern proc fmod(x: real, y: real): real;
+
+
     /* These ops are functions which take an array and produce an array.
        
        **Dev Note:** Do scans fit here also? I think so... vector = scanop(vector)
@@ -371,387 +374,347 @@ module EfuncMsg
     }
 
     /*
-    These are functions which take two arrays and produce an array.
-    vector = efunc(vector, vector)
-
-    :arg reqMsg: request containing (cmd,efunc,num,denom)
-    :type reqMsg: string 
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: (MsgTuple)
-    :throws: `UndefinedSymbolError(name)`
+        These are functions which take two arrays and produce an array.
+        vector = efunc(vector, vector)
     */
-    proc efunc2vvMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc efunc2Msg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        // split request into fields
+        var repMsg: string;
         var rname = st.nextName();
         var efunc = msgArgs.getValueOf("func");
-        var num: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("num"), st);
-        var denom: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("denom"), st);
-        if !(num.size == denom.size) {
-            var errorMsg = "size mismatch in arguments to "+pn;
-            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-        select (num.dtype, denom.dtype) {
-            when (DType.Int64, DType.Int64) {
-                var en = toSymEntry(num, int);
-                var ed = toSymEntry(denom, int);
-                select efunc {
-                    when "arctan2" {
-                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }               
-                } 
-            }
-            when (DType.Int64, DType.UInt64) {
-                var en = toSymEntry(num, int);
-                var ed = toSymEntry(denom, uint);
-                select efunc {
-                    when "arctan2" {
-                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
-                        st.addEntry(rname, new shared SymEntry(a));
+        var aParam = msgArgs.get("A");
+        var bParam = msgArgs.get("B");
+
+        // TODO see issue #2522: merge enum ObjType and ObjectType
+        select (aParam.objType, bParam.objType) {
+            when (ObjectType.PDARRAY, ObjectType.PDARRAY) {
+                var aGen: borrowed GenSymEntry = getGenericTypedArrayEntry(aParam.val, st);
+                var bGen: borrowed GenSymEntry = getGenericTypedArrayEntry(bParam.val, st);
+                if aGen.size != bGen.size {
+                    var errorMsg = "size mismatch in arguments to "+pn;
+                    eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                }
+                select (aGen.dtype, bGen.dtype) {
+                    when (DType.Int64, DType.Int64) {
+                        var aEnt = toSymEntry(aGen, int);
+                        var bEnt = toSymEntry(bGen, int);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.Int64, DType.UInt64) {
+                        var aEnt = toSymEntry(aGen, int);
+                        var bEnt = toSymEntry(bGen, uint);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.Int64, DType.Float64) {
+                        var aEnt = toSymEntry(aGen, int);
+                        var bEnt = toSymEntry(bGen, real);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aEnt.a, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.UInt64, DType.Int64) {
+                        var aEnt = toSymEntry(aGen, uint);
+                        var bEnt = toSymEntry(bGen, int);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.UInt64, DType.UInt64) {
+                        var aEnt = toSymEntry(aGen, uint);
+                        var bEnt = toSymEntry(bGen, uint);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.UInt64, DType.Float64) {
+                        var aEnt = toSymEntry(aGen, uint);
+                        var bEnt = toSymEntry(bGen, real);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aEnt.a, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.Float64, DType.Int64) {
+                        var aEnt = toSymEntry(aGen, real);
+                        var bEnt = toSymEntry(bGen, int);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aEnt.a, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.Float64, DType.UInt64) {
+                        var aEnt = toSymEntry(aGen, real);
+                        var bEnt = toSymEntry(bGen, uint);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aEnt.a, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.Float64, DType.Float64) {
+                        var aEnt = toSymEntry(aGen, real);
+                        var bEnt = toSymEntry(bGen, real);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aEnt.a, bEnt.a)));
+                            }
+                        }
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn, efunc, aGen.dtype, bGen.dtype);
+                        eLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
-            when (DType.Int64, DType.Float64) {
-                var en = toSymEntry(num, int);
-                var ed = toSymEntry(denom, real);
-                select efunc {
-                    when "arctan2" {
-                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
-                        st.addEntry(rname, new shared SymEntry(a));
+            when (ObjectType.PDARRAY, ObjectType.VALUE) {
+                var aGen: borrowed GenSymEntry = getGenericTypedArrayEntry(aParam.val, st);
+                select (aGen.dtype, bParam.getDType()) {
+                    when (DType.Int64, DType.Int64) {
+                        var aEnt = toSymEntry(aGen, int);
+                        var bScal = bParam.getIntValue();
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bScal)));
+                            }
+                        }
+                    }
+                    when (DType.Int64, DType.UInt64) {
+                        var aEnt = toSymEntry(aGen, int);
+                        var bScal = bParam.getUIntValue();
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bScal)));
+                            }
+                        }
+                    }
+                    when (DType.Int64, DType.Float64) {
+                        var aEnt = toSymEntry(aGen, int);
+                        var bScal = bParam.getRealValue();
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bScal)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aEnt.a, bScal)));
+                            }
+                        }
+                    }
+                    when (DType.UInt64, DType.Int64) {
+                        var aEnt = toSymEntry(aGen, uint);
+                        var bScal = bParam.getIntValue();
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bScal)));
+                            }
+                        }
+                    }
+                    when (DType.UInt64, DType.UInt64) {
+                        var aEnt = toSymEntry(aGen, uint);
+                        var bScal = bParam.getUIntValue();
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bScal)));
+                            }
+                        }
+                    }
+                    when (DType.UInt64, DType.Float64) {
+                        var aEnt = toSymEntry(aGen, uint);
+                        var bScal = bParam.getRealValue();
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bScal)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aEnt.a, bScal)));
+                            }
+                        }
+                    }
+                    when (DType.Float64, DType.Int64) {
+                        var aEnt = toSymEntry(aGen, real);
+                        var bScal = bParam.getIntValue();
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bScal)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aEnt.a, bScal)));
+                            }
+                        }
+                    }
+                    when (DType.Float64, DType.UInt64) {
+                        var aEnt = toSymEntry(aGen, real);
+                        var bScal = bParam.getUIntValue();
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bScal)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aEnt.a, bScal)));
+                            }
+                        }
+                    }
+                    when (DType.Float64, DType.Float64) {
+                        var aEnt = toSymEntry(aGen, real);
+                        var bScal = bParam.getRealValue();
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bScal)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aEnt.a, bScal)));
+                            }
+                        }
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn, efunc, aGen.dtype, bParam.getDType());
+                        eLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
-            when (DType.UInt64, DType.Int64) {
-                var en = toSymEntry(num, uint);
-                var ed = toSymEntry(denom, int);
-                select efunc {
-                    when "arctan2" {
-                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }               
-                } 
-            }
-            when (DType.UInt64, DType.UInt64) {
-                var en = toSymEntry(num, uint);
-                var ed = toSymEntry(denom, uint);
-                select efunc {
-                    when "arctan2" {
-                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
-                        st.addEntry(rname, new shared SymEntry(a));
+            when (ObjectType.VALUE, ObjectType.PDARRAY) {
+                var bGen: borrowed GenSymEntry = getGenericTypedArrayEntry(bParam.val, st);
+                select (aParam.getDType(), bGen.dtype) {
+                    when (DType.Int64, DType.Int64) {
+                        var aScal = aParam.getIntValue();
+                        var bEnt = toSymEntry(bGen, int);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.Int64, DType.UInt64) {
+                        var aScal = aParam.getIntValue();
+                        var bEnt = toSymEntry(bGen, uint);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.Int64, DType.Float64) {
+                        var aScal = aParam.getIntValue();
+                        var bEnt = toSymEntry(bGen, real);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aScal, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.UInt64, DType.Int64) {
+                        var aScal = aParam.getUIntValue();
+                        var bEnt = toSymEntry(bGen, int);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.UInt64, DType.UInt64) {
+                        var aScal = aParam.getUIntValue();
+                        var bEnt = toSymEntry(bGen, uint);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.UInt64, DType.Float64) {
+                        var aScal = aParam.getUIntValue();
+                        var bEnt = toSymEntry(bGen, real);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aScal, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.Float64, DType.Int64) {
+                        var aScal = aParam.getRealValue();
+                        var bEnt = toSymEntry(bGen, int);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aScal, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.Float64, DType.UInt64) {
+                        var aScal = aParam.getRealValue();
+                        var bEnt = toSymEntry(bGen, uint);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aScal, bEnt.a)));
+                            }
+                        }
+                    }
+                    when (DType.Float64, DType.Float64) {
+                        var aScal = aParam.getRealValue();
+                        var bEnt = toSymEntry(bGen, real);
+                        select efunc {
+                            when "arctan2" {
+                                st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
+                            }
+                            when "fmod" {
+                                st.addEntry(rname, new shared SymEntry(fmod(aScal, bEnt.a)));
+                            }
+                        }
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn, efunc, aParam.getDType(), bGen.dtype);
+                        eLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
-            }
-            when (DType.UInt64, DType.Float64) {
-                var en = toSymEntry(num, uint);
-                var ed = toSymEntry(denom, real);
-                select efunc {
-                    when "arctan2" {
-                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }
-                }
-            }
-            when (DType.Float64, DType.Int64) {
-                var en = toSymEntry(num, real);
-                var ed = toSymEntry(denom, int);
-                select efunc {
-                    when "arctan2" {
-                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }               
-                } 
-            }
-            when (DType.Float64, DType.UInt64) {
-                var en = toSymEntry(num, real);
-                var ed = toSymEntry(denom, uint);
-                select efunc {
-                    when "arctan2" {
-                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }
-                }
-            }
-            when (DType.Float64, DType.Float64) {
-                var en = toSymEntry(num, real);
-                var ed = toSymEntry(denom, real);
-                select efunc {
-                    when "arctan2" {
-                        var a = [(n,d) in zip(en.a, ed.a)] atan2(n,d);
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }
-                }
-            }
-            otherwise {
-               var errorMsg = notImplementedError(pn,efunc,num.dtype,denom.dtype);
-               eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);       
-               return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
         repMsg = "created " + st.attrib(rname);
-        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
-        return new MsgTuple(repMsg, MsgType.NORMAL); 
-    }
-
-    /*
-    vector = efunc(vector, scalar)
-
-    :arg reqMsg: request containing (cmd,efunc,num,scalar,dtype)
-    :type reqMsg: string 
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: (MsgTuple)
-    :throws: `UndefinedSymbolError(name)`
-    */
-    proc efunc2vsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        var efunc = msgArgs.getValueOf("func");
-        var rname = st.nextName();
-        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
-
-        var name = msgArgs.getValueOf("num");
-        var num: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
-        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s efunc: %s scalar: %s dtype: %s name: %s rname: %s".format(
-             cmd,efunc,msgArgs.getValueOf("dtype"),dtype,name,rname));
-        
-        select (num.dtype, dtype) {
-            when (DType.Int64, DType.Int64) {
-                var en = toSymEntry(num, int);
-                ref ena = en.a;
-                var val = msgArgs.get("scalar").getIntValue();
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
-                    }
-                } 
-            }
-            when (DType.Int64, DType.UInt64) {
-                var en = toSymEntry(num, int);
-                ref ena = en.a;
-                var val = msgArgs.get("scalar").getUIntValue();
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
-                    }
-                } 
-            }
-            when (DType.Int64, DType.Float64) {
-                var en = toSymEntry(num, int);
-                ref ena = en.a;
-                var val = msgArgs.get("scalar").getRealValue();
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
-                    }
-                } 
-            }
-            when (DType.UInt64, DType.Int64) {
-                var en = toSymEntry(num, uint);
-                ref ena = en.a;
-                var val = msgArgs.get("scalar").getIntValue();
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
-                    }
-                } 
-            }
-            when (DType.UInt64, DType.UInt64) {
-                var en = toSymEntry(num, uint);
-                ref ena = en.a;
-                var val = msgArgs.get("scalar").getUIntValue();
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
-                    }
-                } 
-            }
-            when (DType.UInt64, DType.Float64) {
-                var en = toSymEntry(num, uint);
-                ref ena = en.a;
-                var val = msgArgs.get("scalar").getRealValue();
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
-                    }
-                } 
-            }
-            when (DType.Float64, DType.Int64) {
-                var en = toSymEntry(num, real);
-                ref ena = en.a;
-                var val = msgArgs.get("scalar").getIntValue();
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
-                    }
-                } 
-            }
-            when (DType.Float64, DType.UInt64) {
-                var en = toSymEntry(num, real);
-                ref ena = en.a;
-                var val = msgArgs.get("scalar").getUIntValue();
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
-                    }
-                } 
-            }
-            when (DType.Float64, DType.Float64) {
-                var en = toSymEntry(num, real);
-                ref ena = en.a;
-                var val = msgArgs.get("scalar").getRealValue();
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(ena,val)));
-                    }
-                } 
-            }
-            otherwise {
-                var errorMsg = notImplementedError(pn,efunc,num.dtype,dtype);
-                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                return new MsgTuple(errorMsg, MsgType.ERROR);            
-            }
-        }
-        repMsg = "created " + st.attrib(rname);
-        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
-        return new MsgTuple(repMsg, MsgType.NORMAL); 
-    }
-
-    /*
-    vector = efunc(scalar, vector)
-
-    :arg reqMsg: request containing (cmd,efunc,scalar,denom,dtype)
-    :type reqMsg: string 
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: (MsgTuple)
-    :throws: `UndefinedSymbolError(name)`
-    */
-    proc efunc2svMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        var efunc = msgArgs.getValueOf("func");
-        var rname = st.nextName();
-        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
-
-        var name = msgArgs.getValueOf("denom");
-        var denom: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
-        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s efunc: %s scalar: %s dtype: %s name: %s rname: %s".format(
-             cmd,efunc,msgArgs.getValueOf("scalar"),dtype,name,rname));
-
-        select (dtype, denom.dtype) {
-            when (DType.Int64, DType.Int64) {
-                var val = msgArgs.get("scalar").getIntValue();
-                var ed = toSymEntry(denom, int);
-                ref eda = ed.a;
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
-                    } 
-                } 
-            }
-            when (DType.Int64, DType.UInt64) {
-                var val = msgArgs.get("scalar").getIntValue();
-                var ed = toSymEntry(denom, uint);
-                ref eda = ed.a;
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
-                    } 
-                } 
-            }
-            when (DType.Int64, DType.Float64) {
-                var val = msgArgs.get("scalar").getIntValue();
-                var ed = toSymEntry(denom, real);
-                ref eda = ed.a;
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
-                    } 
-                } 
-            }
-            when (DType.UInt64, DType.Int64) {
-                var val = msgArgs.get("scalar").getUIntValue();
-                var ed = toSymEntry(denom, int);
-                ref eda = ed.a;
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
-                    } 
-                } 
-            }
-            when (DType.UInt64, DType.UInt64) {
-                var val = msgArgs.get("scalar").getUIntValue();
-                var ed = toSymEntry(denom, uint);
-                ref eda = ed.a;
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
-                    } 
-                } 
-            }
-            when (DType.UInt64, DType.Float64) {
-                var val = msgArgs.get("scalar").getUIntValue();
-                var ed = toSymEntry(denom, real);
-                ref eda = ed.a;
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
-                    } 
-                } 
-            }
-            when (DType.Float64, DType.Int64) {
-                var val = msgArgs.get("scalar").getRealValue();
-                var ed = toSymEntry(denom, int);
-                ref eda = ed.a;
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
-                    } 
-                } 
-            }
-            when (DType.Float64, DType.UInt64) {
-                var val = msgArgs.get("scalar").getRealValue();
-                var ed = toSymEntry(denom, uint);
-                ref eda = ed.a;
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
-                    } 
-                } 
-            }
-            when (DType.Float64, DType.Float64) {
-                var val = msgArgs.get("scalar").getRealValue();
-                var ed = toSymEntry(denom, real);
-                ref eda = ed.a;
-                select efunc {
-                    when "arctan2" {
-                        st.addEntry(rname, new shared SymEntry(atan2(val, eda)));
-                    } 
-                } 
-            }
-            otherwise {
-                var errorMsg = notImplementedError(pn,efunc,dtype,denom.dtype);
-                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                                 
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
-        repMsg = "created " + st.attrib(rname);
-        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
-        return new MsgTuple(repMsg, MsgType.NORMAL); 
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     /*
@@ -1293,9 +1256,7 @@ module EfuncMsg
 
     use CommandMap;
     registerFunction("efunc", efuncMsg, getModuleName());
-    registerFunction("efunc2vv", efunc2vvMsg, getModuleName());
-    registerFunction("efunc2vs", efunc2vsMsg, getModuleName());
-    registerFunction("efunc2sv", efunc2svMsg, getModuleName());
+    registerFunction("efunc2", efunc2Msg, getModuleName());
     registerFunction("efunc3vv", efunc3vvMsg, getModuleName());
     registerFunction("efunc3vs", efunc3vsMsg, getModuleName());
     registerFunction("efunc3sv", efunc3svMsg, getModuleName());
