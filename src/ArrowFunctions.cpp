@@ -557,7 +557,6 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           auto chpl_ptr = (int64_t*)chpl_arr;
           parquet::Int64Reader* reader =
             static_cast<parquet::Int64Reader*>(column_reader.get());
-          // startIdx -= reader->Skip(startIdx);
 
           while (reader->HasNext() && i < numElems) {
             if((numElems - i) < batchSize)
@@ -569,7 +568,6 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           auto chpl_ptr = (int64_t*)chpl_arr;
           parquet::Int32Reader* reader =
             static_cast<parquet::Int32Reader*>(column_reader.get());
-          startIdx -= reader->Skip(startIdx);
 
           int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
           while (reader->HasNext() && i < numElems) {
@@ -604,7 +602,6 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           auto chpl_ptr = (bool*)chpl_arr;
           parquet::BoolReader* reader =
             static_cast<parquet::BoolReader*>(column_reader.get());
-          startIdx -= reader->Skip(startIdx);
 
           while (reader->HasNext() && i < numElems) {
             if((numElems - i) < batchSize)
@@ -616,7 +613,6 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           auto chpl_ptr = (double*)chpl_arr;
           parquet::FloatReader* reader =
             static_cast<parquet::FloatReader*>(column_reader.get());
-          startIdx -= reader->Skip(startIdx);
           
           while (reader->HasNext() && i < numElems) {
             if((numElems - i) < batchSize) // adjust batchSize if needed
@@ -638,7 +634,6 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           auto chpl_ptr = (double*)chpl_arr;
           parquet::DoubleReader* reader =
             static_cast<parquet::DoubleReader*>(column_reader.get());
-          startIdx -= reader->Skip(startIdx);
 
           while (reader->HasNext() && i < numElems) {
             if((numElems - i) < batchSize) // adjust batchSize if needed
@@ -973,11 +968,9 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
               else {
                 // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
                 segSize = 1; // even though segment is length=0, write null to hold the empty segment
-                int16_t* def_lvl = new int16_t[segSize] { 1 };
-                int16_t* rep_lvl = new int16_t[segSize] { 0 };
-                writer->WriteBatch(segSize, def_lvl, rep_lvl, nullptr);
-                delete[] def_lvl;
-                delete[] rep_lvl;
+                int16_t def_lvl = 1;
+                int16_t rep_lvl = 0;
+                writer->WriteBatch(segSize, &def_lvl, &rep_lvl, nullptr);
               }
               offIdx++;
               count++;
@@ -1027,11 +1020,9 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
               else {
                 // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
                 segSize = 1; // even though segment is length=0, write null to hold the empty segment
-                int16_t* def_lvl = new int16_t[segSize] { 1 };
-                int16_t* rep_lvl = new int16_t[segSize] { 0 };
-                writer->WriteBatch(segSize, def_lvl, rep_lvl, nullptr);
-                delete[] def_lvl;
-                delete[] rep_lvl;
+                int16_t def_lvl = 1;
+                int16_t rep_lvl = 0;
+                writer->WriteBatch(segSize, &def_lvl, &rep_lvl, nullptr);
               }
               offIdx++;
               count++;
@@ -1081,11 +1072,9 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
               else {
                 // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
                 segSize = 1; // even though segment is length=0, write null to hold the empty segment
-                int16_t* def_lvl = new int16_t[segSize] { 1 };
-                int16_t* rep_lvl = new int16_t[segSize] { 0 };
-                writer->WriteBatch(segSize, def_lvl, rep_lvl, nullptr);
-                delete[] def_lvl;
-                delete[] rep_lvl;
+                int16_t def_lvl = 1;
+                int16_t rep_lvl =0;
+                writer->WriteBatch(segSize, &def_lvl, &rep_lvl, nullptr);
               }
               offIdx++;
               count++;

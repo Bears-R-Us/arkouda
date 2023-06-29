@@ -195,44 +195,25 @@ module ParquetMsg {
     var fileOffsets = (+ scan sizes) - sizes;
     var segmentOffsets = (+ scan rows_per_file) - rows_per_file;
     
-    coforall loc in A.targetLocales() do on loc { // TODO return to coforall
+    coforall loc in A.targetLocales() do on loc {
       var locFiles = filenames;
       var locFiledoms = subdoms;
       var locOffsets = fileOffsets; // value count offset
       var locSegOffsets = segmentOffsets; // indicates which segment index is first for the file
-      var pqErr = new parquetErrorMsg();
 
-      // forall (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
-      for (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
+      forall (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
         for locdom in A.localSubdomains() {
           const intersection = domain_intersection(locdom, filedom);
           
           if intersection.size > 0 {
             var pqErr = new parquetErrorMsg();
-            if ty == ArrowTypes.stringArr {
-              var col: [filedom] t;
-              if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                  dsetname.localize().c_str(), intersection.size, 0,
+            var col: [filedom] t;
+            if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                  dsetname.localize().c_str(), filedom.size, 0,
                                   batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-              }
-              A[filedom] = col;
+              pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
-            else {
-              // var shift = computeEmptySegs(seg_sizes, offsets, s, intersection, off); // compute the shift to account for any empty segments in the file before the current section.
-              var col: [filedom] t;
-              // if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
-              //                       dsetname.localize().c_str(), intersection.size, (intersection.low - off) + shift,
-              //                       batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-              //   pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-              // }
-              if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                    dsetname.localize().c_str(), filedom.size, 0,
-                                    batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-              }
-              A[filedom] = col;
-            }
+            A[filedom] = col;
           }
         }
       }
