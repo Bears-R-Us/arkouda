@@ -32,7 +32,7 @@ __all__ = [
     "all_scalars",
     "get_byteorder",
     "get_server_byteorder",
-    "isSupportedNumber"
+    "isSupportedNumber",
 ]
 
 NUMBER_FORMAT_STRINGS = {
@@ -121,7 +121,6 @@ The DType enum defines the supported Arkouda data types in string form.
 
 
 class DType(Enum):
-
     BOOL = "bool"
     FLOAT = "float"
     FLOAT64 = "float64"
@@ -260,7 +259,11 @@ def resolve_scalar_dtype(val: object) -> str:  # type: ignore
         return "bool"
     # Python int or np.int* or np.uint*
     elif isinstance(val, int) or (hasattr(val, "dtype") and cast(np.uint, val).dtype.kind in "ui"):
-        if isinstance(val, np.uint64):
+        # we've established these are int, uint, or bigint,
+        # so we can do comparisons
+        if isSupportedInt(val) and val >= 2**64:  # type: ignore
+            return "bigint"
+        elif isinstance(val, np.uint64) or val >= 2**63:  # type: ignore
             return "uint64"
         else:
             return "int64"
