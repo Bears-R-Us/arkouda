@@ -84,10 +84,11 @@ module MemoryMgmt {
         var availMemory = getAvailMemory();
 
         mmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                 "reqMemory: %i arkMemAlloc: %i arkMemUsed: %i availMemory: %i".format(reqMemory,
-                                                                                       arkMemAlloc,
-                                                                                       arkMemUsed,
-                                                                                       availMemory));
+                 "locale: %s reqMemory: %i arkMemAlloc: %i arkMemUsed: %i availMemory: %i".format(here.id,
+                                                                                                  reqMemory,
+                                                                                                  arkMemAlloc,
+                                                                                                  arkMemUsed,
+                                                                                                  availMemory));
         var newArkoudaMemory = reqMemory:int + arkMemUsed:int;
         
         if newArkoudaMemory:int <= arkMemAlloc:int {
@@ -96,9 +97,9 @@ module MemoryMgmt {
             if newArkoudaMemory:int <= availMemory {
                 return true;
             } else {
-                var msg = "memory exceeded on locale %s with new arkouda memory %i exceeding availMemory: %i".format(here.id,
-                                                                                                                     newArkoudaMemory,
-                                                                                                                     availMemory);
+                var msg = "Arkouda memory request %i on locale %s exceeds available memory %i".format(newArkoudaMemory,
+                                                                                                      here.id,
+                                                                                                      availMemory);
                 mmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
                 return false;
             }
