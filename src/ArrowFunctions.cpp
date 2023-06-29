@@ -1133,7 +1133,6 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
               count++;
             }
             if (numLeft - count > 0) {
-              // idxQueue_segarray.push(byteIdx);
               idxQueue_str.push(byteIdx);
               idxQueue_segarray.push(offIdx);
             }
