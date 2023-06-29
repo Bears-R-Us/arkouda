@@ -333,7 +333,7 @@ Functions
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: arctan2(num: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], denom: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arctan2(num: Union[arkouda.pdarrayclass.pdarray, arkouda.dtypes.numeric_scalars], denom: Union[arkouda.pdarrayclass.pdarray, arkouda.dtypes.numeric_scalars]) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise inverse tangent of the array pair. The result chosen is the
    signed angle in radians between the ray ending at the origin and passing through the

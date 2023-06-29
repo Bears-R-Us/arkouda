@@ -384,6 +384,12 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.sqrt" title="arkouda.pdarrayclass.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>(→ pdarray)</p></td>
 <td><p>Takes the square root of array. If where is given, the operation will only take place in</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mod" title="arkouda.pdarrayclass.mod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mod</span></code></a>(→ pdarray)</p></td>
+<td><p>Returns the element-wise remainder of division.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.fmod" title="arkouda.pdarrayclass.fmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fmod</span></code></a>(→ pdarray)</p></td>
+<td><p>Returns the element-wise remainder of division.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.attach_pdarray" title="arkouda.pdarrayclass.attach_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_pdarray</span></code></a>(→ pdarray)</p></td>
 <td><p>class method to return a pdarray attached to the registered name in the arkouda</p></td>
 </tr>
@@ -2320,8 +2326,8 @@ the positions where the where condition is True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – A pdarry of values that will be square rooted</p></li>
-<li><p><strong>where</strong> (<em>Boolean</em><em> or </em><em>pdaarray</em>) – This condition is broadcast over the input. At locations where the condition is True, the
+<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – A pdarray of values that will be square rooted</p></li>
+<li><p><strong>where</strong> (<em>Boolean</em><em> or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – This condition is broadcast over the input. At locations where the condition is True, the
 corresponding value will be square rooted. Elsewhere, it will retain its original value.
 Default set to True.</p></li>
 </ul>
@@ -2340,6 +2346,49 @@ Default set to True.</p></li>
 array([0 1 1.4142135623730951 1.7320508075688772 2])
 &gt;&gt;&gt; ak.sqrt(a, ak.sqrt([True, True, False, False, True]))
 array([0, 1, 2, 3, 2])</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.mod">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dividend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divisor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.mod" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the element-wise remainder of division.</p>
+<p>Computes the remainder complementary to the floor_divide function.
+It is equivalent to np.mod, the remainder has the same sign as the divisor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dividend</strong> – The array being acted on by the bases for the modular division.</p></li>
+<li><p><strong>divisor</strong> – The array that will be the bases for the modular division.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns an array that contains the element-wise remainder of division.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.fmod">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">fmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dividend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.numeric_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divisor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.numeric_scalars</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.fmod" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the element-wise remainder of division.</p>
+<p>It is equivalent to np.fmod, the remainder has the same sign as the dividend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dividend</strong> (<em>numeric scalars</em><em> or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The array being acted on by the bases for the modular division.</p></li>
+<li><p><strong>divisor</strong> (<em>numeric scalars</em><em> or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The array that will be the bases for the modular division.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns an array that contains the element-wise remainder of division.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -2570,6 +2619,8 @@ they are unregistered.</p>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.rotr"><code class="docutils literal notranslate"><span class="pre">rotr()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.power"><code class="docutils literal notranslate"><span class="pre">power()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.sqrt"><code class="docutils literal notranslate"><span class="pre">sqrt()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarrayclass.mod"><code class="docutils literal notranslate"><span class="pre">mod()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarrayclass.fmod"><code class="docutils literal notranslate"><span class="pre">fmod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.attach_pdarray"><code class="docutils literal notranslate"><span class="pre">attach_pdarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray_by_name"><code class="docutils literal notranslate"><span class="pre">unregister_pdarray_by_name()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.RegistrationError"><code class="docutils literal notranslate"><span class="pre">RegistrationError</span></code></a></li>

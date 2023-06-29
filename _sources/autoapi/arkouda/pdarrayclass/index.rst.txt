@@ -49,6 +49,8 @@ Functions
    arkouda.pdarrayclass.rotr
    arkouda.pdarrayclass.power
    arkouda.pdarrayclass.sqrt
+   arkouda.pdarrayclass.mod
+   arkouda.pdarrayclass.fmod
    arkouda.pdarrayclass.attach_pdarray
    arkouda.pdarrayclass.unregister_pdarray_by_name
 
@@ -1510,12 +1512,12 @@ Functions
    Takes the square root of array. If where is given, the operation will only take place in
    the positions where the where condition is True.
 
-   :param pda: A pdarry of values that will be square rooted
+   :param pda: A pdarray of values that will be square rooted
    :type pda: pdarray
    :param where: This condition is broadcast over the input. At locations where the condition is True, the
                  corresponding value will be square rooted. Elsewhere, it will retain its original value.
                  Default set to True.
-   :type where: Boolean or pdaarray
+   :type where: Boolean or pdarray
 
    :returns: * *pdarray*
              * *Returns a pdarray of square rooted values, under the boolean where condition.*
@@ -1526,6 +1528,35 @@ Functions
    array([0 1 1.4142135623730951 1.7320508075688772 2])
    >>> ak.sqrt(a, ak.sqrt([True, True, False, False, True]))
    array([0, 1, 2, 3, 2])
+
+
+.. py:function:: mod(dividend, divisor) -> pdarray
+
+   Returns the element-wise remainder of division.
+
+   Computes the remainder complementary to the floor_divide function.
+   It is equivalent to np.mod, the remainder has the same sign as the divisor.
+
+   :param dividend: The array being acted on by the bases for the modular division.
+   :param divisor: The array that will be the bases for the modular division.
+
+   :returns: Returns an array that contains the element-wise remainder of division.
+   :rtype: pdarray
+
+
+.. py:function:: fmod(dividend: Union[pdarray, arkouda.dtypes.numeric_scalars], divisor: Union[pdarray, arkouda.dtypes.numeric_scalars]) -> pdarray
+
+   Returns the element-wise remainder of division.
+
+   It is equivalent to np.fmod, the remainder has the same sign as the dividend.
+
+   :param dividend: The array being acted on by the bases for the modular division.
+   :type dividend: numeric scalars or pdarray
+   :param divisor: The array that will be the bases for the modular division.
+   :type divisor: numeric scalars or pdarray
+
+   :returns: Returns an array that contains the element-wise remainder of division.
+   :rtype: pdarray
 
 
 .. py:function:: attach_pdarray(user_defined_name: str) -> pdarray
