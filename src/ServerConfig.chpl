@@ -12,6 +12,7 @@ module ServerConfig
     use Reflection;
     use ServerErrors;
     use Logging;
+    use MemoryMgmt;
 
     use ArkoudaFileCompat;
     
@@ -277,6 +278,21 @@ module ServerConfig
     proc overMemLimit(additionalAmount:int) throws {
         // must set config var "-smemTrack=true"(compile time) or "--memTrack=true" (run time)
         // to use memoryUsed() procedure from Chapel's Memory module
+        proc checkStaticMemoryLimit(total: real) {
+            if total > getMemLimit() {
+                var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
+                var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".format(
+                                   total, getMemLimit(), pct);
+                scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
+                throw getErrorWithContext(
+                          msg=msg,
+                          lineNumber=getLineNumber(),
+                          routineName=getRoutineName(),
+                          moduleName=getModuleName(),
+                          errorClass="ErrorWithContext");                                        
+            }        
+        }
+        
         if (memTrack) {
             // this is a per locale total
             var total = getMemUsed() + (additionalAmount:uint / numLocales:uint);
@@ -291,17 +307,43 @@ module ServerConfig
                                          (getMemLimit():real * numLocales)) * 100):uint));
                 }
             }
-            if total > getMemLimit() {
-                var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
-                var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".format(
+            
+            /*
+             * If the MemoryMgmt.memMgmtType is STATIC (default), use the memory management logic based upon
+             * a percentage of the locale0 host machine physical memory. 
+             *
+             * If DYNAMIC, use the new dynamic memory mgmt capability in the MemoryMgmt module that first determines 
+             * for each locale if there's sufficient space within the memory currently allocated to the Arkouda 
+             * Chapel process to accommodate the projected memory required by the cmd. If not, then MemoryMgmt 
+             * checks the available memory on each locale to see if more can be allocated to the Arkouda-Chapel process.
+             * If the answer is no on any locale, the cmd is not executed and MemoryMgmt logs the corresponding locales
+             * server-side. More detailed client-side reporting can be implemented in a later version. 
+             */
+            if memMgmtType == MemMgmtType.STATIC {
+                if total > getMemLimit() {
+                    var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
+                    var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".format(
                                    total, getMemLimit(), pct);
-                scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
-                throw getErrorWithContext(
-                          msg=msg,
-                          lineNumber=getLineNumber(),
-                          routineName=getRoutineName(),
-                          moduleName=getModuleName(),
-                          errorClass="ErrorWithContext");                                        
+                    scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
+                    throw getErrorWithContext(
+                              msg=msg,
+                              lineNumber=getLineNumber(),
+                              routineName=getRoutineName(),
+                              moduleName=getModuleName(),
+                              errorClass="ErrorWithContext");                                        
+                }
+            } else {
+                if !isMemAvailable(additionalAmount) {
+                    var msg = "cmd requiring %i more bytes of memory exceeds available memory on one or more locales".format(
+                                                                                                     additionalAmount);
+                    scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
+                    throw getErrorWithContext(
+                              msg=msg,
+                              lineNumber=getLineNumber(),
+                              routineName=getRoutineName(),
+                              moduleName=getModuleName(),
+                              errorClass="ErrorWithContext");                                     
+                }
             }
         }
     }
