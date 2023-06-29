@@ -328,7 +328,6 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
             (void)int_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
             if (values_read == 0 || (!first && rep_lvl == 0)) {
               seg_sizes[i] = seg_size;
-              std::cout << "\n\ni: "<<i<<"\nseg_sizes[i]: "<<seg_sizes[i]<<"\n\n";
               i++;
               seg_size = 0;
             }
@@ -341,7 +340,6 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
             }
             if (values_read != 0 && !int_reader->HasNext()){
               seg_sizes[i] = seg_size;
-              std::cout << "\n\ni: "<<i<<"\nseg_sizes[i]: "<<seg_sizes[i]<<"\n\n";
             }
           }
         } else if(lty == ARROWINT32 || lty == ARROWUINT32) {
@@ -363,7 +361,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
                 first = false;
               }
             }
-            if (!int_reader->HasNext()){
+            if (values_read != 0 && !int_reader->HasNext()){
               seg_sizes[i] = seg_size;
             }
           }
@@ -386,7 +384,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
                 first = false;
               }
             }
-            if (!reader->HasNext()){
+            if (values_read != 0 && !reader->HasNext()){
               seg_sizes[i] = seg_size;
             }
           }
@@ -409,7 +407,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
                 first = false;
               }
             }
-            if (!bool_reader->HasNext()){
+            if (values_read != 0 && !bool_reader->HasNext()){
               seg_sizes[i] = seg_size;
             }
           }
@@ -434,7 +432,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
                 first = false;
               }
             }
-            if (!float_reader->HasNext()){
+            if (values_read != 0 && !float_reader->HasNext()){
               seg_sizes[i] = seg_size;
             }
           }
@@ -458,7 +456,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
                 first = false;
               }
             }
-            if (!dbl_reader->HasNext()){
+            if (values_read != 0 && !dbl_reader->HasNext()){
               seg_sizes[i] = seg_size;
             }
           }
@@ -565,7 +563,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             if((numElems - i) < batchSize)
               batchSize = numElems - i;
             (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-            i+=1;
+            i+=values_read;
           }
         } else if(lty == ARROWINT32 || lty == ARROWUINT32) {
           auto chpl_ptr = (int64_t*)chpl_arr;
@@ -1248,6 +1246,10 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
     int64_t i = 0;
     int64_t numLeft = numelems;
 
+    if (chpl_arr == NULL) {
+      return 0;
+    }
+
     if(dtype == ARROWINT64 || dtype == ARROWUINT64) {
       auto chpl_ptr = (int64_t*)chpl_arr;
       while(numLeft > 0) {
@@ -1772,6 +1774,9 @@ int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
                               int64_t dtype, int64_t compression,
                               char** errMsg) {
   try {
+    if (chpl_arr == NULL){
+      return 0;
+    }
     std::shared_ptr<arrow::io::ReadableFile> infile;
     ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename, arrow::default_memory_pool()),
                    infile);

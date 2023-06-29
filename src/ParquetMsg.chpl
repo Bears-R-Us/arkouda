@@ -338,7 +338,6 @@ module ParquetMsg {
     
     if listSize == ARROWERROR then
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-    writeln("\n\nListSize: %jt\nSeg_Sizes: %jt\n\n".format(listSize, seg_sizes));
     return listSize;
   }
   
@@ -465,14 +464,18 @@ module ParquetMsg {
 
         var locDom = A.localSubdomain();
         var locArr = A[locDom];
+        var valPtr: c_void_ptr = nil;
+        if locArr.size != 0 {
+          valPtr = c_ptrTo(locArr);
+        }
         if mode == TRUNCATE || !filesExist {
-          if c_writeColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locArr), 0,
+          if c_writeColumnToParquet(myFilename.localize().c_str(), valPtr, 0,
                                     dsetname.localize().c_str(), locDom.size, rowGroupSize,
                                     dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
             pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
           }
         } else {
-          if c_appendColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locArr),
+          if c_appendColumnToParquet(myFilename.localize().c_str(), valPtr,
                                      dsetname.localize().c_str(), locDom.size,
                                      dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
             pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
