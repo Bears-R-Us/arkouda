@@ -18,6 +18,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import (
     int_scalars,
     isSupportedInt,
+    isSupportedNumber,
     numeric_and_bool_scalars,
     numeric_scalars,
     numpy_scalars,
@@ -59,6 +60,8 @@ __all__ = [
     "divmod",
     "sqrt",
     "power",
+    "mod",
+    "fmod",
     "attach_pdarray",
     "unregister_pdarray_by_name",
     "RegistrationError",
@@ -3054,8 +3057,8 @@ def sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-        A pdarry of values that will be square rooted
-    where : Boolean or pdaarray
+        A pdarray of values that will be square rooted
+    where : Boolean or pdarray
         This condition is broadcast over the input. At locations where the condition is True, the
         corresponding value will be square rooted. Elsewhere, it will retain its original value.
         Default set to True.
@@ -3073,6 +3076,75 @@ def sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     array([0, 1, 2, 3, 2])
     """
     return power(pda, 0.5, where)
+
+
+# there's no need for typechecking, % can handle that
+def mod(dividend, divisor) -> pdarray:
+    """
+    Returns the element-wise remainder of division.
+
+    Computes the remainder complementary to the floor_divide function.
+    It is equivalent to np.mod, the remainder has the same sign as the divisor.
+
+    Parameters
+    ----------
+    dividend
+        The array being acted on by the bases for the modular division.
+    divisor
+        The array that will be the bases for the modular division.
+
+    Returns
+    -------
+    pdarray
+        Returns an array that contains the element-wise remainder of division.
+    """
+    return dividend % divisor
+
+
+@typechecked
+def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, numeric_scalars]) -> pdarray:
+    """
+    Returns the element-wise remainder of division.
+
+    It is equivalent to np.fmod, the remainder has the same sign as the dividend.
+
+    Parameters
+    ----------
+    dividend : numeric scalars or pdarray
+        The array being acted on by the bases for the modular division.
+    divisor : numeric scalars or pdarray
+        The array that will be the bases for the modular division.
+
+    Returns
+    -------
+    pdarray
+        Returns an array that contains the element-wise remainder of division.
+    """
+    if not builtins.all(
+        isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
+    ):
+        raise TypeError(
+            f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
+            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
+        )
+    if isSupportedNumber(dividend) and isSupportedNumber(divisor):
+        raise TypeError(
+            f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
+            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
+        )
+    return create_pdarray(
+        cast(
+            str,
+            generic_msg(
+                cmd="efunc2",
+                args={
+                    "func": "fmod",
+                    "A": dividend,
+                    "B": divisor,
+                },
+            ),
+        )
+    )
 
 
 @typechecked
