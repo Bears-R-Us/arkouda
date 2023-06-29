@@ -1290,7 +1290,7 @@ module ParquetMsg {
           ref ss = segStr;
           var lens = ss.getLengths();
           const locDom = ss.offsets.a.localSubdomain();
-          for i in locDom do x += lens[i];
+          for d in locDom do x += lens[d];
           seg_sizes_str[i] = x;
         }
         else if objType == ObjType.SEGARRAY {
@@ -1317,13 +1317,13 @@ module ParquetMsg {
             var endOffsetIdx = if (lastOffset == sa[locDom.high]) then lastOffsetIdx else sa[locDom.high + 1] - 1;
             var offIdxRange = startOffsetIdx..endOffsetIdx;
             var str_bytes: int;
-            for i in offIdxRange do str_bytes += lens[i];
+            for d in offIdxRange do str_bytes += lens[d];
 
             seg_sizes_str[i] = str_bytes;
           }
 
           lens = [(i, s) in zip (saD, sa)] if i == high then values.size - s else sa[i+1] - s;
-          for i in locDom do x += lens[i];
+          for d in locDom do x += lens[d];
           select values.dtype {
             when DType.Int64 {
               seg_sizes_int[i] = x;

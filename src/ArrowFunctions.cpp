@@ -1085,21 +1085,19 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
           parquet::ByteArrayWriter* ba_writer =
           static_cast<parquet::ByteArrayWriter*>(rg_writer->NextColumn());
           if (objType_ptr[i] == SEGARRAY) {
+            auto offset_ptr = (int64_t*)offset_arr[i];
             int64_t byteIdx = 0;
+            int64_t offIdx = 0; // index into offsets
 
             // identify the starting byte index
             if (x > 0){
               byteIdx = idxQueue_str.front();
               idxQueue_str.pop();
-            }
-            
-            auto offset_ptr = (int64_t*)offset_arr[i];
-            int64_t offIdx = 0; // index into offsets
 
-            if (x > 0){
               offIdx = idxQueue_segarray.front();
               idxQueue_segarray.pop();
             }
+
             int64_t count = 0;
             while (count < batchSize) { // ensures rowGroupSize maintained
               int64_t segSize;
@@ -1135,7 +1133,8 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
               count++;
             }
             if (numLeft - count > 0) {
-              idxQueue_segarray.push(byteIdx);
+              // idxQueue_segarray.push(byteIdx);
+              idxQueue_str.push(byteIdx);
               idxQueue_segarray.push(offIdx);
             }
           }

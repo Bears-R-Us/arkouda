@@ -28,13 +28,13 @@ class ParquetTest(ArkoudaTest):
     def test_parquet(self):
         for dtype in TYPES:
             if dtype == "int64":
-                ak_arr = ak.randint(0, 2 ** 32, SIZE)
+                ak_arr = ak.randint(0, 2**32, SIZE)
             elif dtype == "uint64":
-                ak_arr = ak.randint(0, 2 ** 32, SIZE, dtype=ak.uint64)
+                ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.uint64)
             elif dtype == "bool":
                 ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool)
             elif dtype == "float64":
-                ak_arr = ak.randint(0, 2 ** 32, SIZE, dtype=ak.float64)
+                ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
             elif dtype == "str":
                 ak_arr = ak.random_strings_uniform(1, 10, SIZE)
 
@@ -54,20 +54,20 @@ class ParquetTest(ArkoudaTest):
             adjusted_size = int(SIZE / NUMFILES) * NUMFILES
             test_arrs = []
             if dtype == "int64":
-                elems = ak.randint(0, 2 ** 32, adjusted_size)
+                elems = ak.randint(0, 2**32, adjusted_size)
             elif dtype == "uint64":
-                elems = ak.randint(0, 2 ** 32, adjusted_size, dtype=ak.uint64)
+                elems = ak.randint(0, 2**32, adjusted_size, dtype=ak.uint64)
             elif dtype == "bool":
                 elems = ak.randint(0, 1, adjusted_size, dtype=ak.bool)
             elif dtype == "float64":
-                elems = ak.randint(0, 2 ** 32, adjusted_size, dtype=ak.float64)
+                elems = ak.randint(0, 2**32, adjusted_size, dtype=ak.float64)
             elif dtype == "str":
                 elems = ak.random_strings_uniform(1, 10, adjusted_size)
 
             per_arr = int(adjusted_size / NUMFILES)
             with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
                 for i in range(NUMFILES):
-                    test_arrs.append(elems[(i * per_arr): (i * per_arr) + per_arr])
+                    test_arrs.append(elems[(i * per_arr) : (i * per_arr) + per_arr])
                     test_arrs[i].to_parquet(f"{tmp_dirname}/pq_test{i:04d}", "test-dset")
 
                 pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test*", "test-dset")
@@ -105,13 +105,13 @@ class ParquetTest(ArkoudaTest):
     def test_get_datasets(self):
         for dtype in TYPES:
             if dtype == "int64":
-                ak_arr = ak.randint(0, 2 ** 32, 10)
+                ak_arr = ak.randint(0, 2**32, 10)
             elif dtype == "uint64":
-                ak_arr = ak.randint(0, 2 ** 32, 10, dtype=ak.uint64)
+                ak_arr = ak.randint(0, 2**32, 10, dtype=ak.uint64)
             elif dtype == "bool":
                 ak_arr = ak.randint(0, 1, 10, dtype=ak.bool)
             elif dtype == "float64":
-                ak_arr = ak.randint(0, 2 ** 32, SIZE, dtype=ak.float64)
+                ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
             elif dtype == "str":
                 ak_arr = ak.random_strings_uniform(1, 10, SIZE)
             with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
@@ -124,12 +124,12 @@ class ParquetTest(ArkoudaTest):
         # use small size to cut down on execution time
         append_size = 32
 
-        base_dset = ak.randint(0, 2 ** 32, append_size)
+        base_dset = ak.randint(0, 2**32, append_size)
         ak_dict = {}
-        ak_dict["uint-dset"] = ak.randint(0, 2 ** 32, append_size, dtype=ak.uint64)
+        ak_dict["uint-dset"] = ak.randint(0, 2**32, append_size, dtype=ak.uint64)
         ak_dict["bool-dset"] = ak.randint(0, 1, append_size, dtype=ak.bool)
-        ak_dict["float-dset"] = ak.randint(0, 2 ** 32, append_size, dtype=ak.float64)
-        ak_dict["int-dset"] = ak.randint(0, 2 ** 32, append_size)
+        ak_dict["float-dset"] = ak.randint(0, 2**32, append_size, dtype=ak.float64)
+        ak_dict["int-dset"] = ak.randint(0, 2**32, append_size)
         ak_dict["str-dset"] = ak.random_strings_uniform(1, 10, append_size)
 
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
@@ -165,13 +165,13 @@ class ParquetTest(ArkoudaTest):
     def test_append_empty(self):
         for dtype in TYPES:
             if dtype == "int64":
-                ak_arr = ak.randint(0, 2 ** 32, SIZE)
+                ak_arr = ak.randint(0, 2**32, SIZE)
             elif dtype == "uint64":
-                ak_arr = ak.randint(0, 2 ** 32, SIZE, dtype=ak.uint64)
+                ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.uint64)
             elif dtype == "bool":
                 ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool)
             elif dtype == "float64":
-                ak_arr = ak.randint(0, 2 ** 32, SIZE, dtype=ak.float64)
+                ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
             elif dtype == "str":
                 ak_arr = ak.random_strings_uniform(1, 10, SIZE)
             with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
@@ -196,10 +196,12 @@ class ParquetTest(ArkoudaTest):
 
     def test_gzip_nan_rd(self):
         # create pandas dataframe
-        pdf = pd.DataFrame({
-            'all_nan': np.array([np.nan, np.nan, np.nan, np.nan]),
-            'some_nan': np.array([3.14, np.nan, 7.12, 4.44])
-        })
+        pdf = pd.DataFrame(
+            {
+                "all_nan": np.array([np.nan, np.nan, np.nan, np.nan]),
+                "some_nan": np.array([3.14, np.nan, 7.12, 4.44]),
+            }
+        )
 
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pdf.to_parquet(f"{tmp_dirname}/gzip_pq", engine="pyarrow", compression="gzip")
@@ -209,32 +211,19 @@ class ParquetTest(ArkoudaTest):
             self.assertTrue(pdf.equals(rd_df.to_pandas()))
 
     def test_segarray_read(self):
-        df = pd.DataFrame({
-            "ListCol": [
-                [0, 1, 2],
-                [0, 1],
-                [3, 4, 5, 6],
-                [1, 2, 3]
-            ],
-            "BoolList": [
-                [True, False],
-                [False, False, False],
-                [True],
-                [True, False, True]
-            ],
-            "FloatList": [
-                [3.14, 5.56, 2.23],
-                [3.08],
-                [6.5, 6.8],
-                [7.0]
-            ],
-            "UintList": [
-                np.array([1, 2], np.uint64),
-                np.array([3, 4, 5], np.uint64),
-                np.array([2, 2, 2], np.uint64),
-                np.array([11], np.uint64)
-            ]
-        })
+        df = pd.DataFrame(
+            {
+                "ListCol": [[0, 1, 2], [0, 1], [3, 4, 5, 6], [1, 2, 3]],
+                "BoolList": [[True, False], [False, False, False], [True], [True, False, True]],
+                "FloatList": [[3.14, 5.56, 2.23], [3.08], [6.5, 6.8], [7.0]],
+                "UintList": [
+                    np.array([1, 2], np.uint64),
+                    np.array([3, 4, 5], np.uint64),
+                    np.array([2, 2, 2], np.uint64),
+                    np.array([11], np.uint64),
+                ],
+            }
+        )
         table = pa.Table.from_pandas(df)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/segarray_parquet")
@@ -252,17 +241,11 @@ class ParquetTest(ArkoudaTest):
             ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_parquet*", datasets="FloatList")
             self.assertIsInstance(ak_data, ak.SegArray)
             for x, y in zip(df["FloatList"].tolist(), ak_data.to_list()):
-                self.assertListEqual(x,y)
+                self.assertListEqual(x, y)
 
-        df = pd.DataFrame({
-            "IntCol": [0, 1, 2, 3],
-            "ListCol": [
-                [0, 1, 2],
-                [0, 1],
-                [3, 4, 5, 6],
-                [1, 2, 3]
-            ]
-        })
+        df = pd.DataFrame(
+            {"IntCol": [0, 1, 2, 3], "ListCol": [[0, 1, 2], [0, 1], [3, 4, 5, 6], [1, 2, 3]]}
+        )
         table = pa.Table.from_pandas(df)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/segarray_varied_parquet")
@@ -281,23 +264,9 @@ class ParquetTest(ArkoudaTest):
             self.assertListEqual(df["ListCol"].to_list(), ak_data.to_list())
 
         # test for multi-file
-        df = pd.DataFrame({
-            "ListCol": [
-                [0, 1, 2],
-                [0, 1],
-                [3, 4, 5, 6],
-                [1, 2, 3]
-            ]
-        })
+        df = pd.DataFrame({"ListCol": [[0, 1, 2], [0, 1], [3, 4, 5, 6], [1, 2, 3]]})
         table = pa.Table.from_pandas(df)
-        df2 = pd.DataFrame({
-            "ListCol": [
-                [0, 1, 11],
-                [0, 1],
-                [3, 4, 5, 6],
-                [1]
-            ]
-        })
+        df2 = pd.DataFrame({"ListCol": [[0, 1, 11], [0, 1], [3, 4, 5, 6], [1]]})
         table2 = pa.Table.from_pandas(df2)
         combo = pd.concat([df, df2], ignore_index=True)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
@@ -309,16 +278,8 @@ class ParquetTest(ArkoudaTest):
             for i in range(8):
                 self.assertListEqual(combo["ListCol"][i], ak_data[i].to_list())
 
-        #test for handling empty segments
-        df = pd.DataFrame({
-            "ListCol": [
-                [],
-                [0, 1],
-                [],
-                [3, 4, 5, 6],
-                []
-            ]
-        })
+        # test for handling empty segments
+        df = pd.DataFrame({"ListCol": [[], [0, 1], [], [3, 4, 5, 6], []]})
         table = pa.Table.from_pandas(df)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/empty_segments")
@@ -330,15 +291,7 @@ class ParquetTest(ArkoudaTest):
                 self.assertListEqual(df["ListCol"][i], ak_data[i].to_list())
 
         # test for handling empty segments
-        df = pd.DataFrame({
-            "ListCol": [
-                [8],
-                [0, 1],
-                [],
-                [3, 4, 5, 6],
-                []
-            ]
-        })
+        df = pd.DataFrame({"ListCol": [[8], [0, 1], [], [3, 4, 5, 6], []]})
         table = pa.Table.from_pandas(df)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/empty_segments")
@@ -350,23 +303,8 @@ class ParquetTest(ArkoudaTest):
                 self.assertListEqual(df["ListCol"][i], ak_data[i].to_list())
 
         # multi-file with empty segs
-        df = pd.DataFrame({
-            "ListCol": [
-                [],
-                [0, 1],
-                [],
-                [3, 4, 5, 6],
-                []
-            ]
-        })
-        df2 = pd.DataFrame({
-            "ListCol": [
-                [0, 1],
-                [],
-                [3, 4, 5, 6],
-                [1, 2, 3]
-            ]
-        })
+        df = pd.DataFrame({"ListCol": [[], [0, 1], [], [3, 4, 5, 6], []]})
+        df2 = pd.DataFrame({"ListCol": [[0, 1], [], [3, 4, 5, 6], [1, 2, 3]]})
         table = pa.Table.from_pandas(df)
         table2 = pa.Table.from_pandas(df2)
         combo = pd.concat([df, df2], ignore_index=True)
@@ -381,23 +319,8 @@ class ParquetTest(ArkoudaTest):
                 self.assertListEqual(combo["ListCol"][i], ak_data[i].to_list())
 
         # multi-file with empty segs
-        df = pd.DataFrame({
-            "ListCol": [
-                [8],
-                [0, 1],
-                [],
-                [3, 4, 5, 6],
-                []
-            ]
-        })
-        df2 = pd.DataFrame({
-            "ListCol": [
-                [0, 1],
-                [],
-                [3, 4, 5, 6],
-                [1, 2, 3]
-            ]
-        })
+        df = pd.DataFrame({"ListCol": [[8], [0, 1], [], [3, 4, 5, 6], []]})
+        df2 = pd.DataFrame({"ListCol": [[0, 1], [], [3, 4, 5, 6], [1, 2, 3]]})
         table = pa.Table.from_pandas(df)
         table2 = pa.Table.from_pandas(df2)
         combo = pd.concat([df, df2], ignore_index=True)
@@ -427,7 +350,7 @@ class ParquetTest(ArkoudaTest):
         # integer with empty segments
         a = [0, 1, 2]
         c = [15, 21]
-        s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a)+len(c)]), ak.array(a + c))
+        s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 
@@ -450,7 +373,9 @@ class ParquetTest(ArkoudaTest):
         # uint with empty segments
         a = [0, 1, 2]
         c = [15, 21]
-        s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.uint64))
+        s = ak.SegArray(
+            ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.uint64)
+        )
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 
@@ -473,8 +398,9 @@ class ParquetTest(ArkoudaTest):
         # bool with empty segments
         a = [0, 1, 1]
         c = [1, 0]
-        s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c,
-                                   dtype=ak.bool))
+        s = ak.SegArray(
+            ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.bool)
+        )
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 
@@ -516,10 +442,21 @@ class ParquetTest(ArkoudaTest):
             "c_7": ak.array(np.random.uniform(0, 100, 3)),
             "c_8": ak.SegArray(ak.array([0, 9, 14]), ak.array(np.random.uniform(0, 100, 20))),
             "c_9": ak.array(["abc", "123", "xyz"]),
-            "c_10": ak.SegArray(ak.array([0, 2, 5]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])),
-            "c_11": ak.SegArray(ak.array([0, 2, 2]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])),
-            "c_12": ak.SegArray(ak.array([0, 0, 2]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])),
-            "c_13": ak.SegArray(ak.array([0, 5, 8]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])),
+            "c_10": ak.SegArray(
+                ak.array([0, 2, 5]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+            ),
+            "c_11": ak.SegArray(
+                ak.array([0, 2, 2]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+            ),
+            "c_12": ak.SegArray(
+                ak.array([0, 0, 2]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+            ),
+            "c_13": ak.SegArray(
+                ak.array([0, 5, 8]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+            ),
+            "c_14": ak.SegArray(
+                ak.array([0, 5, 8]), ak.array(["abc", "123", "xyz", "l", "m", "n", "o", "p", "arkouda"])
+            ),
         }
         akdf = ak.DataFrame(df_dict)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
@@ -535,30 +472,29 @@ class ParquetTest(ArkoudaTest):
             self.assertTrue(akdf.to_pandas().equals(rd_df.to_pandas()))
 
     def test_small_ints(self):
-        df_pd = pd.DataFrame({
-            "int16": pd.Series([2 ** 15 - 1, -2 ** 15], dtype=np.int16),
-            "int32": pd.Series([2 ** 31 - 1, -2 ** 31], dtype=np.int32),
-            "uint16": pd.Series([2 ** 15 - 1, 2 ** 15], dtype=np.uint16),
-            "uint32": pd.Series([2 ** 31 - 1, 2 ** 31], dtype=np.uint32),
-        })
+        df_pd = pd.DataFrame(
+            {
+                "int16": pd.Series([2**15 - 1, -(2**15)], dtype=np.int16),
+                "int32": pd.Series([2**31 - 1, -(2**31)], dtype=np.int32),
+                "uint16": pd.Series([2**15 - 1, 2**15], dtype=np.uint16),
+                "uint32": pd.Series([2**31 - 1, 2**31], dtype=np.uint32),
+            }
+        )
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            fname = tmp_dirname+"/pq_small_int"
+            fname = tmp_dirname + "/pq_small_int"
             df_pd.to_parquet(fname)
             df_ak = ak.DataFrame(ak.read(fname + "*"))
             for c in df_ak.columns:
                 self.assertListEqual(df_ak[c].to_list(), df_pd[c].to_list())
 
     def test_read_nested(self):
-        df = ak.DataFrame({
-            "idx": ak.arange(5),
-            "seg": ak.SegArray(ak.arange(0, 10, 2), ak.arange(10))
-        })
+        df = ak.DataFrame({"idx": ak.arange(5), "seg": ak.SegArray(ak.arange(0, 10, 2), ak.arange(10))})
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            fname = tmp_dirname+"/read_nested_test"
+            fname = tmp_dirname + "/read_nested_test"
             df.to_parquet(fname)
 
             # test read with read_nested=true
-            data = ak.read_parquet(fname+"_*")
+            data = ak.read_parquet(fname + "_*")
             self.assertTrue("idx" in data)
             self.assertTrue("seg" in data)
             self.assertListEqual(df["idx"].to_list(), data["idx"].to_list())
@@ -577,8 +513,8 @@ class ParquetTest(ArkoudaTest):
             self.assertListEqual(df["seg"].to_list(), data["seg"].to_list())
 
     def test_segarray_string(self):
-        words = ak.array(['one,two,three', 'uno,dos,tres'])
-        strs, segs = words.split(',', return_segments=True)
+        words = ak.array(["one,two,three", "uno,dos,tres"])
+        strs, segs = words.split(",", return_segments=True)
         x = ak.SegArray(segs, strs)
 
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
@@ -589,7 +525,6 @@ class ParquetTest(ArkoudaTest):
             self.assertListEqual(x.segments.to_list(), rd.segments.to_list())
             self.assertListEqual(x.values.to_list(), rd.values.to_list())
             self.assertListEqual(x.to_list(), rd.to_list())
-
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
