@@ -559,7 +559,7 @@ def arctan(pda: pdarray) -> pdarray:
 
 
 @typechecked
-def arctan2(num: Union[numeric_scalars, pdarray], denom: Union[numeric_scalars, pdarray]) -> pdarray:
+def arctan2(num: Union[pdarray, numeric_scalars], denom: Union[pdarray, numeric_scalars]) -> pdarray:
     """
     Return the element-wise inverse tangent of the array pair. The result chosen is the
     signed angle in radians between the ray ending at the origin and passing through the
@@ -584,55 +584,29 @@ def arctan2(num: Union[numeric_scalars, pdarray], denom: Union[numeric_scalars, 
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if isinstance(num, pdarray) and isinstance(denom, pdarray):
-        return create_pdarray(
-            type_cast(
-                str,
-                generic_msg(
-                    cmd="efunc2vv",
-                    args={
-                        "func": "arctan2",
-                        "num": num,
-                        "denom": denom,
-                    },
-                ),
-            )
-        )
-    elif isinstance(num, pdarray) and isSupportedNumber(denom):
-        return create_pdarray(
-            type_cast(
-                str,
-                generic_msg(
-                    cmd="efunc2vs",
-                    args={
-                        "func": "arctan2",
-                        "num": num,
-                        "scalar": denom,
-                        "dtype": resolve_scalar_dtype(denom),
-                    },
-                ),
-            )
-        )
-    elif isSupportedNumber(num) and isinstance(denom, pdarray):
-        return create_pdarray(
-            type_cast(
-                str,
-                generic_msg(
-                    cmd="efunc2sv",
-                    args={
-                        "func": "arctan2",
-                        "scalar": num,
-                        "denom": denom,
-                        "dtype": resolve_scalar_dtype(num),
-                    },
-                ),
-            )
-        )
-    else:
+    if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
-            f"types are numeric scalars and pdarrays. At least one argument must be a pdarray."
+            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
+    if isSupportedNumber(num) and isSupportedNumber(denom):
+        raise TypeError(
+            f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
+            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
+        )
+    return create_pdarray(
+        type_cast(
+            str,
+            generic_msg(
+                cmd="efunc2",
+                args={
+                    "func": "arctan2",
+                    "A": num,
+                    "B": denom,
+                },
+            ),
+        )
+    )
 
 
 @typechecked

@@ -114,9 +114,9 @@ module MetricsMsg {
         var metrics = new map(keyType=User,valType=shared CounterTable);
         var users = new Users();
 
-        proc getUserMetrics(user: User) {
+        proc getUserMetrics(user: User) : borrowed CounterTable {
             if this.metrics.contains(user: User) {
-              return try! this.metrics[user];
+                return try! this.metrics[user];
             } else {
                 var userMetrics = new shared CounterTable();
                 this.metrics.add(user, userMetrics);

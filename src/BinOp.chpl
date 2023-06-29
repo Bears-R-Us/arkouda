@@ -17,7 +17,7 @@ module BinOp
   const omLogger = new Logger(logLevel, logChannel);
 
   /*
-  Helper function to ensure that floor division cases are handled in accordance with numpy
+    Helper function to ensure that floor division cases are handled in accordance with numpy
   */
   inline proc floorDivisionHelper(numerator: ?t, denom: ?t2): real {
     if (numerator == 0 && denom == 0) || (isinf(numerator) && (denom != 0 || isinf(denom))){
@@ -29,6 +29,25 @@ module BinOp
     else {
       return floor(numerator/denom);
     }
+  }
+
+  /*
+    Helper function to ensure that mod cases are handled in accordance with numpy
+  */
+  inline proc modHelper(dividend: ?t, divisor: ?t2): real {
+    extern proc fmod(x: real, y: real): real;
+
+    var res = fmod(dividend, divisor);
+    // to convert fmod (truncated) results into mod (floored) results
+    // when the dividend and divsor have opposite signs,
+    // we add the divsor into the result
+    // except for when res == 0 (divsor even divides dividend)
+    // see https://en.wikipedia.org/wiki/Modulo#math_1 for more information
+    if res != 0 && (((dividend < 0) && (divisor > 0)) || ((dividend > 0) && (divisor < 0))) {
+      // we do + either way because we want to shift up for positive divisors and shift down for negative
+      res += divisor;
+    }
+    return res;
   }
 
   /*
@@ -320,7 +339,10 @@ module BinOp
             e.a= l.a**r.a;
           }
           when "%" {
-            e.a = AutoMath.mod(l.a, r.a);
+            ref ea = e.a;
+            ref la = l.a;
+            ref ra = r.a;
+            [(ei,li,ri) in zip(ea,la,ra)] ei = modHelper(li, ri);
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
@@ -354,7 +376,10 @@ module BinOp
             e.a= l.a:real**r.a:real;
           }
           when "%" {
-            e.a = AutoMath.mod(l.a:real, r.a:real);
+            ref ea = e.a;
+            ref la = l.a;
+            ref ra = r.a;
+            [(ei,li,ri) in zip(ea,la,ra)] ei = modHelper(li, ri);
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
@@ -671,7 +696,9 @@ module BinOp
             e.a= l.a**val;
           }
           when "%" {
-            e.a = AutoMath.mod(l.a, val);
+            ref ea = e.a;
+            ref la = l.a;
+            [(ei,li) in zip(ea,la)] ei = modHelper(li, val);
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
@@ -681,7 +708,25 @@ module BinOp
         }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
-    } else if ((l.etype == uint && val.type == real) || (l.etype == real && val.type == uint)) {
+    }
+    else if e.etype == real && ((l.etype == uint && val.type == int) || (l.etype == int && val.type == uint)) {
+      select op {
+          when "+" {
+            e.a = l.a: real + val: real;
+          }
+          when "-" {
+            e.a = l.a: real - val: real;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    else if ((l.etype == uint && val.type == real) || (l.etype == real && val.type == uint)) {
       select op {
           when "+" {
             e.a = l.a: real + val: real;
@@ -704,7 +749,9 @@ module BinOp
             e.a= l.a: real**val: real;
           }
           when "%" {
-            e.a = AutoMath.mod(l.a:real, val:real);
+            ref ea = e.a;
+            ref la = l.a;
+            [(ei,li) in zip(ea,la)] ei = modHelper(li, val);
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
@@ -946,29 +993,31 @@ module BinOp
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
-    } else if (val.type == int && r.etype == uint) {
+    }
+    else if (e.etype == int && val.type == uint) ||
+            (e.etype == uint && val.type == int) {
       select op {
         when ">>" {
           ref ea = e.a;
           ref ra = r.a;
-          [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:uint >> ri:uint;
+          [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:r.etype >> ri;
         }
         when "<<" {
           ref ea = e.a;
           ref ra = r.a;
-          [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:uint << ri:uint;
+          [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:r.etype << ri;
         }
         when ">>>" {
-          e.a = rotr(val:uint, r.a:uint);
+          e.a = rotr(val:r.etype, r.a);
         }
         when "<<<" {
-          e.a = rotl(val:uint, r.a:uint);
+          e.a = rotl(val:r.etype, r.a);
         }
         when "+" {
-          e.a = val:uint + r.a:uint;
+          e.a = val:r.etype + r.a;
         }
         when "-" {
-          e.a = val:uint - r.a:uint;
+          e.a = val:r.etype - r.a;
         }
         otherwise {
           var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
@@ -1005,7 +1054,9 @@ module BinOp
             e.a= val**r.a;
           }
           when "%" {
-            e.a = AutoMath.mod(val, r.a);
+            ref ea = e.a;
+            ref ra = r.a;
+            [(ei,ri) in zip(ea,ra)] ei = modHelper(val:real, ri);
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
@@ -1015,7 +1066,25 @@ module BinOp
         }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
-    } else if ((r.etype == uint && val.type == real) || (r.etype == real && val.type == uint)) {
+    }
+    else if e.etype == real && ((r.etype == uint && val.type == int) || (r.etype == int && val.type == uint)) {
+      select op {
+          when "+" {
+            e.a = val:real + r.a:real;
+          }
+          when "-" {
+            e.a = val:real - r.a:real;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    else if ((r.etype == uint && val.type == real) || (r.etype == real && val.type == uint)) {
       select op {
           when "+" {
             e.a = val:real + r.a:real;
@@ -1038,7 +1107,9 @@ module BinOp
             e.a= val:real**r.a:real;
           }
           when "%" {
-            e.a = AutoMath.mod(val:real, r.a:real);
+            ref ea = e.a;
+            ref ra = r.a;
+            [(ei,ri) in zip(ea,ra)] ei = modHelper(val:real, ri);
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
