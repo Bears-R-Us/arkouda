@@ -62,7 +62,7 @@ module MemoryMgmt {
     }
     
     proc getAvailMemory() : uint(64) throws {
-        var aFile = open('/proc/meminfo', ioMode.r);
+        var aFile = open('/proc/meminfo', iomode.r);
         var lines = aFile.reader().lines();
         var line : string;
 
