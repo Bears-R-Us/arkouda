@@ -147,7 +147,7 @@ def get_null_indices(
         Either a list of filenames or shell expression
     datasets : list or str or None
         (List of) name(s) of dataset(s) to read. Each dataset must be a string
-        column. There is no default value for this funciton, the datasets to be
+        column. There is no default value for this function, the datasets to be
         read must be specified.
 
     Returns
