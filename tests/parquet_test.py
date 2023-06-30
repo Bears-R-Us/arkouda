@@ -346,7 +346,6 @@ class ParquetTest(ArkoudaTest):
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
-        print("Finished Int")
 
         # integer with empty segments
         a = [0, 1, 2]
@@ -358,7 +357,6 @@ class ParquetTest(ArkoudaTest):
             rd_data = ak.read_parquet(f"{tmp_dirname}/int_test_empty*")
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
-        print("Finished Int Empty")
 
         # uint test
         a = [0, 1, 2]
