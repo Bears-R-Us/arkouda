@@ -1,0 +1,111 @@
+import arkouda as ak
+import pytest
+import os
+
+from server_util.test.server_test_util import start_arkouda_server
+
+
+class TestClient:
+    def test_client_connected(self):
+        """
+        Tests the following methods:
+        ak.client.connected()
+        ak.client.disconnect()
+        ak.client.connect()
+
+        :return: None
+        :raise: AssertionError if an assert* method returns incorrect value or
+                if there is a error in connecting or disconnecting from  the
+                Arkouda server
+        """
+        assert ak.client.connected
+        try:
+            ak.disconnect()
+        except Exception as e:
+            raise AssertionError(e)
+
+        assert not ak.client.connected
+        try:
+            ak.connect(server=pytest.server, port=pytest.port)
+        except Exception as e:
+            raise AssertionError(e)
+
+        assert ak.client.connected
+
+    def test_disconnect_on_disconnected_client(self):
+        """
+        Tests the ak.disconnect() method invoked on a client that is already
+        disconnect to ensure there is no error
+        """
+        ak.disconnect()
+        assert not ak.client.connected
+        ak.disconnect()
+        ak.connect(server=pytest.server, port=pytest.port)
+
+    def test_shutdown(self):
+        """
+        Tests the ak.shutdown() method
+        """
+        ak.shutdown()
+        start_arkouda_server(numlocales=pytest.nl)
+        # reconnect to server so subsequent tests will pass
+        ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
+
+    def test_client_get_config(self):
+        """
+        Tests the ak.client.get_config() method
+
+        :return: None
+        :raise: AssertionError if one or more Config values are not as expected
+                or the call to ak.client.get_config() fails
+        """
+        try:
+            config = ak.client.get_config()
+        except Exception as e:
+            raise AssertionError(e)
+        assert pytest.port == config["ServerPort"]
+        assert "arkoudaVersion" in config
+        assert "INFO" == config["logLevel"]
+
+    def test_no_op(self):
+        """
+        Tests the ak.client._no_op method
+
+        :return: None
+        :raise: AssertionError if return message is not 'noop'
+        """
+        assert "noop" == ak.client._no_op()
+
+    def test_ruok(self):
+        """
+        Tests the ak.client.ruok method
+
+        :return: None
+        :raise: AssertionError if return message is not 'imok'
+        """
+        assert "imok" == ak.client.ruok()
+
+    def test_client_configuration(self):
+        """
+        Tests the ak.client.set_defaults() method as well as set/get
+        parrayIterThresh, maxTransferBytes, and verbose config params.
+        """
+        ak.client.pdarrayIterThresh = 50
+        ak.client.maxTransferBytes = 1048576000
+        ak.client.verbose = True
+        assert 50 == ak.client.pdarrayIterThresh
+        assert 1048576000 == ak.client.maxTransferBytes
+        assert ak.client.verbose
+        ak.client.set_defaults()
+        assert 100 == ak.client.pdarrayIterThresh
+        assert 1073741824 == ak.client.maxTransferBytes
+        assert not ak.client.verbose
+
+    def test_client_get_server_commands(self):
+        """
+        Tests the ak.client.get_server_commands() method contains an expected
+        sample of commands.
+        """
+        cmds = ak.client.get_server_commands()
+        for cmd in ["connect", "array", "create", "tondarray", "info", "str"]:
+            assert cmd in cmds
