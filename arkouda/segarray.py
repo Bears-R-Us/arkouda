@@ -1561,7 +1561,7 @@ class SegArray:
         else:
             return is_registered(self.registered_name)
 
-    def send_array(self, hostname: str, port: int_scalars):
+    def transfer(self, hostname: str, port: int_scalars):
         """
         Sends a Segmented Array to a different Arkouda server
 

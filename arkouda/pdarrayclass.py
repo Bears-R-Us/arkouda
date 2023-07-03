@@ -375,7 +375,7 @@ class pdarray:
         )
         return create_pdarray(repMsg)
 
-    def send_array(self, hostname: str, port: int_scalars):
+    def transfer(self, hostname: str, port: int_scalars):
         """
         Sends a pdarray to a different Arkouda server
 

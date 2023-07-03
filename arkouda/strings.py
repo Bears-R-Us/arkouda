@@ -2516,7 +2516,7 @@ class Strings:
         )
         return unregister(user_defined_name)
 
-    def send_array(self, hostname: str, port: int_scalars):
+    def transfer(self, hostname: str, port: int_scalars):
         """
         Sends a Strings object to a different Arkouda server
 

@@ -1400,7 +1400,7 @@ class Categorical:
 
         return removal_names, result_categoricals
 
-    def send_array(self, hostname: str, port: int_scalars):
+    def transfer(self, hostname: str, port: int_scalars):
         """
         Sends a Categorical object to a different Arkouda server
 
@@ -1438,7 +1438,7 @@ class Categorical:
         args = {
             "codes": self.codes,
             "categories": self.categories,
-            "objType": "categorical",
+            "objType": self.objType,
             "NA_codes": self._akNAcode,
             "hostname": hostname,
             "port": port

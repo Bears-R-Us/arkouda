@@ -2011,7 +2011,7 @@ def restore(filename):
 
 def receive_array(hostname : str, port):
     """
-    Receive a pdarray sent by `pdarray.send_array()`.
+    Receive a pdarray sent by `pdarray.transfer()`.
 
     Parameters
     ----------
@@ -2027,7 +2027,7 @@ def receive_array(hostname : str, port):
         `port`, Arkouda will use ports 1234, 1235, 1236,
         and 1237 to send the array data).
         This port much match the port passed to the call to
-        `pdarray.send_array()`.
+        `pdarray.transfer()`.
 
     Returns
     -------
