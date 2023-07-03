@@ -2687,7 +2687,7 @@ def invert_permutation(perm):
     return coargsort([perm, arange(perm.size)])
 
 
-def receive(hostname : str, port):
+def receive_dataframe(hostname : str, port):
     """
     Receive a pdarray sent by `dataframe.transfer()`.
 

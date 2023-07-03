@@ -42,7 +42,7 @@ __all__ = [
     "update_hdf",
     "snapshot",
     "restore",
-    "receive_array",
+    "receive",
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -1946,7 +1946,6 @@ def read_tagged_data(
         raise RuntimeError(f"Invalid File Type detected, {ftype}")
 
 
-
 def snapshot(filename):
     """
     Create a snapshot of the current Arkouda namespace. All currently accessible variables containing
@@ -2009,7 +2008,8 @@ def restore(filename):
     return read_hdf(sorted(restore_files))
 
 
-def receive_array(hostname : str, port):
+def receive(hostname : str, port):
+>>>>>>> feb32522 (Fix naming of receive functinos)
     """
     Receive a pdarray sent by `pdarray.transfer()`.
 
