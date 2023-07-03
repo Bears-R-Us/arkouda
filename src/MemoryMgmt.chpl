@@ -1,8 +1,10 @@
 module MemoryMgmt {
 
     use Subprocess;
-    use Memory.Diagnostics;
     use Logging;
+
+    use ArkoudaMemDiagnosticsCompat;
+    use ArkoudaFileCompat;
     
     private config const logLevel = LogLevel.DEBUG;
     private config const logChannel = LogChannel.CONSOLE;
@@ -62,7 +64,7 @@ module MemoryMgmt {
     }
     
     proc getAvailMemory() : uint(64) throws {
-        var aFile = open('/proc/meminfo', iomode.r);
+        var aFile = open('/proc/meminfo', ioMode.r);
         var lines = aFile.reader().lines();
         var line : string;
 
