@@ -62,12 +62,16 @@ module TransferMsg
         if ele_parts[0] == "Categorical" {
           ref codes_name = ele_parts[2];
           ref categories_name = ele_parts[3];
+          ref nacodes_name = ele_parts[4];
 
           var gCode: borrowed GenSymEntry = getGenericTypedArrayEntry(codes_name, st);
           var codes = toSymEntry(gCode, int);
 
           var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(categories_name));
           var cats = new SegString("", cat_entry);
+
+          var nCode: borrowed GenSymEntry = getGenericTypedArrayEntry(nacodes_name, st);
+          var nacodes = toSymEntry(nCode, int);
 
           {
             var (intersections, ports, names) = calculateSetupInfo(codes, localeCount, port);
@@ -84,6 +88,11 @@ module TransferMsg
             var (intersections, ports, names) = calculateSetupInfo(cats.offsets, localeCount, port);
             sendSetupInfo(port:string, cats.offsets.a, names, "pdarray", localeCount);
             sendData(cats.offsets, hostname, intersections, ports);
+          }
+          {
+            var (intersections, ports, names) = calculateSetupInfo(nacodes, localeCount, port);
+            sendSetupInfo(port:string, nacodes.a, names, "pdarray", localeCount);
+            sendData(nacodes, hostname, intersections, ports);
           }
         }
         else if ele_parts[0] == "Strings"{
@@ -275,8 +284,15 @@ module TransferMsg
           receiveData(offsets.a, nodeNames, port);
           var cats = assembleSegStringFromParts(offsets, values, st);
 
+          // GET NA CODES
+          var nacodes = new shared SymEntry(size, int);
+          receiveData(nacodes.a, nodeNames, port);
+          var nname = st.nextName();
+          st.addEntry(nname, nacodes);
+
           rtnMap.add("codes", "created " + st.attrib(codes.name));
           rtnMap.add("categories", "created %s+created %t".format(st.attrib(cats.name), cats.nBytes));
+          rtnMap.add("_akNAcode", "created " + st.attrib(codes.name));
           rnames.append((colName, ObjType.CATEGORICAL, "%jt".format(rtnMap)));
         } else if currObjType == "SegArray" {
           var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);

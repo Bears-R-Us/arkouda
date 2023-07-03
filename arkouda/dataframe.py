@@ -634,7 +634,7 @@ class DataFrame(UserDict):
         msg_list = []
         for col in self._columns:
             if isinstance(self[col], Categorical):
-                msg_list.append(f"Categorical+{col}+{self[col].codes.name}+{self[col].categories.name}")
+                msg_list.append(f"Categorical+{col}+{self[col].codes.name}+{self[col].categories.name}+{self[col]._akNAcode.name}")
             elif isinstance(self[col], SegArray):
                 msg_list.append(f"SegArray+{col}+{self[col].segments.name}+{self[col].values.name}")
             elif isinstance(self[col], Strings):
