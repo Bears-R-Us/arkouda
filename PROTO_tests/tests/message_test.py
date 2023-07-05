@@ -62,8 +62,6 @@ class TestMessage:
             == json.dumps(msg.asdict())
         )
 
-        # self.assertFalse(self.assertRaises(Exception, json.loads(json.dumps(msg.asdict()))))
-
         assert json.loads(json.dumps(msg.asdict())) == msg.asdict()
 
         min_msg = RequestMessage(user="user1", cmd="connect")
@@ -108,26 +106,47 @@ class TestJSONArgs:
     # TODO numpy dtypes are not supported by json, we probably want to add an issue to handle this
     SCALAR_TYPES = [int, float, bool, str]
     PDA_TYPES = [ak.dtype(t) for t in ak.DTypes if t != "str"]
+
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     def test_scalar_args(self, dtype):
         val1 = dtype(5)
         val2 = dtype(0)
         size, args = _json_args_to_str({"arg1": val1, "arg2": val2})
-        expected = json.dumps([
-            json.dumps({"key": "arg1", "objType": "VALUE", "dtype": ak.resolve_scalar_dtype(val1), "val": str(val1)}),
-            json.dumps({"key": "arg2", "objType": "VALUE", "dtype": ak.resolve_scalar_dtype(val2), "val": str(val2)})
-        ])
+        expected = json.dumps(
+            [
+                json.dumps(
+                    {
+                        "key": "arg1",
+                        "objType": "VALUE",
+                        "dtype": ak.resolve_scalar_dtype(val1),
+                        "val": str(val1),
+                    }
+                ),
+                json.dumps(
+                    {
+                        "key": "arg2",
+                        "objType": "VALUE",
+                        "dtype": ak.resolve_scalar_dtype(val2),
+                        "val": str(val2),
+                    }
+                ),
+            ]
+        )
         assert args == expected
 
     def test_addl_str(self):
         val = "abc"
         size, args = _json_args_to_str({"arg": val})
-        expected = json.dumps([
-            json.dumps({"key": "arg", "objType": "VALUE", "dtype": ak.resolve_scalar_dtype(val), "val": val}),
-        ])
+        expected = json.dumps(
+            [
+                json.dumps(
+                    {"key": "arg", "objType": "VALUE", "dtype": ak.resolve_scalar_dtype(val), "val": val}
+                ),
+            ]
+        )
         assert args == expected
 
-    @pytest.mark.parametrize("dtype", [int])
+    @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     def test_list_arg(self, dtype):
         l1 = [0, 1, 2, 3]
         l1 = [dtype(x) for x in l1]
@@ -135,46 +154,71 @@ class TestJSONArgs:
         l2 = [dtype(x) for x in l2]
 
         size, args = _json_args_to_str({"list1": l1, "list2": l2})
-        expected = json.dumps([
-            json.dumps({"key": "list1", "objType": "LIST", "dtype": ak.resolve_scalar_dtype(l1[0]), "val": json.dumps([str(x) for x in l1])}),
-            json.dumps({"key": "list2", "objType": "LIST", "dtype": ak.resolve_scalar_dtype(l2[0]), "val": json.dumps([str(x) for x in l2])})
-        ])
+        expected = json.dumps(
+            [
+                json.dumps(
+                    {
+                        "key": "list1",
+                        "objType": "LIST",
+                        "dtype": ak.resolve_scalar_dtype(l1[0]),
+                        "val": json.dumps([str(x) for x in l1]),
+                    }
+                ),
+                json.dumps(
+                    {
+                        "key": "list2",
+                        "objType": "LIST",
+                        "dtype": ak.resolve_scalar_dtype(l2[0]),
+                        "val": json.dumps([str(x) for x in l2]),
+                    }
+                ),
+            ]
+        )
         assert args == expected
 
     def test_list_addl_str(self):
         l = ["abc", "def", "l", "mn", "op"]
         size, args = _json_args_to_str({"str_list": l})
 
-        expected = json.dumps([
-            json.dumps({"key": "str_list", "objType": "LIST", "dtype": ak.resolve_scalar_dtype(l[0]), "val": json.dumps(l)}),
-        ])
+        expected = json.dumps(
+            [
+                json.dumps(
+                    {
+                        "key": "str_list",
+                        "objType": "LIST",
+                        "dtype": ak.resolve_scalar_dtype(l[0]),
+                        "val": json.dumps(l),
+                    }
+                ),
+            ]
+        )
         assert args == expected
 
     def test_datetime_arg(self):
         dt = ak.date_range(start="2021-01-01 12:00:00", periods=100, freq="s")
         size, args = _json_args_to_str({"datetime": dt})
 
-        expected = json.dumps([
-            json.dumps({"key": "datetime", "objType": "PDARRAY", "dtype": "int64", "val": dt.name})
-        ])
+        expected = json.dumps(
+            [json.dumps({"key": "datetime", "objType": "PDARRAY", "dtype": "int64", "val": dt.name})]
+        )
         assert args == expected
 
     def test_ip_arg(self):
         a = ak.arange(10)
         ip = ak.ip_address(a)
         size, args = _json_args_to_str({"ip": ip})
-        expected = json.dumps([
-            json.dumps({"key": "ip", "objType": "PDARRAY", "dtype": "uint64", "val": ip.name})
-        ])
+        expected = json.dumps(
+            [json.dumps({"key": "ip", "objType": "PDARRAY", "dtype": "uint64", "val": ip.name})]
+        )
         assert args == expected
 
     def test_fields_arg(self):
         a = ak.arange(10)
         f = ak.Fields(a, names="ABCD")
         size, args = _json_args_to_str({"fields": f})
-        expected = json.dumps([
-            json.dumps({"key": "fields", "objType": "PDARRAY", "dtype": "uint64", "val": f.name})
-        ])
+        expected = json.dumps(
+            [json.dumps({"key": "fields", "objType": "PDARRAY", "dtype": "uint64", "val": f.name})]
+        )
         assert args == expected
 
     @pytest.mark.parametrize("dtype", PDA_TYPES)
@@ -182,53 +226,123 @@ class TestJSONArgs:
         pda1 = ak.arange(3, dtype=dtype)
         pda2 = ak.arange(4, dtype=dtype)
         size, args = _json_args_to_str({"pda1": pda1, "pda2": pda2})
-        expected = json.dumps([
-            json.dumps({"key": "pda1", "objType": "PDARRAY", "dtype": str(pda1.dtype), "val": pda1.name}),
-            json.dumps({"key": "pda2", "objType": "PDARRAY", "dtype": str(pda2.dtype), "val": pda2.name})
-        ])
+        expected = json.dumps(
+            [
+                json.dumps(
+                    {"key": "pda1", "objType": "PDARRAY", "dtype": str(pda1.dtype), "val": pda1.name}
+                ),
+                json.dumps(
+                    {"key": "pda2", "objType": "PDARRAY", "dtype": str(pda2.dtype), "val": pda2.name}
+                ),
+            ]
+        )
         assert args == expected
 
         size, args = _json_args_to_str({"pda_list": [pda1, pda2]})
-        expected = json.dumps([
-            json.dumps({"key": "pda_list", "objType": "LIST", "dtype": ak.pdarray.objType, "val": json.dumps([pda1.name, pda2.name])}),
-        ])
+        expected = json.dumps(
+            [
+                json.dumps(
+                    {
+                        "key": "pda_list",
+                        "objType": "LIST",
+                        "dtype": ak.pdarray.objType,
+                        "val": json.dumps([pda1.name, pda2.name]),
+                    }
+                ),
+            ]
+        )
         assert args == expected
 
     def test_segstr_arg(self):
         str1 = ak.array(["abc", "def"])
         str2 = ak.array(["Test", "Test2"])
         size, args = _json_args_to_str({"str1": str1, "str2": str2})
-        expected = json.dumps([
-            json.dumps({"key": "str1", "objType": "SEGSTRING", "dtype": "str", "val": str1.name}),
-            json.dumps({"key": "str2", "objType": "SEGSTRING", "dtype": "str", "val": str2.name})
-        ])
+        expected = json.dumps(
+            [
+                json.dumps({"key": "str1", "objType": "SEGSTRING", "dtype": "str", "val": str1.name}),
+                json.dumps({"key": "str2", "objType": "SEGSTRING", "dtype": "str", "val": str2.name}),
+            ]
+        )
         assert args == expected
 
         size, args = _json_args_to_str({"str_list": [str1, str2]})
-        expected = json.dumps([
-            json.dumps({"key": "str_list", "objType": "LIST", "dtype": ak.Strings.objType,
-                        "val": json.dumps([str1.name, str2.name])}),
-        ])
+        expected = json.dumps(
+            [
+                json.dumps(
+                    {
+                        "key": "str_list",
+                        "objType": "LIST",
+                        "dtype": ak.Strings.objType,
+                        "val": json.dumps([str1.name, str2.name]),
+                    }
+                ),
+            ]
+        )
         assert args == expected
 
     def test_dict_arg(self):
-        data = {
-            "json_1": {
-                "param1": 1,
-                "param2": "abc",
-                "param3": [1, 2, 3],
-                "param4": ak.arange(10),
-                "param5": ak.array(["abc", "123"])
-            }
+        json_1 = {
+            "param1": 1,
+            "param2": "abc",
+            "param3": [1, 2, 3],
+            "param4": ak.arange(10),
+            "param5": ak.array(["abc", "123"]),
         }
+        data = {"json_1": json_1}
         size, args = _json_args_to_str(data)
-        expected = json.dumps([
-            json.dumps({"key": "json_1", "objType": "DICT", "dtype": "dict", "val": json.dumps([
-                json.dumps({"key": "param1", "objType": "VALUE", "dtype": ak.resolve_scalar_dtype(data["json_1"]["param1"]), "val": "1"}),
-                json.dumps({"key": "param2", "objType": "VALUE", "dtype": ak.resolve_scalar_dtype(data["json_1"]["param2"]), "val": "abc"}),
-                json.dumps({"key": "param3", "objType": "LIST", "dtype": ak.resolve_scalar_dtype(data["json_1"]["param3"][0]), "val": json.dumps([str(x) for x in data["json_1"]["param3"]])}),
-                json.dumps({"key": "param4", "objType": "PDARRAY", "dtype": str(data["json_1"]["param4"].dtype), "val": data["json_1"]["param4"].name}),
-                json.dumps({"key": "param5", "objType": "SEGSTRING", "dtype": "str", "val": data["json_1"]["param5"].name}),
-            ])})
-        ])
+        expected = json.dumps(
+            [
+                json.dumps(
+                    {
+                        "key": "json_1",
+                        "objType": "DICT",
+                        "dtype": "dict",
+                        "val": json.dumps(
+                            [
+                                json.dumps(
+                                    {
+                                        "key": "param1",
+                                        "objType": "VALUE",
+                                        "dtype": ak.resolve_scalar_dtype(json_1["param1"]),
+                                        "val": "1",
+                                    }
+                                ),
+                                json.dumps(
+                                    {
+                                        "key": "param2",
+                                        "objType": "VALUE",
+                                        "dtype": ak.resolve_scalar_dtype(json_1["param2"]),
+                                        "val": "abc",
+                                    }
+                                ),
+                                json.dumps(
+                                    {
+                                        "key": "param3",
+                                        "objType": "LIST",
+                                        "dtype": ak.resolve_scalar_dtype(json_1["param3"][0]),
+                                        "val": json.dumps([str(x) for x in json_1["param3"]]),
+                                    }
+                                ),
+                                json.dumps(
+                                    {
+                                        "key": "param4",
+                                        "objType": "PDARRAY",
+                                        "dtype": str(json_1["param4"].dtype),
+                                        "val": json_1["param4"].name,
+                                    }
+                                ),
+                                json.dumps(
+                                    {
+                                        "key": "param5",
+                                        "objType": "SEGSTRING",
+                                        "dtype": "str",
+                                        "val": json_1["param5"].name,
+                                    }
+                                ),
+                            ]
+                        ),
+                    }
+                )
+            ]
+        )
         assert args == expected
