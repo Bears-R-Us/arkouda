@@ -245,20 +245,25 @@ module TransferMsg
           var rname = st.nextName();
           var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
           if typeString == "int(64)" {
+            overMemLimit(2*size*numBytes(int));
             var entry = new shared SymEntry(size, int);
             receiveInto(entry, nodeNames, port, colName, rname, st);
           } else if typeString == "uint(64)" {
+            overMemLimit(2*size*numBytes(uint));
             var entry = new shared SymEntry(size, uint);
             receiveInto(entry, nodeNames, port, colName, rname, st);
           } else if typeString == "real(64)" {
+            overMemLimit(2*size*numBytes(real));
             var entry = new shared SymEntry(size, real);
             receiveInto(entry, nodeNames, port, colName, rname, st);
           } else if typeString == "bool" {
+            overMemLimit(2*size*8);
             var entry = new shared SymEntry(size, bool);
             receiveInto(entry, nodeNames, port, colName, rname, st);
           }
         } else if currObjType == "Strings" {
           var (size, typeString, nodeNames, objType) = receiveSetupInfo(hostname, port);
+          overMemLimit(3*size*numBytes(uint(8)));
           var values = new shared SymEntry(size, uint(8));
           receiveData(values.a, nodeNames, port);
           var (offSize, _, _, _) = receiveSetupInfo(hostname, port);
@@ -268,6 +273,7 @@ module TransferMsg
           rnames.append((colName, ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
         } else if currObjType == "Categorical" {
           var (size, typeString, nodeNames, objType) = receiveSetupInfo(hostname, port);
+          overMemLimit(4*size*numBytes(uint));
           var rtnMap: map(string, string) = new map(string, string);
           // GET CODES
           var codes = new shared SymEntry(size, int);
@@ -296,6 +302,7 @@ module TransferMsg
           rnames.append((colName, ObjType.CATEGORICAL, "%jt".format(rtnMap)));
         } else if currObjType == "SegArray" {
           var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
+          overMemLimit(3*size*numBytes(uint));
           var rtnMap: map(string, string) = new map(string, string);
           if typeString == "int(64)" {
             var entry = new shared SymEntry(size, int);
@@ -557,6 +564,7 @@ module TransferMsg
       var (size, typeString, nodeNames, objType) = receiveSetupInfo(hostname, port);
 
       if objType == "string" {
+        overMemLimit(3*size*numBytes(uint(8)));
         // this is a strings, so we know there are going to be two receives
         var values = new shared SymEntry(size, uint(8));
         receiveData(values.a, nodeNames, port);
@@ -568,6 +576,7 @@ module TransferMsg
         rnames.append(("", ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
       } else if objType == "seg_array" {
         var rtnMap: map(string, string) = new map(string, string);
+        overMemLimit(4*size*numBytes(uint(8)));
         if typeString == "int(64)" {
           var entry = new shared SymEntry(size, int);
           var vname = st.nextName();
@@ -629,6 +638,7 @@ module TransferMsg
         }
         rnames.append(("", ObjType.SEGARRAY, "%jt".format(rtnMap)));
       } else if objType == "categorical" {
+        overMemLimit(5*size*numBytes(uint(8)));
         var rtnMap: map(string, string) = new map(string, string);
         // GET CODES
         var codes = new shared SymEntry(size, int);
