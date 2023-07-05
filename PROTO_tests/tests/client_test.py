@@ -1,6 +1,5 @@
 import arkouda as ak
 import pytest
-import os
 
 from server_util.test.server_test_util import start_arkouda_server
 
@@ -66,6 +65,22 @@ class TestClient:
         assert pytest.port == config["ServerPort"]
         assert "arkoudaVersion" in config
         assert "INFO" == config["logLevel"]
+
+    def test_get_mem_used(self):
+        """
+        Tests the ak.get_mem_used and ak.get_mem_avail methods
+
+        :return: None
+        :raise: AssertionError if one or more ak.get_mem_used values are not as
+                expected or the call to ak.client.get_mem_used() fails
+        """
+        try:
+            config = ak.client.get_config()
+            a = ak.ones(1024 * 1024 * config["numLocales"])
+            mem_used = ak.client.get_mem_used()
+        except Exception as e:
+            raise AssertionError(e)
+        assert mem_used > 0
 
     def test_no_op(self):
         """
