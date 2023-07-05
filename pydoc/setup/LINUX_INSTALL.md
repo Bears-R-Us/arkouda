@@ -10,9 +10,9 @@ sudo apt-get update
 sudo apt-get install gcc g++ m4 perl python3 python3-pip python3-venv python3-dev bash make mawk git pkg-config cmake llvm-12-dev llvm-12 llvm-12-tools clang-12 libclang-12-dev libclang-cpp12-dev libedit-dev
 
 # Download latest Chapel release, explode archive, and navigate to source root directory
-wget https://github.com/chapel-lang/chapel/releases/download/1.30.0/chapel-1.30.0.tar.gz
-tar xvf chapel-1.30.0.tar.gz
-cd chapel-1.30.0/
+wget https://github.com/chapel-lang/chapel/releases/download/1.31.0/chapel-1.31.0.tar.gz
+tar xvf chapel-1.31.0.tar.gz
+cd chapel-1.31.0/
 
 # Set CHPL_HOME
 export CHPL_HOME=$PWD
