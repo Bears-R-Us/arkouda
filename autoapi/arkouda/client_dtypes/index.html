@@ -347,7 +347,7 @@ is the left-most bit.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The integers to represent as bit vectors</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The integers to represent as bit vectors</p></li>
 <li><p><strong>width</strong> (<em>int</em>) – The number of bit fields in the vector</p></li>
 <li><p><strong>reverse</strong> (<em>bool</em>) – If True, display bits from least significant (left) to most
 significant (right). By default, the most significant bit
@@ -403,7 +403,7 @@ typically treat this class like a uint64 pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id500" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id795" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
 binary representation of fields. If Strings, the values are converted
 to binary according to the mapping defined by the names and MSB_left
 arguments.</p></li>
@@ -474,7 +474,7 @@ for importing Python lists of IP addresses into Arkouda.</p>
 <p>Represent integers as IPv4 addresses.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The integer IP addresses</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The integer IP addresses</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The same IP addresses</p>
@@ -531,14 +531,14 @@ and convert it to an integer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ip</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>) or </em><em>ak.IPv4</em>) – </p></li>
+<li><p><strong>ip</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>) or </em><em>ak.IPv4</em>) – </p></li>
 <li><p><strong>in.</strong> (<em>IPv4 value. High Bits</em><em> of </em><em>IPv6 if IPv6 is passed</em>) – </p></li>
-<li><p><strong>ip2</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>)</em><em>, </em><em>Optional</em>) – </p></li>
+<li><p><strong>ip2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>)</em><em>, </em><em>Optional</em>) – </p></li>
 <li><p><strong>well.</strong> (<em>Low Bits</em><em> of </em><em>IPv6. This is added for support when dealing with data that contains IPv6 as</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a> of bools indicating which indexes are IPv4.</p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> of bools indicating which indexes are IPv4.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -554,14 +554,14 @@ and convert it to an integer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ip</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>) or </em><em>ak.IPv4</em>) – </p></li>
+<li><p><strong>ip</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>) or </em><em>ak.IPv4</em>) – </p></li>
 <li><p><strong>IPv6.</strong> (<em>High Bits of</em>) – </p></li>
-<li><p><strong>ip2</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>)</em><em>, </em><em>Optional</em>) – </p></li>
+<li><p><strong>ip2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>)</em><em>, </em><em>Optional</em>) – </p></li>
 <li><p><strong>IPv6</strong> (<em>Low Bits of</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a> of bools indicating which indexes are IPv6.</p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> of bools indicating which indexes are IPv6.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
