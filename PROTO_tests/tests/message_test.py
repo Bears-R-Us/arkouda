@@ -148,10 +148,8 @@ class TestJSONArgs:
 
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     def test_list_arg(self, dtype):
-        l1 = [0, 1, 2, 3]
-        l1 = [dtype(x) for x in l1]
-        l2 = [9, 8, 7]
-        l2 = [dtype(x) for x in l2]
+        l1 = [dtype(x) for x in [0, 1, 2, 3]]
+        l2 = [dtype(x) for x in [9, 8, 7]]
 
         size, args = _json_args_to_str({"list1": l1, "list2": l2})
         expected = json.dumps(
