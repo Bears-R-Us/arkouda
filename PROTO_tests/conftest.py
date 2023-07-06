@@ -39,6 +39,9 @@ def _get_test_locales(config):
 
 
 def pytest_configure(config):
+    pytest.port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
+    pytest.server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
+    pytest.timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
     pytest.nl = _get_test_locales(config)
     pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
     pytest.prob_size = [eval(x) for x in config.getoption("size").split(",")]
@@ -46,18 +49,16 @@ def pytest_configure(config):
 
 @pytest.fixture(scope="session", autouse=True)
 def startup_teardown():
-    port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
-    server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
     test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER"))
 
     if not importlib.util.find_spec("pytest") or not importlib.util.find_spec("pytest_env"):
         raise EnvironmentError("pytest and pytest-env must be installed")
     if TestRunningMode.CLASS_SERVER == test_running_mode:
         try:
-            server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=port)
+            server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=pytest.port)
             print(
                 "Started arkouda_server in TEST_CLASS mode with "
-                "host: {} port: {} locales: {}".format(server, port, pytest.nl)
+                "host: {} port: {} locales: {}".format(server, pytest.port, pytest.nl)
             )
         except Exception as e:
             raise RuntimeError(
@@ -67,7 +68,7 @@ def startup_teardown():
     else:
         print(
             "in client stack test mode with host: {} port: {}".format(
-                server, port
+                pytest.server, pytest.port
             )
         )
 
@@ -82,12 +83,9 @@ def startup_teardown():
 
 @pytest.fixture(scope="class", autouse=True)
 def manage_connection():
-    port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
-    server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
-    timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
     try:
         ak.connect(
-            server=server, port=port, timeout=timeout
+            server=pytest.server, port=pytest.port, timeout=pytest.timeout
         )
     except Exception as e:
         raise ConnectionError(e)

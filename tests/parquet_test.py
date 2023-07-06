@@ -352,9 +352,9 @@ class ParquetTest(ArkoudaTest):
         c = [15, 21]
         s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            s.to_parquet(f"{tmp_dirname}/int_test")
+            s.to_parquet(f"{tmp_dirname}/int_test_empty")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test_empty*")
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -364,9 +364,9 @@ class ParquetTest(ArkoudaTest):
         c = [15, 21]
         s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.uint64))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            s.to_parquet(f"{tmp_dirname}/int_test")
+            s.to_parquet(f"{tmp_dirname}/uint_test")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/uint_test*")
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -377,9 +377,9 @@ class ParquetTest(ArkoudaTest):
             ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.uint64)
         )
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            s.to_parquet(f"{tmp_dirname}/int_test")
+            s.to_parquet(f"{tmp_dirname}/uint_test_empty")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/uint_test_empty*")
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -389,9 +389,9 @@ class ParquetTest(ArkoudaTest):
         c = [1, 0]
         s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.bool))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            s.to_parquet(f"{tmp_dirname}/int_test")
+            s.to_parquet(f"{tmp_dirname}/bool_test")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/bool_test*")
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -402,9 +402,9 @@ class ParquetTest(ArkoudaTest):
             ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.bool)
         )
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            s.to_parquet(f"{tmp_dirname}/int_test")
+            s.to_parquet(f"{tmp_dirname}/bool_test_empty")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/bool_test_empty*")
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -414,9 +414,9 @@ class ParquetTest(ArkoudaTest):
         c = [15.2, 21.0]
         s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            s.to_parquet(f"{tmp_dirname}/int_test")
+            s.to_parquet(f"{tmp_dirname}/float_test")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/float_test*")
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -425,9 +425,9 @@ class ParquetTest(ArkoudaTest):
         c = [15.2, 21.0]
         s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            s.to_parquet(f"{tmp_dirname}/int_test")
+            s.to_parquet(f"{tmp_dirname}/float_test_empty")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/float_test_empty*")
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
