@@ -15,7 +15,7 @@ from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, uni
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array, ones, zeros, zeros_like
-from arkouda.sorting import argsort, coargsort
+from arkouda.sorting import argsort
 from arkouda.strings import Strings
 
 Categorical = ForwardRef("Categorical")
