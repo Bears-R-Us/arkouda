@@ -244,7 +244,6 @@ module MultiTypeSymEntry
             this.etype = etype;
             this.dimensions = N;
             this.tupShape = args;
-            this.a = makeDistArray(size, etype);
             this.a = makeDistArray((...args), etype);
             this.complete();
             // TODO: fix this for multi dimensional
