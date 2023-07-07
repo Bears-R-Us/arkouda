@@ -1109,7 +1109,19 @@ module SegmentedMsg {
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
-  
+
+  proc segmentedFullMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    var repMsg: string;
+    const segStrSize = msgArgs.getValueOf("size"): int;
+    const segStrFillValue = msgArgs.getValueOf("fill_value");
+
+    var (off, val) = segStrFull(segStrSize, segStrFillValue);
+    var retString = getSegString(off, val, st);
+    repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
+
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
   use CommandMap;
   registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
   registerFunction("caseChange", caseChangeMsg, getModuleName());
@@ -1132,4 +1144,5 @@ module SegmentedMsg {
   registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
   registerFunction("segmentedSubstring", segmentedSubstringMsg, getModuleName());
   registerFunction("segmentedWhere", segmentedWhereMsg, getModuleName());
+  registerFunction("segmentedFull", segmentedFullMsg, getModuleName());
 }

@@ -34,6 +34,7 @@ __all__ = [
     "zeros",
     "ones",
     "full",
+    "_full_string",
     "zeros_like",
     "ones_like",
     "full_like",
@@ -499,10 +500,10 @@ def ones(
 @typechecked
 def full(
     size: Union[int_scalars, str],
-    fill_value: int_scalars,
+    fill_value: Union[int_scalars, str],
     dtype: Union[np.dtype, type, str, BigInt] = float64,
     max_bits: Optional[int] = None,
-) -> pdarray:
+) -> Union[pdarray, Strings]:
     """
     Create a pdarray filled with fill_value.
 
@@ -519,7 +520,7 @@ def full(
 
     Returns
     -------
-    pdarray
+    pdarray or Strings
         array of the requested size and dtype filled with fill_value
 
     Raises
@@ -543,8 +544,12 @@ def full(
     >>> ak.full(5, 5, dtype=ak.bool)
     array([True, True, True, True, True])
     """
+
     if not np.isscalar(size):
         raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
+    if type(fill_value) == str:
+       return _full_string(size, fill_value)
+
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
     # check dtype for error
@@ -557,6 +562,28 @@ def full(
         a.max_bits = max_bits
     return a
 
+@typechecked
+def _full_string(
+    size: Union[int_scalars, str],
+    fill_value: str,
+) -> Strings:
+    """
+    Create a Strings object filled with fill_value.
+
+    Parameters
+    ----------
+    size: int_scalars
+        Size of the array (only rank-1 arrays supported)
+    fill_value: str
+        Value with which the array will be filled
+
+    Returns
+    -------
+    Strings
+        array of the requested size and dtype filled with fill_value
+"""
+    repMsg = generic_msg(cmd="segmentedFull", args={"size": size, "fill_value": fill_value})
+    return Strings.from_return_msg(cast(str, repMsg))
 
 @typechecked
 def zeros_like(pda: pdarray) -> pdarray:

@@ -38,6 +38,8 @@ module SegmentedString {
 
   private config param regexMaxCaptures = ServerConfig.regexMaxCaptures;
 
+  config const NULL_STRINGS_VALUE = 0:uint(8);
+
   proc getSegString(name: string, st: borrowed SymTab): owned SegString throws {
       var abstractEntry = st.lookup(name);
       if !abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
@@ -772,7 +774,7 @@ module SegmentedString {
       return (whereOffs, whereVals);
     }
 
-   proc segStrWhere(other: ?t, condition: [] bool, newLens: [] int) throws where t == owned SegString {
+    proc segStrWhere(other: ?t, condition: [] bool, newLens: [] int) throws where t == owned SegString {
       // add one to account for null bytes
       newLens += 1;
       ref origOffs = this.offsets.a;
@@ -1533,6 +1535,22 @@ module SegmentedString {
       }
       return truth;
     }
+  }
+
+  proc segStrFull(arrSize: int, fillValue: string) throws {
+
+    var offsets = makeDistArray(arrSize, int);
+    const nullTermString = (fillValue:bytes + NULL_STRINGS_VALUE:bytes);
+    const strSize = nullTermString.size;
+    var values = makeDistArray(arrSize*strSize, uint(8));
+
+    forall (i, off) in zip(offsets.domain, offsets) with (var agg = newDstAggregator(uint(8))) {
+      off = i * strSize;
+      for j in 0..#strSize {
+        agg.copy(values[off + j], nullTermString[j]:uint(8));
+      }
+    }
+    return (offsets, values);
   }
 
   /*
