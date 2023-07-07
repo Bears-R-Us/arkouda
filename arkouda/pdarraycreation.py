@@ -34,7 +34,6 @@ __all__ = [
     "zeros",
     "ones",
     "full",
-    "_full_string",
     "zeros_like",
     "ones_like",
     "full_like",
