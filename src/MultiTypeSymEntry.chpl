@@ -147,7 +147,7 @@ module MultiTypeSymEntry
             this.size = len;
             this.ndim = ndim;
             // TODO: Update based on variable number of dims
-            this.shape = "[" + len:string + ",]";
+            this.shape = "[1,]";
         }
 
         override proc getSizeEstimate(): int {
@@ -246,8 +246,10 @@ module MultiTypeSymEntry
             this.tupShape = args;
             this.a = makeDistArray((...args), etype);
             this.complete();
-            // TODO: fix this for multi dimensional
-            this.shape = "[" + tupShape[0]:string + "]";
+            this.shape = "[";
+            for s in tupShape do
+              this.shape += s:string + ",";
+            this.shape += "]";
         }
 
         /*
