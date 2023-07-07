@@ -543,10 +543,9 @@ def full(
     >>> ak.full(5, 5, dtype=ak.bool)
     array([True, True, True, True, True])
     """
-
     if not np.isscalar(size):
         raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
-    if type(fill_value) == str:
+    if isinstance(fill_value, str):
         return _full_string(size, fill_value)
 
     dtype = akdtype(dtype)  # normalize dtype
@@ -581,7 +580,7 @@ def _full_string(
     -------
     Strings
         array of the requested size and dtype filled with fill_value
-"""
+    """
     repMsg = generic_msg(cmd="segmentedFull", args={"size": size, "fill_value": fill_value})
     return Strings.from_return_msg(cast(str, repMsg))
 
