@@ -1941,7 +1941,10 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         size = int(fields[3])
         ndim = int(fields[4])
 
-        shape = [int(el) for el in fields[5][1:-2].split(",")]
+        if fields[5][len(fields[5]) - 2] == ",":
+            shape = [int(el) for el in fields[5][1:-2].split(",")]
+        else:
+            shape = [int(el) for el in fields[5][1:-1].split(",")]
         itemsize = int(fields[6])
     except Exception as e:
         raise ValueError(e)
