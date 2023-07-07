@@ -118,8 +118,8 @@ module MultiTypeSymEntry
         :arg etype: type for gse to be cast to
         :type etype: type
        */
-    inline proc toSymEntry(gse: borrowed GenSymEntry, type etype) {
-        return gse.toSymEntry(etype);
+    inline proc toSymEntry(gse: borrowed GenSymEntry, type etype, param dimensions=1) {
+        return gse.toSymEntry(etype, dimensions);
     }
 
     /* 
@@ -135,17 +135,19 @@ module MultiTypeSymEntry
         var itemsize: int; // answer to numpy itemsize = num bytes per elt
         var size: int = 0; // answer to numpy size == num elts
         var ndim: int = 1; // answer to numpy ndim == 1-axis for now
-        var shape: 1*int = (0,); // answer to numpy shape == 1*int tuple
+        var shape: string = "[1,]"; // answer to numpy shape == 1*int tuple
         
         // not sure yet how to implement numpy data() function
 
-        proc init(type etype, len: int = 0) {
+        proc init(type etype, len: int = 0, ndim: int = 1) {
             this.entryType = SymbolEntryType.TypedArraySymEntry;
             assignableTypes.add(this.entryType);
             this.dtype = whichDtype(etype);
             this.itemsize = dtypeSize(this.dtype);
             this.size = len;
-            this.shape = (len,);
+            this.ndim = ndim;
+            // TODO: Update based on variable number of dims
+            this.shape = "[" + len:string + ",]";
         }
 
         override proc getSizeEstimate(): int {
@@ -159,8 +161,8 @@ module MultiTypeSymEntry
            :arg etype: `SymEntry` type parameter
            :type etype: type
          */
-        inline proc toSymEntry(type etype) {
-            return try! this :borrowed SymEntry(etype);
+        inline proc toSymEntry(type etype, param dimensions=1) {
+            return try! this :borrowed SymEntry(etype, dimensions);
         }
 
         /* 
@@ -200,14 +202,26 @@ module MultiTypeSymEntry
         type etype;
 
         /*
+        number of dimensions, to be passed back to the `GenSymEntry` so that
+        we are able to make it visible to the Python client
+        */
+        param dimensions: int;
+
+        /*
+        the actual shape of the array, this has to live here, since GenSymEntry
+        has to stay generic
+        */
+        var tupShape: dimensions*int;
+
+        /*
         'a' is the distributed array whose value and type are defined by
         makeDist{Dom,Array}() to support varying distributions
         */
-        var a = makeDistArray(size, etype);
+        var a: [makeDistDom((...tupShape))] etype;
         /* Removed domain accessor, use `a.domain` instead */
         proc aD { compilerError("SymEntry.aD has been removed, use SymEntry.a.domain instead"); }
         /* only used with bigint pdarrays */
-        var max_bits = -1;
+        var max_bits:int = -1;
 
         /*
         This init takes length and element type
@@ -218,13 +232,23 @@ module MultiTypeSymEntry
         :arg etype: type to be instantiated
         :type etype: type
         */
-        proc init(len: int, type etype) {
-            super.init(etype, len);
+        proc init(args: int ...?N, type etype) {
+            var len = 1;
+            for i in 0..#N {
+              len *= args[i];
+            }
+            super.init(etype, len, N);
             this.entryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
             assignableTypes.add(this.entryType);
 
             this.etype = etype;
+            this.dimensions = N;
+            this.tupShape = args;
             this.a = makeDistArray(size, etype);
+            this.a = makeDistArray((...args), etype);
+            this.complete();
+            // TODO: fix this for multi dimensional
+            this.shape = "[" + tupShape[0]:string + "]";
         }
 
         /*
@@ -239,8 +263,13 @@ module MultiTypeSymEntry
             assignableTypes.add(this.entryType);
 
             this.etype = etype;
+            this.dimensions = D.rank;
+            this.tupShape = D.shape;
             this.a = a;
             this.max_bits=max_bits;
+            this.complete();
+            // TODO: Fix for multi dim
+            this.shape = "[" + tupShape[0]:string + "]";
         }
 
         /*
@@ -251,8 +280,11 @@ module MultiTypeSymEntry
         :type a: [] ?etype
         */
         proc init(a: [?D] ?etype) where MyDmap != Dmap.defaultRectangular && a.isDefaultRectangular() {
-            this.init(D.size, etype);
+            this.init(D.size, etype, D.rank);
+            this.tupShape = D.shape;
             this.a = a;
+            // TODO: Fix for multi dim
+            this.shape = "[" + tupShape[0]:string + "]";
         }
 
         /*
@@ -303,26 +335,31 @@ module MultiTypeSymEntry
             :returns: s (string) containing the array data
         */
         override proc __str__(thresh:int=6, prefix:string = "[", suffix:string = "]", baseFormat:string = "%t"): string throws {
+          if dimensions == 1 {
             var s:string = "";
             if (this.size == 0) {
-                s =  ""; // Unnecessary, but left for clarity
+              s =  ""; // Unnecessary, but left for clarity
             } else if (this.size < thresh || this.size <= 6) {
-                for i in 0..(this.size-2) {s += try! baseFormat.format(this.a[i]) + " ";}
-                s += try! baseFormat.format(this.a[this.size-1]);
+              for i in 0..(this.size-2) {s += try! baseFormat.format(this.a[i]) + " ";}
+              s += try! baseFormat.format(this.a[this.size-1]);
             } else {
-                var b = baseFormat + " " + baseFormat + " " + baseFormat + " ... " +
-                            baseFormat + " " + baseFormat + " " + baseFormat;
-                s = try! b.format(
-                            this.a[0], this.a[1], this.a[2],
-                            this.a[this.size-3], this.a[this.size-2], this.a[this.size-1]);
+              var b = baseFormat + " " + baseFormat + " " + baseFormat + " ... " +
+                baseFormat + " " + baseFormat + " " + baseFormat;
+              s = try! b.format(
+                                this.a[0], this.a[1], this.a[2],
+                                this.a[this.size-3], this.a[this.size-2], this.a[this.size-1]);
             }
-            
+
             if (bool == this.etype) {
-                s = s.replace("true","True");
-                s = s.replace("false","False");
+              s = s.replace("true","True");
+              s = s.replace("false","False");
             }
 
             return prefix + s + suffix;
+          } else {
+            // TODO: We want this to do something smart, not just print entire array
+            return this.a:string;
+          }
         }
     }
 
@@ -360,8 +397,8 @@ module MultiTypeSymEntry
     class SegStringSymEntry:GenSymEntry {
         type etype = string;
 
-        var offsetsEntry: shared SymEntry(int);
-        var bytesEntry: shared SymEntry(uint(8));
+        var offsetsEntry: shared SymEntry(int, 1);
+        var bytesEntry: shared SymEntry(uint(8), 1);
 
         proc init(offsetsSymEntry: shared SymEntry, bytesSymEntry: shared SymEntry, type etype) {
             super.init(etype, bytesSymEntry.size);
