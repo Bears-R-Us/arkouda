@@ -10,6 +10,12 @@ NO_FLOAT = [ak.int64, ak.bool, ak.uint64]
 INT_FLOAT = [ak.int64, ak.float64]
 CAST_TYPES = [ak.dtype(t) for t in ak.DTypes]
 
+NP_TRIG_ARRAYS = {
+    ak.int64: np.arange(0, 10, dtype=np.int64),
+    ak.float64: np.linspace(0, 10),
+    ak.uint64: np.arange(0, 10, dtype=np.uint64),
+}
+
 ROUNDTRIP_CAST = [
     (ak.bool, ak.bool),
     (ak.int64, ak.int64),
@@ -193,10 +199,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_sin(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(0, 10)
-        else:
-            na = np.arange(0, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.sin(na), ak.sin(pda).to_ndarray())
@@ -205,10 +208,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_cos(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(0, 10)
-        else:
-            na = np.arange(0, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.cos(na), ak.cos(pda).to_ndarray())
@@ -217,10 +217,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_tan(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(0, 10)
-        else:
-            na = np.arange(0, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.tan(na), ak.tan(pda).to_ndarray())
@@ -243,7 +240,6 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_arccos(self, num_type):
-        print("mytest")
         if num_type == ak.uint64:
             na = np.arange(0, 2).astype(num_type)
         elif num_type == ak.float64:
@@ -258,10 +254,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_arctan(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(0, 10)
-        else:
-            na = np.arange(0, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arctan(na), ak.arctan(pda).to_ndarray())
@@ -279,16 +272,15 @@ class TestNumeric:
     def test_arctan2(self, num_type, denom_type):
         if num_type == ak.float64:
             na_num = np.linspace(0, 1, 10)
-            pda_num = ak.array(na_num, dtype=num_type)
         else:
             na_num = np.arange(10, 0, -1).astype(num_type)
-            pda_num = ak.array(na_num, dtype=num_type)
         if denom_type == ak.float64:
             na_denom = np.linspace(0, 10, 10)
-            pda_denom = ak.array(na_denom, dtype=denom_type)
         else:
             na_denom = np.arange(0, 10).astype(denom_type)
-            pda_denom = ak.array(na_denom, dtype=denom_type)
+
+        pda_num = ak.array(na_num, dtype=num_type)
+        pda_denom = ak.array(na_denom, dtype=denom_type)
 
         num = np.array([1]).astype(num_type)
         denom = np.array([5]).astype(denom_type)
@@ -303,22 +295,19 @@ class TestNumeric:
             ak.arctan2(num[0], np.array([range(10, 20)]).astype(num_type))
             ak.arctan2(np.array([range(0, 10)]).astype(num_type), denom[0])
 
-        # Edge case: Infinities and Zeros
+        # Edge case: Infinities
         na_inf = np.array([np.inf, -np.inf])
         pda_inf = ak.array(na_inf)
         na_fin = np.array([1, 10]).astype(denom_type)
         pda_fin = ak.array(na_fin)
-        assert np.allclose(np.arctan2(na_inf, na_fin), ak.arctan2(pda_inf, pda_fin).to_ndarray())
-        assert np.allclose(np.arctan2(na_fin, na_inf), ak.arctan2(pda_fin, pda_inf).to_ndarray())
-        assert np.allclose(np.arctan2(na_inf, denom[0]), ak.arctan2(pda_inf, denom[0]).to_ndarray())
-        assert np.allclose(np.arctan2(num[0], na_inf), ak.arctan2(num[0], pda_inf).to_ndarray())
+        assert np.allclose(np.arctan2(na_inf, na_fin), ak.arctan2(pda_inf, pda_fin).to_ndarray(), equal_nan=True)
+        assert np.allclose(np.arctan2(na_fin, na_inf), ak.arctan2(pda_fin, pda_inf).to_ndarray(), equal_nan=True)
+        assert np.allclose(np.arctan2(na_inf, denom[0]), ak.arctan2(pda_inf, denom[0]).to_ndarray(), equal_nan=True)
+        assert np.allclose(np.arctan2(num[0], na_inf), ak.arctan2(num[0], pda_inf).to_ndarray(), equal_nan=True)
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_sinh(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(0, 10)
-        else:
-            na = np.arange(0, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray())
@@ -333,10 +322,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_cosh(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(0, 10)
-        else:
-            na = np.arange(0, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray())
@@ -351,10 +337,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_tanh(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(0, 10)
-        else:
-            na = np.arange(0, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray())
@@ -369,10 +352,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_arcsinh(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(0, 10)
-        else:
-            na = np.arange(0, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray())
@@ -419,10 +399,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_rad2deg(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(0, 10)
-        else:
-            na = np.arange(0, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.rad2deg(na), ak.rad2deg(pda).to_ndarray())
@@ -431,10 +408,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_deg2rad(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(0, 10)
-        else:
-            na = np.arange(0, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.deg2rad(na), ak.deg2rad(pda).to_ndarray())
