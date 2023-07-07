@@ -548,7 +548,7 @@ def full(
     if not np.isscalar(size):
         raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
     if type(fill_value) == str:
-       return _full_string(size, fill_value)
+        return _full_string(size, fill_value)
 
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
@@ -561,6 +561,7 @@ def full(
     if max_bits:
         a.max_bits = max_bits
     return a
+
 
 @typechecked
 def _full_string(
@@ -584,6 +585,7 @@ def _full_string(
 """
     repMsg = generic_msg(cmd="segmentedFull", args={"size": size, "fill_value": fill_value})
     return Strings.from_return_msg(cast(str, repMsg))
+
 
 @typechecked
 def zeros_like(pda: pdarray) -> pdarray:
