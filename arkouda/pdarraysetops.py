@@ -213,7 +213,7 @@ def in1d(
         else:
             return truth[isa] if not invert else ~truth[isa]
     else:
-        # If didn't stat rt unique, first need to deinterleave into ua domain,
+        # If didn't start unique, first need to deinterleave into ua domain,
         # then broadcast to a domain
         atruth = ag.broadcast(truth[isa], permute=True)
         if symmetric:

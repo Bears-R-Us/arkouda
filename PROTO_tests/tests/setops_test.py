@@ -7,16 +7,16 @@ OPS = ["in1d", "intersect1d", "union1d", "setxor1d", "setdiff1d"]
 INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bigint]
 NUMERIC_TYPES = [ak.int64, ak.uint64, ak.bigint, ak.bool]
 
-class TestSetOps:
 
+class TestSetOps:
     @staticmethod
     def make_np_arrays(size, dtype):
         if dtype == ak.int64 or dtype == ak.uint64:
             a = np.random.randint(0, size, size=size, dtype=dtype)
             b = np.random.randint(size / 2, 2 * size, size=size, dtype=dtype)
         elif dtype == ak.bigint:
-            a = np.array([2 ** 200 + i for i in range(size)])
-            b = np.array([2 ** 200 + i for i in range(int(size/2), size*2)])
+            a = np.array([2**200 + i for i in range(size)])
+            b = np.array([2**200 + i for i in range(int(size / 2), size * 2)])
         elif dtype == ak.float64:
             # only used for error handling tests
             a = np.random.random(size)
@@ -35,10 +35,8 @@ class TestSetOps:
             a = np.array([-1, 0, 1, 3]).astype(dtype)
             b = np.array([-1, 2, 2, 3]).astype(dtype)
         elif dtype == ak.bigint:
-            a = np.array([-1, 0, 1, 3]).astype(ak.uint64)
-            a = a + 2**200
-            b = np.array([-1, 2, 2, 3]).astype(ak.uint64)
-            b = b + 2 ** 200
+            a = np.array([-1, 0, 1, 3]).astype(ak.uint64) + 2**200
+            b = np.array([-1, 2, 2, 3]).astype(ak.uint64) + 2**200
         elif dtype == ak.bool:
             a = np.array([True, False, False, True]).astype(dtype)
             b = np.array([True, True, False, False]).astype(dtype)
@@ -55,15 +53,11 @@ class TestSetOps:
             c = np.array([-1, -11, 0, 4, 5, 3]).astype(dtype)
             d = np.array([-1, -4, 0, 7, 8, 3]).astype(dtype)
         elif dtype == ak.bigint:
-            a = np.array([-1, -3, 0, 1, 2, 3]).astype(ak.uint64)
-            a = a + 2**200
-            b = np.array([-1, 0, 0, 7, 8, 3]).astype(ak.uint64)
-            b = b + 2**200
+            a = np.array([-1, -3, 0, 1, 2, 3]).astype(ak.uint64) + 2**200
+            b = np.array([-1, 0, 0, 7, 8, 3]).astype(ak.uint64) + 2**200
 
-            c = np.array([-1, -11, 0, 4, 5, 3]).astype(ak.uint64)
-            c = c + 2**200
-            d = np.array([-1, -4, 0, 7, 8, 3]).astype(ak.uint64)
-            d = d + 2**200
+            c = np.array([-1, -11, 0, 4, 5, 3]).astype(ak.uint64) + 2**200
+            d = np.array([-1, -4, 0, 7, 8, 3]).astype(ak.uint64) + 2**200
         elif dtype == ak.bool:
             a = np.array([True, False, False, False]).astype(dtype)
             b = np.array([True, True, False, True]).astype(dtype)
@@ -75,21 +69,32 @@ class TestSetOps:
         return a, b, c, d
 
     @staticmethod
-    def make_np_arrays_cross_type(dtype):
-        if dtype == ak.int64 or dtype == ak.uint64:
-            a = np.array([-1, 0, 1, 2, 3]).astype(dtype)
-            b = np.array([-1, 0, 9, 2, 7]).astype(dtype)
-        elif dtype == ak.bigint:
-            a = np.array([-1, 0, 1, 2, 3]).astype(ak.uint64)
-            a = a + 2**200
-            b = np.array([-1, 0, 9, 2, 7]).astype(ak.uint64)
-            b = b + 2**200
-        elif dtype == ak.bool:
+    def make_np_arrays_cross_type(dtype1, dtype2):
+        if dtype1 == ak.int64 or dtype1 == ak.uint64:
+            a = np.array([-1, -3, 0, 1, 2, 3]).astype(dtype1)
+            c = np.array([-1, 0, 0, 7, 8, 3]).astype(dtype1)
+        elif dtype1 == ak.bigint:
+            a = np.array([-1, -3, 0, 1, 2, 3]).astype(ak.uint64) + 2 ** 200
+            c = np.array([-1, 0, 0, 7, 8, 3]).astype(ak.uint64) + 2 ** 200
+        elif dtype1 == ak.bool:
             a = np.array([True, False, False, True, True])
-            b = np.array([True, True, False, False, True])
+            c = np.array([True, True, False, False, True])
         else:
-            a = b = None
-        return a, b
+            a = c = None
+
+        if dtype2 == ak.int64 or dtype2 == ak.uint64:
+            b = np.array([-1, -11, 0, 4, 5, 3]).astype(dtype2)
+            d = np.array([-1, -4, 0, 7, 8, 3]).astype(dtype2)
+        elif dtype2 == ak.bigint:
+            b = np.array([-1, -11, 0, 4, 5, 3]).astype(ak.uint64) + 2 ** 200
+            d = np.array([-1, -4, 0, 7, 8, 3]).astype(ak.uint64) + 2 ** 200
+        elif dtype2 == ak.bool:
+            b = np.array([True, True, False, False, True])
+            d = np.array([True, True, False, False, True])
+        else:
+            b = d = None
+
+        return a, b, c, d
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
@@ -116,13 +121,9 @@ class TestSetOps:
         a, b = self.make_np_arrays(size, ak.float64)
         func = getattr(ak, op)
 
-        if op == "in1d":
-            # float64 not implemented for in1dmsg
-            with pytest.raises(RuntimeError):
-                func(ak.array(a, dtype=ak.float64), ak.array(b, dtype=ak.float64))
-        else:
-            with pytest.raises(TypeError):
-                func(ak.array(a, dtype=ak.float64), ak.array(b, dtype=ak.float64))
+        # float64 not implemented for in1dmsg
+        with pytest.raises(RuntimeError if op == "in1d" else TypeError):
+            func(ak.array(a, dtype=ak.float64), ak.array(b, dtype=ak.float64))
 
         # # bool is not supported by argsortMsg (only impacts single array case)
         a, b = self.make_np_arrays(size, ak.bool)
@@ -177,22 +178,8 @@ class TestSetOps:
         l2 = [ak.array(b), ak.array(d)]
         ak_result = ak.in1d(l1, l2)
 
-        la = [(x, y) for x, y in zip(a, c)]
-        lb = [(x, y) for x, y in zip(b, d)]
-        lr = [x in lb for x in la]
-
-        assert ak_result.to_list() == lr
-
-    @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
-    def test_in1d_multiarray_numeric_small(self, dtype):
-        a, b, c, d = self.make_np_arrays_multi_small(dtype)
-
-        l1 = [ak.array(a), ak.array(b)]
-        l2 = [ak.array(c), ak.array(d)]
-        ak_result = ak.in1d(l1, l2)
-
-        la = [(x, y) for x, y in zip(a, b)]
-        lb = [(x, y) for x, y in zip(c, d)]
+        la = list(zip(a, c))
+        lb = list(zip(b, d))
         lr = [x in lb for x in la]
 
         assert ak_result.to_list() == lr
@@ -200,15 +187,14 @@ class TestSetOps:
     @pytest.mark.parametrize("dtype1", INTEGRAL_TYPES)
     @pytest.mark.parametrize("dtype2", INTEGRAL_TYPES)
     def test_in1d_multiarray_cross_type(self, dtype1, dtype2):
-        a, c = self.make_np_arrays_cross_type(dtype1)
-        b, d = self.make_np_arrays_cross_type(dtype2)
+        a, b, c, d = self.make_np_arrays_cross_type(dtype1, dtype2)
 
         l1 = [ak.array(a), ak.array(b)]
         l2 = [ak.array(c), ak.array(d)]
         ak_result = ak.in1d(l1, l2)
 
-        la = [(x, y) for x, y in zip(a, b)]
-        lb = [(x, y) for x, y in zip(c, d)]
+        la = list(zip(a, b))
+        lb = list(zip(c, d))
         lr = [x in lb for x in la]
 
         assert ak_result.to_list() == lr
@@ -227,8 +213,8 @@ class TestSetOps:
 
         ak_result = ak.in1d(l1, l2)
 
-        la = [(x, y) for x, y in zip(a.to_list(), b.to_list())]
-        lb = [(x, y) for x, y in zip(c.to_list(), d.to_list())]
+        la = list(zip(a.to_list(), b.to_list()))
+        lb = list(zip(c.to_list(), d.to_list()))
         lr = [x in lb for x in la]
         assert ak_result.to_list() == lr
 
@@ -250,8 +236,8 @@ class TestSetOps:
 
         ak_result = ak.in1d(l1, l2)
 
-        la = [(x, y) for x, y in zip(a.to_list(), b.to_list())]
-        lb = [(x, y) for x, y in zip(c.to_list(), d.to_list())]
+        la = list(zip(a.to_list(), b.to_list()))
+        lb = list(zip(c.to_list(), d.to_list()))
         lr = [x in lb for x in la]
         assert ak_result.to_list() == lr
 
@@ -270,43 +256,25 @@ class TestSetOps:
 
         ak_result = ak.intersect1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a, c)])
-        lb = set([(x, y) for x, y in zip(b, d)])
-        lr = list(sorted(la.intersection(lb)))
+        la = set(zip(a, c))
+        lb = set(zip(b, d))
+        lr = sorted(la.intersection(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
-        assert ak_result == lr
-
-    @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
-    def test_intersect1d_multiarray_numeric_small(self, dtype):
-        a, b, c, d = self.make_np_arrays_multi_small(dtype)
-
-        l1 = [ak.array(a), ak.array(b)]
-        l2 = [ak.array(c), ak.array(d)]
-        ak_result = ak.intersect1d(l1, l2)
-
-        la = set([(x, y) for x, y in zip(a, b)])
-        lb = set([(x, y) for x, y in zip(c, d)])
-        lr = list(sorted(la.intersection(lb)))
-
-        ak_result = [x.to_list() for x in ak_result]
-        # sorting applied for bigint case. Numbers are right, but not ordering properly
-        ak_result = sorted(list(zip(*ak_result)))
         assert ak_result == lr
 
     @pytest.mark.parametrize("dtype1", INTEGRAL_TYPES)
     @pytest.mark.parametrize("dtype2", INTEGRAL_TYPES)
     def test_intersect1d_multiarray_cross_type(self, dtype1, dtype2):
-        a, c = self.make_np_arrays_cross_type(dtype1)
-        b, d = self.make_np_arrays_cross_type(dtype2)
+        a, b, c, d = self.make_np_arrays_cross_type(dtype1, dtype2)
 
         l1 = [ak.array(a), ak.array(b)]
         l2 = [ak.array(c), ak.array(d)]
         ak_result = ak.intersect1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a, b)])
-        lb = set([(x, y) for x, y in zip(c, d)])
-        lr = list(sorted(la.intersection(lb)))
+        la = set(zip(a, b))
+        lb = set(zip(c, d))
+        lr = sorted(la.intersection(lb))
 
         ak_result = [x.to_list() for x in ak_result]
         # sorting applied for bigint case. Numbers are right, but not ordering properly
@@ -327,9 +295,9 @@ class TestSetOps:
 
         ak_result = ak.intersect1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a.to_list(), c.to_list())])
-        lb = set([(x, y) for x, y in zip(b.to_list(), d.to_list())])
-        lr = list(sorted(la.intersection(lb)))
+        la = set(zip(a.to_list(), c.to_list()))
+        lb = set(zip(b.to_list(), d.to_list()))
+        lr = sorted(la.intersection(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
         assert ak_result == lr
@@ -361,9 +329,9 @@ class TestSetOps:
 
         ak_result = ak.intersect1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a.to_list(), c.to_list())])
-        lb = set([(x, y) for x, y in zip(b.to_list(), d.to_list())])
-        lr = list(sorted(la.intersection(lb)))
+        la = set(zip(a.to_list(), c.to_list()))
+        lb = set(zip(b.to_list(), d.to_list()))
+        lr = sorted(la.intersection(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
         assert ak_result == lr
@@ -392,43 +360,25 @@ class TestSetOps:
 
         ak_result = ak.union1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a, c)])
-        lb = set([(x, y) for x, y in zip(b, d)])
-        lr = list(sorted(la.union(lb)))
+        la = set(zip(a, c))
+        lb = set(zip(b, d))
+        lr = sorted(la.union(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
-        assert ak_result == lr
-
-    @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
-    def test_union1d_multiarray_numeric_small(self, dtype):
-        a, b, c, d = self.make_np_arrays_multi_small(dtype)
-
-        l1 = [ak.array(a), ak.array(b)]
-        l2 = [ak.array(c), ak.array(d)]
-        ak_result = ak.union1d(l1, l2)
-
-        la = set([(x, y) for x, y in zip(a, b)])
-        lb = set([(x, y) for x, y in zip(c, d)])
-        lr = list(sorted(la.union(lb)))
-
-        ak_result = [x.to_list() for x in ak_result]
-        # sorting applied for bigint case. Numbers are right, but not ordering properly
-        ak_result = sorted(list(zip(*ak_result)))
         assert ak_result == lr
 
     @pytest.mark.parametrize("dtype1", INTEGRAL_TYPES)
     @pytest.mark.parametrize("dtype2", INTEGRAL_TYPES)
     def test_union1d_multiarray_cross_type(self, dtype1, dtype2):
-        a, c = self.make_np_arrays_cross_type(dtype1)
-        b, d = self.make_np_arrays_cross_type(dtype2)
+        a, b, c, d = self.make_np_arrays_cross_type(dtype1, dtype2)
 
         l1 = [ak.array(a), ak.array(b)]
         l2 = [ak.array(c), ak.array(d)]
         ak_result = ak.union1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a, b)])
-        lb = set([(x, y) for x, y in zip(c, d)])
-        lr = list(sorted(la.union(lb)))
+        la = set(zip(a, b))
+        lb = set(zip(c, d))
+        lr = sorted(la.union(lb))
 
         ak_result = [x.to_list() for x in ak_result]
         # sorting applied for bigint case. Numbers are right, but not ordering properly
@@ -449,9 +399,9 @@ class TestSetOps:
 
         ak_result = ak.union1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a.to_list(), b.to_list())])
-        lb = set([(x, y) for x, y in zip(c.to_list(), d.to_list())])
-        lr = list(sorted(la.union(lb)))
+        la = set(zip(a.to_list(), b.to_list()))
+        lb = set(zip(c.to_list(), d.to_list()))
+        lr = sorted(la.union(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
@@ -484,9 +434,9 @@ class TestSetOps:
 
         ak_result = ak.union1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a.to_list(), b.to_list())])
-        lb = set([(x, y) for x, y in zip(c.to_list(), d.to_list())])
-        lr = list(sorted(la.union(lb)))
+        la = set(zip(a.to_list(), b.to_list()))
+        lb = set(zip(c.to_list(), d.to_list()))
+        lr = sorted(la.union(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
@@ -520,44 +470,26 @@ class TestSetOps:
 
         ak_result = ak.setxor1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a, c)])
-        lb = set([(x, y) for x, y in zip(b, d)])
-        lr = list(sorted(la.symmetric_difference(lb)))
+        la = set(zip(a, c))
+        lb = set(zip(b, d))
+        lr = sorted(la.symmetric_difference(lb))
 
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
         assert ak_result == lr
 
-    @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
-    def test_setxor1d_multiarray_numeric_small(self, dtype):
-        a, b, c, d = self.make_np_arrays_multi_small(dtype)
-
-        l1 = [ak.array(a), ak.array(b)]
-        l2 = [ak.array(c), ak.array(d)]
-        ak_result = ak.setxor1d(l1, l2)
-
-        la = set([(x, y) for x, y in zip(a, b)])
-        lb = set([(x, y) for x, y in zip(c, d)])
-        lr = list(sorted(la.symmetric_difference(lb)))
-
-        ak_result = [x.to_list() for x in ak_result]
-        # sorting applied for bigint case. Numbers are right, but not ordering properly
-        ak_result = sorted(list(zip(*ak_result)))
-        assert ak_result == lr
-
     @pytest.mark.parametrize("dtype1", INTEGRAL_TYPES)
     @pytest.mark.parametrize("dtype2", INTEGRAL_TYPES)
     def test_setxor1d_multiarray_cross_type(self, dtype1, dtype2):
-        a, c = self.make_np_arrays_cross_type(dtype1)
-        b, d = self.make_np_arrays_cross_type(dtype2)
+        a, b, c, d = self.make_np_arrays_cross_type(dtype1, dtype2)
 
         l1 = [ak.array(a), ak.array(b)]
         l2 = [ak.array(c), ak.array(d)]
         ak_result = ak.setxor1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a, b)])
-        lb = set([(x, y) for x, y in zip(c, d)])
-        lr = list(sorted(la.symmetric_difference(lb)))
+        la = set(zip(a, b))
+        lb = set(zip(c, d))
+        lr = sorted(la.symmetric_difference(lb))
 
         ak_result = [x.to_list() for x in ak_result]
         # sorting applied for bigint case. Numbers are right, but not ordering properly
@@ -578,9 +510,9 @@ class TestSetOps:
 
         ak_result = ak.setxor1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a.to_list(), b.to_list())])
-        lb = set([(x, y) for x, y in zip(c.to_list(), d.to_list())])
-        lr = list(sorted(la.symmetric_difference(lb)))
+        la = set(zip(a.to_list(), b.to_list()))
+        lb = set(zip(c.to_list(), d.to_list()))
+        lr = sorted(la.symmetric_difference(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
@@ -614,9 +546,9 @@ class TestSetOps:
 
         ak_result = ak.setxor1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a.to_list(), b.to_list())])
-        lb = set([(x, y) for x, y in zip(c.to_list(), d.to_list())])
-        lr = list(sorted(la.symmetric_difference(lb)))
+        la = set(zip(a.to_list(), b.to_list()))
+        lb = set(zip(c.to_list(), d.to_list()))
+        lr = sorted(la.symmetric_difference(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
@@ -647,44 +579,26 @@ class TestSetOps:
 
         ak_result = ak.setdiff1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a, c)])
-        lb = set([(x, y) for x, y in zip(b, d)])
-        lr = list(sorted(la.difference(lb)))
+        la = set(zip(a, c))
+        lb = set(zip(b, d))
+        lr = sorted(la.difference(lb))
 
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
         assert ak_result == lr
 
-    @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
-    def test_setdiff1d_multiarray_numeric_small(self, dtype):
-        a, b, c, d = self.make_np_arrays_multi_small(dtype)
-
-        l1 = [ak.array(a), ak.array(b)]
-        l2 = [ak.array(c), ak.array(d)]
-        ak_result = ak.setdiff1d(l1, l2)
-
-        la = set([(x, y) for x, y in zip(a, b)])
-        lb = set([(x, y) for x, y in zip(c, d)])
-        lr = list(sorted(la.difference(lb)))
-
-        ak_result = [x.to_list() for x in ak_result]
-        # sorting applied for bigint case. Numbers are right, but not ordering properly
-        ak_result = sorted(list(zip(*ak_result)))
-        assert ak_result == lr
-
     @pytest.mark.parametrize("dtype1", INTEGRAL_TYPES)
     @pytest.mark.parametrize("dtype2", INTEGRAL_TYPES)
     def test_setdiff1d_multiarray_cross_type(self, dtype1, dtype2):
-        a, c = self.make_np_arrays_cross_type(dtype1)
-        b, d = self.make_np_arrays_cross_type(dtype2)
+        a, b, c, d = self.make_np_arrays_cross_type(dtype1, dtype2)
 
         l1 = [ak.array(a), ak.array(b)]
         l2 = [ak.array(c), ak.array(d)]
         ak_result = ak.setdiff1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a, b)])
-        lb = set([(x, y) for x, y in zip(c, d)])
-        lr = list(sorted(la.difference(lb)))
+        la = set(zip(a, b))
+        lb = set(zip(c, d))
+        lr = sorted(la.difference(lb))
 
         ak_result = [x.to_list() for x in ak_result]
         # sorting applied for bigint case. Numbers are right, but not ordering properly
@@ -707,7 +621,7 @@ class TestSetOps:
 
         la = set([(x, y) for x, y in zip(a.to_list(), b.to_list())])
         lb = set([(x, y) for x, y in zip(c.to_list(), d.to_list())])
-        lr = list(sorted(la.difference(lb)))
+        lr = sorted(la.difference(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
@@ -741,9 +655,9 @@ class TestSetOps:
 
         ak_result = ak.setdiff1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a.to_list(), b.to_list())])
-        lb = set([(x, y) for x, y in zip(c.to_list(), d.to_list())])
-        lr = list(sorted(la.difference(lb)))
+        la = set(zip(a.to_list(), b.to_list()))
+        lb = set(zip(c.to_list(), d.to_list()))
+        lr = sorted(la.difference(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
@@ -779,5 +693,3 @@ class TestSetOps:
         x = [ak.arange(3, dtype=ak.uint64), ak.arange(3)]
         with pytest.raises(TypeError):
             ak.pdarraysetops.multiarray_setop_validation(x, y)
-
-
