@@ -24,10 +24,10 @@ module HDF5Msg {
     use ServerErrorStrings;
     use SegmentedString;
     use Sort;
+    use Map;
 
     use BigInteger;
 
-    use ArkoudaMapCompat;
     use ArkoudaListCompat;
     use ArkoudaStringBytesCompat;
     use ArkoudaCTypesCompat;
