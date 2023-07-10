@@ -18,7 +18,7 @@ module RegistrationMsg
     use SegmentedString;
     use SegmentedMsg;
 
-    use ArkoudaMapCompat;
+    use Map;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

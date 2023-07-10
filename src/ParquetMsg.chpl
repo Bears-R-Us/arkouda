@@ -16,7 +16,7 @@ module ParquetMsg {
 
   use SegmentedString;
 
-  use ArkoudaMapCompat;
+  use Map;
   use ArkoudaListCompat;
   use ArkoudaStringBytesCompat;
 
