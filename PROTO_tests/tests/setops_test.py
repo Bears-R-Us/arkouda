@@ -45,30 +45,6 @@ class TestSetOps:
         return a, b
 
     @staticmethod
-    def make_np_arrays_multi_small(dtype):
-        if dtype == ak.int64 or dtype == ak.uint64:
-            a = np.array([-1, -3, 0, 1, 2, 3]).astype(dtype)
-            b = np.array([-1, 0, 0, 7, 8, 3]).astype(dtype)
-
-            c = np.array([-1, -11, 0, 4, 5, 3]).astype(dtype)
-            d = np.array([-1, -4, 0, 7, 8, 3]).astype(dtype)
-        elif dtype == ak.bigint:
-            a = np.array([-1, -3, 0, 1, 2, 3]).astype(ak.uint64) + 2**200
-            b = np.array([-1, 0, 0, 7, 8, 3]).astype(ak.uint64) + 2**200
-
-            c = np.array([-1, -11, 0, 4, 5, 3]).astype(ak.uint64) + 2**200
-            d = np.array([-1, -4, 0, 7, 8, 3]).astype(ak.uint64) + 2**200
-        elif dtype == ak.bool:
-            a = np.array([True, False, False, False]).astype(dtype)
-            b = np.array([True, True, False, True]).astype(dtype)
-
-            c = np.array([True, True, False, False]).astype(dtype)
-            d = np.array([True, False, False, False]).astype(dtype)
-        else:
-            a = b = c = d = None
-        return a, b, c, d
-
-    @staticmethod
     def make_np_arrays_cross_type(dtype1, dtype2):
         if dtype1 == ak.int64 or dtype1 == ak.uint64:
             a = np.array([-1, -3, 0, 1, 2, 3]).astype(dtype1)
@@ -619,8 +595,8 @@ class TestSetOps:
 
         ak_result = ak.setdiff1d(l1, l2)
 
-        la = set([(x, y) for x, y in zip(a.to_list(), b.to_list())])
-        lb = set([(x, y) for x, y in zip(c.to_list(), d.to_list())])
+        la = set(zip(a.to_list(), b.to_list()))
+        lb = set(zip(c.to_list(), d.to_list()))
         lr = sorted(la.difference(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
