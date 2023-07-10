@@ -15,6 +15,7 @@ from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array, arange
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
+from arkouda.dataframe import DataFrame
 
 __all__ = [
     "get_filetype",
@@ -435,7 +436,7 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
 
 def _parse_obj(
     obj: Dict,
-) -> Union[Strings, pdarray, ArrayView, SegArray, Categorical]:
+) -> Union[Strings, pdarray, ArrayView, SegArray, Categorical, DataFrame]:
     """
     Helper function to create an Arkouda object from read response
 
@@ -468,6 +469,8 @@ def _parse_obj(
         return Categorical.from_return_msg(obj["created"])
     elif GroupBy.objType.upper() == obj["arkouda_type"]:
         return GroupBy.from_return_msg(obj["created"])
+    elif DataFrame.objType.upper() == obj["arkouda_type"]:
+        return DataFrame.from_return_msg(obj["created"])
     else:
         raise TypeError(f"Unknown arkouda type:{obj['arkouda_type']}")
 
@@ -519,7 +522,8 @@ def _build_objects(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[Strings, pdarray, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[Strings, pdarray, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Helper function to create the Arkouda objects from a read operation

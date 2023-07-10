@@ -25,7 +25,8 @@ module ServerConfig
       STRINGS=2,
       SEGARRAY=3,
       CATEGORICAL=4,
-      GROUPBY=5
+      GROUPBY=5,
+      DATAFRAME=6
     };
     
     /*

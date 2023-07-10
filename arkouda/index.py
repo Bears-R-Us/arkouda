@@ -37,11 +37,17 @@ class Index:
             return
         elif isinstance(values, List):
             values = array(values)
-
-        self.values = values
-        self.size = self.values.size
-        self.dtype = self.values.dtype
-        self.name = name
+            self.values = values
+            self.size = self.values.size
+            self.dtype = self.values.dtype
+            self.name = name if name else values.name
+        elif isinstance(values, (pdarray, Strings)):
+            self.values = values
+            self.size = self.values.size
+            self.dtype = self.values.dtype
+            self.name = name if name else values.name
+        else:
+            raise TypeError(f"Unable to create Index from type {type(values)}")
 
     def __getitem__(self, key):
         from arkouda.series import Series

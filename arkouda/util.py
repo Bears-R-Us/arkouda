@@ -240,7 +240,7 @@ def attach(name: str, dtype: str = "infer"):
     elif repType == "dataframe":
         from arkouda.dataframe import DataFrame
 
-        return DataFrame.from_return_msg(repMsg)
+        return DataFrame.from_attach_msg(repMsg)
     elif repType == "segarray":
         repMsg = repMsg[len(repType) + 1 :]
         return SegArray.from_return_msg(repMsg)
