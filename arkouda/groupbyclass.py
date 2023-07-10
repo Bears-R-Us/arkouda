@@ -139,7 +139,7 @@ def unique(
     else:
         unique_key_indices = create_pdarray(cast(str, repMsg))
 
-    if nkeys == 1:
+    if nkeys == 1 and not isinstance(pda, Sequence):
         unique_keys = pda[unique_key_indices]
     else:
         unique_keys = tuple(a[unique_key_indices] for a in pda)

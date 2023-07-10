@@ -85,7 +85,6 @@ def _in1d_single(
     """
     from arkouda.categorical import Categorical as Categorical_
     from arkouda.dtypes import bool as ak_bool
-
     if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance(pda1, Categorical_):
         # While isinstance(thing, type) can be called on a tuple of types,
         # this causes an issue with mypy for unknown reasons.
@@ -95,7 +94,8 @@ def _in1d_single(
         if pda2.size == 0:
             return zeros(pda1.size, dtype=ak_bool)
     if hasattr(pda1, "categories"):
-        return cast(Categorical_, pda1).in1d(pda2)
+        x = cast(Categorical_, pda1).in1d(pda2)
+        return x if not invert else ~x
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.dtype == bigint and pda2.dtype == bigint:
             return in1d(pda1.bigint_to_uint_arrays(), pda2.bigint_to_uint_arrays(), invert=invert)
@@ -209,18 +209,18 @@ def in1d(
     if assume_unique:
         # Deinterleave truth into a and b domains
         if symmetric:
-            return truth[isa], truth[~isa]
+            return truth[isa], truth[~isa] if not invert else ~truth[isa], ~truth[~isa]
         else:
-            return truth[isa]
+            return truth[isa] if not invert else ~truth[isa]
     else:
         # If didn't start unique, first need to deinterleave into ua domain,
         # then broadcast to a domain
         atruth = ag.broadcast(truth[isa], permute=True)
         if symmetric:
             btruth = bg.broadcast(truth[~isa], permute=True)
-            return atruth, btruth
+            return atruth, btruth if not invert else ~atruth, ~btruth
         else:
-            return atruth
+            return atruth if not invert else ~atruth
 
 
 def in1dmulti(a, b, assume_unique=False, symmetric=False):
@@ -450,9 +450,10 @@ def union1d(
         ):
             repMsg = generic_msg(cmd="union1d", args={"arg1": pda1, "arg2": pda2})
             return cast(pdarray, create_pdarray(repMsg))
-        return cast(
+        x = cast(
             pdarray, unique(cast(pdarray, concatenate((unique(pda1), unique(pda2)), ordered=False)))
         )  # type: ignore
+        return x[argsort(x)]
     elif isinstance(pda1, Sequence) and isinstance(pda2, Sequence):
         multiarray_setop_validation(pda1, pda2)
         ag = GroupBy(pda1)
@@ -665,7 +666,8 @@ def setdiff1d(
         if not assume_unique:
             pda1 = cast(pdarray, unique(pda1))
             pda2 = cast(pdarray, unique(pda2))
-        return pda1[in1d(pda1, pda2, invert=True)]
+        x = pda1[in1d(pda1, pda2, invert=True)]
+        return x[argsort(x)]
     elif (isinstance(pda1, list) or isinstance(pda1, tuple)) and (
         isinstance(pda2, list) or isinstance(pda2, tuple)
     ):
