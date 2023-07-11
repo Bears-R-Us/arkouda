@@ -1431,18 +1431,27 @@ int cpp_writeStrListColumnToParquet(const char* filename, void* chpl_segs, void*
         int64_t count = 0;
         while (numLeft > 0 && count < rowGroupSize) { // ensures rowGroupSize maintained
           int64_t segmentLength = segments[segIdx+1] - segments[segIdx];
-          for (int64_t x = 0; x < segmentLength; x++){
-            int16_t rep_lvl = (x == 0) ? 0 : 1;
-            int16_t def_lvl = 3;
-            parquet::ByteArray value;
-            value.ptr = reinterpret_cast<const uint8_t*>(&chpl_ptr[valIdx]);
-            value.len = offsets[offIdx+1] - offsets[offIdx] - 1;
-            ba_writer->WriteBatch(1, &def_lvl, &rep_lvl, &value);
-            offIdx++;
-            valIdx+=offsets[offIdx] - offsets[offIdx-1];
+          if (segmentLength > 0) {
+            for (int64_t x = 0; x < segmentLength; x++){
+              int16_t rep_lvl = (x == 0) ? 0 : 1;
+              int16_t def_lvl = 3;
+              parquet::ByteArray value;
+              value.ptr = reinterpret_cast<const uint8_t*>(&chpl_ptr[valIdx]);
+              value.len = offsets[offIdx+1] - offsets[offIdx] - 1;
+              ba_writer->WriteBatch(1, &def_lvl, &rep_lvl, &value);
+              offIdx++;
+              valIdx+=offsets[offIdx] - offsets[offIdx-1];
+            }
+          } else {
+            // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
+            segmentLength = 1; // even though segment is length=0, write null to hold the empty segment
+            int16_t def_lvl = 1;
+            int16_t rep_lvl = 0;
+            ba_writer->WriteBatch(segmentLength, &def_lvl, &rep_lvl, nullptr);
           }
           segIdx++;
           numLeft--;count++;
+          
         }
       }
 

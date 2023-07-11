@@ -660,7 +660,7 @@ module ParquetMsg {
       var entrySeg = new shared SymEntry((+ reduce listSizes), int);
       var byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, listSizes, dsetname);
       entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
-
+      
       var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
       readListFilesByName(entryVal.a, sizes, seg_sizes, segments, filenames, byteSizes, dsetname, ty);
       var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
