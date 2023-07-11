@@ -3,20 +3,21 @@ module MsgProcessing
 {
     use ServerConfig;
 
-    use ArkoudaTimeCompat as Time;
     use Math only;
     use Reflection;
     use ServerErrors;
     use Logging;
     use Message;
-    use BigInteger;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
     use AryUtil;
-    
+
+    use ArkoudaBigIntCompat;
+    use ArkoudaTimeCompat as Time;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const mpLogger = new Logger(logLevel, logChannel);
@@ -398,9 +399,7 @@ module MsgProcessing
             when (DType.BigInt, DType.Bool) {
                 var e = toSymEntry(gEnt,bigint);
                 var val: bool = value.getBoolValue();
-                // can't cast from a bool to a bigint, so first cast to int
-                // TODO update once that functionality is available
-                e.a = val:int:bigint;
+                e.a = val:bigint;
                 repMsg = "set %s to %t".format(name, val);
             }
             otherwise {
