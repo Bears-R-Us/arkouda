@@ -114,12 +114,6 @@ performance testing.
    A record representing a date 
 
 
-   .. attribute:: var chpl_year: int
-
-   .. attribute:: var chpl_month: chpl_year.type
-
-   .. attribute:: var chpl_day: chpl_month.type
-
    .. method:: proc year
 
       The year represented by this `date` value 
@@ -264,16 +258,6 @@ performance testing.
    A record representing a time 
 
 
-   .. attribute:: var chpl_hour: int
-
-   .. attribute:: var chpl_minute: chpl_hour.type
-
-   .. attribute:: var chpl_second: chpl_minute.type
-
-   .. attribute:: var chpl_microsecond: chpl_second.type
-
-   .. attribute:: var chpl_tz: shared Timezone?
-
    .. method:: proc hour
 
       The hour represented by this `time` value 
@@ -404,10 +388,6 @@ performance testing.
 
    A record representing a combined `date` and `time` 
 
-
-   .. attribute:: var chpl_date: date
-
-   .. attribute:: var chpl_time: time
 
    .. method:: proc type min
 
@@ -695,12 +675,6 @@ performance testing.
    It is an overflow error if `days` is outside the given range.
    
 
-
-   .. attribute:: var chpl_days: int
-
-   .. attribute:: var chpl_seconds: int
-
-   .. attribute:: var chpl_microseconds: int
 
    .. method:: proc days
 
