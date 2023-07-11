@@ -59,6 +59,14 @@ module SymArrayDmap
         return a;
     }
 
+    proc makeDistArrayThrowing(size:int, type etype) throws {
+      var dom = {0..#size} dmapped Block(boundingBox={0..#size});
+      var tmp = dom.dsiBuildArrayThrowing(int, size);
+      //var tmp = dom.dsiBuildArray(int, true);
+      var a: [dom] int = tmp;
+      return a;
+    }
+
     /* 
     Returns the type of the distributed domain
 

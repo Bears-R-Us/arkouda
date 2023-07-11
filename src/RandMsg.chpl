@@ -43,7 +43,6 @@ module RandMsg
                                            cmd,len,dtype2str(dtype),rname,low.getValue(),high.getValue()));
         select (dtype) {
             when (DType.Int64) {
-                overMemLimit(8*len);
                 var aMin = low.getIntValue();
                 var aMax = high.getIntValue();
                 var t1 = Time.timeSinceEpoch().totalSeconds();
