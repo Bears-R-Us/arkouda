@@ -526,6 +526,14 @@ class ParquetTest(ArkoudaTest):
             self.assertListEqual(x.values.to_list(), rd.values.to_list())
             self.assertListEqual(x.to_list(), rd.to_list())
 
+        # additional testing for empty segments. See Issue #2560
+        a, b, c = ["one", "two", "three"], ["un", "deux", "trois"], ["uno", "dos", "tres"]
+        s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            s.to_parquet(f"{tmp_dirname}/segarray_test_empty")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/segarray_test_empty_*")
+            self.assertListEqual(s.to_list(), rd_data.to_list())
+
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
         datadir = "resources/parquet-testing"
