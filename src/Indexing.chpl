@@ -15,7 +15,7 @@ module Indexing {
     use ArkoudaRangeCompat;
     
     // Return a slice of array `a` from `start` to `stop` by `stride`
-    proc sliceIndex(a: [?aD] ?t, start: int, stop: int, stride: int) {
+    proc sliceIndex(a: [?aD] ?t, start: int, stop: int, stride: int) throws {
       var slice: stridableRange;
       
       slice = start..(stop-1) by stride;
@@ -27,12 +27,12 @@ module Indexing {
     }
 
     // helper to get an array without the first element
-    proc sliceTail(a: [?aD] ?t) {
+    proc sliceTail(a: [?aD] ?t) throws {
       return sliceIndex(a, 1, a.size, 1);
     }
 
     // helper to get an array without the last element
-    proc sliceHead(a: [?aD] ?t) {
+    proc sliceHead(a: [?aD] ?t) throws {
       return sliceIndex(a, 0, a.size - 1, 1);
     }
 

@@ -56,7 +56,8 @@ module SymArrayDmap
     */
     proc makeDistArray(size:int, type etype) throws {
       var dom = makeDistDom(size);
-      return dom.createArrayOrThrow(etype);
+      var a: [dom] etype = dom.createArrayOrThrow(etype);
+      return a;
     }
 
     /* 

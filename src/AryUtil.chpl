@@ -102,7 +102,7 @@ module AryUtil
     /*
        Concatenate 2 arrays and return the result.
      */
-    proc concatArrays(a: [?aD] ?t, b: [?bD] t) {
+    proc concatArrays(a: [?aD] ?t, b: [?bD] t) throws {
       var ret = makeDistArray((a.size + b.size), t);
 
       ret[0..#a.size] = a;
