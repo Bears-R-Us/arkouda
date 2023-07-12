@@ -54,17 +54,9 @@ module SymArrayDmap
 
     :returns: [] ?etype
     */
-    proc makeDistArray(size:int, type etype) {
-        var a: [makeDistDom(size)] etype;
-        return a;
-    }
-
-    proc makeDistArrayThrowing(size:int, type etype) throws {
-      var dom = {0..#size} dmapped Block(boundingBox={0..#size});
-      var tmp = dom.dsiBuildArrayThrowing(int, size);
-      //var tmp = dom.dsiBuildArray(int, true);
-      var a: [dom] int = tmp;
-      return a;
+    proc makeDistArray(size:int, type etype) throws {
+      var dom = makeDistDom(size);
+      return dom.createArrayOrThrow(etype);
     }
 
     /* 

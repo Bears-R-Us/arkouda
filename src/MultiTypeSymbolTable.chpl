@@ -60,7 +60,7 @@ module MultiTypeSymbolTable
             :returns: borrow of newly created `SymEntry(t)`
         */
         proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws {
-            var A = makeDistArrayThrowing(len, t);
+            var A = makeDistArray(len, t);
 
             var entry = new shared SymEntry(len, t);
             if (tab.contains(name)) {
