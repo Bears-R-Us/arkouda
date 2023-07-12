@@ -271,11 +271,11 @@ class TestSetOps:
 
         ak_result = ak.intersect1d(l1, l2)
 
-        la = set(zip(a.to_list(), c.to_list()))
-        lb = set(zip(b.to_list(), d.to_list()))
+        la = set(zip(a.to_list(), b.to_list()))
+        lb = set(zip(c.to_list(), d.to_list()))
         lr = sorted(la.intersection(lb))
         ak_result = [x.to_list() for x in ak_result]
-        ak_result = list(zip(*ak_result))
+        ak_result = sorted(list(zip(*ak_result)))
         assert ak_result == lr
 
         # Test for strings
@@ -305,8 +305,8 @@ class TestSetOps:
 
         ak_result = ak.intersect1d(l1, l2)
 
-        la = set(zip(a.to_list(), c.to_list()))
-        lb = set(zip(b.to_list(), d.to_list()))
+        la = set(zip(a.to_list(), b.to_list()))
+        lb = set(zip(c.to_list(), d.to_list()))
         lr = sorted(la.intersection(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))
