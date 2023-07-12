@@ -422,6 +422,8 @@ class PdarrayCreationTest(ArkoudaTest):
         strings_full = ak.full(5, "test")
         self.assertIsInstance(strings_full, ak.Strings)
         self.assertEqual(5, len(strings_full))
+        for i in range(len(strings_full)):
+            self.assertEqual(strings_full[i], "test")
 
         with self.assertRaises(TypeError):
             ak.full(5, 1, dtype=ak.uint8)
