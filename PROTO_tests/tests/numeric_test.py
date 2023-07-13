@@ -18,6 +18,7 @@ NP_TRIG_ARRAYS = {
             np.array([np.nan, -np.inf, -0.0, 0.0, np.inf]),
         ]
     ),
+    ak.bool: np.arange(10) % 2 == 0,
     ak.uint64: np.arange(2**64 - 10, 2**64, dtype=np.uint64),
 }
 
@@ -231,43 +232,21 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_arcsin(self, num_type):
-        if num_type == ak.uint64:
-            na = np.arange(0, 2).astype(num_type)
-        elif num_type == ak.float64:
-            na = np.linspace(-1, 1)
-        else:
-            na = np.arange(-1, 2).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arcsin(na), ak.arcsin(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.arcsin(np.array([range(0, 10)]).astype(num_type))
 
-        # Edge case: Infinities and NaNs
-        if num_type == ak.float64:
-            na = np.array([np.inf, np.nan, -np.inf])
-            pda = ak.array(na)
-            assert np.allclose(np.arcsin(na), ak.arcsin(pda).to_ndarray(), equal_nan=True)
-
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_arccos(self, num_type):
-        if num_type == ak.uint64:
-            na = np.arange(0, 2).astype(num_type)
-        elif num_type == ak.float64:
-            na = np.linspace(-1, 1)
-        else:
-            na = np.arange(-1, 2).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arccos(na), ak.arccos(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.arccos(np.array([range(0, 10)]).astype(num_type))
-
-        # Edge case: Infinities and NaNs
-        if num_type == ak.float64:
-            na = np.array([np.inf, np.nan, -np.inf])
-            pda = ak.array(na)
-            assert np.allclose(np.arccos(na), ak.arccos(pda).to_ndarray(), equal_nan=True)
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_arctan(self, num_type):
@@ -278,17 +257,11 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.arctan(np.array([range(0, 10)]).astype(num_type))
 
-        # Edge case: infinities and NaNs
-        if num_type == ak.float64:
-            na = np.array([np.inf, np.nan, -np.inf])
-            pda = ak.array(na)
-            assert np.allclose(np.arctan(na), ak.arctan(pda).to_ndarray(), equal_nan=True)
-
     @pytest.mark.parametrize("num_type", NO_BOOL)
     @pytest.mark.parametrize("denom_type", NO_BOOL)
     def test_arctan2(self, num_type, denom_type):
-        na_num = NP_TRIG_ARRAYS[num_type]
-        na_denom = np.arange(0, 10).astype(denom_type)
+        na_num = np.random.permutation(NP_TRIG_ARRAYS[num_type])
+        na_denom = np.random.permutation(NP_TRIG_ARRAYS[denom_type])
 
         pda_num = ak.array(na_num, dtype=num_type)
         pda_denom = ak.array(na_denom, dtype=denom_type)
@@ -313,24 +286,6 @@ class TestNumeric:
             ak.arctan2(num[0], np.array([range(10, 20)]).astype(num_type))
             ak.arctan2(np.array([range(0, 10)]).astype(num_type), denom[0])
 
-        # Edge case: Infinities
-        na_inf = np.array([np.inf, np.nan, -np.inf])
-        pda_inf = ak.array(na_inf)
-        na_fin = np.array([0, 5, 10]).astype(denom_type)
-        pda_fin = ak.array(na_fin)
-        assert np.allclose(
-            np.arctan2(na_inf, na_fin), ak.arctan2(pda_inf, pda_fin).to_ndarray(), equal_nan=True
-        )
-        assert np.allclose(
-            np.arctan2(na_fin, na_inf), ak.arctan2(pda_fin, pda_inf).to_ndarray(), equal_nan=True
-        )
-        assert np.allclose(
-            np.arctan2(na_inf, denom[0]), ak.arctan2(pda_inf, denom[0]).to_ndarray(), equal_nan=True
-        )
-        assert np.allclose(
-            np.arctan2(num[0], na_inf), ak.arctan2(num[0], pda_inf).to_ndarray(), equal_nan=True
-        )
-
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_sinh(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
@@ -339,12 +294,6 @@ class TestNumeric:
         assert np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.sinh(np.array([range(0, 10)]).astype(num_type))
-
-        # Edge case: infinities and NaNs
-        if num_type == ak.float64:
-            na = np.array([np.inf, np.nan, -np.inf])
-            pda = ak.array(na)
-            assert np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray(), equal_nan=True)
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_cosh(self, num_type):
@@ -355,12 +304,6 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.cosh(np.array([range(0, 10)]).astype(num_type))
 
-        # Edge case: infinities and NaNs
-        if num_type == ak.float64:
-            na = np.array([np.inf, np.nan, -np.inf])
-            pda = ak.array(na)
-            assert np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray(), equal_nan=True)
-
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_tanh(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
@@ -369,12 +312,6 @@ class TestNumeric:
         assert np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.tanh(np.array([range(0, 10)]).astype(num_type))
-
-        # Edge case: infinities and NaNs
-        if num_type == ak.float64:
-            na = np.array([np.inf, np.nan, -np.inf])
-            pda = ak.array(na)
-            assert np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray(), equal_nan=True)
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_arcsinh(self, num_type):
@@ -385,49 +322,23 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.arcsinh(np.array([range(0, 10)]).astype(num_type))
 
-        # Edge case: infinities and NaNs
-        if num_type == ak.float64:
-            na = np.array([np.inf, np.nan, -np.inf])
-            pda = ak.array(na)
-            assert np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray(), equal_nan=True)
-
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_arccosh(self, num_type):
-        if num_type == ak.float64:
-            na = np.linspace(1, 10)
-        else:
-            na = np.arange(1, 10).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.arccosh(np.array([range(0, 10)]).astype(num_type))
 
-        # Edge case: infinities and NaNs
-        if num_type == ak.float64:
-            na = np.array([1, np.inf, np.nan])
-            pda = ak.array(na)
-            assert np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray(), equal_nan=True)
-
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_arctanh(self, num_type):
-        if num_type == ak.uint64:
-            na = np.arange(0, 2).astype(num_type)
-        elif num_type == ak.float64:
-            na = np.linspace(-1, 1)
-        else:
-            na = np.arange(-1, 2).astype(num_type)
+        na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arctanh(na), ak.arctanh(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.arctanh(np.array([range(0, 10)]).astype(num_type))
-
-        # Edge case: Infinities and NaNs
-        if num_type == ak.float64:
-            na = np.array([np.inf, np.nan, -np.inf])
-            pda = ak.array(na)
-            assert np.allclose(np.arctanh(na), ak.arctanh(pda).to_ndarray(), equal_nan=True)
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_rad2deg(self, num_type):
