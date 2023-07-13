@@ -23,6 +23,8 @@ or
 
 .. enum:: enum Fixes { prefixes, suffixes }
 
+.. data:: config const NULL_STRINGS_VALUE = 0: uint(8)
+
 .. function:: proc getSegString(name: string, st: borrowed SymTab): owned SegString throws
 
 .. function:: proc getSegString(segments: [] int, values: [] uint(8), st: borrowed SymTab): owned SegString throws
@@ -367,6 +369,8 @@ or
 .. function:: proc concat(s1: [] int, v1: [] uint(8), s2: [] int, v2: [] uint(8)) throws
 
 .. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false) throws
+
+.. function:: proc segStrFull(arrSize: int, fillValue: string) throws
 
 .. function:: proc interpretAsString(bytearray: [?D] uint(8), region: range(?), borrow = false): string
 

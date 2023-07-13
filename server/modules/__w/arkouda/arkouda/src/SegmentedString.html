@@ -140,6 +140,11 @@
 <em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">Fixes</span></span> <span class="pre">{</span> <span class="pre">prefixes,</span> <span class="pre">suffixes</span> <span class="pre">}</span><a class="headerlink" href="#SegmentedString.Fixes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="SegmentedString.NULL_STRINGS_VALUE">
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">NULL_STRINGS_VALUE</span></span> <span class="pre">=</span> <span class="pre">0:</span> <span class="pre">uint(8)</span><a class="headerlink" href="#SegmentedString.NULL_STRINGS_VALUE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.getSegString">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSegString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">owned</span> <span class="pre">SegString</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.getSegString" title="Permalink to this definition">¶</a></dt>
@@ -596,6 +601,11 @@ a boolean vector the same size as the first array.</p>
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">mainStr:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">testStr:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">invert</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedString.segStrFull">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segStrFull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">arrSize:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">fillValue:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.segStrFull" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

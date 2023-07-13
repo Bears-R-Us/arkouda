@@ -241,7 +241,7 @@ Functions
    array([True, True, True, True, True])
 
 
-.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: arkouda.dtypes.int_scalars, dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Create a pdarray filled with fill_value.
 
@@ -255,7 +255,7 @@ Functions
    :type max_bits: int
 
    :returns: array of the requested size and dtype filled with fill_value
-   :rtype: pdarray
+   :rtype: pdarray or Strings
 
    :raises TypeError: Raised if the supplied dtype is not supported or if the size
        parameter is neither an int nor a str that is parseable to an int.
