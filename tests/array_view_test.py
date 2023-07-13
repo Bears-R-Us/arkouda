@@ -93,17 +93,21 @@ class ArrayViewTest(ArkoudaTest):
     def test_set_bool_pdarray(self):
         n = np.arange(30).reshape(5, 3, 2)
         a = ak.arange(30).reshape(5, 3, 2)
-
         n[True, True, True] = 9
         a[True, True, True] = 9
         self.assertListEqual(n.tolist(), a.to_list())
+        # If you print the following arrays in each test, they do not update and remain all 9s
         n[False, True, True] = 5
         a[False, True, True] = 5
         self.assertListEqual(n.tolist(), a.to_list())
+        # print(n)
         n[True, False, True] = 6
+        # print(n)
         a[True, False, True] = 6
         self.assertListEqual(n.tolist(), a.to_list())
+        # print(n)
         n[True, True, False] = 13
+        # print(n)
         a[True, True, False] = 13
         self.assertListEqual(n.tolist(), a.to_list())
 
