@@ -1,5 +1,6 @@
 import arkouda as ak
 import pandas as pd
+from pandas.testing import assert_frame_equal
 import numpy as np
 import pytest
 import random
@@ -105,17 +106,57 @@ class TestDataFrame:
             {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
         )
 
-    def test_dataframe_creation(self):
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_dataframe_creation(self, size):
         # Validate empty DataFrame
         df = ak.DataFrame()
         assert isinstance(df, ak.DataFrame)
         assert df.empty
 
-        df = self.build_ak_df()
-        ref_df = self.build_pd_df()
-        assert isinstance(df, ak.DataFrame)
-        assert len(df) == 6
-        assert ref_df.equals(df.to_pandas())
+        # Validation of Creation from Pandas
+        pddf = pd.DataFrame({
+            "int": np.arange(size),
+            "uint": np.random.randint(0, size/2, size, dtype=np.uint64),
+            "bigint": np.arange(2**200, 2**200+size),
+            "bool": np.random.randint(0, 1, size=size, dtype=bool),
+            "segarray": [np.random.randint(0, size / 2, 2) for i in range(size)]
+        })
+        akdf = ak.DataFrame(pddf)
+        assert isinstance(akdf, ak.DataFrame)
+        assert len(akdf) == size
+        assert_frame_equal(pddf, akdf.to_pandas())
+
+        # validation of creation from dictionary
+        akdf = ak.DataFrame({
+            "int": ak.arange(size),
+            "uint": ak.array(pddf["uint"]),
+            "bigint": ak.arange(2 ** 200, 2 ** 200 + size),
+            "bool": ak.array(pddf["bool"]),
+            "segarray": ak.SegArray.from_multi_array([ak.array(x) for x in pddf["segarray"]])
+        })
+        assert isinstance(akdf, ak.DataFrame)
+        assert len(akdf) == size
+
+        assert_frame_equal(pddf, akdf.to_pandas())
+
+        # validation of creation from list
+        x = [
+            np.arange(size),
+            np.random.randint(0, 5, size),
+            np.random.randint(5, 10, size),
+        ]
+        pddf = pd.DataFrame(x)
+        l = [ak.array(val) for val in list(zip(x[0], x[1], x[2]))]
+        akdf = ak.DataFrame(l)
+        assert isinstance(akdf, ak.DataFrame)
+        assert len(akdf) == len(pddf)
+        # arkouda does not allow for numeric columns.
+        assert akdf.columns == [str(x) for x in pddf.columns.values]
+        # use the columns from the pandas created for equivalence check
+        # these should be equivalent
+        ak_to_pd = akdf.to_pandas()
+        ak_to_pd.columns = pddf.columns
+        assert_frame_equal(pddf, ak_to_pd)
 
     def test_client_type_creation(self):
         f = ak.Fields(ak.arange(10), ["A", "B", "c"])
@@ -536,64 +577,6 @@ class TestDataFrame:
         df_copy = df.copy(deep=False)
         df_copy.__setitem__("userID", ak.array([1, 2, 1, 3, 2, 1]))
         assert df.__repr__() == df_copy.__repr__()
-
-    # TODO - This should be covered in HDF5 and Parquet testing
-    def test_save(self):
-        i = list(range(3))
-        c1 = [9, 7, 17]
-        c2 = [2, 4, 6]
-        df_dict = {"i": ak.array(i), "c_1": ak.array(c1), "c_2": ak.array(c2)}
-
-        akdf = ak.DataFrame(df_dict)
-
-        validation_df = pd.DataFrame(
-            {
-                "i": i,
-                "c_1": c1,
-                "c_2": c2,
-            }
-        )
-        with tempfile.TemporaryDirectory(dir=self.df_test_base_tmp) as tmp_dirname:
-            akdf.to_parquet(f"{tmp_dirname}/testName")
-
-            ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/testName")
-            assert validation_df.equals(ak_loaded[akdf.columns].to_pandas())
-
-            # test save with index true
-            akdf.to_parquet(f"{tmp_dirname}/testName_with_index.pq", index=True)
-            assert (
-                len(glob.glob(f"{tmp_dirname}/testName_with_index*.pq")) == ak.get_config()["numLocales"]
-            )
-
-            # Test for df having seg array col
-            df = ak.DataFrame({"a": ak.arange(10), "b": ak.SegArray(ak.arange(10), ak.arange(10))})
-            df.to_hdf(f"{tmp_dirname}/seg_test.h5")
-            assert (
-                len(glob.glob(f"{tmp_dirname}/seg_test*.h5")) == ak.get_config()["numLocales"]
-            )
-            ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/seg_test.h5")
-            assert df.to_pandas().equals(ak_loaded.to_pandas())
-
-            # test with segarray with _ in column name
-            df_dict = {
-                "c_1": ak.arange(3, 6),
-                "c_2": ak.arange(6, 9),
-                "c_3": ak.SegArray(ak.array([0, 9, 14]), ak.arange(20)),
-            }
-            akdf = ak.DataFrame(df_dict)
-            akdf.to_hdf(f"{tmp_dirname}/seg_test.h5")
-            assert (
-                len(glob.glob(f"{tmp_dirname}/seg_test*.h5")) == ak.get_config()["numLocales"]
-            )
-            ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/seg_test.h5")
-            assert akdf.to_pandas().equals(ak_loaded.to_pandas())
-
-            # test load_all and read workflows
-            ak_load_all = ak.DataFrame(ak.load_all(f"{tmp_dirname}/seg_test.h5"))
-            assert akdf.to_pandas().equals(ak_load_all.to_pandas())
-
-            ak_read = ak.DataFrame(ak.read(f"{tmp_dirname}/seg_test*"))
-            assert akdf.to_pandas().equals(ak_read.to_pandas())
 
     def test_isin(self):
         df = ak.DataFrame({"col_A": ak.array([7, 3]), "col_B": ak.array([1, 9])})

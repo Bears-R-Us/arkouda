@@ -275,13 +275,11 @@ class DataFrame(UserDict):
             else:
                 self._set_index(index)
             self.data = {}
-            # convert the lists defining each column into a pdarray
-            # pd.DataFrame.values is stored as rows, we need lists to be columns
-            for key, val in initialdata.to_dict("list").items():
+            for key in initialdata.columns:
                 self.data[key] = (
-                    SegArray.from_multi_array([array(r) for r in val])
-                    if isinstance(val[0], list)
-                    else array(val)
+                    SegArray.from_multi_array([array(r) for r in initialdata[key]])
+                    if isinstance(initialdata[key][0], (list, np.ndarray))
+                    else array(initialdata[key])
                 )
 
             self.data.update()
