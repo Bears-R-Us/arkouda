@@ -17,6 +17,8 @@ or
 
    import ArkoudaBigIntCompat;
 
+.. method:: operator bigint.:(src: bool, type toType: bigint): bigint throws
+
 .. function:: proc mod(ref result: bigint, const ref a: bigint, const ref b: bigint)
 
 .. function:: proc mod(ref result: bigint, const ref a: bigint, b: integral): int
