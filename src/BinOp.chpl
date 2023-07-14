@@ -8,7 +8,6 @@ module BinOp
   use Logging;
   use Message;
   use BitOps;
-  use BigInteger;
 
   use ArkoudaBigIntCompat;
 
@@ -1176,7 +1175,7 @@ module BinOp
     }
     ref la = l.a;
     ref ra = r.a;
-    var tmp = if l.etype == bigint then la else if l.etype == bool then la:int:bigint else la:bigint;
+    var tmp = if l.etype == bigint then la else la:bigint;
     // these cases are not mutually exclusive,
     // so we have a flag to track if tmp is ever populated
     var visted = false;
@@ -1422,7 +1421,7 @@ module BinOp
       max_size -= 1;
     }
     ref la = l.a;
-    var tmp = if l.etype == bigint then la else if l.etype == bool then la:int:bigint else la:bigint;
+    var tmp = if l.etype == bigint then la else la:bigint;
     // these cases are not mutually exclusive,
     // so we have a flag to track if tmp is ever populated
     var visted = false;
@@ -1682,8 +1681,7 @@ module BinOp
     }
     ref ra = r.a;
     var tmp = makeDistArray(ra.size, bigint);
-    // TODO we have to cast to bigint until chape issue #21290 is resolved, see issue #2007
-    tmp = if val.type == bool then val:int:bigint else val:bigint;
+    tmp = val:bigint;
     // these cases are not mutually exclusive,
     // so we have a flag to track if tmp is ever populated
     var visted = false;

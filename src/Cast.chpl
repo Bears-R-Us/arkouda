@@ -7,7 +7,8 @@ module Cast {
   use Logging;
   use CommAggregation;
   use ServerConfig;
-  use BigInteger;
+
+  use ArkoudaBigIntCompat;
   
   private config const logLevel = ServerConfig.logLevel;
   const castLogger = new Logger(logLevel);
@@ -36,12 +37,8 @@ module Cast {
     const name = st.nextName();
     var tmp = makeDistArray(before.size, bigint);
     try {
-      // TODO change once we can cast directly from bool to bigint
       if fromType == bigint {
         tmp = before.a;
-      }
-      else if fromType == bool {
-        tmp = before.a:int:bigint;
       }
       else {
         tmp = before.a:bigint;

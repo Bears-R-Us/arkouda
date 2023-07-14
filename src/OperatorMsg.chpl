@@ -3,7 +3,6 @@ module OperatorMsg
 {
     use ServerConfig;
 
-    use ArkoudaTimeCompat as Time;
     use Math;
     use BitOps;
     use Reflection;
@@ -18,6 +17,7 @@ module OperatorMsg
     use Logging;
     use Message;
 
+    use ArkoudaTimeCompat as Time;
     use ArkoudaBigIntCompat;
     
     private config const logLevel = ServerConfig.logLevel;
@@ -1476,8 +1476,7 @@ module OperatorMsg
                 var l = toSymEntry(left,bigint);
                 var r = toSymEntry(right,bool);
                 ref la = l.a;
-                // TODO change once we can cast directly from bool to bigint
-                var ra = r.a:int:bigint;
+                var ra = r.a:bigint;
                 var max_bits = l.max_bits;
                 var max_size = 1:bigint;
                 var has_max_bits = max_bits != -1;

@@ -1,5 +1,9 @@
 module ArkoudaBigIntCompat {
-  use BigInteger;
+  public use BigInteger;
+
+  inline operator bigint.:(src: bool, type toType: bigint): bigint throws {
+    return new bigint(src:int);
+  }
 
   proc mod(ref result: bigint, const ref a: bigint, const ref b: bigint) {
     result.mod(a, b);

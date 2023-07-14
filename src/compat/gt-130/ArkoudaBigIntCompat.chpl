@@ -1,5 +1,9 @@
 module ArkoudaBigIntCompat {
-  use BigInteger;
+  public use BigInteger;
+
+  inline operator bigint.:(src: bool, type toType: bigint): bigint throws {
+    return new bigint(src:int);
+  }
 
   proc rightShift(const ref a: bigint, b: int): bigint {
     return a >> b;
