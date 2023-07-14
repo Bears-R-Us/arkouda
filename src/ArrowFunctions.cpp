@@ -1418,8 +1418,6 @@ int cpp_writeStrListColumnToParquet(const char* filename, void* chpl_segs, void*
       int64_t i = 0;
       int64_t numLeft = numelems;
       auto segments = (int64_t*)chpl_segs;
-      auto offsets = (int64_t*)chpl_offsets;
-      auto chpl_ptr = (uint8_t*)chpl_arr;
       int64_t segIdx = 0; // index into segarray segments
       int64_t offIdx = 0; // index into the segstring segments
       int64_t valIdx = 0; // index into chpl_arr
@@ -1432,6 +1430,8 @@ int cpp_writeStrListColumnToParquet(const char* filename, void* chpl_segs, void*
         while (numLeft > 0 && count < rowGroupSize) { // ensures rowGroupSize maintained
           int64_t segmentLength = segments[segIdx+1] - segments[segIdx];
           if (segmentLength > 0) {
+            auto offsets = (int64_t*)chpl_offsets;
+            auto chpl_ptr = (uint8_t*)chpl_arr;
             for (int64_t x = 0; x < segmentLength; x++){
               int16_t rep_lvl = (x == 0) ? 0 : 1;
               int16_t def_lvl = 3;
@@ -1451,7 +1451,6 @@ int cpp_writeStrListColumnToParquet(const char* filename, void* chpl_segs, void*
           }
           segIdx++;
           numLeft--;count++;
-          
         }
       }
 

@@ -1092,18 +1092,7 @@ module ParquetMsg {
         createEmptyListParquetFile(myFilename, dsetName, c_dtype, compression);
       }
       else {
-        var localSegments = segments[locDom];
-        var startOffsetIdx = localSegments[locDom.low];
-        var endOffsetIdx = if (lastOffset == localSegments[locDom.high]) then lastOffsetIdx else segments[locDom.high + 1] - 1;
-        var offIdxRange = startOffsetIdx..endOffsetIdx;
-
-        // need to get the local string values 
-        var localOffsets: [offIdxRange] int = oldOff[offIdxRange];
-        var startValIdx = oldOff[offIdxRange.low];
-        var endValIdx = if (lastOffsetIdx == offIdxRange.high) then lastValIdx else oldOff[offIdxRange.high + 1] - 1;
-        var valIdxRange = startValIdx..endValIdx;
-        var localVals: [valIdxRange] uint(8) = oldVal[valIdxRange];
-        
+        var localSegments = segments[locDom];        
         var locSegments: [0..#locDom.size+1] int;
         locSegments[0..#locDom.size] = segments[locDom];
         if locDom.high == segments.domain.high then
@@ -1111,20 +1100,54 @@ module ParquetMsg {
         else
           locSegments[locSegments.domain.high] = segments[locDom.high+1];
 
-        var locOffsets: [0..#offIdxRange.size+1] int;
-        locOffsets[0..#offIdxRange.size] = oldOff[offIdxRange];
-        if offIdxRange.high == oldOff.domain.high then
-          locOffsets[locOffsets.domain.high] = extraOffset;
-        else
-          locOffsets[locOffsets.domain.high] = oldOff[offIdxRange.high+1];
-          
+        var startOffsetIdx = localSegments[locDom.low];
+        var endOffsetIdx = if (lastOffset == localSegments[locDom.high]) then lastOffsetIdx else segments[locDom.high + 1] - 1;
+        var offIdxRange = startOffsetIdx..endOffsetIdx;
+
         var pqErr = new parquetErrorMsg();
         var dtypeRep = ARROWSTRING;
-        if c_writeStrListColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locSegments), c_ptrTo(locOffsets), 
-                                      c_ptrTo(localVals), dsetName.localize().c_str(), locSegments.size-1, 
+        var valPtr: c_void_ptr = nil;
+        var offPtr: c_void_ptr = nil;
+
+        // need to get the local string values
+        if offIdxRange.size > 0 {
+          var localOffsets: [offIdxRange] int = oldOff[offIdxRange];
+          var startValIdx = oldOff[offIdxRange.low];
+          var endValIdx = if (lastOffsetIdx == offIdxRange.high) then lastValIdx else oldOff[offIdxRange.high + 1] - 1;
+          var valIdxRange = startValIdx..endValIdx;
+          var localVals: [valIdxRange] uint(8) = oldVal[valIdxRange];
+
+          var locOffsets: [0..#offIdxRange.size+1] int;
+          locOffsets[0..#offIdxRange.size] = oldOff[offIdxRange];
+          
+          if offIdxRange.high == oldOff.domain.high {
+            locOffsets[locOffsets.domain.high] = extraOffset;
+          } else {
+            locOffsets[locOffsets.domain.high] = oldOff[offIdxRange.high+1];
+          }
+          
+          if localVals.size > 0 {
+            valPtr = c_ptrTo(localVals);
+          }
+          if locOffsets.size > 0 {
+            offPtr = c_ptrTo(locOffsets);
+          }
+          // the call to c must be within the if block so the arrays stay in scope
+          if c_writeStrListColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locSegments), offPtr, 
+                                      valPtr, dsetName.localize().c_str(), locSegments.size-1, 
                                       ROWGROUPS, dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-          pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+            pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+          }
         }
+        else {
+          // empty segment case
+          if c_writeStrListColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locSegments), offPtr, 
+                                      valPtr, dsetName.localize().c_str(), locSegments.size-1, 
+                                      ROWGROUPS, dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+            pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+          }
+        }
+        
       }
     }
     return filesExist; // trigger warning if overwrite occuring
