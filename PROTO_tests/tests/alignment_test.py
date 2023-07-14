@@ -1,8 +1,9 @@
 import pytest
-import json
 import arkouda as ak
 
 DATA_TYPES = [ak.int64, ak.uint64, ak.float64]
+
+
 class TestAlignment:
     @pytest.mark.parametrize("dtype", DATA_TYPES)
     def test_search_interval(self, dtype):
@@ -10,6 +11,15 @@ class TestAlignment:
         lb = [0, 10, 20, 30, 40, 50]
         ub = [9, 19, 29, 39, 49, 59]
         v = [22, 51, 44, 1, 38, 19, 40, 60, 100]
+
+        if dtype == ak.uint64:
+            lb = [i + 2**63 for i in lb]
+            ub = [i + 2**63 for i in ub]
+            v = [i + 2**63 for i in v]
+        elif dtype == ak.float64:
+            lb = [i + 0.5 for i in lb]
+            ub = [i + 0.5 for i in ub]
+            v = [i + 0.5 for i in v]
 
         lower_bound = ak.array(lb, dtype)
         upper_bound = ak.array(ub, dtype)
@@ -40,7 +50,16 @@ class TestAlignment:
         starts = (ak.array([0, 5]), ak.array([0, 11]))
         ends = (ak.array([5, 9]), ak.array([10, 20]))
         vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
-        assert ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list() == [0, -1, 0, 0, 1, -1, 1, -1]
+        assert ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list() == [
+            0,
+            -1,
+            0,
+            0,
+            1,
+            -1,
+            1,
+            -1,
+        ]
 
         search_intervals_hierarchical = ak.search_intervals(vals, (starts, ends)).to_list()
         assert search_intervals_hierarchical == [0, 0, 0, 0, 1, 1, 1, -1]
@@ -49,7 +68,9 @@ class TestAlignment:
         bi_starts = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in starts])
         bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])
         bi_vals = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in vals])
-        assert ak.search_intervals(bi_vals, (bi_starts, bi_ends)).to_list() == search_intervals_hierarchical
+        assert (
+            ak.search_intervals(bi_vals, (bi_starts, bi_ends)).to_list() == search_intervals_hierarchical
+        )
 
     @pytest.mark.parametrize("dtype", DATA_TYPES)
     def test_search_interval_nonunique(self, dtype):
@@ -57,6 +78,15 @@ class TestAlignment:
         lb = [0, 10, 20, 30, 40, 50]
         ub = [9, 19, 29, 39, 49, 59]
         v = [22, 51, 22, 19, 38, 19, 40, 60, 100]
+
+        if dtype == ak.uint64:
+            lb = [i + 2**63 for i in lb]
+            ub = [i + 2**63 for i in ub]
+            v = [i + 2**63 for i in v]
+        elif dtype == ak.float64:
+            lb = [i + 0.5 for i in lb]
+            ub = [i + 0.5 for i in ub]
+            v = [i + 0.5 for i in v]
 
         lower_bound = ak.array(lb, dtype)
         upper_bound = ak.array(ub, dtype)
