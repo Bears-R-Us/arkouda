@@ -1,6 +1,6 @@
 import arkouda as ak
 import pandas as pd
-from pandas.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal, assert_series_equal
 import numpy as np
 import pytest
 import random
@@ -170,19 +170,13 @@ class TestDataFrame:
         pddf = pd.DataFrame(
             {"fields": f.to_list(), "ip": ip.to_list(), "date": pd_d, "bitvector": bv.to_list()}
         )
-        shape = f"({df._shape_str()})".replace("(", "[").replace(")", "]")
-        pd.set_option("display.max_rows", 4)
-        s = df.__repr__().replace(f" ({df._shape_str()})", f"\n\n{shape}")
-        assert s == pddf.__repr__()
+        assert_frame_equal(pddf, df.to_pandas())
+        pddf = pd.DataFrame({"a": list(range(1000)), "b": list(range(1000))})
+        pddf["a"] = pddf["a"].apply(lambda x: "AA" + str(x))
+        pddf["b"] = pddf["b"].apply(lambda x: "BB" + str(x))
 
-        pd.set_option("display.max_rows", 10)
-        pdf = pd.DataFrame({"a": list(range(1000)), "b": list(range(1000))})
-        pdf["a"] = pdf["a"].apply(lambda x: "AA" + str(x))
-        pdf["b"] = pdf["b"].apply(lambda x: "BB" + str(x))
-        df = ak.DataFrame(pdf)
-        shape = f"({df._shape_str()})".replace("(", "[").replace(")", "]")
-        s = df.__repr__().replace(f" ({df._shape_str()})", f"\n\n{shape}")
-        assert s, pdf.__repr__()
+        df = ak.DataFrame(pddf)
+        assert_frame_equal(pddf, df.to_pandas())
 
     def test_boolean_indexing(self):
         df = self.build_ak_df()
@@ -194,22 +188,32 @@ class TestDataFrame:
 
     def test_column_indexing(self):
         df = self.build_ak_df()
-        assert isinstance(df.userName, ak.Series)
-        assert isinstance(df.userID, ak.Series)
-        assert isinstance(df.item, ak.Series)
-        assert isinstance(df.day, ak.Series)
-        assert isinstance(df.amount, ak.Series)
-        assert isinstance(df.bi, ak.Series)
-        for col in ("userName", "userID", "item", "day", "amount", "bi"):
-            assert isinstance(df[col], (ak.pdarray, ak.Strings, ak.Categorical))
-        assert isinstance(df[["userName", "amount", "bi"]], ak.DataFrame)
-        assert isinstance(df[("userID", "item", "day", "bi")], ak.DataFrame)
+        ref_df = self.build_pd_df()
+
+        # index validation
         assert isinstance(df.index, ak.Index)
+        assert df.index.to_list() == ref_df.index.to_list()
+
+        # column validation [] and . access
+        for cname, col, ref_col in zip(df.columns, [df.userName, df.userID, df.item, df.day, df.amount, df.bi], [ref_df.userName, ref_df.userID, ref_df.item, ref_df.day, ref_df.amount, ref_df.bi]):
+            assert isinstance(col, ak.Series)
+            assert col.to_list() == ref_col.to_list()
+            assert isinstance(df[cname], (ak.pdarray, ak.Strings, ak.Categorical))
+            assert df[cname].to_list() == ref_df[cname].to_list()
+
+        # check mult-column list
+        col_list = ["userName", "amount", "bi"]
+        assert isinstance(df[col_list], ak.DataFrame)
+        assert_frame_equal(df[col_list].to_pandas(), ref_df[col_list])
+
+        # check multi-column tuple
+        col_tup = ("userID", "item", "day", "bi")
+        assert isinstance(df[col_tup], ak.DataFrame)
+        # pandas only supports lists of columns, not tuples
+        assert_frame_equal(df[col_tup].to_pandas(), ref_df[list(col_tup)])
 
     def test_dtype_prop(self):
-        str_arr = ak.array(
-            ["".join(random.choices(string.ascii_letters + string.digits, k=5)) for _ in range(3)]
-        )
+        str_arr = ak.random_strings_uniform(1, 5, 3)
         df_dict = {
             "i": ak.arange(3),
             "c_1": ak.arange(3, 6, 1),
@@ -221,32 +225,15 @@ class TestDataFrame:
         }
         akdf = ak.DataFrame(df_dict)
         assert len(akdf.columns) == len(akdf.dtypes)
+        # dtypes returns objType for categorical, segarray. We should probably fix
+        # this and add a df.objTypes property. pdarrays return actual dtype
+        for ref_type, c in zip(["int64", "int64", "int64", "str", "Categorical", "SegArray", "bigint"], akdf.columns):
+            assert ref_type == str(akdf.dtypes[c])
 
     def test_from_pandas(self):
-        username = ["Alice", "Bob", "Alice", "Carol", "Bob", "Alice", "John", "Carol"]
-        userid = [111, 222, 111, 333, 222, 111, 444, 333]
-        item = [0, 0, 1, 1, 2, 0, 0, 2]
-        day = [5, 5, 6, 5, 6, 6, 1, 2]
-        amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
-        bi = 2**200
-        bi_arr = [bi, bi + 1, bi + 2, bi + 3, bi + 4, bi + 5, bi + 6, bi + 7]
-        ref_df = pd.DataFrame(
-            {
-                "userName": username,
-                "userID": userid,
-                "item": item,
-                "day": day,
-                "amount": amount,
-                "bi": bi_arr,
-            }
-        )
-
+        ref_df = self.build_pd_df()
         df = ak.DataFrame(ref_df)
-
-        assert ((ref_df == df.to_pandas()).all()).all()
-
-        df = ak.DataFrame.from_pandas(ref_df)
-        assert ((ref_df == df.to_pandas()).all()).all()
+        assert_frame_equal(ref_df, df.to_pandas())
 
     def test_drop(self):
         # create an arkouda df.
@@ -258,17 +245,17 @@ class TestDataFrame:
         df_drop = df.drop([0, 1, 2])
         pddf_drop = pd_df.drop(labels=[0, 1, 2])
         pddf_drop.reset_index(drop=True, inplace=True)
-        assert pddf_drop.equals(df_drop.to_pandas())
+        assert_frame_equal(pddf_drop, df_drop.to_pandas())
 
         df_drop = df.drop("userName", axis=1)
         pddf_drop = pd_df.drop(labels=["userName"], axis=1)
-        assert pddf_drop.equals(df_drop.to_pandas())
+        assert_frame_equal(pddf_drop, df_drop.to_pandas())
 
         # Test dropping columns
         df.drop("userName", axis=1, inplace=True)
         pd_df.drop(labels=["userName"], axis=1, inplace=True)
 
-        assert ((df.to_pandas() == pd_df).all()).all()
+        assert_frame_equal(pddf_drop, df_drop.to_pandas())
 
         # Test dropping rows
         df.drop([0, 2, 5], inplace=True)
@@ -276,7 +263,7 @@ class TestDataFrame:
         pd_df.drop(labels=[0, 2, 5], inplace=True)
         pd_df.reset_index(drop=True, inplace=True)
 
-        assert pd_df.equals(df.to_pandas())
+        assert_frame_equal(pddf_drop, df_drop.to_pandas())
 
         # verify that index keys must be ints
         with pytest.raises(TypeError):
@@ -298,7 +285,7 @@ class TestDataFrame:
         dedup_test = dedup.to_pandas().sort_values("userName").reset_index(drop=True)
         dedup_pd_test = dedup_pd.sort_values("userName").reset_index(drop=True)
 
-        assert dedup_test.equals(dedup_pd_test)
+        assert_frame_equal(dedup_pd_test, dedup_test)
 
     def test_shape(self):
         df = self.build_ak_df()
@@ -367,7 +354,7 @@ class TestDataFrame:
         ref_df = self.build_pd_df_append()
 
         # dataframe equality returns series with bool result for each row.
-        assert ref_df.equals(df.to_pandas())
+        assert_frame_equal(ref_df, df.to_pandas())
 
         idx = np.arange(8)
         assert idx.tolist() == df.index.index.to_list()
@@ -389,7 +376,7 @@ class TestDataFrame:
         ref_df = self.build_pd_df_append()
 
         # dataframe equality returns series with bool result for each row.
-        assert ref_df.equals(glued.to_pandas())
+        assert_frame_equal(ref_df, glued.to_pandas())
 
         df_keyerror = self.build_ak_keyerror()
         with pytest.raises(KeyError):
@@ -405,15 +392,15 @@ class TestDataFrame:
 
         hdf = df.head(3)
         hdf_ref = ref_df.head(3).reset_index(drop=True)
-        assert hdf_ref.equals(hdf.to_pandas())
+        assert_frame_equal(hdf_ref, hdf.to_pandas())
 
     def test_tail(self):
         df = self.build_ak_df()
         ref_df = self.build_pd_df()
 
-        hdf = df.tail(2)
-        hdf_ref = ref_df.tail(2).reset_index(drop=True)
-        assert hdf_ref.equals(hdf.to_pandas())
+        tdf = df.tail(2)
+        tdf_ref = ref_df.tail(2).reset_index(drop=True)
+        assert_frame_equal(tdf_ref, tdf.to_pandas())
 
     def test_groupby_standard(self):
         df = self.build_ak_df()
@@ -436,12 +423,12 @@ class TestDataFrame:
             data=np.ones(4, dtype=np.int64),
             index=pd.Index(data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7")),
         )
-        assert s.to_pandas().equals(other=pds)
+        assert_series_equal(pds, s.to_pandas())
 
         # testing counts with Categorical column
         s = ak.DataFrame({"a": ak.Categorical(ak.array(["a", "a", "a", "b"]))}).groupby("a").count()
         pds = pd.Series(data=np.array([3, 1]), index=pd.Index(data=np.array(["a", "b"], dtype="<U7")))
-        assert s.to_pandas().equals(other=pds)
+        assert_series_equal(pds, s.to_pandas())
 
     def test_gb_series(self):
         username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
@@ -467,19 +454,6 @@ class TestDataFrame:
         assert isinstance(c, ak.Series)
         assert c.index.to_list() == ["Bob", "Alice", "Carol"]
         assert c.values.to_list() == [2, 3, 1]
-
-    def test_to_pandas(self):
-        df = self.build_ak_df()
-        pd_df = self.build_pd_df()
-
-        assert pd_df.equals(df.to_pandas())
-
-        slice_df = df[ak.array([1, 3, 5])]
-        pd_df = slice_df.to_pandas(retain_index=True)
-        assert pd_df.index.tolist() == [1, 3, 5]
-
-        pd_df = slice_df.to_pandas()
-        assert pd_df.index.tolist() == [0, 1, 2]
 
     def test_argsort(self):
         df = self.build_ak_df()
@@ -508,20 +482,20 @@ class TestDataFrame:
 
         df = ak.DataFrame({"userID": userid_ak})
         ord = df.sort_values()
-        assert ord.to_pandas().equals(pd.DataFrame(data=userid, columns=["userID"]))
+        assert_frame_equal(pd.DataFrame(data=userid, columns=["userID"]), ord.to_pandas())
         ord = df.sort_values(ascending=False)
         userid.reverse()
-        assert ord.to_pandas().equals(pd.DataFrame(data=userid, columns=["userID"]))
+        assert_frame_equal(pd.DataFrame(data=userid, columns=["userID"]), ord.to_pandas())
 
         df = self.build_ak_df()
         ord = df.sort_values(by="userID")
         ref_df = self.build_pd_df()
         ref_df = ref_df.sort_values(by="userID").reset_index(drop=True)
-        assert ref_df.equals(ord.to_pandas())
+        assert_frame_equal(ref_df, ord.to_pandas())
 
         ord = df.sort_values(by=["userID", "day"])
         ref_df = ref_df.sort_values(by=["userID", "day"]).reset_index(drop=True)
-        assert ref_df.equals(ord.to_pandas())
+        assert_frame_equal(ref_df, ord.to_pandas())
 
         with pytest.raises(TypeError):
             df.sort_values(by=1)
@@ -553,7 +527,7 @@ class TestDataFrame:
 
         ord_ref = ref_df.sort_values(by="userID").reset_index(drop=True)
         ord_ref = ord_ref.reindex(perm_list).reset_index(drop=True)
-        assert ord_ref.equals(ord.to_pandas())
+        assert_frame_equal(ord_ref, ord.to_pandas())
 
     def test_filter_by_range(self):
         userid = ak.array([111, 222, 111, 333, 222, 111])
@@ -569,14 +543,14 @@ class TestDataFrame:
         df = ak.DataFrame({"userName": username, "userID": userid})
 
         df_copy = df.copy(deep=True)
-        assert df.__repr__() == df_copy.__repr__()
+        assert_frame_equal(df.to_pandas(), df_copy.to_pandas())
 
         df_copy.__setitem__("userID", ak.array([1, 2, 1, 3, 2, 1]))
-        assert df.__repr__() != df_copy.__repr__()
+        assert df["userID"].to_list() != df_copy["userID"].to_list()
 
         df_copy = df.copy(deep=False)
         df_copy.__setitem__("userID", ak.array([1, 2, 1, 3, 2, 1]))
-        assert df.__repr__() == df_copy.__repr__()
+        assert_frame_equal(df.to_pandas(), df_copy.to_pandas())
 
     def test_isin(self):
         df = ak.DataFrame({"col_A": ak.array([7, 3]), "col_B": ak.array([1, 9])})
@@ -657,8 +631,7 @@ class TestDataFrame:
                 'b': ak.IPv4(data['b'])
             })
 
-            assert df['a'].to_list() == rddf['a'].to_list()
-            assert df['b'].to_list() == rddf['b'].to_list()
+            assert_frame_equal(df.to_pandas(), rddf.to_pandas())
 
         # test with multiple
         df = ak.DataFrame({
@@ -675,8 +648,7 @@ class TestDataFrame:
                 'b': ak.IPv4(data['b'])
             })
 
-            assert df['a'].to_list() == rddf['a'].to_list()
-            assert df['b'].to_list() == rddf['b'].to_list()
+            assert_frame_equal(df.to_pandas(), rddf.to_pandas())
 
         # test replacement of IPv4 with uint representation
         df = ak.DataFrame({
