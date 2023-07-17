@@ -1,13 +1,12 @@
-import arkouda as ak
-import pandas as pd
-from pandas.testing import assert_frame_equal, assert_series_equal
-import numpy as np
-import pytest
-import random
-import string
-import tempfile
-import glob
 import os
+import tempfile
+
+import numpy as np
+import pandas as pd
+import pytest
+from pandas.testing import assert_frame_equal, assert_series_equal
+
+import arkouda as ak
 from arkouda import io_util
 
 
@@ -22,9 +21,16 @@ class TestDataFrame:
         item = ak.array([0, 0, 1, 1, 2, 0])
         day = ak.array([5, 5, 6, 5, 6, 6])
         amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        bi = ak.arange(2 ** 200, 2 ** 200 + 6)
+        bi = ak.arange(2**200, 2**200 + 6)
         return ak.DataFrame(
-            {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
+            {
+                "userName": username,
+                "userID": userid,
+                "item": item,
+                "day": day,
+                "amount": amount,
+                "bi": bi,
+            }
         )
 
     @staticmethod
@@ -34,9 +40,16 @@ class TestDataFrame:
         item = [0, 0, 1, 1, 2, 0]
         day = [5, 5, 6, 5, 6, 6]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6]
-        bi = [2 ** 200, 2 ** 200 + 1, 2 ** 200 + 2, 2 ** 200 + 3, 2 ** 200 + 4, 2 ** 200 + 5]
+        bi = [2**200, 2**200 + 1, 2**200 + 2, 2**200 + 3, 2**200 + 4, 2**200 + 5]
         return pd.DataFrame(
-            {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
+            {
+                "userName": username,
+                "userID": userid,
+                "item": item,
+                "day": day,
+                "amount": amount,
+                "bi": bi,
+            }
         )
 
     @staticmethod
@@ -62,9 +75,16 @@ class TestDataFrame:
         item = ak.array([0, 2])
         day = ak.array([1, 2])
         amount = ak.array([0.5, 5.1])
-        bi = ak.array([2 ** 200 + 6, 2 ** 200 + 7])
+        bi = ak.array([2**200 + 6, 2**200 + 7])
         return ak.DataFrame(
-            {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
+            {
+                "userName": username,
+                "userID": userid,
+                "item": item,
+                "day": day,
+                "amount": amount,
+                "bi": bi,
+            }
         )
 
     @staticmethod
@@ -75,17 +95,24 @@ class TestDataFrame:
         day = [5, 5, 6, 5, 6, 6, 1, 2]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
         bi = [
-            2 ** 200,
-            2 ** 200 + 1,
-            2 ** 200 + 2,
-            2 ** 200 + 3,
-            2 ** 200 + 4,
-            2 ** 200 + 5,
-            2 ** 200 + 6,
-            2 ** 200 + 7,
+            2**200,
+            2**200 + 1,
+            2**200 + 2,
+            2**200 + 3,
+            2**200 + 4,
+            2**200 + 5,
+            2**200 + 6,
+            2**200 + 7,
         ]
         return pd.DataFrame(
-            {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
+            {
+                "userName": username,
+                "userID": userid,
+                "item": item,
+                "day": day,
+                "amount": amount,
+                "bi": bi,
+            }
         )
 
     @staticmethod
@@ -101,9 +128,16 @@ class TestDataFrame:
         item = ak.array([0, 0, 1, 1, 2, 0])
         day = ak.array([5, 5, 6, 5, 6, 6])
         amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        bi = ak.arange(2 ** 200, 2 ** 200 + 6)
+        bi = ak.arange(2**200, 2**200 + 6)
         return ak.DataFrame(
-            {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
+            {
+                "userName": username,
+                "userID": userid,
+                "item": item,
+                "day": day,
+                "amount": amount,
+                "bi": bi,
+            }
         )
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -114,26 +148,30 @@ class TestDataFrame:
         assert df.empty
 
         # Validation of Creation from Pandas
-        pddf = pd.DataFrame({
-            "int": np.arange(size),
-            "uint": np.random.randint(0, size/2, size, dtype=np.uint64),
-            "bigint": np.arange(2**200, 2**200+size),
-            "bool": np.random.randint(0, 1, size=size, dtype=bool),
-            "segarray": [np.random.randint(0, size / 2, 2) for i in range(size)]
-        })
+        pddf = pd.DataFrame(
+            {
+                "int": np.arange(size),
+                "uint": np.random.randint(0, size / 2, size, dtype=np.uint64),
+                "bigint": np.arange(2**200, 2**200 + size),
+                "bool": np.random.randint(0, 1, size=size, dtype=bool),
+                "segarray": [np.random.randint(0, size / 2, 2) for i in range(size)],
+            }
+        )
         akdf = ak.DataFrame(pddf)
         assert isinstance(akdf, ak.DataFrame)
         assert len(akdf) == size
         assert_frame_equal(pddf, akdf.to_pandas())
 
         # validation of creation from dictionary
-        akdf = ak.DataFrame({
-            "int": ak.arange(size),
-            "uint": ak.array(pddf["uint"]),
-            "bigint": ak.arange(2 ** 200, 2 ** 200 + size),
-            "bool": ak.array(pddf["bool"]),
-            "segarray": ak.SegArray.from_multi_array([ak.array(x) for x in pddf["segarray"]])
-        })
+        akdf = ak.DataFrame(
+            {
+                "int": ak.arange(size),
+                "uint": ak.array(pddf["uint"]),
+                "bigint": ak.arange(2**200, 2**200 + size),
+                "bool": ak.array(pddf["bool"]),
+                "segarray": ak.SegArray.from_multi_array([ak.array(x) for x in pddf["segarray"]]),
+            }
+        )
         assert isinstance(akdf, ak.DataFrame)
         assert len(akdf) == size
 
@@ -146,8 +184,8 @@ class TestDataFrame:
             np.random.randint(5, 10, size),
         ]
         pddf = pd.DataFrame(x)
-        l = [ak.array(val) for val in list(zip(x[0], x[1], x[2]))]
-        akdf = ak.DataFrame(l)
+        l_cols = [ak.array(val) for val in list(zip(x[0], x[1], x[2]))]
+        akdf = ak.DataFrame(l_cols)
         assert isinstance(akdf, ak.DataFrame)
         assert len(akdf) == len(pddf)
         # arkouda does not allow for numeric columns.
@@ -195,7 +233,11 @@ class TestDataFrame:
         assert df.index.to_list() == ref_df.index.to_list()
 
         # column validation [] and . access
-        for cname, col, ref_col in zip(df.columns, [df.userName, df.userID, df.item, df.day, df.amount, df.bi], [ref_df.userName, ref_df.userID, ref_df.item, ref_df.day, ref_df.amount, ref_df.bi]):
+        for cname, col, ref_col in zip(
+            df.columns,
+            [df.userName, df.userID, df.item, df.day, df.amount, df.bi],
+            [ref_df.userName, ref_df.userID, ref_df.item, ref_df.day, ref_df.amount, ref_df.bi],
+        ):
             assert isinstance(col, ak.Series)
             assert col.to_list() == ref_col.to_list()
             assert isinstance(df[cname], (ak.pdarray, ak.Strings, ak.Categorical))
@@ -227,7 +269,9 @@ class TestDataFrame:
         assert len(akdf.columns) == len(akdf.dtypes)
         # dtypes returns objType for categorical, segarray. We should probably fix
         # this and add a df.objTypes property. pdarrays return actual dtype
-        for ref_type, c in zip(["int64", "int64", "int64", "str", "Categorical", "SegArray", "bigint"], akdf.columns):
+        for ref_type, c in zip(
+            ["int64", "int64", "int64", "str", "Categorical", "SegArray", "bigint"], akdf.columns
+        ):
             assert ref_type == str(akdf.dtypes[c])
 
     def test_from_pandas(self):
@@ -608,7 +652,8 @@ class TestDataFrame:
 
         bool_idx = df[df["cnt"] > 3]
         bool_idx.__repr__()
-        # the new index is first False and rest True (because we lose first 4), so equivalent to arange(61, bool)
+        # the new index is first False and rest True (because we lose first 4),
+        # so equivalent to arange(61, bool)
         assert bool_idx.index.index.to_list() == ak.arange(61, dtype=bool).to_list()
 
         slice_idx = df[:]
@@ -617,55 +662,43 @@ class TestDataFrame:
 
     def test_ipv4_columns(self):
         # test with single IPv4 column
-        df = ak.DataFrame({
-            'a': ak.arange(10),
-            'b': ak.IPv4(ak.arange(10))
-        })
-        with tempfile.TemporaryDirectory(dir=TestDataFrame.df_test_base_tmp) as tmp_dirname:
-            fname = tmp_dirname + "/ipv4_df"
-            df.to_parquet(fname)
-
-            data = ak.read(fname+"*")
-            rddf = ak.DataFrame({
-                'a': data['a'],
-                'b': ak.IPv4(data['b'])
-            })
-
-            assert_frame_equal(df.to_pandas(), rddf.to_pandas())
-
-        # test with multiple
-        df = ak.DataFrame({
-            'a': ak.IPv4(ak.arange(10)),
-            'b': ak.IPv4(ak.arange(10))
-        })
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.IPv4(ak.arange(10))})
         with tempfile.TemporaryDirectory(dir=TestDataFrame.df_test_base_tmp) as tmp_dirname:
             fname = tmp_dirname + "/ipv4_df"
             df.to_parquet(fname)
 
             data = ak.read(fname + "*")
-            rddf = ak.DataFrame({
-                'a': ak.IPv4(data['a']),
-                'b': ak.IPv4(data['b'])
-            })
+            rddf = ak.DataFrame({"a": data["a"], "b": ak.IPv4(data["b"])})
+
+            assert_frame_equal(df.to_pandas(), rddf.to_pandas())
+
+        # test with multiple
+        df = ak.DataFrame({"a": ak.IPv4(ak.arange(10)), "b": ak.IPv4(ak.arange(10))})
+        with tempfile.TemporaryDirectory(dir=TestDataFrame.df_test_base_tmp) as tmp_dirname:
+            fname = tmp_dirname + "/ipv4_df"
+            df.to_parquet(fname)
+
+            data = ak.read(fname + "*")
+            rddf = ak.DataFrame({"a": ak.IPv4(data["a"]), "b": ak.IPv4(data["b"])})
 
             assert_frame_equal(df.to_pandas(), rddf.to_pandas())
 
         # test replacement of IPv4 with uint representation
-        df = ak.DataFrame({
-            'a': ak.IPv4(ak.arange(10))
-        })
-        df['a'] = df['a'].export_uint()
-        assert ak.arange(10).to_list() == df['a'].to_list()
+        df = ak.DataFrame({"a": ak.IPv4(ak.arange(10))})
+        df["a"] = df["a"].export_uint()
+        assert ak.arange(10).to_list() == df["a"].to_list()
 
     def test_subset(self):
-        df = ak.DataFrame({
-            'a': ak.arange(100),
-            'b': ak.randint(0, 20, 100),
-            'c': ak.random_strings_uniform(0, 16, 100),
-            'd': ak.randint(25, 75, 100)
-        })
-        df2 = df[['a', 'b']]
-        assert ['a', 'b'] == df2.columns
+        df = ak.DataFrame(
+            {
+                "a": ak.arange(100),
+                "b": ak.randint(0, 20, 100),
+                "c": ak.random_strings_uniform(0, 16, 100),
+                "d": ak.randint(25, 75, 100),
+            }
+        )
+        df2 = df[["a", "b"]]
+        assert ["a", "b"] == df2.columns
         assert df.index.to_list() == df2.index.to_list()
-        assert df['a'].to_list() == df2['a'].to_list()
-        assert df['b'].to_list() == df2['b'].to_list()
+        assert df["a"].to_list() == df2["a"].to_list()
+        assert df["b"].to_list() == df2["b"].to_list()

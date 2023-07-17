@@ -241,7 +241,6 @@ def array(
         else:
             raise TypeError("Must be an iterable or have a numeric DType")
 
-
     # Check if array of strings
     # if a.dtype == numpy.object_ need to check first element
     if "U" in a.dtype.kind or (a.dtype == np.object_ and isinstance(a[0], str)):
