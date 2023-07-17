@@ -1354,6 +1354,8 @@ int cpp_writeStrColumnToParquet(const char* filename, void* chpl_arr, void* chpl
           value.ptr = reinterpret_cast<const uint8_t*>(&chpl_ptr[byteIdx]);
           // subtract 1 since we have the null terminator
           value.len = offsets[offIdx+1] - offsets[offIdx] - 1;
+          if (value.len == 0)
+            definition_level = 0;
           ba_writer->WriteBatch(1, &definition_level, nullptr, &value);
           numLeft--;count++;
           offIdx++;
