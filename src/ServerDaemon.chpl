@@ -25,6 +25,7 @@ module ServerDaemon {
     use MetricsMsg;
     use BigIntMsg;
     use NumPyDType;
+    use StatusMsg;
 
     use ArkoudaFileCompat;
     use ArkoudaListCompat;
@@ -359,6 +360,7 @@ module ServerDaemon {
             registerFunction("getconfig", getconfigMsg);
             registerFunction("getmemused", getmemusedMsg);
             registerFunction("getavailmem", getmemavailMsg);
+            registerFunction("getmemstatus", getMemoryStatusMsg);
             registerFunction("getCmdMap", getCommandMapMsg);
             registerFunction("clear", clearMsg);
             registerFunction("lsany", lsAnyMsg);
