@@ -266,17 +266,17 @@ class TestNumeric:
         pda_num = ak.array(na_num, dtype=num_type)
         pda_denom = ak.array(na_denom, dtype=denom_type)
 
-        num = np.array([1]).astype(num_type)
-        denom = np.array([5]).astype(denom_type)
+        num = pda_num[0]
+        denom = pda_denom[0]
 
         assert np.allclose(
             np.arctan2(na_num, na_denom), ak.arctan2(pda_num, pda_denom).to_ndarray(), equal_nan=True
         )
         assert np.allclose(
-            np.arctan2(num[0], na_denom), ak.arctan2(num[0], pda_denom).to_ndarray(), equal_nan=True
+            np.arctan2(num, na_denom), ak.arctan2(num, pda_denom).to_ndarray(), equal_nan=True
         )
         assert np.allclose(
-            np.arctan2(na_num, denom[0]), ak.arctan2(pda_num, denom[0]).to_ndarray(), equal_nan=True
+            np.arctan2(na_num, denom), ak.arctan2(pda_num, denom).to_ndarray(), equal_nan=True
         )
 
         with pytest.raises(TypeError):
@@ -284,9 +284,9 @@ class TestNumeric:
                 np.array([range(0, 10)]).astype(num_type), np.array([range(10, 20)]).astype(num_type)
             )
         with pytest.raises(TypeError):
-            ak.arctan2(num[0], np.array([range(10, 20)]).astype(num_type))
+            ak.arctan2(num, np.array([range(10, 20)]).astype(num_type))
         with pytest.raises(TypeError):
-            ak.arctan2(np.array([range(0, 10)]).astype(num_type), denom[0])
+            ak.arctan2(np.array([range(0, 10)]).astype(num_type), denom)
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_sinh(self, num_type):
