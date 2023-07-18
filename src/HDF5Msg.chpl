@@ -62,8 +62,8 @@ module HDF5Msg {
     require "c_helpers/help_h5ls.h", "c_helpers/help_h5ls.c";
     private extern proc c_get_HDF5_obj_type(loc_id:C_HDF5.hid_t, name:c_string, obj_type:c_ptr(C_HDF5.H5O_type_t)):C_HDF5.herr_t;
     private extern proc c_strlen(s:c_ptr(c_char)):c_size_t;
-    private extern proc c_incrementCounter(data:c_void_ptr);
-    private extern proc c_append_HDF5_fieldname(data:c_void_ptr, name:c_string);
+    private extern proc c_incrementCounter(data:c_ptr_void);
+    private extern proc c_append_HDF5_fieldname(data:c_ptr_void, name:c_string);
 
     /*
      * Returns the HDF5 data type corresponding to the dataset, which delegates
@@ -1987,7 +1987,7 @@ module HDF5Msg {
          * This is an H5Literate call-back function, c_helper funcs are used to process data in void*
          * this proc counts the number of of HDF5 groups/datasets under the root, non-recursive
          */
-        proc _get_item_count(loc_id:C_HDF5.hid_t, name:c_void_ptr, info:c_void_ptr, data:c_void_ptr) {
+        proc _get_item_count(loc_id:C_HDF5.hid_t, name:c_ptr_void, info:c_ptr_void, data:c_ptr_void) {
             var obj_name = name:c_string;
             var obj_type:C_HDF5.H5O_type_t;
             var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));
@@ -2001,7 +2001,7 @@ module HDF5Msg {
          * This is an H5Literate call-back function, c_helper funcs are used to process data in void*
          * this proc builds string of HDF5 group/dataset objects names under the root, non-recursive
          */
-        proc _simulate_h5ls(loc_id:C_HDF5.hid_t, name:c_void_ptr, info:c_void_ptr, data:c_void_ptr) {
+        proc _simulate_h5ls(loc_id:C_HDF5.hid_t, name:c_ptr_void, info:c_ptr_void, data:c_ptr_void) {
             var obj_name = name:c_string;
             var obj_type:C_HDF5.H5O_type_t;
             var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));

@@ -1,5 +1,6 @@
 module ArkoudaCTypesCompat {
   public use CTypes;
+  type c_ptr_void = c_void_ptr;
 
   private proc offset_ARRAY_ELEMENTS {
     extern const CHPL_RT_MD_ARRAY_ELEMENTS:chpl_mem_descInt_t;
