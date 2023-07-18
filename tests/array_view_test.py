@@ -100,14 +100,10 @@ class ArrayViewTest(ArkoudaTest):
         n[False, True, True] = 5
         a[False, True, True] = 5
         self.assertListEqual(n.tolist(), a.to_list())
-        # print(n)
         n[True, False, True] = 6
-        # print(n)
         a[True, False, True] = 6
         self.assertListEqual(n.tolist(), a.to_list())
-        # print(n)
         n[True, True, False] = 13
-        # print(n)
         a[True, True, False] = 13
         self.assertListEqual(n.tolist(), a.to_list())
 
