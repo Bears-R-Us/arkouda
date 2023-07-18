@@ -301,8 +301,8 @@ module MultiTypeSymEntry
     }
 
     proc createSymEntry(a: [?D] ?etype) throws {
-      var a = makeDistArray(D.size, etype);
-      return new shared SymEntry(a);
+      var A = makeDistArray(D.size, etype);
+      return new shared SymEntry(A);
     }
 
     /*
