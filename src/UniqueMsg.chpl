@@ -59,7 +59,7 @@ module UniqueMsg
         }
         // Indices of first unique key in original array
         // These are the value of the permutation at the start of each group
-        var uniqueKeyInds = new shared SymEntry(segments.size, int);
+        var uniqueKeyInds = createSymEntry(segments.size, int);
         if segments.size > 0 {
           // Avoid initializing aggregators if empty array
           ref perm = permutation.a;
@@ -139,10 +139,10 @@ module UniqueMsg
       }
       var (size, hasStr, names, types) = validateArraysSameLength(n, namesList, typesList, st);
       if (size == 0) {
-        return (new shared SymEntry(0, int), new shared SymEntry(0, int));
+        return (createSymEntry(0, int), createSymEntry(0, int));
       }
       proc helper(itemsize, type t, keys: [?D] t) throws {
-        var permutation = new shared SymEntry(keys.size, int);
+        var permutation = createSymEntry(keys.size, int);
         var sortedKeys: [D] t = keys;
 
         if assumeSorted {
@@ -162,7 +162,7 @@ module UniqueMsg
         // Get the unique keys and the count of each
         var (uniqueKeys, counts) = uniqueFromSorted(sortedKeys);
         // Compute offset of each group in sorted array
-        var segments = new shared SymEntry(counts.size, int);
+        var segments = createSymEntry(counts.size, int);
         segments.a = (+ scan counts) - counts;
         return (permutation, segments);
       }

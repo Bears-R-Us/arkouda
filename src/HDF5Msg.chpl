@@ -3009,7 +3009,7 @@ module HDF5Msg {
             var skips = new set(string);
             var len: int;
             (subdoms, len, skips) = get_subdoms(filenames, "%s/Limb_%i".doFormat(dset, l), validFiles);
-            var limb = new shared SymEntry(len, uint);
+            var limb = createSymEntry(len, uint);
             read_files_into_distributed_array(limb.a, subdoms, filenames, "%s/Limb_%i".doFormat(dset, l), skips);
             limbs.pushBack(limb);
         }
@@ -3058,12 +3058,12 @@ module HDF5Msg {
         select dataclass {
             when C_HDF5.H5T_INTEGER {
                 if (!isSigned && 8 == bytesize) {
-                    var entryUInt = new shared SymEntry(len, uint);
+                    var entryUInt = createSymEntry(len, uint);
                     h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Initialized uint entry for dataset %s".doFormat(dset));
                     read_files_into_distributed_array(entryUInt.a, subdoms, filenames, dset, skips);
                     rname = st.nextName();
                     if isBoolDataset(filenames[idx], dset) {
-                        var entryBool = new shared SymEntry(len, bool);
+                        var entryBool = createSymEntry(len, bool);
                         entryBool.a = entryUInt.a:bool;
                         st.addEntry(rname, entryBool);
                     } else {
@@ -3072,12 +3072,12 @@ module HDF5Msg {
                     }
                 }
                 else {
-                    var entryInt = new shared SymEntry(len, int);
+                    var entryInt = createSymEntry(len, int);
                     h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Initialized int entry for dataset %s".doFormat(dset));
                     read_files_into_distributed_array(entryInt.a, subdoms, filenames, dset, skips);
                     rname = st.nextName();
                     if isBoolDataset(filenames[idx], dset) {
-                        var entryBool = new shared SymEntry(len, bool);
+                        var entryBool = createSymEntry(len, bool);
                         entryBool.a = entryInt.a:bool;
                         st.addEntry(rname, entryBool);
                     } else {
@@ -3087,7 +3087,7 @@ module HDF5Msg {
                 }
             }
             when C_HDF5.H5T_FLOAT {
-                var entryReal = new shared SymEntry(len, real);
+                var entryReal = createSymEntry(len, real);
                 h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                                     "Initialized float entry");
                 read_files_into_distributed_array(entryReal.a, subdoms, filenames, dset, skips);
@@ -3145,7 +3145,7 @@ module HDF5Msg {
         }
 
         // Load the strings bytes/values first
-        var entryVal = new shared SymEntry(len, uint(8));
+        var entryVal = createSymEntry(len, uint(8));
         read_files_into_distributed_array(entryVal.a, subdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
 
         proc _buildEntryCalcOffsets(): shared SymEntry throws {
@@ -3154,7 +3154,7 @@ module HDF5Msg {
         }
 
         proc _buildEntryLoadOffsets() throws {
-            var offsetsEntry = new shared SymEntry(nSeg, int);
+            var offsetsEntry = createSymEntry(nSeg, int);
             read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
             fixupSegBoundaries(offsetsEntry.a, segSubdoms, subdoms);
             return offsetsEntry;
@@ -3736,7 +3736,7 @@ module HDF5Msg {
             }
         }
         // create the tag entry
-        var tagEntry = new shared SymEntry(len, int); // this will always contain integer values
+        var tagEntry = createSymEntry(len, int);
         assign_tags(tagEntry.a, subdoms, filenames, dset, skips);
         var rname = st.nextName();
         st.addEntry(rname, tagEntry);

@@ -127,7 +127,7 @@ module RandMsg
         // Result + 2 scratch arrays
         overMemLimit(3*8*len);
         var rname = st.nextName();
-        var entry = new shared SymEntry(len, real);
+        var entry = createSymEntry(len, real);
         fillNormal(entry.a, msgArgs.getValueOf("seed"));
         st.addEntry(rname, entry);
 

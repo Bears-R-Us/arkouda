@@ -62,7 +62,7 @@ module MultiTypeSymbolTable
         proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws {
             var A = makeDistArray(len, t);
 
-            var entry = new shared SymEntry(len, t);
+            var entry = new shared SymEntry(A);
             if (tab.contains(name)) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                         "redefined symbol: %s ".doFormat(name));
