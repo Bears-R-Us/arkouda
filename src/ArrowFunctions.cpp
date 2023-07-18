@@ -419,20 +419,19 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
           while (float_reader->HasNext()) {
             float value;
             (void)float_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
-            // not worried about NaN here so don't need to check values read.
-            if (values_read == 0 || (!first && rep_lvl == 0)) {
+            if ((values_read == 0 && definition_level != 2) || (!first && rep_lvl == 0)) {
               seg_sizes[i] = seg_size;
               i++;
               seg_size = 0;
             }
-            if (values_read != 0) {
+            if (values_read != 0 || (values_read == 0 && definition_level == 2)) {
               seg_size++;
               vct++;
               if (first) {
                 first = false;
               }
             }
-            if (values_read != 0 && !float_reader->HasNext()){
+            if ((values_read != 0 || (values_read == 0 && definition_level == 2)) && !float_reader->HasNext()){
               seg_sizes[i] = seg_size;
             }
           }
@@ -443,20 +442,19 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
           while (dbl_reader->HasNext()) {
             double value;
             (void)dbl_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
-            // not worried about NaN here so don't need to check values read.
-            if (values_read == 0 || (!first && rep_lvl == 0)) {
+            if ((values_read == 0 && definition_level != 2) || (!first && rep_lvl == 0)) {
               seg_sizes[i] = seg_size;
               i++;
               seg_size = 0;
             }
-            if (values_read != 0) {
+            if (values_read != 0 || (values_read == 0 && definition_level == 2)) {
               seg_size++;
               vct++;
               if (first) {
                 first = false;
               }
             }
-            if (values_read != 0 && !dbl_reader->HasNext()){
+            if ((values_read != 0 || (values_read == 0 && definition_level == 2)) && !dbl_reader->HasNext()){
               seg_sizes[i] = seg_size;
             }
           }
@@ -617,18 +615,29 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           while (reader->HasNext() && i < numElems) {
             if((numElems - i) < batchSize) // adjust batchSize if needed
               batchSize = numElems - i;
-            // unlike the base case, the list stores NaN values and is able to read them out. 
-            // This prevents the need for any additional processing
-            // setting nullptr for def and rep levels allows use to ignore the empty segments since we only care about values here.
-            // However, for floats we still need a temporary array to allow for conversion to double
-            float* tmpArr = new float[batchSize] { 0 }; // this will not include NaN values
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
+            float* tmpArr = new float[batchSize]; // this will not include NaN values
+            int16_t* def_lvl = new int16_t[batchSize];
+            int16_t* rep_lvl = new int16_t[batchSize];
+            (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
 
-            for(int64_t j = 0; j < values_read; j++){
-              chpl_ptr[i+j] = (double)tmpArr[j];
+            int64_t tmp_offset = 0; // used to properly access tmp after NaN encountered
+            int64_t val_ct = 0;
+            int64_t j = 0;
+            while (val_ct < values_read){
+              if (def_lvl[j] == 2) {
+                chpl_ptr[i+j] = NAN;
+                tmp_offset++;
+              }
+              else {
+                chpl_ptr[i+j] = (double)tmpArr[j-tmp_offset];
+                val_ct++;
+              }
+              j++;
             }
-            i += values_read;
+            i += values_read + tmp_offset; // account for values and NaNs
             delete[] tmpArr;
+            delete[] def_lvl;
+            delete[] rep_lvl;
           }
         } else if(lty == ARROWDOUBLE) {
           auto chpl_ptr = (double*)chpl_arr;
@@ -638,11 +647,28 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           while (reader->HasNext() && i < numElems) {
             if((numElems - i) < batchSize) // adjust batchSize if needed
               batchSize = numElems - i;
-            // unlike the base case, the list stores NaN values and is able to read them out. 
-            // This prevents the need for any additional processing
-            // setting nullptr for def and rep levels allows use to ignore the empty segments since we only care about values here.
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-            i += values_read;
+            double* tmpArr = new double[batchSize]; // NaNs not included here
+            int16_t* def_lvl = new int16_t[batchSize];
+            int16_t* rep_lvl = new int16_t[batchSize];
+            (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
+            int64_t tmp_offset = 0; // used to properly access tmp after NaN encountered
+            int64_t val_ct = 0;
+            int64_t j = 0;
+            while (val_ct < values_read){
+              if (def_lvl[j] == 2) {
+                chpl_ptr[i+j] = NAN;
+                tmp_offset++;
+              }
+              else {
+                chpl_ptr[i+j] = tmpArr[j-tmp_offset];
+                val_ct++;
+              }
+              j++;
+            }
+            i += values_read + tmp_offset; // account for values and NaNs
+            delete[] tmpArr;
+            delete[] def_lvl;
+            delete[] rep_lvl;
           }
         }
       }
