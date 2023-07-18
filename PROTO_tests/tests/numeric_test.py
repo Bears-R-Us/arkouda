@@ -283,7 +283,9 @@ class TestNumeric:
             ak.arctan2(
                 np.array([range(0, 10)]).astype(num_type), np.array([range(10, 20)]).astype(num_type)
             )
+        with pytest.raises(TypeError):
             ak.arctan2(num[0], np.array([range(10, 20)]).astype(num_type))
+        with pytest.raises(TypeError):
             ak.arctan2(np.array([range(0, 10)]).astype(num_type), denom[0])
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
