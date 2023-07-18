@@ -5,6 +5,23 @@ DATA_TYPES = [ak.int64, ak.uint64, ak.float64]
 
 
 class TestAlignment:
+    @staticmethod
+    def get_interval_info(lower_bound, upper_bound, vals, dtype):
+        if dtype == ak.uint64:
+            lower_bound = [i + 2**63 for i in lower_bound]
+            upper_bound = [i + 2**63 for i in upper_bound]
+            vals = [i + 2**63 for i in vals]
+        elif dtype == ak.float64:
+            lower_bound = [i + 0.5 for i in lower_bound]
+            upper_bound = [i + 0.5 for i in upper_bound]
+            vals = [i + 0.5 for i in vals]
+
+        lb = ak.array(lower_bound, dtype)
+        ub = ak.array(upper_bound, dtype)
+        v = ak.array(vals, dtype)
+
+        return lb, ub, v
+
     @pytest.mark.parametrize("dtype", DATA_TYPES)
     def test_search_interval(self, dtype):
         expected_result = [2, 5, 4, 0, 3, 1, 4, -1, -1]
@@ -12,18 +29,7 @@ class TestAlignment:
         ub = [9, 19, 29, 39, 49, 59]
         v = [22, 51, 44, 1, 38, 19, 40, 60, 100]
 
-        if dtype == ak.uint64:
-            lb = [i + 2**63 for i in lb]
-            ub = [i + 2**63 for i in ub]
-            v = [i + 2**63 for i in v]
-        elif dtype == ak.float64:
-            lb = [i + 0.5 for i in lb]
-            ub = [i + 0.5 for i in ub]
-            v = [i + 0.5 for i in v]
-
-        lower_bound = ak.array(lb, dtype)
-        upper_bound = ak.array(ub, dtype)
-        vals = ak.array(v, dtype)
+        lower_bound, upper_bound, vals = self.get_interval_info(lb, ub, v, dtype)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
         assert expected_result == interval_idxs.to_list()
 
@@ -79,18 +85,7 @@ class TestAlignment:
         ub = [9, 19, 29, 39, 49, 59]
         v = [22, 51, 22, 19, 38, 19, 40, 60, 100]
 
-        if dtype == ak.uint64:
-            lb = [i + 2**63 for i in lb]
-            ub = [i + 2**63 for i in ub]
-            v = [i + 2**63 for i in v]
-        elif dtype == ak.float64:
-            lb = [i + 0.5 for i in lb]
-            ub = [i + 0.5 for i in ub]
-            v = [i + 0.5 for i in v]
-
-        lower_bound = ak.array(lb, dtype)
-        upper_bound = ak.array(ub, dtype)
-        vals = ak.array(v, dtype)
+        lower_bound, upper_bound, vals = self.get_interval_info(lb, ub, v, dtype)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
         assert expected_result == interval_idxs.to_list()
 
