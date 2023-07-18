@@ -534,6 +534,18 @@ class ParquetTest(ArkoudaTest):
             rd_data = ak.read_parquet(f"{tmp_dirname}/segarray_test_empty_*")
             self.assertListEqual(s.to_list(), rd_data.to_list())
 
+    def test_float_edge(self):
+        df = pd.DataFrame({"FloatList": [[3.14, np.nan, 2.23], [], [3.08], [np.inf, 6.8], [-0.0]]})
+
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            table = pa.Table.from_pandas(df)
+            pq.write_table(table, f"{tmp_dirname}/segarray_float_edge")
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_float_edge")
+            pd_l = df["FloatList"].tolist()
+            ak_l = ak_data.to_list()
+            for i in range(len(pd_l)):
+                self.assertTrue(np.allclose(pd_l[i], ak_l[i], equal_nan=True))
+
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
         datadir = "resources/parquet-testing"
