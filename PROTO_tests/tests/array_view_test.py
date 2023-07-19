@@ -1,9 +1,9 @@
 from itertools import product
 
 import numpy as np
-import arkouda as ak
 import pytest
 
+import arkouda as ak
 
 SHAPE = {
     4: (2, 2),
@@ -13,7 +13,6 @@ SHAPE = {
 }
 
 SIZE = [4, 30, 252, 693]
-TRUTH = [(True, True, True), (False, True, True), (True, False, True), (True, True, False)]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 
 class TestArrayView:
