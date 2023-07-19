@@ -1,7 +1,16 @@
-import arkouda as ak
 import numpy as np
-
 import pytest
+
+import arkouda as ak
+
+
+def gather_scatter(a):
+    rev = ak.array(np.arange(len(a) - 1, -1, -1))
+    a2 = a[rev]
+    res = ak.zeros(len(a), dtype=a.dtype)
+    res[:] = a2
+    res[rev] = a2
+    return res
 
 
 class TestBigInt:
@@ -50,12 +59,3 @@ class TestBigInt:
         res = ak.ones_like(bi_arr)
         bi_arr[:] = res
         assert bi_arr.to_list() == res.to_list()
-
-
-def gather_scatter(a):
-    rev = ak.array(np.arange(len(a) - 1, -1, -1))
-    a2 = a[rev]
-    res = ak.zeros(len(a), dtype=a.dtype)
-    res[:] = a2
-    res[rev] = a2
-    return res
