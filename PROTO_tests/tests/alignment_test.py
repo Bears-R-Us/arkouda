@@ -1,4 +1,5 @@
 import pytest
+
 import arkouda as ak
 
 DATA_TYPES = [ak.int64, ak.uint64, ak.float64]
@@ -7,19 +8,18 @@ DATA_TYPES = [ak.int64, ak.uint64, ak.float64]
 class TestAlignment:
     @staticmethod
     def get_interval_info(lower_bound, upper_bound, vals, dtype):
-        if dtype == ak.uint64:
-            lower_bound = [i + 2**63 for i in lower_bound]
-            upper_bound = [i + 2**63 for i in upper_bound]
-            vals = [i + 2**63 for i in vals]
-        elif dtype == ak.float64:
-            lower_bound = [i + 0.5 for i in lower_bound]
-            upper_bound = [i + 0.5 for i in upper_bound]
-            vals = [i + 0.5 for i in vals]
-
         lb = ak.array(lower_bound, dtype)
         ub = ak.array(upper_bound, dtype)
         v = ak.array(vals, dtype)
 
+        if dtype == ak.uint64:
+            lb += 2 ** 63
+            ub += 2 ** 63
+            v += 2 ** 63
+        elif dtype == ak.float64:
+            lb += 0.5
+            ub += 0.5
+            v += 0.5
         return lb, ub, v
 
     @pytest.mark.parametrize("dtype", DATA_TYPES)
@@ -56,16 +56,9 @@ class TestAlignment:
         starts = (ak.array([0, 5]), ak.array([0, 11]))
         ends = (ak.array([5, 9]), ak.array([10, 20]))
         vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
-        assert ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list() == [
-            0,
-            -1,
-            0,
-            0,
-            1,
-            -1,
-            1,
-            -1,
-        ]
+
+        search_intervals = ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
+        assert search_intervals == [0, -1, 0, 0, 1, -1, 1, -1]
 
         search_intervals_hierarchical = ak.search_intervals(vals, (starts, ends)).to_list()
         assert search_intervals_hierarchical == [0, 0, 0, 0, 1, 1, 1, -1]
