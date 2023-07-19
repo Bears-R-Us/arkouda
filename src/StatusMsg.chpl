@@ -11,9 +11,6 @@ module StatusMsg {
     private config const logChannel = ServerConfig.logChannel;
     const sLogger = new Logger(logLevel, logChannel);
     
-    /**
-     * 
-     */
     proc getMemoryStatusMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var statuses = "%jt".format(getLocaleMemoryStatuses());
 
