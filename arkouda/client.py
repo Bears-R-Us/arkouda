@@ -985,6 +985,7 @@ def get_mem_avail(unit: str = "b", as_percent: bool = False) -> int:
     )
     return int(mem_avail_message)
 
+
 def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
     """
     Retrieves the memory status for each locale
@@ -997,7 +998,7 @@ def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
          arkouda_mem_alloc: memory allocated to Arkouda chapel process on locale host
          pct_avail_mem: percentage of physical memory currently available on locale host
          locale_id: locale id which is between 0 and numLocales-1
-         locale_hostname: host name of locale host 
+         locale_hostname: host name of locale host
 
     Raises
      ------
@@ -1012,7 +1013,6 @@ def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
         raise ValueError(f"Returned memory status is not valid JSON: {raw_message}")
     except Exception as e:
         raise RuntimeError(f"{e} in retrieving Arkouda server config")
-
 
 
 def get_server_commands() -> Mapping[str, str]:
