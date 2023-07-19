@@ -972,7 +972,7 @@ def get_mem_avail(unit: str = "b", as_percent: bool = False) -> int:
      int
          Indicates the amount of memory available to be used.
 
-    Raises
+     Raises
      ------
      RuntimeError
          Raised if there is a server-side error in getting memory available
