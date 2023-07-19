@@ -33,8 +33,9 @@ module MemoryMgmt {
     record LocaleMemoryStatus {
         var total_mem: uint(64);
         var avail_mem: uint(64);
-        var arkouda_mem_alloc: uint(64);
         var pct_avail_mem: int;
+        var arkouda_mem_alloc: uint(64);
+        var mem_used: uint(64);
         var locale_id: int;
         var locale_hostname: string;
     }
@@ -113,12 +114,13 @@ module MemoryMgmt {
             on loc {
                 var availMem = getAvailMemory();
                 var totalMem = getTotalMemory();
-                var pctAvailMem = (availMem/totalMem)*100:int;
+                var pctAvailMem = (availMem:real/totalMem)*100:int;
 
                 memStatuses[here.id] = new LocaleMemoryStatus(total_mem=totalMem,
                                                               avail_mem=availMem,
                                                               pct_avail_mem=pctAvailMem:int,
                                                               arkouda_mem_alloc=getArkoudaMemAlloc(),
+                                                              mem_used=memoryUsed(),
                                                               locale_id=here.id,
                                                               locale_hostname=here.hostname);                                      
             }
