@@ -11,7 +11,6 @@ module SegStringSort {
   use ServerConfig;
   use BlockDist;
 
-  use ArkoudaBlockCompat;
   use ArkoudaStringBytesCompat;
 
   private config const SSS_v = false;
