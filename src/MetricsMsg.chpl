@@ -10,9 +10,9 @@ module MetricsMsg {
     use Message;
     use ArkoudaMemDiagnosticsCompat;
     use NumPyDType;
+    use Map;
     use ArkoudaTimeCompat as Time;
 
-    use ArkoudaMapCompat;
     use ArkoudaListCompat;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,TOTAL_RESPONSE_TIME,

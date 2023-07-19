@@ -11,7 +11,7 @@ module TimeClassMsg {
     use BinOp;
     use ArkoudaTimeCompat as Time;
 
-    use ArkoudaMapCompat;
+    use Map;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

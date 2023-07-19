@@ -10,9 +10,9 @@ module FileIO {
     use MultiTypeSymEntry;
     use ServerErrors;
     use Sort;
+    use Map;
 
     use ArkoudaFileCompat;
-    use ArkoudaMapCompat;
     use ArkoudaRangeCompat;
 
     use ServerConfig, Logging, CommandMap;

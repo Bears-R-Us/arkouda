@@ -12,7 +12,7 @@ module HashMsg {
   use SegmentedString;
   use AryUtil;
   use UniqueMsg;
-  use ArkoudaMapCompat;
+  use Map;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;

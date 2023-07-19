@@ -15,7 +15,7 @@ module SegmentedMsg {
   use Math;
   use SegmentedArray;
 
-  use ArkoudaMapCompat;
+  use Map;
   use ArkoudaStringBytesCompat;
   use ArkoudaCTypesCompat;
 

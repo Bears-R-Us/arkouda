@@ -17,7 +17,7 @@ module IndexingMsg
     use List;
 
     use ArkoudaBigIntCompat;
-    use ArkoudaMapCompat;
+    use Map;
     use ArkoudaFileCompat;
     use ArkoudaBigIntCompat;
     use ArkoudaRangeCompat;
