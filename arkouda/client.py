@@ -967,7 +967,7 @@ def get_mem_avail(unit: str = "b", as_percent: bool = False) -> int:
          If True, return the percent (as an int) of the memory that's available to be used
          False by default
 
-    Returns
+     Returns
      -------
      int
          Indicates the amount of memory available to be used.
