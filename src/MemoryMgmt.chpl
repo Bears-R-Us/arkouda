@@ -84,6 +84,7 @@ module MemoryMgmt {
             if line.find('MemAvailable:') >= 0 {
                 var splits = line.split('MemAvailable:');
                 memAvail = splits[1].strip().strip(' kB'):uint(64);
+                break;
             }
         }
 
@@ -101,6 +102,7 @@ module MemoryMgmt {
             if line.find('MemTotal:') >= 0 {
                 var splits = line.split('MemTotal:');
                 totalMem = splits[1].strip().strip(' kB'):uint(64);
+                break;
             }
         }
 
