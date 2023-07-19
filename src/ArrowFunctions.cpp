@@ -621,20 +621,25 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
 
             int64_t tmp_offset = 0; // used to properly access tmp after NaN encountered
-            int64_t val_ct = 0;
-            int64_t j = 0;
-            while (val_ct < values_read){
+            int64_t val_idx = 0;
+            for (int64_t j = 0; j< batchSize; j++){
+              // skip any empty segments
+              if (def_lvl[j] == 1)
+                continue;
+              
+              // Null values treated as NaN
               if (def_lvl[j] == 2) {
-                chpl_ptr[i+j] = NAN;
-                tmp_offset++;
+                chpl_ptr[i+val_idx] = NAN;
+                tmp_offset++; // adjustment for values array since Nulls are not included
               }
-              else {
-                chpl_ptr[i+j] = (double)tmpArr[j-tmp_offset];
-                val_ct++;
+              else if (def_lvl[j] == 3){ // defined value to write
+                chpl_ptr[i+val_idx] = (double)tmpArr[val_idx-tmp_offset];
               }
-              j++;
+              val_idx++;
             }
-            i += values_read + tmp_offset; // account for values and NaNs
+
+            i += values_read + tmp_offset; // account for values and NaNs, but not empty segments
+
             delete[] tmpArr;
             delete[] def_lvl;
             delete[] rep_lvl;
@@ -651,21 +656,27 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             int16_t* def_lvl = new int16_t[batchSize];
             int16_t* rep_lvl = new int16_t[batchSize];
             (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
+            
             int64_t tmp_offset = 0; // used to properly access tmp after NaN encountered
-            int64_t val_ct = 0;
-            int64_t j = 0;
-            while (val_ct < values_read){
+            int64_t val_idx = 0;
+            for (int64_t j = 0; j< batchSize; j++){
+              // skip any empty segments
+              if (def_lvl[j] == 1)
+                continue;
+              
+              // Null values treated as NaN
               if (def_lvl[j] == 2) {
-                chpl_ptr[i+j] = NAN;
-                tmp_offset++;
+                chpl_ptr[i+val_idx] = NAN;
+                tmp_offset++; // adjustment for values array since Nulls are not included
               }
-              else {
-                chpl_ptr[i+j] = tmpArr[j-tmp_offset];
-                val_ct++;
+              else if (def_lvl[j] == 3){ // defined value to write
+                chpl_ptr[i+val_idx] = (double)tmpArr[val_idx-tmp_offset];
               }
-              j++;
+              val_idx++;
             }
-            i += values_read + tmp_offset; // account for values and NaNs
+
+            i += values_read + tmp_offset; // account for values and NaNs, but not empty segments
+
             delete[] tmpArr;
             delete[] def_lvl;
             delete[] rep_lvl;
