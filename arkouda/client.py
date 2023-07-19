@@ -23,6 +23,7 @@ __all__ = [
     "get_config",
     "get_mem_used",
     "get_mem_avail",
+    "get_mem_status",
     "get_server_commands",
     "print_server_commands",
     "ruok",
@@ -983,6 +984,35 @@ def get_mem_avail(unit: str = "b", as_percent: bool = False) -> int:
         generic_msg(cmd="getavailmem", args={"factor": _mem_get_factor(unit), "as_percent": as_percent}),
     )
     return int(mem_avail_message)
+
+
+def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
+    """
+    Retrieves the memory status for each locale
+
+    Returns
+     -------
+     List[Mapping[str, Union[str, int, float]]]
+         total_mem: total physical memory on locale host
+         avail_mem: current available memory on locale host
+         arkouda_mem_alloc: memory allocated to Arkouda chapel process on locale host
+         pct_avail_mem: percentage of physical memory currently available on locale host
+         locale_id: locale id which is between 0 and numLocales-1
+         locale_hostname: host name of locale host
+
+    Raises
+     ------
+     RuntimeError
+         Raised if there is a server-side error in getting per-locale
+         memory status information
+    """
+    try:
+        raw_message = cast(str, generic_msg(cmd="getmemstatus"))
+        return json.loads(raw_message)
+    except json.decoder.JSONDecodeError:
+        raise ValueError(f"Returned memory status is not valid JSON: {raw_message}")
+    except Exception as e:
+        raise RuntimeError(f"{e} in retrieving Arkouda server config")
 
 
 def get_server_commands() -> Mapping[str, str]:

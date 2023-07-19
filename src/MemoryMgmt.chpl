@@ -30,6 +30,16 @@ module MemoryMgmt {
      */
     config const memMgmtType = MemMgmtType.STATIC;
 
+    record LocaleMemoryStatus {
+        var total_mem: uint(64);
+        var avail_mem: uint(64);
+        var pct_avail_mem: int;
+        var arkouda_mem_alloc: uint(64);
+        var mem_used: uint(64);
+        var locale_id: int;
+        var locale_hostname: string;
+    }
+
     proc getArkoudaPid() : string throws {
         var pid = spawn(["pgrep","arkouda_server"], stdout=pipeStyle.pipe);
 
@@ -74,10 +84,50 @@ module MemoryMgmt {
             if line.find('MemAvailable:') >= 0 {
                 var splits = line.split('MemAvailable:');
                 memAvail = splits[1].strip().strip(' kB'):uint(64);
+                break;
             }
         }
 
         return (AutoMath.round(availableMemoryPct/100 * memAvail)*1000):uint(64);
+    }
+    
+    proc getTotalMemory() : uint(64) throws {
+        var aFile = open('/proc/meminfo', ioMode.r);
+        var lines = aFile.reader().lines();
+        var line : string;
+
+        var totalMem:uint(64);
+
+        for line in lines do {
+            if line.find('MemTotal:') >= 0 {
+                var splits = line.split('MemTotal:');
+                totalMem = splits[1].strip().strip(' kB'):uint(64);
+                break;
+            }
+        }
+
+        return totalMem*1000:uint(64);
+    }
+    
+    proc getLocaleMemoryStatuses() throws {
+        var memStatuses: [0..numLocales-1] LocaleMemoryStatus;
+        
+        coforall loc in Locales with (ref memStatuses) {
+            on loc {
+                var availMem = getAvailMemory();
+                var totalMem = getTotalMemory();
+                var pctAvailMem = (availMem:real/totalMem)*100:int;
+
+                memStatuses[here.id] = new LocaleMemoryStatus(total_mem=totalMem,
+                                                              avail_mem=availMem,
+                                                              pct_avail_mem=pctAvailMem:int,
+                                                              arkouda_mem_alloc=getArkoudaMemAlloc(),
+                                                              mem_used=memoryUsed(),
+                                                              locale_id=here.id,
+                                                              locale_hostname=here.hostname);                                      
+            }
+        }
+        return memStatuses;
     }
 
     proc localeMemAvailable(reqMemory) : bool throws {
