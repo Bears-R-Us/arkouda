@@ -1,9 +1,13 @@
+import ipaddress
 import random
 
 import pytest
 
 import arkouda as ak
 from arkouda import client_dtypes
+
+INT_TYPES = [ak.int64, ak.uint64]
+IPS = [3232235777, 2222222222, 1234567890, 7]
 
 
 class TestClientDTypeTests:
@@ -15,26 +19,30 @@ class TestClientDTypeTests:
     Thus, pdarray testing covers these operations.
     """
 
-    def test_BitVector_creation(self):
-        arr = ak.arange(4)
+    @pytest.mark.parametrize("int_types", INT_TYPES)
+    def test_BitVector_creation(self, int_types):
+        bv_answer = ["...", "..|", ".|.", ".||"]
+        bv_rev_answer = ["...", "|..", ".|.", "||."]
+
+        arr = ak.arange(4, dtype=int_types)
         bv = ak.BitVector(arr, width=3)
         assert isinstance(bv, client_dtypes.BitVector)
-        assert bv.to_list() == ["...", "..|", ".|.", ".||"]
+        assert bv.to_list() == bv_answer
         assert bv.dtype == ak.bitType
 
         # Test reversed
-        arr = ak.arange(4, dtype=ak.uint64)  # Also test with uint64 input
+        arr = ak.arange(4, dtype=int_types)
         bv = ak.BitVector(arr, width=3, reverse=True)
         assert isinstance(bv, client_dtypes.BitVector)
-        assert bv.to_list() == ["...", "|..", ".|.", "||."]
+        assert bv.to_list() == bv_rev_answer
         assert bv.dtype == ak.bitType
 
         # test use of vectorizer function
-        arr = ak.arange(4)
+        arr = ak.arange(4, dtype=int_types)
         bvectorizer = ak.BitVectorizer(3)
         bv = bvectorizer(arr)
         assert isinstance(bv, client_dtypes.BitVector)
-        assert bv.to_list() == ["...", "..|", ".|.", ".||"]
+        assert bv.to_list() == bv_answer
         assert bv.dtype == ak.bitType
 
         # fail on argument types
@@ -88,39 +96,33 @@ class TestClientDTypeTests:
         with pytest.raises(ValueError):
             f = ak.Fields(values, names, pad="|!~", separator="//")
 
-    def test_ipv4_creation(self):
-        # Test handling of int64 input
-        ip_list = ak.array([3232235777], dtype=ak.int64)
+    @pytest.mark.parametrize("int_types", INT_TYPES)
+    @pytest.mark.parametrize("ip", IPS)
+    def test_ipv4_creation(self, int_types, ip):
+        ip_list = ak.array([ip], dtype=int_types)
         ipv4 = ak.IPv4(ip_list)
 
         assert isinstance(ipv4, ak.IPv4)
-        assert ipv4.to_list() == ["192.168.1.1"]
-        assert ipv4.dtype == ak.bitType
-
-        # Test handling of uint64 input
-        ip_list = ak.array([3232235777], dtype=ak.uint64)
-        ipv4 = ak.IPv4(ip_list)
-
-        assert isinstance(ipv4, ak.IPv4)
-        assert ipv4.to_list() == ["192.168.1.1"]
+        assert ipv4.to_list() == [format(ipaddress.IPv4Address(ip))]
         assert ipv4.dtype == ak.bitType
 
         with pytest.raises(TypeError):
-            ipv4 = ak.IPv4("3232235777")
+            ipv4 = ak.IPv4(f"{ip}")
         with pytest.raises(TypeError):
-            ipv4 = ak.IPv4(ak.array([3232235777.177]))
+            ipv4 = ak.IPv4(ak.array([ip + 0.177]))
 
         # Test handling of python dotted-quad input
-        ipv4 = ak.ip_address(["192.168.1.1"])
+        ipv4 = ak.ip_address([format(ipaddress.IPv4Address(ip))])
         assert isinstance(ipv4, ak.IPv4)
-        assert ipv4.to_list() == ["192.168.1.1"]
+        assert ipv4.to_list() == [format(ipaddress.IPv4Address(ip))]
         assert ipv4.dtype == ak.bitType
 
-    def test_ipv4_normalization(self):
-        ip_list = ak.array([3232235777])
+    @pytest.mark.parametrize("ip", IPS)
+    def test_ipv4_normalization(self, ip):
+        ip_list = ak.array([ip])
         ipv4 = ak.IPv4(ip_list)
-        ip_as_int = ipv4.normalize("192.168.1.1")
-        assert 3232235777 == ip_as_int
+        ip_as_int = ipv4.normalize(ipaddress.IPv4Address(ip))
+        assert ip == ip_as_int
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_is_ipv4(self, size):
