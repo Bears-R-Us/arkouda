@@ -1,3 +1,4 @@
+import random
 from itertools import product
 
 import numpy as np
@@ -14,6 +15,7 @@ SHAPE = {
 
 SIZE = [4, 30, 252, 693]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
+
 
 class TestArrayView:
     @pytest.mark.parametrize("size", SIZE)
@@ -57,11 +59,10 @@ class TestArrayView:
 
     @pytest.mark.parametrize("size", SIZE)
     def test_int_list_indexing(self, size):
-        N = len(SHAPE[size])
         iav = ak.arange(size).reshape(SHAPE[size])
         uav = ak.arange(size, dtype=np.uint64).reshape(SHAPE[size])
 
-        iind = ak.ones(N, dtype=ak.uint64)
+        iind = ak.ones(len(SHAPE[size]), dtype=ak.uint64)
         uind = ak.cast(iind, np.uint64)
         assert np.array_equal(iav[iind], iav[uind])
         assert np.array_equal(uav[iind], uav[uind])
@@ -73,7 +74,7 @@ class TestArrayView:
         iav = ak.arange(size).reshape(SHAPE[size])
         uav = ak.arange(size, dtype=ak.uint64).reshape(SHAPE[size])
 
-        nind = (1,) * inav.ndim
+        nind = tuple(random.randint(0, y - 1) for y in SHAPE[size])
         iind = ak.array(nind)
         uind = ak.cast(iind, ak.uint64)
 
@@ -90,13 +91,10 @@ class TestArrayView:
     def test_get_bool_pdarray(self, size):
         N = len(SHAPE[size])
 
-        for i in range(0, N+1):
-            n = np.arange(size).reshape(SHAPE[size])
-            a = ak.arange(size).reshape(SHAPE[size])
-            truth = [True] * N
-            if i > 0:
-                truth[i - 1] = False
-            truth = tuple(truth)
+        n = np.arange(size).reshape(SHAPE[size])
+        a = ak.arange(size).reshape(SHAPE[size])
+        for i in range(0, N + 1):
+            truth = tuple(j != i - 1 if i > 0 else True for j in range(N))
             n_bool_list = n[truth].tolist()
             a_bool_list = a[truth].to_list()
 
@@ -106,15 +104,15 @@ class TestArrayView:
     def test_set_bool_pdarray(self, size):
         N = len(SHAPE[size])
 
-        for i in range(0, N+1):
+        for i in range(0, N + 1):
             n = np.arange(size).reshape(SHAPE[size])
             a = ak.arange(size).reshape(SHAPE[size])
-            truth = [True] * N
-            if i > 0:
-                truth[i-1] = False
-            truth = tuple(truth)
-            n[truth] = 7
-            a[truth] = 7
+            truth = tuple(j != i - 1 if i > 0 else True for j in range(N))
+
+            val = random.randint(1, 10)
+            n[truth] = val
+            a[truth] = val
+
             assert n.tolist() == a.to_list()
 
     @pytest.mark.parametrize("size", SIZE)
