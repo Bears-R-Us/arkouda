@@ -72,6 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerErrors.html">ServerErrors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StatusMsg.html">StatusMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
@@ -156,6 +157,46 @@
 </ul>
 </dd></dl>
 
+<dl class="chpl record">
+<dt class="sig sig-object chpl" id="MemoryMgmt.LocaleMemoryStatus">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">LocaleMemoryStatus</span></span><a class="headerlink" href="#MemoryMgmt.LocaleMemoryStatus" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MemoryMgmt.LocaleMemoryStatus.total_mem">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">total_mem</span></span><span class="pre">:</span> <span class="pre">uint(64)</span><a class="headerlink" href="#MemoryMgmt.LocaleMemoryStatus.total_mem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MemoryMgmt.LocaleMemoryStatus.avail_mem">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">avail_mem</span></span><span class="pre">:</span> <span class="pre">uint(64)</span><a class="headerlink" href="#MemoryMgmt.LocaleMemoryStatus.avail_mem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MemoryMgmt.LocaleMemoryStatus.pct_avail_mem">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">pct_avail_mem</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MemoryMgmt.LocaleMemoryStatus.pct_avail_mem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MemoryMgmt.LocaleMemoryStatus.arkouda_mem_alloc">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">arkouda_mem_alloc</span></span><span class="pre">:</span> <span class="pre">uint(64)</span><a class="headerlink" href="#MemoryMgmt.LocaleMemoryStatus.arkouda_mem_alloc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MemoryMgmt.LocaleMemoryStatus.mem_used">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">mem_used</span></span><span class="pre">:</span> <span class="pre">uint(64)</span><a class="headerlink" href="#MemoryMgmt.LocaleMemoryStatus.mem_used" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MemoryMgmt.LocaleMemoryStatus.locale_id">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">locale_id</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MemoryMgmt.LocaleMemoryStatus.locale_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MemoryMgmt.LocaleMemoryStatus.locale_hostname">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">locale_hostname</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#MemoryMgmt.LocaleMemoryStatus.locale_hostname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MemoryMgmt.getArkoudaPid">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArkoudaPid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#MemoryMgmt.getArkoudaPid" title="Permalink to this definition">¶</a></dt>
@@ -169,6 +210,16 @@
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MemoryMgmt.getAvailMemory">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getAvailMemory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(64)</span> <span class="pre">throws</span><a class="headerlink" href="#MemoryMgmt.getAvailMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MemoryMgmt.getTotalMemory">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTotalMemory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(64)</span> <span class="pre">throws</span><a class="headerlink" href="#MemoryMgmt.getTotalMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MemoryMgmt.getLocaleMemoryStatuses">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLocaleMemoryStatuses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MemoryMgmt.getLocaleMemoryStatuses" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

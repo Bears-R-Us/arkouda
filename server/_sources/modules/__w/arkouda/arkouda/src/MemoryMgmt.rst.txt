@@ -43,11 +43,31 @@ or
    * default is static memory mgmt.
    
 
+.. record:: LocaleMemoryStatus
+
+   .. attribute:: var total_mem: uint(64)
+
+   .. attribute:: var avail_mem: uint(64)
+
+   .. attribute:: var pct_avail_mem: int
+
+   .. attribute:: var arkouda_mem_alloc: uint(64)
+
+   .. attribute:: var mem_used: uint(64)
+
+   .. attribute:: var locale_id: int
+
+   .. attribute:: var locale_hostname: string
+
 .. function:: proc getArkoudaPid(): string throws
 
 .. function:: proc getArkoudaMemAlloc(): uint(64) throws
 
 .. function:: proc getAvailMemory(): uint(64) throws
+
+.. function:: proc getTotalMemory(): uint(64) throws
+
+.. function:: proc getLocaleMemoryStatuses() throws
 
 .. function:: proc localeMemAvailable(reqMemory): bool throws
 

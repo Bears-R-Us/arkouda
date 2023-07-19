@@ -301,13 +301,16 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client.get_mem_avail" title="arkouda.client.get_mem_avail"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mem_avail</span></code></a>(→ int)</p></td>
 <td><p>Compute the amount of memory available to be used.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client.get_server_commands" title="arkouda.client.get_server_commands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_commands</span></code></a>(→ Mapping[str, str])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client.get_mem_status" title="arkouda.client.get_mem_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mem_status</span></code></a>(→ List[Mapping[str, Union[str, int, ...)</p></td>
+<td><p>Retrieves the memory status for each locale</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client.get_server_commands" title="arkouda.client.get_server_commands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_commands</span></code></a>(→ Mapping[str, str])</p></td>
 <td><p>Return a dictionary of available server commands and the functions they map to</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client.print_server_commands" title="arkouda.client.print_server_commands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_server_commands</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client.print_server_commands" title="arkouda.client.print_server_commands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_server_commands</span></code></a>()</p></td>
 <td><p>Print the list of the available Server commands</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client.ruok" title="arkouda.client.ruok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ruok</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client.ruok" title="arkouda.client.ruok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ruok</span></code></a>(→ str)</p></td>
 <td><p>Simply sends an &quot;ruok&quot; message to the server and, if the return message is</p></td>
 </tr>
 </tbody>
@@ -458,6 +461,30 @@ False by default</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.client.get_mem_status">
+<span class="sig-prename descclassname"><span class="pre">arkouda.client.</span></span><span class="sig-name descname"><span class="pre">get_mem_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.client.get_mem_status" title="Permalink to this definition">#</a></dt>
+<dd><p>Retrieves the memory status for each locale</p>
+<dl class="simple">
+<dt>Returns</dt><dd><dl class="simple">
+<dt>List[Mapping[str, Union[str, int, float]]]</dt><dd><p>total_mem: total physical memory on locale host
+avail_mem: current available memory on locale host
+arkouda_mem_alloc: memory allocated to Arkouda chapel process on locale host
+pct_avail_mem: percentage of physical memory currently available on locale host
+locale_id: locale id which is between 0 and numLocales-1
+locale_hostname: host name of locale host</p>
+</dd>
+</dl>
+</dd>
+<dt>Raises</dt><dd><dl class="simple">
+<dt>RuntimeError</dt><dd><p>Raised if there is a server-side error in getting per-locale
+memory status information</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.client.get_server_commands">
 <span class="sig-prename descclassname"><span class="pre">arkouda.client.</span></span><span class="sig-name descname"><span class="pre">get_server_commands</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.client.get_server_commands" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a dictionary of available server commands and the functions they map to</p>
@@ -571,6 +598,7 @@ both of the latter cases</p>
 <li><a class="reference internal" href="#arkouda.client.get_config"><code class="docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client.get_mem_used"><code class="docutils literal notranslate"><span class="pre">get_mem_used()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client.get_mem_avail"><code class="docutils literal notranslate"><span class="pre">get_mem_avail()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.client.get_mem_status"><code class="docutils literal notranslate"><span class="pre">get_mem_status()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client.get_server_commands"><code class="docutils literal notranslate"><span class="pre">get_server_commands()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client.print_server_commands"><code class="docutils literal notranslate"><span class="pre">print_server_commands()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client.ruok"><code class="docutils literal notranslate"><span class="pre">ruok()</span></code></a></li>

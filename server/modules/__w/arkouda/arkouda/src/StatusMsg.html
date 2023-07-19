@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Security &mdash; chpldoc 0.0.1 documentation</title>
+  <title>StatusMsg &mdash; chpldoc 0.0.1 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="SegStringSort" href="SegStringSort.html" />
-    <link rel="prev" title="RadixSortLSD" href="RadixSortLSD.html" /> 
+    <link rel="next" title="SymArrayDmap" href="SymArrayDmap.html" />
+    <link rel="prev" title="SipHash" href="SipHash.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -63,7 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SegmentedComputation.html">SegmentedComputation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SegmentedString.html">SegmentedString</a></li>
@@ -72,7 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerErrors.html">ServerErrors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="StatusMsg.html">StatusMsg</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">StatusMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
@@ -103,9 +103,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Security</li>
+      <li>StatusMsg</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/Security.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/StatusMsg.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -113,29 +113,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-Security"></span><div class="section" id="security">
-<h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-StatusMsg"></span><div class="section" id="statusmsg">
+<h1>StatusMsg<a class="headerlink" href="#statusmsg" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">Security</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">StatusMsg</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">Security</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">StatusMsg</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="Security.generateToken">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateToken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">32</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Security.generateToken" title="Permalink to this definition">¶</a></dt>
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="StatusMsg.sLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">sLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span><a class="headerlink" href="#StatusMsg.sLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="Security.getArkoudaToken">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArkoudaToken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tokensPath:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#Security.getArkoudaToken" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="Security.setArkoudaToken">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setArkoudaToken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tokensPath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">32</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#Security.setArkoudaToken" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="StatusMsg.getMemoryStatusMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMemoryStatusMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#StatusMsg.getMemoryStatusMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -144,8 +139,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="RadixSortLSD.html" class="btn btn-neutral float-left" title="RadixSortLSD" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="SegStringSort.html" class="btn btn-neutral float-right" title="SegStringSort" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="SipHash.html" class="btn btn-neutral float-left" title="SipHash" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SymArrayDmap.html" class="btn btn-neutral float-right" title="SymArrayDmap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

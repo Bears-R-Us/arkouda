@@ -70,6 +70,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html">ServerErrorStrings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/ServerErrors.html">ServerErrors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/SipHash.html">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/StatusMsg.html">StatusMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/arkouda_server.html">arkouda_server</a></li>
@@ -334,6 +335,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.arkDirectory">arkDirectory (ServerDaemon.DefaultServerDaemon attribute)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus.arkouda_mem_alloc">arkouda_mem_alloc (MemoryMgmt.LocaleMemoryStatus attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/arkouda_server.html#module-arkouda_server">arkouda_server (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaBigIntCompat.html#module-ArkoudaBigIntCompat">ArkoudaBigIntCompat (module)</a>
@@ -391,6 +394,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.authenticateUser">authenticateUser() (ServerDaemon.DefaultServerDaemon method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.autoShutdown">autoShutdown (in module ServerConfig)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus.avail_mem">avail_mem (MemoryMgmt.LocaleMemoryStatus attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.availableMemoryPct">availableMemoryPct (in module MemoryMgmt)</a>
 </li>
@@ -1042,12 +1047,12 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.getFirstEightBytesFromFile">getFirstEightBytesFromFile() (in module FileIO)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.getFixes">getFixes() (SegmentedString.SegString method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.getGenericTypedArrayEntry">getGenericTypedArrayEntry() (in module MultiTypeSymbolTable)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getIntValue">getIntValue() (Message.ParameterObj method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.getJSON">getJSON() (Message.MessageArgs method)</a>
@@ -1066,6 +1071,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getList">getList() (Message.ParameterObj method)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.getLocaleMemoryStatuses">getLocaleMemoryStatuses() (in module MemoryMgmt)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.getMatchingFilenames">getMatchingFilenames() (in module FileIO)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/BigIntMsg.html#BigIntMsg.getMaxBitsMsg">getMaxBitsMsg() (in module BigIntMsg)</a>
@@ -1077,6 +1084,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.getmemavailMsg">getmemavailMsg() (in module MsgProcessing)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.getMemLimit">getMemLimit() (in module ServerConfig)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/StatusMsg.html#StatusMsg.getMemoryStatusMsg">getMemoryStatusMsg() (in module StatusMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.getMemUsed">getMemUsed() (in module ServerConfig)</a>
 </li>
@@ -1129,6 +1138,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getSystemMetrics">getSystemMetrics() (in module MetricsMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.dateTime.gettime">gettime() (ArkoudaTimeCompat.dateTime method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.getTotalMemory">getTotalMemory() (in module MemoryMgmt)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getTotalMemoryUsedMetrics">getTotalMemoryUsedMetrics() (in module MetricsMsg)</a>
 </li>
@@ -1444,7 +1455,13 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.loc">loc (CommAggregation.remoteBuffer attribute)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric.locale_hostname">locale_hostname (MetricsMsg.LocaleMetric attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus.locale_hostname">locale_hostname (MemoryMgmt.LocaleMemoryStatus attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric.locale_hostname">(MetricsMsg.LocaleMetric attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus.locale_id">locale_id (MemoryMgmt.LocaleMemoryStatus attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric.locale_name">locale_name (MetricsMsg.LocaleMetric attribute)</a>
 </li>
@@ -1454,12 +1471,14 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.localeMemAvailable">localeMemAvailable() (in module MemoryMgmt)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus">LocaleMemoryStatus (record in MemoryMgmt)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric">LocaleMetric (class in MetricsMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.ServerInfo.locales">locales (MetricsMsg.ServerInfo attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.localFree">localFree() (CommAggregation.remoteBuffer method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.localIter">localIter() (CommAggregation.remoteBuffer iterator)</a>
@@ -1542,6 +1561,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.AverageMeasurementTable.measurementTotals">measurementTotals (MetricsMsg.AverageMeasurementTable attribute)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus.mem_used">mem_used (MemoryMgmt.LocaleMemoryStatus attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.memcmp">memcmp() (in module SegmentedString)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaPOSIXCompat.html#ArkoudaPOSIXCompat.memcpy">memcpy() (in module ArkoudaPOSIXCompat)</a>
@@ -1580,10 +1601,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.metricsMsg">metricsMsg() (in module MetricsMsg)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.MetricsServerDaemon">MetricsServerDaemon (class in ServerDaemon)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.MetricsServerDaemon">MetricsServerDaemon (class in ServerDaemon)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MetricValue">MetricValue (class in MetricsMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.dateTime.microsecond">microsecond() (ArkoudaTimeCompat.dateTime method)</a>
@@ -1798,6 +1819,8 @@
         <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.FileChannelParams.path">(ExternalIntegration.FileChannelParams attribute)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus.pct_avail_mem">pct_avail_mem (MemoryMgmt.LocaleMemoryStatus attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.peel">peel() (SegmentedString.SegString method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.peelRegex">peelRegex() (SegmentedString.SegString method)</a>
@@ -2180,6 +2203,8 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.sleep">sleep() (in module ArkoudaTimeCompat)</a>, <a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.sleep">[1]</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/StatusMsg.html#StatusMsg.sLogger">sLogger (in module StatusMsg)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.socket">socket (ServerDaemon.DefaultServerDaemon attribute)</a>
 
       <ul>
@@ -2248,6 +2273,8 @@
         <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.Timer.start">(ArkoudaTimeCompat.Timer method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/StatusMsg.html#module-StatusMsg">StatusMsg (module)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.stick">stick() (SegmentedString.SegString method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.stopwatch.stop">stop() (ArkoudaTimeCompat.stopwatch method)</a>
@@ -2378,10 +2405,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.tm.tm_mon">tm_mon (ArkoudaTimeCompat.tm attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.tm.tm_sec">tm_sec (ArkoudaTimeCompat.tm attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.tm.tm_wday">tm_wday (ArkoudaTimeCompat.tm attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.tm.tm_yday">tm_yday (ArkoudaTimeCompat.tm attribute)</a>
@@ -2415,6 +2442,8 @@
 </li>
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.total">total() (MetricsMsg.CounterTable method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus.total_mem">total_mem (MemoryMgmt.LocaleMemoryStatus attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.totalMemoryUsedMetrics">totalMemoryUsedMetrics (in module MetricsMsg)</a>
 </li>
