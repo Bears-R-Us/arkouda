@@ -22,7 +22,7 @@ module Codecs {
       var tmp = cRes: c_ptr(uint(8));
       var ret: [0..#outBufSize] uint(8);
       for i in ret.domain do ret[i] = (tmp+i).deref();
-      idn2_free(cRes: c_ptr_void);
+      idn2_free(cRes: c_void_ptr);
       return ret;
     } else if fromEncoding == "IDNA" {
       if toEncoding != "UTF-8" {
@@ -39,7 +39,7 @@ module Codecs {
       var tmp = cRes: c_ptr(uint(8));
       var ret: [0..#outBufSize] uint(8);
       for i in ret.domain do ret[i] = (tmp+i).deref();
-      idn2_free(cRes: c_ptr_void);
+      idn2_free(cRes: c_void_ptr);
       return ret;
     } else {
       var cd = libiconv_open(toEncoding.c_str(), fromEncoding.c_str());
@@ -68,11 +68,11 @@ module Codecs {
         var rc = idn2_to_ascii_lz(obj:c_string, cRes, 0);
         if (rc != IDNA_SUCCESS) {
           // Error condition, we just want this to be empty string
-          idn2_free(cRes: c_ptr_void);
+          idn2_free(cRes: c_void_ptr);
           return 1;
         }
         var tmp = cRes: bytes;
-        idn2_free(cRes: c_ptr_void);
+        idn2_free(cRes: c_void_ptr);
         return tmp.size+1;
       } else if fromEncoding == "IDNA" {
         // Check valid round trip characters
@@ -84,11 +84,11 @@ module Codecs {
         var rc = idn2_to_unicode_8z8z(obj:c_string, cRes, 0);
         if (rc != IDNA_SUCCESS) {
           // Error condition, we just want this to be empty string
-          idn2_free(cRes: c_ptr_void);
+          idn2_free(cRes: c_void_ptr);
           return 1;
         }
         var tmp = cRes: bytes;
-        idn2_free(cRes: c_ptr_void);
+        idn2_free(cRes: c_void_ptr);
         return tmp.size+1;
       } else {
         var cd = libiconv_open(toEncoding.c_str(), fromEncoding.c_str());

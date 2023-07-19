@@ -72,7 +72,7 @@ extern proc idn2_strerror_name(rc : c_int) : c_string;
 
 extern proc idn2_check_version(req_version : c_string) : c_string;
 
-extern proc idn2_free(ptr : c_ptr_void) : void;
+extern proc idn2_free(ptr : c_void_ptr) : void;
 
 // ==== c2chapel typedefs ====
 

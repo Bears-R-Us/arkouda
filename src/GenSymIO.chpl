@@ -58,7 +58,7 @@ module GenSymIO {
 
         proc bytesToSymEntry(size:int, type t, st: borrowed SymTab, ref data:bytes): string throws {
             var entry = new shared SymEntry(size, t);
-            var localA = makeArrayFromPtr(data.c_str():c_ptr_void:c_ptr(t), size:uint);
+            var localA = makeArrayFromPtr(data.c_str():c_void_ptr:c_ptr(t), size:uint);
             entry.a = localA;
             var name = st.nextName();
             st.addEntry(name, entry);

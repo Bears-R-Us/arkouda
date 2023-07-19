@@ -95,7 +95,7 @@ module ParquetMsg {
     extern proc c_free_string(ptr);
     var cVersionString = c_getVersionInfo();
     defer {
-      c_free_string(cVersionString: c_ptr_void);
+      c_free_string(cVersionString: c_void_ptr);
     }
     var ret: string;
     try {
@@ -446,7 +446,7 @@ module ParquetMsg {
 
         var locDom = A.localSubdomain();
         var locArr = A[locDom];
-        var valPtr: c_ptr_void = nil;
+        var valPtr: c_void_ptr = nil;
         if locArr.size != 0 {
           valPtr = c_ptrTo(locArr);
         }
@@ -995,7 +995,7 @@ module ParquetMsg {
 
     var pqErr = new parquetErrorMsg();
 
-    var valPtr: c_ptr_void = nil;
+    var valPtr: c_void_ptr = nil;
     if localVals.size != 0 {
       valPtr = c_ptrTo(localVals);
     }
@@ -1107,8 +1107,8 @@ module ParquetMsg {
 
         var pqErr = new parquetErrorMsg();
         var dtypeRep = ARROWSTRING;
-        var valPtr: c_ptr_void = nil;
-        var offPtr: c_ptr_void = nil;
+        var valPtr: c_void_ptr = nil;
+        var offPtr: c_void_ptr = nil;
 
         // need to get the local string values
         if offIdxRange.size > 0 {
@@ -1286,8 +1286,8 @@ module ParquetMsg {
       var pqErr = new parquetErrorMsg();
       const fname = filenames[idx];
 
-      var ptrList: [0..#ncols] c_ptr_void;
-      var segmentPtr: [0..#ncols] c_ptr_void; // ptrs to offsets for SegArray. Know number of rows so we know where to stop
+      var ptrList: [0..#ncols] c_void_ptr;
+      var segmentPtr: [0..#ncols] c_void_ptr; // ptrs to offsets for SegArray. Know number of rows so we know where to stop
       var objTypes: [0..#ncols] int; // ObjType enum integer values
       var datatypes: [0..#ncols] int;
       var sizeList: [0..#ncols] int;
@@ -1421,7 +1421,7 @@ module ParquetMsg {
               var valIdxRange = startValIdx..endValIdx;
               ref olda = ss.values.a;
               str_vals[si..#valIdxRange.size] = olda[valIdxRange];
-              ptrList[i] = c_ptrTo(str_vals[si]): c_ptr_void;
+              ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
               sizeList[i] = locDom.size;
             }
           }
@@ -1458,7 +1458,7 @@ module ParquetMsg {
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   int_vals[ui..#valIdxRange.size] = olda[valIdxRange];
-                  ptrList[i] = c_ptrTo(int_vals[ui]): c_ptr_void;
+                  ptrList[i] = c_ptrTo(int_vals[ui]): c_void_ptr;
                 }
                 when DType.UInt64 {
                   segarray_sizes[i] = seg_sizes_int[i];
@@ -1471,7 +1471,7 @@ module ParquetMsg {
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   int_vals[ui..#valIdxRange.size] = olda[valIdxRange]: int;
-                  ptrList[i] = c_ptrTo(int_vals[ui]): c_ptr_void;
+                  ptrList[i] = c_ptrTo(int_vals[ui]): c_void_ptr;
                 }
                 when DType.Float64 {
                   segarray_sizes[i] = seg_sizes_real[i];
@@ -1484,7 +1484,7 @@ module ParquetMsg {
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   real_vals[ri..#valIdxRange.size] = olda[valIdxRange];
-                  ptrList[i] = c_ptrTo(real_vals[ri]): c_ptr_void;
+                  ptrList[i] = c_ptrTo(real_vals[ri]): c_void_ptr;
                 }
                 when DType.Bool {
                   segarray_sizes[i] = seg_sizes_bool[i];
@@ -1497,7 +1497,7 @@ module ParquetMsg {
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   bool_vals[bi..#valIdxRange.size] = olda[valIdxRange];
-                  ptrList[i] = c_ptrTo(bool_vals[bi]): c_ptr_void;
+                  ptrList[i] = c_ptrTo(bool_vals[bi]): c_void_ptr;
                 }
                 when DType.Strings {
                   segarray_sizes[i] = val_sizes_str[i];
@@ -1524,7 +1524,7 @@ module ParquetMsg {
                     var endValIdx = if (lastOffsetIdx == offIdxRange.high) then lastValIdx else oldOff[offIdxRange.high + 1] - 1;
                     var valIdxRange = startValIdx..endValIdx;
                     str_vals[si..#valIdxRange.size] = oldVal[valIdxRange];
-                    ptrList[i] = c_ptrTo(str_vals[si]): c_ptr_void;
+                    ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
                   }
                 }
                 otherwise {
@@ -1579,7 +1579,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWINT64;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr_void;
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
                   sizeList[i] = locDom.size;
                 }
               }
@@ -1590,7 +1590,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWUINT64;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr_void;
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
                   sizeList[i] = locDom.size;
                 }
               }
@@ -1601,7 +1601,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWDOUBLE;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr_void;
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
                   sizeList[i] = locDom.size;
                 }
               }
@@ -1612,7 +1612,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWBOOLEAN;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr_void;
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
                   sizeList[i] = locDom.size;
                 }
               }
