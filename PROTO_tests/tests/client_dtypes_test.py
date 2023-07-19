@@ -132,9 +132,9 @@ class TestClientDTypeTests:
         ipv4 = ak.IPv4(ak.array(x))
         assert ak.is_ipv4(ipv4).to_list() == [True] * size
 
-        x = [random.getrandbits(64) if i < size/2 else random.getrandbits(32) for i in range(size)]
+        x = [random.getrandbits(64) if i < size / 2 else random.getrandbits(32) for i in range(size)]
         ans = ak.is_ipv4(ak.array(x, ak.uint64))
-        assert ans.to_list() == [i >= size/2 for i in range(size)]
+        assert ans.to_list() == [i >= size / 2 for i in range(size)]
 
         with pytest.raises(TypeError):
             ak.is_ipv4(ak.array(x, ak.float64))
@@ -150,9 +150,9 @@ class TestClientDTypeTests:
 
         assert ak.is_ipv6(high, low).to_list() == [True] * size
 
-        x = [random.getrandbits(64) if i < 5 else random.getrandbits(32) for i in range(10)]
+        x = [random.getrandbits(64) if i < size / 2 else random.getrandbits(32) for i in range(size)]
         ans = ak.is_ipv6(ak.array(x, ak.uint64))
-        assert ans.to_list() == [i < 5 for i in range(10)]
+        assert ans.to_list() == [i < size / 2 for i in range(size)]
 
         with pytest.raises(TypeError):
             ak.is_ipv6(ak.array(x, ak.float64))
