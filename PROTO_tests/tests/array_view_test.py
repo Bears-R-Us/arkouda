@@ -7,13 +7,13 @@ import pytest
 import arkouda as ak
 
 SHAPE = {
-    4: (2, 2),
+    56: (7, 8),
     30: (5, 3, 2),
-    252: (4, 9, 7),
-    693: (3, 7, 3, 11),
+    27: (3, 3, 3),
+    48: (2, 3, 4, 2),
 }
 
-SIZE = [4, 30, 252, 693]
+SIZE = [56, 30, 27, 48]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 
 
