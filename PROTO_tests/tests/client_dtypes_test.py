@@ -122,14 +122,15 @@ class TestClientDTypeTests:
         ip_as_int = ipv4.normalize("192.168.1.1")
         assert 3232235777 == ip_as_int
 
-    def test_is_ipv4(self):
-        x = [random.getrandbits(32) for i in range(100)]
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_is_ipv4(self, size):
+        x = [random.getrandbits(32) for i in range(size)]
 
         ans = ak.is_ipv4(ak.array(x, dtype=ak.uint64))
-        assert ans.to_list() == [True] * 100
+        assert ans.to_list() == [True] * size
 
         ipv4 = ak.IPv4(ak.array(x))
-        assert ak.is_ipv4(ipv4).to_list() == [True] * 100
+        assert ak.is_ipv4(ipv4).to_list() == [True] * size
 
         x = [random.getrandbits(64) if i < 5 else random.getrandbits(32) for i in range(10)]
         ans = ak.is_ipv4(ak.array(x, ak.uint64))
@@ -141,12 +142,13 @@ class TestClientDTypeTests:
         with pytest.raises(RuntimeError):
             ak.is_ipv4(ak.array(x, dtype=ak.uint64), ak.arange(2, dtype=ak.uint64))
 
-    def test_is_ipv6(self):
-        x = [random.getrandbits(128) for i in range(100)]
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_is_ipv6(self, size):
+        x = [random.getrandbits(128) for i in range(size)]
         low = ak.array([i & (2**64 - 1) for i in x], dtype=ak.uint64)
         high = ak.array([i >> 64 for i in x], dtype=ak.uint64)
 
-        assert ak.is_ipv6(high, low).to_list() == [True] * 100
+        assert ak.is_ipv6(high, low).to_list() == [True] * size
 
         x = [random.getrandbits(64) if i < 5 else random.getrandbits(32) for i in range(10)]
         ans = ak.is_ipv6(ak.array(x, ak.uint64))
