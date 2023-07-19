@@ -2709,6 +2709,34 @@ Attributes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
+   .. py:method:: get_bytes()
+
+      Getter for the bytes component (uint8 pdarray) of this Strings.
+
+      :returns: Pdarray of bytes of the string accessed
+      :rtype: pdarray, uint8
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_bytes()
+      [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
+
+
+   .. py:method:: get_offsets()
+
+      Getter for the offsets component (int64 pdarray) of this Strings.
+
+      :returns: Pdarray of offsets of the string accessed
+      :rtype: pdarray, int64
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_offsets()
+      [0 4 8]
+
+
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
@@ -8459,6 +8487,34 @@ Attributes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
+   .. py:method:: get_bytes()
+
+      Getter for the bytes component (uint8 pdarray) of this Strings.
+
+      :returns: Pdarray of bytes of the string accessed
+      :rtype: pdarray, uint8
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_bytes()
+      [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
+
+
+   .. py:method:: get_offsets()
+
+      Getter for the offsets component (int64 pdarray) of this Strings.
+
+      :returns: Pdarray of offsets of the string accessed
+      :rtype: pdarray, int64
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_offsets()
+      [0 4 8]
+
+
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
@@ -14046,6 +14102,34 @@ Attributes
       :rtype: pdarray, int
 
       :raises RuntimeError: Raised if there is a server-side error thrown
+
+
+   .. py:method:: get_bytes()
+
+      Getter for the bytes component (uint8 pdarray) of this Strings.
+
+      :returns: Pdarray of bytes of the string accessed
+      :rtype: pdarray, uint8
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_bytes()
+      [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
+
+
+   .. py:method:: get_offsets()
+
+      Getter for the offsets component (int64 pdarray) of this Strings.
+
+      :returns: Pdarray of offsets of the string accessed
+      :rtype: pdarray, int64
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_offsets()
+      [0 4 8]
 
 
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
@@ -22429,6 +22513,34 @@ Attributes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
+   .. py:method:: get_bytes()
+
+      Getter for the bytes component (uint8 pdarray) of this Strings.
+
+      :returns: Pdarray of bytes of the string accessed
+      :rtype: pdarray, uint8
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_bytes()
+      [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
+
+
+   .. py:method:: get_offsets()
+
+      Getter for the offsets component (int64 pdarray) of this Strings.
+
+      :returns: Pdarray of offsets of the string accessed
+      :rtype: pdarray, int64
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_offsets()
+      [0 4 8]
+
+
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
@@ -24633,6 +24745,34 @@ Attributes
       :rtype: pdarray, int
 
       :raises RuntimeError: Raised if there is a server-side error thrown
+
+
+   .. py:method:: get_bytes()
+
+      Getter for the bytes component (uint8 pdarray) of this Strings.
+
+      :returns: Pdarray of bytes of the string accessed
+      :rtype: pdarray, uint8
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_bytes()
+      [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
+
+
+   .. py:method:: get_offsets()
+
+      Getter for the offsets component (int64 pdarray) of this Strings.
+
+      :returns: Pdarray of offsets of the string accessed
+      :rtype: pdarray, int64
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_offsets()
+      [0 4 8]
 
 
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')

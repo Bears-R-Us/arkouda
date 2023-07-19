@@ -465,6 +465,46 @@ need to instruct the server to assemble the into a composite entity.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.strings.Strings.get_bytes">
+<span class="sig-name descname"><span class="pre">get_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.strings.Strings.get_bytes" title="Permalink to this definition">#</a></dt>
+<dd><p>Getter for the bytes component (uint8 pdarray) of this Strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pdarray of bytes of the string accessed</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, uint8</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;three&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">()</span>
+<span class="go">[111 110 101 0 116 119 111 0 116 104 114 101 101 0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.strings.Strings.get_offsets">
+<span class="sig-name descname"><span class="pre">get_offsets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.strings.Strings.get_offsets" title="Permalink to this definition">#</a></dt>
+<dd><p>Getter for the offsets component (int64 pdarray) of this Strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pdarray of offsets of the string accessed</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int64</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;three&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_offsets</span><span class="p">()</span>
+<span class="go">[0 4 8]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.encode">
 <span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toEncoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromEncoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'UTF-8'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.strings.Strings.encode" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a new strings object in <cite>toEncoding</cite>, expecting that the
@@ -2058,6 +2098,8 @@ until they are unregistered.</p>
 <li><a class="reference internal" href="#arkouda.strings.Strings.from_return_msg"><code class="docutils literal notranslate"><span class="pre">Strings.from_return_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.from_parts"><code class="docutils literal notranslate"><span class="pre">Strings.from_parts()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.get_lengths"><code class="docutils literal notranslate"><span class="pre">Strings.get_lengths()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.get_bytes"><code class="docutils literal notranslate"><span class="pre">Strings.get_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.get_offsets"><code class="docutils literal notranslate"><span class="pre">Strings.get_offsets()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.encode"><code class="docutils literal notranslate"><span class="pre">Strings.encode()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.decode"><code class="docutils literal notranslate"><span class="pre">Strings.decode()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.to_lower"><code class="docutils literal notranslate"><span class="pre">Strings.to_lower()</span></code></a></li>
