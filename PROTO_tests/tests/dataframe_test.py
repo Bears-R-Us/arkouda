@@ -15,32 +15,14 @@ class TestDataFrame:
     io_util.get_directory(df_test_base_tmp)
 
     @staticmethod
-    def build_ak_df():
-        username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        bi = ak.arange(2**200, 2**200 + 6)
-        return ak.DataFrame(
-            {
-                "userName": username,
-                "userID": userid,
-                "item": item,
-                "day": day,
-                "amount": amount,
-                "bi": bi,
-            }
-        )
-
-    @staticmethod
     def build_pd_df():
         username = ["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"]
         userid = [111, 222, 111, 333, 222, 111]
         item = [0, 0, 1, 1, 2, 0]
         day = [5, 5, 6, 5, 6, 6]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6]
-        bi = [2**200, 2**200 + 1, 2**200 + 2, 2**200 + 3, 2**200 + 4, 2**200 + 5]
+        bi = [2 ** 200, 2 ** 200 + 1, 2 ** 200 + 2, 2 ** 200 + 3, 2 ** 200 + 4, 2 ** 200 + 5]
+        ui = np.arange(6).astype(ak.uint64)
         return pd.DataFrame(
             {
                 "userName": username,
@@ -49,16 +31,13 @@ class TestDataFrame:
                 "day": day,
                 "amount": amount,
                 "bi": bi,
+                "ui": ui
             }
         )
 
     @staticmethod
-    def build_ak_df_duplicates():
-        username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 1, 0, 2, 1, 0])
-        day = ak.array([5, 5, 5, 5, 5, 5])
-        return ak.DataFrame({"userName": username, "userID": userid, "item": item, "day": day})
+    def build_ak_df():
+        return ak.DataFrame(TestDataFrame.build_pd_df())
 
     @staticmethod
     def build_pd_df_duplicates():
@@ -69,6 +48,10 @@ class TestDataFrame:
         return pd.DataFrame({"userName": username, "userID": userid, "item": item, "day": day})
 
     @staticmethod
+    def build_ak_df_duplicates():
+        return ak.DataFrame(TestDataFrame.build_pd_df_duplicates())
+
+    @staticmethod
     def build_ak_append():
         username = ak.array(["John", "Carol"])
         userid = ak.array([444, 333])
@@ -76,6 +59,7 @@ class TestDataFrame:
         day = ak.array([1, 2])
         amount = ak.array([0.5, 5.1])
         bi = ak.array([2**200 + 6, 2**200 + 7])
+        ui = ak.array([6, 7], dtype=ak.uint64)
         return ak.DataFrame(
             {
                 "userName": username,
@@ -84,6 +68,7 @@ class TestDataFrame:
                 "day": day,
                 "amount": amount,
                 "bi": bi,
+                "ui": ui
             }
         )
 
@@ -94,16 +79,8 @@ class TestDataFrame:
         item = [0, 0, 1, 1, 2, 0, 0, 2]
         day = [5, 5, 6, 5, 6, 6, 1, 2]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
-        bi = [
-            2**200,
-            2**200 + 1,
-            2**200 + 2,
-            2**200 + 3,
-            2**200 + 4,
-            2**200 + 5,
-            2**200 + 6,
-            2**200 + 7,
-        ]
+        bi = (np.arange(8) + 2**200).tolist()
+        ui = np.arange(8).astype(ak.uint64)
         return pd.DataFrame(
             {
                 "userName": username,
@@ -112,6 +89,7 @@ class TestDataFrame:
                 "day": day,
                 "amount": amount,
                 "bi": bi,
+                "ui": ui
             }
         )
 
@@ -129,6 +107,7 @@ class TestDataFrame:
         day = ak.array([5, 5, 6, 5, 6, 6])
         amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
         bi = ak.arange(2**200, 2**200 + 6)
+        ui = ak.arange(6, dtype=ak.uint64)
         return ak.DataFrame(
             {
                 "userName": username,
@@ -137,6 +116,7 @@ class TestDataFrame:
                 "day": day,
                 "amount": amount,
                 "bi": bi,
+                "ui": ui
             }
         )
 
@@ -184,8 +164,7 @@ class TestDataFrame:
             np.random.randint(5, 10, size),
         ]
         pddf = pd.DataFrame(x)
-        l_cols = [ak.array(val) for val in list(zip(x[0], x[1], x[2]))]
-        akdf = ak.DataFrame(l_cols)
+        akdf = ak.DataFrame([ak.array(val) for val in list(zip(*x))])
         assert isinstance(akdf, ak.DataFrame)
         assert len(akdf) == len(pddf)
         # arkouda does not allow for numeric columns.
@@ -233,11 +212,13 @@ class TestDataFrame:
         assert df.index.to_list() == ref_df.index.to_list()
 
         # column validation [] and . access
-        for cname, col, ref_col in zip(
-            df.columns,
-            [df.userName, df.userID, df.item, df.day, df.amount, df.bi],
-            [ref_df.userName, ref_df.userID, ref_df.item, ref_df.day, ref_df.amount, ref_df.bi],
-        ):
+        # for cname, col, ref_col in zip(
+        #     df.columns,
+        #     [df.userName, df.userID, df.item, df.day, df.amount, df.bi],
+        #     [ref_df.userName, ref_df.userID, ref_df.item, ref_df.day, ref_df.amount, ref_df.bi],
+        # ):
+        for cname in df.columns:
+            col, ref_col = getattr(df, cname), getattr(ref_df, cname)
             assert isinstance(col, ak.Series)
             assert col.to_list() == ref_col.to_list()
             assert isinstance(df[cname], (ak.pdarray, ak.Strings, ak.Categorical))
@@ -261,7 +242,7 @@ class TestDataFrame:
             "c_1": ak.arange(3, 6, 1),
             "c_2": ak.arange(6, 9, 1),
             "c_3": str_arr,
-            "c_4": ak.Categorical(str_arr),
+            "c_4": ak.Categorical(ak.array(["str"] * 3)),
             "c_5": ak.SegArray(ak.array([0, 9, 14]), ak.arange(20)),
             "c_6": ak.arange(2**200, 2**200 + 3),
         }
@@ -273,11 +254,6 @@ class TestDataFrame:
             ["int64", "int64", "int64", "str", "Categorical", "SegArray", "bigint"], akdf.columns
         ):
             assert ref_type == str(akdf.dtypes[c])
-
-    def test_from_pandas(self):
-        ref_df = self.build_pd_df()
-        df = ak.DataFrame(ref_df)
-        assert_frame_equal(ref_df, df.to_pandas())
 
     def test_drop(self):
         # create an arkouda df.
@@ -299,7 +275,7 @@ class TestDataFrame:
         df.drop("userName", axis=1, inplace=True)
         pd_df.drop(labels=["userName"], axis=1, inplace=True)
 
-        assert_frame_equal(pddf_drop, df_drop.to_pandas())
+        assert_frame_equal(pd_df, df.to_pandas())
 
         # Test dropping rows
         df.drop([0, 2, 5], inplace=True)
@@ -307,7 +283,7 @@ class TestDataFrame:
         pd_df.drop(labels=[0, 2, 5], inplace=True)
         pd_df.reset_index(drop=True, inplace=True)
 
-        assert_frame_equal(pddf_drop, df_drop.to_pandas())
+        assert_frame_equal(pd_df, df.to_pandas())
 
         # verify that index keys must be ints
         with pytest.raises(TypeError):
@@ -336,7 +312,7 @@ class TestDataFrame:
 
         row, col = df.shape
         assert row == 6
-        assert col == 6
+        assert col == 7
 
     def test_reset_index(self):
         df = self.build_ak_df()
@@ -391,9 +367,8 @@ class TestDataFrame:
 
     def test_append(self):
         df = self.build_ak_df()
-        df_toappend = self.build_ak_append()
 
-        df.append(df_toappend)
+        df.append(self.build_ak_append())
 
         ref_df = self.build_pd_df_append()
 
@@ -401,6 +376,7 @@ class TestDataFrame:
         assert_frame_equal(ref_df, df.to_pandas())
 
         idx = np.arange(8)
+        print(type(df.index.index))
         assert idx.tolist() == df.index.index.to_list()
 
         df_keyerror = self.build_ak_keyerror()
@@ -413,9 +389,8 @@ class TestDataFrame:
 
     def test_concat(self):
         df = self.build_ak_df()
-        df_toappend = self.build_ak_append()
 
-        glued = ak.DataFrame.concat([df, df_toappend])
+        glued = ak.DataFrame.concat([df, self.build_ak_append()])
 
         ref_df = self.build_pd_df_append()
 
@@ -475,22 +450,7 @@ class TestDataFrame:
         assert_series_equal(pds, s.to_pandas())
 
     def test_gb_series(self):
-        username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        bi = ak.arange(2**200, 2**200 + 6)
-        df = ak.DataFrame(
-            {
-                "userName": username,
-                "userID": userid,
-                "item": item,
-                "day": day,
-                "amount": amount,
-                "bi": bi,
-            }
-        )
+        df = self.build_ak_df()
 
         gb = df.GroupBy("userName", use_series=True)
 
