@@ -533,6 +533,99 @@ class RegistrationTest(ArkoudaTest):
         self.assertIsInstance(sAttach.segments, ak.pdarray)
         self.assertIsInstance(sAttach.unique_keys, ak.Strings)
 
+    def test_string_property_accessor(self):
+        # Verify s can be attached then accessed
+        cleanup()
+        s = ak.array(["one", "two", "three", "123"])
+        s.register("sname")
+        ak.clear()
+        sAttach = ak.Strings.attach("sname")
+        self.assertListEqual(s.to_list(), sAttach.to_list())
+        s.get_bytes()
+        self.assertTrue(s._bytes is not None)
+        s.get_offsets()
+        self.assertTrue(s._offsets is not None)
+        self.assertListEqual(s.to_list(), sAttach.to_list())
+        self.assertListEqual(s.get_bytes().to_list(), sAttach.get_bytes().to_list())
+        self.assertListEqual(s.get_offsets().to_list(), sAttach.get_offsets().to_list())
+
+        # Verify s can be accessed then attached
+        cleanup()
+        s = ak.array(["one", "two", "three", "123"])
+        s.register("sname")
+        ak.clear()
+        s.get_offsets()
+        self.assertTrue(s._offsets is not None)
+        s.get_bytes()
+        self.assertTrue(s._bytes is not None)
+        sAttach = ak.Strings.attach("sname")
+        self.assertListEqual(s.to_list(), sAttach.to_list())
+        self.assertListEqual(s.get_bytes().to_list(), sAttach.get_bytes().to_list())
+        self.assertListEqual(s.get_offsets().to_list(), sAttach.get_offsets().to_list())
+
+        # Testing for registration after being accessed and being removed after unregistering s
+        # Also tests for correct values in accessed arrays
+        cleanup()
+        s = ak.array(["one", "two", "three", "123"])
+        s.register("sname")
+        ak.clear()
+        self.assertTrue(len(ak.list_registry()) == 1)
+
+        sbytes = s.get_bytes()
+        bytes_answers = ak.array(
+            [111, 110, 101, 0, 116, 119, 111, 0, 116, 104, 114, 101, 101, 0, 49, 50, 51, 0]
+        )
+        self.assertListEqual(sbytes.to_list(), bytes_answers.to_list())
+        self.assertTrue(len(ak.list_registry()) == 2)
+
+        soffsets = s.get_offsets()
+        offsets_answers = ak.array([0, 4, 8, 14])
+        self.assertListEqual(soffsets.to_list(), offsets_answers.to_list())
+        self.assertTrue(len(ak.list_registry()) == 3)
+
+        s.unregister()
+        self.assertTrue(len(ak.list_registry()) == 0)
+
+        # Tests for unregistering each property and after clearing we can still access them
+        cleanup()
+        s = ak.array(["one", "two", "three", "123"])
+        s.register("sname")
+        sbytes = s.get_bytes()
+        soffsets = s.get_offsets()
+        self.assertTrue(len(ak.list_registry()) == 3)
+        sbytes.unregister()
+        self.assertTrue(len(ak.list_registry()) == 2)
+        self.assertTrue(sbytes.name not in ak.list_registry())
+        soffsets.unregister()
+        self.assertTrue(len(ak.list_registry()) == 1)
+        self.assertTrue(soffsets.name not in ak.list_registry())
+
+        ak.clear()
+        sbytes = s.get_bytes()
+        soffsets = s.get_offsets()
+        self.assertTrue(len(ak.list_registry()) == 3)
+        self.assertTrue(sbytes.name in ak.list_registry())
+        self.assertTrue(soffsets.name in ak.list_registry())
+
+        # Tests that s does not get registered if a is accessed
+        cleanup()
+        s = ak.array(["one", "two", "three", "123"])
+        self.assertTrue(len(ak.list_registry()) == 0)
+        s.get_bytes()
+        self.assertTrue(len(ak.list_registry()) == 0)
+        s.get_offsets()
+        self.assertTrue(len(ak.list_registry()) == 0)
+
+        # Test to ensure we do not create a duplicate pdarrays after repeated accessing
+        cleanup()
+        s = ak.array(["one", "two", "three", "123"])
+        s.get_bytes()
+        self.assertTrue(len(ak.list_symbol_table()) == 2)
+        s.get_offsets()
+        self.assertTrue(len(ak.list_symbol_table()) == 3)
+        s.get_offsets()
+        self.assertTrue(len(ak.list_symbol_table()) == 3)
+
     def test_pdarray_groupby_attach(self):
         a = ak.randint(0, 10, 10)
         aGroup = ak.GroupBy(a)

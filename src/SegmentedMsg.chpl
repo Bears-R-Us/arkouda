@@ -170,6 +170,40 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc getSegStringPropertyMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    var pn = Reflection.getRoutineName();
+    const property = msgArgs.getValueOf("property");
+    const name = msgArgs.getValueOf("obj");
+
+    var genSym = toGenSymEntry(st.lookup(name));
+
+    if genSym.dtype != DType.Strings{
+      var errorMsg = notImplementedError(pn, "%s".format(dtype2str(genSym.dtype)));
+      smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                      
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+    
+    var ssentry = toSegStringSymEntry(genSym);
+    var rname = st.nextName();
+    select property{
+      when "get_bytes" {
+        st.addEntry(rname, ssentry.bytesEntry);
+      }
+      when "get_offsets" {
+        st.addEntry(rname, ssentry.offsetsEntry);
+      }
+      otherwise {
+        var errorMsg = notImplementedError(pn,property);
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                               
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+    }
+
+    var repMsg = "created "+st.attrib(rname);
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
   proc caseChangeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
@@ -1145,4 +1179,5 @@ module SegmentedMsg {
   registerFunction("segmentedSubstring", segmentedSubstringMsg, getModuleName());
   registerFunction("segmentedWhere", segmentedWhereMsg, getModuleName());
   registerFunction("segmentedFull", segmentedFullMsg, getModuleName());
+  registerFunction("getSegStringProperty", getSegStringPropertyMsg, getModuleName());
 }
