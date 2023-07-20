@@ -1476,7 +1476,6 @@ class DataFrame(UserDict):
         file_type: str (single | distribute)
             Default: distribute
             Whether to save to a single file or distribute across Locales
-            Only used when as_dataset=True
         Returns
         -------
         None
@@ -1496,7 +1495,7 @@ class DataFrame(UserDict):
         from arkouda.io import to_hdf
 
         data = self._prep_data(index=index, columns=columns)
-        return to_hdf(data, prefix_path=path, file_type=file_type)
+        to_hdf(data, prefix_path=path, file_type=file_type)
 
     def _to_hdf_snapshot(self, path, dataset="DataFrame", mode="truncate", file_type="distribute"):
         """
@@ -1568,7 +1567,7 @@ class DataFrame(UserDict):
                     "column_objTypes": [obj.objType for key, obj in self.items()],
                     "column_dtypes": dtypes,
                     "columns": column_data,
-                    "index": self.index.name
+                    "index": self.index.values.name
                 },
             ),
         )

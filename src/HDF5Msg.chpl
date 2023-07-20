@@ -2245,7 +2245,6 @@ module HDF5Msg {
                 C_HDF5.H5Fclose(file_id);
             } 
             when MULTI_FILE {
-                // TODO - may need to adjust usage of idx_col based on typing
                 var filenames = prepFiles(filename, mode, idx_gen);
 
                 // need to add the group to all files
@@ -3589,8 +3588,7 @@ module HDF5Msg {
             } else if objType == ObjType.GROUPBY {
                 // for groupby this information will not be used, but needs to be returned for the workflow
                 (dataclass, bytesize, isSigned) = get_dataset_info(file_id, "%s/%s".format(dsetName, PERMUTATION_NAME)); 
-            } else if objType == ObjType.DATAFRAME {
-                // TODO - call get_info on the index column and handle from there
+            } else if objType == ObjType.DATAFRAME {=
                 // for dataframe this information will not be used, but needs to be returned for the workflow
                 var idx_objType = getObjType(file_id, "%s/%s".format(dsetName, INDEX_NAME));
                 if idx_objType == ObjType.PDARRAY {
