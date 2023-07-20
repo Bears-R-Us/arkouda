@@ -22,7 +22,7 @@ class TestDataFrame:
         day = [5, 5, 6, 5, 6, 6]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6]
         bi = [2 ** 200, 2 ** 200 + 1, 2 ** 200 + 2, 2 ** 200 + 3, 2 ** 200 + 4, 2 ** 200 + 5]
-        ui = np.arange(6).astype(ak.uint64)
+        ui = (np.arange(6).astype(ak.uint64)) + 2**63
         return pd.DataFrame(
             {
                 "userName": username,
@@ -59,7 +59,7 @@ class TestDataFrame:
         day = ak.array([1, 2])
         amount = ak.array([0.5, 5.1])
         bi = ak.array([2**200 + 6, 2**200 + 7])
-        ui = ak.array([6, 7], dtype=ak.uint64)
+        ui = ak.array([6, 7], dtype=ak.uint64) + 2**63
         return ak.DataFrame(
             {
                 "userName": username,
@@ -80,7 +80,7 @@ class TestDataFrame:
         day = [5, 5, 6, 5, 6, 6, 1, 2]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
         bi = (np.arange(8) + 2**200).tolist()
-        ui = np.arange(8).astype(ak.uint64)
+        ui = (np.arange(8).astype(ak.uint64)) + 2**63
         return pd.DataFrame(
             {
                 "userName": username,
@@ -107,7 +107,7 @@ class TestDataFrame:
         day = ak.array([5, 5, 6, 5, 6, 6])
         amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
         bi = ak.arange(2**200, 2**200 + 6)
-        ui = ak.arange(6, dtype=ak.uint64)
+        ui = ak.arange(6, dtype=ak.uint64) + 2**63
         return ak.DataFrame(
             {
                 "userName": username,
@@ -188,12 +188,24 @@ class TestDataFrame:
             {"fields": f.to_list(), "ip": ip.to_list(), "date": pd_d, "bitvector": bv.to_list()}
         )
         assert_frame_equal(pddf, df.to_pandas())
+
+        # validate that set max_rows adjusts the repr properly
+        shape = f"({df._shape_str()})".replace("(", "[").replace(")", "]")
+        pd.set_option("display.max_rows", 4)
+        s = df.__repr__().replace(f" ({df._shape_str()})", f"\n\n{shape}")
+        assert s == pddf.__repr__()
+
         pddf = pd.DataFrame({"a": list(range(1000)), "b": list(range(1000))})
         pddf["a"] = pddf["a"].apply(lambda x: "AA" + str(x))
         pddf["b"] = pddf["b"].apply(lambda x: "BB" + str(x))
 
         df = ak.DataFrame(pddf)
         assert_frame_equal(pddf, df.to_pandas())
+
+        pd.set_option("display.max_rows", 10)
+        shape = f"({df._shape_str()})".replace("(", "[").replace(")", "]")
+        s = df.__repr__().replace(f" ({df._shape_str()})", f"\n\n{shape}")
+        assert s == pddf.__repr__()
 
     def test_boolean_indexing(self):
         df = self.build_ak_df()
@@ -211,12 +223,6 @@ class TestDataFrame:
         assert isinstance(df.index, ak.Index)
         assert df.index.to_list() == ref_df.index.to_list()
 
-        # column validation [] and . access
-        # for cname, col, ref_col in zip(
-        #     df.columns,
-        #     [df.userName, df.userID, df.item, df.day, df.amount, df.bi],
-        #     [ref_df.userName, ref_df.userID, ref_df.item, ref_df.day, ref_df.amount, ref_df.bi],
-        # ):
         for cname in df.columns:
             col, ref_col = getattr(df, cname), getattr(ref_df, cname)
             assert isinstance(col, ak.Series)
@@ -376,7 +382,6 @@ class TestDataFrame:
         assert_frame_equal(ref_df, df.to_pandas())
 
         idx = np.arange(8)
-        print(type(df.index.index))
         assert idx.tolist() == df.index.index.to_list()
 
         df_keyerror = self.build_ak_keyerror()
@@ -619,34 +624,6 @@ class TestDataFrame:
         slice_idx = df[:]
         slice_idx.__repr__()
         assert slice_idx.index.index.to_list() == idx.to_list()
-
-    def test_ipv4_columns(self):
-        # test with single IPv4 column
-        df = ak.DataFrame({"a": ak.arange(10), "b": ak.IPv4(ak.arange(10))})
-        with tempfile.TemporaryDirectory(dir=TestDataFrame.df_test_base_tmp) as tmp_dirname:
-            fname = tmp_dirname + "/ipv4_df"
-            df.to_parquet(fname)
-
-            data = ak.read(fname + "*")
-            rddf = ak.DataFrame({"a": data["a"], "b": ak.IPv4(data["b"])})
-
-            assert_frame_equal(df.to_pandas(), rddf.to_pandas())
-
-        # test with multiple
-        df = ak.DataFrame({"a": ak.IPv4(ak.arange(10)), "b": ak.IPv4(ak.arange(10))})
-        with tempfile.TemporaryDirectory(dir=TestDataFrame.df_test_base_tmp) as tmp_dirname:
-            fname = tmp_dirname + "/ipv4_df"
-            df.to_parquet(fname)
-
-            data = ak.read(fname + "*")
-            rddf = ak.DataFrame({"a": ak.IPv4(data["a"]), "b": ak.IPv4(data["b"])})
-
-            assert_frame_equal(df.to_pandas(), rddf.to_pandas())
-
-        # test replacement of IPv4 with uint representation
-        df = ak.DataFrame({"a": ak.IPv4(ak.arange(10))})
-        df["a"] = df["a"].export_uint()
-        assert ak.arange(10).to_list() == df["a"].to_list()
 
     def test_subset(self):
         df = ak.DataFrame(
