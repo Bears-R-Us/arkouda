@@ -573,7 +573,8 @@ def read_hdf(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Read Arkouda objects from HDF5 file/s
@@ -702,7 +703,8 @@ def read_parquet(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Read Arkouda objects from Parquet file/s
@@ -829,7 +831,8 @@ def read_csv(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
@@ -1520,7 +1523,8 @@ def load(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
@@ -1711,7 +1715,8 @@ def read(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Read datasets from files.
