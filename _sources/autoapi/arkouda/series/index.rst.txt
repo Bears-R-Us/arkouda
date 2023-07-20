@@ -125,6 +125,9 @@ Classes
       Convert the series to a local PANDAS series
 
 
+   .. py:method:: to_list() -> list
+
+
    .. py:method:: value_counts(sort: bool = True) -> Series
 
       Return a Series containing counts of unique values.
