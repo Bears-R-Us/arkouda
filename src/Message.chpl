@@ -8,7 +8,7 @@ module Message {
     use BigInteger;
 
     use ArkoudaFileCompat;
-    use ArkoudaMapCompat;
+    use Map;
     use ArkoudaListCompat;
 
     enum MsgType {NORMAL,WARNING,ERROR}

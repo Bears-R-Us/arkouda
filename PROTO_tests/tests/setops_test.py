@@ -177,12 +177,14 @@ class TestSetOps:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_in1d_multiarray_str(self, size):
+        if size < 1000:
+            size = 1000
         # large general test
-        a = ak.random_strings_uniform(1, 5, size)
-        b = ak.random_strings_uniform(1, 5, size)
+        a = ak.random_strings_uniform(1, 2, size)
+        b = ak.random_strings_uniform(1, 2, size)
 
-        c = ak.random_strings_uniform(1, 5, size)
-        d = ak.random_strings_uniform(1, 5, size)
+        c = ak.random_strings_uniform(1, 2, size)
+        d = ak.random_strings_uniform(1, 2, size)
 
         l1 = [a, b]
         l2 = [c, d]
@@ -200,12 +202,14 @@ class TestSetOps:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_in1d_multiarray_categorical(self, size):
+        if size < 1000:
+            size = 1000
         # large general test
-        a = ak.Categorical(ak.random_strings_uniform(1, 5, size))
-        b = ak.Categorical(ak.random_strings_uniform(1, 5, size))
+        a = ak.Categorical(ak.random_strings_uniform(1, 2, size))
+        b = ak.Categorical(ak.random_strings_uniform(1, 2, size))
 
-        c = ak.Categorical(ak.random_strings_uniform(1, 5, size))
-        d = ak.Categorical(ak.random_strings_uniform(1, 5, size))
+        c = ak.Categorical(ak.random_strings_uniform(1, 2, size))
+        d = ak.Categorical(ak.random_strings_uniform(1, 2, size))
 
         l1 = [a, b]
         l2 = [c, d]
@@ -259,23 +263,25 @@ class TestSetOps:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_intersect1d_multiarray_str(self, size):
+        if size < 1000:
+            size = 1000
         # large general test
-        a = ak.random_strings_uniform(1, 5, size)
-        b = ak.random_strings_uniform(1, 5, size)
+        a = ak.random_strings_uniform(1, 2, size)
+        b = ak.random_strings_uniform(1, 2, size)
 
-        c = ak.random_strings_uniform(1, 5, size)
-        d = ak.random_strings_uniform(1, 5, size)
+        c = ak.random_strings_uniform(1, 2, size)
+        d = ak.random_strings_uniform(1, 2, size)
 
         l1 = [a, b]
         l2 = [c, d]
 
         ak_result = ak.intersect1d(l1, l2)
 
-        la = set(zip(a.to_list(), c.to_list()))
-        lb = set(zip(b.to_list(), d.to_list()))
+        la = set(zip(a.to_list(), b.to_list()))
+        lb = set(zip(c.to_list(), d.to_list()))
         lr = sorted(la.intersection(lb))
         ak_result = [x.to_list() for x in ak_result]
-        ak_result = list(zip(*ak_result))
+        ak_result = sorted(list(zip(*ak_result)))
         assert ak_result == lr
 
         # Test for strings
@@ -293,20 +299,22 @@ class TestSetOps:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_intersect1d_multiarray_categorical(self, size):
+        if size < 1000:
+            size = 1000
         # large general test
-        a = ak.Categorical(ak.random_strings_uniform(1, 5, size))
-        b = ak.Categorical(ak.random_strings_uniform(1, 5, size))
+        a = ak.Categorical(ak.random_strings_uniform(1, 2, size))
+        b = ak.Categorical(ak.random_strings_uniform(1, 2, size))
 
-        c = ak.Categorical(ak.random_strings_uniform(1, 5, size))
-        d = ak.Categorical(ak.random_strings_uniform(1, 5, size))
+        c = ak.Categorical(ak.random_strings_uniform(1, 2, size))
+        d = ak.Categorical(ak.random_strings_uniform(1, 2, size))
 
         l1 = [a, b]
         l2 = [c, d]
 
         ak_result = ak.intersect1d(l1, l2)
 
-        la = set(zip(a.to_list(), c.to_list()))
-        lb = set(zip(b.to_list(), d.to_list()))
+        la = set(zip(a.to_list(), b.to_list()))
+        lb = set(zip(c.to_list(), d.to_list()))
         lr = sorted(la.intersection(lb))
         ak_result = [x.to_list() for x in ak_result]
         ak_result = list(zip(*ak_result))

@@ -12,12 +12,12 @@ module IndexingMsg
     use MultiTypeSymbolTable;
 
     use CommAggregation;
-    use BigInteger;
 
     use FileIO;
     use List;
 
-    use ArkoudaMapCompat;
+    use ArkoudaBigIntCompat;
+    use Map;
     use ArkoudaFileCompat;
     use ArkoudaBigIntCompat;
     use ArkoudaRangeCompat;
@@ -637,8 +637,7 @@ module IndexingMsg
              }
             when (DType.BigInt, DType.Bool) {
                 var e = toSymEntry(gEnt,bigint);
-                // TODO change once we can cast directly from bool to bigint
-                var val = valueArg.getBoolValue():int:bigint;
+                var val = valueArg.getBoolValue():bigint;
                 if e.max_bits != -1 {
                   mod(val, val, e.max_bits);
                 }
@@ -867,7 +866,7 @@ module IndexingMsg
             if gX.dtype == DType.BigInt {
                 var e = toSymEntry(gX, bigint);
                 // NOTE y.etype will never be real when gX.dtype is bigint, but the compiler doesn't know that
-                var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
+                var tmp = if y.etype == bigint then ya else if y.etype == real then ya:int:bigint else ya:bigint;
                 ref ea = e.a;
                 forall (i,v) in zip(iva,tmp) with (var agg = newDstAggregator(bigint)) {
                     agg.copy(ea[i],v);
@@ -912,7 +911,7 @@ module IndexingMsg
             if gX.dtype == DType.BigInt {
                 var e = toSymEntry(gX, bigint);
                 // NOTE y.etype will never be real when gX.dtype is bigint, but the compiler doesn't know that
-                var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
+                var tmp = if y.etype == bigint then ya else if y.etype == real then ya:int:bigint else ya:bigint;
                 ref ea = e.a;
                 forall (i,v) in zip(iva,tmp) with (var agg = newDstAggregator(bigint)) {
                     agg.copy(ea[i:int],v);
@@ -956,7 +955,7 @@ module IndexingMsg
             if gX.dtype == DType.BigInt {
                 var e = toSymEntry(gX, bigint);
                 // NOTE y.etype will never be real when gX.dtype is bigint, but the compiler doesn't know that
-                var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
+                var tmp = if y.etype == bigint then ya else if y.etype == real then ya:int:bigint else ya:bigint;
                 ref ea = e.a;
                 const ref ead = ea.domain;
                 forall (eai, i) in zip(ea, ead) with (var agg = newSrcAggregator(bigint)) {
@@ -1180,8 +1179,7 @@ module IndexingMsg
              }
             when (DType.BigInt, DType.Bool) {
                 var e = toSymEntry(gEnt,bigint);
-                // TODO change once we can cast directly from bool to bigint
-                var val = value.getBoolValue():int:bigint;
+                var val = value.getBoolValue():bigint;
                 if e.max_bits != -1 {
                   mod(val, val, e.max_bits);
                 }

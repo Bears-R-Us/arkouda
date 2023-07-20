@@ -1,3 +1,3 @@
 module ArkoudaMemDiagnosticsCompat {
-  public use Memory.Diagnostics;
+  public use MemDiagnostics;
 }

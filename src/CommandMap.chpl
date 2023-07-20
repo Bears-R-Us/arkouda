@@ -3,7 +3,7 @@ module CommandMap {
   use MultiTypeSymbolTable;
 
   use ArkoudaFileCompat;
-  use ArkoudaMapCompat;
+  use Map;
 
   /**
    * This is a dummy function to get the signature of the Arkouda

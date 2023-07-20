@@ -11,7 +11,7 @@ module MultiTypeSymbolTable
     use MultiTypeSymEntry;
     use IO;
 
-    use ArkoudaMapCompat;
+    use Map;
     use ArkoudaRegexCompat;
     use ArkoudaFileCompat;
     
@@ -471,7 +471,7 @@ module MultiTypeSymbolTable
             var entry = tab[name];
             if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
                 var u: borrowed GenSymEntry = toGenSymEntry(entry);
-                if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
+                if u.dtype == DType.UNDEF {
                     var s = unrecognizedTypeError("datarepr",dtype2str(u.dtype));
                     mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);
                     return s;

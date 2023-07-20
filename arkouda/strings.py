@@ -18,7 +18,7 @@ from arkouda.dtypes import (
     str_scalars,
     translate_np_dtype,
 )
-from arkouda.infoclass import information
+from arkouda.infoclass import information, list_registry, list_symbol_table
 from arkouda.logger import getArkoudaLogger
 from arkouda.match import Match, MatchType
 from arkouda.pdarrayclass import (
@@ -26,6 +26,7 @@ from arkouda.pdarrayclass import (
     parse_single_value,
     pdarray,
     unregister_pdarray_by_name,
+    attach_pdarray,
 )
 
 __all__ = ["Strings"]
@@ -183,6 +184,8 @@ class Strings:
         except Exception as e:
             raise ValueError(e)
 
+        self._bytes: Optional[pdarray] = None
+        self._offsets: Optional[pdarray] = None
         self.dtype = npstr
         self._regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
@@ -353,6 +356,70 @@ class Strings:
         return create_pdarray(
             generic_msg(cmd="segmentLengths", args={"objType": self.objType, "obj": self.entry})
         )
+
+    def get_bytes(self):
+        """
+        Getter for the bytes component (uint8 pdarray) of this Strings.
+
+        Returns
+        -------
+        pdarray, uint8
+            Pdarray of bytes of the string accessed
+
+        Example
+        -------
+        >>> x = ak.array(['one', 'two', 'three'])
+        >>> x.get_bytes()
+        [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
+        """
+        bytes_name = self.name + "_bytes"
+        registry = list_registry()
+
+        if self._bytes is None and bytes_name in registry:
+            self._bytes = attach_pdarray(bytes_name)
+
+        if self._bytes is None or self._bytes.name not in list_symbol_table():
+            self._bytes = create_pdarray(
+                generic_msg(
+                    cmd="getSegStringProperty", args={"property": "get_bytes", "obj": self.entry}
+                )
+            )
+
+        if self.is_registered() and self._bytes.name not in registry:
+            self._bytes.register(self.name + "_bytes")
+        return self._bytes
+
+    def get_offsets(self):
+        """
+        Getter for the offsets component (int64 pdarray) of this Strings.
+
+        Returns
+        -------
+        pdarray, int64
+            Pdarray of offsets of the string accessed
+
+        Example
+        -------
+        >>> x = ak.array(['one', 'two', 'three'])
+        >>> x.get_offsets()
+        [0 4 8]
+        """
+        offsets_name = self.name + "_offsets"
+        registry = list_registry()
+
+        if self._offsets is None and offsets_name in registry:
+            self._offsets = attach_pdarray(offsets_name)
+
+        if self._offsets is None or self._offsets.name not in list_symbol_table():
+            self._offsets = create_pdarray(
+                generic_msg(
+                    cmd="getSegStringProperty", args={"property": "get_offsets", "obj": self.entry}
+                )
+            )
+
+        if self.is_registered() and self._offsets.name not in registry:
+            self._offsets.register(self.name + "_offsets")
+        return self._offsets
 
     def encode(self, toEncoding: str, fromEncoding: str = "UTF-8"):
         """
@@ -2074,7 +2141,12 @@ class Strings:
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
         """
-        from arkouda.io import _mode_str_to_int, _file_type_to_int, _get_hdf_filetype, _repack_hdf
+        from arkouda.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
@@ -2343,6 +2415,10 @@ class Strings:
         """
         self.entry.register(user_defined_name)
         self.name = user_defined_name
+        if self._bytes is not None:
+            self._bytes.register(self.name + "_bytes")
+        if self._offsets is not None:
+            self._offsets.register(self.name + "_offsets")
         return self
 
     def unregister(self) -> None:
@@ -2373,6 +2449,10 @@ class Strings:
         """
         self.entry.unregister()
         self.name = None
+        if self._bytes is not None:
+            self._bytes.unregister()
+        if self._offsets is not None:
+            self._offsets.unregister()
 
     @staticmethod
     @typechecked
@@ -2405,9 +2485,17 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
+        from arkouda.pdarrayclass import attach_pdarray
+
         rep_msg: str = cast(str, generic_msg(cmd="attach", args={"name": user_defined_name}))
         s = Strings.from_return_msg(rep_msg)
         s.name = user_defined_name
+        registry = list_registry()
+        bytes_name, offsets_name = f"{user_defined_name}_bytes", f"{user_defined_name}_offsets"
+        if bytes_name in registry:
+            s._bytes = attach_pdarray(bytes_name)
+        if offsets_name in registry:
+            s._offsets = attach_pdarray(offsets_name)
         return s
 
     @staticmethod
@@ -2426,3 +2514,9 @@ class Strings:
         register, unregister, attach, is_registered
         """
         unregister_pdarray_by_name(user_defined_name)
+        registry = list_registry()
+        bytes_name, offsets_name = f"{user_defined_name}_bytes", f"{user_defined_name}_offsets"
+        if bytes_name in registry:
+            unregister_pdarray_by_name(bytes_name)
+        if offsets_name in registry:
+            unregister_pdarray_by_name(offsets_name)

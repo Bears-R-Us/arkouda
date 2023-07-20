@@ -6,7 +6,7 @@ from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.infoclass import list_symbol_table
+from arkouda.infoclass import list_registry, list_symbol_table
 from arkouda.pdarrayclass import RegistrationError, create_pdarray
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
@@ -248,7 +248,18 @@ def attach(name: str, dtype: str = "infer"):
         dtype = repMsg.split()[2]
         repMsg = repMsg[len(repType) + 1 :]
         if dtype == "str":
-            return Strings.from_return_msg(repMsg)
+            s = Strings.from_return_msg(repMsg)
+            registry = list_registry()
+            bytes_name, offsets_name = f"{name}_bytes", f"{name}_offsets"
+            if bytes_name in registry:
+                s._bytes = create_pdarray(
+                    cast(str, generic_msg(cmd="attach", args={"name": bytes_name}))
+                )
+            if offsets_name in registry:
+                s._offsets = create_pdarray(
+                    cast(str, generic_msg(cmd="attach", args={"name": offsets_name}))
+                )
+            return s
         else:
             return create_pdarray(repMsg)
     else:

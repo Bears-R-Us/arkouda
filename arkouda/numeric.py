@@ -809,7 +809,7 @@ def rad2deg(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return 180 * pda / np.pi
+    return 180 * (pda / np.pi)
 
 
 @typechecked

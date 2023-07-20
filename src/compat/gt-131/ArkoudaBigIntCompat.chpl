@@ -1,5 +1,5 @@
 module ArkoudaBigIntCompat {
-  use BigInteger;
+  public use BigInteger;
 
   proc rightShift(const ref a: bigint, b: int): bigint {
     return a >> b;
