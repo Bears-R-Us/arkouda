@@ -40,13 +40,11 @@ module RandArray {
 
   proc fillReal(a:[] real, const aMin:numeric=0.0, const aMax:numeric=1.0, const seedStr:string="None") throws {
     if (seedStr.toLower() == "none") {
-      fillRandom(a);
+      fillRandom(a, aMin, aMax);
     } else {
       var seed = (seedStr:int) + here.id;
-      fillRandom(a, seed);
+      fillRandom(a, aMin, aMax, seed);
     }
-    const scale = aMax - aMin;
-    a = scale*a + aMin;
   }
 
   proc fillBool(a:[] bool, const seedStr:string="None") throws {
