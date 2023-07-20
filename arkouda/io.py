@@ -10,12 +10,12 @@ from typeguard import typechecked
 from arkouda.array_view import ArrayView
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
+from arkouda.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import array, arange
+from arkouda.pdarraycreation import arange, array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
-from arkouda.dataframe import DataFrame
 
 __all__ = [
     "get_filetype",

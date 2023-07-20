@@ -1527,8 +1527,8 @@ class DataFrame(UserDict):
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
         from arkouda.categorical import Categorical as Categorical_
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
 
         column_data = [
             obj.name
@@ -1543,15 +1543,13 @@ class DataFrame(UserDict):
                 }
             )
             if isinstance(obj, Categorical_)
-            else json.dumps(
-                {
-                    "segments": obj.segments,
-                    "values": obj.values
-                }
-            )
+            else json.dumps({"segments": obj.segments, "values": obj.values})
             for k, obj in self.items()
         ]
-        dtypes = [str(obj.categories.dtype) if isinstance(obj, Categorical_) else str(obj.dtype) for obj in self.values()]
+        dtypes = [
+            str(obj.categories.dtype) if isinstance(obj, Categorical_) else str(obj.dtype)
+            for obj in self.values()
+        ]
         return cast(
             str,
             generic_msg(
@@ -1567,7 +1565,7 @@ class DataFrame(UserDict):
                     "column_objTypes": [obj.objType for key, obj in self.items()],
                     "column_dtypes": dtypes,
                     "columns": column_data,
-                    "index": self.index.values.name
+                    "index": self.index.values.name,
                 },
             ),
         )
@@ -1815,7 +1813,12 @@ class DataFrame(UserDict):
         Load dataframe from file
         file_format needed for consistency with other load functions
         """
-        from arkouda.io import _dict_recombine_segarrays_categoricals, get_filetype, load_all
+        from arkouda.io import (
+            _dict_recombine_segarrays_categoricals,
+            get_filetype,
+            load_all,
+        )
+
         prefix, extension = os.path.splitext(prefix_path)
         first_file = f"{prefix}_LOCALE0000{extension}"
         filetype = get_filetype(first_file) if file_format.lower() == "infer" else file_format
@@ -2516,7 +2519,7 @@ class DataFrame(UserDict):
                 i += 3
 
             elif parts[i] == "segarray":
-                info = json.loads(parts[i+1])
+                info = json.loads(parts[i + 1])
                 colName = DataFrame._parse_col_name(info["segments"], dfName)[0]
                 cols[colName] = SegArray.from_return_msg(parts[i + 1])
                 i += 1
