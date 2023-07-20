@@ -6,7 +6,6 @@ module ServerConfig
     use SymArrayDmap only makeDistDom;
 
     public use IO;
-    private use CTypes;
 
     use ServerErrorStrings;
     use Reflection;
@@ -15,6 +14,7 @@ module ServerConfig
     use MemoryMgmt;
 
     use ArkoudaFileCompat;
+    private use ArkoudaCTypesCompat;
     
     enum Deployment {STANDARD,KUBERNETES}
 
@@ -139,7 +139,7 @@ module ServerConfig
     const scLogger = new Logger(lLevel,lChannel);
    
     proc createConfig() {
-        use CTypes;
+        use ArkoudaCTypesCompat;
 
         class LocaleConfig {
             const id: int;
@@ -227,7 +227,7 @@ module ServerConfig
     chpl_comm_regMemHeapInfo if using a fixed heap, otherwise physical memory
     */ 
     proc getPhysicalMemHere() {
-        use ArkoudaMemDiagnosticsCompat, CTypes;
+        use ArkoudaMemDiagnosticsCompat, ArkoudaCTypesCompat;
         extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_void_ptr), size: c_ptr(c_size_t)): void;
         var unused: c_void_ptr;
         var heap_size: c_size_t;

@@ -5,7 +5,7 @@ require "iconv.h";
 
 // Note: Generated with fake std headers
 
-use CTypes;
+use ArkoudaCTypesCompat;
 extern var _libiconv_version : c_int;
 
 extern proc libiconv_open(tocode : c_string, fromcode : c_string) : libiconv_t;

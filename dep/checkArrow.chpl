@@ -1,4 +1,5 @@
-use CTypes, IO;
+use IO;
+use ArkoudaCTypesCompat;
 use ArkoudaStringBytesCompat;
 
 require "../src/ArrowFunctions.h";

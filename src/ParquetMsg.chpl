@@ -1,5 +1,5 @@
 module ParquetMsg {
-  use CTypes, IO;
+  use IO;
   use ServerErrors, ServerConfig;
   use FileIO;
   use FileSystem;
@@ -17,6 +17,7 @@ module ParquetMsg {
   use SegmentedString;
 
   use Map;
+  use ArkoudaCTypesCompat;
   use ArkoudaListCompat;
   use ArkoudaStringBytesCompat;
 

@@ -5,7 +5,7 @@ require "idn2.h";
 
 // Note: Generated with fake std headers
 
-use CTypes;
+use ArkoudaCTypesCompat;
 extern proc idn2_lookup_u8(ref src : uint(8), ref lookupname : c_ptr(uint(8)), flags : c_int) : c_int;
 
 extern proc idn2_lookup_u8(src : c_ptr(uint(8)), lookupname : c_ptr(c_ptr(uint(8))), flags : c_int) : c_int;
