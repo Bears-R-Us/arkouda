@@ -358,6 +358,11 @@ class Series:
         val = convert_if_categorical(self.values)
         return pd.Series(val.to_ndarray(), index=idx)
 
+    @typechecked()
+    def to_list(self) -> list:
+        p = self.to_pandas()
+        return p.to_list()
+
     @typechecked
     def value_counts(self, sort: bool = True) -> Series:
         """Return a Series containing counts of unique values.

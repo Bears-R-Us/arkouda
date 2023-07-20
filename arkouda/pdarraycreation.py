@@ -229,6 +229,7 @@ def array(
                 a = np.array(a)
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
+
     # Return multi-dimensional arrayview
     if a.ndim != 1:
         # TODO add order
@@ -239,8 +240,10 @@ def array(
                 return flat_a.reshape(a.shape)
         else:
             raise TypeError("Must be an iterable or have a numeric DType")
+
     # Check if array of strings
-    if "U" in a.dtype.kind:
+    # if a.dtype == numpy.object_ need to check first element
+    if "U" in a.dtype.kind or (a.dtype == np.object_ and isinstance(a[0], str)):
         # encode each string and add a null byte terminator
         encoded = [i for i in itertools.chain.from_iterable(map(lambda x: x.encode() + b"\x00", a))]
         nbytes = len(encoded)
