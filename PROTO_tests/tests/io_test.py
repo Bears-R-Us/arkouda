@@ -14,8 +14,6 @@ from arkouda import io_util
 
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_AND_STR_TYPES = NUMERIC_TYPES + ["str"]
-COMPRESSIONS = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
-
 
 def make_ak_arrays(size, dtype):
     if dtype in ["int64", "float64"]:
@@ -49,6 +47,9 @@ def make_edge_case_arrays(dtype):
                 7.0,
                 np.finfo(np.float64).max,
                 np.inf,
+                np.nan,
+                np.nan,
+                np.nan,
             ]
         )
     elif dtype == "bool":
@@ -76,7 +77,7 @@ def edge_case_segarray_setup(dtype):
     if dtype == "uint64":
         return [0, 1, 2**63 + 3], [0], [np.iinfo(np.uint64).max, 17]
     elif dtype == "float64":
-        return [-0.0, np.finfo(np.float64).min, 2.7], [1.99], [np.inf, np.nan]
+        return [-0.0, np.finfo(np.float64).min, np.nan, 2.7], [1.99], [np.inf, np.nan]
     elif dtype == "bool":
         return [0, 1, 1], [0], [1, 0]
     elif dtype == "str":
@@ -116,6 +117,7 @@ def make_multi_col_df():
 class TestParquet:
     par_test_base_tmp = f"{os.getcwd()}/par_io_test"
     io_util.get_directory(par_test_base_tmp)
+    COMPRESSIONS = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
@@ -135,6 +137,14 @@ class TestParquet:
             # verify generic read works
             gen_arr = ak.read(f"{tmp_dirname}/pq_test_correct*", "my-dset")
             assert (ak_arr == gen_arr).all()
+
+            # verify generic load works
+            gen_arr = ak.load(path_prefix=f"{tmp_dirname}/pq_test_correct", dataset="my-dset")
+            assert (ak_arr == gen_arr).all()
+
+            # verify load_all works
+            gen_arr = ak.load_all(path_prefix=f"{tmp_dirname}/pq_test_correct")
+            assert (ak_arr == gen_arr['my-dset']).all()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
@@ -184,14 +194,10 @@ class TestParquet:
                 compression=comp if dtype != "bool" else None,
             )
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_edge_case*", "my-dset")
-            # verify generic read works
-            gen_arr = ak.read(f"{tmp_dirname}/pq_test_edge_case*", "my-dset")
             if dtype == "float64":
                 assert np.allclose(np_edge_case, pq_arr.to_ndarray(), equal_nan=True)
-                assert np.allclose(np_edge_case, gen_arr.to_ndarray(), equal_nan=True)
             else:
                 assert (np_edge_case == pq_arr.to_ndarray()).all()
-                assert (np_edge_case == gen_arr.to_ndarray()).all()
 
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
     def test_get_datasets(self, dtype):
@@ -436,7 +442,7 @@ class TestParquet:
         with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
             fname = f"{tmp_dirname}/pq_small_int"
             df_pd.to_parquet(fname)
-            df_ak = ak.DataFrame(ak.read(fname + "*"))
+            df_ak = ak.DataFrame(ak.read_parquet(fname + "*"))
             for c in df_ak.columns:
                 assert df_ak[c].to_list() == df_pd[c].to_list()
 
@@ -474,7 +480,7 @@ class TestParquet:
             fname = f"{tmp_dirname}/ipv4_df"
             df.to_parquet(fname, compression=comp)
 
-            data = ak.read(f"{fname}*")
+            data = ak.read_parquet(f"{fname}*")
             rd_df = ak.DataFrame({"a": data["a"], "b": ak.IPv4(data["b"])})
 
             pd.testing.assert_frame_equal(df.to_pandas(), rd_df.to_pandas())
@@ -485,7 +491,7 @@ class TestParquet:
             fname = f"{tmp_dirname}/ipv4_df"
             df.to_parquet(fname, compression=comp)
 
-            data = ak.read(f"{fname}*")
+            data = ak.read_parquet(f"{fname}*")
             rd_df = ak.DataFrame({"a": ak.IPv4(data["a"]), "b": ak.IPv4(data["b"])})
 
             pd.testing.assert_frame_equal(df.to_pandas(), rd_df.to_pandas())
