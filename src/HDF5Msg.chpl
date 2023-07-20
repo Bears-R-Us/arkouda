@@ -3588,7 +3588,7 @@ module HDF5Msg {
             } else if objType == ObjType.GROUPBY {
                 // for groupby this information will not be used, but needs to be returned for the workflow
                 (dataclass, bytesize, isSigned) = get_dataset_info(file_id, "%s/%s".format(dsetName, PERMUTATION_NAME)); 
-            } else if objType == ObjType.DATAFRAME {=
+            } else if objType == ObjType.DATAFRAME {
                 // for dataframe this information will not be used, but needs to be returned for the workflow
                 var idx_objType = getObjType(file_id, "%s/%s".format(dsetName, INDEX_NAME));
                 if idx_objType == ObjType.PDARRAY {
