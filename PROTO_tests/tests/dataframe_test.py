@@ -11,8 +11,6 @@ from arkouda import io_util
 
 
 class TestDataFrame:
-    df_test_base_tmp = "{}/df_test".format(os.getcwd())
-    io_util.get_directory(df_test_base_tmp)
 
     @staticmethod
     def build_pd_df():
