@@ -1543,7 +1543,7 @@ class DataFrame(UserDict):
                 }
             )
             if isinstance(obj, Categorical_)
-            else json.dumps({"segments": obj.segments, "values": obj.values})
+            else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
             for k, obj in self.items()
         ]
         dtypes = [
