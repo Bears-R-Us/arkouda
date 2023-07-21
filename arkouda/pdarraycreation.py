@@ -15,15 +15,14 @@ from arkouda.dtypes import (
     bigint,
 )
 from arkouda.dtypes import dtype as akdtype
+from arkouda.dtypes import float64, get_byteorder, get_server_byteorder
+from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import (
-    float64,
-    get_byteorder,
-    get_server_byteorder,
-    int64,
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
     numeric_scalars,
+    resolve_scalar_dtype,
 )
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
@@ -811,21 +810,28 @@ def arange(*args, **kwargs) -> pdarray:
     if stride == 0:
         raise ZeroDivisionError("division by zero")
 
-    dtype = int64 if "dtype" not in kwargs.keys() else kwargs["dtype"]
+    dtype = akint64 if "dtype" not in kwargs.keys() else kwargs["dtype"]
 
     if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(stride):
-        if dtype in ["bigint", bigint] or start >= 2**64 or stop >= 2**64:
+        arg_dtypes = [resolve_scalar_dtype(arg) for arg in (start, stop, stride)]
+        max_bits = None
+        arg_dtype = "int64"
+        if dtype in ["bigint", bigint] or "bigint" in arg_dtypes:
             max_bits = None if "max_bits" not in kwargs.keys() else kwargs["max_bits"]
-            # we only return dtype bigint here
-            repMsg = generic_msg(
-                cmd="bigintArange", args={"start": start, "stop": stop, "stride": stride}
-            )
-            return create_pdarray(repMsg, max_bits=max_bits)
-        else:
-            if stride < 0:
-                stop = stop + 2
-            repMsg = generic_msg(cmd="arange", args={"start": start, "stop": stop, "stride": stride})
-            return create_pdarray(repMsg) if dtype == int64 else akcast(create_pdarray(repMsg), dtype)
+            arg_dtype = "bigint"
+        elif "uint64" in arg_dtypes:
+            arg_dtype = "uint64"
+
+        if stride < 0:
+            stop = stop + 2
+        repMsg = generic_msg(
+            cmd="arange", args={"start": start, "stop": stop, "stride": stride, "dtype": arg_dtype}
+        )
+        return (
+            create_pdarray(repMsg, max_bits=max_bits)
+            if dtype == akint64
+            else akcast(create_pdarray(repMsg, max_bits=max_bits), dtype)
+        )
     else:
         raise TypeError(
             f"start,stop,stride must be type int, np.int64, or np.uint64 {start} {stop} {stride}"
@@ -886,7 +892,11 @@ def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars)
 
 @typechecked
 def randint(
-    low: numeric_scalars, high: numeric_scalars, size: int_scalars, dtype=int64, seed: int_scalars = None
+    low: numeric_scalars,
+    high: numeric_scalars,
+    size: int_scalars,
+    dtype=akint64,
+    seed: int_scalars = None,
 ) -> pdarray:
     """
     Generate a pdarray of randomized int, float, or bool values in a
