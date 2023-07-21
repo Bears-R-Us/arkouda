@@ -125,11 +125,10 @@ class TestParquet:
     def test_read_and_write(self, prob_size, dtype, comp):
         ak_arr = make_ak_arrays(prob_size * pytest.nl, dtype)
         with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
-            # compression doesn't work for bool see issue #2579
             ak_arr.to_parquet(
                 f"{tmp_dirname}/pq_test_correct",
                 "my-dset",
-                compression=comp #if dtype != "bool" else None,
+                compression=comp
             )
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_correct*", "my-dset")
             assert (ak_arr == pq_arr).all()
@@ -187,11 +186,10 @@ class TestParquet:
         np_edge_case = make_edge_case_arrays(dtype)
         ak_edge_case = ak.array(np_edge_case)
         with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
-            # compression doesn't work for bool see issue #2579
             ak_edge_case.to_parquet(
                 f"{tmp_dirname}/pq_test_edge_case",
                 "my-dset",
-                compression=comp #if dtype != "bool" else None,
+                compression=comp
             )
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_edge_case*", "my-dset")
             if dtype == "float64":
@@ -414,7 +412,6 @@ class TestParquet:
 
     @pytest.mark.parametrize("comp", COMPRESSIONS)
     def test_multi_col_write(self, comp):
-        # TODO update to add compression after this is added for bools in issue #2579
         df_dict = make_multi_col_df()
         akdf = ak.DataFrame(df_dict)
         with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
