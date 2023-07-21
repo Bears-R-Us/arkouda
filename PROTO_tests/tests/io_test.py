@@ -129,7 +129,7 @@ class TestParquet:
             ak_arr.to_parquet(
                 f"{tmp_dirname}/pq_test_correct",
                 "my-dset",
-                compression=comp if dtype != "bool" else None,
+                compression=comp #if dtype != "bool" else None,
             )
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_correct*", "my-dset")
             assert (ak_arr == pq_arr).all()
@@ -191,7 +191,7 @@ class TestParquet:
             ak_edge_case.to_parquet(
                 f"{tmp_dirname}/pq_test_edge_case",
                 "my-dset",
-                compression=comp if dtype != "bool" else None,
+                compression=comp #if dtype != "bool" else None,
             )
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_edge_case*", "my-dset")
             if dtype == "float64":
@@ -412,20 +412,21 @@ class TestParquet:
                 x, y = s[i].to_list(), rd_data[i].to_list()
                 assert x == y if dtype != "float64" else np.allclose(x, y, equal_nan=True)
 
-    def test_multi_col_write(self):
+    @pytest.mark.parametrize("comp", COMPRESSIONS)
+    def test_multi_col_write(self, comp):
         # TODO update to add compression after this is added for bools in issue #2579
         df_dict = make_multi_col_df()
         akdf = ak.DataFrame(df_dict)
         with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
             # use multi-column write to generate parquet file
-            akdf.to_parquet(f"{tmp_dirname}/multi_col_parquet")
+            akdf.to_parquet(f"{tmp_dirname}/multi_col_parquet", compression=comp)
             # read files and ensure that all resulting fields are as expected
             rd_data = ak.read_parquet(f"{tmp_dirname}/multi_col_parquet*")
             rd_df = ak.DataFrame(rd_data)
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
             # test save with index true
-            akdf.to_parquet(f"{tmp_dirname}/multi_col_parquet", index=True)
+            akdf.to_parquet(f"{tmp_dirname}/multi_col_parquet", index=True, compression=comp)
             rd_data = ak.read_parquet(f"{tmp_dirname}/multi_col_parquet*")
             rd_df = ak.DataFrame(rd_data)
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
