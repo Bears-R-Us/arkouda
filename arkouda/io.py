@@ -10,9 +10,10 @@ from typeguard import typechecked
 from arkouda.array_view import ArrayView
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
+from arkouda.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import array, arange
+from arkouda.pdarraycreation import arange, array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 
@@ -435,7 +436,7 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
 
 def _parse_obj(
     obj: Dict,
-) -> Union[Strings, pdarray, ArrayView, SegArray, Categorical]:
+) -> Union[Strings, pdarray, ArrayView, SegArray, Categorical, DataFrame]:
     """
     Helper function to create an Arkouda object from read response
 
@@ -468,6 +469,8 @@ def _parse_obj(
         return Categorical.from_return_msg(obj["created"])
     elif GroupBy.objType.upper() == obj["arkouda_type"]:
         return GroupBy.from_return_msg(obj["created"])
+    elif DataFrame.objType.upper() == obj["arkouda_type"]:
+        return DataFrame.from_return_msg(obj["created"])
     else:
         raise TypeError(f"Unknown arkouda type:{obj['arkouda_type']}")
 
@@ -519,7 +522,8 @@ def _build_objects(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[Strings, pdarray, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[Strings, pdarray, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Helper function to create the Arkouda objects from a read operation
@@ -569,7 +573,8 @@ def read_hdf(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Read Arkouda objects from HDF5 file/s
@@ -698,7 +703,8 @@ def read_parquet(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Read Arkouda objects from Parquet file/s
@@ -825,7 +831,8 @@ def read_csv(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
@@ -1516,7 +1523,8 @@ def load(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
@@ -1707,7 +1715,8 @@ def read(
     SegArray,
     ArrayView,
     Categorical,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical]],
+    DataFrame,
+    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
 ]:
     """
     Read datasets from files.

@@ -677,56 +677,72 @@ class DataFrameTest(ArkoudaTest):
 
     def test_ipv4_columns(self):
         # test with single IPv4 column
-        df = ak.DataFrame({
-            'a': ak.arange(10),
-            'b': ak.IPv4(ak.arange(10))
-        })
-        with tempfile.TemporaryDirectory(dir=DataFrameTest.df_test_base_tmp) as tmp_dirname:
-            fname = tmp_dirname + "/ipv4_df"
-            df.to_parquet(fname)
-
-            data = ak.read(fname+"*")
-            rddf = ak.DataFrame({
-                'a': data['a'],
-                'b': ak.IPv4(data['b'])
-            })
-
-            self.assertListEqual(df['a'].to_list(), rddf['a'].to_list())
-            self.assertListEqual(df['b'].to_list(), rddf['b'].to_list())
-
-        # test with multiple
-        df = ak.DataFrame({
-            'a': ak.IPv4(ak.arange(10)),
-            'b': ak.IPv4(ak.arange(10))
-        })
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.IPv4(ak.arange(10))})
         with tempfile.TemporaryDirectory(dir=DataFrameTest.df_test_base_tmp) as tmp_dirname:
             fname = tmp_dirname + "/ipv4_df"
             df.to_parquet(fname)
 
             data = ak.read(fname + "*")
-            rddf = ak.DataFrame({
-                'a': ak.IPv4(data['a']),
-                'b': ak.IPv4(data['b'])
-            })
+            rddf = ak.DataFrame({"a": data["a"], "b": ak.IPv4(data["b"])})
 
-            self.assertListEqual(df['a'].to_list(), rddf['a'].to_list())
-            self.assertListEqual(df['b'].to_list(), rddf['b'].to_list())
+            self.assertListEqual(df["a"].to_list(), rddf["a"].to_list())
+            self.assertListEqual(df["b"].to_list(), rddf["b"].to_list())
+
+        # test with multiple
+        df = ak.DataFrame({"a": ak.IPv4(ak.arange(10)), "b": ak.IPv4(ak.arange(10))})
+        with tempfile.TemporaryDirectory(dir=DataFrameTest.df_test_base_tmp) as tmp_dirname:
+            fname = tmp_dirname + "/ipv4_df"
+            df.to_parquet(fname)
+
+            data = ak.read(fname + "*")
+            rddf = ak.DataFrame({"a": ak.IPv4(data["a"]), "b": ak.IPv4(data["b"])})
+
+            self.assertListEqual(df["a"].to_list(), rddf["a"].to_list())
+            self.assertListEqual(df["b"].to_list(), rddf["b"].to_list())
 
         # test replacement of IPv4 with uint representation
-        df = ak.DataFrame({
-            'a': ak.IPv4(ak.arange(10))
-        })
-        df['a'] = df['a'].export_uint()
-        self.assertListEqual(ak.arange(10).to_list(), df['a'].to_list())
+        df = ak.DataFrame({"a": ak.IPv4(ak.arange(10))})
+        df["a"] = df["a"].export_uint()
+        self.assertListEqual(ak.arange(10).to_list(), df["a"].to_list())
+
     def test_subset(self):
-        df = ak.DataFrame({
-            'a': ak.arange(100),
-            'b': ak.randint(0, 20, 100),
-            'c': ak.random_strings_uniform(0, 16, 100),
-            'd': ak.randint(25, 75, 100)
-        })
-        df2 = df[['a', 'b']]
-        self.assertListEqual(['a', 'b'], df2.columns)
+        df = ak.DataFrame(
+            {
+                "a": ak.arange(100),
+                "b": ak.randint(0, 20, 100),
+                "c": ak.random_strings_uniform(0, 16, 100),
+                "d": ak.randint(25, 75, 100),
+            }
+        )
+        df2 = df[["a", "b"]]
+        self.assertListEqual(["a", "b"], df2.columns)
         self.assertListEqual(df.index.to_list(), df2.index.to_list())
-        self.assertListEqual(df['a'].to_list(), df2['a'].to_list())
-        self.assertListEqual(df['b'].to_list(), df2['b'].to_list())
+        self.assertListEqual(df["a"].to_list(), df2["a"].to_list())
+        self.assertListEqual(df["b"].to_list(), df2["b"].to_list())
+
+    def test_snapshot(self):
+        from pandas.testing import assert_frame_equal
+
+        df = build_ak_df()
+        # standard index
+        column_order = ["userName", "userID", "item", "day", "amount", "bi"]
+        with tempfile.TemporaryDirectory(dir=DataFrameTest.df_test_base_tmp) as tmp_dirname:
+            fname = tmp_dirname + "/snapshot_test"
+            df._to_hdf_snapshot(fname)
+            rd_data = ak.read_hdf(fname + "_*")
+
+            self.assertTrue(
+                assert_frame_equal(df[column_order].to_pandas(), rd_data[column_order].to_pandas())
+                is None
+            )
+
+        df._set_index(["A" + str(i) for i in range(len(df))])
+        with tempfile.TemporaryDirectory(dir=DataFrameTest.df_test_base_tmp) as tmp_dirname:
+            fname = tmp_dirname + "/snapshot_test"
+            df._to_hdf_snapshot(fname)
+            rd_data = ak.read_hdf(fname + "_*")
+
+            self.assertTrue(
+                assert_frame_equal(df[column_order].to_pandas(), rd_data[column_order].to_pandas())
+                is None
+            )

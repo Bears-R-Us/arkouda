@@ -212,10 +212,8 @@ module GenSymIO {
                 var (segName, nBytes) = id.splitMsgToTuple("+", 2);
                 create_str = "created " + st.attrib(segName) + "+created bytes.size " + nBytes;
             }
-            else if (akType == ObjType.SEGARRAY || akType == ObjType.CATEGORICAL) {
-                create_str = id;
-            }
-            else if akType == ObjType.GROUPBY {
+            else if (akType == ObjType.SEGARRAY || akType == ObjType.CATEGORICAL || 
+                        akType == ObjType.GROUPBY || akType == ObjType.DATAFRAME) {
                 create_str = id;
             }
             else {

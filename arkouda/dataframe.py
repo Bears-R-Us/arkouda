@@ -22,7 +22,6 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index
-from arkouda.io import _dict_recombine_segarrays_categoricals, get_filetype, load_all
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum
 from arkouda.numeric import isnan as akisnan
@@ -247,6 +246,8 @@ class DataFrame(UserDict):
 
     COLUMN_CLASSES = (pdarray, Strings, Categorical, SegArray)
 
+    objType = "DataFrame"
+
     def __init__(self, initialdata=None, index=None):
         super().__init__()
 
@@ -350,7 +351,6 @@ class DataFrame(UserDict):
             self.update_size()
 
     def __getattr__(self, key):
-        # print("key =", key)
         if key not in self.columns:
             raise AttributeError(f"Attribute {key} not found")
         # Should this be cached?
@@ -865,7 +865,7 @@ class DataFrame(UserDict):
     def _set_index(self, value):
         if isinstance(value, Index) or value is None:
             self._index = value
-        elif isinstance(value, pdarray):
+        elif isinstance(value, (pdarray, Strings)):
             self._index = Index(value)
         elif isinstance(value, list):
             self._index = Index(array(value))
@@ -1497,9 +1497,82 @@ class DataFrame(UserDict):
         data = self._prep_data(index=index, columns=columns)
         to_hdf(data, prefix_path=path, file_type=file_type)
 
+    def _to_hdf_snapshot(self, path, dataset="DataFrame", mode="truncate", file_type="distribute"):
+        """
+        Save a dataframe as a group with columns within the group. This allows saving other
+        datasets in the HDF5 file without impacting the integrity of the dataframe
+        This is only used for the snapshot workflow
+        Parameters
+        ----------
+        path : str
+            File path to save data
+        dataset: str
+            Name to save the dataframe under within the file
+            Only used when as_dataset=True
+        mode: str (truncate | append)
+            Default: trunate
+            Indicates whether the dataset should truncate the file and write or append
+            to the file
+            Only used when as_dataset=True
+        file_type: str (single | distribute)
+            Default: distribute
+            Whether to save to a single file or distribute across Locales
+            Only used when as_dataset=True
+
+        Returns
+        -------
+        None
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+        """
+        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
+
+        column_data = [
+            obj.name
+            if not isinstance(obj, (Categorical_, SegArray))
+            else json.dumps(
+                {
+                    "codes": obj.codes.name,
+                    "categories": obj.categories.name,
+                    "NA_codes": obj._akNAcode.name,
+                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
+                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                }
+            )
+            if isinstance(obj, Categorical_)
+            else json.dumps({"segments": obj.segments, "values": obj.values})
+            for k, obj in self.items()
+        ]
+        dtypes = [
+            str(obj.categories.dtype) if isinstance(obj, Categorical_) else str(obj.dtype)
+            for obj in self.values()
+        ]
+        return cast(
+            str,
+            generic_msg(
+                cmd="tohdf",
+                args={
+                    "filename": path,
+                    "dset": dataset,
+                    "file_format": _file_type_to_int(file_type),
+                    "write_mode": _mode_str_to_int(mode),
+                    "objType": self.objType,
+                    "num_cols": len(self.columns),
+                    "column_names": self.columns,
+                    "column_objTypes": [obj.objType for key, obj in self.items()],
+                    "column_dtypes": dtypes,
+                    "columns": column_data,
+                    "index": self.index.values.name,
+                },
+            ),
+        )
+
     def update_hdf(self, prefix_path: str, index=False, columns=None, repack: bool = True):
         """
-        Overwrite the dataset with the name provided with this pdarray. If
+        Overwrite the dataset with the name provided with this dataframe. If
         the dataset does not exist it is added
 
         Parameters
@@ -1740,6 +1813,12 @@ class DataFrame(UserDict):
         Load dataframe from file
         file_format needed for consistency with other load functions
         """
+        from arkouda.io import (
+            _dict_recombine_segarrays_categoricals,
+            get_filetype,
+            load_all,
+        )
+
         prefix, extension = os.path.splitext(prefix_path)
         first_file = f"{prefix}_LOCALE0000{extension}"
         filetype = get_filetype(first_file) if file_format.lower() == "infer" else file_format
@@ -2387,7 +2466,7 @@ class DataFrame(UserDict):
             return colParts[3], colType
 
     @staticmethod
-    def from_return_msg(repMsg):
+    def from_attach_msg(repMsg):
         """
         Creates and returns a DataFrame based on return components from ak.util.attach
 
@@ -2440,7 +2519,7 @@ class DataFrame(UserDict):
                 i += 3
 
             elif parts[i] == "segarray":
-                info = json.loads(parts[i+1])
+                info = json.loads(parts[i + 1])
                 colName = DataFrame._parse_col_name(info["segments"], dfName)[0]
                 cols[colName] = SegArray.from_return_msg(parts[i + 1])
                 i += 1
@@ -2450,6 +2529,29 @@ class DataFrame(UserDict):
         df = DataFrame(cols, idx)
         df.name = dfName
         return df
+
+    @classmethod
+    def from_return_msg(cls, rep_msg):
+        from arkouda.categorical import Categorical as Categorical_
+
+        data = json.loads(rep_msg)
+        idx = None
+        columns = {}
+        for k, create_data in data.items():
+            if k == "index":
+                idx = Index(create_pdarray(data["permutation"]))
+            else:
+                comps = create_data.split("+|+")
+                if comps[0] == pdarray.objType.upper():
+                    columns[k] = create_pdarray(comps[1])
+                elif comps[0] == Strings.objType.upper():
+                    columns[k] = Strings.from_return_msg(comps[1])
+                elif comps[0] == Categorical_.objType.upper():
+                    columns[k] = Categorical_.from_return_msg(comps[1])
+                elif comps[0] == SegArray.objType.upper():
+                    columns[k] = SegArray.from_return_msg(comps[1])
+
+        return cls(columns, idx)
 
 
 def sorted(df, column=False):
