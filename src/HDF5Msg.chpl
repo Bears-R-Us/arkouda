@@ -2096,7 +2096,7 @@ module HDF5Msg {
 
                                     // localize permutation and write dataset
                                     var localkey: [0..#key.size] uint = key.a;
-                                    writeLocalDset(file_id, "/%s/%s".format(group, dset), c_ptrTo(localkey), key.size, int);
+                                    writeLocalDset(file_id, "/%s/%s".format(group, dset), c_ptrTo(localkey), key.size, uint);
                                     dtype = getDataType(uint);
                                 }
                                 when DType.Float64 {
