@@ -15,6 +15,7 @@ from arkouda import io_util
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_AND_STR_TYPES = NUMERIC_TYPES + ["str"]
 
+
 def make_ak_arrays(size, dtype):
     if dtype in ["int64", "float64"]:
         # randint for float is equivalent to uniform
@@ -125,11 +126,7 @@ class TestParquet:
     def test_read_and_write(self, prob_size, dtype, comp):
         ak_arr = make_ak_arrays(prob_size * pytest.nl, dtype)
         with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
-            ak_arr.to_parquet(
-                f"{tmp_dirname}/pq_test_correct",
-                "my-dset",
-                compression=comp
-            )
+            ak_arr.to_parquet(f"{tmp_dirname}/pq_test_correct", "my-dset", compression=comp)
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_correct*", "my-dset")
             assert (ak_arr == pq_arr).all()
 
@@ -143,7 +140,7 @@ class TestParquet:
 
             # verify load_all works
             gen_arr = ak.load_all(path_prefix=f"{tmp_dirname}/pq_test_correct")
-            assert (ak_arr == gen_arr['my-dset']).all()
+            assert (ak_arr == gen_arr["my-dset"]).all()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
@@ -186,11 +183,7 @@ class TestParquet:
         np_edge_case = make_edge_case_arrays(dtype)
         ak_edge_case = ak.array(np_edge_case)
         with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
-            ak_edge_case.to_parquet(
-                f"{tmp_dirname}/pq_test_edge_case",
-                "my-dset",
-                compression=comp
-            )
+            ak_edge_case.to_parquet(f"{tmp_dirname}/pq_test_edge_case", "my-dset", compression=comp)
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_edge_case*", "my-dset")
             if dtype == "float64":
                 assert np.allclose(np_edge_case, pq_arr.to_ndarray(), equal_nan=True)
