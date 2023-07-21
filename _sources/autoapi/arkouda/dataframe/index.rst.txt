@@ -106,6 +106,11 @@ Functions
 
       
 
+   .. py:attribute:: objType
+      :value: 'DataFrame'
+
+      
+
    .. py:method:: from_pandas(pd_df)
       :classmethod:
 
@@ -379,7 +384,7 @@ Functions
 
    .. py:method:: update_hdf(prefix_path: str, index=False, columns=None, repack: bool = True)
 
-      Overwrite the dataset with the name provided with this pdarray. If
+      Overwrite the dataset with the name provided with this dataframe. If
       the dataset does not exist it is added
 
       :param prefix_path: Directory and filename prefix that all output files share
@@ -845,7 +850,7 @@ Functions
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
 
-   .. py:method:: from_return_msg(repMsg)
+   .. py:method:: from_attach_msg(repMsg)
       :staticmethod:
 
       Creates and returns a DataFrame based on return components from ak.util.attach
@@ -858,6 +863,10 @@ Functions
 
       :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
           the DataFrame instance
+
+
+   .. py:method:: from_return_msg(rep_msg)
+      :classmethod:
 
 
 

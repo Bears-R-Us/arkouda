@@ -156,7 +156,7 @@ Functions
    Get a list of column names from CSV file(s).
 
 
-.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False, tag_data=False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical]]]
+.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False, tag_data=False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame]]]
 
    Read Arkouda objects from HDF5 file/s
 
@@ -222,7 +222,7 @@ Functions
    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical]]]
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame]]]
 
    Read Arkouda objects from Parquet file/s
 
@@ -290,7 +290,7 @@ Functions
    >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
 
 
-.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical]]]
+.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame]]]
 
    Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
    will be returned in a dictionary mapping the dataset name to the Arkouda object
@@ -610,7 +610,7 @@ Functions
    >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
 
 
-.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, column_delim: str = ',') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, column_delim: str = ',') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -702,7 +702,7 @@ Functions
    CSV files without the Arkouda Header are not supported.
 
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical]]]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame]]]
 
    Read datasets from files.
    File Type is determined automatically.

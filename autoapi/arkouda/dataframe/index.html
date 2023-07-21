@@ -399,6 +399,11 @@ DataFrame([‘userID’, ‘day’] [6 rows : 96 B])</p>
 <span class="sig-name descname"><span class="pre">COLUMN_CLASSES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#arkouda.dataframe.DataFrame.COLUMN_CLASSES" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.objType">
+<span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DataFrame'</span></em><a class="headerlink" href="#arkouda.dataframe.DataFrame.objType" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.from_pandas">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pd_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.from_pandas" title="Permalink to this definition">#</a></dt>
@@ -751,7 +756,7 @@ locale number.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.update_hdf">
 <span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.update_hdf" title="Permalink to this definition">#</a></dt>
-<dd><p>Overwrite the dataset with the name provided with this pdarray. If
+<dd><p>Overwrite the dataset with the name provided with this dataframe. If
 the dataset does not exist it is added</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1307,8 +1312,8 @@ with the arkouda server via register()</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.from_return_msg">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repMsg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.from_return_msg" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.from_attach_msg">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_attach_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repMsg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.from_attach_msg" title="Permalink to this definition">#</a></dt>
 <dd><p>Creates and returns a DataFrame based on return components from ak.util.attach</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1326,6 +1331,11 @@ the DataFrame instance</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.from_return_msg">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.from_return_msg" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -1477,6 +1487,7 @@ arrays.</p>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.index"><code class="docutils literal notranslate"><span class="pre">DataFrame.index</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.info"><code class="docutils literal notranslate"><span class="pre">DataFrame.info</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.COLUMN_CLASSES"><code class="docutils literal notranslate"><span class="pre">DataFrame.COLUMN_CLASSES</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.objType"><code class="docutils literal notranslate"><span class="pre">DataFrame.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.from_pandas"><code class="docutils literal notranslate"><span class="pre">DataFrame.from_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.drop"><code class="docutils literal notranslate"><span class="pre">DataFrame.drop()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.drop_duplicates"><code class="docutils literal notranslate"><span class="pre">DataFrame.drop_duplicates()</span></code></a></li>
@@ -1512,6 +1523,7 @@ arrays.</p>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.is_registered"><code class="docutils literal notranslate"><span class="pre">DataFrame.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.attach"><code class="docutils literal notranslate"><span class="pre">DataFrame.attach()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.unregister_dataframe_by_name"><code class="docutils literal notranslate"><span class="pre">DataFrame.unregister_dataframe_by_name()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.from_attach_msg"><code class="docutils literal notranslate"><span class="pre">DataFrame.from_attach_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.from_return_msg"><code class="docutils literal notranslate"><span class="pre">DataFrame.from_return_msg()</span></code></a></li>
 </ul>
 </li>
