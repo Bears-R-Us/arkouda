@@ -592,6 +592,14 @@ class TestDataFrame:
         df = pd.DataFrame({"Test": [2**64 - 1, 0]})
         assert df["Test"].dtype == ak.uint64
 
+    def test_head_tail_datetime_display(self):
+        # Reproducer for issue #2596
+        values = ak.array([1689221916000000] * 100, dtype=ak.int64)
+        dt = ak.Datetime(values, unit='u')
+        df = ak.DataFrame({"Datetime from Microseconds": dt})
+        # verify _get_head_tail and _get_head_tail_server match
+        assert df._get_head_tail_server().__repr__() == df._get_head_tail().__repr__()
+
     def test_head_tail_resetting_index(self):
         # Test that issue #2183 is resolved
         df = ak.DataFrame({"cnt": ak.arange(65)})

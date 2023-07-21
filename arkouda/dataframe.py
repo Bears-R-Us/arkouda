@@ -627,7 +627,7 @@ class DataFrame(UserDict):
             elif t == "IPv4":
                 df_dict[msg[1]] = IPv4(create_pdarray(msg[2]))
             elif t == "Datetime":
-                df_dict[msg[1]] = Datetime(create_pdarray(msg[2]), unit=self[msg[1]].unit)
+                df_dict[msg[1]] = Datetime(create_pdarray(msg[2]))
             elif t == "BitVector":
                 df_dict[msg[1]] = BitVector(
                     create_pdarray(msg[2]), width=self[msg[1]].width, reverse=self[msg[1]].reverse

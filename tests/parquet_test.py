@@ -194,6 +194,18 @@ class ParquetTest(ArkoudaTest):
                 # validate the list read out matches the array used to write
                 self.assertListEqual(rd_arr.to_list(), a.to_list())
 
+        b = ak.randint(0, 2, 150, dtype=ak.bool)
+        for comp in COMPRESSIONS:
+            with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+                # write with the selected compression
+                b.to_parquet(f"{tmp_dirname}/compress_test", compression=comp)
+
+                # ensure read functions
+                rd_arr = ak.read_parquet(f"{tmp_dirname}/compress_test*", "array")
+
+                # validate the list read out matches the array used to write
+                self.assertListEqual(rd_arr.to_list(), b.to_list())
+
     def test_gzip_nan_rd(self):
         # create pandas dataframe
         pdf = pd.DataFrame(

@@ -15,6 +15,7 @@ from arkouda import io_util
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_AND_STR_TYPES = NUMERIC_TYPES + ["str"]
 
+
 def make_ak_arrays(size, dtype):
     if dtype in ["int64", "float64"]:
         # randint for float is equivalent to uniform
@@ -125,12 +126,7 @@ class TestParquet:
     def test_read_and_write(self, prob_size, dtype, comp):
         ak_arr = make_ak_arrays(prob_size * pytest.nl, dtype)
         with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
-            # compression doesn't work for bool see issue #2579
-            ak_arr.to_parquet(
-                f"{tmp_dirname}/pq_test_correct",
-                "my-dset",
-                compression=comp if dtype != "bool" else None,
-            )
+            ak_arr.to_parquet(f"{tmp_dirname}/pq_test_correct", "my-dset", compression=comp)
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_correct*", "my-dset")
             assert (ak_arr == pq_arr).all()
 
@@ -144,7 +140,7 @@ class TestParquet:
 
             # verify load_all works
             gen_arr = ak.load_all(path_prefix=f"{tmp_dirname}/pq_test_correct")
-            assert (ak_arr == gen_arr['my-dset']).all()
+            assert (ak_arr == gen_arr["my-dset"]).all()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
@@ -187,12 +183,7 @@ class TestParquet:
         np_edge_case = make_edge_case_arrays(dtype)
         ak_edge_case = ak.array(np_edge_case)
         with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
-            # compression doesn't work for bool see issue #2579
-            ak_edge_case.to_parquet(
-                f"{tmp_dirname}/pq_test_edge_case",
-                "my-dset",
-                compression=comp if dtype != "bool" else None,
-            )
+            ak_edge_case.to_parquet(f"{tmp_dirname}/pq_test_edge_case", "my-dset", compression=comp)
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_edge_case*", "my-dset")
             if dtype == "float64":
                 assert np.allclose(np_edge_case, pq_arr.to_ndarray(), equal_nan=True)
@@ -412,20 +403,20 @@ class TestParquet:
                 x, y = s[i].to_list(), rd_data[i].to_list()
                 assert x == y if dtype != "float64" else np.allclose(x, y, equal_nan=True)
 
-    def test_multi_col_write(self):
-        # TODO update to add compression after this is added for bools in issue #2579
+    @pytest.mark.parametrize("comp", COMPRESSIONS)
+    def test_multi_col_write(self, comp):
         df_dict = make_multi_col_df()
         akdf = ak.DataFrame(df_dict)
         with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
             # use multi-column write to generate parquet file
-            akdf.to_parquet(f"{tmp_dirname}/multi_col_parquet")
+            akdf.to_parquet(f"{tmp_dirname}/multi_col_parquet", compression=comp)
             # read files and ensure that all resulting fields are as expected
             rd_data = ak.read_parquet(f"{tmp_dirname}/multi_col_parquet*")
             rd_df = ak.DataFrame(rd_data)
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
             # test save with index true
-            akdf.to_parquet(f"{tmp_dirname}/multi_col_parquet", index=True)
+            akdf.to_parquet(f"{tmp_dirname}/multi_col_parquet", index=True, compression=comp)
             rd_data = ak.read_parquet(f"{tmp_dirname}/multi_col_parquet*")
             rd_df = ak.DataFrame(rd_data)
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())

@@ -928,19 +928,14 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
     // assign the proper compression
     if(compression == SNAPPY_COMP) {
       builder.compression(parquet::Compression::SNAPPY);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == GZIP_COMP) {
       builder.compression(parquet::Compression::GZIP);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == BROTLI_COMP) {
       builder.compression(parquet::Compression::BROTLI);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == ZSTD_COMP) {
       builder.compression(parquet::Compression::ZSTD);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == LZ4_COMP) {
       builder.compression(parquet::Compression::LZ4);
-      builder.encoding(parquet::Encoding::RLE);
     }
     std::shared_ptr<parquet::WriterProperties> props = builder.build();
 
@@ -1250,19 +1245,14 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
     // assign the proper compression
     if(compression == SNAPPY_COMP) {
       builder.compression(parquet::Compression::SNAPPY);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == GZIP_COMP) {
       builder.compression(parquet::Compression::GZIP);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == BROTLI_COMP) {
       builder.compression(parquet::Compression::BROTLI);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == ZSTD_COMP) {
       builder.compression(parquet::Compression::ZSTD);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == LZ4_COMP) {
       builder.compression(parquet::Compression::LZ4);
-      builder.encoding(parquet::Encoding::RLE);
     }
     std::shared_ptr<parquet::WriterProperties> props = builder.build();
 
@@ -1352,19 +1342,14 @@ int cpp_writeStrColumnToParquet(const char* filename, void* chpl_arr, void* chpl
     // assign the proper compression
     if(compression == SNAPPY_COMP) {
       builder.compression(parquet::Compression::SNAPPY);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == GZIP_COMP) {
       builder.compression(parquet::Compression::GZIP);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == BROTLI_COMP) {
       builder.compression(parquet::Compression::BROTLI);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == ZSTD_COMP) {
       builder.compression(parquet::Compression::ZSTD);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == LZ4_COMP) {
       builder.compression(parquet::Compression::LZ4);
-      builder.encoding(parquet::Encoding::RLE);
     }
     std::shared_ptr<parquet::WriterProperties> props = builder.build();
 
@@ -1435,19 +1420,14 @@ int cpp_writeStrListColumnToParquet(const char* filename, void* chpl_segs, void*
       // assign the proper compression
       if(compression == SNAPPY_COMP) {
         builder.compression(parquet::Compression::SNAPPY);
-        builder.encoding(parquet::Encoding::RLE);
       } else if (compression == GZIP_COMP) {
         builder.compression(parquet::Compression::GZIP);
-        builder.encoding(parquet::Encoding::RLE);
       } else if (compression == BROTLI_COMP) {
         builder.compression(parquet::Compression::BROTLI);
-        builder.encoding(parquet::Encoding::RLE);
       } else if (compression == ZSTD_COMP) {
         builder.compression(parquet::Compression::ZSTD);
-        builder.encoding(parquet::Encoding::RLE);
       } else if (compression == LZ4_COMP) {
         builder.compression(parquet::Compression::LZ4);
-        builder.encoding(parquet::Encoding::RLE);
       }
       std::shared_ptr<parquet::WriterProperties> props = builder.build();
 
@@ -1544,19 +1524,14 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_segs, void* ch
     // assign the proper compression
     if(compression == SNAPPY_COMP) {
       builder.compression(parquet::Compression::SNAPPY);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == GZIP_COMP) {
       builder.compression(parquet::Compression::GZIP);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == BROTLI_COMP) {
       builder.compression(parquet::Compression::BROTLI);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == ZSTD_COMP) {
       builder.compression(parquet::Compression::ZSTD);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == LZ4_COMP) {
       builder.compression(parquet::Compression::LZ4);
-      builder.encoding(parquet::Encoding::RLE);
     }
     std::shared_ptr<parquet::WriterProperties> props = builder.build();
 
@@ -1725,19 +1700,14 @@ int cpp_createEmptyListParquetFile(const char* filename, const char* dsetname, i
     // assign the proper compression
     if(compression == SNAPPY_COMP) {
       builder.compression(parquet::Compression::SNAPPY);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == GZIP_COMP) {
       builder.compression(parquet::Compression::GZIP);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == BROTLI_COMP) {
       builder.compression(parquet::Compression::BROTLI);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == ZSTD_COMP) {
       builder.compression(parquet::Compression::ZSTD);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == LZ4_COMP) {
       builder.compression(parquet::Compression::LZ4);
-      builder.encoding(parquet::Encoding::RLE);
     }
     std::shared_ptr<parquet::WriterProperties> props = builder.build();
     std::shared_ptr<parquet::ParquetFileWriter> file_writer =
@@ -1778,19 +1748,14 @@ int cpp_createEmptyParquetFile(const char* filename, const char* dsetname, int64
     // assign the proper compression
     if(compression == SNAPPY_COMP) {
       builder.compression(parquet::Compression::SNAPPY);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == GZIP_COMP) {
       builder.compression(parquet::Compression::GZIP);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == BROTLI_COMP) {
       builder.compression(parquet::Compression::BROTLI);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == ZSTD_COMP) {
       builder.compression(parquet::Compression::ZSTD);
-      builder.encoding(parquet::Encoding::RLE);
     } else if (compression == LZ4_COMP) {
       builder.compression(parquet::Compression::LZ4);
-      builder.encoding(parquet::Encoding::RLE);
     }
     std::shared_ptr<parquet::WriterProperties> props = builder.build();
     std::shared_ptr<parquet::ParquetFileWriter> file_writer =
