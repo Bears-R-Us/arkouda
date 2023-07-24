@@ -33,6 +33,8 @@ Functions
    arkouda.io.load_all
    arkouda.io.read
    arkouda.io.read_tagged_data
+   arkouda.io.snapshot
+   arkouda.io.restore
 
 
 
@@ -812,5 +814,39 @@ Functions
    >>> data, cat = ak.read_tagged_data('path/name')
    >>> data
    {'Filname_Codes': array([0 3 6 9 12]), 'col_name': array([0 0 0 1])}
+
+
+.. py:function:: snapshot(filename)
+
+   Create a snapshot of the current Arkouda namespace. All currently accessible variables containing
+   Arkouda objects will be written to an HDF5 file.
+
+   Unlike other save/load functions, this maintains the integrity of dataframes.
+
+   Current Variable names are used as the dataset name when saving.
+
+   :param filename:
+   :type filename: str
+   :param Name to use when storing file:
+
+   :rtype: None
+
+   .. seealso:: :obj:`ak.restore`
+
+
+.. py:function:: restore(filename)
+
+   Return data saved using `ak.snapshot`
+
+   :param filename:
+   :type filename: str
+   :param Name used to create snapshot to be read:
+
+   :rtype: Dict
+
+   .. rubric:: Notes
+
+   Unlike other save/load methods using snapshot restore will save DataFrames alongside other
+   objects in HDF5. Thus, they are returned within the dictionary as a dataframe.
 
 

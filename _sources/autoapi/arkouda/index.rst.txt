@@ -291,6 +291,8 @@ Functions
    arkouda.load
    arkouda.load_all
    arkouda.update_hdf
+   arkouda.snapshot
+   arkouda.restore
 
 
 
@@ -26901,5 +26903,39 @@ Attributes
      file with the new data
    - This workflow is slightly different from `to_hdf` to prevent reading and
      creating a copy of the file for each dataset
+
+
+.. py:function:: snapshot(filename)
+
+   Create a snapshot of the current Arkouda namespace. All currently accessible variables containing
+   Arkouda objects will be written to an HDF5 file.
+
+   Unlike other save/load functions, this maintains the integrity of dataframes.
+
+   Current Variable names are used as the dataset name when saving.
+
+   :param filename:
+   :type filename: str
+   :param Name to use when storing file:
+
+   :rtype: None
+
+   .. seealso:: :obj:`ak.restore`
+
+
+.. py:function:: restore(filename)
+
+   Return data saved using `ak.snapshot`
+
+   :param filename:
+   :type filename: str
+   :param Name used to create snapshot to be read:
+
+   :rtype: Dict
+
+   .. rubric:: Notes
+
+   Unlike other save/load methods using snapshot restore will save DataFrames alongside other
+   objects in HDF5. Thus, they are returned within the dictionary as a dataframe.
 
 

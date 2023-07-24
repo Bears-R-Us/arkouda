@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.io_util" href="../io_util/index.html" /><link rel="prev" title="arkouda.infoclass" href="../infoclass/index.html" />
 
-    <!-- Generated with Sphinx 7.0.1 and Furo 2023.05.20 -->
+    <!-- Generated with Sphinx 7.1.0 and Furo 2023.05.20 -->
         <title>arkouda.io - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=362ab14a" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -342,6 +342,12 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.read_tagged_data" title="arkouda.io.read_tagged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_tagged_data</span></code></a>(filenames[, datasets, strictTypes, ...])</p></td>
 <td><p>Read datasets from files and tag each record to the file it was read from.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.snapshot" title="arkouda.io.snapshot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">snapshot</span></code></a>(filename)</p></td>
+<td><p>Create a snapshot of the current Arkouda namespace. All currently accessible variables containing</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.restore" title="arkouda.io.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(filename)</p></td>
+<td><p>Return data saved using <cite>ak.snapshot</cite></p></td>
 </tr>
 </tbody>
 </table>
@@ -1261,6 +1267,50 @@ cat.codes will link the codes in data to the filename. Data will contain the cod
 {‘Filname_Codes’: array([0 3 6 9 12]), ‘col_name’: array([0 0 0 1])}</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io.snapshot">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.io.snapshot" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a snapshot of the current Arkouda namespace. All currently accessible variables containing
+Arkouda objects will be written to an HDF5 file.</p>
+<p>Unlike other save/load functions, this maintains the integrity of dataframes.</p>
+<p>Current Variable names are used as the dataset name when saving.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – </p></li>
+<li><p><strong>file</strong> (<em>Name to use when storing</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ak.restore</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io.restore">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.io.restore" title="Permalink to this definition">#</a></dt>
+<dd><p>Return data saved using <cite>ak.snapshot</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – </p></li>
+<li><p><strong>read</strong> (<em>Name used to create snapshot to be</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Unlike other save/load methods using snapshot restore will save DataFrames alongside other
+objects in HDF5. Thus, they are returned within the dictionary as a dataframe.</p>
+</dd></dl>
+
 </section>
 </section>
 </section>
@@ -1343,6 +1393,8 @@ cat.codes will link the codes in data to the filename. Data will contain the cod
 <li><a class="reference internal" href="#arkouda.io.load_all"><code class="docutils literal notranslate"><span class="pre">load_all()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.read"><code class="docutils literal notranslate"><span class="pre">read()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.read_tagged_data"><code class="docutils literal notranslate"><span class="pre">read_tagged_data()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.io.snapshot"><code class="docutils literal notranslate"><span class="pre">snapshot()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.io.restore"><code class="docutils literal notranslate"><span class="pre">restore()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1358,9 +1410,9 @@ cat.codes will link the codes in data to the filename. Data will contain the cod
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/scripts/furo.js"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=b3ba4146"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>
