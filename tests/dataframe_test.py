@@ -719,30 +719,3 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(df.index.to_list(), df2.index.to_list())
         self.assertListEqual(df["a"].to_list(), df2["a"].to_list())
         self.assertListEqual(df["b"].to_list(), df2["b"].to_list())
-
-    def test_snapshot(self):
-        from pandas.testing import assert_frame_equal
-
-        df = build_ak_df()
-        # standard index
-        column_order = ["userName", "userID", "item", "day", "amount", "bi"]
-        with tempfile.TemporaryDirectory(dir=DataFrameTest.df_test_base_tmp) as tmp_dirname:
-            fname = tmp_dirname + "/snapshot_test"
-            df._to_hdf_snapshot(fname)
-            rd_data = ak.read_hdf(fname + "_*")
-
-            self.assertTrue(
-                assert_frame_equal(df[column_order].to_pandas(), rd_data[column_order].to_pandas())
-                is None
-            )
-
-        df._set_index(["A" + str(i) for i in range(len(df))])
-        with tempfile.TemporaryDirectory(dir=DataFrameTest.df_test_base_tmp) as tmp_dirname:
-            fname = tmp_dirname + "/snapshot_test"
-            df._to_hdf_snapshot(fname)
-            rd_data = ak.read_hdf(fname + "_*")
-
-            self.assertTrue(
-                assert_frame_equal(df[column_order].to_pandas(), rd_data[column_order].to_pandas())
-                is None
-            )

@@ -2411,22 +2411,18 @@ module HDF5Msg {
                                 when DType.Int64 {
                                     var values = toSymEntry(vals_entry, int);
                                     writeSegmentedDistDset(filenames, "/%s/%s".format(group, dset), ot: string, overwrite, values.a, segments.a, st, int);
-                                    // writeSegmentedDistDset(filenames, group, ot: string, overwrite, values.a, segments.a, st, int);
                                 }
                                 when DType.UInt64 {
                                     var values = toSymEntry(vals_entry, uint);
                                     writeSegmentedDistDset(filenames, "/%s/%s".format(group, dset), ot: string, overwrite, values.a, segments.a, st, uint);
-                                    // writeSegmentedDistDset(filenames, group, ot: string, overwrite, values.a, segments.a, st, uint);
                                 }
                                 when DType.Float64 {
                                     var values = toSymEntry(vals_entry, real);
                                     writeSegmentedDistDset(filenames, "/%s/%s".format(group, dset), ot: string, overwrite, values.a, segments.a, st, real);
-                                    // writeSegmentedDistDset(filenames, group, ot: string, overwrite, values.a, segments.a, st, real);
                                 }
                                 when DType.Bool {
                                     var values = toSymEntry(vals_entry, bool);
                                     writeSegmentedDistDset(filenames, "/%s/%s".format(group, dset), ot: string, overwrite, values.a, segments.a, st, bool);
-                                    // writeSegmentedDistDset(filenames, group, ot: string, overwrite, values.a, segments.a, st, bool);
                                 }
                                 when DType.BigInt {
                                     var values = toSymEntry(vals_entry, bigint);
