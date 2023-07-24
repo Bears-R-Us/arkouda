@@ -1262,7 +1262,7 @@ class IOTest(ArkoudaTest):
             with self.assertRaises(NameError):
                 self.assertTrue(not df)
             with self.assertRaises(NameError):
-                self.assertTrue(not df)df_str_idx
+                self.assertTrue(not df_str_idx)
             with self.assertRaises(NameError):
                 self.assertTrue(not a)
             with self.assertRaises(NameError):
