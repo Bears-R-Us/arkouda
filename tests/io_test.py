@@ -1250,9 +1250,9 @@ class IOTest(ArkoudaTest):
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             ak.snapshot(f"{tmp_dirname}/arkouda_snapshot_test")
-            print(dir())
             # delete variables
             del df
+            del df_str_idx
             del a
             del s
             del c
@@ -1261,6 +1261,8 @@ class IOTest(ArkoudaTest):
             # verify no longer in the namespace
             with self.assertRaises(NameError):
                 self.assertTrue(not df)
+            with self.assertRaises(NameError):
+                self.assertTrue(not df)df_str_idx
             with self.assertRaises(NameError):
                 self.assertTrue(not a)
             with self.assertRaises(NameError):
