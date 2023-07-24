@@ -17,6 +17,7 @@ def to_tuple_dict(labels, values):
         )
     }
 
+
 class TestGroupBy:
     GROUPS = 8
     LEVELS = [1, 2]
@@ -153,10 +154,7 @@ class TestGroupBy:
         revs = ak.arange(self.igb.length) % 2
         assert self.igb.OR(revs)[1].to_list() == self.igb.max(revs)[1].to_list()
         assert self.igb.AND(revs)[1].to_list() == self.igb.min(revs)[1].to_list()
-        assert (
-            self.igb.XOR(revs)[1].to_list() ==
-            (self.igb.sum(revs)[1] % 2).to_list()
-        )
+        assert self.igb.XOR(revs)[1].to_list() == (self.igb.sum(revs)[1] % 2).to_list()
 
     def test_standalone_broadcast(self):
         segs = ak.arange(10) ** 2
@@ -229,7 +227,7 @@ class TestGroupBy:
     def test_broadcast_strings(self):
         keys, counts = self.sgb.count()
         assert [1, 4, 2, 1, 2] == counts.to_list()
-        assert ['1', '2', '3', '4', '5'] == keys.to_list()
+        assert ["1", "2", "3", "4", "5"] == keys.to_list()
 
         s_results = self.sgb.broadcast(1 * (counts > 2))
         i_results = self.igb.broadcast(1 * (counts > 2))
@@ -244,11 +242,11 @@ class TestGroupBy:
         assert i_results.to_list() == s_results.to_list()
 
         # test str Groupby.broadcast with and without permute
-        s_results = self.sgb.broadcast(ak.array(['1', '2', '6', '8', '9']), permute=False)
-        i_results = self.igb.broadcast(ak.array(['1', '2', '6', '8', '9']), permute=False)
+        s_results = self.sgb.broadcast(ak.array(["1", "2", "6", "8", "9"]), permute=False)
+        i_results = self.igb.broadcast(ak.array(["1", "2", "6", "8", "9"]), permute=False)
         assert i_results.to_list() == s_results.to_list()
-        s_results = self.sgb.broadcast(ak.array(['1', '2', '6', '8', '9']))
-        i_results = self.igb.broadcast(ak.array(['1', '2', '6', '8', '9']))
+        s_results = self.sgb.broadcast(ak.array(["1", "2", "6", "8", "9"]))
+        i_results = self.igb.broadcast(ak.array(["1", "2", "6", "8", "9"]))
         assert i_results.to_list() == s_results.to_list()
 
     def test_broadcast_bigints(self):
