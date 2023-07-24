@@ -4,7 +4,6 @@ import os
 from typing import Dict, List, Mapping, Optional, Union, cast
 from warnings import warn
 
-import dill
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
@@ -1937,9 +1936,7 @@ def snapshot(filename):
     for name, val in [
         (n, v) for n, v in callers_local_vars if not n.startswith("__") and not isinstance(v, ModuleType)
     ]:
-        # TODO - should dataframe save format be updated so we don't need separate files
         if isinstance(val, (pdarray, Categorical, SegArray, Strings, DataFrame, GroupBy)):
-            # currently save dataframes to own files so they can be recreated as dataframe
             if isinstance(val, DataFrame):
                 val._to_hdf_snapshot(filename, dataset=name, mode=mode)
             else:
@@ -1948,12 +1945,5 @@ def snapshot(filename):
 
 
 def restore(filename):
-    # TODO - remove commented out code if just returning dict
-    # import inspect
     restore_files = glob.glob(f"{filename}_SNAPSHOT_LOCALE*")
     return read_hdf(restore_files)
-
-    # for name, obj in restore_data.items():
-    #     inspect.currentframe().f_back.f_locals[name] = obj
-    # print(inspect.currentframe().f_back.f_locals.keys())
-    # return restore_data.keys()
