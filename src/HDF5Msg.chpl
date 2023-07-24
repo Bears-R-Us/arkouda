@@ -2181,31 +2181,31 @@ module HDF5Msg {
                                 when DType.Int64 {
                                     var values = toSymEntry(vals_entry, int);
                                     //localize values and write dataset
-                                    writeSegmentedLocalDset(file_id, group, values, segments, true, int);
+                                    writeSegmentedLocalDset(file_id, "%s/%s".format(group, dset), values, segments, true, int);
                                     dtype = getDataType(int);
                                 }
                                 when DType.UInt64 {
                                     var values = toSymEntry(vals_entry, uint);
                                     //localize values and write dataset
-                                    writeSegmentedLocalDset(file_id, group, values, segments, true, uint);
+                                    writeSegmentedLocalDset(file_id, "%s/%s".format(group, dset), values, segments, true, uint);
                                     dtype = getDataType(uint);
                                 }
                                 when DType.Float64 {
                                     var values = toSymEntry(vals_entry, real);
                                     //localize values and write dataset
-                                    writeSegmentedLocalDset(file_id, group, values, segments, true, real);
+                                    writeSegmentedLocalDset(file_id, "%s/%s".format(group, dset), values, segments, true, real);
                                     dtype = getDataType(real);
                                 }
                                 when DType.Bool {
                                     var values = toSymEntry(vals_entry, bool);
                                     //localize values and write dataset
-                                    writeSegmentedLocalDset(file_id, group, values, segments, true, bool);
+                                    writeSegmentedLocalDset(file_id, "%s/%s".format(group, dset), values, segments, true, bool);
                                     dtype = getDataType(bool);
                                 }
                                 when (DType.BigInt) {
                                     var values = toSymEntry(vals_entry, bigint);
                                     // create the group
-                                    validateGroup(file_id, f, "%s/%s".format(group, SEGMENTED_VALUE_NAME), overwrite); // stored as group - group uses the dataset name
+                                    validateGroup(file_id, f, "%s/%s/%s".format(group, dset, SEGMENTED_VALUE_NAME), overwrite); // stored as group - group uses the dataset name
                                     //localize values and write dataset
                                     writeSegmentedLocalDset(file_id, group, values, segments, true, bigint);
                                     dtype = getDataType(uint);
@@ -2213,9 +2213,9 @@ module HDF5Msg {
                                 when (DType.Strings){
                                     var values = toSegStringSymEntry(vals_entry);
                                     // create the group
-                                    validateGroup(file_id, f, "%s/%s".format(group, SEGMENTED_VALUE_NAME), overwrite);
+                                    validateGroup(file_id, f, "%s/%s/%s".format(group, dset, SEGMENTED_VALUE_NAME), overwrite);
                                     //localize values and write dataset
-                                    writeNestedSegmentedLocalDset(file_id, group, values, segments, true, uint(8));
+                                    writeNestedSegmentedLocalDset(file_id, "%s/%s".format(group, dset), values, segments, true, uint(8));
                                     dtype = getDataType(uint(8));
                                 }
                                 otherwise {
@@ -2410,27 +2410,27 @@ module HDF5Msg {
                             select vals_entry.dtype {
                                 when DType.Int64 {
                                     var values = toSymEntry(vals_entry, int);
-                                    writeSegmentedDistDset(filenames, group, ot: string, overwrite, values.a, segments.a, st, int);
+                                    writeSegmentedDistDset(filenames, "/%s/%s".format(group, dset), ot: string, overwrite, values.a, segments.a, st, int);
                                 }
                                 when DType.UInt64 {
                                     var values = toSymEntry(vals_entry, uint);
-                                    writeSegmentedDistDset(filenames, group, ot: string, overwrite, values.a, segments.a, st, uint);
+                                    writeSegmentedDistDset(filenames, "/%s/%s".format(group, dset), ot: string, overwrite, values.a, segments.a, st, uint);
                                 }
                                 when DType.Float64 {
                                     var values = toSymEntry(vals_entry, real);
-                                    writeSegmentedDistDset(filenames, group, ot: string, overwrite, values.a, segments.a, st, real);
+                                    writeSegmentedDistDset(filenames, "/%s/%s".format(group, dset), ot: string, overwrite, values.a, segments.a, st, real);
                                 }
                                 when DType.Bool {
                                     var values = toSymEntry(vals_entry, bool);
-                                    writeSegmentedDistDset(filenames, group, ot: string, overwrite, values.a, segments.a, st, bool);
+                                    writeSegmentedDistDset(filenames, "/%s/%s".format(group, dset), ot: string, overwrite, values.a, segments.a, st, bool);
                                 }
                                 when DType.BigInt {
                                     var values = toSymEntry(vals_entry, bigint);
-                                    writeSegmentedDistDset(filenames, group, ot: string, overwrite, values.a, segments.a, st, bigint, values.max_bits);
+                                    writeSegmentedDistDset(filenames, "/%s/%s".format(group, dset), ot: string, overwrite, values.a, segments.a, st, bigint, values.max_bits);
                                 }
                                 when DType.Strings {
                                     var values = toSegStringSymEntry(vals_entry);
-                                    writeNestedSegmentedDistDset(filenames, group, ot: string, overwrite, values, segments.a, st, uint(8));
+                                    writeNestedSegmentedDistDset(filenames, "/%s/%s".format(group, dset), ot: string, overwrite, values, segments.a, st, uint(8));
                                 }
                                 otherwise {
                                     throw getErrorWithContext(

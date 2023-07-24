@@ -1217,6 +1217,81 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(x.segments.to_list(), rd.segments.to_list())
             self.assertListEqual(x.values.to_list(), rd.values.to_list())
 
+    def test_snapshot(self):
+        from pandas.testing import assert_frame_equal
+        df = ak.DataFrame(
+            {
+                "int_col": ak.arange(10),
+                "uint_col": ak.array([i + 2**63 for i in range(10)], dtype=ak.uint64),
+                "float_col": ak.linspace(-3.5, 3.5, 10),
+                "bool_col": ak.randint(0, 2, 10, dtype=ak.bool),
+                "bigint_col": ak.array([i + 2**200 for i in range(10)], dtype=ak.bigint),
+                "segarr_col": ak.SegArray(ak.arange(0, 20, 2), ak.randint(0, 3, 20)),
+                "str_col": ak.random_strings_uniform(0, 3, 10),
+            }
+        )
+        df_str_idx = df.copy()
+        df_str_idx._set_index(["A" + str(i) for i in range(len(df))])
+        col_order = df.columns
+        df_ref = df.to_pandas()
+        df_str_idx_ref = df_str_idx.to_pandas()
+        a = ak.randint(0, 10, 100)
+        a_ref = a.to_list()
+        s = ak.random_strings_uniform(0, 5, 50)
+        s_ref = s.to_list()
+        c = ak.Categorical(s)
+        c_ref = c.to_list()
+        g = ak.GroupBy(a)
+        g_ref = {
+            "perm": g.permutation.to_list(),
+            "keys": g.keys.to_list(),
+            "segments": g.segments.to_list(),
+        }
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            ak.snapshot(f"{tmp_dirname}/arkouda_snapshot_test")
+            # delete variables
+            del df
+            del df_str_idx
+            del a
+            del s
+            del c
+            del g
+
+            # verify no longer in the namespace
+            with self.assertRaises(NameError):
+                self.assertTrue(not df)
+            with self.assertRaises(NameError):
+                self.assertTrue(not df_str_idx)
+            with self.assertRaises(NameError):
+                self.assertTrue(not a)
+            with self.assertRaises(NameError):
+                self.assertTrue(not s)
+            with self.assertRaises(NameError):
+                self.assertTrue(not c)
+            with self.assertRaises(NameError):
+                self.assertTrue(not g)
+
+            # restore the variables
+            data = ak.restore(f"{tmp_dirname}/arkouda_snapshot_test")
+            for vn in ["df", "df_str_idx", "a", "s", "c", "g"]:
+                # ensure all variable names returned
+                self.assertTrue(vn in data.keys())
+
+            # validate that restored variables are correct
+            self.assertTrue(
+                assert_frame_equal(df_ref[col_order], data["df"].to_pandas()[col_order]) is None
+            )
+            self.assertTrue(
+                assert_frame_equal(df_str_idx_ref[col_order], data["df_str_idx"].to_pandas()[col_order]) is None
+            )
+            self.assertListEqual(a_ref, data["a"].to_list())
+            self.assertListEqual(s_ref, data["s"].to_list())
+            self.assertListEqual(c_ref, data["c"].to_list())
+            self.assertListEqual(g_ref["perm"], data["g"].permutation.to_list())
+            self.assertListEqual(g_ref["keys"], data["g"].keys.to_list())
+            self.assertListEqual(g_ref["segments"], data["g"].segments.to_list())
+
     def tearDown(self):
         super(IOTest, self).tearDown()
         for f in glob.glob("{}/*".format(IOTest.io_test_dir)):
