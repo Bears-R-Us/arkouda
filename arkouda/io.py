@@ -1926,6 +1926,27 @@ def read_tagged_data(
 
 
 def snapshot(filename):
+    """
+    Create a snapshot of the current Arkouda namespace. All currently accessible variables containing
+    Arkouda objects will be written to an HDF5 file.
+
+    Unlike other save/load functions, this maintains the integrity of dataframes.
+
+    Current Variable names are used as the dataset name when saving.
+
+    Parameters
+    ----------
+    filename: str
+    Name to use when storing file
+
+    Returns
+    --------
+    None
+
+    See Also
+    ---------
+    ak.restore
+    """
     import inspect
     from types import ModuleType
     from arkouda.dataframe import DataFrame
@@ -1945,5 +1966,22 @@ def snapshot(filename):
 
 
 def restore(filename):
+    """
+    Return data saved using `ak.snapshot`
+
+    Parameters
+    ----------
+    filename: str
+    Name used to create snapshot to be read
+
+    Returns
+    --------
+    Dict
+
+    Notes
+    ------
+    Unlike other save/load methods using snapshot restore will save DataFrames alongside other
+    objects in HDF5. Thus, they are returned within the dictionary as a dataframe.
+    """
     restore_files = glob.glob(f"{filename}_SNAPSHOT_LOCALE*")
     return read_hdf(restore_files)
