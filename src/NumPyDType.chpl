@@ -52,7 +52,7 @@ module NumPyDType
     */
     proc str2dtype(dstr:string): DType {
         if dstr == "int64" || dstr == "int" {return DType.Int64;}
-        if dstr == "uint64" || dstr == "unint" {return DType.UInt64;}
+        if dstr == "uint64" || dstr == "uint" {return DType.UInt64;}
         if dstr == "float64" || dstr == "float" {return DType.Float64;}        
         if dstr == "bool" {return DType.Bool;}
         if dstr == "uint8" {return DType.UInt8;}

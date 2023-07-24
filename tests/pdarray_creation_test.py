@@ -116,8 +116,9 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertListEqual([0, 1, 2], uint_stop.to_list())
         self.assertEqual(ak.uint64, uint_stop.dtype)
 
-        uint_start_stop = ak.arange(3, 7, dtype=ak.uint64)
-        self.assertListEqual([3, 4, 5, 6], uint_start_stop.to_list())
+        uint_start_stop = ak.arange(2**63 + 3, 2**63 + 7)
+        ans = ak.arange(3, 7, dtype=ak.uint64) + 2**63
+        self.assertListEqual(ans.to_list(), uint_start_stop.to_list())
         self.assertEqual(ak.uint64, uint_start_stop.dtype)
 
         uint_start_stop_stride = ak.arange(3, 7, 2, dtype=ak.uint64)
