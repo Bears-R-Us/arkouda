@@ -21,7 +21,6 @@ from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index
-from arkouda.io import _dict_recombine_segarrays_categoricals, get_filetype, load_all, _build_objects
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum, where
 from arkouda.pdarrayclass import RegistrationError, pdarray
@@ -33,6 +32,7 @@ from arkouda.series import Series
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
+from arkouda.io import _build_objects
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits

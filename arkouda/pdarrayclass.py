@@ -64,7 +64,7 @@ __all__ = [
     "fmod",
     "attach_pdarray",
     "unregister_pdarray_by_name",
-    "RegistrationError"
+    "RegistrationError",
 ]
 
 logger = getArkoudaLogger(name="pdarrayclass")
