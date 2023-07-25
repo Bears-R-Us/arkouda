@@ -45,12 +45,13 @@ class TestClientDTypeTests:
         assert bv.to_list() == bv_answer
         assert bv.dtype == ak.bitType
 
+    def test_bit_vector_error_handling(self):
         # fail on argument types
         with pytest.raises(TypeError):
-            bv = ak.BitVector(17, width=4)
+            ak.BitVector(17, width=4)
         arr = ak.array([1.1, 8.3])
         with pytest.raises(TypeError):
-            bv - ak.BitVector(arr)
+            ak.BitVector(arr)
 
     def test_Field_creation(self):
         values = ak.arange(4)
@@ -97,32 +98,31 @@ class TestClientDTypeTests:
             f = ak.Fields(values, names, pad="|!~", separator="//")
 
     @pytest.mark.parametrize("int_types", INT_TYPES)
-    @pytest.mark.parametrize("ip", IPS)
-    def test_ipv4_creation(self, int_types, ip):
-        ip_list = ak.array([ip], dtype=int_types)
+    def test_ipv4_creation(self, int_types):
+        ip_list = ak.array(IPS, dtype=int_types)
         ipv4 = ak.IPv4(ip_list)
 
         assert isinstance(ipv4, ak.IPv4)
-        assert ipv4.to_list() == [format(ipaddress.IPv4Address(ip))]
+        assert ipv4.to_list() == [format(ipaddress.IPv4Address(ip)) for ip in IPS]
         assert ipv4.dtype == ak.bitType
 
         with pytest.raises(TypeError):
-            ipv4 = ak.IPv4(f"{ip}")
+            ipv4 = ak.IPv4(f"{IPS}")
         with pytest.raises(TypeError):
-            ipv4 = ak.IPv4(ak.array([ip + 0.177]))
+            ipv4 = ak.IPv4(ak.array([IPS + 0.177]))
 
         # Test handling of python dotted-quad input
-        ipv4 = ak.ip_address([format(ipaddress.IPv4Address(ip))])
+        ipv4 = ak.ip_address([format(ipaddress.IPv4Address(ip)) for ip in IPS])
         assert isinstance(ipv4, ak.IPv4)
-        assert ipv4.to_list() == [format(ipaddress.IPv4Address(ip))]
+        assert ipv4.to_list() == [format(ipaddress.IPv4Address(ip)) for ip in IPS]
         assert ipv4.dtype == ak.bitType
 
-    @pytest.mark.parametrize("ip", IPS)
-    def test_ipv4_normalization(self, ip):
-        ip_list = ak.array([ip])
+    def test_ipv4_normalization(self):
+        ip_list = ak.array(IPS)
         ipv4 = ak.IPv4(ip_list)
-        ip_as_int = ipv4.normalize(ipaddress.IPv4Address(ip))
-        assert ip == ip_as_int
+        ip_as_dot = [ipaddress.IPv4Address(ip) for ip in IPS]
+        ip_as_int = [ipv4.normalize(ipd) for ipd in ip_as_dot]
+        assert IPS == ip_as_int
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_is_ipv4(self, size):
