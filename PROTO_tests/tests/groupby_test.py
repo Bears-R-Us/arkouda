@@ -15,6 +15,9 @@ def to_tuple_dict(labels, values):
 class TestGroupBy:
     GROUPS = 8
     LEVELS = [1, 2]
+    OPS = list(ak.GroupBy.Reductions)
+    OPS.append("count")
+    NAN_OPS = frozenset(["mean", "min", "max", "sum", "prod"])
 
     @classmethod
     def setup_class(cls):
@@ -37,6 +40,17 @@ class TestGroupBy:
         f = np.random.randn(size)  # normally dist random numbers
         b = (i % 2) == 0
         d = {"keys": keys, "keys2": keys2, "int64": i, "uint64": u, "float64": f, "bool": b}
+
+        return d
+
+    def make_arrays_nan(self, size):
+        keys = np.random.randint(0, self.GROUPS, size)
+        f = np.random.randn(size)
+
+        for i in range(size):
+            if np.random.rand() < 0.2:
+                f[i] = np.nan
+        d = {"keys": keys, "float64": f}
 
         return d
 
@@ -72,7 +86,8 @@ class TestGroupBy:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("levels", LEVELS)
-    def test_pandas_equivalency(self, size, levels):
+    @pytest.mark.parametrize("op", OPS)
+    def test_pandas_equivalency(self, size, levels, op):
         data = self.make_arrays(size)
         df = pd.DataFrame(data)
         akdf = {k: ak.array(v) for k, v in data.items()}
@@ -83,32 +98,74 @@ class TestGroupBy:
             akg = ak.GroupBy([akdf["keys"], akdf["keys2"]])
             keyname = ["keys", "keys2"]
 
-        pdkeys, pdvals = self.groupby_to_arrays(df, keyname, "int64", "count", levels)
-        akkeys, akvals = akg.count()
-
-        self.compare_keys(pdkeys, akkeys, levels, pdvals, akvals)
-
         for vname in ("int64", "uint64", "float64", "bool"):
-            for op in ak.GroupBy.Reductions:
-                do_check = True
-                try:
-                    pdkeys, pdvals = self.groupby_to_arrays(df, keyname, vname, op, levels)
-                except Exception:
-                    do_check = False
-                try:
-                    akkeys, akvals = akg.aggregate(akdf[vname], op)
-                except Exception as E:
-                    do_check = False
-                    continue
-                if not do_check:
-                    continue
+            if op == "count":
+                print(f"Doing .count() - {vname}")
+            else:
+                print(f"\nDoing aggregate({vname}, {op})")
+
+            do_check = True
+            try:
+                pdkeys, pdvals = self.groupby_to_arrays(df, keyname, vname, op, levels)
+            except Exception:
+                print("Pandas does not implement")
+                do_check = False
+            try:
+                akkeys, akvals = akg.count() if op == "count" else akg.aggregate(akdf[vname], op)
+            except Exception as E:
+                print("Arkouda error: ", E)
+                continue # skip check
+            if do_check:
                 if op.startswith("arg"):
                     pdextrema = df[vname][pdvals]
                     akextrema = akdf[vname][akvals].to_ndarray()
+                    # check so we can get meaningful output if needed
+                    if not np.allclose(pdextrema, akextrema):
+                        print("Different argmin/argmax: Arkouda failed to find an extremum")
+                        print("pd: ", pdextrema)
+                        print("ak: ", akextrema)
                     assert np.allclose(pdextrema, akextrema)
                 else:
                     if op != "unique":
                         self.compare_keys(pdkeys, akkeys, levels, pdvals, akvals)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("op", NAN_OPS)
+    def test_pandas_equivalency_nan(self, size, op):
+        d = self.make_arrays_nan(size)
+        df = pd.DataFrame(d)
+        akdf = {k: ak.array(v) for k, v in d.items()}
+
+        akg = ak.GroupBy(akdf["keys"])
+        keyname = "keys"
+
+        if op == "count":
+            print(f"Doing .count()")
+        else:
+            print(f"\nDoing aggregate(float64, {op})")
+
+        do_check = True
+        try:
+            pdkeys, pdvals = self.groupby_to_arrays(df, keyname, "float64", op, 1)
+        except Exception:
+            print("Pandas does not implement")
+            do_check = False
+        try:
+            akkeys, akvals = akg.count() if op == "count" else akg.aggregate(akdf["float64"], op, True)
+        except RuntimeError as E:
+            print("Arkouda error: ", E)
+            do_check = False
+        if do_check:
+            for i in range(pdvals.size):
+                if np.isnan(pdvals[i]):
+                    pdvals[i] = 0.0  # clear out any nans to match ak implementation
+            print()
+            print(akg.keys.to_list())
+            print(pdkeys)
+            print(pdvals)
+            print(akkeys)
+            print(akvals)
+            self.compare_keys(pdkeys, akkeys, 1, pdvals, akvals)
 
     def test_argmax_argmin(self):
         b = ak.array([True, False, True, True, False, True])
