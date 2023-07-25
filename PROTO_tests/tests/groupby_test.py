@@ -9,13 +9,7 @@ from arkouda.groupbyclass import GroupByReductionType
 def to_tuple_dict(labels, values):
     # transforms labels from list of arrays into a list of tuples by index and builds a dictionary
     # labels: [array(['b', 'a', 'c']), array(['b', 'a', 'c'])] -> [('b', 'b'), ('a', 'a'), ('c', 'c')]
-    return {
-        label: value
-        for (label, value) in zip(
-            [index_tuple for index_tuple in zip(*[pda.to_ndarray() for pda in labels])],
-            values.to_ndarray(),
-        )
-    }
+    return dict(zip(list(zip(*[pda.to_ndarray() for pda in labels])), values.to_ndarray()))
 
 
 class TestGroupBy:
