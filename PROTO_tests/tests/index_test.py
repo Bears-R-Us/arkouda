@@ -9,7 +9,7 @@ class TestIndex:
 
         assert isinstance(idx, ak.Index)
         assert idx.size == 5
-        assert idx.to_list() == [i for i in range(5)]
+        assert idx.to_list() == list(range(5))
 
     def test_multiindex_creation(self):
         # test list generation
@@ -70,10 +70,10 @@ class TestIndex:
     def test_multi_argsort(self):
         idx = ak.Index.factory([ak.arange(5), ak.arange(5)])
         s = idx.argsort(False)
-        s.to_list() == [4, 3, 2, 1, 0]
+        assert s.to_list() == list(reversed(range(5)))
 
         s = idx.argsort()
-        s.to_list() == [i for i in range(5)]
+        assert s.to_list() == list(range(5))
 
     def test_multi_concat(self):
         idx = ak.Index.factory([ak.arange(5), ak.arange(5)])
@@ -83,18 +83,8 @@ class TestIndex:
 
         idx_2 = ak.Index.factory([ak.arange(5), ak.arange(5)])
         idx_full = idx.concat(idx_2)
-        assert idx_full.to_pandas().tolist() == [
-            (0, 0),
-            (1, 1),
-            (2, 2),
-            (3, 3),
-            (4, 4),
-            (0, 0),
-            (1, 1),
-            (2, 2),
-            (3, 3),
-            (4, 4),
-        ]
+        ans = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
+        assert idx_full.to_pandas().tolist() == ans
 
     def test_multi_lookup(self):
         idx = ak.Index.factory([ak.arange(5), ak.arange(5)])
