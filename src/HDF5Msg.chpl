@@ -3173,13 +3173,17 @@ module HDF5Msg {
         var len: int;
         var rtnMap: map(string, string) = new map(string, string);
 
-        if isStringsObject(filenames[0], "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
+        // need to get fist valid file
+        var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
+        var first_file = filenames[idx];
+
+        if isStringsObject(first_file, "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
             (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s/%s".format(dset, SEGMENTED_VALUE_NAME, SEGMENTED_OFFSET_NAME), validFiles);
             var stringsEntry = readStringsFromFile(filenames, "%s/%s".format(dset, SEGMENTED_VALUE_NAME), dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
             rtnMap.add("values", "created %s+created bytes.size %t".format(st.attrib(stringsEntry.name), stringsEntry.nBytes));
         }
         else {
-            if isBigIntPdarray(filenames[0], "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
+            if isBigIntPdarray(first_file, "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
                 (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s/Limb_0".format(dset, SEGMENTED_VALUE_NAME), validFiles);
             }
             else {
