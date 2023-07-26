@@ -1234,7 +1234,7 @@ class IOTest(ArkoudaTest):
         df_str_idx._set_index(["A" + str(i) for i in range(len(df))])
         col_order = df.columns
         df_ref = df.to_pandas()
-        df_str_idx_ref = df_str_idx.to_pandas()
+        df_str_idx_ref = df_str_idx.to_pandas(retain_index=True)
         a = ak.randint(0, 10, 100)
         a_ref = a.to_list()
         s = ak.random_strings_uniform(0, 5, 50)
@@ -1280,10 +1280,10 @@ class IOTest(ArkoudaTest):
 
             # validate that restored variables are correct
             self.assertTrue(
-                assert_frame_equal(df_ref[col_order], data["df"].to_pandas()[col_order]) is None
+                assert_frame_equal(df_ref[col_order], data["df"].to_pandas(retain_index=True)[col_order]) is None
             )
             self.assertTrue(
-                assert_frame_equal(df_str_idx_ref[col_order], data["df_str_idx"].to_pandas()[col_order]) is None
+                assert_frame_equal(df_str_idx_ref[col_order], data["df_str_idx"].to_pandas(retain_index=True)[col_order]) is None
             )
             self.assertListEqual(a_ref, data["a"].to_list())
             self.assertListEqual(s_ref, data["s"].to_list())

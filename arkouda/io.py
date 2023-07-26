@@ -1984,4 +1984,4 @@ def restore(filename):
     objects in HDF5. Thus, they are returned within the dictionary as a dataframe.
     """
     restore_files = glob.glob(f"{filename}_SNAPSHOT_LOCALE*")
-    return read_hdf(restore_files)
+    return read_hdf(sorted(restore_files))
