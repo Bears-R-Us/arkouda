@@ -2539,7 +2539,7 @@ class DataFrame(UserDict):
         columns = {}
         for k, create_data in data.items():
             if k == "index":
-                idx = Index(create_pdarray(data["permutation"]))
+                idx = Index(create_pdarray(create_data))
             else:
                 comps = create_data.split("+|+")
                 if comps[0] == pdarray.objType.upper():
