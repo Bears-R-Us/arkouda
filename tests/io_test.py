@@ -1292,6 +1292,29 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(g_ref["keys"], data["g"].keys.to_list())
             self.assertListEqual(g_ref["segments"], data["g"].segments.to_list())
 
+    def test_segarr_edge(self):
+        """
+        This test was added specifically for issue #2612.
+        Pierce will be adding testing to the new framework for this.
+        """
+        df = ak.DataFrame({
+            "c_11": ak.SegArray(ak.array([0, 2, 3, 3]), ak.array(["a", "b", "", "c", "d", "e", "f", "g", "h", "i"]))
+        })
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/seg_test")
+
+            rd_data = ak.read_hdf(f"{tmp_dirname}/seg_test*")
+            self.assertListEqual(df["c_11"].to_list(), rd_data.to_list())
+
+        df = ak.DataFrame({"c_2": ak.SegArray(ak.array([0, 9, 14]), ak.arange(-10, 10))})
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/seg_test")
+
+            # only verifying the read is successful
+            rd_arr = ak.read_hdf(filenames=[f"{tmp_dirname}/seg_test_LOCALE0000", f"{tmp_dirname}/seg_test_MISSING"],
+                                 strict_types=False, allow_errors=True)
+
+
     def tearDown(self):
         super(IOTest, self).tearDown()
         for f in glob.glob("{}/*".format(IOTest.io_test_dir)):
