@@ -347,7 +347,6 @@ class DataFrame(UserDict):
                 self._set_index(arange(self._size))
             else:
                 self._set_index(index)
-
             self.update_size()
 
     def __getattr__(self, key):
@@ -2538,10 +2537,13 @@ class DataFrame(UserDict):
         idx = None
         columns = {}
         for k, create_data in data.items():
-            if k == "index":
-                idx = Index(create_pdarray(data["permutation"]))
+            comps = create_data.split("+|+")
+            if k.lower() == "index":
+                if comps[0] == Strings.objType.upper():
+                    idx = Index(Strings.from_return_msg(comps[1]))
+                else:
+                    idx = Index(create_pdarray(comps[1]))
             else:
-                comps = create_data.split("+|+")
                 if comps[0] == pdarray.objType.upper():
                     columns[k] = create_pdarray(comps[1])
                 elif comps[0] == Strings.objType.upper():
