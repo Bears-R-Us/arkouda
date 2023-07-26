@@ -1364,35 +1364,40 @@ module HDF5Msg {
                 // create local copy of the string offsets (values) according to the locality of the SegArray Segments
                 var localSegs = segments[locDom];
                 var startOffIdx = localSegs[locDom.low];
-                var endOffIdx = if (lastSegIdx == locDom.high) then lastOffIdx else segments[locDom.high + 1] - 1;
-                var offIdxRange = startOffIdx..endOffIdx;
-
-                var localOffsets: [offIdxRange] int;
-                forall (localOff, offIdx) in zip(localOffsets, offIdxRange) with (var agg = newSrcAggregator(int)) {
-                    // Copy the remote value at index position valIdx to our local array
-                    agg.copy(localOff, strSegs[offIdx]); // in SrcAgg, the Right Hand Side is REMOTE
-                }
-
-                // Copy the String Values local based on the offsets pulled local.
-                var startValIdx = localOffsets[offIdxRange.low];
-                var endValIdx = if (lastOffIdx == offIdxRange.high) then lastValIdx else strSegs[offIdxRange.high + 1] - 1;
-                var valsIdxRange = startValIdx..endValIdx;
-
-                var localVals: [valsIdxRange] t;
-                forall (localVal, valIdx) in zip(localVals, valsIdxRange) with (var agg = newSrcAggregator(t)) {
-                    // Copy the remote value at index position valIdx to our local array
-                    agg.copy(localVal, strVals[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
-                }
-
                 // write the SegArray segments
                 localSegs = localSegs - startOffIdx;
                 writeSegmentedComponentToHdf(file_id, group, SEGMENTED_OFFSET_NAME, localSegs);
 
-                // create the group for SegString components - write the segments and offsets
-                validateGroup(file_id, localeFilename, "%s/%s".format(group, SEGMENTED_VALUE_NAME), overwrite);
-                localOffsets = localOffsets - startValIdx;
-                writeSegmentedComponentToHdf(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), SEGMENTED_OFFSET_NAME, localOffsets);
-                writeSegmentedComponentToHdf(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), SEGMENTED_VALUE_NAME, localVals);
+                var endOffIdx = if (lastSegIdx == locDom.high) then lastOffIdx else segments[locDom.high + 1] - 1;
+                var offIdxRange = startOffIdx..endOffIdx;
+                if offIdxRange.size > 0 {
+                    var localOffsets: [offIdxRange] int;
+                    forall (localOff, offIdx) in zip(localOffsets, offIdxRange) with (var agg = newSrcAggregator(int)) {
+                        // Copy the remote value at index position valIdx to our local array
+                        agg.copy(localOff, strSegs[offIdx]); // in SrcAgg, the Right Hand Side is REMOTE
+                    }
+
+                    // Copy the String Values local based on the offsets pulled local.
+                    var startValIdx = localOffsets[offIdxRange.low];
+                    var endValIdx = if (lastOffIdx == offIdxRange.high) then lastValIdx else strSegs[offIdxRange.high + 1] - 1;
+                    var valsIdxRange = startValIdx..endValIdx;
+
+                    var localVals: [valsIdxRange] t;
+                    forall (localVal, valIdx) in zip(localVals, valsIdxRange) with (var agg = newSrcAggregator(t)) {
+                        // Copy the remote value at index position valIdx to our local array
+                        agg.copy(localVal, strVals[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
+                    }
+
+                    // create the group for SegString components - write the segments and offsets
+                    validateGroup(file_id, localeFilename, "%s/%s".format(group, SEGMENTED_VALUE_NAME), overwrite);
+                    localOffsets = localOffsets - startValIdx;
+                    writeSegmentedComponentToHdf(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), SEGMENTED_OFFSET_NAME, localOffsets);
+                    writeSegmentedComponentToHdf(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), SEGMENTED_VALUE_NAME, localVals);
+                }
+                else {
+                    validateGroup(file_id, localeFilename, "%s/%s".format(group, SEGMENTED_VALUE_NAME), overwrite);
+                    writeNilSegmentedGroupToHdf(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), true, dtype);
+                }
             }
             // write attributes for arkouda meta info
             writeArkoudaMetaData(file_id, group, objType, dtype);
@@ -3168,13 +3173,17 @@ module HDF5Msg {
         var len: int;
         var rtnMap: map(string, string) = new map(string, string);
 
-        if isStringsObject(filenames[0], "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
+        // need to get fist valid file
+        var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
+        var first_file = filenames[idx];
+
+        if isStringsObject(first_file, "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
             (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s/%s".format(dset, SEGMENTED_VALUE_NAME, SEGMENTED_OFFSET_NAME), validFiles);
             var stringsEntry = readStringsFromFile(filenames, "%s/%s".format(dset, SEGMENTED_VALUE_NAME), dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
             rtnMap.add("values", "created %s+created bytes.size %t".format(st.attrib(stringsEntry.name), stringsEntry.nBytes));
         }
         else {
-            if isBigIntPdarray(filenames[0], "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
+            if isBigIntPdarray(first_file, "%s/%s".format(dset, SEGMENTED_VALUE_NAME)) {
                 (valSubdoms, len, vskips) = get_subdoms(filenames, "%s/%s/Limb_0".format(dset, SEGMENTED_VALUE_NAME), validFiles);
             }
             else {
