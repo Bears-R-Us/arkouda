@@ -70,7 +70,7 @@ class TestIndex:
         idx = ak.Index.factory(ak.arange(size))
         lk = idx.lookup(ak.array([0, size - 1]))
 
-        assert lk.to_list() == [True if (i == 0 or i == size - 1) else False for i in range(size)]
+        assert lk.to_list() == [i in [0, size - 1] for i in range(size)]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_multi_argsort(self, size):
@@ -99,4 +99,4 @@ class TestIndex:
         lk = ak.array(truth)
         result = idx.lookup([lk, lk])
 
-        assert result.to_list() == [True if i in truth else False for i in range(size)]
+        assert result.to_list() == [i in truth for i in range(size)]
