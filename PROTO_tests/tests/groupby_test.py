@@ -139,10 +139,7 @@ class TestGroupBy:
         akg = ak.GroupBy(akdf["keys"])
         keyname = "keys"
 
-        if op == "count":
-            print(f"Doing .count()")
-        else:
-            print(f"\nDoing aggregate(float64, {op})")
+        print(f"\nDoing aggregate(float64, {op})")
 
         do_check = True
         try:
@@ -151,7 +148,7 @@ class TestGroupBy:
             print("Pandas does not implement")
             do_check = False
         try:
-            akkeys, akvals = akg.count() if op == "count" else akg.aggregate(akdf["float64"], op, True)
+            akkeys, akvals = akg.aggregate(akdf["float64"], op, True)
         except RuntimeError as E:
             print("Arkouda error: ", E)
             do_check = False
@@ -159,12 +156,6 @@ class TestGroupBy:
             for i in range(pdvals.size):
                 if np.isnan(pdvals[i]):
                     pdvals[i] = 0.0  # clear out any nans to match ak implementation
-            print()
-            print(akg.keys.to_list())
-            print(pdkeys)
-            print(pdvals)
-            print(akkeys)
-            print(akvals)
             self.compare_keys(pdkeys, akkeys, 1, pdvals, akvals)
 
     def test_argmax_argmin(self):
