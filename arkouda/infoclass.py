@@ -74,25 +74,34 @@ def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
     return cast(str, generic_msg(cmd="info", args={"names": json.dumps(names)}))
 
 
-def list_registry() -> List[str]:
+def list_registry(detailed: bool = False):
     """
     Return a list containing the names of all registered objects
 
     Parameters
     ----------
-    None
+    detailed: bool
+        Default = False
+        Return details of registry objects. Currently includes object type for any objects
 
     Returns
     -------
-    list
-        List of all object names in the registry
+    dict
+        Dict containing keys "Componets" and "Objects".
 
     Raises
     ------
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    return [i.name for i in _parse_json(RegisteredSymbols)]
+    # return json.loads(cast(str, generic_msg(cmd="list_registry")))
+    data = json.loads(cast(str, generic_msg(cmd="list_registry")))
+    objs = json.loads(data["Objects"]) if data["Objects"] != "" else []
+    obj_types = json.loads(data["Object_Types"]) if data["Objects"] != "" else []
+    return {
+        "Objects": [(o, t) for (o, t) in zip(objs, obj_types)] if detailed else objs,
+        "Components": json.loads(data["Components"]),
+    }
 
 
 def list_symbol_table() -> List[str]:

@@ -1,13 +1,15 @@
-import re
 from typing import cast
 from warnings import warn
+import json
+
+from typeguard import typechecked
 
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.infoclass import list_registry, list_symbol_table
-from arkouda.pdarrayclass import RegistrationError, create_pdarray
+from arkouda.infoclass import list_registry
+from arkouda.pdarrayclass import create_pdarray
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
 from arkouda.segarray import SegArray
@@ -60,68 +62,6 @@ def report_mem(pre=""):
     cfg = get_config()
     used = get_mem_used() / (cfg["numLocales"] * cfg["physicalMemory"])
     print(f"{pre} mem use: {get_mem_used()/(1024**4): .2f} TB ({used:.1%})")
-
-
-def register(a, name):
-    """
-    Register an arkouda object with a user-specified name. Backwards compatible
-    with earlier arkouda versions.
-    """
-    cb = identity
-    if type(a) in {Datetime, Timedelta, BitVector, IPv4}:
-        # These classes wrap a pdarray, so two names must be updated
-        a = a.register(name)
-        # Get the registered name
-        n = a.name
-        # Re-convert object if necessary
-        reg = cb(a)
-        # Assign registered name to wrapper object
-        reg.name = n
-        # Assign same name to underlying pdarray
-        reg.values.name = n
-    else:
-        a = a.register(name)
-        reg = cb(a)
-    return reg
-
-
-def register_all(data, prefix, overwrite=True):
-    from arkouda.dataframe import DataFrame
-
-    def sanitize(k):
-        return str(k).replace(" ", "_")
-
-    if overwrite:
-        att = attach_all(prefix)
-        for k in data:
-            ksan = sanitize(k)
-            if ksan in att:
-                att[ksan].unregister()
-    if isinstance(data, dict):
-        return {k: register(v, f"{prefix}{sanitize(k)}") for k, v in data.items()}
-    elif isinstance(data, DataFrame):
-        return DataFrame({k: register(v, f"{prefix}{sanitize(k)}") for k, v in data.items()})
-    elif isinstance(data, list):
-        return [register(v, f"{prefix}{i}") for i, v in enumerate(data)]
-    elif isinstance(data, tuple):
-        return tuple(register(v, f"{prefix}{i}") for i, v in enumerate(data))
-    else:
-        try:
-            return data.register(prefix)
-        except Exception:
-            raise RegistrationError(f"Failed to register object of type '{type(data)}'")
-
-
-def attach_all(prefix):
-    pat = re.compile(f"(?:\\d+_)?{prefix}[\\w.]+")
-    res = pat.findall(str(list_symbol_table()))
-    return {k[len(prefix) :]: attach(k) for k in res}
-
-
-def unregister_all(prefix):
-    att = attach_all(prefix)
-    for v in att.values():
-        v.unregister()
 
 
 def enrich_inplace(data, keynames, aggregations, **kwargs):
@@ -220,65 +160,138 @@ def convert_if_categorical(values):
     return values
 
 
-def attach(name: str, dtype: str = "infer"):
+def register(obj, name):
     """
-    Attaches to a known element name. If a type is passed, the server will use that type
-    to pull the corresponding parts, otherwise the server will try to infer the type
+    Register an arkouda object with a user-specified name. Backwards compatible
+    with earlier arkouda versions.
     """
-    repMsg = cast(str, generic_msg(cmd="genericAttach", args={"dtype": dtype, "name": name}))
-    repType = repMsg.split("+")[0]
-
-    if repType == "categorical":
-        build_data = repMsg.split("+", 2)[-1]
-        c = Categorical.from_return_msg(build_data)
-        c.name = name
-        return c
-    elif repType == "series":
-        from arkouda.series import Series
-
-        return Series.from_return_msg(repMsg)
-    elif repType == "dataframe":
-        from arkouda.dataframe import DataFrame
-
-        return DataFrame.from_attach_msg(repMsg)
-    elif repType == "segarray":
-        repMsg = repMsg[len(repType) + 1 :]
-        return SegArray.from_return_msg(repMsg)
-    elif repType == "simple":
-        dtype = repMsg.split()[2]
-        repMsg = repMsg[len(repType) + 1 :]
-        if dtype == "str":
-            s = Strings.from_return_msg(repMsg)
-            registry = list_registry()
-            bytes_name, offsets_name = f"{name}_bytes", f"{name}_offsets"
-            if bytes_name in registry:
-                s._bytes = create_pdarray(
-                    cast(str, generic_msg(cmd="attach", args={"name": bytes_name}))
-                )
-            if offsets_name in registry:
-                s._offsets = create_pdarray(
-                    cast(str, generic_msg(cmd="attach", args={"name": offsets_name}))
-                )
-            return s
-        else:
-            return create_pdarray(repMsg)
-    else:
-        raise ValueError(f"Unknown object type returned by genericAttach - {repType}")
+    return obj.register(name)
 
 
-def unregister_by_name(name: str, dtype: str = "infer"):
+@typechecked
+def attach(name: str):
+    from arkouda.dataframe import DataFrame
+    from arkouda.pdarrayclass import pdarray
+    from arkouda.index import Index, MultiIndex
+    from arkouda.series import Series
+
+    rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
+    rtn_obj = None
+    if rep_msg["objType"].lower() == pdarray.objType.lower():
+        rtn_obj = create_pdarray(rep_msg["create"])
+    elif rep_msg["objType"].lower() == Strings.objType.lower():
+        rtn_obj = Strings.from_return_msg(rep_msg["create"])
+    elif rep_msg["objType"].lower() == Datetime.objType.lower():
+        rtn_obj = Datetime(create_pdarray(rep_msg["create"]))
+    elif rep_msg["objType"].lower() == Timedelta.objType.lower():
+        rtn_obj = Timedelta(create_pdarray(rep_msg["create"]))
+    elif rep_msg["objType"].lower() == IPv4.objType.lower():
+        rtn_obj = IPv4(create_pdarray(rep_msg["create"]))
+    elif rep_msg["objType"].lower() == SegArray.objType.lower():
+        rtn_obj = SegArray.from_return_msg(rep_msg["create"])
+    elif rep_msg["objType"].lower() == DataFrame.objType.lower():
+        rtn_obj = DataFrame.from_return_msg(rep_msg["create"])
+    elif rep_msg["objType"].lower() == GroupBy.objType.lower():
+        rtn_obj = GroupBy.from_return_msg(rep_msg["create"])
+    elif rep_msg["objType"].lower() == Categorical.objType.lower():
+        rtn_obj = Categorical.from_return_msg(rep_msg["create"])
+    elif (
+        rep_msg["objType"].lower() == Index.objType.lower()
+        or rep_msg["objType"].lower() == MultiIndex.objType.lower()
+    ):
+        rtn_obj = Index.from_return_msg(rep_msg["create"])
+    elif rep_msg["objType"].lower() == Series.objType.lower():
+        print(rep_msg["create"])
+        rtn_obj = Series.from_return_msg(rep_msg["create"])
+    elif rep_msg["objType"].lower() == BitVector.objType.lower():
+        rtn_obj = BitVector.from_return_msg(rep_msg["create"])
+
+    if rtn_obj is not None:
+        rtn_obj.registered_name = name
+    return rtn_obj
+
+
+@typechecked
+def unregister(name: str):
+    rep_msg = cast(str, generic_msg(cmd="unregister", args={"name": name}))
+
+    return rep_msg
+
+
+@typechecked
+def is_registered(name: str, as_component: bool = False) -> bool:
     """
-    Unregisters all components of a given registered object's name
+    Determine if the name provided is associated with a registered Object
 
     Parameters
     ----------
-    name : str
-        Name of the object to be unregistered
-    dtype : str
-        Name of the type of object being unregistered. If no type is given, we will attempt
-        to identify the type based on registered symbols
-        Supported types are: pdarray, strings, categorical, segarray, and series
-    """
-    repMsg = cast(str, generic_msg(cmd="genericUnregisterByName", args={"dtype": dtype, "name": name}))
+    name: str
+        The name to check for in the registry
+    as_component: bool
+        Default: False
+        When True, the name will be checked to determine if it is registered as a component of
+        a registered object
 
-    return repMsg
+    Return
+    -------
+    bool
+    """
+    reg = list_registry()
+    if as_component:
+        return name in reg["Components"]
+    else:
+        return name in reg["Objects"]
+
+
+def register_all(data: dict):
+    """
+    Register all objects in the provided dictionary
+
+    Parameters
+    -----------
+    data: dict
+        Maps name to register the object to the object. For example, {"MyArray": ak.array([0, 1, 2])
+
+    Returns
+    --------
+    None
+    """
+    for reg_name, obj in data.items():
+        register(obj, reg_name)
+
+
+def unregister_all(names: list):
+    """
+    Unregister all names provided
+
+    Parameters
+    -----------
+    names : list
+        List of names used to register objects to be unregistered
+
+    Returns
+    --------
+    None
+    """
+    for n in names:
+        unregister(n)
+
+
+def attach_all(names: list):
+    """
+    Attach to all objects registered with the names provide
+
+    Parameters
+    -----------
+    names: list
+        List of names to attach to
+
+    Returns
+    --------
+    dict
+    """
+    rtn = {}
+    for n in names:
+        rtn[n] = attach(n)
+
+    return rtn

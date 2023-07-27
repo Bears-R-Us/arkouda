@@ -27,7 +27,14 @@ module ServerConfig
       SEGARRAY=3,
       CATEGORICAL=4,
       GROUPBY=5,
-      DATAFRAME=6
+      DATAFRAME=6,
+      DATETIME=7,
+      TIMEDELTA=8,
+      IPV4=9,
+      BITVECTOR=10,
+      SERIES=11,
+      INDEX=12,
+      MULTIINDEX=13,
     };
     
     /*

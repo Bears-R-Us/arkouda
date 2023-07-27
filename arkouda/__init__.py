@@ -30,3 +30,4 @@ from arkouda.alignment import *
 from arkouda.plotting import *
 from arkouda.accessor import *
 from arkouda.io import *
+from arkouda.util import attach, register, unregister, is_registered, register_all, unregister_all, attach_all

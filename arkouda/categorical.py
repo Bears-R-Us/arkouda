@@ -23,7 +23,7 @@ from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import int_scalars, npstr, resolve_scalar_dtype, str_, str_scalars
 from arkouda.groupbyclass import GroupBy, unique
-from arkouda.infoclass import information, list_registry
+from arkouda.infoclass import information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import where
@@ -31,7 +31,6 @@ from arkouda.pdarrayclass import (
     RegistrationError,
     create_pdarray,
     pdarray,
-    unregister_pdarray_by_name,
 )
 from arkouda.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.pdarraysetops import concatenate, in1d
@@ -141,7 +140,7 @@ class Categorical:
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
         self.dtype = str_
-        self.name: Optional[str] = None
+        self.registered_name: Optional[str] = None
 
     @classmethod
     @typechecked
@@ -1104,11 +1103,21 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        [
-            p.register(f"{user_defined_name}.{n}")
-            for n, p in Categorical._get_components_dict(self).items()
-        ]
-        self.name = user_defined_name
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "codes": self.codes,
+                "categories": self.categories,
+                "_akNAcode": self._akNAcode,
+                "segments": self.segments if self.segments is not None else "",
+                "permutation": self.permutation if self.permutation is not None else "",
+            },
+        )
+        self.registered_name = user_defined_name
         return self
 
     def unregister(self) -> None:
@@ -1131,16 +1140,17 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        if not self.name:
-            raise RegistrationError(
-                "This item does not have a name and does not appear to be registered."
-            )
-        [p.unregister() for p in Categorical._get_components_dict(self).values()]
-        self.name = None  # Clear our internal Categorical object name
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
 
     def is_registered(self) -> np.bool_:
         """
-         Return True iff the object is contained in the registry
+         Return True iff the object is contained in the registry or is a component of a
+         registered object.
 
         Returns
         -------
@@ -1161,15 +1171,19 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        parts_registered: List[np.bool_] = [
-            p.is_registered() for p in Categorical._get_components_dict(self).values()
-        ]
-        if np.any(parts_registered) and not np.all(parts_registered):  # test for error
-            raise RegistrationError(
-                f"Not all registerable components of Categorical {self.name} are registered."
-            )
+        from arkouda.util import is_registered
 
-        return np.bool_(np.any(parts_registered))
+        if self.registered_name is None:
+            result = True
+            result &= is_registered(self.codes.name, as_component=True)
+            result &= is_registered(self.categories.name, as_component=True)
+            result &= is_registered(self._akNAcode.name, as_component=True)
+            if self.permutation is not None and self.segments is not None:
+                result &= is_registered(self.permutation.name, as_component=True)
+                result &= is_registered(self.segments.name, as_component=True)
+            return np.bool_(result)
+        else:
+            return np.bool_(is_registered(self.registered_name))
 
     def _get_components_dict(self) -> Dict:
         """
@@ -1245,6 +1259,7 @@ class Categorical:
     @typechecked
     def attach(user_defined_name: str) -> Categorical:
         """
+        DEPRECATED
         Function to return a Categorical object attached to the registered name in the
         arkouda server which was registered using register()
 
@@ -1267,9 +1282,15 @@ class Categorical:
         --------
         register, is_registered, unregister, unregister_categorical_by_name
         """
+        import warnings
+
         from arkouda.util import attach
 
-        return attach(user_defined_name, dtype="categorical")
+        warnings.warn(
+            "ak.Categorical.attach() is deprecated. Please use ak.attach() instead.",
+            DeprecationWarning,
+        )
+        return attach(user_defined_name)
 
     @staticmethod
     @typechecked
@@ -1294,17 +1315,16 @@ class Categorical:
         --------
         register, unregister, attach, is_registered
         """
-        # We have 4 subcomponents, unregister each of them
-        Strings.unregister_strings_by_name(f"{user_defined_name}.categories")
-        unregister_pdarray_by_name(f"{user_defined_name}.codes")
-        unregister_pdarray_by_name(f"{user_defined_name}._akNAcode")
+        import warnings
 
-        # Unregister optional pieces only if they are contained in the registry
-        registry = list_registry()
-        if f"{user_defined_name}.permutation" in registry:
-            unregister_pdarray_by_name(f"{user_defined_name}.permutation")
-        if f"{user_defined_name}.segments" in registry:
-            unregister_pdarray_by_name(f"{user_defined_name}.segments")
+        from arkouda.util import unregister
+
+        warnings.warn(
+            "ak.Categorical.unregister_categorical_by_name() is deprecated. "
+            "Please use ak.unregister() instead.",
+            DeprecationWarning,
+        )
+        return unregister(user_defined_name)
 
     @staticmethod
     @typechecked

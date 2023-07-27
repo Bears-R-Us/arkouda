@@ -4,7 +4,6 @@ import json
 import os
 import random
 from collections import UserDict
-from re import compile, match
 from typing import Callable, Dict, List, Optional, Union, cast
 from warnings import warn
 
@@ -12,7 +11,6 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
-from arkouda import list_registry
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
@@ -26,9 +24,7 @@ from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum
 from arkouda.numeric import isnan as akisnan
 from arkouda.numeric import where
-from arkouda.pdarrayclass import RegistrationError
-from arkouda.pdarrayclass import attach as pd_attach
-from arkouda.pdarrayclass import pdarray, unregister_pdarray_by_name
+from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.row import Row
@@ -36,7 +32,7 @@ from arkouda.segarray import SegArray
 from arkouda.series import Series
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
-from arkouda.timeclass import Datetime
+from arkouda.timeclass import Datetime, Timedelta
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -250,6 +246,7 @@ class DataFrame(UserDict):
 
     def __init__(self, initialdata=None, index=None):
         super().__init__()
+        self.registered_name = None
 
         if isinstance(initialdata, DataFrame):
             # Copy constructor
@@ -290,7 +287,6 @@ class DataFrame(UserDict):
         self._size = 0
         self._bytes = 0
         self._empty = True
-        self.name: Optional[str] = None
 
         # Initial attempts to keep an order on the columns
         self._columns = []
@@ -2224,14 +2220,40 @@ class DataFrame(UserDict):
         Any changes made to a DataFrame object after registering with the server may not be reflected
         in attached copies.
         """
+        from arkouda.categorical import Categorical as Categorical_
 
-        self.index.register(f"df_index_{user_defined_name}")
-        array(self.columns).register(f"df_columns_{user_defined_name}")
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        column_data = [
+            obj.name
+            if not isinstance(obj, (Categorical_, SegArray))
+            else json.dumps(
+                {
+                    "codes": obj.codes.name,
+                    "categories": obj.categories.name,
+                    "NA_codes": obj._akNAcode.name,
+                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
+                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                }
+            )
+            if isinstance(obj, Categorical_)
+            else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
+            for k, obj in self.items()
+        ]
 
-        for col, data in self.data.items():
-            data.register(f"df_data_{data.objType}_{col}_{user_defined_name}")
-
-        self.name = user_defined_name
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "idx": self.index.values.name,
+                "num_cols": len(self.columns),
+                "column_names": self.columns,
+                "columns": column_data,
+                "col_objTypes": [obj.objType for key, obj in self.items()],
+            },
+        )
+        self.registered_name = user_defined_name
         return self
 
     def unregister(self):
@@ -2254,15 +2276,12 @@ class DataFrame(UserDict):
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
+        from arkouda.util import unregister
 
-        if not self.name:
-            raise RegistrationError(
-                "This DataFrame does not have a name and does not appear to be registered."
-            )
-
-        DataFrame.unregister_dataframe_by_name(self.name)
-
-        self.name = None  # Clear our internal DataFrame object name
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None  # Clear our internal DataFrame object name
 
     def is_registered(self) -> bool:
         """
@@ -2287,27 +2306,11 @@ class DataFrame(UserDict):
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
+        from arkouda.util import is_registered
 
-        if self.name is None:
-            return False
-
-        # Total number of registered parts should equal number of columns plus an entry
-        # for the index and the column order
-        total = len(self.data) + 2
-        registered = sum(data.is_registered() for col, data in self.data.items())
-
-        if self.index.values.is_registered():
-            registered += 1
-        if f"df_columns_{self.name}" in list_registry():
-            registered += 1
-
-        if 0 < registered < total:
-            warn(
-                f"WARNING: DataFrame {self.name} expected {total} components to be registered,"
-                f" but only located {registered}."
-            )
-
-        return registered == total
+        if self.registered_name is None:
+            return False  # Dataframe cannot be registered as a component
+        return is_registered(self.registered_name)
 
     @staticmethod
     def attach(user_defined_name: str) -> DataFrame:
@@ -2334,52 +2337,15 @@ class DataFrame(UserDict):
         --------
         register, is_registered, unregister, unregister_groupby_by_name
         """
+        import warnings
 
-        col_resp = cast(
-            str, generic_msg(cmd="stringsToJSON", args={"name": f"df_columns_{user_defined_name}"})
+        from arkouda.util import attach
+
+        warnings.warn(
+            "ak.DataFrame.attach() is deprecated. Please use ak.attach() instead.",
+            DeprecationWarning,
         )
-        columns = dict.fromkeys(json.loads(col_resp))
-        matches = []
-        regEx = compile(
-            f"^df_data_({pdarray.objType}|{Strings.objType}|"
-            f"{Categorical.objType}|{SegArray.objType})_.*_{user_defined_name}"
-        )
-        # Using the regex, cycle through the registered items and find all the columns in the DataFrame
-        for name in list_registry():
-            x = match(regEx, name)
-            if x is not None:
-                matches.append(x.group())
-
-        if len(matches) == 0:
-            raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
-
-        # Remove duplicates caused by multiple components in Categorical or SegArray and
-        # loop through
-        for name in set(matches):
-            colName = DataFrame._parse_col_name(name, user_defined_name)[0]
-            if f"_{Strings.objType}_" in name:
-                columns[colName] = Strings.attach(name)
-            elif f"_{pdarray.objType}_" in name:
-                columns[colName] = pd_attach(name)
-            elif f"_{Categorical.objType}_" in name:
-                columns[colName] = Categorical.attach(name)
-            elif f"_{SegArray.objType}_" in name:
-                columns[colName] = SegArray.attach(name)
-
-        index_resp = cast(
-            str, generic_msg(cmd="attach", args={"name": f"df_index_{user_defined_name}_key"})
-        )
-        dtype = index_resp.split()[2]
-        if dtype == "str":  # TODO - this should be updated in the future to Strings
-            ind = Strings.from_return_msg(index_resp)
-        else:  # pdarray
-            ind = create_pdarray(index_resp)
-
-        index = Index.factory(ind)
-
-        df = DataFrame(columns, index)
-        df.name = user_defined_name
-        return df
+        return attach(user_defined_name)
 
     @staticmethod
     @typechecked
@@ -2404,34 +2370,16 @@ class DataFrame(UserDict):
         --------
         register, unregister, attach, is_registered
         """
+        import warnings
 
-        matches = []
-        regEx = compile(
-            f"^df_data_({pdarray.objType}|{Strings.objType}|"
-            f"{Categorical.objType}|{SegArray.objType})_.*_{user_defined_name}"
+        from arkouda.util import unregister
+
+        warnings.warn(
+            "ak.DataFrame.unregister_dataframe_by_name() is deprecated. "
+            "Please use ak.unregister() instead.",
+            DeprecationWarning,
         )
-        # Using the regex, cycle through the registered items and find all the columns in the DataFrame
-        for name in list_registry():
-            x = match(regEx, name)
-            if x is not None:
-                matches.append(x.group())
-
-        if len(matches) == 0:
-            raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
-
-        # Remove duplicates caused by multiple components in categorical and loop through
-        for name in set(matches):
-            if f"_{Strings.objType}_" in name:
-                Strings.unregister_strings_by_name(name)
-            elif f"_{pdarray.objType}_" in name:
-                unregister_pdarray_by_name(name)
-            elif f"_{Categorical.objType}_" in name:
-                Categorical.unregister_categorical_by_name(name)
-            elif f"_{SegArray.objType}_" in name:
-                SegArray.unregister_segarray_by_name(name)
-
-        unregister_pdarray_by_name(f"df_index_{user_defined_name}_key")
-        Strings.unregister_strings_by_name(f"df_columns_{user_defined_name}")
+        return unregister(user_defined_name)
 
     @staticmethod
     def _parse_col_name(entryName, dfName):
@@ -2464,76 +2412,12 @@ class DataFrame(UserDict):
         else:
             return colParts[3], colType
 
-    @staticmethod
-    def from_attach_msg(repMsg):
-        """
-        Creates and returns a DataFrame based on return components from ak.util.attach
-
-        Parameters
-        ----------
-        repMsg : string
-            A '+' delimited string of the DataFrame components to parse.
-
-        Returns
-        -------
-        DataFrame
-            A DataFrame representing a set of DataFrame components on the server
-
-        Raises
-        ------
-        RuntimeError
-            Raised if a server-side error is thrown in the process of creating
-            the DataFrame instance
-        """
-        parts = repMsg.split("+")
-        dfName = parts[1]
-        cols = dict.fromkeys(json.loads(parts[2][4:]))
-
-        # index could be a pdarray or a Strings
-        idxType = parts[3].split()[2]
-        if (
-            idxType == "str"
-        ):  # TODO - we should update the create statment to check for Strings.objType here
-            idx = Index.factory(Strings.from_return_msg(f"{parts[3]}+{parts[4]}"))
-            i = 5
-        else:  # pdarray
-            idx = Index.factory(create_pdarray(parts[3]))
-            i = 4
-
-        # Column parsing
-        while i < len(parts):
-            if parts[i][:7] == "created":
-                colName, colType = DataFrame._parse_col_name(parts[i], dfName)
-                if colType == "pdarray":
-                    cols[colName] = create_pdarray(parts[i])
-                elif colType == "str":
-                    cols[colName] = Strings.from_return_msg(f"{parts[i]}+{parts[i+1]}")
-                    i += 1
-                else:
-                    raise ValueError(f"Unknown object type defined in return message - {colType}")
-
-            elif parts[i] == "categorical":
-                colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
-                cols[colName] = Categorical.from_return_msg(parts[i + 2] + "+" + parts[i + 3])
-                i += 3
-
-            elif parts[i] == "segarray":
-                info = json.loads(parts[i + 1])
-                colName = DataFrame._parse_col_name(info["segments"], dfName)[0]
-                cols[colName] = SegArray.from_return_msg(parts[i + 1])
-                i += 1
-
-            i += 1
-
-        df = DataFrame(cols, idx)
-        df.name = dfName
-        return df
-
     @classmethod
     def from_return_msg(cls, rep_msg):
         from arkouda.categorical import Categorical as Categorical_
 
         data = json.loads(rep_msg)
+        print(data)
         idx = None
         columns = {}
         for k, create_data in data.items():
@@ -2548,6 +2432,12 @@ class DataFrame(UserDict):
                     columns[k] = create_pdarray(comps[1])
                 elif comps[0] == Strings.objType.upper():
                     columns[k] = Strings.from_return_msg(comps[1])
+                elif comps[0] == IPv4.objType.upper():
+                    columns[k] = IPv4(create_pdarray(comps[1]))
+                elif comps[0] == Datetime.objType.upper():
+                    columns[k] = Datetime(create_pdarray(comps[1]))
+                elif comps[0] == Timedelta.objType.upper():
+                    columns[k] = Timedelta(create_pdarray(comps[1]))
                 elif comps[0] == Categorical_.objType.upper():
                     columns[k] = Categorical_.from_return_msg(comps[1])
                 elif comps[0] == SegArray.objType.upper():

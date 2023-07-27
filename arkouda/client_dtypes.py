@@ -5,12 +5,13 @@ from typing import Optional, Union
 import numpy as np  # type: ignore
 from typeguard import typechecked
 
-from arkouda.dtypes import bitType, intTypes, isSupportedInt, uint64 as akuint64
+from arkouda.dtypes import bitType, intTypes, isSupportedInt
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import where
-from arkouda.pdarrayclass import pdarray
-from arkouda.pdarraycreation import arange, array, zeros
+from arkouda.pdarrayclass import RegistrationError, pdarray
+from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.strings import Strings
 
 
@@ -65,8 +66,10 @@ class BitVector(pdarray):
     """
 
     conserves = frozenset(("+", "-", "|", "&", "^", ">>", "<<"))
+    objType = "BitVector"
 
     def __init__(self, values, width=64, reverse=False):
+        self.registered_name = None
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
             raise TypeError("Argument must be integer pdarray")
@@ -195,6 +198,127 @@ class BitVector(pdarray):
         else:
             return NotImplemented
         self.values.opeq(otherdata, op)
+
+    def register(self, user_defined_name):
+        """
+        Register this BitVector object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name the BitVector is to be registered under,
+            this will be the root name for underlying components
+
+        Returns
+        -------
+        Categorical
+            The same BitVector which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
+            Please note you cannot register two different BitVectors with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the Categorical with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, unregister_categorical_by_name, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.client import generic_msg
+
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "values": self.values.name,
+                "width": self.width,
+                "reverse": self.reverse,
+            },
+        )
+        self.registered_name = user_defined_name
+        return self
+
+    def unregister(self):
+        """
+        Unregister this BitVector object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
+
+        Raises
+        ------
+        RegistrationError
+            If the object is already unregistered or if there is a server error
+            when attempting to unregister
+
+        See also
+        --------
+        register, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
+
+    def is_registered(self) -> np.bool_:
+        """
+        Return True iff the object is contained in the registry or is a component of a
+        registered object.
+
+        Returns
+        -------
+        numpy.bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RegistrationError
+            Raised if there's a server-side error or a mis-match of registered components
+
+        See Also
+        --------
+        register, attach, unregister
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.util import is_registered
+
+        if self.registered_name is None:
+            return np.bool_(False)
+        else:
+            return np.bool_(is_registered(self.registered_name))
+
+    @classmethod
+    def from_return_msg(cls, rep_msg):
+        import json
+
+        data = json.loads(rep_msg)
+
+        return cls(
+            create_pdarray(data["values"]),
+            width=data["width"],
+            reverse=json.loads(data["reverse"].lower()),
+        )
 
 
 class Fields(BitVector):
@@ -439,6 +563,8 @@ class IPv4(pdarray):
     how values are displayed to the user. Operators and methods will
     typically treat this class like an int64 pdarray.
     """
+
+    objType = "IPv4"
 
     def __init__(self, values):
         if not isinstance(values, pdarray) or values.dtype not in intTypes:

@@ -16,10 +16,10 @@ from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import (
+    RegistrationError,
     create_pdarray,
     is_sorted,
     pdarray,
-    unregister_pdarray_by_name,
 )
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate
@@ -105,7 +105,7 @@ class SegArray:
 
     def __init__(self, segments, values, lengths=None, grouping=None):
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
-        self.name = ""
+        self.registered_name = None
 
         # validate inputs
         if not isinstance(segments, pdarray) or segments.dtype != akint64:
@@ -1433,7 +1433,7 @@ class SegArray:
 
     def register(self, user_defined_name):
         """
-        Save this SegArray object by registering it to the Symbol Table using a defined name
+        Register this SegArray object and underlying components with the Arkouda server
 
         Parameters
         ----------
@@ -1443,26 +1443,44 @@ class SegArray:
         Returns
         -------
         SegArray
-            This SegArray object
+            The same SegArray which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
+            Please note you cannot register two different SegArrays with the same name.
 
         Raises
         ------
         RegistrationError
             Raised if the server could not register the SegArray object
 
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+
         See Also
         --------
         unregister, attach, is_registered
         """
-        self.name = user_defined_name
-        self.segments.register(self.name + SEG_SUFFIX)
-        self.values.register(self.name + VAL_SUFFIX)
-        self.lengths.register(self.name + LEN_SUFFIX)
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "segments": self.segments,
+                "values": self.values,
+                "val_type": self.values.objType,
+            },
+        )
+        self.registered_name = user_defined_name
         return self
 
     def unregister(self):
         """
-        Remove this SegArray object from the Symbol Table
+        Unregister this SegArray object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
 
         Returns
         -------
@@ -1473,11 +1491,21 @@ class SegArray:
         RuntimeError
             Raised if the server could not unregister the SegArray object from the Symbol Table
 
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+
         See Also
         --------
         register, attach, is_registered
         """
-        SegArray.unregister_segarray_by_name(self.name)
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
 
     @staticmethod
     def unregister_segarray_by_name(user_defined_name):
@@ -1502,9 +1530,16 @@ class SegArray:
         --------
         register, unregister, attach, is_registered
         """
-        unregister_pdarray_by_name(user_defined_name + SEG_SUFFIX)
-        unregister_pdarray_by_name(user_defined_name + VAL_SUFFIX)
-        unregister_pdarray_by_name(user_defined_name + LEN_SUFFIX)
+        import warnings
+
+        from arkouda.util import unregister
+
+        warnings.warn(
+            "ak.SegArray.unregister_segarray_by_name() is deprecated. "
+            "Please use ak.unregister() instead.",
+            DeprecationWarning,
+        )
+        return unregister(user_defined_name)
 
     @classmethod
     def attach(cls, user_defined_name):
@@ -1530,12 +1565,15 @@ class SegArray:
         --------
         register, unregister, is_registered
         """
-        from arkouda.pdarrayclass import attach_pdarray
+        import warnings
 
-        segs = attach_pdarray(user_defined_name + SEG_SUFFIX)
-        vals = attach_pdarray(user_defined_name + VAL_SUFFIX)
-        lengths = attach_pdarray(user_defined_name + LEN_SUFFIX)
-        return cls(segs, vals, lengths=lengths)
+        from arkouda.util import attach
+
+        warnings.warn(
+            "ak.SegArray.attach() is deprecated. Please use ak.attach() instead.",
+            DeprecationWarning,
+        )
+        return attach(user_defined_name)
 
     def is_registered(self) -> bool:
         """
@@ -1550,15 +1588,12 @@ class SegArray:
         --------
         register, unregister, attach
         """
-        regParts = [
-            self.segments.is_registered(),
-            self.values.is_registered(),
-            self.lengths.is_registered(),
-        ]
+        from arkouda.util import is_registered
 
-        if any(regParts) and not all(regParts):
-            warn(
-                f"SegArray expected {len(regParts)} components to be registered,"
-                f" but only located {sum(regParts)}"
+        if self.registered_name is None:
+            # if it is registered as a component of DataFrame
+            return is_registered(self.segments.name, as_component=True) and is_registered(
+                self.values.name, as_component=True
             )
-        return all(regParts)
+        else:
+            return is_registered(self.registered_name)
