@@ -2009,7 +2009,6 @@ def restore(filename):
 
 
 def receive(hostname : str, port):
->>>>>>> feb32522 (Fix naming of receive functinos)
     """
     Receive a pdarray sent by `pdarray.transfer()`.
 
