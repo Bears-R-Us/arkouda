@@ -20,7 +20,7 @@ class TestClientDTypeTests:
     """
 
     @pytest.mark.parametrize("int_types", INT_TYPES)
-    def test_BitVector_creation(self, int_types):
+    def test_bit_vector_creation(self, int_types):
         bv_answer = ["...", "..|", ".|.", ".||"]
         bv_rev_answer = ["...", "|..", ".|.", "||."]
 
@@ -52,8 +52,14 @@ class TestClientDTypeTests:
         arr = ak.array([1.1, 8.3])
         with pytest.raises(TypeError):
             ak.BitVector(arr)
+    @pytest.mark.parametrize("int_types", INT_TYPES)
+    def test_bit_vector_edge_case(self, int_types):
+        arr = ak.arange(2**64-10, 2**64-1, dtype=int_types)
+        bv = ak.BitVector(arr, width=3)
+        assert isinstance(bv, client_dtypes.BitVector)
+        assert bv.dtype == ak.bitType
 
-    def test_Field_creation(self):
+    def test_field_creation(self):
         values = ak.arange(4)
         names = ["8", "4", "2", "1"]
         f = ak.Fields(values, names)
@@ -101,9 +107,10 @@ class TestClientDTypeTests:
     def test_ipv4_creation(self, int_types):
         ip_list = ak.array(IPS, dtype=int_types)
         ipv4 = ak.IPv4(ip_list)
+        py_ips = [ipaddress.IPv4Address(ip).compressed for ip in IPS]
 
         assert isinstance(ipv4, ak.IPv4)
-        assert ipv4.to_list() == [format(ipaddress.IPv4Address(ip)) for ip in IPS]
+        assert ipv4.to_list() == py_ips
         assert ipv4.dtype == ak.bitType
 
         with pytest.raises(TypeError):
@@ -112,9 +119,9 @@ class TestClientDTypeTests:
             ipv4 = ak.IPv4(ak.array([IPS + 0.177]))
 
         # Test handling of python dotted-quad input
-        ipv4 = ak.ip_address([format(ipaddress.IPv4Address(ip)) for ip in IPS])
+        ipv4 = ak.ip_address(py_ips)
         assert isinstance(ipv4, ak.IPv4)
-        assert ipv4.to_list() == [format(ipaddress.IPv4Address(ip)) for ip in IPS]
+        assert ipv4.to_list() == py_ips
         assert ipv4.dtype == ak.bitType
 
     def test_ipv4_normalization(self):
@@ -146,7 +153,7 @@ class TestClientDTypeTests:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_is_ipv6(self, size):
-        x = [random.getrandbits(128) for i in range(size)]
+        x = [random.getrandbits(128) for _ in range(size)]
         low = ak.array([i & (2**64 - 1) for i in x], dtype=ak.uint64)
         high = ak.array([i >> 64 for i in x], dtype=ak.uint64)
 
