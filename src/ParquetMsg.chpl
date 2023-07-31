@@ -20,6 +20,7 @@ module ParquetMsg {
   use ArkoudaCTypesCompat;
   use ArkoudaListCompat;
   use ArkoudaStringBytesCompat;
+  use ArkoudaIOCompat;
 
   enum CompressionType {
     NONE=0,
@@ -675,7 +676,7 @@ module ParquetMsg {
                  moduleName=getModuleName(), 
                  errorClass='IllegalArgumentError');
     }
-    return "%jt".format(rtnmap);
+    return formatJson(rtnmap);
   }
 
   proc populateTagData(A, filenames: [?fD] string, sizes) throws {
@@ -1817,7 +1818,7 @@ module ParquetMsg {
       try! repMsg = string.createCopyingBuffer(res, strlen(res));
       var items = new list(repMsg.split(",")); // convert to json
 
-      repMsg = "%jt".format(items);
+      repMsg = formatJson(items);
     } catch e : Error {
       var errorMsg = "Failed to process Parquet file %t".format(e.message());
       return new MsgTuple(errorMsg, MsgType.ERROR);

@@ -10,6 +10,7 @@ module Message {
     use ArkoudaFileCompat;
     use Map;
     use ArkoudaListCompat;
+    use ArkoudaIOCompat;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
@@ -77,7 +78,7 @@ module Message {
         }
 
         proc getJSON() throws {
-            return "%jt".format(this);
+            return formatJson(this);
         }
 
         proc setKey(value: string) {
@@ -299,7 +300,7 @@ module Message {
                     break;
                 }
             }
-            return "%jt".format(json);
+            return formatJson(json);
         }
 
         /*
@@ -430,7 +431,7 @@ module Message {
     */
    proc serialize(msg: string, msgType: MsgType, msgFormat: MsgFormat, 
                                                                  user: string) : string throws {
-       return "%jt".format(new ReplyMsg(msg=msg,msgType=msgType, 
+       return formatJson(new ReplyMsg(msg=msg,msgType=msgType, 
                                                         msgFormat=msgFormat, user=user));
    }
 

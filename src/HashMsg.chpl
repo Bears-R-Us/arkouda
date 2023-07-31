@@ -14,6 +14,8 @@ module HashMsg {
   use UniqueMsg;
   use Map;
 
+  use ArkoudaIOCompat;
+
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const hmLogger = new Logger(logLevel, logChannel);
@@ -58,7 +60,7 @@ module HashMsg {
     var createdMap = new map(keyType=string,valType=string);
     createdMap.add("upperHash", "created %s".format(st.attrib(upperName)));
     createdMap.add("lowerHash", "created %s".format(st.attrib(lowerName)));
-    repMsg = "%jt".format(createdMap);
+    repMsg = formatJson(createdMap);
     hmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
@@ -88,7 +90,7 @@ module HashMsg {
     var createdMap = new map(keyType=string,valType=string);
     createdMap.add("upperHash", "created %s".format(st.attrib(upperName)));
     createdMap.add("lowerHash", "created %s".format(st.attrib(lowerName)));
-    var repMsg = "%jt".format(createdMap);
+    var repMsg = formatJson(createdMap);
     hmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }

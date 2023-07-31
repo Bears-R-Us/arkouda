@@ -22,7 +22,7 @@ module GenSymIO {
     use ArkoudaListCompat;
     use ArkoudaStringBytesCompat;
     use ArkoudaCTypesCompat;
-
+    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -225,13 +225,13 @@ module GenSymIO {
         }
         
         var reply: map(string, string) = new map(string, string);
-        reply.add("items", "%jt".format(items));
+        reply.add("items", formatJson(items));
         if allowErrors && !fileErrors.isEmpty() { // If configured, build the allowErrors portion
             reply.add("allow_errors", "true");
             reply.add("file_error_count", fileErrorCount:string);
-            reply.add("file_errors", "%jt".format(fileErrors));
+            reply.add("file_errors", formatJson(fileErrors));
         }
-        return "%jt".format(reply);
+        return formatJson(reply);
     }
 
     /*

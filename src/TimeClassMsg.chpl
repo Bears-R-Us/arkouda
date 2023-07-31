@@ -13,6 +13,7 @@ module TimeClassMsg {
 
     use Map;
     use ArkoudaMapCompat;
+    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -89,7 +90,7 @@ module TimeClassMsg {
         st.addEntry(retname, new shared SymEntry(dayOfWeek));
         attributesDict.add("dayOfWeek", "created %s".format(st.attrib(retname)));
 
-        var repMsg: string = "%jt".format(attributesDict);
+        var repMsg: string = formatJson(attributesDict);
 
         tLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -97,7 +98,7 @@ module TimeClassMsg {
 
     proc timeDeltaAttributesMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var values: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("values"), st);
-        var repMsg: string = "%jt".format(simpleAttributesHelper(toSymEntry(values, int).a, st));
+        var repMsg: string = formatJson(simpleAttributesHelper(toSymEntry(values, int).a, st));
 
         tLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);

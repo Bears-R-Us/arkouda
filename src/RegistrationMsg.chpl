@@ -20,6 +20,8 @@ module RegistrationMsg
 
     use Map;
 
+    use ArkoudaIOCompat;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const regLogger = new Logger(logLevel, logChannel);
@@ -188,7 +190,7 @@ module RegistrationMsg
             rtnMap.add("segments", "created " + segs);
         }
 
-        var repMsg: string = "categorical+%s+%jt".format(name, rtnMap);
+        var repMsg: string = "categorical+%s+".format(name)+formatJson(rtnMap);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
@@ -307,7 +309,7 @@ module RegistrationMsg
         var u : set(string) = new set(string, nameList);
 
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "%s: Data components found for dataframe: '%jt'".format(cmd, u));
+                        "%s: Data components found for dataframe: '".format(cmd)+formatJson(u)+"'");
 
         // Use existing attach functionality to build the response message based on the objType of each data column
         forall regName in u with (+ reduce repMsg) {
@@ -334,7 +336,7 @@ module RegistrationMsg
                     var attParam3 = new ParameterObj("name", regName+"_lengths", ObjectType.VALUE, "");
                     var subArgs3 = new MessageArgs(new list([attParam3, ]));
                     sa_map.add("lengths", attachMsg(cmd, subArgs3, st).msg);
-                    msg = "segarray+%jt".format(sa_map); 
+                    msg = "segarray+"+formatJson(sa_map);
                 }
                 when (ObjType.STRINGS) {
                     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
@@ -484,7 +486,7 @@ module RegistrationMsg
                 var subArgs3 = new MessageArgs(new list([attParam3, ]));
                 sa_map.add("lengths", attachMsg(cmd, subArgs3, st).msg);
 
-                return new MsgTuple("segarray+%jt".format(sa_map), MsgType.NORMAL); 
+                return new MsgTuple("segarray+"+formatJson(sa_map), MsgType.NORMAL); 
             }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 

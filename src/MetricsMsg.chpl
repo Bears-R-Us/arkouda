@@ -15,6 +15,7 @@ module MetricsMsg {
 
     use ArkoudaListCompat;
     use ArkoudaMapCompat;
+    use ArkoudaIOCompat;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,TOTAL_RESPONSE_TIME,
                         TOTAL_MEMORY_USED,SYSTEM,SERVER,SERVER_INFO};
@@ -636,28 +637,28 @@ module MetricsMsg {
 
         select category {
             when MetricCategory.ALL {
-                metrics = "%jt".format(exportAllMetrics());
+                metrics = formatJson(exportAllMetrics());
             }
             when MetricCategory.NUM_REQUESTS {
-                metrics = "%jt".format(getNumRequestMetrics());
+                metrics = formatJson(getNumRequestMetrics());
             }
             when MetricCategory.SERVER {
-                metrics = "%jt".format(getServerMetrics());
+                metrics = formatJson(getServerMetrics());
             }
             when MetricCategory.SYSTEM {
-                metrics = "%jt".format(getSystemMetrics());
+                metrics = formatJson(getSystemMetrics());
             }
             when MetricCategory.SERVER_INFO {
-                metrics = "%jt".format(getServerInfo());
+                metrics = formatJson(getServerInfo());
             }
             when MetricCategory.TOTAL_MEMORY_USED {
-                metrics = "%jt".format(getTotalMemoryUsedMetrics());            
+                metrics = formatJson(getTotalMemoryUsedMetrics());            
             }
             when MetricCategory.AVG_RESPONSE_TIME {
-                metrics = "%jt".format(getAvgResponseTimeMetrics());            
+                metrics = formatJson(getAvgResponseTimeMetrics());            
             }
             when MetricCategory.TOTAL_RESPONSE_TIME {
-                metrics = "%jt".format(getTotalResponseTimeMetrics());            
+                metrics = formatJson(getTotalResponseTimeMetrics());            
             }
             otherwise {
                 throw getErrorWithContext(getLineNumber(),getModuleName(),getRoutineName(),

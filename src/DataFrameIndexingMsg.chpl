@@ -13,6 +13,7 @@
 
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
+    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -125,7 +126,7 @@
                     throw new IllegalArgumentError(repTup.msg);
                 }
 
-                rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
+                rpm = formatJson("Strings+%s+%s".format(col_name, repTup.msg));
             }
             else if ele_parts[0] == "Strings"{
                 dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings. Name: %s".format(i, ele_parts[2]));
@@ -135,7 +136,7 @@
                     throw new IllegalArgumentError(repTup.msg);
                 }
 
-                rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
+                rpm = formatJson("Strings+%s+%s".format(col_name, repTup.msg));
             }
             else if ele_parts[0] == "pdarray" || ele_parts[0] == "IPv4" || 
                             ele_parts[0] == "Fields" || ele_parts[0] == "Datetime" || ele_parts[0] == "BitVector"{
@@ -144,23 +145,23 @@
                     select (gCol.dtype) {
                         when (DType.Int64) {
                             var col_vals = toSymEntry(gCol, int);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                            rpm = formatJson(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.UInt64) {
                             var col_vals = toSymEntry(gCol, uint);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                            rpm = formatJson(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.Bool) {
                             var col_vals = toSymEntry(gCol, bool);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                            rpm = formatJson(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.Float64){
                             var col_vals = toSymEntry(gCol, real);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                            rpm = formatJson(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.BigInt){
                             var col_vals = toSymEntry(gCol, bigint);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                            rpm = formatJson(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         otherwise {
                             var errorMsg = notImplementedError(pn,dtype2str(gCol.dtype));
@@ -181,19 +182,19 @@
                 select(gVal.dtype){
                     when(DType.Int64){
                         var values = toSymEntry(gVal, int);
-                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        rpm = formatJson(df_seg_array_idx(idx, segments, values, col_name, st));
                     }
                     when(DType.UInt64){
                         var values = toSymEntry(gVal, uint);
-                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        rpm = formatJson(df_seg_array_idx(idx, segments, values, col_name, st));
                     }
                     when(DType.Float64){
                         var values = toSymEntry(gVal, real);
-                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        rpm = formatJson(df_seg_array_idx(idx, segments, values, col_name, st));
                     }
                     when(DType.Bool){
                         var values = toSymEntry(gVal, bool);
-                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        rpm = formatJson(df_seg_array_idx(idx, segments, values, col_name, st));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,dtype2str(gVal.dtype));

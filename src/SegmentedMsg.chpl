@@ -18,6 +18,7 @@ module SegmentedMsg {
   use Map;
   use ArkoudaStringBytesCompat;
   use ArkoudaCTypesCompat;
+  use ArkoudaIOCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -398,7 +399,7 @@ module SegmentedMsg {
       createdMap.add("MatchInd", "created %s".format(st.attrib(rMatchScanName)));
       createdMap.add("FullMatchBool", "created %s".format(st.attrib(rfullMatchBoolName)));
       createdMap.add("FullMatchInd", "created %s".format(st.attrib(rfullMatchScanName)));
-      repMsg = "%jt".format(createdMap);
+      repMsg = formatJson(createdMap);
     }
     else {
       var errorMsg = "%s".format(objtype);
@@ -758,7 +759,7 @@ module SegmentedMsg {
               idx = convertPythonIndexToChapel(idx, strings.size);
               var s = strings[idx];
 
-              var repMsg = "item %s %jt".format("str", s);
+              var repMsg = "item str "+formatJson(s);
               smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
               return new MsgTuple(repMsg, MsgType.NORMAL);
           }
@@ -1079,7 +1080,7 @@ module SegmentedMsg {
       rtn[i] = strings[i];
     }
 
-    var repMsg = "%jt".format(rtn);
+    var repMsg = formatJson(rtn);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 

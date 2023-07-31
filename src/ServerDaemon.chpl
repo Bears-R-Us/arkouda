@@ -29,6 +29,7 @@ module ServerDaemon {
 
     use ArkoudaFileCompat;
     use ArkoudaListCompat;
+    use ArkoudaIOCompat;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
@@ -474,7 +475,7 @@ module ServerDaemon {
                 
                 // Log to the console or arkouda.log file
                 sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "%jt".format(metric)); 
+                              formatJson(metric)); 
             }
             
         }

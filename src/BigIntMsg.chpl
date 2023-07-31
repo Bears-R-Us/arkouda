@@ -12,7 +12,7 @@ module BigIntMsg {
     use List;
 
     use ArkoudaListCompat;
-
+    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -82,7 +82,7 @@ module BigIntMsg {
                     all_zero &&= (t == 0 || t == -1);
                   }
                 }
-                var repMsg = "%jt".format(retList);
+                var repMsg = formatJson(retList);
                 biLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }
@@ -101,7 +101,7 @@ module BigIntMsg {
 
         select gEnt.dtype {
             when DType.BigInt {
-                var repMsg = "%jt".format(toSymEntry(gEnt, bigint).max_bits);
+                var repMsg = formatJson(toSymEntry(gEnt, bigint).max_bits);
                 biLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }

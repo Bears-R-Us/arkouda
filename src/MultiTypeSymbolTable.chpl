@@ -15,6 +15,7 @@ module MultiTypeSymbolTable
     use ArkoudaRegexCompat;
     use ArkoudaFileCompat;
     use ArkoudaMapCompat;
+    use ArkoudaIOCompat;
     
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -282,10 +283,10 @@ module MultiTypeSymbolTable
         */
         proc dump(name:string): string throws {
             if name == "__AllSymbols__" {
-                return "%jt".format(this);
+                return formatJson(this);
             } 
             checkTable(name, "dump");
-            return "%jt %jt".format(name, tab.getReference(name));
+            return formatJson(name) + formatJson(tab.getReference(name));
         }
         
         /*
@@ -386,17 +387,16 @@ module MultiTypeSymbolTable
         proc formatEntry(name:string, abstractEntry:borrowed AbstractSymEntry): string throws {
             if abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
                 var item:borrowed GenSymEntry = toGenSymEntry(abstractEntry);
-                return '{"name":%jt, "dtype":%jt, "size":%jt, "ndim":%jt, "shape":%jt, "itemsize":%jt, "registered":%jt}'.format(name,
-                              dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
-
+                return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%?, "itemsize":%?, "registered":%?}',
+                                  name, dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
             } else if abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
                 var item:borrowed SegStringSymEntry = toSegStringSymEntry(abstractEntry);
-                return '{"name":%jt, "dtype":%jt, "size":%jt, "ndim":%jt, "shape":%jt, "itemsize":%jt, "registered":%jt}'.format(name,
-                              dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
+                return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%?, "itemsize":%?, "registered":%?}',
+                                  name, dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
                               
             } else {
-                return '{"name":%jt, "dtype":%jt, "size":%jt, "ndim":%jt, "shape":%jt, "itemsize":%jt, "registered":%jt}'.format(name,
-                              dtype2str(DType.UNDEF), 0, 0, (0,), 0, registry.contains(name));
+              return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%?, "itemsize":%?, "registered":%?}',
+                                name, dtype2str(DType.UNDEF), 0, 0, (0,), 0, registry.contains(name));
             }
         }
 

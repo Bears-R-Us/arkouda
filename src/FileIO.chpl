@@ -385,6 +385,6 @@ module FileIO {
           // assumes that we are providing 
           filenames = filelist;
       }
-      return new MsgTuple("%jt".format(filenames), MsgType.NORMAL);
+      return new MsgTuple(formatJson(filenames), MsgType.NORMAL);
     }
 }

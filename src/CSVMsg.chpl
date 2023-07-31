@@ -19,6 +19,7 @@ module CSVMsg {
 
     use ArkoudaFileCompat;
     use ArkoudaListCompat;
+    use ArkoudaIOCompat;
 
     const CSV_HEADER_OPEN = "**HEADER**";
     const CSV_HEADER_CLOSE = "*/HEADER/*";
@@ -77,7 +78,7 @@ module CSVMsg {
         var column_names = lines[idx].split(col_delim);
         reader.close();
         csvFile.close();
-        return new MsgTuple("%jt".format(column_names), MsgType.NORMAL);
+        return new MsgTuple(formatJson(column_names), MsgType.NORMAL);
 
     }
 
@@ -306,7 +307,7 @@ module CSVMsg {
         forall (i, dset) in zip(0..#datasets.size, datasets) {
             var idx: int;
             var col_exists = columns.find(dset, idx);
-            csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: %jt, IDX: %i".format(dset, col_exists, idx));
+            csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: ".format(dset)+formatJson(col_exists)+" IDX: %i".format(idx));
             if !col_exists {
                 throw getErrorWithContext(
                     msg="The dataset %s was not found in %s".format(dset, filename),

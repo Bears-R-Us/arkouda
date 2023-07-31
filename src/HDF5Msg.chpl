@@ -31,6 +31,7 @@ module HDF5Msg {
     use ArkoudaListCompat;
     use ArkoudaStringBytesCompat;
     use ArkoudaCTypesCompat;
+    use ArkoudaIOCompat;
 
 
     private config const logLevel = ServerConfig.logLevel;
@@ -2645,7 +2646,7 @@ module HDF5Msg {
             repMsg = simulate_h5ls(file_id);
             var items = new list(repMsg.split(",")); // convert to json
 
-            repMsg = "%jt".format(items);
+            repMsg = formatJson(items);
         } catch e : Error {
             var errorMsg = "Failed to process HDF5 file %t".format(e.message());
             h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -3206,7 +3207,7 @@ module HDF5Msg {
 
     proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var rtnMap = readSegArrayFromFile(filenames, dset, dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
-        return (dset, ObjType.SEGARRAY, "%jt".format(rtnMap));
+        return (dset, ObjType.SEGARRAY, formatJson(rtnMap));
     }
 
     proc categorical_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
@@ -3279,7 +3280,7 @@ module HDF5Msg {
             rtnMap.add("segments", "created " + st.attrib(segEntry.name));
             rtnMap.add("permutation", "created " + st.attrib(permEntry.name));
         }
-        return (dset, ObjType.CATEGORICAL, "%jt".format(rtnMap));
+        return (dset, ObjType.CATEGORICAL, formatJson(rtnMap));
     }
 
     proc groupby_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
@@ -3384,7 +3385,7 @@ module HDF5Msg {
             }
             rtnMap.add("KEY_%i".format(k), "%s+|+%s".format(keyObjType: string, readCreate));
         }
-        return (dset, ObjType.GROUPBY, "%jt".format(rtnMap));
+        return (dset, ObjType.GROUPBY, formatJson(rtnMap));
     }
 
     proc dataframe_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
@@ -3428,7 +3429,7 @@ module HDF5Msg {
                 }
                 when ObjType.SEGARRAY {
                     var segMap = readSegArrayFromFile(filenames, "%s/%s".format(dset, col), dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
-                    readCreate = "%jt".format(segMap);
+                    readCreate = formatJson(segMap);
                 }
                 otherwise {
                     throw getErrorWithContext(
@@ -3441,7 +3442,7 @@ module HDF5Msg {
             }
             rtnMap.add(col, "%s+|+%s".format(keyObjType: string, readCreate));
         }
-        return (dset, ObjType.DATAFRAME, "%jt".format(rtnMap));
+        return (dset, ObjType.DATAFRAME, formatJson(rtnMap));
     }
 
     /*

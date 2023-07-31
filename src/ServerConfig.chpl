@@ -6,6 +6,7 @@ module ServerConfig
     use SymArrayDmap only makeDistDom;
 
     public use IO;
+    use ArkoudaIOCompat;
 
     use ServerErrorStrings;
     use Reflection;
@@ -207,7 +208,7 @@ module ServerConfig
             autoShutdown = autoShutdown,
             serverInfoNoSplash = serverInfoNoSplash
         );
-        return try! "%jt".format(cfg);
+        return try! formatJson(cfg);
 
     }
     private var cfgStr = createConfig();

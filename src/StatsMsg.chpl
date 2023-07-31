@@ -11,6 +11,7 @@ module StatsMsg {
     use Stats;
 
     use Map;
+    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -292,7 +293,7 @@ module StatsMsg {
             st.addEntry(retname, new shared SymEntry(corrPdarray));
             corrDict.add(col, "created %s".format(st.attrib(retname)));
         }
-        var repMsg: string = "%jt".format(corrDict);
+        var repMsg: string = formatJson(corrDict);
 
         sLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
