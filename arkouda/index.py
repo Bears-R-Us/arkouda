@@ -148,13 +148,13 @@ class Index:
         data = {}
         if label is None:
             label = "idx"
-        elif type(label) == list:
+        elif isinstance(label, list):
             label = label[0]
         data[label] = self.index
         return data
 
     def _check_types(self, other):
-        if type(self) != type(other):
+        if type(self) is not type(other):
             raise TypeError("Index Types must match")
 
     def _merge(self, other):

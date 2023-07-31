@@ -403,7 +403,7 @@ def ip_address(values):
     for importing Python lists of IP addresses into Arkouda.
     """
 
-    if type(values) == IPv4:
+    if isinstance(values, IPv4):
         return values
 
     if isinstance(values, pdarray):

@@ -25,7 +25,7 @@ def get_callback(x):
         return type(x)
     elif hasattr(x, "_cast"):
         return x._cast
-    elif type(x) == BitVector:
+    elif isinstance(x, BitVector):
         return BitVectorizer(width=x.width, reverse=x.reverse)
     else:
         return identity

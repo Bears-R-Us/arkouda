@@ -302,7 +302,7 @@ class DataFrame(UserDict):
             sizes = set()
 
             # Initial data is a dictionary of arkouda arrays
-            if type(initialdata) == dict:
+            if isinstance(initialdata, dict):
                 for key, val in initialdata.items():
                     if not isinstance(val, self.COLUMN_CLASSES):
                         raise ValueError(f"Values must be one of {self.COLUMN_CLASSES}.")
@@ -319,7 +319,7 @@ class DataFrame(UserDict):
                     self._columns.append(key)
 
             # Initial data is a list of arkouda arrays
-            elif type(initialdata) == list:
+            elif isinstance(initialdata, list):
                 # Create string IDs for the columns
                 keys = [str(x) for x in range(len(initialdata))]
                 for key, col in zip(keys, initialdata):
@@ -394,7 +394,7 @@ class DataFrame(UserDict):
                 return result
             if len({type(x) for x in key}) > 1:
                 raise TypeError("Invalid selector: too many types in list.")
-            if type(key[0]) == str:
+            if isinstance(key[0], str):
                 for k in key:
                     result.data[k] = UserDict.__getitem__(self, k)
                     result._columns.append(k)
@@ -441,7 +441,7 @@ class DataFrame(UserDict):
             add_index = True
 
         # Set a single row in the dataframe using a dict of values
-        if type(key) == int:
+        if isinstance(key, int):
             for k in self._columns:
                 if isinstance(self.data[k], Strings):
                     raise ValueError(
@@ -463,7 +463,7 @@ class DataFrame(UserDict):
                     self[k][key] = v
 
         # Set a single column in the dataframe using a an arkouda array
-        elif type(key) == str:
+        elif isinstance(key, str):
             if not isinstance(value, self.COLUMN_CLASSES):
                 raise ValueError(f"Column must be one of {self.COLUMN_CLASSES}.")
             elif self._size is not None and self._size != value.size:
@@ -1046,12 +1046,12 @@ class DataFrame(UserDict):
             for i in range(obj.index.size):
                 oldval = obj.index[i]
                 newval = mapper(oldval)
-                if type(oldval) != type(newval):
+                if type(oldval) is not type(newval):
                     raise TypeError("Replacement value must have the same type as the original value")
                 obj.index.values[obj.index.values == oldval] = newval
         elif isinstance(mapper, dict):
             for key, val in mapper.items():
-                if type(key) != type(val):
+                if type(key) is not type(val):
                     raise TypeError("Replacement value must have the same type as the original value")
                 obj.index.values[obj.index.values == key] = val
         else:
