@@ -14,6 +14,7 @@ module MultiTypeSymbolTable
     use Map;
     use ArkoudaRegexCompat;
     use ArkoudaFileCompat;
+    use ArkoudaMapCompat;
     
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -70,7 +71,7 @@ module MultiTypeSymbolTable
 
             // point at same shared table entry
             var entry = tab.getAndRemove(name);
-            tab.addOrSet(userDefinedName, entry);
+            tab.addOrReplace(userDefinedName, entry);
             entry.setName(userDefinedName);
         }
 
@@ -118,7 +119,7 @@ module MultiTypeSymbolTable
                                                         "adding symbol: %s ".format(name));            
             }
 
-            tab.addOrSet(name, entry);
+            tab.addOrReplace(name, entry);
             entry.setName(name);
             // When we retrieve from table, it comes back as AbstractSymEntry so we need to cast it
             // back to the original type. Since we know it already we can skip isAssignableTo check
@@ -154,7 +155,7 @@ module MultiTypeSymbolTable
                                                         "adding symbol: %s ".format(name));            
             }
 
-            tab.addOrSet(name, entry);
+            tab.addOrReplace(name, entry);
             entry.setName(name);
             return tab[name];
         }

@@ -14,6 +14,7 @@ module MetricsMsg {
     use ArkoudaTimeCompat as Time;
 
     use ArkoudaListCompat;
+    use ArkoudaMapCompat;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,TOTAL_RESPONSE_TIME,
                         TOTAL_MEMORY_USED,SYSTEM,SERVER,SERVER_INFO};
@@ -190,7 +191,7 @@ module MetricsMsg {
          * Sets the metrics value
          */
         proc set(metric: string, measurement: real) throws {
-            this.measurements.addOrSet(metric, measurement);
+            this.measurements.addOrReplace(metric, measurement);
         }
 
         /*
@@ -246,7 +247,7 @@ module MetricsMsg {
 
             if !this.measurementTotals.contains(metric) {
                 value = 0.0;
-                this.measurementTotals.addOrSet(metric, value);
+                this.measurementTotals.addOrReplace(metric, value);
             } else {
                 value = this.measurementTotals(metric);
             }
@@ -266,12 +267,12 @@ module MetricsMsg {
             var numMeasurements = getNumMeasurements(metric);
             var measurementTotal = getMeasurementTotal(metric);
 
-            this.numMeasurements.addOrSet(metric, numMeasurements);
+            this.numMeasurements.addOrReplace(metric, numMeasurements);
             this.measurementTotals(metric) += measurement;
 
             var value: real = this.measurementTotals(metric)/numMeasurements;
 
-            this.measurements.addOrSet(metric, value);
+            this.measurements.addOrReplace(metric, value);
         }
     }
 
@@ -288,7 +289,7 @@ module MetricsMsg {
         }   
         
         proc set(metric: string, count: int) {
-            this.counts.addOrSet(metric,count);
+            this.counts.addOrReplace(metric,count);
         }
     
         proc increment(metric: string, increment: int=1) {

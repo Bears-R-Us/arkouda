@@ -14,6 +14,7 @@ module FileIO {
 
     use ArkoudaFileCompat;
     use ArkoudaRangeCompat;
+    use ArkoudaIOCompat;
 
     use ServerConfig, Logging, CommandMap;
     private config const logLevel = ServerConfig.logLevel;
@@ -247,7 +248,7 @@ module FileIO {
           f.close();
         } catch e {
           throw getErrorWithContext(
-                     msg=e:string,
+                     msg=formatString(e),
                      getLineNumber(),
                      getRoutineName(),
                      getModuleName(),

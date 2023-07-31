@@ -7,6 +7,7 @@ module Logging {
 
     import IO.{format, stdout, file};
     use ArkoudaFileCompat;
+    use ArkoudaIOCompat;
 
     /*
      * The LogLevel enum is used to provide a strongly-typed means of
@@ -77,11 +78,11 @@ module Logging {
     /*
      * getOutputHandler is a factory method for OutputHandler implementations.
      */
-    proc getOutputHandler(channel: LogChannel) : OutputHandler throws {
+    proc getOutputHandler(channel: LogChannel) : owned OutputHandler throws {
         if channel == LogChannel.CONSOLE {
-            return new ConsoleOutputHandler();
+            return new owned ConsoleOutputHandler();
         } else {
-            return new FileOutputHandler("%s/arkouda.log".format(here.cwd()));
+            return new owned FileOutputHandler("%s/arkouda.log".format(here.cwd()));
         }
     }
     
@@ -105,7 +106,7 @@ module Logging {
         
         var printDate: bool = true;
         
-        var outputHandler: OutputHandler = try! getOutputHandler(LogChannel.CONSOLE);
+        var outputHandler: owned OutputHandler = try! getOutputHandler(LogChannel.CONSOLE);
         
         proc init() {}
        
@@ -189,7 +190,7 @@ module Logging {
         }
          
         proc generateDateTimeString() throws {
-            var dts = dateTime.now():string;
+            var dts = formatString(dateTime.now());
             var vals = dts.split("T");
             var cd = vals(0);
             var rawCms = vals(1).split(".");

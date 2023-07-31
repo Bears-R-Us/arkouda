@@ -17,6 +17,7 @@ module GenSymIO {
     use ServerConfig;
     use SegmentedString;
     use Map;
+    use ArkoudaMapCompat;
 
     use ArkoudaListCompat;
     use ArkoudaStringBytesCompat;
@@ -249,7 +250,7 @@ module GenSymIO {
         for kv in key_value  {
             // split to 2 components key: value
             var x = kv.split(": ");
-            m.addOrSet(x[0], x[1]);
+            m.addOrReplace(x[0], x[1]);
         }
         return m;
     }

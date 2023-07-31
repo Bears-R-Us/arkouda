@@ -12,6 +12,7 @@ module TimeClassMsg {
     use ArkoudaTimeCompat as Time;
 
     use Map;
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -65,7 +66,7 @@ module TimeClassMsg {
 
         var retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(day));
-        attributesDict.addOrSet("day", "created %s".format(st.attrib(retname)));
+        attributesDict.addOrReplace("day", "created %s".format(st.attrib(retname)));
         retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(month));
         attributesDict.add("month", "created %s".format(st.attrib(retname)));
