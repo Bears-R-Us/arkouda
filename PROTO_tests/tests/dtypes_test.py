@@ -27,6 +27,7 @@ class TestDTypes:
     def test_check_np_dtype(self, dtype):
         dtypes.check_np_dtype(np.dtype(dtype))
 
+    def test_check_np_dtype_errors(self):
         with pytest.raises(TypeError):
             dtypes.check_np_dtype(np.dtype(np.int16))
         with pytest.raises(TypeError):
@@ -47,19 +48,19 @@ class TestDTypes:
         assert ("uint", 1) == dtypes.translate_np_dtype(np.dtype(np.uint8))
 
     def test_resolve_scalar_dtype(self):
-        assert "bool" == dtype.resolve_scalar_dtype(True)
-        assert "int64" == dtype.resolve_scalar_dtype(1)
-        assert "int64" == dtype.resolve_scalar_dtype(-1)
-        assert "int64" == dtype.resolve_scalar_dtype(np.int64(1))
-        assert "float64" == dtype.resolve_scalar_dtype(float(0.0))
-        assert "float64" == dtype.resolve_scalar_dtype(float(-1.0))
-        assert "float64" == dtype.resolve_scalar_dtype(np.nan)
-        assert "float64" == dtype.resolve_scalar_dtype(np.inf)
-        assert "float64" == dtype.resolve_scalar_dtype(-np.inf)
-        assert "str" == dtype.resolve_scalar_dtype("test")
-        assert "<class 'list'>" == dtype.resolve_scalar_dtype([1])
-        assert "uint64" == dtype.resolve_scalar_dtype(2 ** 63 + 1)
-        assert "bigint" == dtype.resolve_scalar_dtype(2 ** 64)
+        assert "bool" == dtypes.resolve_scalar_dtype(True)
+        assert "int64" == dtypes.resolve_scalar_dtype(1)
+        assert "int64" == dtypes.resolve_scalar_dtype(-1)
+        assert "int64" == dtypes.resolve_scalar_dtype(np.int64(1))
+        assert "float64" == dtypes.resolve_scalar_dtype(float(0.0))
+        assert "float64" == dtypes.resolve_scalar_dtype(float(-1.0))
+        assert "float64" == dtypes.resolve_scalar_dtype(np.nan)
+        assert "float64" == dtypes.resolve_scalar_dtype(np.inf)
+        assert "float64" == dtypes.resolve_scalar_dtype(-np.inf)
+        assert "str" == dtypes.resolve_scalar_dtype("test")
+        assert "<class 'list'>" == dtypes.resolve_scalar_dtype([1])
+        assert "uint64" == dtypes.resolve_scalar_dtype(2**63 + 1)
+        assert "bigint" == dtypes.resolve_scalar_dtype(2**64)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_pdarrays_datatypes(self, size):
@@ -68,7 +69,12 @@ class TestDTypes:
         assert dtypes.dtype("bool") == ak.ones(size, ak.bool).dtype
         assert dtypes.dtype("float64") == ak.ones(size).dtype
         assert dtypes.dtype("str") == ak.array([f"string {i}" for i in range(size)]).dtype
-        assert dtypes.dtype("bigint") == ak.bigint_from_uint_arrays([ak.ones(size, dtype=ak.uint64), ak.arange(size, dtype=ak.uint64)]).dtype
+        assert (
+            dtypes.dtype("bigint")
+            == ak.bigint_from_uint_arrays(
+                [ak.ones(size, dtype=ak.uint64), ak.arange(size, dtype=ak.uint64)]
+            ).dtype
+        )
         assert dtypes.dtype("bigint") == ak.array([i for i in range(2**200, 2**200 + size)]).dtype
 
     @pytest.mark.parametrize("supported", [1, np.int64(1), np.int64(1.0), 1, np.uint32(1)])
@@ -83,21 +89,15 @@ class TestDTypes:
         assert dtypes.isSupportedFloat(supported)
         assert not dtypes.isSupportedFloat(unsupported)
 
-    @pytest.mark.parametrize(
-        "dtype, val",
-        [
-            ("bool", dtypes.DType.BOOL),
-            ("float", dtypes.DType.FLOAT),
-            ("float64", dtypes.DType.FLOAT64),
-            ("int", dtypes.DType.INT),
-            ("int64", dtypes.DType.INT64),
-            ("str", dtypes.DType.STR),
-            ("uint8", dtypes.DType.UINT8),
-            ("bigint", dtypes.DType.BIGINT),
-        ],
-    )
-    def test_DtypeEnum(self, dtype, val):
-        assert dtype == str(val)
+    def test_DtypeEnum(self):
+        assert "bool" == str(dtypes.DType.BOOL)
+        assert "float" == str(dtypes.DType.FLOAT)
+        assert "float64" == str(dtypes.DType.FLOAT64)
+        assert "int" == str(dtypes.DType.INT)
+        assert "int64" == str(dtypes.DType.INT64)
+        assert "str" == str(dtypes.DType.STR)
+        assert "uint8" == str(dtypes.DType.UINT8)
+        assert "bigint" == str(dtypes.DType.BIGINT)
 
         enum_vals = frozenset(
             {"float", "float64", "bool", "uint8", "int", "int64", "str", "uint64", "bigint"}
@@ -109,25 +109,19 @@ class TestDTypes:
         num_types = frozenset(["bool", "float", "float64", "int", "int64", "uint64", "bigint"])
         assert num_types == dtypes.NumericDTypes
 
-    @pytest.mark.parametrize(
-        "dtype, val",
-        [
-            (np.str_, "string"),
-            (np.str_, "<class 'str'>"),
-            (np.int64, "int64"),
-            (np.int64, "<class 'numpy.int64'>"),
-            (np.float64, "float64"),
-            (np.float64, "<class 'numpy.float64'>"),
-            (np.bool_, "bool"),
-            (np.dtype(bool), "bool"),
-            (np.bool_, "<class 'bool'>"),
-            (np.dtype(bool), "<class 'bool'>"),
-            (np.int64, "datetime64[ns]"),
-            (np.int64, "timedelta64[ns]"),
-        ],
-    )
-    def test_SeriesDTypes(self, dtype, val):
-        assert dtype == dtypes.SeriesDTypes[val]
+    def test_SeriesDTypes(self):
+        assert np.str_ == dtypes.SeriesDTypes["string"]
+        assert np.str_ == dtypes.SeriesDTypes["<class 'str'>"]
+        assert np.int64 == dtypes.SeriesDTypes["int64"]
+        assert np.int64 == dtypes.SeriesDTypes["<class 'numpy.int64'>"]
+        assert np.float64 == dtypes.SeriesDTypes["float64"]
+        assert np.float64 == dtypes.SeriesDTypes["<class 'numpy.float64'>"]
+        assert np.bool_ == dtypes.SeriesDTypes["bool"]
+        assert np.dtype(bool) == dtypes.SeriesDTypes["bool"]
+        assert np.bool_ == dtypes.SeriesDTypes["<class 'bool'>"]
+        assert np.dtype(bool) == dtypes.SeriesDTypes["<class 'bool'>"]
+        assert np.int64 == dtypes.SeriesDTypes["datetime64[ns]"]
+        assert np.int64 == dtypes.SeriesDTypes["timedelta64[ns]"]
 
     def test_scalars(self):
         assert "typing.Union[bool, numpy.bool_]" == str(ak.bool_scalars)
@@ -152,17 +146,11 @@ class TestDTypes:
             + " numpy.uint64, numpy.str_, str]"
         ) == str(ak.all_scalars)
 
-    @pytest.mark.parametrize(
-        "type_format, dtype",
-        [
-            ("{}", "bool"),
-            ("{:n}", "int64"),
-            ("{:.17f}", "float64"),
-            ("{:n}", "uint8"),
-            ("f", "np.float64"),
-            ("{:n}", "uint64"),
-            ("{:n}", "bigint"),
-        ],
-    )
-    def test_number_format_strings(self, type_format, dtype):
-        assert dtypes.NUMBER_FORMAT_STRINGS[dtype] == type_format
+    def test_number_format_strings(self):
+        assert "{}" == dtypes.NUMBER_FORMAT_STRINGS["bool"]
+        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["int64"]
+        assert "{:.17f}" == dtypes.NUMBER_FORMAT_STRINGS["float64"]
+        assert "f" == dtypes.NUMBER_FORMAT_STRINGS["np.float64"]
+        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["uint8"]
+        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["uint64"]
+        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["bigint"]
