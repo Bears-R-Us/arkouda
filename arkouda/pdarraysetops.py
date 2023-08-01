@@ -85,6 +85,7 @@ def _in1d_single(
     """
     from arkouda.categorical import Categorical as Categorical_
     from arkouda.dtypes import bool as ak_bool
+
     if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance(pda1, Categorical_):
         # While isinstance(thing, type) can be called on a tuple of types,
         # this causes an issue with mypy for unknown reasons.
@@ -437,7 +438,7 @@ def union1d(
     if (
         isinstance(pda1, (pdarray, Strings, Categorical_))
         and isinstance(pda2, (pdarray, Strings, Categorical_))
-        and type(pda1) == type(pda2)
+        and type(pda1) is type(pda2)
     ):
         if pda1.size == 0:
             return pda2  # union is pda2
@@ -532,7 +533,7 @@ def intersect1d(
     if (
         isinstance(pda1, (pdarray, Strings, Categorical_))
         and isinstance(pda2, (pdarray, Strings, Categorical_))
-        and type(pda1) == type(pda2)
+        and type(pda1) is type(pda2)
     ):
         if pda1.size == 0:
             return pda1  # nothing in the intersection
@@ -650,7 +651,7 @@ def setdiff1d(
     if (
         isinstance(pda1, (pdarray, Strings, Categorical_))
         and isinstance(pda2, (pdarray, Strings, Categorical_))
-        and type(pda1) == type(pda2)
+        and type(pda1) is type(pda2)
     ):
         if pda1.size == 0:
             return pda1  # return a zero length pdarray
@@ -761,7 +762,7 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
     if (
         isinstance(pda1, (pdarray, Strings, Categorical_))
         and isinstance(pda2, (pdarray, Strings, Categorical_))
-        and type(pda1) == type(pda2)
+        and type(pda1) is type(pda2)
     ):
         if pda1.size == 0:
             return pda2  # return other pdarray if pda1 is empty

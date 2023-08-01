@@ -125,7 +125,7 @@ def find(query, space):
 
     # Concatenate the space and query in fast (block interleaved) mode
     if isinstance(query, (pdarray, Strings, Categorical)):
-        if type(query) != type(space):
+        if type(query) is not type(space):
             raise TypeError("Arguments must have same type")
         c = concatenate((space, query), ordered=False)
         spacesize = space.size
