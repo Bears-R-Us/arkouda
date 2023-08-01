@@ -77,10 +77,11 @@ class TestBitOps:
         assert ak.ctz(self.edge_cases_uint).to_list() == ans_uint
         assert ak.ctz(self.edge_cases_bigint).to_list() == ans_uint
 
-    def test_bigint_bitops(self):
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_bigint_bitops(self, size):
         # compare against int pdarray with variety of max_bits, should be the same except for clz
-        i = ak.arange(10)
-        bi = ak.arange(10, dtype=ak.bigint)
+        i = ak.arange(size)
+        bi = ak.arange(size, dtype=ak.bigint)
 
         pop_ans = ak.popcount(i)
         par_ans = ak.parity(i)
@@ -117,9 +118,9 @@ class TestBitOps:
         # test with lots of trailing zeros
         bi = ak.bigint_from_uint_arrays(
             [
-                ak.arange(10, dtype=ak.uint64),
-                ak.zeros(10, dtype=ak.uint64),
-                ak.zeros(10, dtype=ak.uint64),
+                ak.arange(size, dtype=ak.uint64),
+                ak.zeros(size, dtype=ak.uint64),
+                ak.zeros(size, dtype=ak.uint64),
             ]
         )
 
