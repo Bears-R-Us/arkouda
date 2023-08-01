@@ -6,7 +6,7 @@ module ServerConfig
     use SymArrayDmap only makeDistDom;
 
     public use IO;
-    use ArkoudaIOCompat;
+    public use ArkoudaIOCompat;
 
     use ServerErrorStrings;
     use Reflection;
@@ -190,8 +190,8 @@ module ServerConfig
         const cfg = new owned Config(
             arkoudaVersion = (ServerConfig.arkoudaVersion:string),
             chplVersion = chplVersion,
-            ZMQVersion = try! "%i.%i.%i".format(Zmajor, Zminor, Zmicro),
-            HDF5Version = try! "%i.%i.%i".format(H5major, H5minor, H5micro),
+            ZMQVersion = try! "%i.%i.%i".doFormat(Zmajor, Zminor, Zmicro),
+            HDF5Version = try! "%i.%i.%i".doFormat(H5major, H5minor, H5micro),
             serverHostname = serverHostname,
             ServerPort = ServerPort,
             numLocales = numLocales,
@@ -283,7 +283,7 @@ module ServerConfig
         proc checkStaticMemoryLimit(total: real) {
             if total > getMemLimit() {
                 var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
-                var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".format(
+                var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
                                    total, getMemLimit(), pct);
                 scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                 throw getErrorWithContext(
@@ -302,7 +302,7 @@ module ServerConfig
                 if (total > memHighWater) {
                     memHighWater = total;
                     scLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                    "memory high watermark = %i memory limit = %i projected pct memory used of %i%%".format(
+                    "memory high watermark = %i memory limit = %i projected pct memory used of %i%%".doFormat(
                            memHighWater:uint * numLocales:uint, 
                            getMemLimit():uint * numLocales:uint,
                            AutoMath.round((memHighWater:real * numLocales / 
@@ -324,7 +324,7 @@ module ServerConfig
             if memMgmtType == MemMgmtType.STATIC {
                 if total > getMemLimit() {
                     var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
-                    var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".format(
+                    var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
                                    total, getMemLimit(), pct);
                     scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                     throw getErrorWithContext(
@@ -336,7 +336,7 @@ module ServerConfig
                 }
             } else {
                 if !isMemAvailable(additionalAmount) {
-                    var msg = "cmd requiring %i more bytes of memory exceeds available memory on one or more locales".format(
+                    var msg = "cmd requiring %i more bytes of memory exceeds available memory on one or more locales".doFormat(
                                                                                                      additionalAmount);
                     scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                     throw getErrorWithContext(

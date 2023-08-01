@@ -43,7 +43,7 @@ module SegmentedString {
   proc getSegString(name: string, st: borrowed SymTab): owned SegString throws {
       var abstractEntry = st.lookup(name);
       if !abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
-          var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
+          var errorMsg = "Error: Unhandled SymbolEntryType %s".doFormat(abstractEntry.entryType);
           ssLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new Error(errorMsg);
       }
@@ -252,7 +252,7 @@ module SegmentedString {
       gatheredOffsets -= gatheredLengths;
       
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                "aggregation in %i seconds".format(timeSinceEpoch().totalSeconds() - t1));
+                                "aggregation in %i seconds".doFormat(timeSinceEpoch().totalSeconds() - t1));
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
       if logLevel == LogLevel.DEBUG {
           t1 = timeSinceEpoch().totalSeconds();
@@ -298,7 +298,7 @@ module SegmentedString {
         }
       }
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "Gathered offsets and vals in %i seconds".format(
+                            "Gathered offsets and vals in %i seconds".doFormat(
                                            timeSinceEpoch().totalSeconds() -t1));
       return (gatheredOffsets, gatheredVals);
     }
@@ -354,7 +354,7 @@ module SegmentedString {
 
         if logLevel == LogLevel.DEBUG { 
             ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           "hashing took %t seconds\nSorting hashes".format(timeSinceEpoch().totalSeconds() - t1));
+                           "hashing took %? seconds\nSorting hashes".doFormat(timeSinceEpoch().totalSeconds() - t1));
             t1 = timeSinceEpoch().totalSeconds();
         }
 
@@ -362,7 +362,7 @@ module SegmentedString {
         var iv = radixSortLSD_ranks(hashes);
         if logLevel == LogLevel.DEBUG { 
             ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                            "sorting took %t seconds".format(timeSinceEpoch().totalSeconds() - t1));
+                                            "sorting took %? seconds".doFormat(timeSinceEpoch().totalSeconds() - t1));
         }
         if logLevel == LogLevel.DEBUG {
           var sortedHashes = [i in iv] hashes[i];
@@ -371,7 +371,7 @@ module SegmentedString {
           printAry("diffs = ", diffs);
           var nonDecreasing = [(d0,d1) in diffs] ((d0 > 0) || ((d0 == 0) && (d1 >= 0)));
           ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                    "Are hashes sorted? %i".format(&& reduce nonDecreasing));
+                                    "Are hashes sorted? %i".doFormat(&& reduce nonDecreasing));
         }
         return iv;
       } else {
@@ -509,7 +509,7 @@ module SegmentedString {
         const concat2Name = st.nextName();
         st.addEntry(concat1Name, new shared SymEntry(numeric1));
         st.addEntry(concat2Name, new shared SymEntry(numeric2));
-        return "%s+%s".format(concat1Name, concat2Name);
+        return "%s+%s".doFormat(concat1Name, concat2Name);
       }
     }
 
@@ -1383,7 +1383,7 @@ module SegmentedString {
       return compile(pattern);
     }
     catch {
-      var errorMsg = "re2 could not compile pattern: %s".format(pattern);
+      var errorMsg = "re2 could not compile pattern: %s".doFormat(pattern);
       ssLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       throw new owned IllegalArgumentError(errorMsg);
     }
@@ -1476,7 +1476,7 @@ module SegmentedString {
       const (uoTest, uvTest, cTest, revTest) = uniqueGroup(testStr);
       const (segs, vals) = concat(uoMain, uvMain, uoTest, uvTest);
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-           "Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(
+           "Unique strings in first array: %?\nUnique strings in second array: %?\nConcat length: %?".doFormat(
                                              uoMain.size, uoTest.size, segs.size));
       var st = new owned SymTab();
       const ar = new owned SegString(segs, vals, st);
@@ -1515,7 +1515,7 @@ module SegmentedString {
       }
       
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "Flag pop: %t".format(+ reduce flag));
+                                             "Flag pop: %?".doFormat(+ reduce flag));
 
       // Now flag contains true for both elements of duplicate pairs
       if invert {flag = !flag;}
@@ -1526,7 +1526,7 @@ module SegmentedString {
       }
       if logLevel == LogLevel.DEBUG {
           ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "Ret pop: %t".format(+ reduce ret));
+                                                "Ret pop: %?".doFormat(+ reduce ret));
       }
       // Broadcast back to original (pre-unique) order
       var truth: [mainStr.offsets.a.domain] bool;

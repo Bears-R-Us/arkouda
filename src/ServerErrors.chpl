@@ -1,6 +1,7 @@
 module ServerErrors {
 
     private use IO; // for string.format
+    use ArkoudaIOCompat;
 
     class OutOfBoundsError: Error {}
 
@@ -23,7 +24,7 @@ module ServerErrors {
          */
         proc init(msg : string, lineNumber: int, routineName: string, 
                       moduleName: string, errorClass: string='ErrorWithContext') {
-            try! super.init("%s Line %t In %s.%s: %s".format(errorClass,lineNumber,
+            try! super.init("%s Line %? In %s.%s: %s".doFormat(errorClass,lineNumber,
                                                           moduleName,
                                                           routineName,
                                                           msg));
@@ -44,7 +45,7 @@ module ServerErrors {
          * understandable to front-end developers as well as users.
          */
         proc publish() : string {
-            return try! "Error: %s".format(publishMsg);
+            return try! "Error: %s".doFormat(publishMsg);
         }
     }
     
@@ -179,7 +180,7 @@ module ServerErrors {
      */
     proc generateErrorContext(msg: string, lineNumber: int, moduleName: string, routineName: string, 
                                         errorClass: string="ErrorWithContext") : string {
-        return try! "%s %t %s:%s %s".format(errorClass,lineNumber,moduleName,routineName,msg);
+        return try! "%s %? %s:%s %s".doFormat(errorClass,lineNumber,moduleName,routineName,msg);
     }
  
     /*

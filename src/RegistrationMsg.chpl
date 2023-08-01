@@ -47,7 +47,7 @@ module RegistrationMsg
 
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-               "cmd: %s name: %s userDefinedName: %s".format(cmd,name,userDefinedName));
+               "cmd: %s name: %s userDefinedName: %s".doFormat(cmd,name,userDefinedName));
 
         // register new user_defined_name for name
         var msgTuple:MsgTuple;
@@ -57,7 +57,7 @@ module RegistrationMsg
             regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             msgTuple = new MsgTuple(repMsg, MsgType.NORMAL);
         } catch e: ArgumentError {
-            repMsg = "Error: requested name '%s' was already in use.".format(userDefinedName);
+            repMsg = "Error: requested name '%s' was already in use.".doFormat(userDefinedName);
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             msgTuple = new MsgTuple(repMsg, MsgType.ERROR);
         }
@@ -89,13 +89,13 @@ module RegistrationMsg
 
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "%s %s".format(cmd,name));
+                                                        "%s %s".doFormat(cmd,name));
 
         // lookup name in symbol table to get attributes
         var attrib = st.attrib(name);
         
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "requested attrib: %s".format(attrib));
+                                                        "requested attrib: %s".doFormat(attrib));
 
         // response message
         if (attrib.startsWith("Error:")) { 
@@ -104,14 +104,14 @@ module RegistrationMsg
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         } else {
             if objType == ObjType.UNKNOWN || objType == ObjType.STRINGS || objType == ObjType.PDARRAY {
-                repMsg = "created %s".format(attrib);
+                repMsg = "created %s".doFormat(attrib);
                 if (isStringAttrib(attrib)) {
                     var s = getSegString(name, st);
-                    repMsg += "+created bytes.size %t".format(s.nBytes);
+                    repMsg += "+created bytes.size %?".doFormat(s.nBytes);
                 }
             }
             else {
-                var errorMsg = "Error: Unkown object type passed to attachMsg - %s".format(objType);
+                var errorMsg = "Error: Unkown object type passed to attachMsg - %s".doFormat(objType);
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
@@ -137,13 +137,13 @@ module RegistrationMsg
     proc attachCategoricalMsg(cmd: string, name: string, 
                                             st: borrowed SymTab): MsgTuple throws {
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "%s: Collecting Categorical components for '%s'".format(cmd, name));
+                            "%s: Collecting Categorical components for '%s'".doFormat(cmd, name));
 
         var rtnMap: map(string, string);
                 
-        var cats = st.attrib("%s.categories".format(name));
-        var codes = st.attrib("%s.codes".format(name));
-        var naCode = st.attrib("%s._akNAcode".format(name));
+        var cats = st.attrib("%s.categories".doFormat(name));
+        var codes = st.attrib("%s.codes".doFormat(name));
+        var naCode = st.attrib("%s._akNAcode".doFormat(name));
 
         if (cats.startsWith("Error:")) { 
             var errorMsg = cats;
@@ -163,16 +163,16 @@ module RegistrationMsg
 
         // categories should always be string, add bytes for string return message
         if (isStringAttrib(cats)) {
-            var s = getSegString("%s.categories".format(name), st);
-            rtnMap.add("categories", "created %s+created %t".format(st.attrib(s.name), s.nBytes));
+            var s = getSegString("%s.categories".doFormat(name), st);
+            rtnMap.add("categories", "created %s+created %?".doFormat(st.attrib(s.name), s.nBytes));
         }
         rtnMap.add("codes", "created " + codes);
         rtnMap.add("_akNAcode", "created " + naCode);
 
 
         // Optional components of categorical
-        if st.contains("%s.permutation".format(name)) {
-            var perm = st.attrib("%s.permutation".format(name));
+        if st.contains("%s.permutation".doFormat(name)) {
+            var perm = st.attrib("%s.permutation".doFormat(name));
             if (perm.startsWith("Error:")) { 
                 var errorMsg = perm;
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -180,8 +180,8 @@ module RegistrationMsg
             }
             rtnMap.add("permutation", "created " + perm);
         }
-        if st.contains("%s.segments".format(name)) {
-            var segs = st.attrib("%s.segments".format(name));
+        if st.contains("%s.segments".doFormat(name)) {
+            var segs = st.attrib("%s.segments".doFormat(name));
             if (segs.startsWith("Error:")) { 
                 var errorMsg = segs;
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -190,7 +190,7 @@ module RegistrationMsg
             rtnMap.add("segments", "created " + segs);
         }
 
-        var repMsg: string = "categorical+%s+".format(name)+formatJson(rtnMap);
+        var repMsg: string = "categorical+%s+".doFormat(name)+formatJson(rtnMap);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
@@ -211,15 +211,15 @@ module RegistrationMsg
     */
     proc attachSeriesMsg(cmd: string, name: string, st: borrowed SymTab): MsgTuple throws {
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "%s: Collecting Series components for '%s'".format(cmd, name));
+                            "%s: Collecting Series components for '%s'".doFormat(cmd, name));
 
         var repMsg: string;
 
         var ind = "";
 
         // if Series matches MultiIndex format
-        if st.contains("%s_key_0".format(name)) {
-            var nameList = st.findAll("%s_key_\\d".format(name));
+        if st.contains("%s_key_0".doFormat(name)) {
+            var nameList = st.findAll("%s_key_\\d".doFormat(name));
             sort(nameList);
             for regName in nameList {
                 var entry = st.attrib(regName);
@@ -228,27 +228,27 @@ module RegistrationMsg
                     regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR); 
                 }
-                ind += "+created %s".format(entry);
+                ind += "+created %s".doFormat(entry);
             }
         }
         else {  // Series only contains one key for index
-            ind = st.attrib("%s_key".format(name));
+            ind = st.attrib("%s_key".doFormat(name));
             if (ind.startsWith("Error:")) { 
                 var errorMsg = ind;
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
-            ind = "+created %s".format(ind);
+            ind = "+created %s".doFormat(ind);
         }
 
-        var vals = st.attrib("%s_value".format(name));
+        var vals = st.attrib("%s_value".doFormat(name));
         if (vals.startsWith("Error:")) { 
             var errorMsg = vals;
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         }
 
-        repMsg = "series+created %s%s".format(vals, ind);
+        repMsg = "series+created %s%s".doFormat(vals, ind);
 
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
@@ -273,20 +273,20 @@ module RegistrationMsg
     proc attachDataFrameMsg(cmd: string, msgArgs: borrowed MessageArgs,
                                  st: borrowed SymTab): MsgTuple throws {
         const name = msgArgs.getValueOf("name"); 
-        var colName = "df_columns_%s".format(name);
-        var repMsg = "dataframe+%s".format(name);
+        var colName = "df_columns_%s".doFormat(name);
+        var repMsg = "dataframe+%s".doFormat(name);
 
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "%s: Collecting DataFrame components for '%s'".format(cmd, name));
+                            "%s: Collecting DataFrame components for '%s'".doFormat(cmd, name));
 
         var jsonParam = new ParameterObj("name", colName, ObjectType.VALUE, "str");
         var subArgs1 = new MessageArgs(new list([jsonParam, ]));
         // Add columns as a json list
         var cols = stringsToJSONMsg(cmd, subArgs1, st).msg;
-        repMsg += "+json %s".format(cols);
+        repMsg += "+json %s".doFormat(cols);
 
         // Get index 
-        var indParam = new ParameterObj("name", "df_index_%s_key".format(name), ObjectType.VALUE, "");
+        var indParam = new ParameterObj("name", "df_index_%s_key".doFormat(name), ObjectType.VALUE, "");
         var subArgs2 = new MessageArgs(new list([indParam, ]));
         var ind = attachMsg(cmd, subArgs2, st).msg;
         if ind.startsWith("Error:") { 
@@ -294,13 +294,13 @@ module RegistrationMsg
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         }
-        repMsg += "+%s".format(ind);
+        repMsg += "+%s".doFormat(ind);
 
         // Get column data
-        var nameList = st.findAll("df_data_(pdarray|str|SegArray|Categorical)_.*_%s".format(name));
+        var nameList = st.findAll("df_data_(pdarray|str|SegArray|Categorical)_.*_%s".doFormat(name));
         
         if nameList.size == 1 && nameList[0] == "" {
-            var errorMsg = "No data values found for DataFrame %s".format(name);
+            var errorMsg = "No data values found for DataFrame %s".doFormat(name);
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
@@ -309,7 +309,7 @@ module RegistrationMsg
         var u : set(string) = new set(string, nameList);
 
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                        "%s: Data components found for dataframe: '".format(cmd)+formatJson(u)+"'");
+                        "%s: Data components found for dataframe: '".doFormat(cmd)+formatJson(u)+"'");
 
         // Use existing attach functionality to build the response message based on the objType of each data column
         forall regName in u with (+ reduce repMsg) {
@@ -349,10 +349,10 @@ module RegistrationMsg
                 otherwise {
                     regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
                                 "Unsupported column type found in DataFrame: '%s'. \
-                                Supported types are: pdarray, str, Categorical, and SegArray".format(objtype));
+                                Supported types are: pdarray, str, Categorical, and SegArray".doFormat(objtype));
                     
                     throw getErrorWithContext(
-                                        msg="Unknown column type (%s) found in DataFrame: %s".format(objtype, name),
+                                        msg="Unknown column type (%s) found in DataFrame: %s".doFormat(objtype, name),
                                         lineNumber=getLineNumber(),
                                         routineName=getRoutineName(),
                                         moduleName=getModuleName(),
@@ -365,7 +365,7 @@ module RegistrationMsg
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
                 repMsg = msg;
             } else {
-                repMsg += "+%s".format(msg);
+                repMsg += "+%s".doFormat(msg);
             }
         }
 
@@ -388,7 +388,7 @@ module RegistrationMsg
     proc findType(cmd: string, name: string, st: borrowed SymTab): string throws {
         // Try to determine the type from the entries in the symbol table
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                        "Attempting to find type of registered element '%s'".format(name));
+                        "Attempting to find type of registered element '%s'".doFormat(name));
 
         var objtype: string;
 
@@ -397,18 +397,18 @@ module RegistrationMsg
             var entry = st.lookup(name);
             // pdarray or Strings
             objtype = "simple";
-        } else if st.contains("%s.categories".format(name)) && st.contains("%s.codes".format(name)) {
+        } else if st.contains("%s.categories".doFormat(name)) && st.contains("%s.codes".doFormat(name)) {
             objtype = "categorical";
-        } else if st.contains("%s_value".format(name)) && (st.contains("%s_key".format(name)) || st.contains("%s_key_0".format(name))) {
+        } else if st.contains("%s_value".doFormat(name)) && (st.contains("%s_key".doFormat(name)) || st.contains("%s_key_0".doFormat(name))) {
             objtype = "series";
-        } else if st.contains("df_columns_%s".format(name)) && (st.contains("df_index_%s_key".format(name))) {
+        } else if st.contains("df_columns_%s".doFormat(name)) && (st.contains("df_index_%s_key".doFormat(name))) {
             objtype = "dataframe";
-        } else if st.contains("%s_segments".format(name)) && st.contains("%s_values".format(name)) {
+        } else if st.contains("%s_segments".doFormat(name)) && st.contains("%s_values".doFormat(name)) {
             objtype = "segarray";
         } 
         else {
             throw getErrorWithContext(
-                                msg="Unable to determine type for given name: %s".format(name),
+                                msg="Unable to determine type for given name: %s".doFormat(name),
                                 lineNumber=getLineNumber(),
                                 routineName=getRoutineName(),
                                 moduleName=getModuleName(),
@@ -417,7 +417,7 @@ module RegistrationMsg
         }
 
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                        "Type determined to be: '%s'".format(objtype));
+                        "Type determined to be: '%s'".doFormat(objtype));
 
         return objtype;
     }
@@ -457,7 +457,7 @@ module RegistrationMsg
                 var aRet = attachMsg(cmd, msgArgs, st);
                 var msg = aRet.msg;
                 var msgType = aRet.msgType;
-                repMsg = "simple+%s".format(msg);
+                repMsg = "simple+%s".doFormat(msg);
                 return new MsgTuple(repMsg, msgType);
             }
             when ("categorical") {
@@ -490,10 +490,10 @@ module RegistrationMsg
             }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray, series, and dataframe".format(dtype));
+                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray, series, and dataframe".doFormat(dtype));
                 
                 throw getErrorWithContext(
-                                    msg="Unknown type (%s) supplied for given name: %s".format(dtype, name),
+                                    msg="Unknown type (%s) supplied for given name: %s".doFormat(dtype, name),
                                     lineNumber=getLineNumber(),
                                     routineName=getRoutineName(),
                                     moduleName=getModuleName(),
@@ -532,7 +532,7 @@ module RegistrationMsg
 
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                          "%s %s".format(cmd,name));
+                                                          "%s %s".doFormat(cmd,name));
 
         // take name out of the registry
         st.unregName(name);
@@ -564,15 +564,15 @@ module RegistrationMsg
             when ("categorical") {
                 // Create an array with 5 strings, one for each component of categorical, and assign the names
                 var nameList: [0..4] string;
-                nameList[0] = "%s.categories".format(name);
-                nameList[1] = "%s.codes".format(name);
-                nameList[2] = "%s._akNAcode".format(name);
+                nameList[0] = "%s.categories".doFormat(name);
+                nameList[1] = "%s.codes".doFormat(name);
+                nameList[2] = "%s._akNAcode".doFormat(name);
                 
-                if st.contains("%s.permutation".format(name)) {
-                    nameList[3] = "%s.permutation".format(name);
+                if st.contains("%s.permutation".doFormat(name)) {
+                    nameList[3] = "%s.permutation".doFormat(name);
                 }
-                if st.contains("%s.segments".format(name)) {
-                    nameList[4] = "%s.segments".format(name);
+                if st.contains("%s.segments".doFormat(name)) {
+                    nameList[4] = "%s.segments".doFormat(name);
                 }
 
                 var base_json = msgArgs.get("name");
@@ -583,7 +583,7 @@ module RegistrationMsg
                         base_json.setVal(n);
                         var subArgs = new MessageArgs(new list([base_json, ]));
                         var resp = unregisterMsg(cmd, subArgs, st);
-                        status += " %s: %s ".format(n, resp.msg);
+                        status += " %s: %s ".doFormat(n, resp.msg);
                     }
                 }
             }
@@ -592,18 +592,18 @@ module RegistrationMsg
                 var nameStr = "";
 
                 // MultiIndex
-                if st.contains("%s_key_0".format(name)) {
+                if st.contains("%s_key_0".doFormat(name)) {
                     // Get an array of all the multi-index parts
-                    var indexList = st.findAll("%s_key_\\d".format(name));
+                    var indexList = st.findAll("%s_key_\\d".doFormat(name));
                     // Convert the array into a + delimited string
                     nameStr = "+".join(indexList);
                 } 
                 else {  // Single index
                     // Add the name of the single key to the name String
-                    nameStr = "%s_key".format(name);
+                    nameStr = "%s_key".doFormat(name);
                 }
                 // Add the name of the values to the name String
-                nameStr += "+%s_value".format(name);
+                nameStr += "+%s_value".doFormat(name);
 
                 // Convert the string back into an array for looping
                 var nameList = nameStr.split("+");
@@ -612,15 +612,15 @@ module RegistrationMsg
                     base_json.setVal(n);
                     var subArgs = new MessageArgs(new list([base_json, ]));
                     var resp = unregisterMsg(cmd, subArgs, st);
-                    status += " %s: %s ".format(n, resp.msg);
+                    status += " %s: %s ".doFormat(n, resp.msg);
                 }
             }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray and series".format(dtype));
+                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray and series".doFormat(dtype));
                 
                 throw getErrorWithContext(
-                                    msg="Unknown type (%s) supplied for given name: %s".format(dtype, name),
+                                    msg="Unknown type (%s) supplied for given name: %s".doFormat(dtype, name),
                                     lineNumber=getLineNumber(),
                                     routineName=getRoutineName(),
                                     moduleName=getModuleName(),

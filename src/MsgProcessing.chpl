@@ -47,13 +47,13 @@ module MsgProcessing
         
         // if verbose print action
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-            "cmd: %s dtype: %s size: %i new pdarray name: %s".format(
+            "cmd: %s dtype: %s size: %i new pdarray name: %s".doFormat(
                                                      cmd,dtype2str(dtype),size,rname));
         // create and add entry to symbol table
         st.addEntry(rname, size, dtype);
         // if verbose print result
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                    "created the pdarray %s".format(st.attrib(rname)));
+                                    "created the pdarray %s".doFormat(st.attrib(rname)));
 
         repMsg = "created " + st.attrib(rname);
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);                                 
@@ -75,13 +75,13 @@ module MsgProcessing
         var repMsg: string; // response message
         const name = msgArgs.getValueOf("name");
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                     "cmd: %s array: %s".format(cmd,st.attrib(name)));
+                                     "cmd: %s array: %s".doFormat(cmd,st.attrib(name)));
         // delete entry from symbol table
         if st.deleteEntry(name) {
-            repMsg = "deleted %s".format(name);
+            repMsg = "deleted %s".doFormat(name);
         }
         else {
-            repMsg = "registered symbol, %s, not deleted".format(name);
+            repMsg = "registered symbol, %s, not deleted".doFormat(name);
         }
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       
         return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -100,7 +100,7 @@ module MsgProcessing
      */
     proc clearMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "cmd: %s".format(cmd));
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "cmd: %s".doFormat(cmd));
         st.clear();
 
         repMsg = "success";
@@ -143,7 +143,7 @@ module MsgProcessing
      */
     proc getconfigMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".doFormat(cmd));
         return new MsgTuple(getConfig(), MsgType.NORMAL);
     }
 
@@ -162,7 +162,7 @@ module MsgProcessing
         var repMsg: string; // response message
         var factor = msgArgs.get("factor").getIntValue();
         var asPercent = msgArgs.get("as_percent").getBoolValue();
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".doFormat(cmd));
         var memUsed = if memTrack then getMemUsed():real * numLocales else st.memUsed():real;
         if asPercent {
             repMsg = AutoMath.round((memUsed / (getMemLimit():real * numLocales)) * 100):uint:string;
@@ -188,7 +188,7 @@ module MsgProcessing
         var repMsg: string; // response message
         var factor = msgArgs.get("factor").getIntValue();
         var asPercent = msgArgs.get("as_percent").getBoolValue();
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".doFormat(cmd));
         var memUsed = if memTrack then getMemUsed():real * numLocales else st.memUsed():real;
         var totMem = getMemLimit():real * numLocales;
         if asPercent {
@@ -248,7 +248,7 @@ module MsgProcessing
 
         var printThresh = msgArgs.get("printThresh").getIntValue();
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                              "cmd: %s name: %s threshold: %i".format(
+                                              "cmd: %s name: %s threshold: %i".doFormat(
                                                cmd,name,printThresh));  
                                                
         repMsg  = st.datastr(name,printThresh);        
@@ -299,112 +299,112 @@ module MsgProcessing
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "cmd: %s value: %s in pdarray %s".format(cmd,name,st.attrib(name)));
+                            "cmd: %s value: %s in pdarray %s".doFormat(cmd,name,st.attrib(name)));
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var e = toSymEntry(gEnt,int);
                 var val: int = value.getIntValue();
                 e.a = val;
-                repMsg = "set %s to %t".format(name, val);
+                repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.Int64, DType.Float64) {
                 var e = toSymEntry(gEnt,int);
                 var val: real = value.getRealValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "cmd: %s name: %s to val: %t".format(cmd,name,val:int));
+                                        "cmd: %s name: %s to val: %?".doFormat(cmd,name,val:int));
                 e.a = val:int;
-                repMsg = "set %s to %t".format(name, val:int);
+                repMsg = "set %s to %?".doFormat(name, val:int);
             }
             when (DType.Int64, DType.Bool) {
                 var e = toSymEntry(gEnt,int);
                 var val: bool = value.getBoolValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "cmd: %s name: %s to val: %t".format(cmd,name,val:int));
+                                        "cmd: %s name: %s to val: %?".doFormat(cmd,name,val:int));
                 e.a = val:int;
-                repMsg = "set %s to %t".format(name, val:int);
+                repMsg = "set %s to %?".doFormat(name, val:int);
             }
             when (DType.Float64, DType.Int64) {
                 var e = toSymEntry(gEnt,real);
                 var val: int = value.getIntValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "cmd: %s name: %s to value: %t".format(cmd,name,val:real));
+                                      "cmd: %s name: %s to value: %?".doFormat(cmd,name,val:real));
                 e.a = val:real;
-                repMsg = "set %s to %t".format(name, val:real);
+                repMsg = "set %s to %?".doFormat(name, val:real);
             }
             when (DType.Float64, DType.Float64) {
                 var e = toSymEntry(gEnt,real);
                 var val: real = value.getRealValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "cmd: %s name; %s to value: %t".format(cmd,name,val));
+                                           "cmd: %s name; %s to value: %?".doFormat(cmd,name,val));
                 e.a = val;
-                repMsg = "set %s to %t".format(name, val);
+                repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.Float64, DType.Bool) {
                 var e = toSymEntry(gEnt,real);           
                 var val: bool = value.getBoolValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "cmd: %s name: %s to value: %t".format(cmd,name,val:real));
+                                       "cmd: %s name: %s to value: %?".doFormat(cmd,name,val:real));
                 e.a = val:real;
-                repMsg = "set %s to %t".format(name, val:real);
+                repMsg = "set %s to %?".doFormat(name, val:real);
             }
             when (DType.Bool, DType.Int64) {
                 var e = toSymEntry(gEnt,bool);
                 var val: int = value.getIntValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "cmd: %s name: %s to value: %t".format(cmd,name,val:bool));
+                                       "cmd: %s name: %s to value: %?".doFormat(cmd,name,val:bool));
                 e.a = val:bool;
-                repMsg = "set %s to %t".format(name, val:bool);
+                repMsg = "set %s to %?".doFormat(name, val:bool);
             }
             when (DType.Bool, DType.Float64) {
                 var e = toSymEntry(gEnt,int);
                 var val: real = value.getRealValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "cmd: %s name: %s to  value: %t".format(cmd,name,val:bool));
+                                      "cmd: %s name: %s to  value: %?".doFormat(cmd,name,val:bool));
                 e.a = val:bool;
-                repMsg = "set %s to %t".format(name, val:bool);
+                repMsg = "set %s to %?".doFormat(name, val:bool);
             }
             when (DType.Bool, DType.Bool) {
                 var e = toSymEntry(gEnt,bool);
                 var val: bool = value.getBoolValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                            "cmd: %s name: %s to value: %t".format(cmd,name,val));
+                                            "cmd: %s name: %s to value: %?".doFormat(cmd,name,val));
                 e.a = val;
-                repMsg = "set %s to %t".format(name, val);
+                repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.UInt64, DType.UInt64) {
                 var e = toSymEntry(gEnt,uint);
                 var val: uint = value.getUIntValue();
                 e.a = val;
-                repMsg = "set %s to %t".format(name, val);
+                repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.BigInt, DType.BigInt) {
                 var e = toSymEntry(gEnt,bigint);
                 var val: bigint = value.getBigIntValue();
                 e.a = val;
-                repMsg = "set %s to %t".format(name, val);
+                repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.BigInt, DType.UInt64) {
                 var e = toSymEntry(gEnt,bigint);
                 var val: uint = value.getUIntValue();
                 e.a = val:bigint;
-                repMsg = "set %s to %t".format(name, val);
+                repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.BigInt, DType.Int64) {
                 var e = toSymEntry(gEnt,bigint);
                 var val: int = value.getIntValue();
                 e.a = val:bigint;
-                repMsg = "set %s to %t".format(name, val);
+                repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.BigInt, DType.Bool) {
                 var e = toSymEntry(gEnt,bigint);
                 var val: bool = value.getBoolValue();
                 e.a = val:bigint;
-                repMsg = "set %s to %t".format(name, val);
+                repMsg = "set %s to %?".doFormat(name, val);
             }
             otherwise {
                 mpLogger.error(getModuleName(),getRoutineName(),
-                                               getLineNumber(),"dtype: %s".format(msgArgs.getValueOf("dtype")));
+                                               getLineNumber(),"dtype: %s".doFormat(msgArgs.getValueOf("dtype")));
                 return new MsgTuple(unrecognizedTypeError(pn,msgArgs.getValueOf("dtype")), MsgType.ERROR);
             }
         }

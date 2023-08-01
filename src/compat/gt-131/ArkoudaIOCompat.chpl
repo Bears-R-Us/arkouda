@@ -16,4 +16,8 @@ module ArkoudaIOCompat {
     f.writer(serializer = new JsonSerializer()).writef(input, (...vals));
     return f.reader().readAll(string);
   }
+
+  proc string.doFormat(vals...?): string throws {
+    return this.format((...vals));
+  }
 }

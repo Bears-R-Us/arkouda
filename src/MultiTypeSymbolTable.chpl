@@ -51,7 +51,7 @@ module MultiTypeSymbolTable
             // check to see if userDefinedName is already defined, with in-place modification, this will be an error
             if (registry.contains(userDefinedName)) {
                 mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "regName: requested symbol `%s` is already in use".format(userDefinedName));
+                                     "regName: requested symbol `%s` is already in use".doFormat(userDefinedName));
                 throw getErrorWithContext(
                                     msg=incompatibleArgumentsError("regName", name),
                                     lineNumber=getLineNumber(),
@@ -60,7 +60,7 @@ module MultiTypeSymbolTable
                                     errorClass="ArgumentError");
             } else {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "Registering symbol: %s ".format(userDefinedName));            
+                                     "Registering symbol: %s ".doFormat(userDefinedName));            
             }
             
             // RE: Issue#729 we no longer support multiple name registration of the same object
@@ -80,10 +80,10 @@ module MultiTypeSymbolTable
             checkTable(name, "unregName");
             if registry.contains(name) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "Unregistering symbol: %s ".format(name));  
+                                         "Unregistering symbol: %s ".doFormat(name));  
             } else {
                 mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "The symbol %s is not registered".format(name));                  
+                                         "The symbol %s is not registered".doFormat(name));                  
             }
 
             registry -= name; // take name out of registry
@@ -114,10 +114,10 @@ module MultiTypeSymbolTable
             var entry = new shared SymEntry(len, t);
             if (tab.contains(name)) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "redefined symbol: %s ".format(name));
+                                                        "redefined symbol: %s ".doFormat(name));
             } else {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "adding symbol: %s ".format(name));            
+                                                        "adding symbol: %s ".doFormat(name));            
             }
 
             tab.addOrReplace(name, entry);
@@ -150,10 +150,10 @@ module MultiTypeSymbolTable
 
             if (tab.contains(name)) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "redefined symbol: %s ".format(name));
+                                                        "redefined symbol: %s ".doFormat(name));
             } else {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "adding symbol: %s ".format(name));            
+                                                        "adding symbol: %s ".doFormat(name));            
             }
 
             tab.addOrReplace(name, entry);
@@ -182,7 +182,7 @@ module MultiTypeSymbolTable
                 when DType.Bool { return addEntry(name, len, bool); }
                 when DType.BigInt { return addEntry(name, len, bigint); }
                 otherwise { 
-                    var errorMsg = "addEntry not implemented for %t".format(dtype); 
+                    var errorMsg = "addEntry not implemented for %?".doFormat(dtype); 
                     throw getErrorWithContext(
                         msg=errorMsg,
                         lineNumber=getLineNumber(),
@@ -205,12 +205,12 @@ module MultiTypeSymbolTable
             checkTable(name, "deleteEntry");
             if !registry.contains(name) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "Deleting unregistered entry: %s".format(name)); 
+                                       "Deleting unregistered entry: %s".doFormat(name)); 
                 tab.remove(name);
                 return true;
             } else {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "Skipping registered entry: %s".format(name)); 
+                                       "Skipping registered entry: %s".doFormat(name)); 
                 return false;
             }  
         }
@@ -244,7 +244,7 @@ module MultiTypeSymbolTable
         proc checkTable(name: string, calling_func="check") throws { 
             if (!tab.contains(name)) { 
                 mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "undefined symbol: %s".format(name));
+                                                "undefined symbol: %s".doFormat(name));
                 throw getErrorWithContext(
                     msg=unknownSymbolError(pname=calling_func, sname=name),
                     lineNumber=getLineNumber(),
@@ -253,7 +253,7 @@ module MultiTypeSymbolTable
                     errorClass="UnknownSymbolError");
             } else {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "found symbol: %s".format(name));
+                                                "found symbol: %s".doFormat(name));
             }
         }
         
@@ -262,7 +262,7 @@ module MultiTypeSymbolTable
          */
         proc pretty() throws {
             for n in tab {
-                writeln("%10s = ".format(n), tab.getValue(n)); stdout.flush();
+                writeln("%10s = ".doFormat(n), tab.getValue(n)); stdout.flush();
             }
         }
 
@@ -309,7 +309,7 @@ module MultiTypeSymbolTable
                 when "__RegisteredSymbols__"  {entries = getEntries(registry);}
                 otherwise                     {entries = getEntries(parseJson(names));}
             }
-            return "[%s]".format(','.join(entries));
+            return "[%s]".doFormat(','.join(entries));
         }
 
         /*
@@ -415,14 +415,14 @@ module MultiTypeSymbolTable
             var entry = tab[name];
             if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry){ //Anything considered a GenSymEntry
                 var g:GenSymEntry = toGenSymEntry(entry);
-                return "%s %s %t %t %t %t".format(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
+                return "%s %s %? %? %? %?".doFormat(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
             }
             else if entry.isAssignableTo(SymbolEntryType.CompositeSymEntry) { //CompositeSymEntry
                 var c: CompositeSymEntry = toCompositeSymEntry(entry);
-                return "%s %t %t".format(name, c.size, c.ndim);
+                return "%s %? %?".doFormat(name, c.size, c.ndim);
             }
             
-            throw new Error("attrib - Unsupported Entry Type %s".format(entry.entryType));
+            throw new Error("attrib - Unsupported Entry Type %s".doFormat(entry.entryType));
         }
 
         /*
@@ -449,7 +449,7 @@ module MultiTypeSymbolTable
             //     mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);
             //     return s;
             // }
-            return u.__str__(thresh=thresh, prefix="[", suffix="]", baseFormat="%t");
+            return u.__str__(thresh=thresh, prefix="[", suffix="]", baseFormat="%?");
         }
 
         /*
@@ -477,10 +477,10 @@ module MultiTypeSymbolTable
                     mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);
                     return s;
                 }
-                var frmt:string = if (u.dtype == DType.Float64) then "%.17r" else "%t";
+                var frmt:string = if (u.dtype == DType.Float64) then "%.17r" else "%?";
                 return u.__str__(thresh=thresh, prefix="array([", suffix="])", baseFormat=frmt);
             } else {
-                return "Unhandled type %s".format(entry.entryType);
+                return "Unhandled type %s".doFormat(entry.entryType);
             }
 
         }
@@ -534,7 +534,7 @@ module MultiTypeSymbolTable
     proc getGenericTypedArrayEntry(name:string, st: borrowed SymTab): borrowed GenSymEntry throws {
         var abstractEntry = st.lookup(name);
         if ! abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
-            var errorMsg = "Error: SymbolEntryType %s is not assignable to GenSymEntry".format(abstractEntry.entryType);
+            var errorMsg = "Error: SymbolEntryType %s is not assignable to GenSymEntry".doFormat(abstractEntry.entryType);
             mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             throw new Error(errorMsg);
         }
@@ -549,7 +549,7 @@ module MultiTypeSymbolTable
     proc getSegStringEntry(name:string, st: borrowed SymTab): borrowed SegStringSymEntry throws {
         var abstractEntry = st.lookup(name);
         if ! abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
-            var errorMsg = "Error: SymbolEntryType %s is not assignable to SegStringSymEntry".format(abstractEntry.entryType);
+            var errorMsg = "Error: SymbolEntryType %s is not assignable to SegStringSymEntry".doFormat(abstractEntry.entryType);
             mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             throw new Error(errorMsg);
         }

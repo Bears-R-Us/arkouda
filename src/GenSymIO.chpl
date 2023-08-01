@@ -55,7 +55,7 @@ module GenSymIO {
         overMemLimit(2*size);
 
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                          "dtype: %t size: %i".format(dtype,size));
+                                          "dtype: %? size: %i".doFormat(dtype,size));
 
         proc bytesToSymEntry(size:int, type t, st: borrowed SymTab, ref data:bytes): string throws {
             var entry = new shared SymEntry(size, t);
@@ -77,7 +77,7 @@ module GenSymIO {
         } else if dtype == DType.UInt8 {
             rname = bytesToSymEntry(size, uint(8), st, data);
         } else {
-            msg = "Unhandled data type %s".format(msgArgs.getValueOf("dtype"));
+            msg = "Unhandled data type %s".doFormat(msgArgs.getValueOf("dtype"));
             msgType = MsgType.ERROR;
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
         }
@@ -94,7 +94,7 @@ module GenSymIO {
                     st.addEntry(oname, offsetsEntry);
                     msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
                 } else {
-                    throw new Error("Unsupported Type %s".format(g.entryType));
+                    throw new Error("Unsupported Type %s".doFormat(g.entryType));
                 }
 
             } catch e: Error {
@@ -139,7 +139,7 @@ module GenSymIO {
         var arrayBytes: bytes;
         var abstractEntry = st.lookup(msgArgs.getValueOf("array"));
         if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
-            var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
+            var errorMsg = "Error: Unhandled SymbolEntryType %s".doFormat(abstractEntry.entryType);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return errorMsg.encode(); // return as bytes
         }
@@ -166,7 +166,7 @@ module GenSymIO {
         } else if entry.dtype == DType.UInt8 {
             arrayBytes = distArrToBytes(toSymEntry(entry, uint(8)).a);
         } else {
-            var errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);
+            var errorMsg = "Error: Unhandled dtype %s".doFormat(entry.dtype);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return errorMsg.encode(); // return as bytes
         }

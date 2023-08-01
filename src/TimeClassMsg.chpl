@@ -67,28 +67,28 @@ module TimeClassMsg {
 
         var retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(day));
-        attributesDict.addOrReplace("day", "created %s".format(st.attrib(retname)));
+        attributesDict.addOrReplace("day", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(month));
-        attributesDict.add("month", "created %s".format(st.attrib(retname)));
+        attributesDict.add("month", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(year));
-        attributesDict.add("year", "created %s".format(st.attrib(retname)));
+        attributesDict.add("year", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(is_leap_year));
-        attributesDict.add("isLeapYear", "created %s".format(st.attrib(retname)));
+        attributesDict.add("isLeapYear", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(dayOfYear));
-        attributesDict.add("dayOfYear", "created %s".format(st.attrib(retname)));
+        attributesDict.add("dayOfYear", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(isoYear));
-        attributesDict.add("isoYear", "created %s".format(st.attrib(retname)));
+        attributesDict.add("isoYear", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(weekOfYear));
-        attributesDict.add("weekOfYear", "created %s".format(st.attrib(retname)));
+        attributesDict.add("weekOfYear", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(dayOfWeek));
-        attributesDict.add("dayOfWeek", "created %s".format(st.attrib(retname)));
+        attributesDict.add("dayOfWeek", "created %s".doFormat(st.attrib(retname)));
 
         var repMsg: string = formatJson(attributesDict);
 
@@ -119,7 +119,7 @@ module TimeClassMsg {
                 // "day" is not modded, because it's the last unit
                 [(ei,vi) in zip(e.a,values)] ei = floorDivisionHelper(vi, denominator):int;
             }
-            attributesDict.add(u, "created %s".format(st.attrib(retname)));
+            attributesDict.add(u, "created %s".doFormat(st.attrib(retname)));
             denominator *= f;  //denominator is product of previous factors
         }
         return attributesDict;

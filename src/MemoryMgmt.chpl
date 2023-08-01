@@ -136,7 +136,7 @@ module MemoryMgmt {
         var availMemory = getAvailMemory();
 
         mmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                 "locale: %s reqMemory: %i arkMemAlloc: %i arkMemUsed: %i availMemory: %i".format(here.id,
+                 "locale: %s reqMemory: %i arkMemAlloc: %i arkMemUsed: %i availMemory: %i".doFormat(here.id,
                                                                                                   reqMemory,
                                                                                                   arkMemAlloc,
                                                                                                   arkMemUsed,
@@ -149,7 +149,7 @@ module MemoryMgmt {
             if newArkoudaMemory:int <= availMemory {
                 return true;
             } else {
-                var msg = "Arkouda memory request %i on locale %s exceeds available memory %i".format(newArkoudaMemory,
+                var msg = "Arkouda memory request %i on locale %s exceeds available memory %i".doFormat(newArkoudaMemory,
                                                                                                       here.id,
                                                                                                       availMemory);
                 mmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);

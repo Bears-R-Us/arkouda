@@ -13,4 +13,9 @@ module ArkoudaIOCompat {
     var toUse = input.replace("%?", "%jt");
     return toUse.format((...vals));
   }
+
+  proc string.doFormat(vals...?): string throws {
+    var toUse = this.replace('%?', '%t');
+    return toUse.format((...vals));
+  }
 }

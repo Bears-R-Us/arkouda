@@ -119,7 +119,7 @@ module SegmentedComputation {
             }
           }
         } catch {
-          throw new owned ErrorWithContext("Error computing %s on string or segment".format(function:string),
+          throw new owned ErrorWithContext("Error computing %s on string or segment".doFormat(function:string),
                                            getLineNumber(),
                                            getRoutineName(),
                                            getModuleName(),
@@ -171,7 +171,7 @@ module SegmentedComputation {
             }
           }
         } catch {
-          throw new owned ErrorWithContext("Error computing %s on string or segment".format(function:string),
+          throw new owned ErrorWithContext("Error computing %s on string or segment".doFormat(function:string),
                                            getLineNumber(),
                                            getRoutineName(),
                                            getModuleName(),

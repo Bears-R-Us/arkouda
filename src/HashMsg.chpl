@@ -58,8 +58,8 @@ module HashMsg {
     var lowerName = st.nextName();
     st.addEntry(lowerName, new shared SymEntry(lower));
     var createdMap = new map(keyType=string,valType=string);
-    createdMap.add("upperHash", "created %s".format(st.attrib(upperName)));
-    createdMap.add("lowerHash", "created %s".format(st.attrib(lowerName)));
+    createdMap.add("upperHash", "created %s".doFormat(st.attrib(upperName)));
+    createdMap.add("lowerHash", "created %s".doFormat(st.attrib(lowerName)));
     repMsg = formatJson(createdMap);
     hmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -88,8 +88,8 @@ module HashMsg {
     st.addEntry(lowerName, new shared SymEntry(lower));
 
     var createdMap = new map(keyType=string,valType=string);
-    createdMap.add("upperHash", "created %s".format(st.attrib(upperName)));
-    createdMap.add("lowerHash", "created %s".format(st.attrib(lowerName)));
+    createdMap.add("upperHash", "created %s".doFormat(st.attrib(upperName)));
+    createdMap.add("lowerHash", "created %s".doFormat(st.attrib(lowerName)));
     var repMsg = formatJson(createdMap);
     hmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);

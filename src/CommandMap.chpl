@@ -88,7 +88,7 @@ module CommandMap {
       usedModules.add(moduleMap[cmd]);
       repTuple = commandMap[cmd](cmd, msgArgs, st);
     } else {
-      repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
+      repTuple = new MsgTuple("Unrecognized command: %s".doFormat(cmd), MsgType.ERROR);
     }
     return repTuple;
   }

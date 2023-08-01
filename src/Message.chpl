@@ -130,7 +130,7 @@ module Message {
                 return this.val:int;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as int. Attempting to cast %s as type int failed".format(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as int. Attempting to cast %s as type int failed".doFormat(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -147,7 +147,7 @@ module Message {
                 return this.val:uint;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as uint. Attempting to cast %s as type uint failed".format(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as uint. Attempting to cast %s as type uint failed".doFormat(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -160,7 +160,7 @@ module Message {
                 return this.val:uint(8);
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as uint(8). Attempting to cast %s as type uint(8) failed".format(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as uint(8). Attempting to cast %s as type uint(8) failed".doFormat(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -177,7 +177,7 @@ module Message {
                 return this.val:real;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as real. Attempting to cast %s as type real failed".format(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as real. Attempting to cast %s as type real failed".doFormat(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -194,7 +194,7 @@ module Message {
                 return this.val.toLower():bool;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as bool. Attempting to cast %s as type bool failed".format(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as bool. Attempting to cast %s as type bool failed".doFormat(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -207,7 +207,7 @@ module Message {
                 return this.val:bigint;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as bigint. Attempting to cast %s as type bigint failed".format(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as bigint. Attempting to cast %s as type bigint failed".doFormat(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -231,7 +231,7 @@ module Message {
                 return this.val:t; 
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as %t. Attempting to cast %s as type %t failed".format(t, this.val, t),
+                throw new owned ErrorWithContext("Parameter cannot be cast as %?. Attempting to cast %s as type %? failed".doFormat(t, this.val, t),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -246,7 +246,7 @@ module Message {
         */
         proc getList(size: int) throws {
             if this.objType != ObjectType.LIST {
-                throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".format(this.key),
+                throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".doFormat(this.key),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -257,7 +257,7 @@ module Message {
 
         proc getJSON(size: int) throws {
             if this.objType != ObjectType.DICT {
-                throw new owned ErrorWithContext("Parameter with key, %s, is not a JSON obj.".format(this.key),
+                throw new owned ErrorWithContext("Parameter with key, %s, is not a JSON obj.".doFormat(this.key),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -314,7 +314,7 @@ module Message {
                     return p;
                 }
             }
-            throw new owned ErrorWithContext("Key Not Found; %s".format(key),
+            throw new owned ErrorWithContext("Key Not Found; %s".doFormat(key),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -327,7 +327,7 @@ module Message {
                     return p.val;
                 }
             }
-            throw new owned ErrorWithContext("Key Not Found; %s".format(key),
+            throw new owned ErrorWithContext("Key Not Found; %s".doFormat(key),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -383,7 +383,7 @@ module Message {
         try {
             nreader.readf("%jt", p);
         } catch bfe : BadFormatError {
-            throw new owned ErrorWithContext("Incorrect JSON format %s".format(payload),
+            throw new owned ErrorWithContext("Incorrect JSON format %s".doFormat(payload),
                                        getLineNumber(),
                                        getRoutineName(),
                                        getModuleName(),
@@ -418,7 +418,7 @@ module Message {
         try {
             nreader.readf("%jt", msg);
         } catch bfe : BadFormatError {
-            throw new owned ErrorWithContext("Incorrect JSON format %s".format(request),
+            throw new owned ErrorWithContext("Incorrect JSON format %s".doFormat(request),
                                        getLineNumber(),
                                        getRoutineName(),
                                        getModuleName(),
