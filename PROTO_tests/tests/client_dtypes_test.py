@@ -52,11 +52,19 @@ class TestClientDTypeTests:
         arr = ak.array([1.1, 8.3])
         with pytest.raises(TypeError):
             ak.BitVector(arr)
+
     @pytest.mark.parametrize("int_types", INT_TYPES)
     def test_bit_vector_edge_case(self, int_types):
-        arr = ak.arange(2**64-10, 2**64-1, dtype=int_types)
-        bv = ak.BitVector(arr, width=3)
+        bv_answer = [
+            "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||..",
+            "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||.|",
+            "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||.",
+        ]
+
+        arr = ak.arange(2**64 - 4, 2**64 - 1, dtype=int_types)
+        bv = ak.BitVector(arr, width=64)
         assert isinstance(bv, client_dtypes.BitVector)
+        assert bv.to_list() == bv_answer
         assert bv.dtype == ak.bitType
 
     def test_field_creation(self):
