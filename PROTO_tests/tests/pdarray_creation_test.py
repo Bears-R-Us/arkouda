@@ -1,17 +1,15 @@
 import datetime as dt
 import math
 import statistics
-from collections import deque
-from typing import Iterable, List, Optional, Tuple, Union, cast
-from arkouda import full
+from contextlib import nullcontext as does_not_raise
+from typing import Union
 
 import numpy as np
 import pandas as pd
 import pytest
 
 import arkouda as ak
-from arkouda import ARKOUDA_SUPPORTED_DTYPES
-from contextlib import nullcontext as does_not_raise
+from arkouda import full
 
 INT_SCALARS = [
     int,
@@ -59,20 +57,19 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NO_BIGINT)
     def test_array_creation(self, dtype, size):
-
-    #ndarray * dtypes
+        # ndarray * dtypes
         pda = ak.array(np.ones(size), dtype)
         assert isinstance(pda, Union[ak.pdarray, ak.Strings])
         assert size == len(pda)
         assert dtype == pda.dtype
 
-    # pdarray * dtypes
+        # pdarray * dtypes
         pda = ak.array(full(size, 1), dtype)
         assert isinstance(pda, Union[ak.pdarray, ak.Strings])
         assert size == len(pda)
         assert dtype == pda.dtype
 
-    # other Iterable ; using all dtypes yields error: castMsg: str : str not implemented
+        # other Iterable ; using all dtypes yields error: castMsg: str : str not implemented
         pda = ak.array(list(range(0, size)), dtype=int)
         assert isinstance(pda, ak.pdarray)
         assert size == len(pda)
@@ -472,7 +469,6 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_random_strings_uniform_errors(self, size):
-
         with pytest.raises(ValueError):
             ak.random_strings_uniform(maxlen=1, minlen=5, size=size)
 
@@ -492,13 +488,15 @@ class TestPdarrayCreation:
             ak.random_strings_uniform(minlen=1, maxlen=5, size="10")
 
         # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(ak.random_strings_uniform(
-            minlen=np.uint8(1),
-            maxlen=np.uint32(5),
-            seed=np.uint16(1),
-            size=np.uint8(10),
-            characters="printable",
-        ))
+        does_not_raise(
+            ak.random_strings_uniform(
+                minlen=np.uint8(1),
+                maxlen=np.uint32(5),
+                seed=np.uint16(1),
+                size=np.uint8(10),
+                characters="printable",
+            )
+        )
 
     def test_random_strings_uniform_with_seed(self):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
@@ -510,7 +508,9 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("num_dtype", NUMERIC_SCALARS)
     def test_random_strings_lognormal(self, size, num_dtype):
-        pda = ak.random_strings_lognormal(logmean=num_dtype(2), logstd=num_dtype(1), size=np.int64(size), characters="printable")
+        pda = ak.random_strings_lognormal(
+            logmean=num_dtype(2), logstd=num_dtype(1), size=np.int64(size), characters="printable"
+        )
         assert isinstance(pda, ak.Strings)
         assert size == len(pda)
         assert str == pda.dtype
@@ -529,8 +529,7 @@ class TestPdarrayCreation:
         does_not_raise(ak.random_strings_lognormal(np.uint8(2), 0.25, np.uint16(100)))
 
     def test_random_strings_lognormal_with_seed(self):
-        pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1)
-        assert [
+        randoms = [
             "VWHJEX",
             "BEBBXJHGM",
             "RWOVKBUR",
@@ -541,24 +540,15 @@ class TestPdarrayCreation:
             "VUDYRA",
             "QHQETTEZ",
             "DJBPWJV",
-        ] == pda.to_list()
+        ]
+
+        pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1)
+        assert randoms == pda.to_list()
 
         pda = ak.random_strings_lognormal(float(2), np.float64(0.25), np.int64(10), seed=1)
-        assert [
-            "VWHJEX",
-            "BEBBXJHGM",
-            "RWOVKBUR",
-            "LNJCSDXD",
-            "NKEDQC",
-            "GIBAFPAVWF",
-            "IJIFHGDHKA",
-            "VUDYRA",
-            "QHQETTEZ",
-            "DJBPWJV",
-        ] == pda.to_list()
+        assert randoms == pda.to_list()
 
-        pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1, characters="printable")
-        assert [
+        printable_randoms = [
             "eL96<O",
             ")o-GOe lR",
             ")PV yHf(",
@@ -569,23 +559,14 @@ class TestPdarrayCreation:
             "I*VknZ",
             "0!u~e$Lm",
             "9Q{TtHq",
-        ] == pda.to_list()
+        ]
+        pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1, characters="printable")
+        assert printable_randoms == pda.to_list()
 
         pda = ak.random_strings_lognormal(
             np.int64(2), np.float64(0.25), np.int64(10), seed=1, characters="printable"
         )
-        assert [
-            "eL96<O",
-            ")o-GOe lR",
-            ")PV yHf(",
-            "._b3Yc&K",
-            ",7Wjef",
-            "R{lQs_g]5T",
-            "E[2dk\\2a9J",
-            "I*VknZ",
-            "0!u~e$Lm",
-            "9Q{TtHq",
-        ] == pda.to_list()
+        assert printable_randoms == pda.to_list()
 
     def test_mulitdimensional_array_creation(self):
         av = ak.array([[0, 0], [0, 1], [1, 1]])
@@ -594,7 +575,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [bool, np.float64, np.int64, str])
     def test_from_series_dtypes(self, size, dtype):
-
         p_array = ak.from_series(pd.Series(np.random.randint(0, 10, size)), dtype)
         assert isinstance(p_array, (ak.pdarray, ak.Strings))
         assert dtype == p_array.dtype
@@ -607,7 +587,6 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_from_series_misc(self, size):
-
         p_array = ak.from_series(pd.Series(np.random.choice([True, False], size=size)))
 
         assert isinstance(p_array, ak.pdarray)
