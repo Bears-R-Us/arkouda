@@ -1,49 +1,164 @@
-import arkouda as ak
+from __future__ import annotations
 
-def asarray():
-    return 0
 
-def arange():
-    return 0
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
-def empty():
-    return 0
+if TYPE_CHECKING:
+    from ._typing import (
+        Array,
+        Device,
+        Dtype,
+        NestedSequence,
+        SupportsBufferProtocol,
+    )
+    from collections.abc import Sequence
+from ._dtypes import _all_dtypes
 
-def empty_like():
-    return 0
+import arkouda as np
 
-def eye():
-    return 0
 
-def from_dlpack():
-    return 0
+def _check_valid_dtype(dtype):
+    # Note: Only spelling dtypes as the dtype objects is supported.
 
-def full():
-    return 0
+    # We use this instead of "dtype in _all_dtypes" because the dtype objects
+    # define equality with the sorts of things we want to disallow.
+    for d in (None,) + _all_dtypes:
+        if dtype is d:
+            return
+    raise ValueError("dtype must be one of the supported dtypes")
 
-def full_like():
-    return 0
 
-def linspace():
-    return 0
+def asarray(
+    obj: Union[
+        Array,
+        bool,
+        int,
+        float,
+        NestedSequence[bool | int | float],
+        SupportsBufferProtocol,
+    ],
+    /,
+    *,
+    dtype: Optional[Dtype] = None,
+    device: Optional[Device] = None,
+    copy: Optional[Union[bool, np._CopyMode]] = None,
+) -> Array:
+    raise ValueError(f"Not implemented")
 
-def meshgrid():
-    return 0
 
-def ones():
-    return 0
+def arange(
+    start: Union[int, float],
+    /,
+    stop: Optional[Union[int, float]] = None,
+    step: Union[int, float] = 1,
+    *,
+    dtype: Optional[Dtype] = None,
+    device: Optional[Device] = None,
+) -> Array:
+    raise ValueError(f"Not implemented")
 
-def ones_like():
-    return 0
 
-def tril():
-    return 0
+def empty(
+    shape: Union[int, Tuple[int, ...]],
+    *,
+    dtype: Optional[Dtype] = None,
+    device: Optional[Device] = None,
+) -> Array:
+    raise ValueError(f"Not implemented")
 
-def triu():
-    return 0
 
-def zeros():
-    return 0
+def empty_like(
+    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
+) -> Array:
+    raise ValueError(f"Not implemented")
 
-def zeros_like():
-    return 0
+
+def eye(
+    n_rows: int,
+    n_cols: Optional[int] = None,
+    /,
+    *,
+    k: int = 0,
+    dtype: Optional[Dtype] = None,
+    device: Optional[Device] = None,
+) -> Array:
+    raise ValueError(f"Not implemented")
+
+
+def from_dlpack(x: object, /) -> Array:
+    raise ValueError(f"Not implemented")
+
+
+def full(
+    shape: Union[int, Tuple[int, ...]],
+    fill_value: Union[int, float],
+    *,
+    dtype: Optional[Dtype] = None,
+    device: Optional[Device] = None,
+) -> Array:
+    raise ValueError(f"Not implemented")
+
+
+def full_like(
+    x: Array,
+    /,
+    fill_value: Union[int, float],
+    *,
+    dtype: Optional[Dtype] = None,
+    device: Optional[Device] = None,
+) -> Array:
+    raise ValueError(f"Not implemented")
+
+
+def linspace(
+    start: Union[int, float],
+    stop: Union[int, float],
+    /,
+    num: int,
+    *,
+    dtype: Optional[Dtype] = None,
+    device: Optional[Device] = None,
+    endpoint: bool = True,
+) -> Array:
+    raise ValueError(f"Not implemented")
+
+
+def meshgrid(*arrays: Array, indexing: str = "xy") -> List[Array]:
+    raise ValueError(f"Not implemented")
+
+
+def ones(
+    shape: Union[int, Tuple[int, ...]],
+    *,
+    dtype: Optional[Dtype] = None,
+    device: Optional[Device] = None,
+) -> Array:
+    raise ValueError(f"Not implemented")
+
+
+def ones_like(
+    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
+) -> Array:
+    raise ValueError(f"Not implemented")
+
+
+def tril(x: Array, /, *, k: int = 0) -> Array:
+    raise ValueError(f"Not implemented")
+
+
+def triu(x: Array, /, *, k: int = 0) -> Array:
+    raise ValueError(f"Not implemented")
+
+def zeros(
+    shape: Union[int, Tuple[int, ...]],
+    *,
+    dtype: Optional[Dtype] = None,
+    device: Optional[Device] = None,
+) -> Array:
+    raise ValueError(f"Not implemented")
+
+
+def zeros_like(
+    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
+) -> Array:
+    raise ValueError(f"Not implemented")
