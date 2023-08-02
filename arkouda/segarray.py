@@ -12,6 +12,7 @@ from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
@@ -56,11 +57,21 @@ def gen_ranges(starts, ends, stride=1):
     if starts.size == 0:
         return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
     lengths = (ends - starts) // stride
+    if not (lengths >= 0).all():
+        raise ValueError("all ends must be greater than or equal to starts")
+    non_empty = lengths != 0
     segs = cumsum(lengths) - lengths
     totlen = lengths.sum()
     slices = ones(totlen, dtype=akint64)
-    diffs = concatenate((array([starts[0]]), starts[1:] - starts[:-1] - (lengths[:-1] - 1) * stride))
-    slices[segs] = diffs
+    non_empty_starts = starts[non_empty]
+    non_empty_lengths = lengths[non_empty]
+    diffs = concatenate(
+        (
+            array([non_empty_starts[0]]),
+            non_empty_starts[1:] - non_empty_starts[:-1] - (non_empty_lengths[:-1] - 1) * stride,
+        )
+    )
+    slices[segs[non_empty]] = diffs
     return segs, cumsum(slices)
 
 
@@ -263,9 +274,7 @@ class SegArray:
             start = self.segments[i]
             end = self.segments[i] + self.lengths[i]
             return self.values[start:end]
-        elif (isinstance(i, pdarray) and (i.dtype == akint64 or i.dtype == akbool)) or isinstance(
-            i, slice
-        ):
+        elif (isinstance(i, pdarray) and i.dtype in [akint64, akuint64, akbool]) or isinstance(i, slice):
             starts = self.segments[i]
             ends = starts + self.lengths[i]
             newsegs, inds = gen_ranges(starts, ends)
@@ -352,13 +361,16 @@ class SegArray:
     def __eq__(self, other):
         if not isinstance(other, SegArray):
             return NotImplemented
+        if self.size != other.size:
+            raise ValueError("Segarrays must have same size to compare")
         eq = zeros(self.size, dtype=akbool)
         leneq = self.lengths == other.lengths
         if leneq.sum() > 0:
             selfcmp = self[leneq]
             othercmp = other[leneq]
-            intersection = self.all(selfcmp.values == othercmp.values)
-            eq[leneq] = intersection
+            intersection = selfcmp.all(selfcmp.values == othercmp.values)
+            eq[leneq & (self.lengths != 0)] = intersection
+            eq[leneq & (self.lengths == 0)] = True
         return eq
 
     def __len__(self) -> int:

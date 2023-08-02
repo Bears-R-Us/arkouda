@@ -12,8 +12,9 @@ from arkouda.dtypes import resolve_scalar_dtype
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import arange, array, ones, zeros
+from arkouda.pdarraycreation import arange, array, zeros
 from arkouda.pdarraysetops import concatenate, in1d
+from arkouda.segarray import gen_ranges as seg_gen_ranges
 from arkouda.strings import Strings
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
@@ -137,19 +138,8 @@ def gen_ranges(starts: pdarray, ends: pdarray) -> Tuple[pdarray, pdarray]:
     ranges : pdarray, int64
         The actual ranges, flattened into a single array
     """
-    if starts.size != ends.size:
-        raise ValueError("starts and ends must be same size")
-    if starts.size == 0:
-        return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
-    lengths = ends - starts
-    if not (lengths > 0).all():
-        raise ValueError("all ends must be greater than starts")
-    segs = cumsum(lengths) - lengths
-    totlen = lengths.sum()
-    slices = ones(totlen, dtype=akint64)
-    diffs = concatenate((array([starts[0]]), starts[1:] - starts[:-1] - lengths[:-1] + 1))
-    slices[segs] = diffs
-    return segs, cumsum(slices)
+    # only maintain one version of gen_ranges
+    return seg_gen_ranges(starts, ends)
 
 
 @typechecked
