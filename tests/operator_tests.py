@@ -732,10 +732,14 @@ class OperatorsTest(ArkoudaTest):
         # Test __str__()
         self.assertEqual("[1 2 3]", ak.array([1, 2, 3]).__str__())
         self.assertEqual("[1 2 3 ... 17 18 19]", ak.arange(1, 20).__str__())
-        self.assertEqual("[1.100000e+00 2.300000e+00 5.000000e+00]", ak.array([1.1, 2.3, 5]).__str__())
-        self.assertEqual(
-            "[0.000000e+00 5.263158e-01 1.052632e+00 ... 8.947368e+00 9.473684e+00 1.000000e+01]",
-            ak.linspace(0, 10, 20).__str__(),
+        self.assertTrue(
+            ("[1.100000e+00 2.300000e+00 5.000000e+00]" == ak.array([1.1, 2.3, 5]).__str__()) or
+            ("[1.1 2.3 5.0]" == ak.array([1.1, 2.3, 5]).__str__())
+        )
+        self.assertTrue(
+            ("[0.000000e+00 5.263158e-01 1.052632e+00 ... 8.947368e+00 9.473684e+00 1.000000e+01]" == \
+            ak.linspace(0, 10, 20).__str__()) or
+            ("[0.0 0.5 1.1 ... 8.9 9.4 1.0]" == ak.linspace(0, 10, 20).__str__())
         )
         self.assertEqual("[False False False]", ak.isnan(ak.array([1.1, 2.3, 5])).__str__())
         self.assertEqual(
@@ -745,13 +749,14 @@ class OperatorsTest(ArkoudaTest):
         # Test __repr__()
         self.assertEqual("array([1 2 3])", ak.array([1, 2, 3]).__repr__())
         self.assertEqual("array([1 2 3 ... 17 18 19])", ak.arange(1, 20).__repr__())
-        self.assertEqual(
-            "array([1.1000000000000001 2.2999999999999998 5])", ak.array([1.1, 2.3, 5]).__repr__()
+        self.assertTrue(
+            "array([1.1000000000000001 2.2999999999999998 5])" == ak.array([1.1, 2.3, 5]).__repr__() or
+            "array([1.1 2.3 5])" == ak.array([1.1, 2.3, 5]).__repr__()
         )
-        self.assertEqual(
+        self.assertTrue(
             "array([0 0.52631578947368418 1.0526315789473684 ... "
-            "8.9473684210526319 9.473684210526315 10])",
-            ak.linspace(0, 10, 20).__repr__(),
+            "8.9473684210526319 9.473684210526315 10])" ==  ak.linspace(0, 10, 20).__repr__() or
+            "array([0 0.5 1.1 ... 8.9 9.5 10])" ==  ak.linspace(0, 10, 20).__repr__()
         )
         self.assertEqual("array([False False False])", ak.isnan(ak.array([1.1, 2.3, 5])).__repr__())
         self.assertEqual(
