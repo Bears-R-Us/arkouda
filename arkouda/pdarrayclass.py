@@ -102,8 +102,11 @@ def parse_single_value(msg: str) -> object:
     dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
     if mydtype == bigint:
-        # we have to strip off quotes
-        return int(value[1:-1])
+        # we have to strip off quotes prior to 1.32
+        if value[0] == "\"":
+            return int(value[1:-1])
+        else:
+            return int(value)
     if mydtype == npbool:
         if value == "True":
             return mydtype.type(True)
