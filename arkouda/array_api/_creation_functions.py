@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 from ._dtypes import _all_dtypes
 
-import arkouda as np
+import arkouda as ak
 
 
 def _check_valid_dtype(dtype):
@@ -41,7 +41,7 @@ def asarray(
     *,
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
-    copy: Optional[Union[bool, np._CopyMode]] = None,
+    copy: Optional[Union[bool, ak._CopyMode]] = None,
 ) -> Array:
     raise ValueError(f"Not implemented")
 
@@ -55,7 +55,8 @@ def arange(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
-    raise ValueError(f"Not implemented")
+    from ._array_object import Array
+    return Array._new(ak.arange(start, stop))
 
 
 def empty(

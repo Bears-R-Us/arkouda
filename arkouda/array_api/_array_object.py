@@ -73,6 +73,7 @@ class Array:
 
         """
         obj = super().__new__(cls)
+        obj._array = x
         return obj
 
     # Prevent Array() from working
@@ -271,9 +272,6 @@ class Array:
 
     def __complex__(self: Array, /) -> complex:
         return complex(1)
-
-    def __dlpack__(self: Array, /, *, stream: None = None) -> -:
-        raise ValueError(f"Not implemented")
 
     def __dlpack_device__(self: Array, /) -> Tuple[IntEnum, int]:
         raise ValueError(f"Not implemented")
