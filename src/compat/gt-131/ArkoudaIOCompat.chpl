@@ -33,6 +33,18 @@ module ArkoudaIOCompat {
     return tup;
   }
 
+  proc jsonToPdArrayCompat(json: string, size: int) throws {
+    var f = openMemFile();
+    var w = f.writer();
+    w.write(json);
+    w.close();
+    var r = f.reader(deserializer=new JsonDeserializer());
+    var array: [0..#size] string;
+    r.readf("%?", array);
+    r.close();
+    return array;
+  }
+
   proc readfCompat(f: file, str: string, ref obj) throws {
     var nreader = f.reader(deserializer=new JsonDeserializer());
     nreader.readf("%?", obj);

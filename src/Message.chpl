@@ -380,7 +380,7 @@ module Message {
         var newmem = openMemFile();
         newmem.writer().write(payload);
         try {
-          readfCompat(newmem, "%jt", p);
+          readfCompat(newmem, "%?", p);
         } catch bfe : BadFormatError {
             throw new owned ErrorWithContext("Incorrect JSON format %s".doFormat(payload),
                                        getLineNumber(),
@@ -415,7 +415,7 @@ module Message {
         newmem.writer().write(request);
         var nreader = newmem.reader();
         try {
-            nreader.readf("%jt", msg);
+            readfCompat(newmem, "%?", msg);
         } catch bfe : BadFormatError {
             throw new owned ErrorWithContext("Incorrect JSON format %s".doFormat(request),
                                        getLineNumber(),
@@ -438,15 +438,7 @@ module Message {
      * Converts the JSON array to a pdarray
      */
     proc jsonToPdArray(json: string, size: int) throws {
-        var f = openMemFile(); defer { ensureClose(f); }
-        var w = f.writer();
-        w.write(json);
-        w.close();
-        var r = f.reader();
-        var array: [0..#size] string;
-        r.readf("%jt", array);
-        r.close();
-        return array;
+      return jsonToPdArrayCompat(json, size);
     }
 
 }
