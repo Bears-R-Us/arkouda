@@ -607,6 +607,9 @@ module ServerDaemon {
                     break;
                 }
 
+                appendFile(filePath="%s/commands.log".format(this.arkDirectory),
+                           "cmd: %s args: %s user: %s".format(cmd,args,user));
+
                 /*
                  * For messages that return a string repTuple is filled. For binary
                  * messages the message is sent directly to minimize copies.
@@ -762,7 +765,7 @@ module ServerDaemon {
                 var format = msg.format;
                 var args   = msg.args;
                 var size   = msg.size: int;
-                
+
                 var msgArgs: owned MessageArgs;
                 if size > 0 {
                     msgArgs = parseMessageArgs(args, size);
