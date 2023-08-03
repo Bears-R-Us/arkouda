@@ -18,4 +18,16 @@ module ArkoudaIOCompat {
     var toUse = this.replace('%?', '%t');
     return toUse.format((...vals));
   }
+
+  proc jsonToTupleCompat(json: string, type t) throws {
+    var f = openMemFile();
+    var w = f.writer();
+    w.write(json);
+    w.close();
+    var r = f.reader();
+    var tup: t;
+    r.readf("%jt", tup);
+    r.close();
+    return tup;
+  }
 }

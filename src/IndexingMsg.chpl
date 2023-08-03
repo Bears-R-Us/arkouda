@@ -21,21 +21,14 @@ module IndexingMsg
     use ArkoudaFileCompat;
     use ArkoudaBigIntCompat;
     use ArkoudaRangeCompat;
+    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const imLogger = new Logger(logLevel, logChannel);
 
     proc jsonToTuple(json: string, type t) throws {
-        var f = openMemFile(); defer { ensureClose(f); }
-        var w = f.writer();
-        w.write(json);
-        w.close();
-        var r = f.reader();
-        var tup: t;
-        r.readf("%jt", tup);
-        r.close();
-        return tup;
+      return jsonToTupleCompat(json, t);
     }
 
     proc arrayViewMixedIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
