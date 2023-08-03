@@ -379,9 +379,8 @@ module Message {
         var p: ParameterObj;
         var newmem = openMemFile();
         newmem.writer().write(payload);
-        var nreader = newmem.reader();
         try {
-            nreader.readf("%jt", p);
+          readfCompat(newmem, "%jt", p);
         } catch bfe : BadFormatError {
             throw new owned ErrorWithContext("Incorrect JSON format %s".doFormat(payload),
                                        getLineNumber(),

@@ -32,4 +32,9 @@ module ArkoudaIOCompat {
     r.close();
     return tup;
   }
+
+  proc readfCompat(f: file, str: string, ref obj) throws {
+    var nreader = f.reader(deserializer=new JsonDeserializer());
+    nreader.readf("%?", obj);
+  }
 }
