@@ -273,7 +273,7 @@ module ServerDaemon {
                                'writing serverConnectionInfo to %?'.doFormat(serverConnectionInfo));
                 try! {
                     var w = open(serverConnectionInfo, ioMode.cw).writer();
-                    w.writef("%s %? %s\n",serverHostname,ServerPort,this.connectUrl);
+                    w.writef("%s %i %s\n",serverHostname,ServerPort,this.connectUrl);
                 }
             }
         }
