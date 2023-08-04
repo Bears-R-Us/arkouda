@@ -828,6 +828,13 @@ class RegistrationTest(ArkoudaTest):
         seg = None
         self.assertEqual(len(ak.list_symbol_table()), 0)
 
+        str_seg = ak.SegArray(
+            ak.array([0, 6, 8]), ak.array([10, 11, 12, 13, 14, 15, 20, 21, 30, 31, 32, 33])
+        )
+        self.assertTrue(len(ak.list_symbol_table()) > 0)
+        str_seg = None
+        self.assertEqual(len(ak.list_symbol_table()), 0)
+
         g = ak.GroupBy(
             [ak.arange(3), ak.array(["a", "b", "c"]), ak.Categorical(ak.array(["a", "b", "c"]))]
         )

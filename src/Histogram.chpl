@@ -57,7 +57,7 @@ module Histogram
         // copy from atomic histogram to normal histogram
         [(e,ae) in zip(hist, atomicHist)] e = ae.read();
         try! hgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                             "hist = %t".format(hist));
+                                                             "hist = %?".doFormat(hist));
 
         return hist;
     }

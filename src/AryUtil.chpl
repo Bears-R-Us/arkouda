@@ -35,9 +35,9 @@ module AryUtil
     */
     proc formatAry(A):string throws {
         if A.size <= printThresh {
-            return "%t".format(A);
+            return "%?".doFormat(A);
         } else {
-            return "%t ... %t".format(A[A.domain.low..A.domain.low+2],
+            return "%? ... %?".doFormat(A[A.domain.low..A.domain.low+2],
                                       A[A.domain.high-2..A.domain.high]);
         }
     }
@@ -146,7 +146,7 @@ module AryUtil
     proc validateArraysSameLength(n:int, names:[] string, types: [] string, st: borrowed SymTab) throws {
       // Check that fields contains the stated number of arrays
       if (names.size != n) { 
-          var errorMsg = "Expected %i arrays but got %i".format(n, names.size);
+          var errorMsg = "Expected %i arrays but got %i".doFormat(n, names.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
                                            getLineNumber(),
@@ -155,7 +155,7 @@ module AryUtil
                                            "ArgumentError");
       }
       if (types.size != n) { 
-          var errorMsg = "Expected %i types but got %i".format(n, types.size);
+          var errorMsg = "Expected %i types but got %i".doFormat(n, types.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
                                            getLineNumber(),
@@ -201,7 +201,7 @@ module AryUtil
             thisSize = segs.size;
           }
           otherwise {
-              var errorMsg = "Unrecognized object type: %s".format(objtype);
+              var errorMsg = "Unrecognized object type: %s".doFormat(objtype);
               auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
               throw new owned ErrorWithContext(errorMsg,
                                                getLineNumber(),
@@ -215,7 +215,7 @@ module AryUtil
             size = thisSize;
         } else {
             if (thisSize != size) { 
-              var errorMsg = "Arrays must all be same size; expected size %t, got size %t".format(size, thisSize);
+              var errorMsg = "Arrays must all be same size; expected size %?, got size %?".doFormat(size, thisSize);
                 auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 throw new owned ErrorWithContext(errorMsg,
                                                  getLineNumber(),

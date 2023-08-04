@@ -40,7 +40,7 @@ module In1dMsg
         var gAr2: borrowed GenSymEntry = getGenericTypedArrayEntry(sname, st);
         
         iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "cmd: %s pdarray1: %s pdarray2: %s invert: %t new pdarray name: %t".format(
+                        "cmd: %s pdarray1: %s pdarray2: %s invert: %? new pdarray name: %?".doFormat(
                                    cmd,st.attrib(name),st.attrib(sname),invert,rname));
 
         select (gAr1.dtype, gAr2.dtype) {

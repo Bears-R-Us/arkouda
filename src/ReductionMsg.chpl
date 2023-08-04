@@ -39,7 +39,7 @@ module ReductionMsg
         const reductionop = msgArgs.getValueOf("op");
         const name = msgArgs.getValueOf("array");
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "cmd: %s reductionop: %s name: %s".format(cmd,reductionop,name));
+                         "cmd: %s reductionop: %s name: %s".doFormat(cmd,reductionop,name));
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
        
@@ -52,46 +52,46 @@ module ReductionMsg
                         var val:string;
                         var sum = + reduce (e.a != 0);
                         if sum != 0 {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".format(val);
+                        repMsg = "bool %s".doFormat(val);
                     }
                     when "all" {
                         var val:string;
                         var sum = + reduce (e.a != 0);
                         if sum == e.a.domain.size {val = "True";} else {val = "False";}
-                       repMsg = "bool %s".format(val);
+                       repMsg = "bool %s".doFormat(val);
                     }
                     when "sum" {
                         var val = + reduce e.a;
-                        repMsg = "int64 %i".format(val);
+                        repMsg = "int64 %i".doFormat(val);
                     }
                     when "prod" {
                         // Cast to real to avoid int64 overflow
                         var val = * reduce e.a:real;
                         // Return value is always float64 for prod
-                        repMsg = "float64 %.17r".format(val);
+                        repMsg = "float64 %.17r".doFormat(val);
                     }
                     when "min" {
                       var val = min reduce e.a;
-                      repMsg = "int64 %i".format(val);
+                      repMsg = "int64 %i".doFormat(val);
                     }
                     when "max" {
                         var val = max reduce e.a;
-                        repMsg = "int64 %i".format(val);
+                        repMsg = "int64 %i".doFormat(val);
                     }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".format(minLoc);
+                        repMsg = "int64 %i".doFormat(minLoc);
                     }
                     when "argmax" {
                         var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".format(maxLoc);
+                        repMsg = "int64 %i".doFormat(maxLoc);
                     }
                     when "is_sorted" {
                         ref ea = e.a;
                         var sorted = isSorted(ea);
                         var val: string;
                         if sorted {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".format(val);
+                        repMsg = "bool %s".doFormat(val);
                     }
                     when "is_locally_sorted" {
                       var locSorted: [LocaleSpace] bool;
@@ -105,7 +105,7 @@ module ReductionMsg
                       var val: string;
                       if (& reduce locSorted) {val = "True";} else {val = "False";}
 
-                      repMsg = "bool %s".format(val);
+                      repMsg = "bool %s".doFormat(val);
                       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                       return new MsgTuple(repMsg, MsgType.NORMAL); 
                     }
@@ -122,36 +122,36 @@ module ReductionMsg
                 {
                     when "sum" {
                         var val = + reduce e.a;
-                        repMsg = "uint64 %i".format(val);
+                        repMsg = "uint64 %i".doFormat(val);
                     }
                     when "prod" {
                         // Cast to real to avoid int64 overflow
                         var val = * reduce e.a:real;
                         // Return value is always float64 for prod
-                        repMsg = "float64 %.17r".format(val);
+                        repMsg = "float64 %.17r".doFormat(val);
                     }
                     when "min" {
                       var val = min reduce e.a;
-                      repMsg = "uint64 %i".format(val);
+                      repMsg = "uint64 %i".doFormat(val);
                     }
                     when "max" {
                         var val = max reduce e.a;
-                        repMsg = "uint64 %i".format(val);
+                        repMsg = "uint64 %i".doFormat(val);
                     }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
-                        repMsg = "uint64 %i".format(minLoc);
+                        repMsg = "uint64 %i".doFormat(minLoc);
                     }
                     when "argmax" {
                         var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
-                        repMsg = "uint64 %i".format(maxLoc);
+                        repMsg = "uint64 %i".doFormat(maxLoc);
                     }
                     when "is_sorted" {
                         ref ea = e.a;
                         var sorted = isSorted(ea);
                         var val: string;
                         if sorted {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".format(val);
+                        repMsg = "bool %s".doFormat(val);
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
@@ -168,43 +168,43 @@ module ReductionMsg
                         var val:string;
                         var sum = + reduce (e.a != 0.0);
                         if sum != 0.0 {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".format(val);
+                        repMsg = "bool %s".doFormat(val);
                     }
                     when "all" {
                         var val:string;
                         var sum = + reduce (e.a != 0.0);
                         if sum == e.a.domain.size {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".format(val);
+                        repMsg = "bool %s".doFormat(val);
                     }
                     when "sum" {
                         var val = + reduce e.a;
-                        repMsg = "float64 %.17r".format(val);
+                        repMsg = "float64 %.17r".doFormat(val);
                     }
                     when "prod" {
                         var val = * reduce e.a;
-                        repMsg =  "float64 %.17r".format(val);
+                        repMsg =  "float64 %.17r".doFormat(val);
                     }
                     when "min" {
                         var val = min reduce e.a;
-                        repMsg = "float64 %.17r".format(val);
+                        repMsg = "float64 %.17r".doFormat(val);
                     }
                     when "max" {
                         var val = max reduce e.a;
-                        repMsg = "float64 %.17r".format(val);
+                        repMsg = "float64 %.17r".doFormat(val);
                     }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".format(minLoc);
+                        repMsg = "int64 %i".doFormat(minLoc);
                     }
                     when "argmax" {
                         var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".format(maxLoc);
+                        repMsg = "int64 %i".doFormat(maxLoc);
                     }
                     when "is_sorted" {
                         var sorted = isSorted(e.a);
                         var val:string;
                         if sorted {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".format(val);
+                        repMsg = "bool %s".doFormat(val);
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
@@ -221,39 +221,39 @@ module ReductionMsg
                         var val:string;
                         var any = | reduce e.a;
                         if any {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".format(val);
+                        repMsg = "bool %s".doFormat(val);
                     }
                     when "all" {
                         var val:string;
                         var all = & reduce e.a;
                         if all {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".format(val);
+                        repMsg = "bool %s".doFormat(val);
                     }
                     when "sum" {
                         var val = + reduce e.a:int;
-                        repMsg = "int64 %i".format(val);
+                        repMsg = "int64 %i".doFormat(val);
                     }
                     when "prod" {
                         var val = * reduce e.a:int;
-                        repMsg = "int64 %i".format(val);
+                        repMsg = "int64 %i".doFormat(val);
                     }
                     when "min" {
                         var val:string;
                         if (& reduce e.a) { val = "True"; } else { val = "False"; }
-                        repMsg = "bool %s".format(val);
+                        repMsg = "bool %s".doFormat(val);
                     }
                     when "max" {
                         var val:string;
                         if (| reduce e.a) { val = "True"; } else { val = "False"; }
-                        repMsg = "bool %s".format(val);
+                        repMsg = "bool %s".doFormat(val);
                     }
                     when "argmax" {
                         var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".format(maxLoc);
+                        repMsg = "int64 %i".doFormat(maxLoc);
                     }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".format(minLoc);
+                        repMsg = "int64 %i".doFormat(minLoc);
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
@@ -280,7 +280,7 @@ module ReductionMsg
       const size = msgArgs.get("size").getIntValue();
       var rname = st.nextName();
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "cmd: %s segments_name: %s size: %s".format(cmd,segments_name, size));
+                       "cmd: %s segments_name: %s size: %s".doFormat(cmd,segments_name, size));
 
       var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
       var segments = toSymEntry(gSeg, int);
@@ -350,7 +350,7 @@ module ReductionMsg
       
         var rname = st.nextName();
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "cmd: %s values_name: %s segments_name: %s operator: %s skipNan: %s".format(
+                      "cmd: %s values_name: %s segments_name: %s operator: %s skipNan: %s".doFormat(
                                        cmd,values_name,segments_name,op,skipNan));
         var gVal: borrowed GenSymEntry = getGenericTypedArrayEntry(values_name, st);
         var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
@@ -1348,7 +1348,7 @@ module ReductionMsg
         valsAgg.copy(kvi1, values[idx]);
       }
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "sort time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                           "sort time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "Finding unique (key, value) pairs...");
       var truth: [kD] bool;
@@ -1375,7 +1375,7 @@ module ReductionMsg
         }
       }
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                       "time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "Finding unique keys and num unique vals per key.");
       // find steps in keys
@@ -1413,7 +1413,7 @@ module ReductionMsg
         }
       }
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                                   "time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
       return res;
     }
 

@@ -35,12 +35,12 @@ module ConcatenateMsg
         var names = msgArgs.get("names").getList(n);
         
         cmLogger.debug(getModuleName(),getRoutineName(), getLineNumber(), 
-              "number of arrays: %i names: %t".format(n,names));
+              "number of arrays: %i names: %?".doFormat(n,names));
 
         // Check that fields contains the stated number of arrays
         if (n != names.size) { 
             var errorMsg = incompatibleArgumentsError(pn, 
-                             "Expected %i arrays but got %i".format(n, names.size)); 
+                             "Expected %i arrays but got %i".doFormat(n, names.size)); 
             cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                               
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
@@ -62,18 +62,18 @@ module ConcatenateMsg
                         valSize = segString.nBytes;
                     } catch e: Error {
                         throw getErrorWithContext(
-                           msg="lookup for %s failed".format(name),
+                           msg="lookup for %s failed".doFormat(name),
                            lineNumber=getLineNumber(),
                            routineName=getRoutineName(), 
                            moduleName=getModuleName(),
                            errorClass="UnknownSymbolError");                    
                     }
                     cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "name: %s".format(name));
+                                             "name: %s".doFormat(name));
                 }
                 when ObjType.PDARRAY {
                     cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                 "pdarray name %s".format(name));
+                                 "pdarray name %s".doFormat(name));
                 }
                 otherwise { 
                     var errorMsg = notImplementedError(pn, objtype: string); 
@@ -91,7 +91,7 @@ module ConcatenateMsg
             } else { // Check that all dtype's are the same across the list of arrays to concat
                 if (dtype != entryDtype) {
                     var errorMsg = incompatibleArgumentsError(pn, 
-                             "Expected %s dtype but got %s dtype".format(dtype2str(dtype), 
+                             "Expected %s dtype but got %s dtype".doFormat(dtype2str(dtype), 
                                     dtype2str(entryDtype)));
                     cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg,MsgType.ERROR);
@@ -207,16 +207,16 @@ module ConcatenateMsg
                       valStart += thisVals.size;
                     }
                 }
-                var repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
+                var repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
                 // var repMsg = "created " + st.attrib(retString.name) + "+created " + st.attrib(retString.name);
                 cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "created concatenated pdarray %s".format(st.attrib(retString.name)));
+                                  "created concatenated pdarray %s".doFormat(st.attrib(retString.name)));
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             when ObjType.PDARRAY {
                 var rname = st.nextName();
                 cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                             "creating pdarray %s of type %t".format(rname,dtype));
+                                             "creating pdarray %s of type %?".doFormat(rname,dtype));
                 select (dtype) {
                     when DType.Int64 {
                         // create array to copy into
@@ -245,7 +245,7 @@ module ConcatenateMsg
                             }
                         }
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
+                                         "created concatenated pdarray: %s".doFormat(st.attrib(rname)));
                     }
                     when DType.Float64 {
                         // create array to copy into
@@ -274,7 +274,7 @@ module ConcatenateMsg
                             }
                         }
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
+                                         "created concatenated pdarray: %s".doFormat(st.attrib(rname)));
                     }
                     when DType.Bool {
                         // create array to copy into
@@ -303,7 +303,7 @@ module ConcatenateMsg
                             }
                         }
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "created concatenated pdarray: %s".format(st.attrib(rname)));
+                                           "created concatenated pdarray: %s".doFormat(st.attrib(rname)));
                     }
                     when DType.UInt64 {
                         // create array to copy into
@@ -332,7 +332,7 @@ module ConcatenateMsg
                             }
                         }
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
+                                         "created concatenated pdarray: %s".doFormat(st.attrib(rname)));
                     }
                     when DType.BigInt {
                         // create array to copy into
@@ -363,7 +363,7 @@ module ConcatenateMsg
                         }
                         st.addEntry(rname, new shared SymEntry(tmp, max_bits));
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
+                                         "created concatenated pdarray: %s".doFormat(st.attrib(rname)));
                     }
                     otherwise {
                         var errorMsg = notImplementedError("concatenate",dtype);
