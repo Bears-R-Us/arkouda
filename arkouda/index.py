@@ -1,16 +1,16 @@
+import json
 from typing import List, Optional, Union
 
 import pandas as pd  # type: ignore
 from typeguard import typechecked
-import json
 
 from arkouda import Categorical, Strings
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy, unique
-from arkouda.pdarrayclass import pdarray, RegistrationError
-from arkouda.pdarraycreation import arange, array, ones, create_pdarray
+from arkouda.pdarrayclass import RegistrationError, pdarray
+from arkouda.pdarraycreation import arange, array, create_pdarray, ones
 from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.util import convert_if_categorical, generic_concat, get_callback

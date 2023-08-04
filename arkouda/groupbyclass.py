@@ -2,7 +2,17 @@ from __future__ import annotations
 
 import enum
 import json
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple, Union, cast, no_type_check
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    cast,
+    no_type_check,
+)
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
@@ -17,12 +27,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import int_scalars
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.logger import getArkoudaLogger
-from arkouda.pdarrayclass import (
-    RegistrationError,
-    create_pdarray,
-    is_sorted,
-    pdarray,
-)
+from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange
 from arkouda.sorting import argsort
 from arkouda.strings import Strings

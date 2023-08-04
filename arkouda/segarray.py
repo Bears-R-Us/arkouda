@@ -15,12 +15,7 @@ from arkouda.dtypes import isSupportedInt, str_
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
-from arkouda.pdarrayclass import (
-    RegistrationError,
-    create_pdarray,
-    is_sorted,
-    pdarray,
-)
+from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate
 from arkouda.strings import Strings

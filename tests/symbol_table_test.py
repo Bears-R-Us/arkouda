@@ -4,8 +4,15 @@ import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-from arkouda.util import attach, unregister, is_registered, register_all, unregister_all, attach_all
 from arkouda.pdarrayclass import RegistrationError
+from arkouda.util import (
+    attach,
+    attach_all,
+    is_registered,
+    register_all,
+    unregister,
+    unregister_all,
+)
 
 N = 100
 UNIQUE = N // 4
@@ -618,10 +625,12 @@ class RegistrationTest(ArkoudaTest):
     def test_registered_component(self):
         a = ak.arange(10)
         s = ak.SegArray(ak.arange(0, 20, 2), ak.arange(20))
-        df = ak.DataFrame({
-            "array": a,
-            "SegArray": s,
-        })
+        df = ak.DataFrame(
+            {
+                "array": a,
+                "SegArray": s,
+            }
+        )
 
         s.register("MySegArray")
         df.register("MyDataFrame")
@@ -643,17 +652,17 @@ class RegistrationTest(ArkoudaTest):
         a = ak.ones(3, dtype=ak.int64)
 
         with self.assertRaises(
-                TypeError, msg="register() should raise TypeError when user_defined_name is not a str"
+            TypeError, msg="register() should raise TypeError when user_defined_name is not a str"
         ):
             a.register(7)
 
         with self.assertRaises(
-                TypeError, msg="attach() should raise TypeError when user_defined_name is not a str"
+            TypeError, msg="attach() should raise TypeError when user_defined_name is not a str"
         ):
             attach(7)
 
         with self.assertRaises(
-                TypeError, msg="is_registered() should raise TypeError when user_defined_name is not a str"
+            TypeError, msg="is_registered() should raise TypeError when user_defined_name is not a str"
         ):
             is_registered(7)
 
@@ -711,11 +720,7 @@ class RegistrationTest(ArkoudaTest):
         s = ak.array(["a", "b", "c"])
         c = ak.Categorical(s)
 
-        register_all({
-            "MyArray": a,
-            "MyStrings": s,
-            "MyCat": c
-        })
+        register_all({"MyArray": a, "MyStrings": s, "MyCat": c})
 
         # validate that all objects are registered
         self.assertEqual(a.registered_name, "MyArray")

@@ -2242,10 +2242,7 @@ class DataFrame(UserDict):
         ]
 
         col_objTypes = [
-            obj.special_objType
-            if hasattr(obj, "special_objType")
-            else
-            obj.objType
+            obj.special_objType if hasattr(obj, "special_objType") else obj.objType
             for key, obj in self.items()
         ]
 
@@ -2258,7 +2255,7 @@ class DataFrame(UserDict):
                 "num_cols": len(self.columns),
                 "column_names": self.columns,
                 "columns": column_data,
-                "col_objTypes": col_objTypes
+                "col_objTypes": col_objTypes,
             },
         )
         self.registered_name = user_defined_name

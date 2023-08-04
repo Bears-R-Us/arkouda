@@ -27,11 +27,7 @@ from arkouda.infoclass import information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import where
-from arkouda.pdarrayclass import (
-    RegistrationError,
-    create_pdarray,
-    pdarray,
-)
+from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort
