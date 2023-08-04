@@ -8,6 +8,7 @@ module Registry {
     use Reflection;
     use ServerErrors;
     use Logging;
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -19,7 +20,7 @@ module Registry {
 
         proc register_array(name: string, are: shared ArrayRegEntry) throws {
             checkAvailability(name);
-            tab.addOrSet(name, are);
+            tab.addOrReplace(name, are);
             registered_entries.pushBack(are.array);
             are.setName(name);
         }
@@ -34,14 +35,14 @@ module Registry {
 
         proc register_segarray(name: string, sre: shared SegArrayRegEntry) throws {
             checkAvailability(name);
-            tab.addOrSet(name, sre);
+            tab.addOrReplace(name, sre);
             register_segarray_components(sre);
             sre.setName(name);
         }
 
         proc register_dataframe(name: string, dfre: shared DataFrameRegEntry) throws {
             checkAvailability(name);
-            tab.addOrSet(name, dfre);
+            tab.addOrReplace(name, dfre);
             registered_entries.pushBack(dfre.idx);
             for c in dfre.columns {
                 var gre = c: borrowed GenRegEntry;
@@ -59,7 +60,7 @@ module Registry {
                     register_categorical_components(cre);
                 }
                 else {
-                    var errorMsg = "Dataframes only support pdarray, Strings, SegArray, and Categorical columns. Found %s".format(gre.objType: string);
+                    var errorMsg = "Dataframes only support pdarray, Strings, SegArray, and Categorical columns. Found %s".doFormat(gre.objType: string);
                     throw getErrorWithContext(
                         msg=errorMsg,
                         lineNumber=getLineNumber(),
@@ -73,7 +74,7 @@ module Registry {
 
         proc register_groupby(name: string, gbre: shared GroupByRegEntry) throws {
             checkAvailability(name);
-            tab.addOrSet(name, gbre);
+            tab.addOrReplace(name, gbre);
             registered_entries.pushBack(gbre.segments);
             registered_entries.pushBack(gbre.permutation);
             registered_entries.pushBack(gbre.uki);
@@ -104,7 +105,7 @@ module Registry {
 
         proc register_categorical(name: string, cre: shared CategoricalRegEntry) throws {
             checkAvailability(name);
-            tab.addOrSet(name, cre);
+            tab.addOrReplace(name, cre);
             register_categorical_components(cre);
             cre.setName(name);            
         }
@@ -125,14 +126,14 @@ module Registry {
 
         proc register_index(name: string, ire: shared IndexRegEntry) throws {
             checkAvailability(name);
-            tab.addOrSet(name, ire);
+            tab.addOrReplace(name, ire);
             register_index_components(ire);
             ire.setName(name);
         }
 
         proc register_series(name: string, sre: shared SeriesRegEntry) throws {
             checkAvailability(name);
-            tab.addOrSet(name, sre);
+            tab.addOrReplace(name, sre);
             register_index_components(sre.idx);
 
             if sre.values.objType == ObjType.PDARRAY || sre.values.objType == ObjType.STRINGS {
@@ -148,7 +149,7 @@ module Registry {
 
         proc register_bitvector(name: string, bre: shared BitVectorRegEntry) throws {
             checkAvailability(name);
-            tab.addOrSet(name, bre);
+            tab.addOrReplace(name, bre);
             registered_entries.pushBack(bre.array);
             bre.setName(name);
         }
@@ -189,7 +190,7 @@ module Registry {
                     unregister_segarray_components(sre);
                 }
                 else {
-                    var errorMsg = "Dataframes only support pdarray, Strings, SegArray, and Categorical columns. Found %s".format(gre.objType: string);
+                    var errorMsg = "Dataframes only support pdarray, Strings, SegArray, and Categorical columns. Found %s".doFormat(gre.objType: string);
                     throw getErrorWithContext(
                         msg=errorMsg,
                         lineNumber=getLineNumber(),
@@ -280,8 +281,8 @@ module Registry {
         proc checkAvailability(name: string) throws {
             if tab.contains(name) {
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "undefined registry name: %s".format(name));
-                var errorMsg = "Name, %s, not available for registration. Already in use.".format(name); 
+                                                "undefined registry name: %s".doFormat(name));
+                var errorMsg = "Name, %s, not available for registration. Already in use.".doFormat(name); 
                     throw getErrorWithContext(
                         msg=errorMsg,
                         lineNumber=getLineNumber(),
@@ -297,7 +298,7 @@ module Registry {
         proc checkTable(name: string, calling_func="check") throws { 
             if (!tab.contains(name)) { 
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "undefined registry entry: %s".format(name));
+                                                "undefined registry entry: %s".doFormat(name));
                 throw getErrorWithContext(
                     msg=unknownSymbolError(pname=calling_func, sname=name),
                     lineNumber=getLineNumber(),
@@ -306,7 +307,7 @@ module Registry {
                     errorClass="UnknownSymbolError");
             } else {
                 regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "found registered object: %s".format(name));
+                                                "found registered object: %s".doFormat(name));
             }
         }
 
@@ -323,7 +324,7 @@ module Registry {
             for (name, o) in zip(tab.keys(), objs) {
                 o = name;
             }
-            rtnMap.addOrSet("Objects", "%jt".format(objs));
+            rtnMap.addOrReplace("Objects", formatJson(objs));
 
             // if detailed, provide list of object types
             var obj_types: [0..#tab.size] string;
@@ -331,10 +332,10 @@ module Registry {
                 var gre = o: borrowed GenRegEntry;
                 ots = gre.objType: string;
             }
-            rtnMap.addOrSet("Object_Types", "%jt".format(obj_types));
+            rtnMap.addOrReplace("Object_Types", formatJson(obj_types));
             
-            rtnMap.addOrSet("Components", "%jt".format(registered_entries));
-            return "%jt".format(rtnMap);
+            rtnMap.addOrReplace("Components", formatJson(registered_entries));
+            return formatJson(rtnMap);
         }
     }
 }

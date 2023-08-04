@@ -13,6 +13,8 @@ module MultiTypeRegEntry {
     use GenSymIO;
     use NumPyDType;
 
+    use ArkoudaIOCompat;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const regLogger = new Logger(logLevel, logChannel);
@@ -99,7 +101,7 @@ module MultiTypeRegEntry {
             comps.add("values", "created " + st.attrib(this.array));
             comps.add("width", this.width: string);
             comps.add("reverse", this.reverse: string);
-            rtnMap.add("create", "%jt".format(comps));
+            rtnMap.add("create", formatJson(comps));
             return rtnMap;
         }
     }
@@ -127,7 +129,7 @@ module MultiTypeRegEntry {
             if this.lengths != "" {
                 comp_create.add("lengths", "created " + st.attrib(this.lengths));
             }
-            rtnMap.add("create", "%jt".format(comp_create));
+            rtnMap.add("create", formatJson(comp_create));
             return rtnMap;
         } 
     }
@@ -163,10 +165,10 @@ module MultiTypeRegEntry {
                     var sre = gre: borrowed SegArrayRegEntry;
                     col_map = sre.asMap(st);
                 }
-                var create_str = "%s+|+%s".format(col_map["objType"], col_map["create"]);
+                var create_str = "%s+|+%s".doFormat(col_map["objType"], col_map["create"]);
                 col_creates.add(cname, create_str);
             }
-            rtnMap.add("create", "%jt".format(col_creates));
+            rtnMap.add("create", formatJson(col_creates));
             return rtnMap;
         }
     }
@@ -205,10 +207,10 @@ module MultiTypeRegEntry {
                     var cre = gre: borrowed CategoricalRegEntry;
                     k_map = cre.asMap(st);
                 }
-                var create_str = "%s+|+%s".format(k_map["objType"], k_map["create"]);
-                comp_create.add("KEY_%i".format(i), create_str);
+                var create_str = "%s+|+%s".doFormat(k_map["objType"], k_map["create"]);
+                comp_create.add("KEY_%i".doFormat(i), create_str);
             }
-            rtnMap.add("create", "%jt".format(comp_create));
+            rtnMap.add("create", formatJson(comp_create));
             return rtnMap;
         }
     }
@@ -243,7 +245,7 @@ module MultiTypeRegEntry {
                 comp_create.add("permutation", "created " + st.attrib(this.permutation));
                 comp_create.add("segments", "created " + st.attrib(this.segments));
             }
-            rtnMap.add("create", "%jt".format(comp_create));
+            rtnMap.add("create", formatJson(comp_create));
             return rtnMap;
         }
     }
@@ -276,10 +278,10 @@ module MultiTypeRegEntry {
                     var cre = gre: borrowed CategoricalRegEntry;
                     idx_map = cre.asMap(st);
                 }
-                var create_str = "%s+|+%s".format(idx_map["objType"], idx_map["create"]);
+                var create_str = "%s+|+%s".doFormat(idx_map["objType"], idx_map["create"]);
                 idxList.pushBack(create_str);
             }
-            rtnMap.add("create", "%jt".format(idxList));
+            rtnMap.add("create", formatJson(idxList));
             return rtnMap;
         }
     }
@@ -310,9 +312,9 @@ module MultiTypeRegEntry {
                 var cre = this.values: shared CategoricalRegEntry;
                 val_map = cre.asMap(st);
             }
-            comp_create.add("value", "%s+|+%s".format(val_map["objType"], val_map["create"]));
+            comp_create.add("value", "%s+|+%s".doFormat(val_map["objType"], val_map["create"]));
 
-            rtnMap.add("create", "%jt".format(comp_create));
+            rtnMap.add("create", formatJson(comp_create));
             return rtnMap;
         }
     }
