@@ -52,7 +52,7 @@ module ServerConfig
     config var logChannel = LogChannel.CONSOLE;
     
     /*
-    Indicates whether arkouda_server commands should be loggfed.
+    Indicates whether arkouda_server commands should be logged.
     */
     config var logCommands = false;
 
