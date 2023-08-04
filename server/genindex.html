@@ -78,7 +78,9 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaBitOpsCompat.html">ArkoudaBitOpsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaListCompat.html">ArkoudaListCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
@@ -299,6 +301,8 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.addEntry">addEntry() (MultiTypeSymbolTable.SymTab method)</a>, <a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.addEntry">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.addEntry">[2]</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaMapCompat.html#ArkoudaMapCompat.map.addOrReplace">addOrReplace() (ArkoudaMapCompat.map method)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html#BigIntegerAggregation.DstAggregatorBigint.aggType">aggType (BigIntegerAggregation.DstAggregatorBigint attribute)</a>
 
       <ul>
@@ -343,13 +347,17 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaBitOpsCompat.html#module-ArkoudaBitOpsCompat">ArkoudaBitOpsCompat (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaCTypesCompat.html#module-ArkoudaCTypesCompat">ArkoudaCTypesCompat (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaFileCompat.html#module-ArkoudaFileCompat">ArkoudaFileCompat (module)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaIOCompat.html#module-ArkoudaIOCompat">ArkoudaIOCompat (module)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaListCompat.html#module-ArkoudaListCompat">ArkoudaListCompat (module)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaMapCompat.html#module-ArkoudaMapCompat">ArkoudaMapCompat (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaMemDiagnosticsCompat.html#module-ArkoudaMemDiagnosticsCompat">ArkoudaMemDiagnosticsCompat (module)</a>
 </li>
@@ -763,6 +771,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.Dmap">Dmap (in module SymArrayDmap)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaIOCompat.html#ArkoudaIOCompat.string.doFormat">doFormat() (ArkoudaIOCompat.string method)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.domain_intersection">domain_intersection() (in module FileIO)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.dROUNDS">dROUNDS (in module SipHash)</a>
@@ -897,10 +907,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.fioLogger">fioLogger (in module FileIO)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.Fixes">Fixes (in module SegmentedString)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html#BigIntegerAggregation.DstAggregatorBigint.flush">flush() (BigIntegerAggregation.DstAggregatorBigint method)</a>
 
       <ul>
@@ -920,6 +930,10 @@
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.formatAry">formatAry() (in module AryUtil)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.formatEntry">formatEntry() (MultiTypeSymbolTable.SymTab method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaIOCompat.html#ArkoudaIOCompat.formatJson">formatJson() (in module ArkoudaIOCompat)</a>, <a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaIOCompat.html#ArkoudaIOCompat.formatJson">[1]</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaIOCompat.html#ArkoudaIOCompat.formatString">formatString() (in module ArkoudaIOCompat)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.date.fromOrdinal">fromOrdinal() (ArkoudaTimeCompat.date method)</a>
 
@@ -1399,9 +1413,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.jsonToMap">jsonToMap() (in module GenSymIO)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.jsonToPdArray">jsonToPdArray() (in module Message)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.jsonToPdArray">jsonToPdArray() (in module Message)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaIOCompat.html#ArkoudaIOCompat.jsonToPdArrayCompat">jsonToPdArrayCompat() (in module ArkoudaIOCompat)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaIOCompat.html#ArkoudaIOCompat.jsonToTupleCompat">jsonToTupleCompat() (in module ArkoudaIOCompat)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1915,6 +1933,8 @@
         <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.DstAggregator.rBuffers">(CommAggregation.DstAggregator attribute)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaIOCompat.html#ArkoudaIOCompat.readfCompat">readfCompat() (in module ArkoudaIOCompat)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html#ArkoudaTimeCompat.date.readThis">readThis() (ArkoudaTimeCompat.date method)</a>
 
       <ul>

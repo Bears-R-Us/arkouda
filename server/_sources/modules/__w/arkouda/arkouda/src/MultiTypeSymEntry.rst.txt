@@ -227,7 +227,7 @@ or
 
    .. method:: override proc writeThis(f) throws
 
-   .. method:: override proc __str__(thresh: int = 6, prefix: string = "[", suffix: string = "]", baseFormat: string = "%t"): string throws
+   .. method:: override proc __str__(thresh: int = 6, prefix: string = "[", suffix: string = "]", baseFormat: string = "%\?"): string throws
 
       
       Formats and returns data in this entry up to the specified threshold. 

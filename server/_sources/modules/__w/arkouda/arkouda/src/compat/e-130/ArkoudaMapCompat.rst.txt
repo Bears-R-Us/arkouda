@@ -1,0 +1,21 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaMapCompat
+
+ArkoudaMapCompat
+================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaMapCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaMapCompat;
+
+.. method:: proc map.addOrReplace(in k: keyType, in v: valType)
+

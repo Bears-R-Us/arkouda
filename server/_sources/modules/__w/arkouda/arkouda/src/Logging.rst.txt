@@ -72,7 +72,7 @@ or
       * Writes to file, creating file if it does not exist
       
 
-.. function:: proc getOutputHandler(channel: LogChannel): OutputHandler throws
+.. function:: proc getOutputHandler(channel: LogChannel): owned OutputHandler throws
 
    
    * getOutputHandler is a factory method for OutputHandler implementations.
@@ -98,7 +98,7 @@ or
 
    .. attribute:: var printDate: bool = true
 
-   .. attribute:: var outputHandler: OutputHandler = try! getOutputHandler(LogChannel.CONSOLE)
+   .. attribute:: var outputHandler: owned OutputHandler = try! getOutputHandler(LogChannel.CONSOLE)
 
    .. method:: proc init()
 
