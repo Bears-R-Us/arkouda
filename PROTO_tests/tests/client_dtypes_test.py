@@ -4,13 +4,13 @@ import random
 import pytest
 
 import arkouda as ak
-from arkouda import client_dtypes
+
+# from arkouda import client_dtypes
 
 INT_TYPES = [ak.int64, ak.uint64]
-IPS = [3232235777, 2222222222, 1234567890, 7]
 
 
-class TestClientDTypeTests:
+class TestClientDType:
     """
     Note: BitVector operations are not tested here because the class is
     only a wrapper on a pdarray to display as such.
@@ -26,14 +26,14 @@ class TestClientDTypeTests:
 
         arr = ak.arange(4, dtype=int_types)
         bv = ak.BitVector(arr, width=3)
-        assert isinstance(bv, client_dtypes.BitVector)
+        assert isinstance(bv, ak.BitVector)
         assert bv.to_list() == bv_answer
         assert bv.dtype == ak.bitType
 
         # Test reversed
         arr = ak.arange(4, dtype=int_types)
         bv = ak.BitVector(arr, width=3, reverse=True)
-        assert isinstance(bv, client_dtypes.BitVector)
+        assert isinstance(bv, ak.BitVector)
         assert bv.to_list() == bv_rev_answer
         assert bv.dtype == ak.bitType
 
@@ -41,7 +41,7 @@ class TestClientDTypeTests:
         arr = ak.arange(4, dtype=int_types)
         bvectorizer = ak.BitVectorizer(3)
         bv = bvectorizer(arr)
-        assert isinstance(bv, client_dtypes.BitVector)
+        assert isinstance(bv, ak.BitVector)
         assert bv.to_list() == bv_answer
         assert bv.dtype == ak.bitType
 
@@ -54,7 +54,7 @@ class TestClientDTypeTests:
             ak.BitVector(arr)
 
     @pytest.mark.parametrize("int_types", INT_TYPES)
-    def test_bit_vector_edge_case(self, int_types):
+    def test_bit_vector_upper_bound(self, int_types):
         bv_answer = [
             "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||..",
             "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||.|",
@@ -63,7 +63,7 @@ class TestClientDTypeTests:
 
         arr = ak.arange(2**64 - 4, 2**64 - 1, dtype=int_types)
         bv = ak.BitVector(arr, width=64)
-        assert isinstance(bv, client_dtypes.BitVector)
+        assert isinstance(bv, ak.BitVector)
         assert bv.to_list() == bv_answer
         assert bv.dtype == ak.bitType
 
@@ -111,20 +111,22 @@ class TestClientDTypeTests:
         with pytest.raises(ValueError):
             f = ak.Fields(values, names, pad="|!~", separator="//")
 
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("int_types", INT_TYPES)
-    def test_ipv4_creation(self, int_types):
-        ip_list = ak.array(IPS, dtype=int_types)
+    def test_ipv4_creation(self, prob_size, int_types):
+        ips = ak.randint(1, 2**32, prob_size)
+        ip_list = ak.array(ips, dtype=int_types)
         ipv4 = ak.IPv4(ip_list)
-        py_ips = [ipaddress.IPv4Address(ip).compressed for ip in IPS]
+        py_ips = [ipaddress.IPv4Address(ip).compressed for ip in ips.to_list()]
 
         assert isinstance(ipv4, ak.IPv4)
         assert ipv4.to_list() == py_ips
         assert ipv4.dtype == ak.bitType
 
         with pytest.raises(TypeError):
-            ipv4 = ak.IPv4(f"{IPS}")
+            ipv4 = ak.IPv4(f"{ips[0]}")
         with pytest.raises(TypeError):
-            ipv4 = ak.IPv4(ak.array([IPS + 0.177]))
+            ipv4 = ak.IPv4(ak.array([ips[0] + 0.177]))
 
         # Test handling of python dotted-quad input
         ipv4 = ak.ip_address(py_ips)
@@ -132,12 +134,15 @@ class TestClientDTypeTests:
         assert ipv4.to_list() == py_ips
         assert ipv4.dtype == ak.bitType
 
-    def test_ipv4_normalization(self):
-        ip_list = ak.array(IPS)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_ipv4_normalization(self, prob_size):
+        prob_size = 100
+        ips = ak.randint(1, 2**32, prob_size)
+        ip_list = ak.array(ips)
         ipv4 = ak.IPv4(ip_list)
-        ip_as_dot = [ipaddress.IPv4Address(ip) for ip in IPS]
+        ip_as_dot = [ipaddress.IPv4Address(ip) for ip in ips.to_list()]
         ip_as_int = [ipv4.normalize(ipd) for ipd in ip_as_dot]
-        assert IPS == ip_as_int
+        assert ips.to_list() == ip_as_int
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_is_ipv4(self, size):
