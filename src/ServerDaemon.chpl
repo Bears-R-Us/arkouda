@@ -612,7 +612,7 @@ module ServerDaemon {
                  * If logCommands is true, log incoming request to the .arkouda/commands.log file
                  */
                 if logCommands {
-                    appendFile(filePath="%s/commands.log".format(this.arkDirectory), "%jt".format(msg));
+                    appendFile(filePath="%s/commands.log".doFormat(this.arkDirectory), formatJson(msg));
                 }
 
                 /*
