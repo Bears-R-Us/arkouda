@@ -13,6 +13,7 @@
 
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
+    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -29,18 +30,18 @@
             if rtnName {
                 return rname;
             }
-            var repMsg = "pdarray+%s+created %s".format(col, st.attrib(rname));
+            var repMsg = "pdarray+%s+created %s".doFormat(col, st.attrib(rname));
             return repMsg;
         }
         var idxMin = min reduce idx.a;
         var idxMax = max reduce idx.a;
         if idxMin < 0 {
-            var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,idxMin);
+            var errorMsg = "Error: %s: OOBindex %i < 0".doFormat(pn,idxMin);
             dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             throw new owned IllegalArgumentError(errorMsg);
         }
         if idxMax >= columnVals.size {
-            var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,idxMin,columnVals.size-1);
+            var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,idxMin,columnVals.size-1);
             dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             throw new owned IllegalArgumentError(errorMsg);
         }
@@ -56,7 +57,7 @@
             return rname;
         }
 
-        var repMsg =  "%s+%s+created %s".format(objType, col, st.attrib(rname));
+        var repMsg =  "%s+%s+created %s".doFormat(objType, col, st.attrib(rname));
         return repMsg;
     }
 
@@ -92,7 +93,7 @@
         var v_name = st.nextName();
         st.addEntry(v_name, new shared SymEntry(rvals));
 
-        return "SegArray+%s+created %s+created %s".format(col, st.attrib(s_name), st.attrib(v_name));
+        return "SegArray+%s+created %s+created %s".doFormat(col, st.attrib(s_name), st.attrib(v_name));
     }
 
     proc dataframeBatchIndexingMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -113,7 +114,7 @@
             if ele_parts[0] == "Categorical" {
                 ref codes_name = ele_parts[2];
                 ref categories_name = ele_parts[3];
-                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Categorical\nCodes Name: %s, Categories Name: %s".format(i, codes_name, categories_name));
+                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Categorical\nCodes Name: %s, Categories Name: %s".doFormat(i, codes_name, categories_name));
 
                 var gCode: borrowed GenSymEntry = getGenericTypedArrayEntry(codes_name, st);
                 var code_vals = toSymEntry(gCode, int);
@@ -125,42 +126,42 @@
                     throw new IllegalArgumentError(repTup.msg);
                 }
 
-                rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
+                rpm = formatJson("Strings+%s+%s".doFormat(col_name, repTup.msg));
             }
             else if ele_parts[0] == "Strings"{
-                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings. Name: %s".format(i, ele_parts[2]));
+                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings. Name: %s".doFormat(i, ele_parts[2]));
                 var repTup = segPdarrayIndex(ObjType.STRINGS, ele_parts[2], msgArgs.getValueOf("idx_name"), DType.UInt8, st);
                 
                 if repTup.msgType == MsgType.ERROR {
                     throw new IllegalArgumentError(repTup.msg);
                 }
 
-                rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
+                rpm = formatJson("Strings+%s+%s".doFormat(col_name, repTup.msg));
             }
             else if ele_parts[0] == "pdarray" || ele_parts[0] == "IPv4" || 
                             ele_parts[0] == "Fields" || ele_parts[0] == "Datetime" || ele_parts[0] == "BitVector"{
-                    dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is pdarray. Name: %s".format(i, ele_parts[2]));
+                    dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is pdarray. Name: %s".doFormat(i, ele_parts[2]));
                     var gCol: borrowed GenSymEntry = getGenericTypedArrayEntry(ele_parts[2], st);
                     select (gCol.dtype) {
                         when (DType.Int64) {
                             var col_vals = toSymEntry(gCol, int);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                            rpm = formatJson(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.UInt64) {
                             var col_vals = toSymEntry(gCol, uint);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                            rpm = formatJson(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.Bool) {
                             var col_vals = toSymEntry(gCol, bool);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                            rpm = formatJson(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.Float64){
                             var col_vals = toSymEntry(gCol, real);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                            rpm = formatJson(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.BigInt){
                             var col_vals = toSymEntry(gCol, bigint);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
+                            rpm = formatJson(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         otherwise {
                             var errorMsg = notImplementedError(pn,dtype2str(gCol.dtype));
@@ -170,10 +171,10 @@
                     }
                 }
             else if ele_parts[0] == "SegArray" {
-                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is SegArray".format(i));
+                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is SegArray".doFormat(i));
                 ref segments_name = ele_parts[2];
                 ref values_name = ele_parts[3];
-                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Segments Name: %s, Values Name: %s".format(segments_name, values_name));
+                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Segments Name: %s, Values Name: %s".doFormat(segments_name, values_name));
 
                 var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
                 var segments = toSymEntry(gSeg, int);
@@ -181,19 +182,19 @@
                 select(gVal.dtype){
                     when(DType.Int64){
                         var values = toSymEntry(gVal, int);
-                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        rpm = formatJson(df_seg_array_idx(idx, segments, values, col_name, st));
                     }
                     when(DType.UInt64){
                         var values = toSymEntry(gVal, uint);
-                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        rpm = formatJson(df_seg_array_idx(idx, segments, values, col_name, st));
                     }
                     when(DType.Float64){
                         var values = toSymEntry(gVal, real);
-                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        rpm = formatJson(df_seg_array_idx(idx, segments, values, col_name, st));
                     }
                     when(DType.Bool){
                         var values = toSymEntry(gVal, bool);
-                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        rpm = formatJson(df_seg_array_idx(idx, segments, values, col_name, st));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,dtype2str(gVal.dtype));
@@ -208,7 +209,7 @@
                 throw new IllegalArgumentError(errorMsg);
             }
         }
-        repMsg = "[%s]".format(",".join(repMsgList));
+        repMsg = "[%s]".doFormat(",".join(repMsgList));
         dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL); 
     }

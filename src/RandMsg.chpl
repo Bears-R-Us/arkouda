@@ -39,7 +39,7 @@ module RandMsg
 
         // if verbose print action
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-               "cmd: %s len: %i dtype: %s rname: %s aMin: %s: aMax: %s".format(
+               "cmd: %s len: %i dtype: %s rname: %s aMin: %s: aMax: %s".doFormat(
                                            cmd,len,dtype2str(dtype),rname,low.getValue(),high.getValue()));
         select (dtype) {
             when (DType.Int64) {
@@ -49,12 +49,12 @@ module RandMsg
                 var t1 = Time.timeSinceEpoch().totalSeconds();
                 var e = st.addEntry(rname, len, int);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                   "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                   "alloc time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
                 
                 t1 = Time.timeSinceEpoch().totalSeconds();
                 fillInt(e.a, aMin, aMax, seed);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                  "compute time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
             }
             when (DType.UInt8) {
                 overMemLimit(len);
@@ -63,12 +63,12 @@ module RandMsg
                 var t1 = Time.timeSinceEpoch().totalSeconds();
                 var e = st.addEntry(rname, len, uint(8));
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                     "alloc time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
                 
                 t1 = Time.timeSinceEpoch().totalSeconds();
                 fillUInt(e.a, aMin, aMax, seed);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "compute time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                        "compute time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
             }
             when (DType.UInt64) {
                 overMemLimit(len);
@@ -77,12 +77,12 @@ module RandMsg
                 var t1 = Time.timeSinceEpoch().totalSeconds();
                 var e = st.addEntry(rname, len, uint);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                     "alloc time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
                 
                 t1 = Time.timeSinceEpoch().totalSeconds();
                 fillUInt(e.a, aMin, aMax, seed);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "compute time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                        "compute time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
             }
             when (DType.Float64) {
                 overMemLimit(8*len);
@@ -91,24 +91,24 @@ module RandMsg
                 var t1 = Time.timeSinceEpoch().totalSeconds();
                 var e = st.addEntry(rname, len, real);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                         "alloc time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
                 
                 t1 = Time.timeSinceEpoch().totalSeconds();
                 fillReal(e.a, aMin, aMax, seed);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                          "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                          "compute time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
             }
             when (DType.Bool) {
                 overMemLimit(len);
                 var t1 = Time.timeSinceEpoch().totalSeconds();
                 var e = st.addEntry(rname, len, bool);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                  "alloc time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
                 
                 t1 = Time.timeSinceEpoch().totalSeconds();
                 fillBool(e.a, seed);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
+                                "compute time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
             }            
             otherwise {
                 var errorMsg = notImplementedError(pn,dtype);

@@ -80,7 +80,7 @@ module ExternalIntegration {
                 hostip.split();
             } catch (e: Error) {
                 throw new IllegalArgumentError(
-                         "invalid hostname -> ip address entry in /etc/hosts %t".format(
+                         "invalid hostname -> ip address entry in /etc/hosts %?".doFormat(
                                                e));
             }
         }
@@ -208,26 +208,26 @@ module ExternalIntegration {
             Curl.curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, this.requestType:string);
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "Configured HttpChannel for type %s format %s".format(
+                      "Configured HttpChannel for type %s format %s".doFormat(
                       this.requestType, this.requestFormat));
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "Executing Http request with payload %s".format(payload));
+                      "Executing Http request with payload %s".doFormat(payload));
 
             var ret = Curl.curl_easy_perform(curl);
             
             if ret == 0 {
                 eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "Successfully executed Http request with payload %s".format(payload));
+                    "Successfully executed Http request with payload %s".doFormat(payload));
             } else {
                 if ret == 22 {
                     throw getErrorWithContext(getLineNumber(),getRoutineName(),getModuleName(),
-                       "invalid request to overwrite existing entry with payload %s. Delete the existing entry first".format(payload),
+                       "invalid request to overwrite existing entry with payload %s. Delete the existing entry first".doFormat(payload),
                        "ExternalSystemError");
 
                 } else { 
                     throw getErrorWithContext(getLineNumber(),getRoutineName(),getModuleName(),
-                       "request with payload %s returned error code %i".format(payload,ret),
+                       "request with payload %s returned error code %i".doFormat(payload,ret),
                        "ExternalSystemError");
                 }
             }
@@ -332,20 +332,20 @@ module ExternalIntegration {
         proc generateEndpointCreateUrl() : string throws {
             var k8sHost = ServerConfig.getEnv('K8S_HOST');
             var namespace = ServerConfig.getEnv('NAMESPACE');
-            return '%s/api/v1/namespaces/%s/endpoints'.format(k8sHost,namespace);
+            return '%s/api/v1/namespaces/%s/endpoints'.doFormat(k8sHost,namespace);
         }
     
         proc generateEndpointUpdateUrl() : string throws {
             var k8sHost = ServerConfig.getEnv('K8S_HOST');
             var namespace = ServerConfig.getEnv('NAMESPACE');
             var name = ServerConfig.getEnv('ENDPOINT_NAME');
-            return '%s/api/v1/namespaces/%s/endpoints/%s'.format(k8sHost,namespace,name);
+            return '%s/api/v1/namespaces/%s/endpoints/%s'.doFormat(k8sHost,namespace,name);
         }
 
         proc generateServiceCreateUrl() : string throws {
             var k8sHost = ServerConfig.getEnv('K8S_HOST');
             var namespace = ServerConfig.getEnv(name='NAMESPACE',default='default');
-            return '%s/api/v1/namespaces/%s/services'.format(k8sHost,namespace);
+            return '%s/api/v1/namespaces/%s/services'.doFormat(k8sHost,namespace);
         }
 
         proc registerAsInternalService(appName: string, serviceName: string, servicePort: int, 
@@ -354,14 +354,14 @@ module ExternalIntegration {
             var servicePayload = "".join('{"apiVersion": "v1","kind": "Service","metadata": ',
                                          '{"name": "%s"},"spec": {"ports": [{"port": %i,' ,
                                          '"protocol": "TCP","targetPort": %i}],"selector":',
-                                         ' {"app":"%s"}}}').format(
+                                         ' {"app":"%s"}}}').doFormat(
                                     serviceName,
                                     servicePort,
                                     targetPort,
                                     appName);
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                     "Registering internal service via payload %s and url %s".format(
+                     "Registering internal service via payload %s and url %s".doFormat(
                                          servicePayload,serviceUrl));
 
             var channel = getExternalChannel(new HttpChannelParams(
@@ -379,7 +379,7 @@ module ExternalIntegration {
             channel.write(servicePayload);
         
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                     "Registered internal service via payload %s and url %s".format(
+                     "Registered internal service via payload %s and url %s".doFormat(
                                          servicePayload,serviceUrl));  
         }
 
@@ -394,12 +394,12 @@ module ExternalIntegration {
             var serviceUrl = generateServiceCreateUrl();
             var servicePayload = "".join('{"apiVersion": "v1","kind": "Service","metadata": ',
                                              '{"name": "%s"},"spec": {"ports": [{"port": %i,',
-                                             '"protocol": "TCP","targetPort": %i}]}}').format(
+                                             '"protocol": "TCP","targetPort": %i}]}}').doFormat(
                                     serviceName,
                                     servicePort,
                                     serviceTargetPort);
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                     "Registering external service via payload %s and url %s".format(
+                     "Registering external service via payload %s and url %s".doFormat(
                                          servicePayload,serviceUrl));
 
             var channel = getExternalChannel(new HttpChannelParams(
@@ -416,7 +416,7 @@ module ExternalIntegration {
 
             channel.write(servicePayload);
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                     "Registered external service via payload %s and url %s".format(
+                     "Registered external service via payload %s and url %s".doFormat(
                                          servicePayload,serviceUrl));       
             
             // Create Kubernetes Endpoints  
@@ -424,7 +424,7 @@ module ExternalIntegration {
             var endpointPayload = "".join('{"kind": "Endpoints","apiVersion": "v1",',
                                           ' "metadata": {"name": "%s"}, "subsets": ',
                                           '[{"addresses": [{"ip": "%s"}],"ports": ',
-                                          '[{"port": %i, "protocol": "TCP"}]}]}').format(
+                                          '[{"port": %i, "protocol": "TCP"}]}]}').doFormat(
                                                 serviceName,
                                                 getConnectHostIp(),
                                                 servicePort);
@@ -442,12 +442,12 @@ module ExternalIntegration {
                                          sslKeyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                     "Registering endpoint via payload %s and url %s".format(
+                     "Registering endpoint via payload %s and url %s".doFormat(
                                          endpointPayload,endpointUrl));
 
             channel.write(endpointPayload);      
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                     "Registered endpoint via payload %s and endpointUrl %s".format(
+                     "Registered endpoint via payload %s and endpointUrl %s".doFormat(
                                          endpointPayload,endpointUrl)); 
         }
     }
@@ -461,7 +461,7 @@ module ExternalIntegration {
         proc generateServiceDeleteUrl(serviceName: string) throws {
             var k8sHost = ServerConfig.getEnv('K8S_HOST');
             var namespace = ServerConfig.getEnv('NAMESPACE');   
-            return '%s/api/v1/namespaces/%s/services/%s'.format(k8sHost,namespace,serviceName);
+            return '%s/api/v1/namespaces/%s/services/%s'.doFormat(k8sHost,namespace,serviceName);
         }
         
         var url = generateServiceDeleteUrl(serviceName);
@@ -478,7 +478,7 @@ module ExternalIntegration {
                                          sslKeyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
         channel.write('{}');
         eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                     "Deregistered service %s from Kubernetes via url %s".format(serviceName, 
+                     "Deregistered service %s from Kubernetes via url %s".doFormat(serviceName, 
                                                                                  url));
     }
     
@@ -540,7 +540,7 @@ module ExternalIntegration {
             when SystemType.KUBERNETES {
                 deregisterFromKubernetes(serviceName);
                 eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Deregistered service %s from Kubernetes".format(serviceName));
+                        "Deregistered service %s from Kubernetes".doFormat(serviceName));
             }
             otherwise {
                 eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),

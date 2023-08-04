@@ -31,7 +31,7 @@ module EncodingMsg {
 
       var (offsets, vals) = encodeDecode(stringsObj, toEncoding, fromEncoding);
       var encodedStrings = getSegString(offsets, vals, st);
-      repMsg = "created " + st.attrib(encodedStrings.name) + "+created bytes.size %t".format(encodedStrings.nBytes);
+      repMsg = "created " + st.attrib(encodedStrings.name) + "+created bytes.size %?".doFormat(encodedStrings.nBytes);
 
       emLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);

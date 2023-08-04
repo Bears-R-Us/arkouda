@@ -21,10 +21,10 @@ module Cast {
     try {
       after.a = before.a : toType;
     } catch e: IllegalArgumentError {
-      var errorMsg = "bad value in cast from %s to %s".format(fromType:string, 
+      var errorMsg = "bad value in cast from %s to %s".doFormat(fromType:string, 
                                                        toType:string);
       castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
-      return "Error: %s".format(errorMsg);
+      return "Error: %s".doFormat(errorMsg);
     }
 
     var returnMsg = "created " + st.attrib(name);
@@ -44,9 +44,9 @@ module Cast {
         tmp = before.a:bigint;
       }
     } catch e: IllegalArgumentError {
-      var errorMsg = "bad value in cast from %s to bigint".format(fromType:string);
+      var errorMsg = "bad value in cast from %s to bigint".doFormat(fromType:string);
       castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-      return "Error: %s".format(errorMsg);
+      return "Error: %s".doFormat(errorMsg);
     }
     var after = st.addEntry(name, new shared SymEntry(tmp));
 
@@ -64,20 +64,20 @@ module Cast {
     if fromType == real {
       try {
           forall (s, v) in zip(strings, before.a) {
-              s = "%.17r".format(v);
+              s = "%.17r".doFormat(v);
           }
       } catch e {
           var errorMsg = "could not convert float64 value to decimal representation";
           castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
-          return "Error: %s".format(errorMsg);
+          return "Error: %s".doFormat(errorMsg);
       }
     } else {
       try {
           strings = [s in before.a] s : string;
       } catch e: IllegalArgumentError {
-          var errorMsg = "bad value in cast from %s to string".format(fromType:string);
+          var errorMsg = "bad value in cast from %s to string".doFormat(fromType:string);
           castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
-          return "Error: %s".format(errorMsg);
+          return "Error: %s".doFormat(errorMsg);
       }
     }
     const byteLengths = [s in strings] s.numBytes + 1;

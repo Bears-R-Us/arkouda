@@ -7,6 +7,7 @@ module Logging {
 
     import IO.{format, stdout, file};
     use ArkoudaFileCompat;
+    use ArkoudaIOCompat;
 
     /*
      * The LogLevel enum is used to provide a strongly-typed means of
@@ -77,11 +78,11 @@ module Logging {
     /*
      * getOutputHandler is a factory method for OutputHandler implementations.
      */
-    proc getOutputHandler(channel: LogChannel) : OutputHandler throws {
+    proc getOutputHandler(channel: LogChannel) : owned OutputHandler throws {
         if channel == LogChannel.CONSOLE {
-            return new ConsoleOutputHandler();
+            return new owned ConsoleOutputHandler();
         } else {
-            return new FileOutputHandler("%s/arkouda.log".format(here.cwd()));
+            return new owned FileOutputHandler("%s/arkouda.log".doFormat(here.cwd()));
         }
     }
     
@@ -105,7 +106,7 @@ module Logging {
         
         var printDate: bool = true;
         
-        var outputHandler: OutputHandler = try! getOutputHandler(LogChannel.CONSOLE);
+        var outputHandler: owned OutputHandler = try! getOutputHandler(LogChannel.CONSOLE);
         
         proc init() {}
        
@@ -171,29 +172,29 @@ module Logging {
         
         proc generateErrorMsg(moduleName: string, routineName, lineNumber, 
                            error) throws {
-            return "Error in logging message for %s %s %i: %t".format(
+            return "Error in logging message for %s %s %i: %?".doFormat(
                     moduleName, routineName, lineNumber, error.message());                
         }
         
         proc generateLogMessage(moduleName: string, routineName, lineNumber, 
                            msg, level: string) throws {
-            var lineStr: string = if lineNumber != 0 then "Line %i ".format(lineNumber) else "";
+            var lineStr: string = if lineNumber != 0 then "Line %i ".doFormat(lineNumber) else "";
              if printDate {
-                 return "%s [%s] %s %s%s [Chapel] %s".format(
+                 return "%s [%s] %s %s%s [Chapel] %s".doFormat(
                  generateDateTimeString(), moduleName,routineName,lineStr, 
                                      level,msg);
              } else {
-                 return "[%s] %s %s%s [Chapel] %s".format(moduleName, 
+                 return "[%s] %s %s%s [Chapel] %s".doFormat(moduleName, 
                  routineName,lineStr,level,msg);            
              }
         }
          
         proc generateDateTimeString() throws {
-            var dts = dateTime.now():string;
+            var dts = formatString(dateTime.now());
             var vals = dts.split("T");
             var cd = vals(0);
             var rawCms = vals(1).split(".");
-            return "%s:%s".format(cd,rawCms(0));        
+            return "%s:%s".doFormat(cd,rawCms(0));        
         }
     }
 }

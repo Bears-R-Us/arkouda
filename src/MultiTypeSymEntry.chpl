@@ -184,7 +184,7 @@ module MultiTypeSymEntry
         */
         override proc __str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
             genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
-            var s = "DType: %s, itemsize: %t, size: %t".format(this.dtype, this.itemsize, this.size);
+            var s = "DType: %s, itemsize: %?, size: %?".doFormat(this.dtype, this.itemsize, this.size);
             return prefix + s + suffix;
         }
     }
@@ -302,17 +302,17 @@ module MultiTypeSymEntry
 
             :returns: s (string) containing the array data
         */
-        override proc __str__(thresh:int=6, prefix:string = "[", suffix:string = "]", baseFormat:string = "%t"): string throws {
+        override proc __str__(thresh:int=6, prefix:string = "[", suffix:string = "]", baseFormat:string = "%?"): string throws {
             var s:string = "";
             if (this.size == 0) {
                 s =  ""; // Unnecessary, but left for clarity
             } else if (this.size < thresh || this.size <= 6) {
-                for i in 0..(this.size-2) {s += try! baseFormat.format(this.a[i]) + " ";}
-                s += try! baseFormat.format(this.a[this.size-1]);
+                for i in 0..(this.size-2) {s += try! baseFormat.doFormat(this.a[i]) + " ";}
+                s += try! baseFormat.doFormat(this.a[this.size-1]);
             } else {
                 var b = baseFormat + " " + baseFormat + " " + baseFormat + " ... " +
                             baseFormat + " " + baseFormat + " " + baseFormat;
-                s = try! b.format(
+                s = try! b.doFormat(
                             this.a[0], this.a[1], this.a[2],
                             this.a[this.size-3], this.a[this.size-2], this.a[this.size-1]);
             }
@@ -403,7 +403,7 @@ module MultiTypeSymEntry
          */
         override proc __str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
             genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
-            var s = "DType: %s, itemsize: %t, size: %t".format(this.dtype, this.itemsize, this.size);
+            var s = "DType: %s, itemsize: %?, size: %?".doFormat(this.dtype, this.itemsize, this.size);
             return prefix + s + suffix;
         }
     }

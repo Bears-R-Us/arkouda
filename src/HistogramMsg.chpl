@@ -31,7 +31,7 @@ module HistogramMsg
         // get next symbol name
         var rname = st.nextName();
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "cmd: %s name: %s bins: %i rname: %s".format(cmd, name, bins, rname));
+                      "cmd: %s name: %s bins: %i rname: %s".doFormat(cmd, name, bins, rname));
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
@@ -42,23 +42,23 @@ module HistogramMsg
           var aMax = max reduce e.a;
           var binWidth:real = (aMax - aMin):real / bins:real;
           hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                           "binWidth %r".format(binWidth));
+                                                           "binWidth %r".doFormat(binWidth));
 
           if (bins <= sBound) {
               hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                           "%t <= %t".format(bins,sBound));
+                                                           "%? <= %?".doFormat(bins,sBound));
               var hist = histogramReduceIntent(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, new shared SymEntry(hist));
           }
           else if (bins <= mBound) {
               hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                           "%t <= %t".format(bins,mBound));
+                                                           "%? <= %?".doFormat(bins,mBound));
               var hist = histogramLocalAtomic(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, new shared SymEntry(hist));
           }
           else {
               hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                            "%t > %t".format(bins,mBound));
+                                                            "%? > %?".doFormat(bins,mBound));
               var hist = histogramGlobalAtomic(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, new shared SymEntry(hist));
           }

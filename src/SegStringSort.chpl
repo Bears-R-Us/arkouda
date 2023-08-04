@@ -39,14 +39,14 @@ module SegStringSort {
     var t = timeSinceEpoch().totalSeconds();
     const lengths = ss.getLengths();
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "Found lengths in %t seconds".format(timeSinceEpoch().totalSeconds() - t));
+                                       "Found lengths in %? seconds".doFormat(timeSinceEpoch().totalSeconds() - t));
     t = timeSinceEpoch().totalSeconds();
     // Compute length survival function and choose a pivot length
     const (pivot, nShort) = getPivot(lengths);
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "Computed pivot in %t seconds".format(timeSinceEpoch().totalSeconds() - t)); 
+                                       "Computed pivot in %? seconds".doFormat(timeSinceEpoch().totalSeconds() - t)); 
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "Pivot = %t, nShort = %t".format(pivot, nShort)); 
+                                       "Pivot = %?, nShort = %?".doFormat(pivot, nShort)); 
     t = timeSinceEpoch().totalSeconds();
     const longStart = ss.offsets.a.domain.low + nShort;
     const isLong = (lengths >= pivot);
@@ -65,7 +65,7 @@ module SegStringSort {
       }
     }
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                   "Partitioned short/long strings in %t seconds".format(timeSinceEpoch().totalSeconds() - t));
+                   "Partitioned short/long strings in %? seconds".doFormat(timeSinceEpoch().totalSeconds() - t));
     on Locales[Locales.domain.high] {
       var tl = timeSinceEpoch().totalSeconds();
       const ref highDom = {longStart..ss.offsets.a.domain.high};
@@ -74,14 +74,14 @@ module SegStringSort {
       var stringsWithInds = gatherLongStrings(ss, lengths, highInds);
 
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           "Gathered long strings in %t seconds".format(timeSinceEpoch().totalSeconds() - tl));
+                           "Gathered long strings in %? seconds".doFormat(timeSinceEpoch().totalSeconds() - tl));
       tl = timeSinceEpoch().totalSeconds();
       // Sort the strings, but bring the inds along for the ride
       const myComparator = new StringIntComparator();
       sort(stringsWithInds, comparator=myComparator);
 
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "Sorted long strings in %t seconds".format(timeSinceEpoch().totalSeconds() - tl));
+                             "Sorted long strings in %? seconds".doFormat(timeSinceEpoch().totalSeconds() - tl));
       tl = timeSinceEpoch().totalSeconds();
 
       forall (h, s) in zip(highDom, stringsWithInds.domain) with (var agg = newDstAggregator(int)) {
@@ -89,12 +89,12 @@ module SegStringSort {
         agg.copy(gatherInds[h], val);
       }
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "Permuted long inds in %t seconds".format(timeSinceEpoch().totalSeconds() - tl));
+                              "Permuted long inds in %? seconds".doFormat(timeSinceEpoch().totalSeconds() - tl));
     }
     t = timeSinceEpoch().totalSeconds();
     const ranks = radixSortLSD_raw(ss.offsets.a, lengths, ss.values.a, gatherInds, pivot);
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                          "Sorted ranks in %t seconds".format(timeSinceEpoch().totalSeconds() - t));
+                                          "Sorted ranks in %? seconds".doFormat(timeSinceEpoch().totalSeconds() - t));
     return ranks;
   }
   
@@ -231,7 +231,7 @@ module SegStringSort {
         
     // loop over digits
     for rshift in {2..#pivot by 2} {
-      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = %t".format(rshift));
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = %?".doFormat(rshift));
       // count digits
       coforall loc in Locales {
         on loc {
