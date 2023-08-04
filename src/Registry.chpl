@@ -9,6 +9,7 @@ module Registry {
     use ServerErrors;
     use Logging;
     use ArkoudaMapCompat;
+    use ArkoudaListCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
