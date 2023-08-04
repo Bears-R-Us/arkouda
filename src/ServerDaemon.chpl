@@ -607,8 +607,12 @@ module ServerDaemon {
                     break;
                 }
 
-                appendFile(filePath="%s/commands.log".format(this.arkDirectory),
-                           "cmd: %s args: %s user: %s".format(cmd,args,user));
+                /*
+                 * If logCommands is true, log incoming request to the .arkouda/commands.log file
+                 */
+                if logCommands {
+                    appendFile(filePath="%s/commands.log".format(this.arkDirectory), "%jt".format(msg));
+                }
 
                 /*
                  * For messages that return a string repTuple is filled. For binary
