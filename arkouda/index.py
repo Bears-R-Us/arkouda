@@ -615,7 +615,7 @@ class Index:
             raise ValueError("Valid file types are HDF5 or Parquet")
 
 
-class MultiIndex:
+class MultiIndex(Index):
     objType = "MultiIndex"
 
     def __init__(self, values):

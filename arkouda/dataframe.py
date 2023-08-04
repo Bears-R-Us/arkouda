@@ -2241,6 +2241,14 @@ class DataFrame(UserDict):
             for k, obj in self.items()
         ]
 
+        col_objTypes = [
+            obj.special_objType
+            if hasattr(obj, "special_objType")
+            else
+            obj.objType
+            for key, obj in self.items()
+        ]
+
         generic_msg(
             cmd="register",
             args={
@@ -2250,7 +2258,7 @@ class DataFrame(UserDict):
                 "num_cols": len(self.columns),
                 "column_names": self.columns,
                 "columns": column_data,
-                "col_objTypes": [obj.objType for key, obj in self.items()],
+                "col_objTypes": col_objTypes#[obj.objType for key, obj in self.items()],
             },
         )
         self.registered_name = user_defined_name
@@ -2417,7 +2425,6 @@ class DataFrame(UserDict):
         from arkouda.categorical import Categorical as Categorical_
 
         data = json.loads(rep_msg)
-        print(data)
         idx = None
         columns = {}
         for k, create_data in data.items():
@@ -2432,11 +2439,11 @@ class DataFrame(UserDict):
                     columns[k] = create_pdarray(comps[1])
                 elif comps[0] == Strings.objType.upper():
                     columns[k] = Strings.from_return_msg(comps[1])
-                elif comps[0] == IPv4.objType.upper():
+                elif comps[0] == IPv4.special_objType.upper():
                     columns[k] = IPv4(create_pdarray(comps[1]))
-                elif comps[0] == Datetime.objType.upper():
+                elif comps[0] == Datetime.special_objType.upper():
                     columns[k] = Datetime(create_pdarray(comps[1]))
-                elif comps[0] == Timedelta.objType.upper():
+                elif comps[0] == Timedelta.special_objType.upper():
                     columns[k] = Timedelta(create_pdarray(comps[1]))
                 elif comps[0] == Categorical_.objType.upper():
                     columns[k] = Categorical_.from_return_msg(comps[1])

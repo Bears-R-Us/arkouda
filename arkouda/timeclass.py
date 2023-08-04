@@ -416,7 +416,7 @@ class Datetime(_AbstractBaseTime):
     supported_with_pdarray = frozenset(())  # type: ignore
     supported_with_r_pdarray = frozenset(())  # type: ignore
 
-    objType = "Datetime"
+    special_objType = "Datetime"
 
     def _ensure_components(self):
         if self._is_populated:
@@ -576,7 +576,7 @@ class Datetime(_AbstractBaseTime):
 
     def register(self, user_defined_name):
         """
-        Register this Categorical object and underlying components with the Arkouda server
+        Register this Datetime object and underlying components with the Arkouda server
 
         Parameters
         ----------
@@ -586,7 +586,7 @@ class Datetime(_AbstractBaseTime):
 
         Returns
         -------
-        Categorical
+        Datetime
             The same Datetime which is now registered with the arkouda server and has an updated name.
             This is an in-place modification, the original is returned to support
             a fluid programming style.
@@ -616,7 +616,7 @@ class Datetime(_AbstractBaseTime):
             cmd="register",
             args={
                 "name": user_defined_name,
-                "objType": self.objType,
+                "objType": self.special_objType,
                 "array": self.values,
             },
         )
@@ -721,7 +721,7 @@ class Timedelta(_AbstractBaseTime):
     supported_with_pdarray = frozenset(("*", "//"))
     supported_with_r_pdarray = frozenset(("*"))
 
-    objType = "Timedelta"
+    special_objType = "Timedelta"
 
     def _ensure_components(self):
         if self._is_populated:
@@ -841,7 +841,7 @@ class Timedelta(_AbstractBaseTime):
 
         Returns
         -------
-        Categorical
+        Timedelta
             The same Timedelta which is now registered with the arkouda server and has an updated name.
             This is an in-place modification, the original is returned to support
             a fluid programming style.
@@ -871,7 +871,7 @@ class Timedelta(_AbstractBaseTime):
             cmd="register",
             args={
                 "name": user_defined_name,
-                "objType": self.objType,
+                "objType": self.special_objType,
                 "array": self.values,
             },
         )

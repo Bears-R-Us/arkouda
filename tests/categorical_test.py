@@ -8,6 +8,7 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 
 from arkouda import io_util, io
+from arkouda.util import attach
 
 
 class CategoricalTest(ArkoudaTest):
@@ -427,7 +428,7 @@ class CategoricalTest(ArkoudaTest):
         self.assertEqual(c.NAvalue, "C")
         # Test that NAval survives registration
         c.register("my_categorical")
-        c2 = ak.Categorical.attach("my_categorical")
+        c2 = attach("my_categorical")
         self.assertEqual(c2.NAvalue, "C")
 
         c.unregister()

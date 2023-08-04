@@ -238,16 +238,13 @@ class SegArray:
 
     @property
     def grouping(self):
-        from arkouda.infoclass import list_symbol_table
-
-        if self._grouping.name not in list_symbol_table():
-            if self.size == 0 or self._non_empty_count == 0:
-                self._grouping = GroupBy(zeros(0, dtype=akint64))
-            else:
-                # Treat each sub-array as a group, for grouped aggregations
-                self._grouping = GroupBy(
-                    broadcast(self.segments[self.non_empty], arange(self._non_empty_count), self.valsize)
-                )
+        if self.size == 0 or self._non_empty_count == 0:
+            self._grouping = GroupBy(zeros(0, dtype=akint64))
+        else:
+            # Treat each sub-array as a group, for grouped aggregations
+            self._grouping = GroupBy(
+                broadcast(self.segments[self.non_empty], arange(self._non_empty_count), self.valsize)
+            )
         return self._grouping
 
     def _get_lengths(self):

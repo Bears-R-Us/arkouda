@@ -181,11 +181,11 @@ def attach(name: str):
         rtn_obj = create_pdarray(rep_msg["create"])
     elif rep_msg["objType"].lower() == Strings.objType.lower():
         rtn_obj = Strings.from_return_msg(rep_msg["create"])
-    elif rep_msg["objType"].lower() == Datetime.objType.lower():
+    elif rep_msg["objType"].lower() == Datetime.special_objType.lower():
         rtn_obj = Datetime(create_pdarray(rep_msg["create"]))
-    elif rep_msg["objType"].lower() == Timedelta.objType.lower():
+    elif rep_msg["objType"].lower() == Timedelta.special_objType.lower():
         rtn_obj = Timedelta(create_pdarray(rep_msg["create"]))
-    elif rep_msg["objType"].lower() == IPv4.objType.lower():
+    elif rep_msg["objType"].lower() == IPv4.special_objType.lower():
         rtn_obj = IPv4(create_pdarray(rep_msg["create"]))
     elif rep_msg["objType"].lower() == SegArray.objType.lower():
         rtn_obj = SegArray.from_return_msg(rep_msg["create"])
@@ -203,7 +203,7 @@ def attach(name: str):
     elif rep_msg["objType"].lower() == Series.objType.lower():
         print(rep_msg["create"])
         rtn_obj = Series.from_return_msg(rep_msg["create"])
-    elif rep_msg["objType"].lower() == BitVector.objType.lower():
+    elif rep_msg["objType"].lower() == BitVector.special_objType.lower():
         rtn_obj = BitVector.from_return_msg(rep_msg["create"])
 
     if rtn_obj is not None:
