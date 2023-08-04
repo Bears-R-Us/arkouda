@@ -320,7 +320,7 @@ In this example, the logging level for all other Arkouda modules will be set to 
 
 ### Log Channels
 
-Arkouda logs can be written either to the console (default) or to the arkouda.log file located in the Arkouda deployment directory. To enable log output to the arkouda.log file, start Arkouda as follows with the --logChannel flag:
+Arkouda logs can be written either to the console (default) or to the arkouda.log file located in the .arkouda directory. To enable log output to the arkouda.log file, start Arkouda as follows with the --logChannel flag:
 
 ```
 ./arkouda_server --logChannel=LogChannel.FILE
