@@ -174,7 +174,7 @@ class Strings:
             from either the offset_attrib or bytes_attrib parameter
         """
         self.entry: pdarray = strings_pdarray
-        self.registered_name = None
+        self.registered_name: Optional[str] = None
         try:
             self.size = self.entry.size
             self.nbytes = bytes_size  # This is a deficiency of server GenSymEntry right now

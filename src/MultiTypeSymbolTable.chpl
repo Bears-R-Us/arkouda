@@ -166,8 +166,7 @@ module MultiTypeSymbolTable
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "Skipping registered entry: %s".doFormat(name)); 
                 return false;
-            }  
-            return false;
+            }
         }
 
         /*

@@ -94,7 +94,6 @@ def list_registry(detailed: bool = False):
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    # return json.loads(cast(str, generic_msg(cmd="list_registry")))
     data = json.loads(cast(str, generic_msg(cmd="list_registry")))
     objs = json.loads(data["Objects"]) if data["Objects"] != "" else []
     obj_types = json.loads(data["Object_Types"]) if data["Objects"] != "" else []

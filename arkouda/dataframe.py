@@ -2258,7 +2258,7 @@ class DataFrame(UserDict):
                 "num_cols": len(self.columns),
                 "column_names": self.columns,
                 "columns": column_data,
-                "col_objTypes": col_objTypes#[obj.objType for key, obj in self.items()],
+                "col_objTypes": col_objTypes
             },
         )
         self.registered_name = user_defined_name

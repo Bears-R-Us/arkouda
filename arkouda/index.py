@@ -25,7 +25,7 @@ class Index:
         values: Union[List, pdarray, Strings, Categorical, pd.Index, "Index"],
         name: Optional[str] = None,
     ):
-        self.registered_name = None
+        self.registered_name: Optional[str] = None
         if isinstance(values, Index):
             self.values = values.values
             self.size = values.size
@@ -619,7 +619,7 @@ class MultiIndex(Index):
     objType = "MultiIndex"
 
     def __init__(self, values):
-        self.registered_name = None
+        self.registered_name: Optional[str] = None
         if not (isinstance(values, list) or isinstance(values, tuple)):
             raise TypeError("MultiIndex should be an iterable")
         self.values = values

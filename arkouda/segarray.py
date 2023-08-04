@@ -105,7 +105,7 @@ class SegArray:
 
     def __init__(self, segments, values, lengths=None, grouping=None):
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
-        self.registered_name = None
+        self.registered_name: Optional[str] = None
 
         # validate inputs
         if not isinstance(segments, pdarray) or segments.dtype != akint64:

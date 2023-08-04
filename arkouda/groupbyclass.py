@@ -253,7 +253,7 @@ class GroupBy:
         # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
         # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
         # See Issue #1267
-        self.registered_name: Optional[None] = None
+        self.registered_name: Optional[str] = None
         if not isinstance(assume_sorted, bool):
             raise TypeError("assume_sorted must be of type bool.")
 
