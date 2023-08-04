@@ -307,7 +307,7 @@ module CSVMsg {
         forall (i, dset) in zip(0..#datasets.size, datasets) {
             var idx: int;
             var col_exists = columns.find(dset, idx);
-            csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: ".doFormat(dset)+formatJson(col_exists)+" IDX: %i".doFormat(idx));
+            csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: ".doFormat(dset)+formatJson(col_exists)+", IDX: %i".doFormat(idx));
             if !col_exists {
                 throw getErrorWithContext(
                     msg="The dataset %s was not found in %s".doFormat(dset, filename),

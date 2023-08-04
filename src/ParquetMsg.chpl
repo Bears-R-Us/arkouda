@@ -1926,7 +1926,7 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else {
-          var errorMsg = "Null indices only supported on Parquet string columns, not {} columns".doFormat(ty);
+          var errorMsg = "Null indices only supported on Parquet string columns, not %? columns".doFormat(ty);
           pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }

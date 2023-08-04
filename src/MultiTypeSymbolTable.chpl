@@ -286,7 +286,7 @@ module MultiTypeSymbolTable
                 return formatJson(this);
             } 
             checkTable(name, "dump");
-            return formatJson(name) + formatJson(tab.getReference(name));
+            return formatJson(name) + " " + formatJson(tab.getReference(name));
         }
         
         /*
