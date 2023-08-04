@@ -43,7 +43,8 @@ def asarray(
     device: Optional[Device] = None,
     copy: Optional[Union[bool, ak._CopyMode]] = None,
 ) -> Array:
-    raise ValueError(f"Not implemented")
+    from ._array_object import Array
+    return Array._new(ak.array(obj))
 
 
 def arange(
@@ -65,12 +66,14 @@ def empty(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
+    # TODO: Returns an uninitialized array having a specified shape.
     raise ValueError(f"Not implemented")
 
 
 def empty_like(
     x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
 ) -> Array:
+    # TODO: Returns an uninitialized array with the same shape as an input array x.
     raise ValueError(f"Not implemented")
 
 
@@ -83,10 +86,12 @@ def eye(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
+    # TODO: Returns a two-dimensional array with ones on the kth diagonal and zeros elsewhere.
     raise ValueError(f"Not implemented")
 
 
 def from_dlpack(x: object, /) -> Array:
+    #TODO: What is this? 
     raise ValueError(f"Not implemented")
 
 
@@ -121,7 +126,8 @@ def linspace(
     device: Optional[Device] = None,
     endpoint: bool = True,
 ) -> Array:
-    raise ValueError(f"Not implemented")
+    from ._array_object import Array
+    return Array._new(ak.linspace(start, stop, num))
 
 
 def meshgrid(*arrays: Array, indexing: str = "xy") -> List[Array]:
@@ -134,7 +140,8 @@ def ones(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
-    raise ValueError(f"Not implemented")
+    from ._array_object import Array
+    return Array._new(ak.ones(shape[0]))
 
 
 def ones_like(
@@ -156,10 +163,12 @@ def zeros(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
-    raise ValueError(f"Not implemented")
+    from ._array_object import Array
+    return Array._new(ak.zeros(shape[0]))
 
 
 def zeros_like(
     x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
 ) -> Array:
-    raise ValueError(f"Not implemented")
+    from ._array_object import Array
+    return Array._new(ak.zeros(x.size))
