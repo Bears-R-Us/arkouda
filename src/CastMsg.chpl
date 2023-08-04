@@ -22,7 +22,7 @@ module CastMsg {
     var targetDtype = msgArgs.getValueOf("targetDtype");
     var opt = msgArgs.getValueOf("opt");
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-          "name: %s obgtype: %t targetDtype: %t opt: %t".format(
+          "name: %s obgtype: %? targetDtype: %? opt: %?".doFormat(
                                                  name,objtype,targetDtype,opt));
     select objtype {
       when ObjType.PDARRAY {

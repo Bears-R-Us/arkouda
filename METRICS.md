@@ -30,7 +30,7 @@ Measurement metrics are generated in the MeasurementsTable class:
     }   
         
     proc set(metric: string, measurement: real) {
-        this.measurements.addOrSet(metric, measurement);
+        this.measurements.addOrReplace(metric, measurement);
     }
 ```
 
@@ -40,7 +40,7 @@ Count metrics are captured in the Counter Table:
 
 ```
     proc set(metric: string, count: int) {
-        this.counts.addOrSet(metric,count);
+        this.counts.addOrReplace(metric,count);
     }
 
     proc increment(metric: string, increment: int=1) {

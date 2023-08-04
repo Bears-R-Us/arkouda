@@ -122,7 +122,7 @@ module UniqueMsg
             var g = getSegString(myNames, st);
             var (uSegs, uVals) = g[gatherInds];
             var newStringsObj = getSegString(uSegs, uVals, st);
-            repMsg += "created " + st.attrib(newStringsObj.name) + "+created bytes.size %t".format(newStringsObj.nBytes);
+            repMsg += "created " + st.attrib(newStringsObj.name) + "+created bytes.size %?".doFormat(newStringsObj.nBytes);
           }
         }
       }

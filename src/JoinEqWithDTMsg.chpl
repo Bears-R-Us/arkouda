@@ -94,7 +94,7 @@ module JoinEqWithDTMsg
                       resLimitPerLocale: int) throws {
 
         try! jeLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                            "resLimitPerLocale = %t".format(resLimitPerLocale));
+                                            "resLimitPerLocale = %?".doFormat(resLimitPerLocale));
         
         // allocate result arrays per locale
         var locResI: [PrivateSpace] [0..#resLimitPerLocale] int;
@@ -114,7 +114,7 @@ module JoinEqWithDTMsg
                         // return found flag and a range for the segment of that value(unique key)
                         var (found, j_seg) = findMatch(a1[i], seg, ukeys, perm);
                         try! jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                          "a1: %t found: %t j_seq: %t".format(a1[i], found, j_seg));
+                                          "a1: %? found: %? j_seq: %?".doFormat(a1[i], found, j_seg));
                         // if there is a matching value in ukeys
                         if (found) {
                             var t1_i = t1[i];
@@ -186,9 +186,9 @@ module JoinEqWithDTMsg
         var numResults: int = resEnds[resEnds.domain.high];
 
         try! jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "result ends: %t".format(resEnds));
+                                                        "result ends: %?".doFormat(resEnds));
         try! jeLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "numResults = %i".format(numResults));
+                                                        "numResults = %i".doFormat(numResults));
         
         // allocate result arrays
         var resI = makeDistArray(numResults, int);
@@ -201,7 +201,7 @@ module JoinEqWithDTMsg
                 var gEnd: int = resEnds[here.id] - 1;
                 var gStart: int = resEnds[here.id] - locNumResults[here.id];
                 try! jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                  "start: %t end: %t".format(gStart,gEnd));
+                                                  "start: %? end: %?".doFormat(gStart,gEnd));
                 // copy local results into global results
                 resI[{gStart..gEnd}] = locResI[here.id][{0..#locNumResults[here.id]}];
                 resJ[{gStart..gEnd}] = locResJ[here.id][{0..#locNumResults[here.id]}];                
@@ -243,7 +243,7 @@ module JoinEqWithDTMsg
         var resJ_name = st.nextName();
         
         jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                "cmd: %s array1: %s g2seg2: %s g2ukeys: %s g2perm: %s t1name: %s t2name: %s dt: %t pred: %t resLimit: %t resI: %s resJ: %s".format(
+                "cmd: %s array1: %s g2seg2: %s g2ukeys: %s g2perm: %s t1name: %s t2name: %s dt: %? pred: %? resLimit: %? resI: %s resJ: %s".doFormat(
                                             cmd, a1_name, g2Seg_name, g2Ukeys_name, 
                                             g2Perm_name, t1_name, t2_name, dt, 
                                             pred, resLimit, resI_name, resJ_name));

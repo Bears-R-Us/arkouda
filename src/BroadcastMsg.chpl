@@ -90,7 +90,7 @@ module BroadcastMsg {
           res.a = broadcast(perm.a, segs.a, vals.a);
         }
         otherwise {
-          throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(gv.dtype:string),
+          throw new owned ErrorWithContext("Values array has unsupported dtype %s".doFormat(gv.dtype:string),
                                            getLineNumber(),
                                            getRoutineName(),
                                            getModuleName(),
@@ -127,7 +127,7 @@ module BroadcastMsg {
           res.a = broadcast(segs.a, vals.a, size);
         }
         otherwise {
-          throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(gv.dtype:string),
+          throw new owned ErrorWithContext("Values array has unsupported dtype %s".doFormat(gv.dtype:string),
                                            getLineNumber(),
                                            getRoutineName(),
                                            getModuleName(),
@@ -167,12 +167,12 @@ module BroadcastMsg {
       const perm = toSymEntry(gp, int);
       var (vals, offs) = broadcast(perm.a, segs.a, sE);
       var res = getSegString(offs, vals, st);
-      repMsg = "created %s".format(st.attrib(res.name)) + "+created bytes.size %t".format(res.nBytes);
+      repMsg = "created %s".doFormat(st.attrib(res.name)) + "+created bytes.size %?".doFormat(res.nBytes);
     }
     else {
       var (vals, offs) = broadcast(segs.a, sE, size);
       var res = getSegString(offs, vals, st);
-      repMsg = "created %s".format(st.attrib(res.name)) + "+created bytes.size %t".format(res.nBytes);
+      repMsg = "created %s".doFormat(st.attrib(res.name)) + "+created bytes.size %?".doFormat(res.nBytes);
     }
 
     bmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);

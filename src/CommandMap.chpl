@@ -3,6 +3,7 @@ module CommandMap {
   use MultiTypeSymbolTable;
 
   use ArkoudaFileCompat;
+  use ArkoudaIOCompat;
   use Map;
 
   /**
@@ -74,8 +75,8 @@ module CommandMap {
    * Dump the combined contents of the command maps as a single json encoded string
    */
   proc dumpCommandMap(): string throws {
-    var cm1:string = "%jt".format(commandMap);
-    var cm2:string = "%jt".format(commandMapBinary);
+    var cm1:string = formatJson(commandMap);
+    var cm2:string = formatJson(commandMapBinary);
     // Join these two together
     var idx_close = cm1.rfind("}"):int;
     return cm1(0..idx_close-1) + ", " + cm2(1..cm2.size-1);
@@ -87,7 +88,7 @@ module CommandMap {
       usedModules.add(moduleMap[cmd]);
       repTuple = commandMap[cmd](cmd, msgArgs, st);
     } else {
-      repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
+      repTuple = new MsgTuple("Unrecognized command: %s".doFormat(cmd), MsgType.ERROR);
     }
     return repTuple;
   }
