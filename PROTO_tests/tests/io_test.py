@@ -537,6 +537,54 @@ class TestHDF5:
         ak_arr = make_ak_arrays(prob_size * pytest.nl, dtype)
         with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/hdf_test_correct"
+            ak_arr.to_hdf(file_name)
+
+            # test read_hdf with glob
+            gen_arr = ak.read_hdf(f"{file_name}*")
+            assert (ak_arr == gen_arr).all()
+
+            # test read_hdf with filenames
+            gen_arr = ak.read_hdf(filenames=[f"{file_name}_LOCALE{i:04d}" for i in range(pytest.nl)])
+            assert (ak_arr == gen_arr).all()
+
+            # verify generic read works
+            gen_arr = ak.read(f"{file_name}*")
+            assert (ak_arr == gen_arr).all()
+
+            # verify generic load works
+            if dtype == "str":
+                # we have to specify the dataset for strings since it differs from default of "array"
+                gen_arr = ak.load(path_prefix=file_name, dataset="strings_array")
+            else:
+                gen_arr = ak.load(path_prefix=file_name)
+            assert (ak_arr == gen_arr).all()
+
+            # verify generic load works with file_format parameter
+            if dtype == "str":
+                # we have to specify the dataset for strings since it differs from default of "array"
+                gen_arr = ak.load(path_prefix=file_name, dataset="strings_array", file_format="HDF5")
+            else:
+                gen_arr = ak.load(path_prefix=file_name, file_format="HDF5")
+            assert (ak_arr == gen_arr).all()
+
+            # verify load_all works
+            gen_arr = ak.load_all(path_prefix=file_name)
+            if dtype == "str":
+                # we have to specify the dataset for strings since it differs from default of "array"
+                assert (ak_arr == gen_arr["strings_array"]).all()
+            else:
+                assert (ak_arr == gen_arr["array"]).all()
+
+            # Test load with invalid file
+            with pytest.raises(RuntimeError):
+                ak.load(path_prefix=f"{TestHDF5.hdf_test_base_tmp}/not-a-file")
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
+    def test_read_and_write_dset_provided(self, prob_size, dtype):
+        ak_arr = make_ak_arrays(prob_size * pytest.nl, dtype)
+        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/hdf_test_correct"
             ak_arr.to_hdf(file_name, "my_dset")
 
             # test read_hdf with glob
@@ -544,7 +592,9 @@ class TestHDF5:
             assert (ak_arr == gen_arr).all()
 
             # test read_hdf with filenames
-            gen_arr = ak.read_hdf(filenames=[f"{file_name}_LOCALE{i:04d}" for i in range(pytest.nl)])
+            gen_arr = ak.read_hdf(
+                filenames=[f"{file_name}_LOCALE{i:04d}" for i in range(pytest.nl)], datasets="my_dset"
+            )
             assert (ak_arr == gen_arr).all()
 
             # verify generic read works
@@ -592,8 +642,34 @@ class TestHDF5:
             # use multi-column write to generate hdf file
             akdf.to_hdf(file_name)
 
-            # test read_hdf with glob
+            # test read_hdf with glob, no datasets specified
             rd_data = ak.read_hdf(f"{file_name}*")
+            rd_df = ak.DataFrame(rd_data)
+            # fix column ordering see issue #2611
+            rd_df = rd_df[akdf.columns]
+            pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
+
+            # test read_hdf with only one dataset specified (each tested)
+            for col_name in akdf.columns:
+                gen_arr = ak.read_hdf(f"{file_name}*", datasets=[col_name])
+                if akdf[col_name].dtype != ak.float64:
+                    assert akdf[col_name].to_list() == gen_arr.to_list()
+                else:
+                    a = akdf[col_name].to_ndarray()
+                    b = gen_arr.to_ndarray()
+                    if isinstance(a[0], np.ndarray):
+                        assert all(np.allclose(a1, b1, equal_nan=True) for a1, b1 in zip(a, b))
+                    else:
+                        assert np.allclose(a, b, equal_nan=True)
+
+            # test read_hdf with half of columns names specified as datasets
+            half_cols = akdf.columns[: len(akdf.columns) // 2]
+            rd_data = ak.read_hdf(f"{file_name}*", datasets=half_cols)
+            rd_df = ak.DataFrame(rd_data)
+            pd.testing.assert_frame_equal(akdf[half_cols].to_pandas(), rd_df[half_cols].to_pandas())
+
+            # test read_hdf with all columns names specified as datasets
+            rd_data = ak.read_hdf(f"{file_name}*", datasets=akdf.columns)
             rd_df = ak.DataFrame(rd_data)
             # fix column ordering see issue #2611
             rd_df = rd_df[akdf.columns]
