@@ -142,14 +142,14 @@ Classes
       list
 
 
-   .. py:method:: to_hdf(filepath: str, dset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
 
       Save the current ArrayView object to hdf5 file
 
-      :param filepath: Path to the file to write the dataset to
-      :type filepath: str
-      :param dset: Name of the dataset to write
-      :type dset: str
+      :param prefix_path: Path to the file to write the dataset to
+      :type prefix_path: str
+      :param dataset: Name of the dataset to write
+      :type dataset: str
       :param mode: Default: truncate
                    Mode to write the dataset in. Truncate will overwrite any existing files.
                    Append will add the dataset to an existing file.
