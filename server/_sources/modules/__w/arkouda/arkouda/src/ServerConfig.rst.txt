@@ -50,6 +50,12 @@ arkouda server config param and config const
    Global log channel flag that defaults to LogChannel.CONSOLE
    
 
+.. data:: config var logCommands = false
+
+   
+   Indicates whether arkouda_server commands should be logged.
+   
+
 .. data:: config const ServerPort = 5555
 
    
