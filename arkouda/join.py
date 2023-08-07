@@ -12,9 +12,8 @@ from arkouda.dtypes import resolve_scalar_dtype
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import arange, array, zeros
+from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate, in1d
-from arkouda.segarray import gen_ranges as seg_gen_ranges
 from arkouda.strings import Strings
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
@@ -115,14 +114,13 @@ def join_on_eq_with_dt(
     resIAttr, resJAttr = cast(str, repMsg).split("+")
     resI = create_pdarray(resIAttr)
     resJ = create_pdarray(resJAttr)
-    return (resI, resJ)
+    return resI, resJ
 
 
-@typechecked
-def gen_ranges(starts: pdarray, ends: pdarray) -> Tuple[pdarray, pdarray]:
+def gen_ranges(starts, ends, stride=1):
     """
-    Generate a segmented array of variable-length, contiguous
-    ranges between pairs of start- and end-points.
+    Generate a segmented array of variable-length, contiguous ranges between pairs of
+    start- and end-points.
 
     Parameters
     ----------
@@ -130,6 +128,8 @@ def gen_ranges(starts: pdarray, ends: pdarray) -> Tuple[pdarray, pdarray]:
         The start value of each range
     ends : pdarray, int64
         The end value (exclusive) of each range
+    stride: int
+        Difference between successive elements of each range
 
     Returns
     -------
@@ -138,8 +138,27 @@ def gen_ranges(starts: pdarray, ends: pdarray) -> Tuple[pdarray, pdarray]:
     ranges : pdarray, int64
         The actual ranges, flattened into a single array
     """
-    # only maintain one version of gen_ranges
-    return seg_gen_ranges(starts, ends)
+    if starts.size != ends.size:
+        raise ValueError("starts and ends must be same length")
+    if starts.size == 0:
+        return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
+    lengths = (ends - starts) // stride
+    if not (lengths >= 0).all():
+        raise ValueError("all ends must be greater than or equal to starts")
+    non_empty = lengths != 0
+    segs = cumsum(lengths) - lengths
+    totlen = lengths.sum()
+    slices = ones(totlen, dtype=akint64)
+    non_empty_starts = starts[non_empty]
+    non_empty_lengths = lengths[non_empty]
+    diffs = concatenate(
+        (
+            array([non_empty_starts[0]]),
+            non_empty_starts[1:] - non_empty_starts[:-1] - (non_empty_lengths[:-1] - 1) * stride,
+        )
+    )
+    slices[segs[non_empty]] = diffs
+    return segs, cumsum(slices)
 
 
 @typechecked

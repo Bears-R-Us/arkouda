@@ -14,6 +14,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.join import gen_ranges
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import (
@@ -29,50 +30,6 @@ from arkouda.strings import Strings
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"
-
-
-def gen_ranges(starts, ends, stride=1):
-    """
-    Generate a segmented array of variable-length, contiguous ranges between pairs of
-    start- and end-points.
-
-    Parameters
-    ----------
-    starts : pdarray, int64
-        The start value of each range
-    ends : pdarray, int64
-        The end value (exclusive) of each range
-    stride: int
-        Difference between successive elements of each range
-
-    Returns
-    -------
-    segments : pdarray, int64
-        The starting index of each range in the resulting array
-    ranges : pdarray, int64
-        The actual ranges, flattened into a single array
-    """
-    if starts.size != ends.size:
-        raise ValueError("starts and ends must be same length")
-    if starts.size == 0:
-        return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
-    lengths = (ends - starts) // stride
-    if not (lengths >= 0).all():
-        raise ValueError("all ends must be greater than or equal to starts")
-    non_empty = lengths != 0
-    segs = cumsum(lengths) - lengths
-    totlen = lengths.sum()
-    slices = ones(totlen, dtype=akint64)
-    non_empty_starts = starts[non_empty]
-    non_empty_lengths = lengths[non_empty]
-    diffs = concatenate(
-        (
-            array([non_empty_starts[0]]),
-            non_empty_starts[1:] - non_empty_starts[:-1] - (non_empty_lengths[:-1] - 1) * stride,
-        )
-    )
-    slices[segs[non_empty]] = diffs
-    return segs, cumsum(slices)
 
 
 def _aggregator(func):
