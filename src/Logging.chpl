@@ -82,7 +82,7 @@ module Logging {
         if channel == LogChannel.CONSOLE {
             return new owned ConsoleOutputHandler();
         } else {
-            return new owned FileOutputHandler("%s/arkouda.log".doFormat(here.cwd()));
+            return new owned FileOutputHandler("%s/.arkouda/arkouda.log".doFormat(here.cwd()));
         }
     }
     

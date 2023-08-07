@@ -609,6 +609,13 @@ module ServerDaemon {
                 }
 
                 /*
+                 * If logCommands is true, log incoming request to the .arkouda/commands.log file
+                 */
+                if logCommands {
+                    appendFile(filePath="%s/commands.log".doFormat(this.arkDirectory), formatJson(msg));
+                }
+
+                /*
                  * For messages that return a string repTuple is filled. For binary
                  * messages the message is sent directly to minimize copies.
                  */
@@ -763,7 +770,7 @@ module ServerDaemon {
                 var format = msg.format;
                 var args   = msg.args;
                 var size   = msg.size: int;
-                
+
                 var msgArgs: owned MessageArgs;
                 if size > 0 {
                     msgArgs = parseMessageArgs(args, size);
