@@ -17,6 +17,6 @@ class TestSecurity:
             security.get_home_directory()
         )
 
-    def testGetArkoudaDirectory(self):
+    def test_get_arkouda_directory(self):
         ak_directory = security.get_arkouda_client_directory()
         assert f"{security.get_home_directory()}/.arkouda" == str(ak_directory)
