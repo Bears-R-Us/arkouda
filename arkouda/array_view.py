@@ -368,8 +368,8 @@ class ArrayView:
 
     def to_hdf(
         self,
-        filepath: str,
-        dset: str = "ArrayView",
+        prefix_path: str,
+        dataset: str = "ArrayView",
         mode: str = "truncate",
         file_type: str = "distribute",
     ):
@@ -378,9 +378,9 @@ class ArrayView:
 
         Parameters
         ----------
-        filepath: str
+        prefix_path: str
             Path to the file to write the dataset to
-        dset: str
+        dataset: str
             Name of the dataset to write
         mode: str (truncate | append)
             Default: truncate
@@ -399,9 +399,9 @@ class ArrayView:
                 "values": self.base,
                 "shape": self.shape,
                 "order": self.order,
-                "filename": filepath,
+                "filename": prefix_path,
                 "file_format": _file_type_to_int(file_type),
-                "dset": dset,
+                "dset": dataset,
                 "write_mode": _mode_str_to_int(mode),
                 "objType": "ArrayView",
             },
