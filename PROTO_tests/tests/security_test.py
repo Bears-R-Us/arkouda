@@ -13,9 +13,8 @@ class TestSecurity:
         assert expanduser("~") == security.get_home_directory()
 
     def test_get_username(self):
-        assert (
-            security.get_username()
-            in security.username_tokenizer[platform.system()](security.get_home_directory())
+        assert security.get_username() in security.username_tokenizer[platform.system()](
+            security.get_home_directory()
         )
 
     def testGetArkoudaDirectory(self):
