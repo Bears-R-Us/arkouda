@@ -8,7 +8,7 @@ import arkouda as ak
 INT_TYPES = [ak.int64, ak.uint64]
 
 
-class TestClientDType:
+class TestClientDTypes:
     """
     Note: BitVector operations are not tested here because the class is
     only a wrapper on a pdarray to display as such.
