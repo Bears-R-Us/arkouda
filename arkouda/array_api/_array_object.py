@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from ._typing import Any, PyCapsule, Device, Dtype
     import numpy.typing as npt
 
-import arkouda as np
+import arkouda as ak
 
 from arkouda import array_api
 
@@ -57,7 +57,7 @@ class Array:
     functions, such as asarray().
 
     """
-    _array: np.array[Any, Any]
+    _array: ak.array[Any, Any]
 
     # Use a custom constructor instead of __init__, as manually initializing
     # this class is not supported API.
@@ -89,13 +89,13 @@ class Array:
         """
         Performs the operation __str__.
         """
-        return ""
+        return _array.__str__
 
     def __repr__(self: Array, /) -> str:
         """
         Performs the operation __repr__.
         """
-        return ""
+        return _array.__repr__
 
     # This function is not required by the spec, but we implement it here for
     # convenience so that np.asarray(np.array_api.Array) will work.
@@ -106,7 +106,7 @@ class Array:
         will be present in other implementations.
 
         """
-        return np.asarray(self._array, dtype=dtype)
+        return ak.asarray(self._array, dtype=dtype)
 
     # These are various helper functions to make the array behavior match the
     # spec in places where it either deviates from or is more strict than

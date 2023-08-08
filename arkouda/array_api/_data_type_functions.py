@@ -27,7 +27,24 @@ import arkouda as ak
 def astype(x: Array, dtype: Dtype, /, *, copy: bool = True) -> Array:
     if not copy and dtype == x.dtype:
         return x
-    return Array._new(ak.akcast(x._array, dtype)
+    return Array._new(ak.akcast(x._array, dtype))
+
+def broadcast_arrays(*arrays: Array) -> List[Array]:
+    """
+    Array API compatible wrapper for :py:func:`np.broadcast_arrays <numpy.broadcast_arrays>`.
+
+    See its docstring for more information.
+    """
+    raise ValueError("broadcast_arrays not implemented")
+
+
+def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
+    """
+    Array API compatible wrapper for :py:func:`np.broadcast_to <numpy.broadcast_to>`.
+
+    See its docstring for more information.
+    """
+    raise ValueError("broadcast_to not implemented")
 
 
 def can_cast(from_: Union[Dtype, Array], to: Dtype, /) -> bool:

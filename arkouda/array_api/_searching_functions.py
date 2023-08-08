@@ -5,7 +5,7 @@ from ._dtypes import _result_type, _real_numeric_dtypes
 
 from typing import Optional, Tuple
 
-import arkoud as ak
+import arkouda as ak
 
 
 def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:

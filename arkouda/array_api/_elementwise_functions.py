@@ -138,7 +138,7 @@ def bitwise_and(x1: Array, x2: Array, /) -> Array:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_and")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
-    return Array._new(x1._array & x2._array))
+    return Array._new(x1._array & x2._array)
 
 
 # Note: the function name is different here
@@ -155,7 +155,7 @@ def bitwise_left_shift(x1: Array, x2: Array, /) -> Array:
     # Note: bitwise_left_shift is only defined for x2 nonnegative.
     if np.any(x2._array < 0):
         raise ValueError("bitwise_left_shift(x1, x2) is only defined for x2 >= 0")
-    return Array._new(x1._array << x2._array))
+    return Array._new(x1._array << x2._array)
 
 
 # Note: the function name is different here
@@ -181,7 +181,7 @@ def bitwise_or(x1: Array, x2: Array, /) -> Array:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_or")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
-    return Array._new(x1._array OR x2._array)
+    return Array._new(x1._array | x2._array)
 
 
 # Note: the function name is different here
@@ -648,7 +648,7 @@ def subtract(x1: Array, x2: Array, /) -> Array:
         raise TypeError("Only numeric dtypes are allowed in subtract")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
-    return Array._new(x1._array - x2._array))
+    return Array._new(x1._array - x2._array)
 
 
 def tan(x: Array, /) -> Array:
