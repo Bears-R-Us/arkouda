@@ -1,5 +1,5 @@
 
-module SymArrayDmap
+module SymArrayDmapCompat
 {
     use ChplConfig;
 
