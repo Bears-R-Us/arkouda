@@ -3,7 +3,7 @@ module ServerConfig
 {
     use ZMQ only;
     use HDF5.C_HDF5 only H5get_libversion;
-    use SymArrayDmap only makeDistDom;
+    use SymArrayDmapCompat only makeDistDom;
 
     public use IO;
     public use ArkoudaIOCompat;

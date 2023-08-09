@@ -9,7 +9,7 @@ module MultiTypeSymEntry
     use AryUtil;
 
     public use NumPyDType;
-    public use SymArrayDmap;
+    public use SymArrayDmapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

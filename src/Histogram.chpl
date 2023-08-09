@@ -6,7 +6,7 @@ module Histogram
     use Math only;
 
     use PrivateDist;
-    use SymArrayDmap;
+    use SymArrayDmapCompat;
     use Logging;
     use Reflection;
 

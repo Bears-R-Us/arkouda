@@ -8,7 +8,7 @@ module ArraySetops
 {
     use ServerConfig;
 
-    use SymArrayDmap;
+    use SymArrayDmapCompat;
 
     use RadixSortLSD;
     use Unique;

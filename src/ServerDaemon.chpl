@@ -15,7 +15,7 @@ module ServerDaemon {
     use MsgProcessing;
     use GenSymIO;
     use Reflection;
-    use SymArrayDmap;
+    use SymArrayDmapCompat;
     use ServerErrorStrings;
     use Message;
     use CommandMap;
