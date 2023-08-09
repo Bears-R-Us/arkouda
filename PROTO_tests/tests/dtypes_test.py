@@ -68,7 +68,7 @@ class TestDTypes:
         assert dtypes.dtype("uint64") == ak.array(np.arange(size), ak.uint64).dtype
         assert dtypes.dtype("bool") == ak.ones(size, ak.bool).dtype
         assert dtypes.dtype("float64") == ak.ones(size).dtype
-        assert dtypes.dtype("str") == ak.array([f"string {i}" for i in range(size)]).dtype
+        assert dtypes.dtype("str") == ak.random_strings_uniform(1, 16, size=size).dtype
         assert (
             dtypes.dtype("bigint")
             == ak.bigint_from_uint_arrays(
@@ -77,17 +77,17 @@ class TestDTypes:
         )
         assert dtypes.dtype("bigint") == ak.array([i for i in range(2**200, 2**200 + size)]).dtype
 
-    @pytest.mark.parametrize("supported", [1, np.int64(1), np.int64(1.0), 1, np.uint32(1)])
-    @pytest.mark.parametrize("unsupported", [1.0, "1"])
-    def test_isSupportedInt(self, supported, unsupported):
-        assert dtypes.isSupportedInt(supported)
-        assert not dtypes.isSupportedInt(unsupported)
+    def test_isSupportedInt(self):
+        for supported in 1, np.int64(1), np.int64(1.0), np.uint32(1):
+            assert dtypes.isSupportedInt(supported)
+        for unsupported in 1.0, "1":
+            assert not dtypes.isSupportedInt(unsupported)
 
-    @pytest.mark.parametrize("supported", [1.0, float(1), np.float64(1), np.float64(1.0)])
-    @pytest.mark.parametrize("unsupported", [np.int64(1.0), int(1.0), "1.0"])
-    def test_isSupportedFloat(self, supported, unsupported):
-        assert dtypes.isSupportedFloat(supported)
-        assert not dtypes.isSupportedFloat(unsupported)
+    def test_isSupportedFloat(self):
+        for supported in 1.0, float(1), np.float64(1), np.float64(1.0):
+            assert dtypes.isSupportedFloat(supported)
+        for unsupported in np.int64(1.0), int(1.0), "1.0":
+            assert not dtypes.isSupportedFloat(unsupported)
 
     def test_DtypeEnum(self):
         assert "bool" == str(dtypes.DType.BOOL)
