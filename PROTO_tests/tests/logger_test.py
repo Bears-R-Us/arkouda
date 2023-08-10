@@ -45,26 +45,26 @@ class TestLogger:
             logger.getHandler("console-handlers")
 
     def test_update_arkouda_logger_log_level(self):
+        logger = getArkoudaLogger(name="UpdateLogger")
+        assert DEBUG == logger.level
+        logger.debug("debug before level change")
+        logger.changeLogLevel(LogLevel.WARN)
+        assert WARN == logger.handlers[0].level
+        logger.debug("debug after level change")
+
         with tempfile.TemporaryDirectory(dir=TestLogger.logger_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/logger_test_output.txt"
 
-            logger = getArkoudaLogger(name="UpdateLogger")
-            assert DEBUG == logger.level
-            logger.debug("debug before level change")
-            logger.changeLogLevel(LogLevel.WARN)
-            assert WARN == logger.handlers[0].level
-            logger.debug("debug after level change")
-
-            handlerOne = StreamHandler()
-            handlerOne.name = "handler-one"
-            handlerOne.setLevel(DEBUG)
-            handlerTwo = FileHandler(filename=file_name)
-            handlerTwo.name = "handler-two"
-            handlerTwo.setLevel(INFO)
-            logger = getArkoudaLogger(name="UpdateLogger", handlers=[handlerOne, handlerTwo])
+            handler_one = StreamHandler()
+            handler_one.name = "handler-one"
+            handler_one.setLevel(DEBUG)
+            handler_two = FileHandler(filename=file_name)
+            handler_two.name = "handler-two"
+            handler_two.setLevel(INFO)
+            logger = getArkoudaLogger(name="UpdateLogger", handlers=[handler_one, handler_two])
             logger.changeLogLevel(level=LogLevel.WARN, handlerNames=["handler-one"])
-            assert WARN == handlerOne.level
-            assert INFO == handlerTwo.level
+            assert WARN == handler_one.level
+            assert INFO == handler_two.level
 
     def test_verbosity_controls(self):
         logger = getArkoudaLogger(name="VerboseLogger", logLevel=LogLevel("INFO"))

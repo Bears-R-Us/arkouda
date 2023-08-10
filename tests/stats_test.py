@@ -1,4 +1,4 @@
-import numpy as np
+ import numpy as np
 import pandas as pd
 from base_test import ArkoudaTest
 from context import arkouda as ak
