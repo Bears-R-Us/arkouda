@@ -7,13 +7,13 @@ NUM_TYPES = [ak.int64, ak.uint64, ak.float64, ak.bool, ak.bigint]
 BIGINT_AND_UINT_TYPES = [ak.bigint, ak.uint64]
 
 
-def make_key_arrays(size):
+def key_arrays(size):
     ikeys = ak.arange(size)
     ukeys = ak.arange(size, dtype=ak.uint64)
     return ikeys, ukeys
 
 
-def trial(num_types, size):
+def value_array(num_types, size):
     array_dict = {
         ak.int64: (i := ak.randint(0, size, size)),
         ak.uint64: (u := ak.cast(i, ak.uint64)),
@@ -30,33 +30,33 @@ class TestIndexing:
     @pytest.mark.parametrize("num_types", NUM_TYPES)
     def test_pdarray_uint_indexing(self, prob_size, num_types):
         # for every pda in array_dict test indexing with uint array and uint scalar
-        ikeys, ukeys = make_key_arrays(prob_size)
-        pda = trial(num_types, prob_size)
+        ikeys, ukeys = key_arrays(prob_size)
+        pda = value_array(num_types, prob_size)
         assert pda[np.uint(2)] == pda[2]
         assert pda[ukeys].to_list() == pda[ikeys].to_list()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_strings_uint_indexing(self, prob_size):
         # test Strings array indexing with uint array and uint scalar
-        ikeys, ukeys = make_key_arrays(prob_size)
-        pda = trial(ak.str_, prob_size)
+        ikeys, ukeys = key_arrays(prob_size)
+        pda = value_array(ak.str_, prob_size)
         assert pda[np.uint(2)] == pda[2]
         assert pda[ukeys].to_list() == pda[ikeys].to_list()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("bigint_and_uint_types", BIGINT_AND_UINT_TYPES)
-    def test_bool_indexing(self, prob_size, bigint_and_uint_types):
-        pda_test = trial(bigint_and_uint_types, prob_size)
+    @pytest.mark.parametrize("dtypes", BIGINT_AND_UINT_TYPES)
+    def test_bool_indexing(self, prob_size, dtypes):
+        pda_test = value_array(dtypes, prob_size)
         pda_uint = ak.cast(pda_test, ak.uint64)
-        pda_bool = trial(ak.bool, prob_size)
+        pda_bool = value_array(ak.bool, prob_size)
         assert pda_uint[pda_bool].to_list() == pda_test[pda_bool].to_list()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("num_types", NUM_TYPES)
     def test_set_uint(self, prob_size, num_types):
         test_size = prob_size // 2
-        ikeys, ukeys = make_key_arrays(prob_size)
-        pda = trial(num_types, prob_size)
+        ikeys, ukeys = key_arrays(prob_size)
+        pda = value_array(num_types, prob_size)
 
         # set [int] = val with uint key and value
         pda[np.uint(2)] = np.uint(5)
