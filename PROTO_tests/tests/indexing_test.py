@@ -44,9 +44,9 @@ class TestIndexing:
         assert pda[ukeys].to_list() == pda[ikeys].to_list()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("dtypes", BIGINT_AND_UINT_TYPES)
-    def test_bool_indexing(self, prob_size, dtypes):
-        pda_test = value_array(dtypes, prob_size)
+    @pytest.mark.parametrize("dtype", BIGINT_AND_UINT_TYPES)
+    def test_bool_indexing(self, prob_size, dtype):
+        pda_test = value_array(dtype, prob_size)
         pda_uint = ak.cast(pda_test, ak.uint64)
         pda_bool = value_array(ak.bool, prob_size)
         assert pda_uint[pda_bool].to_list() == pda_test[pda_bool].to_list()
