@@ -79,17 +79,17 @@ class TestLogger:
         logger.debug("next non-working debug message")
 
     def test_enable_disable_verbose(self):
-        loggerOne = getArkoudaLogger(name="loggerOne", logLevel=LogLevel.INFO)
-        loggerTwo = getArkoudaLogger("loggerTwo", logLevel=LogLevel.INFO)
+        logger_one = getArkoudaLogger(name="logger_one", logLevel=LogLevel.INFO)
+        logger_two = getArkoudaLogger(name="logger_two", logLevel=LogLevel.INFO)
 
-        loggerOne.debug("loggerOne before enableVerbose")
-        loggerTwo.debug("loggerTwo before enableVerbose")
+        logger_one.debug("logger_one before enableVerbose")
+        logger_two.debug("logger_two before enableVerbose")
         ak.enableVerbose()
-        loggerOne.debug("loggerOne after enableVerbose")
-        loggerTwo.debug("loggerTwo after enableVerbose")
+        logger_one.debug("logger_one after enableVerbose")
+        logger_two.debug("logger_two after enableVerbose")
         ak.disableVerbose()
-        loggerOne.debug("loggerOne after disableVerbose")
-        loggerTwo.debug("loggerTwo after disableVerbose")
+        logger_one.debug("logger_one after disableVerbose")
+        logger_two.debug("logger_two after disableVerbose")
 
     def test_error_handling(self):
         logger = getArkoudaLogger(name="VerboseLogger", logLevel=LogLevel("INFO"))
