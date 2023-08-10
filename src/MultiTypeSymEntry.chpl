@@ -202,7 +202,7 @@ module MultiTypeSymEntry
         'a' is the distributed array whose value and type are defined by
         makeDist{Dom,Array}() to support varying distributions
         */
-        var a: [makeDistDom(size)] etype;
+        var a = makeDistArray(size, etype);
         /* Removed domain accessor, use `a.domain` instead */
         proc aD { compilerError("SymEntry.aD has been removed, use SymEntry.a.domain instead"); }
         /* only used with bigint pdarrays */
@@ -295,12 +295,12 @@ module MultiTypeSymEntry
         }
     }
     
-    proc createSymEntry(len: int, type etype) throws {
+    inline proc createSymEntry(len: int, type etype) throws {
       var a = makeDistArray(len, etype);
       return new shared SymEntry(a);
     }
 
-    proc createSymEntry(a: [?D] ?etype) throws {
+    inline proc createSymEntry(a: [?D] ?etype) throws {
       var A = makeDistArray(D.size, etype);
       A = a;
       return new shared SymEntry(A);
