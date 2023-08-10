@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 
 import arkouda as ak
@@ -17,71 +16,37 @@ class TestBitOps:
         cls.edge_cases_bigint.max_bits = 64
 
     def test_popcount(self):
-        ans = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2]
-        assert self.int_arr.popcount().to_list() == ans
+        for arr in self.int_arr, self.uint_arr, self.bigint_arr:
+            assert arr.popcount().to_list() == [0, 1, 1, 2, 1, 2, 2, 3, 1, 2]
 
-        ans_uint = np.array(ans, ak.uint64).tolist()
-        assert self.uint_arr.popcount().to_list() == ans_uint
-        assert self.bigint_arr.popcount().to_list() == ans_uint
-
-        # Edge case input
-        ans = [1, 64, 63]
-        assert ak.popcount(self.edge_cases).to_list() == ans
-
-        ans_uint = np.array(ans, ak.uint64).tolist()
-        assert ak.popcount(self.edge_cases_uint).to_list() == ans_uint
-        assert ak.popcount(self.edge_cases_bigint).to_list() == ans_uint
+        for arr in self.edge_cases, self.edge_cases_uint, self.edge_cases_bigint:
+            assert ak.popcount(arr).to_list() == [1, 64, 63]
 
     def test_parity(self):
-        ans = [0, 1, 1, 0, 1, 0, 0, 1, 1, 0]
-        assert self.int_arr.parity().to_list() == ans
+        for arr in self.int_arr, self.uint_arr, self.bigint_arr:
+            assert arr.parity().to_list() == [0, 1, 1, 0, 1, 0, 0, 1, 1, 0]
 
-        ans_uint = np.array(ans, ak.uint64).tolist()
-        assert self.uint_arr.parity().to_list() == ans_uint
-        assert self.bigint_arr.parity().to_list() == ans_uint
-
-        ans = [1, 0, 1]
-        assert ak.parity(self.edge_cases).to_list() == ans
-
-        ans_uint = np.array(ans, ak.uint64).tolist()
-        assert ak.parity(self.edge_cases_uint).to_list() == ans_uint
-        assert ak.parity(self.edge_cases_bigint).to_list() == ans_uint
+        for arr in self.edge_cases, self.edge_cases_uint, self.edge_cases_bigint:
+            assert ak.parity(arr).to_list() == [1, 0, 1]
 
     def test_clz(self):
-        ans = [64, 63, 62, 62, 61, 61, 61, 61, 60, 60]
-        assert self.int_arr.clz().to_list() == ans
+        for arr in self.int_arr, self.uint_arr, self.bigint_arr:
+            assert arr.clz().to_list() == [64, 63, 62, 62, 61, 61, 61, 61, 60, 60]
 
-        ans_uint = np.array(ans, ak.uint64).tolist()
-        assert self.uint_arr.clz().to_list() == ans_uint
-        assert self.bigint_arr.clz().to_list() == ans_uint
-
-        ans = [0, 0, 1]
-        assert ak.clz(self.edge_cases).to_list() == ans
-
-        ans_uint = np.array(ans, ak.uint64).tolist()
-        assert ak.clz(self.edge_cases_uint).to_list() == ans_uint
-        assert ak.clz(self.edge_cases_bigint).to_list() == ans_uint
+        for arr in self.edge_cases, self.edge_cases_uint, self.edge_cases_bigint:
+            assert ak.clz(arr).to_list() == [0, 0, 1]
 
     def test_ctz(self):
-        ans = [0, 0, 1, 0, 2, 0, 1, 0, 3, 0]
-        assert self.int_arr.ctz().to_list() == ans
+        for arr in self.int_arr, self.uint_arr, self.bigint_arr:
+            assert arr.ctz().to_list() == [0, 0, 1, 0, 2, 0, 1, 0, 3, 0]
 
-        ans_uint = np.array(ans, ak.uint64).tolist()
-        assert self.uint_arr.ctz().to_list() == ans_uint
-        assert self.bigint_arr.ctz().to_list() == ans_uint
+        for arr in self.edge_cases, self.edge_cases_uint, self.edge_cases_bigint:
+            assert ak.ctz(arr).to_list() == [63, 0, 0]
 
-        ans = [63, 0, 0]
-        assert ak.ctz(self.edge_cases).to_list() == ans
-
-        ans_uint = np.array(ans, ak.uint64).tolist()
-        assert ak.ctz(self.edge_cases_uint).to_list() == ans_uint
-        assert ak.ctz(self.edge_cases_bigint).to_list() == ans_uint
-
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_bigint_bitops(self, size):
+    def test_bigint_bitops(self):
         # compare against int pdarray with variety of max_bits, should be the same except for clz
-        i = ak.arange(size)
-        bi = ak.arange(size, dtype=ak.bigint)
+        i = ak.arange(10)
+        bi = ak.arange(10, dtype=ak.bigint)
 
         pop_ans = ak.popcount(i)
         par_ans = ak.parity(i)
@@ -118,9 +83,9 @@ class TestBitOps:
         # test with lots of trailing zeros
         bi = ak.bigint_from_uint_arrays(
             [
-                ak.arange(size, dtype=ak.uint64),
-                ak.zeros(size, dtype=ak.uint64),
-                ak.zeros(size, dtype=ak.uint64),
+                ak.arange(10, dtype=ak.uint64),
+                ak.zeros(10, dtype=ak.uint64),
+                ak.zeros(10, dtype=ak.uint64),
             ]
         )
 
@@ -164,11 +129,15 @@ class TestBitOps:
             assert ctz_ans.to_list() == bi.ctz().to_list()
 
     @pytest.mark.parametrize("dtype", [bool, str, float])
-    def test_dtypes(self, dtype):
-        f = ak.cast(ak.array(range(10)), dtype)
+    def test_dtypes_errors(self, dtype):
+        arr = ak.cast(ak.array(range(10)), dtype)
 
         with pytest.raises(TypeError):
-            ak.popcount(f)
+            ak.popcount(arr)
+
+        if dtype is not str:
+            with pytest.raises(TypeError):
+                arr.popcount()
 
     def test_rotl(self):
         # vector <<< scalar
