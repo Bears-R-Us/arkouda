@@ -31,6 +31,8 @@ class TestDTypes:
         with pytest.raises(TypeError):
             dtypes.check_np_dtype(np.dtype(np.int16))
         with pytest.raises(TypeError):
+            dtypes.check_np_dtype("np.str")
+        with pytest.raises(TypeError):
             dtypes.check_np_dtype(ak.bigint)
 
     def test_translate_np_dtype(self):
