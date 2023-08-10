@@ -31,9 +31,7 @@ class TestDTypes:
         with pytest.raises(TypeError):
             dtypes.check_np_dtype(np.dtype(np.int16))
         with pytest.raises(TypeError):
-            dtypes.check_np_dtype("np.str")
-        with pytest.raises(TypeError):
-            dtypes.check_np_dtype("bigint")
+            dtypes.check_np_dtype(ak.bigint)
 
     def test_translate_np_dtype(self):
         for b in [np.bool_, bool]:
@@ -48,19 +46,32 @@ class TestDTypes:
         assert ("uint", 1) == dtypes.translate_np_dtype(np.dtype(np.uint8))
 
     def test_resolve_scalar_dtype(self):
-        assert "bool" == dtypes.resolve_scalar_dtype(True)
-        assert "int64" == dtypes.resolve_scalar_dtype(1)
-        assert "int64" == dtypes.resolve_scalar_dtype(-1)
-        assert "int64" == dtypes.resolve_scalar_dtype(np.int64(1))
-        assert "float64" == dtypes.resolve_scalar_dtype(float(0.0))
-        assert "float64" == dtypes.resolve_scalar_dtype(float(-1.0))
-        assert "float64" == dtypes.resolve_scalar_dtype(np.nan)
-        assert "float64" == dtypes.resolve_scalar_dtype(np.inf)
-        assert "float64" == dtypes.resolve_scalar_dtype(-np.inf)
-        assert "str" == dtypes.resolve_scalar_dtype("test")
+        for b in True, False:
+            assert "bool" == dtypes.resolve_scalar_dtype(b)
+
+        for i in np.iinfo(np.int64).min, -1, 0, 3, np.iinfo(np.int64).max:
+            assert "int64" == dtypes.resolve_scalar_dtype(i)
+
+        floats = [
+            -np.inf,
+            np.finfo(np.float64).min,
+            -3.14,
+            -0.0,
+            0.0,
+            7.0,
+            np.finfo(np.float64).max,
+            np.inf,
+            np.nan,
+        ]
+        for f in floats:
+            assert "float64" == dtypes.resolve_scalar_dtype(f)
+
+        for s in "test", '"', " ", "":
+            assert "str" == dtypes.resolve_scalar_dtype(s)
         assert "<class 'list'>" == dtypes.resolve_scalar_dtype([1])
-        assert "uint64" == dtypes.resolve_scalar_dtype(2**63 + 1)
-        assert "bigint" == dtypes.resolve_scalar_dtype(2**64)
+
+        assert "uint64" == dtypes.resolve_scalar_dtype(2 ** 63 + 1)
+        assert "bigint" == dtypes.resolve_scalar_dtype(2 ** 64)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_pdarrays_datatypes(self, size):
@@ -69,22 +80,21 @@ class TestDTypes:
         assert dtypes.dtype("bool") == ak.ones(size, ak.bool).dtype
         assert dtypes.dtype("float64") == ak.ones(size).dtype
         assert dtypes.dtype("str") == ak.random_strings_uniform(1, 16, size=size).dtype
-        assert (
-            dtypes.dtype("bigint")
-            == ak.bigint_from_uint_arrays(
-                [ak.ones(size, dtype=ak.uint64), ak.arange(size, dtype=ak.uint64)]
-            ).dtype
-        )
-        assert dtypes.dtype("bigint") == ak.array([i for i in range(2**200, 2**200 + size)]).dtype
+
+        bi = ak.bigint_from_uint_arrays(
+            [ak.ones(size, dtype=ak.uint64), ak.arange(size, dtype=ak.uint64)]
+        ).dtype
+        assert dtypes.dtype("bigint") == bi
+        assert dtypes.dtype("bigint") == ak.arange(2 ** 200, 2 ** 200 + size).dtype
 
     def test_isSupportedInt(self):
-        for supported in 1, np.int64(1), np.int64(1.0), np.uint32(1):
+        for supported in -10, 1, np.int64(1), np.int64(1.0), np.uint32(1), 2 ** 63 + 1, 2 ** 200:
             assert dtypes.isSupportedInt(supported)
         for unsupported in 1.0, "1":
             assert not dtypes.isSupportedInt(unsupported)
 
     def test_isSupportedFloat(self):
-        for supported in 1.0, float(1), np.float64(1), np.float64(1.0):
+        for supported in np.nan, -np.inf, 3.1, -0.0, float(1), np.float64(1):
             assert dtypes.isSupportedFloat(supported)
         for unsupported in np.int64(1.0), int(1.0), "1.0":
             assert not dtypes.isSupportedFloat(unsupported)
