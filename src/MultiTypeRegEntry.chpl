@@ -3,6 +3,7 @@ module MultiTypeRegEntry {
     use Set;
     use List;
     use Map;
+    use ServerErrors;
 
     use ServerConfig;
     use Logging;
@@ -28,6 +29,7 @@ module MultiTypeRegEntry {
                 DataFrameRegEntry,
                 GroupByRegEntry,
                 CategoricalRegEntry,
+                SegArrayRegEntry,
                 IndexRegEntry,
                 SeriesRegEntry,
                 BitVectorRegEntry,           
@@ -154,19 +156,29 @@ module MultiTypeRegEntry {
             for (cname, c) in zip(this.column_names, this.columns) {
                 var gre = c: borrowed GenRegEntry;
                 var col_map: map(string, string);
-                if gre.objType == ObjType.PDARRAY || gre.objType == ObjType.STRINGS || gre.objType == ObjType.DATETIME ||
-                    gre.objType == ObjType.TIMEDELTA || gre.objType == ObjType.IPV4 {
-                    var are = gre: borrowed ArrayRegEntry;
-                    col_map = are.asMap(st);
+                select gre.objType {
+                    when ObjType.PDARRAY, ObjType.STRINGS, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
+                        var are = gre: borrowed ArrayRegEntry;
+                        col_map = are.asMap(st);
+                    }
+                    when ObjType.CATEGORICAL {
+                        var cre = gre: borrowed CategoricalRegEntry;
+                        col_map = cre.asMap(st);
+                    }
+                    when ObjType.SEGARRAY {
+                        var sre = gre: borrowed SegArrayRegEntry;
+                        col_map = sre.asMap(st);
+                    }
+                    otherwise {
+                        throw getErrorWithContext(
+                            msg="Invalid DataFrame column ObjType, %s".doFormat(gre.objType: string),
+                            lineNumber=getLineNumber(),
+                            routineName=getRoutineName(),
+                            moduleName=getModuleName(),
+                            errorClass="IllegalArgumentError");
+                    }
                 }
-                else if gre.objType == ObjType.CATEGORICAL {
-                    var cre = gre: borrowed CategoricalRegEntry;
-                    col_map = cre.asMap(st);
-                }
-                else if gre.objType == ObjType.SEGARRAY {
-                    var sre = gre: borrowed SegArrayRegEntry;
-                    col_map = sre.asMap(st);
-                }
+                
                 var create_str = "%s+|+%s".doFormat(col_map["objType"], col_map["create"]);
                 col_creates.add(cname, create_str);
             }
@@ -268,17 +280,23 @@ module MultiTypeRegEntry {
             for i in idx {
                 var idx_map: map(string, string);
                 var gre = i: borrowed GenRegEntry;
-                if gre.objType == ObjType.PDARRAY {
-                    var are = gre: borrowed ArrayRegEntry;
-                    idx_map = are.asMap(st);
-                }
-                else if gre.objType == ObjType.STRINGS {
-                    var are = gre: borrowed ArrayRegEntry;
-                    idx_map = are.asMap(st);
-                }
-                else if gre.objType == ObjType.CATEGORICAL {
-                    var cre = gre: borrowed CategoricalRegEntry;
-                    idx_map = cre.asMap(st);
+                select gre.objType {
+                    when ObjType.PDARRAY, ObjType.STRINGS {
+                        var are = gre: borrowed ArrayRegEntry;
+                        idx_map = are.asMap(st);
+                    }
+                    when ObjType.CATEGORICAL {
+                        var cre = gre: borrowed CategoricalRegEntry;
+                        idx_map = cre.asMap(st);
+                    }
+                    otherwise {
+                        throw getErrorWithContext(
+                            msg="Invalid Index ObjType, %s".doFormat(gre.objType: string),
+                            lineNumber=getLineNumber(),
+                            routineName=getRoutineName(),
+                            moduleName=getModuleName(),
+                            errorClass="IllegalArgumentError");
+                    }
                 }
                 var create_str = "%s+|+%s".doFormat(idx_map["objType"], idx_map["create"]);
                 idxList.pushBack(create_str);

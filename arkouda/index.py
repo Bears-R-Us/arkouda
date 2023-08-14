@@ -154,7 +154,7 @@ class Index:
 
         Returns
         -------
-        Categorical
+        Index
             The same Index which is now registered with the arkouda server and has an updated name.
             This is an in-place modification, the original is returned to support
             a fluid programming style.
@@ -680,12 +680,7 @@ class MultiIndex(Index):
 
     def to_ndarray(self):
         import numpy as np
-
-        rtn = []
-        for val in self.values:
-            val = convert_if_categorical(val)
-            rtn.append(val.to_ndarray())
-        return np.array(rtn)
+        return np.array([convert_if_categorical(val).to_ndarray() for val in self.values])
 
     def to_list(self):
         return self.to_ndarray().tolist()
@@ -702,7 +697,7 @@ class MultiIndex(Index):
 
         Returns
         -------
-        Categorical
+        MultiIndex
             The same Index which is now registered with the arkouda server and has an updated name.
             This is an in-place modification, the original is returned to support
             a fluid programming style.

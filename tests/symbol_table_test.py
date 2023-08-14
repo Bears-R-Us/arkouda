@@ -1,19 +1,7 @@
-import json
-
-import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
 from arkouda.pdarrayclass import RegistrationError
-from arkouda.util import (
-    attach,
-    attach_all,
-    is_registered,
-    register_all,
-    unregister,
-    unregister_all,
-)
-
 N = 100
 UNIQUE = N // 4
 
@@ -21,7 +9,7 @@ UNIQUE = N // 4
 def cleanup():
     ak.clear()
     for registered_name in ak.list_registry()["Objects"]:
-        unregister(registered_name)
+        ak.unregister(registered_name)
     ak.clear()
 
 
@@ -46,7 +34,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(pda.name in reg["Components"])
 
         # validate attach
-        attach_pda = attach(reg_name)
+        attach_pda = ak.attach(reg_name)
         self.assertTrue(attach_pda.is_registered())
         self.assertEqual(pda.registered_name, attach_pda.registered_name)
         self.assertListEqual(pda.to_list(), attach_pda.to_list())
@@ -86,7 +74,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(pda.name in reg["Components"])
 
         # validate attach
-        attach_pda = attach(reg_name)
+        attach_pda = ak.attach(reg_name)
         self.assertTrue(attach_pda.is_registered())
         self.assertEqual(pda.registered_name, attach_pda.registered_name)
         self.assertListEqual(pda.to_list(), attach_pda.to_list())
@@ -125,7 +113,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(ip.name in reg["Components"])
 
         # validate attach
-        attach_ip = attach(reg_name)
+        attach_ip = ak.attach(reg_name)
         self.assertTrue(attach_ip.is_registered())
         self.assertEqual(ip.registered_name, attach_ip.registered_name)
         self.assertListEqual(ip.to_list(), attach_ip.to_list())
@@ -164,7 +152,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(dt.name in reg["Components"])
 
         # validate attach
-        attach_dt = attach(reg_name)
+        attach_dt = ak.attach(reg_name)
         self.assertTrue(attach_dt.is_registered())
         self.assertEqual(dt.registered_name, attach_dt.registered_name)
         self.assertListEqual(dt.to_list(), attach_dt.to_list())
@@ -203,7 +191,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(td.name in reg["Components"])
 
         # validate attach
-        attach_td = attach(reg_name)
+        attach_td = ak.attach(reg_name)
         self.assertTrue(attach_td.is_registered())
         self.assertEqual(td.registered_name, attach_td.registered_name)
         self.assertListEqual(td.to_list(), attach_td.to_list())
@@ -243,7 +231,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(sa.values.name in reg["Components"])
 
         # validate attach
-        attach_sa = attach(reg_name)
+        attach_sa = ak.attach(reg_name)
         self.assertTrue(attach_sa.is_registered())
         self.assertEqual(sa.registered_name, attach_sa.registered_name)
         self.assertListEqual(sa.to_list(), attach_sa.to_list())
@@ -307,13 +295,10 @@ class RegistrationTest(ArkoudaTest):
                 self.assertTrue(val.name in reg["Components"])
 
         # validate attach
-        attach_df = attach(reg_name)
+        attach_df = ak.attach(reg_name)
         self.assertTrue(attach_df.is_registered())
         self.assertEqual(df.registered_name, attach_df.registered_name)
         # need to index the attached to ensure same columns order
-        print(df.to_pandas())
-        print()
-        print(attach_df[df.columns].to_pandas())
         self.assertTrue(assert_frame_equal(df.to_pandas(), attach_df[df.columns].to_pandas()) is None)
         self.assertIsInstance(attach_df, ak.DataFrame)
 
@@ -368,7 +353,7 @@ class RegistrationTest(ArkoudaTest):
                 self.assertTrue(k.name in reg["Components"])
 
         # validate attach
-        attach_g = attach(reg_name)
+        attach_g = ak.attach(reg_name)
         self.assertTrue(attach_g.is_registered())
         self.assertEqual(g.registered_name, attach_g.registered_name)
         # need to index the attached to ensure same columns order
@@ -417,7 +402,7 @@ class RegistrationTest(ArkoudaTest):
             self.assertTrue(cat.permutation.name in reg["Components"])
 
         # validate attach
-        attach_cat = attach(reg_name)
+        attach_cat = ak.attach(reg_name)
         self.assertTrue(attach_cat.is_registered())
         self.assertEqual(cat.registered_name, attach_cat.registered_name)
         # need to index the attached to ensure same columns order
@@ -463,7 +448,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(i.values.name in reg["Components"])
 
         # validate attach
-        attach_i = attach(reg_name)
+        attach_i = ak.attach(reg_name)
         self.assertTrue(attach_i.is_registered())
         self.assertEqual(i.registered_name, attach_i.registered_name)
         self.assertListEqual(i.to_list(), attach_i.to_list())
@@ -518,7 +503,7 @@ class RegistrationTest(ArkoudaTest):
                 self.assertTrue(x.name in reg["Components"])
 
         # validate attach
-        attach_i = attach(reg_name)
+        attach_i = ak.attach(reg_name)
         self.assertTrue(attach_i.is_registered())
         self.assertEqual(i.registered_name, attach_i.registered_name)
         self.assertListEqual(i.to_list(), attach_i.to_list())
@@ -559,7 +544,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(s.values.name in reg["Components"])
 
         # validate attach
-        attach_s = attach(reg_name)
+        attach_s = ak.attach(reg_name)
         self.assertTrue(attach_s.is_registered())
         self.assertEqual(s.registered_name, attach_s.registered_name)
         self.assertListEqual(s.to_list(), attach_s.to_list())
@@ -599,7 +584,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(b.values.name in reg["Components"])
 
         # validate attach
-        attach_b = attach(reg_name)
+        attach_b = ak.attach(reg_name)
         self.assertTrue(attach_b.is_registered())
         self.assertEqual(b.registered_name, attach_b.registered_name)
         self.assertListEqual(b.to_list(), attach_b.to_list())
@@ -659,12 +644,12 @@ class RegistrationTest(ArkoudaTest):
         with self.assertRaises(
             TypeError, msg="attach() should raise TypeError when user_defined_name is not a str"
         ):
-            attach(7)
+            ak.attach(7)
 
         with self.assertRaises(
             TypeError, msg="is_registered() should raise TypeError when user_defined_name is not a str"
         ):
-            is_registered(7)
+            ak.is_registered(7)
 
         cleanup()
 
@@ -720,7 +705,7 @@ class RegistrationTest(ArkoudaTest):
         s = ak.array(["a", "b", "c"])
         c = ak.Categorical(s)
 
-        register_all({"MyArray": a, "MyStrings": s, "MyCat": c})
+        ak.register_all({"MyArray": a, "MyStrings": s, "MyCat": c})
 
         # validate that all objects are registered
         self.assertEqual(a.registered_name, "MyArray")
@@ -733,7 +718,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(c.registered_name in reg["Objects"])
 
         # validate that all objects are attached
-        att = attach_all(["MyArray", "MyCat"])
+        att = ak.attach_all(["MyArray", "MyCat"])
         self.assertTrue("MyArray" in att)
         self.assertTrue("MyCat" in att)
         self.assertIsInstance(att["MyArray"], ak.pdarray)
@@ -742,7 +727,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertListEqual(att["MyCat"].to_list(), c.to_list())
 
         # validate all objects are unregistered
-        unregister_all(["MyStrings", "MyArray"])
+        ak.unregister_all(["MyStrings", "MyArray"])
         reg = ak.list_registry()
         self.assertFalse("MyArray" in reg["Objects"])
         self.assertFalse("MyStrings" in reg["Objects"])
@@ -759,7 +744,7 @@ class RegistrationTest(ArkoudaTest):
         cleanup()
         a = ak.ones(3, dtype=ak.int64).register("a_reg")
         self.assertTrue(str(a), "Expected to pass")
-        b = attach("a_reg")
+        b = ak.attach("a_reg")
         b.unregister()
         b = None  # Force out of scope
         with self.assertRaises(RuntimeError):

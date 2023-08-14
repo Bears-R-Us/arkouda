@@ -1707,8 +1707,8 @@ class GroupBy:
 
         if isinstance(self.keys, (pdarray, Strings, Categorical)):
             key_data = [
-                self.keys.name
-                if not isinstance(self.keys.name, Categorical)
+                self.keys
+                if not isinstance(self.keys, Categorical)
                 else json.dumps(
                     {
                         "codes": self.keys.codes.name,
@@ -1790,7 +1790,7 @@ class GroupBy:
 
         unregister(self.registered_name)
 
-        self.name = None  # Clear our internal GroupBy object name
+        self.registered_name = None  # Clear our internal GroupBy object name
 
     def is_registered(self) -> bool:
         """

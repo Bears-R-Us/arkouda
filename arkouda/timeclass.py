@@ -667,7 +667,7 @@ class Datetime(_AbstractBaseTime):
 
         See Also
         --------
-        register, attach, unregister, unregister_categorical_by_name
+        register, attach, unregister
 
         Notes
         -----
@@ -891,7 +891,7 @@ class Timedelta(_AbstractBaseTime):
 
         See also
         --------
-        register, attach, unregister_categorical_by_name, is_registered
+        register, attach, is_registered
 
         Notes
         -----
@@ -922,7 +922,7 @@ class Timedelta(_AbstractBaseTime):
 
         See Also
         --------
-        register, attach, unregister, unregister_categorical_by_name
+        register, attach, unregister
 
         Notes
         -----

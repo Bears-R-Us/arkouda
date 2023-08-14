@@ -87,7 +87,7 @@ def list_registry(detailed: bool = False):
     Returns
     -------
     dict
-        Dict containing keys "Componets" and "Objects".
+        Dict containing keys "Components" and "Objects".
 
     Raises
     ------
@@ -95,10 +95,11 @@ def list_registry(detailed: bool = False):
         Raised if there's a server-side error thrown
     """
     data = json.loads(cast(str, generic_msg(cmd="list_registry")))
+    print(data)
     objs = json.loads(data["Objects"]) if data["Objects"] != "" else []
-    obj_types = json.loads(data["Object_Types"]) if data["Objects"] != "" else []
+    obj_types = json.loads(data["Object_Types"]) if data["Object_Types"] != "" else []
     return {
-        "Objects": [(o, t) for (o, t) in zip(objs, obj_types)] if detailed else objs,
+        "Objects": list(zip(objs, obj_types)) if detailed else objs,
         "Components": json.loads(data["Components"]),
     }
 

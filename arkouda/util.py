@@ -201,7 +201,6 @@ def attach(name: str):
     ):
         rtn_obj = Index.from_return_msg(rep_msg["create"])
     elif rep_msg["objType"].lower() == Series.objType.lower():
-        print(rep_msg["create"])
         rtn_obj = Series.from_return_msg(rep_msg["create"])
     elif rep_msg["objType"].lower() == BitVector.special_objType.lower():
         rtn_obj = BitVector.from_return_msg(rep_msg["create"])
@@ -236,11 +235,7 @@ def is_registered(name: str, as_component: bool = False) -> bool:
     -------
     bool
     """
-    reg = list_registry()
-    if as_component:
-        return name in reg["Components"]
-    else:
-        return name in reg["Objects"]
+    return name in list_registry()["Components" if as_component else "Objects"]
 
 
 def register_all(data: dict):
@@ -290,8 +285,4 @@ def attach_all(names: list):
     --------
     dict
     """
-    rtn = {}
-    for n in names:
-        rtn[n] = attach(n)
-
-    return rtn
+    return {n: attach(n) for n in names}

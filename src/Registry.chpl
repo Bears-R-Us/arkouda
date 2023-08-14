@@ -47,27 +47,28 @@ module Registry {
             registered_entries.pushBack(dfre.idx);
             for c in dfre.columns {
                 var gre = c: borrowed GenRegEntry;
-                if (gre.objType == ObjType.PDARRAY || gre.objType == ObjType.STRINGS || gre.objType == ObjType.DATETIME ||
-                    gre.objType == ObjType.TIMEDELTA || gre.objType == ObjType.IPV4) {
-                    var are = gre: borrowed ArrayRegEntry;
-                    registered_entries.pushBack(are.array);
-                }
-                else if gre.objType == ObjType.SEGARRAY {
-                    var sre = gre: borrowed SegArrayRegEntry;
-                    register_segarray_components(sre);
-                }
-                else if gre.objType == ObjType.CATEGORICAL {
-                    var cre = gre: borrowed CategoricalRegEntry;
-                    register_categorical_components(cre);
-                }
-                else {
-                    var errorMsg = "Dataframes only support pdarray, Strings, SegArray, and Categorical columns. Found %s".doFormat(gre.objType: string);
-                    throw getErrorWithContext(
-                        msg=errorMsg,
-                        lineNumber=getLineNumber(),
-                        routineName=getRoutineName(),
-                        moduleName=getModuleName(),
-                        errorClass="IllegalArgumentError");
+                select gre.objType {
+                    when ObjType.PDARRAY, ObjType.STRINGS, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
+                        var are = gre: borrowed ArrayRegEntry;
+                        registered_entries.pushBack(are.array);
+                    }
+                    when ObjType.CATEGORICAL {
+                        var cre = gre: borrowed CategoricalRegEntry;
+                        register_categorical_components(cre);
+                    }
+                    when ObjType.SEGARRAY {
+                        var sre = gre: borrowed SegArrayRegEntry;
+                        register_segarray_components(sre);
+                    }
+                    otherwise {
+                        var errorMsg = "Dataframes only support pdarray, Strings, SegArray, and Categorical columns. Found %s".doFormat(gre.objType: string);
+                        throw getErrorWithContext(
+                            msg=errorMsg,
+                            lineNumber=getLineNumber(),
+                            routineName=getRoutineName(),
+                            moduleName=getModuleName(),
+                            errorClass="IllegalArgumentError");
+                    }
                 }
             }
             dfre.setName(name);
@@ -80,7 +81,7 @@ module Registry {
             registered_entries.pushBack(gbre.permutation);
             registered_entries.pushBack(gbre.uki);
 
-            for (k) in zip(gbre.keys) {
+            for k in gbre.keys {
                 var gre = k: borrowed GenRegEntry;
                 if gre.objType == ObjType.PDARRAY || gre.objType == ObjType.STRINGS {
                     var are = gre: borrowed ArrayRegEntry;
@@ -282,7 +283,7 @@ module Registry {
         proc checkAvailability(name: string) throws {
             if tab.contains(name) {
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "undefined registry name: %s".doFormat(name));
+                                                "Name, %s, not available for registration. Already in use.".doFormat(name));
                 var errorMsg = "Name, %s, not available for registration. Already in use.".doFormat(name); 
                     throw getErrorWithContext(
                         msg=errorMsg,

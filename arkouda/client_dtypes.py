@@ -211,7 +211,7 @@ class BitVector(pdarray):
 
         Returns
         -------
-        Categorical
+        BitVector
             The same BitVector which is now registered with the arkouda server and has an updated name.
             This is an in-place modification, the original is returned to support
             a fluid programming style.
@@ -222,11 +222,11 @@ class BitVector(pdarray):
         TypeError
             Raised if user_defined_name is not a str
         RegistrationError
-            If the server was unable to register the Categorical with the user_defined_name
+            If the server was unable to register the BitVector with the user_defined_name
 
         See also
         --------
-        unregister, attach, unregister_categorical_by_name, is_registered
+        unregister, attach, is_registered
 
         Notes
         -----
@@ -249,64 +249,6 @@ class BitVector(pdarray):
         )
         self.registered_name = user_defined_name
         return self
-
-    def unregister(self):
-        """
-        Unregister this BitVector object in the arkouda server which was previously
-        registered using register() and/or attached to using attach()
-
-        Raises
-        ------
-        RegistrationError
-            If the object is already unregistered or if there is a server error
-            when attempting to unregister
-
-        See also
-        --------
-        register, attach, is_registered
-
-        Notes
-        -----
-        Objects registered with the server are immune to deletion until
-        they are unregistered.
-        """
-        from arkouda.util import unregister
-
-        if not self.registered_name:
-            raise RegistrationError("This object is not registered")
-        unregister(self.registered_name)
-        self.registered_name = None
-
-    def is_registered(self) -> np.bool_:
-        """
-        Return True iff the object is contained in the registry or is a component of a
-        registered object.
-
-        Returns
-        -------
-        numpy.bool
-            Indicates if the object is contained in the registry
-
-        Raises
-        ------
-        RegistrationError
-            Raised if there's a server-side error or a mis-match of registered components
-
-        See Also
-        --------
-        register, attach, unregister
-
-        Notes
-        -----
-        Objects registered with the server are immune to deletion until
-        they are unregistered.
-        """
-        from arkouda.util import is_registered
-
-        if self.registered_name is None:
-            return np.bool_(False)
-        else:
-            return np.bool_(is_registered(self.registered_name))
 
     @classmethod
     def from_return_msg(cls, rep_msg):
@@ -701,7 +643,7 @@ class IPv4(pdarray):
         Parameters
         ----------
         user_defined_name : str
-            user defined name the timedelta is to be registered under,
+            user defined name the IPv4 is to be registered under,
             this will be the root name for underlying components
 
         Returns
@@ -717,7 +659,7 @@ class IPv4(pdarray):
         TypeError
             Raised if user_defined_name is not a str
         RegistrationError
-            If the server was unable to register the timedelta with the user_defined_name
+            If the server was unable to register the IPv4 with the user_defined_name
 
         See also
         --------

@@ -2238,12 +2238,12 @@ class DataFrame(UserDict):
             )
             if isinstance(obj, Categorical_)
             else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
-            for k, obj in self.items()
+            for obj in self.values()
         ]
 
         col_objTypes = [
             obj.special_objType if hasattr(obj, "special_objType") else obj.objType
-            for key, obj in self.items()
+            for obj in self.values()
         ]
 
         generic_msg(
@@ -2340,7 +2340,7 @@ class DataFrame(UserDict):
 
         See Also
         --------
-        register, is_registered, unregister, unregister_groupby_by_name
+        register, is_registered, unregister
         """
         import warnings
 

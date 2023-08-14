@@ -434,7 +434,7 @@ class Series:
 
         Returns
         -------
-        Categorical
+        Series
             The same Series which is now registered with the arkouda server and has an updated name.
             This is an in-place modification, the original is returned to support
             a fluid programming style.

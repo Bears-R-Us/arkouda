@@ -271,19 +271,7 @@ module RegistrationMsg {
                         st: borrowed SymTab): MsgTuple throws {
         var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
         select objtype {
-            when ObjType.PDARRAY {
-                return register_array(msgArgs, st);
-            }
-            when ObjType.STRINGS {
-                return register_array(msgArgs, st);
-            }
-            when ObjType.DATETIME {
-                return register_array(msgArgs, st);
-            }
-            when ObjType.TIMEDELTA {
-                return register_array(msgArgs, st);
-            }
-            when ObjType.IPV4 {
+            when ObjType.PDARRAY, ObjType.STRINGS, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
                 return register_array(msgArgs, st);
             }
             when ObjType.SEGARRAY {
@@ -327,23 +315,7 @@ module RegistrationMsg {
         var name = msgArgs.getValueOf("name");
         var gre = st.registry.lookup(name): borrowed GenRegEntry;
         select gre.objType {
-            when ObjType.PDARRAY {
-                var are = gre: borrowed ArrayRegEntry;
-                st.registry.unregister_array(are);
-            }
-            when ObjType.STRINGS {
-                var are = gre: borrowed ArrayRegEntry;
-                st.registry.unregister_array(are);
-            }
-            when ObjType.DATETIME {
-                var are = gre: borrowed ArrayRegEntry;
-                st.registry.unregister_array(are);
-            }
-            when ObjType.TIMEDELTA {
-                var are = gre: borrowed ArrayRegEntry;
-                st.registry.unregister_array(are);
-            }
-            when ObjType.IPV4 {
+            when ObjType.PDARRAY, ObjType.STRINGS, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
                 var are = gre: borrowed ArrayRegEntry;
                 st.registry.unregister_array(are);
             }

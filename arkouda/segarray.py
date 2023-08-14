@@ -233,6 +233,9 @@ class SegArray:
 
     @property
     def grouping(self):
+        if self._grouping is not None:
+            return self._grouping
+
         if self.size == 0 or self._non_empty_count == 0:
             self._grouping = GroupBy(zeros(0, dtype=akint64))
         else:
@@ -240,7 +243,6 @@ class SegArray:
             self._grouping = GroupBy(
                 broadcast(self.segments[self.non_empty], arange(self._non_empty_count), self.valsize)
             )
-        return self._grouping
 
     def _get_lengths(self):
         if self.size == 0:

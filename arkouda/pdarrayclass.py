@@ -3260,7 +3260,7 @@ def attach(user_defined_name: str) -> pdarray:
     from arkouda.util import attach
 
     warnings.warn(
-        "ak.pdarray.attach() is deprecated. Please use ak.attach() instead.",
+        "ak.pdarrayclass.attach() is deprecated. Please use ak.attach() instead.",
         DeprecationWarning,
     )
     return attach(user_defined_name)
