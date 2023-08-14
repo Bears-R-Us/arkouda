@@ -4,7 +4,6 @@ import pytest
 import arkouda as ak
 
 NUM_TYPES = [ak.int64, ak.uint64, ak.float64, ak.bool, ak.bigint]
-BIGINT_AND_UINT_TYPES = [ak.bigint, ak.uint64]
 
 
 def key_arrays(size):
@@ -13,43 +12,38 @@ def key_arrays(size):
     return ikeys, ukeys
 
 
-def value_array(num_types, size):
-    array_dict = {
-        ak.int64: (i := ak.randint(0, size, size)),
-        ak.uint64: (u := ak.cast(i, ak.uint64)),
-        ak.float64: ak.array(np.random.randn(size)),
-        ak.bool: (i % 2) == 0,
-        ak.bigint: ak.cast(u, ak.bigint),
-        ak.str_: ak.cast(i, str),
-    }
-    return array_dict[num_types]
+def value_array(dtype, size):
+    if dtype is ak.int64:
+        return ak.randint(-size, size, size)
+    elif dtype is ak.uint64:
+        return ak.randint(0, size, size, dtype=dtype)
+    elif dtype is ak.float64:
+        return ak.randint(-size, size, size, dtype=dtype)
+    elif dtype is ak.bool:
+        return (ak.randint(0, size, size) % 2) == 0
+    elif dtype is ak.bigint:
+        return ak.randint(0, size, size, dtype=ak.uint64) + 2**200
+    elif dtype is ak.str_:
+        return ak.random_strings_uniform(1, 16, size=size)
+    return None
 
 
 class TestIndexing:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("num_types", NUM_TYPES)
-    def test_pdarray_uint_indexing(self, prob_size, num_types):
+    @pytest.mark.parametrize("dtype", NUM_TYPES + [ak.str_])
+    def test_pdarray_uint_indexing(self, prob_size, dtype):
         # for every pda in array_dict test indexing with uint array and uint scalar
         ikeys, ukeys = key_arrays(prob_size)
-        pda = value_array(num_types, prob_size)
+        pda = value_array(dtype, prob_size)
         assert pda[np.uint(2)] == pda[2]
         assert pda[ukeys].to_list() == pda[ikeys].to_list()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_strings_uint_indexing(self, prob_size):
-        # test Strings array indexing with uint array and uint scalar
-        ikeys, ukeys = key_arrays(prob_size)
-        pda = value_array(ak.str_, prob_size)
-        assert pda[np.uint(2)] == pda[2]
-        assert pda[ukeys].to_list() == pda[ikeys].to_list()
-
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", BIGINT_AND_UINT_TYPES)
-    def test_bool_indexing(self, prob_size, dtype):
-        pda_test = value_array(dtype, prob_size)
-        pda_uint = ak.cast(pda_test, ak.uint64)
-        pda_bool = value_array(ak.bool, prob_size)
-        assert pda_uint[pda_bool].to_list() == pda_test[pda_bool].to_list()
+    def test_bool_indexing(self, prob_size):
+        u = value_array(ak.uint64, prob_size)
+        b = value_array(ak.bool, prob_size)
+        assert u[b].to_list() == ak.cast(u, ak.int64)[b].to_list()
+        assert u[b].to_list() == ak.cast(u, ak.bigint)[b].to_list()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("num_types", NUM_TYPES)
