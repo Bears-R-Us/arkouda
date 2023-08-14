@@ -1197,18 +1197,7 @@ class TestHDF5:
             assert f1_size == f2_size
 
     def test_snapshot(self):
-        # Once issue #2617 is resolved, update to df = ak.DataFrame(make_multi_dtype_dict())
-        df = ak.DataFrame(
-            {
-                "int_col": ak.arange(10),
-                "uint_col": ak.array([i + 2**63 for i in range(10)], dtype=ak.uint64),
-                "float_col": ak.linspace(-3.5, 3.5, 10),
-                "bool_col": ak.randint(0, 2, 10, dtype=ak.bool),
-                "bigint_col": ak.array([i + 2**200 for i in range(10)], dtype=ak.bigint),
-                "segarr_col": ak.SegArray(ak.arange(0, 20, 2), ak.randint(0, 3, 20)),
-                "str_col": ak.random_strings_uniform(0, 3, 10),
-            }
-        )
+        df = ak.DataFrame(make_multi_dtype_dict())
         df_str_idx = df.copy()
         df_str_idx._set_index([f"A{i}" for i in range(len(df))])
         col_order = df.columns

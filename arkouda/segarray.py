@@ -12,7 +12,9 @@ from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.join import gen_ranges
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import (
@@ -28,40 +30,6 @@ from arkouda.strings import Strings
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"
-
-
-def gen_ranges(starts, ends, stride=1):
-    """
-    Generate a segmented array of variable-length, contiguous ranges between pairs of
-    start- and end-points.
-
-    Parameters
-    ----------
-    starts : pdarray, int64
-        The start value of each range
-    ends : pdarray, int64
-        The end value (exclusive) of each range
-    stride: int
-        Difference between successive elements of each range
-
-    Returns
-    -------
-    segments : pdarray, int64
-        The starting index of each range in the resulting array
-    ranges : pdarray, int64
-        The actual ranges, flattened into a single array
-    """
-    if starts.size != ends.size:
-        raise ValueError("starts and ends must be same length")
-    if starts.size == 0:
-        return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
-    lengths = (ends - starts) // stride
-    segs = cumsum(lengths) - lengths
-    totlen = lengths.sum()
-    slices = ones(totlen, dtype=akint64)
-    diffs = concatenate((array([starts[0]]), starts[1:] - starts[:-1] - (lengths[:-1] - 1) * stride))
-    slices[segs] = diffs
-    return segs, cumsum(slices)
 
 
 def _aggregator(func):
@@ -263,9 +231,7 @@ class SegArray:
             start = self.segments[i]
             end = self.segments[i] + self.lengths[i]
             return self.values[start:end]
-        elif (isinstance(i, pdarray) and (i.dtype == akint64 or i.dtype == akbool)) or isinstance(
-            i, slice
-        ):
+        elif (isinstance(i, pdarray) and i.dtype in [akint64, akuint64, akbool]) or isinstance(i, slice):
             starts = self.segments[i]
             ends = starts + self.lengths[i]
             newsegs, inds = gen_ranges(starts, ends)
@@ -352,13 +318,16 @@ class SegArray:
     def __eq__(self, other):
         if not isinstance(other, SegArray):
             return NotImplemented
+        if self.size != other.size:
+            raise ValueError("Segarrays must have same size to compare")
         eq = zeros(self.size, dtype=akbool)
         leneq = self.lengths == other.lengths
         if leneq.sum() > 0:
             selfcmp = self[leneq]
             othercmp = other[leneq]
-            intersection = self.all(selfcmp.values == othercmp.values)
-            eq[leneq] = intersection
+            intersection = selfcmp.all(selfcmp.values == othercmp.values)
+            eq[leneq & (self.lengths != 0)] = intersection
+            eq[leneq & (self.lengths == 0)] = True
         return eq
 
     def __len__(self) -> int:
