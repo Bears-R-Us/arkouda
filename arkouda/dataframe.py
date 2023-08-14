@@ -2239,7 +2239,7 @@ class DataFrame(UserDict):
             if isinstance(obj, Categorical_)
             else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
             if isinstance(obj, SegArray)
-            else json.dumps({ # BitVector Case
+            else json.dumps({  # BitVector Case
                 "name": obj.name,
                 "width": obj.width,
                 "reverse": obj.reverse
