@@ -746,7 +746,8 @@ class OperatorsTest(ArkoudaTest):
         # Test __repr__()
         self.assertEqual("array([1 2 3])", ak.array([1, 2, 3]).__repr__())
         self.assertEqual("array([1 2 3 ... 17 18 19])", ak.arange(1, 20).__repr__())
-        answers = ["array([1.1000000000000001 2.2999999999999998 5])", "array([1.1 2.3 5])"]
+        answers = ["array([1.1000000000000001 2.2999999999999998 5.00000000000000000])",
+                   "array([1.1 2.3 5])"]
         self.assertTrue(ak.array([1.1, 2.3, 5]).__repr__() in answers)
 
         answers = ["array([0 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10])",
