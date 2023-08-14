@@ -64,37 +64,44 @@ module RegistrationMsg {
         var col_list: list(shared AbstractRegEntry);
         for (c, ot) in zip(columns, col_objTypes) {
             var objType: ObjType = ot.toUpper(): ObjType;
-            if objType == ObjType.PDARRAY || objType == ObjType.STRINGS || objType == ObjType.DATETIME ||
-                    objType == ObjType.TIMEDELTA || objType == ObjType.IPV4 {
-                var are = new shared ArrayRegEntry(c, objType);
-                col_list.pushBack(are);
-            }
-            else if objType == ObjType.CATEGORICAL {
-                var comps = jsonToMap(c);
-                var perm = if comps.contains["permutation"] then comps["permutation"] else "";
-                var seg = if comps.contains["segments"] then comps["segments"] else "";
-                var cre = new shared CategoricalRegEntry(comps["codes"], comps["categories"], comps["NA_codes"], perm, seg);
-                col_list.pushBack(cre);
-            }
-            else if objType == ObjType.SEGARRAY {
-                var comps = jsonToMap(c);
+            select objType {
+                when ObjType.PDARRAY, ObjType.STRINGS, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.TIMEDELTA, ObjType.IPV4 {
+                    var are = new shared ArrayRegEntry(c, objType);
+                    col_list.pushBack(are);
+                }
+                when ObjType.CATEGORICAL {
+                    var comps = jsonToMap(c);
+                    var perm = if comps.contains["permutation"] then comps["permutation"] else "";
+                    var seg = if comps.contains["segments"] then comps["segments"] else "";
+                    var cre = new shared CategoricalRegEntry(comps["codes"], comps["categories"], comps["NA_codes"], perm, seg);
+                    col_list.pushBack(cre);
+                }
+                when ObjType.SEGARRAY {
+                    var comps = jsonToMap(c);
 
-                var gse = toGenSymEntry(st.lookup(comps["values"]));
-                var val_type: ObjType = if gse.dtype == DType.Strings then ObjType.STRINGS else ObjType.PDARRAY;
-                var vre = new shared ArrayRegEntry(comps["values"], val_type);
+                    var gse = toGenSymEntry(st.lookup(comps["values"]));
+                    var val_type: ObjType = if gse.dtype == DType.Strings then ObjType.STRINGS else ObjType.PDARRAY;
+                    var vre = new shared ArrayRegEntry(comps["values"], val_type);
 
-                var lengths = if comps.contains("lengths") then comps["lengths"] else "";
-                var sre = new shared SegArrayRegEntry(comps["segments"], vre, lengths);
-                col_list.pushBack(sre);
-            }
-            else {
-                var errorMsg = "GroupBys only support pdarray, Strings, SegArray and Categorical columns. Found %s".doFormat(objType: string);
-                throw getErrorWithContext(
-                    msg=errorMsg,
-                    lineNumber=getLineNumber(),
-                    routineName=getRoutineName(),
-                    moduleName=getModuleName(),
-                    errorClass="IllegalArgumentError");
+                    var lengths = if comps.contains("lengths") then comps["lengths"] else "";
+                    var sre = new shared SegArrayRegEntry(comps["segments"], vre, lengths);
+                    col_list.pushBack(sre);
+                }
+                when ObjType.BITVECTOR {
+                    var comps = jsonToMap(c);
+
+                    var bre = new shared BitVectorRegEntry(comps["name"], comps["width"]: int, comps["reverse"]: bool);
+                    col_list.pushBack(bre);
+                }
+                otherwise {
+                    var errorMsg = "DataFrames only support columns of type pdarray, Strings, Datetime, Timedelta, IPv4, Categorical, BitVector and SegArray. Found %s".doFormat(objType: string);
+                    throw getErrorWithContext(
+                        msg=errorMsg,
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="IllegalArgumentError");
+                }
             }
         }
         

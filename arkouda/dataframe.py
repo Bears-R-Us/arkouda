@@ -2226,7 +2226,7 @@ class DataFrame(UserDict):
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         column_data = [
             obj.name
-            if not isinstance(obj, (Categorical_, SegArray))
+            if not isinstance(obj, (Categorical_, SegArray, BitVector))
             else json.dumps(
                 {
                     "codes": obj.codes.name,
@@ -2238,6 +2238,12 @@ class DataFrame(UserDict):
             )
             if isinstance(obj, Categorical_)
             else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
+            if isinstance(obj, SegArray)
+            else json.dumps({ # BitVector Case
+                "name": obj.name,
+                "width": obj.width,
+                "reverse": obj.reverse
+            })
             for obj in self.values()
         ]
 
@@ -2446,6 +2452,8 @@ class DataFrame(UserDict):
                     columns[k] = Categorical_.from_return_msg(comps[1])
                 elif comps[0] == SegArray.objType.upper():
                     columns[k] = SegArray.from_return_msg(comps[1])
+                elif comps[0] == BitVector.special_objType.upper():
+                    columns[k] = BitVector.from_return_msg(comps[1])
 
         return cls(columns, idx)
 

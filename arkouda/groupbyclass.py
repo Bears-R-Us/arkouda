@@ -1635,7 +1635,7 @@ class GroupBy:
             and "segments" in kwargs
         ):
             g = GroupBy(None, **kwargs)
-            g.name = user_defined_name
+            g.registered_name = user_defined_name
 
             return g
         else:

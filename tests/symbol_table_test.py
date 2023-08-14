@@ -267,6 +267,7 @@ class RegistrationTest(ArkoudaTest):
                 "td": ak.Timedelta(ak.arange(10)),
                 "cat": ak.Categorical(ak.array(["a", "b", "c", "c", "a", "a", "d", "d", "e", "c"])),
                 "seg": ak.SegArray(ak.arange(0, 20, 2), ak.arange(20)),
+                "bv": ak.BitVector(ak.arange(10))
             }
         )
         df.register(reg_name)

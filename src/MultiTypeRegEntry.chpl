@@ -169,6 +169,10 @@ module MultiTypeRegEntry {
                         var sre = gre: borrowed SegArrayRegEntry;
                         col_map = sre.asMap(st);
                     }
+                    when ObjType.BITVECTOR {
+                        var bre = gre: borrowed BitVectorRegEntry;
+                        col_map = bre.asMap(st);
+                    }
                     otherwise {
                         throw getErrorWithContext(
                             msg="Invalid DataFrame column ObjType, %s".doFormat(gre.objType: string),

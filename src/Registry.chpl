@@ -60,6 +60,10 @@ module Registry {
                         var sre = gre: borrowed SegArrayRegEntry;
                         register_segarray_components(sre);
                     }
+                    when ObjType.BITVECTOR {
+                        var bre = gre: borrowed BitVectorRegEntry;
+                        registered_entries.pushBack(bre.array);
+                    }
                     otherwise {
                         var errorMsg = "Dataframes only support pdarray, Strings, SegArray, and Categorical columns. Found %s".doFormat(gre.objType: string);
                         throw getErrorWithContext(
@@ -178,27 +182,32 @@ module Registry {
             registered_entries.remove(dfre.idx);
             for c in dfre.columns {
                 var gre = c: borrowed GenRegEntry;
-                if gre.objType == ObjType.PDARRAY || gre.objType == ObjType.STRINGS || gre.objType == ObjType.DATETIME ||
-                    gre.objType == ObjType.TIMEDELTA || gre.objType == ObjType.IPV4 {
-                    var are = gre: borrowed ArrayRegEntry;
-                    registered_entries.remove(are.array);
-                }
-                else if gre.objType == ObjType.CATEGORICAL {
-                    var cre = gre: borrowed CategoricalRegEntry;
-                    unregister_categorical_components(cre);
-                }
-                else if gre.objType == ObjType.SEGARRAY {
-                    var sre = gre: borrowed SegArrayRegEntry;
-                    unregister_segarray_components(sre);
-                }
-                else {
-                    var errorMsg = "Dataframes only support pdarray, Strings, SegArray, and Categorical columns. Found %s".doFormat(gre.objType: string);
-                    throw getErrorWithContext(
-                        msg=errorMsg,
-                        lineNumber=getLineNumber(),
-                        routineName=getRoutineName(),
-                        moduleName=getModuleName(),
-                        errorClass="TypeError");
+                select gre.objType {
+                    when ObjType.PDARRAY, ObjType.STRINGS, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
+                        var are = gre: borrowed ArrayRegEntry;
+                        registered_entries.remove(are.array);
+                    }
+                    when ObjType.CATEGORICAL {
+                        var cre = gre: borrowed CategoricalRegEntry;
+                        unregister_categorical_components(cre);
+                    }
+                    when ObjType.SEGARRAY {
+                        var sre = gre: borrowed SegArrayRegEntry;
+                        unregister_segarray_components(sre);
+                    }
+                    when ObjType.BITVECTOR {
+                        var bre = gre: borrowed BitVectorRegEntry;
+                        registered_entries.remove(bre.array);
+                    }
+                    otherwise {
+                        var errorMsg = "Dataframes only support pdarray, Strings, Datetime, Timedelta, IPv4, BitVector, SegArray, and Categorical columns. Found %s".doFormat(gre.objType: string);
+                        throw getErrorWithContext(
+                            msg=errorMsg,
+                            lineNumber=getLineNumber(),
+                            routineName=getRoutineName(),
+                            moduleName=getModuleName(),
+                            errorClass="TypeError");
+                    }
                 }
             }
             tab.remove(dfre.name);
