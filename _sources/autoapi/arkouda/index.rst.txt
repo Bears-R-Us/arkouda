@@ -217,6 +217,7 @@ Functions
    arkouda.pretty_print_information
    arkouda.isSupportedInt
    arkouda.broadcast
+   arkouda.gen_ranges
    arkouda.getArkoudaLogger
    arkouda.cumsum
    arkouda.create_pdarray
@@ -227,7 +228,6 @@ Functions
    arkouda.ones
    arkouda.zeros
    arkouda.concatenate
-   arkouda.gen_ranges
    arkouda.segarray
    arkouda.sorted
    arkouda.intersect
@@ -309,6 +309,7 @@ Attributes
    arkouda.akbool
    arkouda.akint64
    arkouda.str_
+   arkouda.akuint64
    arkouda.SEG_SUFFIX
    arkouda.VAL_SUFFIX
    arkouda.LEN_SUFFIX
@@ -9516,15 +9517,17 @@ Attributes
        'true_dt', 'abs_dt', or 'pos_dt', or result_limit is < 0
 
 
-.. py:function:: gen_ranges(starts: arkouda.pdarrayclass.pdarray, ends: arkouda.pdarrayclass.pdarray) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+.. py:function:: gen_ranges(starts, ends, stride=1)
 
-   Generate a segmented array of variable-length, contiguous
-   ranges between pairs of start- and end-points.
+   Generate a segmented array of variable-length, contiguous ranges between pairs of
+   start- and end-points.
 
    :param starts: The start value of each range
    :type starts: pdarray, int64
    :param ends: The end value (exclusive) of each range
    :type ends: pdarray, int64
+   :param stride: Difference between successive elements of each range
+   :type stride: int
 
    :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
              * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
@@ -11655,6 +11658,10 @@ Attributes
 
    
 
+.. py:data:: akuint64
+
+   
+
 .. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
 
 
@@ -12617,6 +12624,22 @@ Attributes
    >>> permutation = ak.arange(6, -1, -1)
    >>> ak.broadcast(row_starts, row_number, permutation=permutation)
    array([2 2 1 1 1 0 0])
+
+
+.. py:function:: gen_ranges(starts, ends, stride=1)
+
+   Generate a segmented array of variable-length, contiguous ranges between pairs of
+   start- and end-points.
+
+   :param starts: The start value of each range
+   :type starts: pdarray, int64
+   :param ends: The end value (exclusive) of each range
+   :type ends: pdarray, int64
+   :param stride: Difference between successive elements of each range
+   :type stride: int
+
+   :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
+             * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
 
 
 .. py:function:: getArkoudaLogger(name: str, handlers: Optional[List[logging.Handler]] = None, logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT, logLevel: LogLevel = None) -> ArkoudaLogger
@@ -15118,22 +15141,6 @@ Attributes
    :value: '_lengths'
 
    
-
-.. py:function:: gen_ranges(starts, ends, stride=1)
-
-   Generate a segmented array of variable-length, contiguous ranges between pairs of
-   start- and end-points.
-
-   :param starts: The start value of each range
-   :type starts: pdarray, int64
-   :param ends: The end value (exclusive) of each range
-   :type ends: pdarray, int64
-   :param stride: Difference between successive elements of each range
-   :type stride: int
-
-   :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
-             * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
-
 
 .. py:function:: segarray(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, lengths=None, grouping=None)
 

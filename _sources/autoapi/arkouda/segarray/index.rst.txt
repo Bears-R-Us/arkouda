@@ -21,7 +21,6 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.segarray.gen_ranges
    arkouda.segarray.segarray
 
 
@@ -50,22 +49,6 @@ Attributes
    :value: '_lengths'
 
    
-
-.. py:function:: gen_ranges(starts, ends, stride=1)
-
-   Generate a segmented array of variable-length, contiguous ranges between pairs of
-   start- and end-points.
-
-   :param starts: The start value of each range
-   :type starts: pdarray, int64
-   :param ends: The end value (exclusive) of each range
-   :type ends: pdarray, int64
-   :param stride: Difference between successive elements of each range
-   :type stride: int
-
-   :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
-             * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
-
 
 .. py:function:: segarray(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, lengths=None, grouping=None)
 

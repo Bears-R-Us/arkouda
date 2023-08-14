@@ -286,8 +286,8 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.join.join_on_eq_with_dt" title="arkouda.join.join_on_eq_with_dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_on_eq_with_dt</span></code></a>(...)</p></td>
 <td><p>Performs an inner-join on equality between two integer arrays where</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.join.gen_ranges" title="arkouda.join.gen_ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_ranges</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
-<td><p>Generate a segmented array of variable-length, contiguous</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.join.gen_ranges" title="arkouda.join.gen_ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_ranges</span></code></a>(starts, ends[, stride])</p></td>
+<td><p>Generate a segmented array of variable-length, contiguous ranges between pairs of</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.join.compute_join_size" title="arkouda.join.compute_join_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_join_size</span></code></a>(→ Tuple[int, int])</p></td>
 <td><p>Compute the internal size of a hypothetical join between a and b. Returns</p></td>
@@ -332,14 +332,15 @@ result_limit is not an int</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.join.gen_ranges">
-<span class="sig-prename descclassname"><span class="pre">arkouda.join.</span></span><span class="sig-name descname"><span class="pre">gen_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ends</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.join.gen_ranges" title="Permalink to this definition">#</a></dt>
-<dd><p>Generate a segmented array of variable-length, contiguous
-ranges between pairs of start- and end-points.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.join.</span></span><span class="sig-name descname"><span class="pre">gen_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.join.gen_ranges" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate a segmented array of variable-length, contiguous ranges between pairs of
+start- and end-points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>starts</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The start value of each range</p></li>
 <li><p><strong>ends</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The end value (exclusive) of each range</p></li>
+<li><p><strong>stride</strong> (<em>int</em>) – Difference between successive elements of each range</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -295,10 +295,7 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.segarray.gen_ranges" title="arkouda.segarray.gen_ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_ranges</span></code></a>(starts, ends[, stride])</p></td>
-<td><p>Generate a segmented array of variable-length, contiguous ranges between pairs of</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.segarray.segarray" title="arkouda.segarray.segarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segarray</span></code></a>(segments, values[, lengths, grouping])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.segarray.segarray" title="arkouda.segarray.segarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segarray</span></code></a>(segments, values[, lengths, grouping])</p></td>
 <td><p>Alias for the from_parts function. Prevents user from needing to call <cite>ak.SegArray</cite> constructor</p></td>
 </tr>
 </tbody>
@@ -336,29 +333,6 @@
 <dt class="sig sig-object py" id="arkouda.segarray.LEN_SUFFIX">
 <span class="sig-prename descclassname"><span class="pre">arkouda.segarray.</span></span><span class="sig-name descname"><span class="pre">LEN_SUFFIX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'_lengths'</span></em><a class="headerlink" href="#arkouda.segarray.LEN_SUFFIX" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.segarray.gen_ranges">
-<span class="sig-prename descclassname"><span class="pre">arkouda.segarray.</span></span><span class="sig-name descname"><span class="pre">gen_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.gen_ranges" title="Permalink to this definition">#</a></dt>
-<dd><p>Generate a segmented array of variable-length, contiguous ranges between pairs of
-start- and end-points.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>starts</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The start value of each range</p></li>
-<li><p><strong>ends</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The end value (exclusive) of each range</p></li>
-<li><p><strong>stride</strong> (<em>int</em>) – Difference between successive elements of each range</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>segments</strong> (<em>pdarray, int64</em>) – The starting index of each range in the resulting array</p></li>
-<li><p><strong>ranges</strong> (<em>pdarray, int64</em>) – The actual ranges, flattened into a single array</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.segarray.segarray">
@@ -423,7 +397,7 @@ attach method.</p>
 resulting in an array of rows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>m</strong> (<em>list</em><em> of </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id801" title="arkouda.Strings"><em>Strings</em></a>) – List of columns, the rows of which will form the sub-arrays of the output</p>
+<dd class="field-odd"><p><strong>m</strong> (<em>list</em><em> of </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id802" title="arkouda.Strings"><em>Strings</em></a>) – List of columns, the rows of which will form the sub-arrays of the output</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Array of rows of input</p>
@@ -1349,7 +1323,6 @@ the return SegArray</p></li>
 <li><a class="reference internal" href="#arkouda.segarray.SEG_SUFFIX"><code class="docutils literal notranslate"><span class="pre">SEG_SUFFIX</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.VAL_SUFFIX"><code class="docutils literal notranslate"><span class="pre">VAL_SUFFIX</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.LEN_SUFFIX"><code class="docutils literal notranslate"><span class="pre">LEN_SUFFIX</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.gen_ranges"><code class="docutils literal notranslate"><span class="pre">gen_ranges()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.segarray"><code class="docutils literal notranslate"><span class="pre">segarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray"><code class="docutils literal notranslate"><span class="pre">SegArray</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.non_empty"><code class="docutils literal notranslate"><span class="pre">SegArray.non_empty</span></code></a></li>
