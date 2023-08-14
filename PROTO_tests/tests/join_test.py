@@ -22,13 +22,11 @@ class TestJoin:
     @pytest.mark.parametrize("dt_type", ["true_dt", "abs_dt", "pos_dt"])
     def test_join_on_eq_by_dt(self, dt_type):
         x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, self.dt, dt_type)
-        nl = ak.get_config()["numLocales"]
-        assert self.size // nl, x.size
-        assert self.size // nl, y.size
+        assert self.size // pytest.nl, x.size
+        assert self.size // pytest.nl, y.size
 
     def test_join_on_eq_with_true_dt_with_result_limit(self):
-        nl = ak.get_config()["numLocales"]
-        lim = (self.size + nl) * self.size
+        lim = (self.size + pytest.nl) * self.size
         res_size = self.size * self.size
         x, y = ak.join_on_eq_with_dt(
             self.a1, self.a1, self.a1, self.a1, self.dt, "true_dt", result_limit=lim
