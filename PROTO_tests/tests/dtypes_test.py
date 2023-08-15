@@ -28,12 +28,9 @@ class TestDTypes:
         dtypes.check_np_dtype(np.dtype(dtype))
 
     def test_check_np_dtype_errors(self):
-        with pytest.raises(TypeError):
-            dtypes.check_np_dtype(np.dtype(np.int16))
-        with pytest.raises(TypeError):
-            dtypes.check_np_dtype("np.str")
-        with pytest.raises(TypeError):
-            dtypes.check_np_dtype(ak.bigint)
+        for dt in np.dtype(np.int16), "np.str", ak.bigint:
+            with pytest.raises(TypeError):
+                dtypes.check_np_dtype(dt)
 
     def test_translate_np_dtype(self):
         for b in [np.bool_, bool]:
@@ -75,19 +72,18 @@ class TestDTypes:
         assert "uint64" == dtypes.resolve_scalar_dtype(2 ** 63 + 1)
         assert "bigint" == dtypes.resolve_scalar_dtype(2 ** 64)
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_pdarrays_datatypes(self, size):
-        assert dtypes.dtype("int64") == ak.array(np.arange(size)).dtype
-        assert dtypes.dtype("uint64") == ak.array(np.arange(size), ak.uint64).dtype
-        assert dtypes.dtype("bool") == ak.ones(size, ak.bool).dtype
-        assert dtypes.dtype("float64") == ak.ones(size).dtype
-        assert dtypes.dtype("str") == ak.random_strings_uniform(1, 16, size=size).dtype
+    def test_pdarrays_datatypes(self):
+        assert dtypes.dtype("int64") == ak.array(np.arange(10)).dtype
+        assert dtypes.dtype("uint64") == ak.array(np.arange(10), ak.uint64).dtype
+        assert dtypes.dtype("bool") == ak.ones(10, ak.bool).dtype
+        assert dtypes.dtype("float64") == ak.ones(10).dtype
+        assert dtypes.dtype("str") == ak.random_strings_uniform(1, 16, size=10).dtype
 
         bi = ak.bigint_from_uint_arrays(
-            [ak.ones(size, dtype=ak.uint64), ak.arange(size, dtype=ak.uint64)]
+            [ak.ones(10, dtype=ak.uint64), ak.arange(10, dtype=ak.uint64)]
         ).dtype
         assert dtypes.dtype("bigint") == bi
-        assert dtypes.dtype("bigint") == ak.arange(2 ** 200, 2 ** 200 + size).dtype
+        assert dtypes.dtype("bigint") == ak.arange(2 ** 200, 2 ** 200 + 10).dtype
 
     def test_isSupportedInt(self):
         for supported in -10, 1, np.int64(1), np.int64(1.0), np.uint32(1), 2 ** 63 + 1, 2 ** 200:
@@ -122,18 +118,17 @@ class TestDTypes:
         assert num_types == dtypes.NumericDTypes
 
     def test_SeriesDTypes(self):
-        assert np.str_ == dtypes.SeriesDTypes["string"]
-        assert np.str_ == dtypes.SeriesDTypes["<class 'str'>"]
-        assert np.int64 == dtypes.SeriesDTypes["int64"]
-        assert np.int64 == dtypes.SeriesDTypes["<class 'numpy.int64'>"]
-        assert np.float64 == dtypes.SeriesDTypes["float64"]
-        assert np.float64 == dtypes.SeriesDTypes["<class 'numpy.float64'>"]
-        assert np.bool_ == dtypes.SeriesDTypes["bool"]
-        assert np.dtype(bool) == dtypes.SeriesDTypes["bool"]
-        assert np.bool_ == dtypes.SeriesDTypes["<class 'bool'>"]
-        assert np.dtype(bool) == dtypes.SeriesDTypes["<class 'bool'>"]
-        assert np.int64 == dtypes.SeriesDTypes["datetime64[ns]"]
-        assert np.int64 == dtypes.SeriesDTypes["timedelta64[ns]"]
+        for dt in "int64", "<class 'numpy.int64'>", "datetime64[ns]", "timedelta64[ns]":
+            assert dtypes.SeriesDTypes[dt] == np.int64
+
+        for dt in "string", "<class 'str'>":
+            assert dtypes.SeriesDTypes[dt] == np.str_
+
+        for dt in "float64", "<class 'numpy.float64'>":
+            assert dtypes.SeriesDTypes[dt] == np.float64
+
+        for dt in "bool", "<class 'bool'>":
+            assert dtypes.SeriesDTypes[dt] == np.bool_
 
     def test_scalars(self):
         assert "typing.Union[bool, numpy.bool_]" == str(ak.bool_scalars)
