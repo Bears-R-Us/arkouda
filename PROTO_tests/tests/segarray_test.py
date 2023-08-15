@@ -1,11 +1,9 @@
-import os
-import tempfile
 import math
-import pytest
-from arkouda import io_util
-import arkouda as ak
-import numpy as np
 
+import numpy as np
+import pytest
+
+import arkouda as ak
 
 DTYPES = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool, ak.str_]
 NO_BOOL = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.str_]
@@ -13,6 +11,7 @@ NO_STR = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool]
 NO_FLOAT = [ak.int64, ak.uint64, ak.bigint, ak.str_, ak.bool]
 NO_FLOAT_STR = [ak.int64, ak.uint64, ak.bigint, ak.bool]
 SETOPS = ["intersect", "union", "setdiff", "setxor"]
+
 
 class TestSegArray:
     @staticmethod
@@ -23,11 +22,11 @@ class TestSegArray:
         elif dtype == ak.bigint:
             vals = np.array([2**200 + i for i in range(size)])
         elif dtype == ak.float64:
-            vals = np.linspace(-(size/2), (size/2), size)
+            vals = np.linspace(-(size / 2), (size / 2), size)
         elif dtype == ak.str_:
-            alpha_num = list('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+            alpha_num = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
             np_codes = np.random.choice(alpha_num, size=[size, 2])
-            vals = np.array([''.join(code) for code in np_codes])
+            vals = np.array(["".join(code) for code in np_codes])
         elif dtype == ak.bool:
             vals = np.random.randint(0, 2, size, dtype=dtype)
         else:
@@ -48,9 +47,9 @@ class TestSegArray:
         elif dtype == ak.float64:
             vals = np.linspace(-2.5, 2.5, 10)
         elif dtype == ak.str_:
-            alpha_num = list('abcd')
+            alpha_num = list("abcd")
             np_codes = np.random.choice(alpha_num, size=[10, 2])
-            vals = np.array([''.join(code) for code in np_codes])
+            vals = np.array(["".join(code) for code in np_codes])
         elif dtype == ak.bool:
             vals = np.random.randint(0, 2, 10, dtype=dtype)
         else:
@@ -68,9 +67,9 @@ class TestSegArray:
         elif dtype == ak.float64:
             vals = np.linspace(-5, 5, 10)
         elif dtype == ak.str_:
-            alpha_num = list('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+            alpha_num = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
             np_codes = np.random.choice(alpha_num, size=[10, 2])
-            vals = np.array([''.join(code) for code in np_codes])
+            vals = np.array(["".join(code) for code in np_codes])
         elif dtype == ak.bool:
             vals = np.random.randint(0, 2, 10, dtype=dtype)
         else:
@@ -93,9 +92,9 @@ class TestSegArray:
         elif dtype == ak.float64:
             vals = np.linspace(-5, 5, size)
         elif dtype == ak.str_:
-            alpha_num = list('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+            alpha_num = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
             np_codes = np.random.choice(alpha_num, size=[size, 2])
-            vals = np.array([''.join(code) for code in np_codes])
+            vals = np.array(["".join(code) for code in np_codes])
         elif dtype == ak.bool:
             vals = np.random.randint(0, 2, size, dtype=dtype)
         else:
@@ -239,7 +238,7 @@ class TestSegArray:
             ak.array([0, 1, 2, 3]),
             ak.array([], dtype=ak.int64),
             ak.array([4, 5]),
-            ak.array([], dtype=ak.int64)
+            ak.array([], dtype=ak.int64),
         ]
         sa = ak.SegArray.from_multi_array(ma)
 
@@ -290,7 +289,9 @@ class TestSegArray:
             result = ak.SegArray.concat([sa, c_sa], axis=1)
             assert isinstance(result, ak.SegArray)
             assert result.size == sa.size
-            assert result.lengths.to_list() == [x+y for (x, y) in zip(sa.lengths.to_list(), c_sa.lengths.to_list())]
+            assert result.lengths.to_list() == [
+                x + y for (x, y) in zip(sa.lengths.to_list(), c_sa.lengths.to_list())
+            ]
             assert result.to_list() == [x + y for (x, y) in zip(sa.to_list(), c_sa.to_list())]
 
     def test_concat_error_handling(self):
@@ -327,7 +328,7 @@ class TestSegArray:
         suffix, origin = sa.get_suffixes(2)
         assert origin.to_list() == [False, True, False, False, True, False, False]
         sa_list = sa.to_list()
-        expected = [[s[(-2+i)] for s in sa_list if len(s) > 2] for i in range(2)]
+        expected = [[s[(-2 + i)] for s in sa_list if len(s) > 2] for i in range(2)]
         assert [x.to_list() for x in suffix] == expected
 
         suffix, origin = sa.get_suffixes(2, proper=False)
@@ -404,15 +405,15 @@ class TestSegArray:
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
 
         sa.set_jth(0, 1, 99)
-        val_np[seg_np[0]+1] = 99
+        val_np[seg_np[0] + 1] = 99
         test_sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
         assert val_np.tolist() == sa.values.to_list()
         assert test_sa.to_list() == sa.to_list()
 
         sa.set_jth(ak.array([0, 1, 2]), 3, 17)
-        val_np[seg_np[0]+3] = 17
-        val_np[seg_np[1]+3] = 17
-        val_np[seg_np[2]+3] = 17
+        val_np[seg_np[0] + 3] = 17
+        val_np[seg_np[1] + 3] = 17
+        val_np[seg_np[2] + 3] = 17
         test_sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
         assert val_np.tolist() == sa.values.to_list()
         assert test_sa.to_list() == sa.to_list()
@@ -485,7 +486,9 @@ class TestSegArray:
             result = sa.append(sa2, axis=1)
             assert isinstance(result, ak.SegArray)
             assert result.size == sa.size
-            assert result.lengths.to_list() == [x + y for (x, y) in zip(sa.lengths.to_list(), sa2.lengths.to_list())]
+            assert result.lengths.to_list() == [
+                x + y for (x, y) in zip(sa.lengths.to_list(), sa2.lengths.to_list())
+            ]
             assert result.to_list() == [x + y for (x, y) in zip(sa.to_list(), sa2.to_list())]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -564,17 +567,24 @@ class TestSegArray:
         # test empty segments
         # TODO - update line below to segments = ak.array([0, 0, len(a), len(a), len(a), len(a)+len(b)])
         #  when issue #2661 is corrected. Also, needed in the first assert below
-        segments = ak.array([0, len(a), len(a), len(a), len(a)+len(b)])
+        segments = ak.array([0, len(a), len(a), len(a), len(a) + len(b)])
         flat = ak.array(a + b)
         sa = ak.SegArray(segments, flat)
         result = sa.remove_repeats()
-        assert [0, len(exp_a), len(exp_a), len(exp_a), len(exp_a)+len(exp_b)] == result.segments.to_list()
+        assert [
+            0,
+            len(exp_a),
+            len(exp_a),
+            len(exp_a),
+            len(exp_a) + len(exp_b),
+        ] == result.segments.to_list()
         assert np.concatenate([exp_a, exp_b]).tolist() == result.values.to_list()
 
     @pytest.mark.parametrize("dtype", NO_FLOAT_STR)
     @pytest.mark.parametrize("op", SETOPS)
     def test_setops(self, dtype, op):
-        # TODO - string results not properly ordered. Need to add ak.str_ testing back once #2665 is worked.
+        # TODO - string results not properly ordered. Need to add ak.str_ testing
+        #  back once #2665 is worked.
         a, b, c, d = self.get_setops_segments(dtype)
 
         # test with no empty segments
@@ -624,7 +634,7 @@ class TestSegArray:
         # TODO - once #2666 is resolved, this test will need to be updated for the SegArray
         #  being filtered containing empty segments prior to filter
         a, b = self.build_repeat_filter_data(dtype)
-        sa = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        sa = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
 
         # test filtering single value retain empties
         f = self.get_filter(dtype)
