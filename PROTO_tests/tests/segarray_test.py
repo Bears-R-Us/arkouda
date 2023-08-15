@@ -10,6 +10,9 @@ import numpy as np
 DTYPES = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool, ak.str_]
 NO_BOOL = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.str_]
 NO_STR = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool]
+NO_FLOAT = [ak.int64, ak.uint64, ak.bigint, ak.str_, ak.bool]
+NO_FLOAT_STR = [ak.int64, ak.uint64, ak.bigint, ak.bool]
+SETOPS = ["intersect", "union", "setdiff", "setxor"]
 
 class TestSegArray:
     @staticmethod
@@ -39,13 +42,13 @@ class TestSegArray:
         """
         segs = np.array([0, 0, 3, 5, 5, 9, 10])
         if dtype in [ak.int64, ak.uint64]:
-            vals = np.random.randint(0, 5, 10, dtype=dtype)
+            vals = np.random.randint(0, 3, 10, dtype=dtype)
         elif dtype == ak.bigint:
             vals = np.array([2**200 + i for i in range(10)])
         elif dtype == ak.float64:
-            vals = np.linspace(-5, 5, 10)
+            vals = np.linspace(-2.5, 2.5, 10)
         elif dtype == ak.str_:
-            alpha_num = list('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+            alpha_num = list('abcd')
             np_codes = np.random.choice(alpha_num, size=[10, 2])
             vals = np.array([''.join(code) for code in np_codes])
         elif dtype == ak.bool:
@@ -81,7 +84,8 @@ class TestSegArray:
         else:
             return self.make_concat_segarray(ak.int64)
 
-    def build_single_append_array(self, size, dtype):
+    @staticmethod
+    def build_single_append_array(size, dtype):
         if dtype in [ak.int64, ak.uint64]:
             vals = np.random.randint(0, 5, size, dtype=dtype)
         elif dtype == ak.bigint:
@@ -108,6 +112,60 @@ class TestSegArray:
             return False
         elif dtype == ak.float64:
             return -3.14
+
+    @staticmethod
+    def build_repeat_filter_data(dtype):
+        """
+        Small set to validate repeats and filters are used properly
+        Only returns values as segments will change throughout test.
+        """
+        if dtype in [ak.int64, ak.uint64]:
+            a = [1, 2, 1, 1, 3, 3, 5, 4, 6, 2]
+            b = [10, 11, 11, 12, 13, 10, 4, 6, 1, 12]
+        elif dtype == ak.bigint:
+            a = [2**200 + i for i in [1, 2, 1, 1, 3, 3, 5, 4, 6, 2]]
+            b = [2**200 + i for i in [10, 11, 11, 12, 13, 10, 4, 6, 1, 12]]
+        elif dtype == ak.bool:
+            a = [True, False, True, False, False]
+            b = [False, False, True, False, True]
+        elif dtype == ak.float64:
+            a = [3.14, 2.23, 1.01, 3.14, 3.14, 5.7, 1.01]
+            b = [2.23, 1.01, 3.14, 3.14, 5.7, 1.01]
+        elif dtype == ak.str_:
+            a = ["abc", "123", "abc", "abc", "a"]
+            b = ["a", "a", "b", "a"]
+
+        return a, b
+
+    @staticmethod
+    def get_setops_segments(dtype):
+        if dtype in [ak.int64, ak.uint64, ak.bigint]:
+            a = [1, 2, 3, 1, 4]
+            b = [3, 1, 4, 5]
+            c = [1, 3, 3, 5]
+            d = [2, 2, 4]
+            if dtype == ak.bigint:
+                a = [2**200 + x for x in a]
+                b = [2**200 + x for x in b]
+                c = [2**200 + x for x in c]
+                d = [2**200 + x for x in d]
+        elif dtype == ak.bool:
+            a = [True, False, True, True]
+            b = [False, False, False]
+            c = [True, True]
+            d = [False, True, False, True, False]
+        elif dtype == ak.float64:
+            a = [3.14, 2.01, 5.77, 9.31]
+            b = [5.1, 7.6, 3.14]
+            c = [3.14, 5.77, 9.00, 6.43]
+            d = [0.13, 7.6, 3.14, 7.77]
+        elif dtype == ak.str_:
+            a = ["a", "abc", "123", "b", "c"]
+            b = ["a", "abc", "b", "123"]
+            c = ["c", "abc", "x", "y"]
+            d = ["abc", "b", "z"]
+
+        return a, b, c, d
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
@@ -485,7 +543,132 @@ class TestSegArray:
             s.insert(0, to_prepend)
         assert result.to_list() == sa_list
 
-    def test_remove_repeats(self):
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_remove_repeats(self, dtype):
         # Testing with small example to ensure that we are getting duplicates
-        return
+        a, b = self.build_repeat_filter_data(dtype)
 
+        exp_idx_a = np.array([x == y for (x, y) in zip(a[:-1], a[1:])])
+        exp_idx_b = np.array([x == y for (x, y) in zip(b[:-1], b[1:])])
+        exp_a = np.concatenate([np.array([a[0]]), np.array(a[1:])[~exp_idx_a]])
+        exp_b = np.concatenate([np.array([b[0]]), np.array(b[1:])[~exp_idx_b]])
+
+        # Test with no empty segments
+        segments = ak.array([0, len(a)])
+        flat = ak.array(a + b)
+        sa = ak.SegArray(segments, flat)
+        result = sa.remove_repeats()
+        assert [0, len(exp_a)] == result.segments.to_list()
+        assert np.concatenate([exp_a, exp_b]).tolist() == result.values.to_list()
+
+        # test empty segments
+        # TODO - update line below to segments = ak.array([0, 0, len(a), len(a), len(a), len(a)+len(b)])
+        #  when issue #2661 is corrected. Also, needed in the first assert below
+        segments = ak.array([0, len(a), len(a), len(a), len(a)+len(b)])
+        flat = ak.array(a + b)
+        sa = ak.SegArray(segments, flat)
+        result = sa.remove_repeats()
+        assert [0, len(exp_a), len(exp_a), len(exp_a), len(exp_a)+len(exp_b)] == result.segments.to_list()
+        assert np.concatenate([exp_a, exp_b]).tolist() == result.values.to_list()
+
+    @pytest.mark.parametrize("dtype", NO_FLOAT_STR)
+    @pytest.mark.parametrize("op", SETOPS)
+    def test_setops(self, dtype, op):
+        # TODO - string results not properly ordered. Need to add ak.str_ testing back once #2665 is worked.
+        a, b, c, d = self.get_setops_segments(dtype)
+
+        # test with no empty segments
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
+        segarr_2 = ak.SegArray(ak.array([0, len(c)]), ak.array(c + d))
+        sa_op = getattr(segarr, op)
+        result = sa_op(segarr_2)
+
+        np_func = getattr(np, f"{op}1d")
+        exp_1 = np_func(np.array(a), np.array(c))
+        exp_2 = np_func(np.array(b), np.array(d))
+        assert result.segments.to_list() == [0, len(exp_1)]
+        assert result.values.to_list() == np.concatenate([exp_1, exp_2]).tolist()
+        exp_sa = ak.SegArray(ak.array([0, len(exp_1)]), ak.array(np.concatenate([exp_1, exp_2])))
+        assert result.to_list() == exp_sa.to_list()
+
+        # TODO - empty segments testing
+
+    @staticmethod
+    def get_filter(dtype):
+        if dtype in [ak.int64, ak.uint64]:
+            return 3
+        elif dtype == ak.bigint:
+            return 3 + 2**200
+        elif dtype == ak.float64:
+            return 3.14
+        elif dtype == ak.bool:
+            return False
+        elif dtype == ak.str_:
+            return "a"
+
+    @staticmethod
+    def get_filter_list(dtype):
+        if dtype in [ak.int64, ak.uint64]:
+            return [1, 3]
+        elif dtype == ak.bigint:
+            return [1 + 2**200, 3 + 2**200]
+        elif dtype == ak.float64:
+            return [3.14, 1.01]
+        elif dtype == ak.bool:
+            return [False]
+        elif dtype == ak.str_:
+            return ["a", "abc"]
+
+    @pytest.mark.parametrize("dtype", [ak.int64])
+    def test_filter(self, dtype):
+        # TODO - once #2666 is resolved, this test will need to be updated for the SegArray
+        #  being filtered containing empty segments prior to filter
+        a, b = self.build_repeat_filter_data(dtype)
+        sa = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+
+        # test filtering single value retain empties
+        f = self.get_filter(dtype)
+        filter_result = sa.filter(f, discard_empty=False)
+        assert sa.size == filter_result.size
+        # ensure 2 does not exist in return values
+        assert (filter_result.values != f).all()
+        for i in range(sa.size):
+            assert sa[i][(sa[i] != f)].to_list() == filter_result[i].to_list()
+
+        # test list filter
+        fl = self.get_filter_list(dtype)
+        filter_result = sa.filter(fl, discard_empty=False)
+        assert sa.size == filter_result.size
+        # ensure 1 & 2 do not exist in return values
+        assert (filter_result.values != fl[0]).all()
+        assert (filter_result.values != fl[1]).all()
+        for i in range(sa.size):
+            x = ak.in1d(ak.array(sa[i]), ak.array(fl), invert=True)
+            v = ak.array(sa[i])[x]
+            assert v.to_list() == filter_result[i].to_list()
+
+        # test pdarray filter
+        filter_result = sa.filter(ak.array(fl), discard_empty=False)
+        assert sa.size == filter_result.size
+        # ensure 1 & 2 do not exist in return values
+        assert (filter_result.values != fl[0]).all()
+        assert (filter_result.values != fl[1]).all()
+        for i in range(sa.size):
+            x = ak.in1d(ak.array(sa[i]), ak.array(fl), invert=True)
+            v = ak.array(sa[i])[x]
+            assert v.to_list() == filter_result[i].to_list()
+
+        # test dropping empty segments
+        fl = list(set(a))
+        filter_result = sa.filter(ak.array(fl), discard_empty=True)
+        # ensure 1 & 2 do not exist in return values
+        assert (filter_result.values != fl[0]).all()
+        assert (filter_result.values != fl[1]).all()
+        offset = 0
+        for i in range(sa.size):
+            x = ak.in1d(ak.array(sa[i]), ak.array(fl), invert=True)
+            v = ak.array(sa[i])[x]
+            if v.size != 0:
+                assert v.to_list() == filter_result[i - offset].to_list()
+            else:
+                offset += 1
