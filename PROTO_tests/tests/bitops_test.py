@@ -160,8 +160,7 @@ class TestBitOps:
 
         # scalar <<< vector
         rotated = ak.rotl(-(2**63), self.int_arr)
-        ans = [-(2**63), 1, 2, 4, 8, 16, 32, 64, 128, 256]
-        assert rotated.to_list() == ans
+        assert rotated.to_list() == [-(2**63), 1, 2, 4, 8, 16, 32, 64, 128, 256]
 
     def test_rotr(self):
         # vector <<< scalar
