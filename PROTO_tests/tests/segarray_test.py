@@ -205,9 +205,6 @@ class TestSegArray:
             ak.SegArray(ak.array([0, 1, 4, 3]), ak.arange(10))
 
         with pytest.raises(ValueError):
-            ak.SegArray(ak.array([0, 1, 4, 3]), ak.arange(10))
-
-        with pytest.raises(ValueError):
             ak.SegArray(ak.array([1, 4, 3]), ak.arange(10))
 
         with pytest.raises(ValueError):
