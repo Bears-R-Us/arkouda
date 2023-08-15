@@ -51,16 +51,12 @@ class TestJoin:
         """
         Should get 0 answers because N matches but 0 within dt window
         """
-        dt = 8
-        x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "pos_dt")
-        assert 0 == x.size
-        assert 0 == y.size
+        for dt in 8, np.int64(8):
+            x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "pos_dt")
+            assert 0 == x.size
+            assert 0 == y.size
 
         dt = np.int64(8)
-        x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "pos_dt")
-        assert 0 == x.size
-        assert 0 == y.size
-
         x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "pos_dt", int(0))
         assert 0 == x.size
         assert 0 == y.size
@@ -86,21 +82,15 @@ class TestJoin:
         l, r = ak.join.inner_join(left, right, wherefunc=join_where, whereargs=(left, right))
         assert left[l].to_list() == right[r].to_list()
 
-        with pytest.raises(ValueError):
-            l, r = ak.join.inner_join(left, right, wherefunc=ak.unique)
+        for where_func in ak.unique, ak.intersect1d:
+            with pytest.raises(ValueError):
+                l, r = ak.join.inner_join(left, right, wherefunc=where_func)
 
-        with pytest.raises(ValueError):
-            l, r = ak.join.inner_join(left, right, wherefunc=ak.intersect1d)
-
-        with pytest.raises(ValueError):
-            l, r = ak.join.inner_join(
-                left, right, wherefunc=ak.intersect1d, whereargs=(ak.arange(5), ak.arange(10))
-            )
-
-        with pytest.raises(ValueError):
-            l, r = ak.join.inner_join(
-                left, right, wherefunc=ak.intersect1d, whereargs=(ak.arange(10), ak.arange(5))
-            )
+        for where_args in ((ak.arange(5), ak.arange(10)), (ak.arange(10), ak.arange(5))):
+            with pytest.raises(ValueError):
+                l, r = ak.join.inner_join(
+                    left, right, wherefunc=ak.intersect1d, whereargs=where_args
+                )
 
     def test_str_inner_join(self):
         int_left = ak.arange(50)
