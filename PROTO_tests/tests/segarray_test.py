@@ -364,12 +364,25 @@ class TestSegArray:
 
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_ngram(self, dtype):
-        # TODO - come back to this
         seg_np, val_np = self.make_segarray_edge(dtype)
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
-        sa_list = sa.to_list()
 
         ngram, origin = sa.get_ngrams(2)
+        ng_list = [x.to_list() for x in ngram]
+        ng_tuple = list(zip(ng_list[0], ng_list[1]))
+        exp_list = []
+        exp_origin = []
+        for i in range(sa.size):
+            seg = sa[i]
+            if len(seg) > 1:
+                for j in range(len(seg)-1):
+                    exp_list.append((seg[j], seg[j+1]))
+                    exp_origin.append(i)
+        assert ng_tuple == exp_list
+        assert origin.to_list() == exp_origin
+
+        with pytest.raises(ValueError):
+            sa.get_ngrams(7)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NO_BOOL)  # TODO add bool processing once issue #2647 is complete
