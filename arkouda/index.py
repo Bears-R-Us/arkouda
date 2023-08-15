@@ -806,5 +806,9 @@ class MultiIndex(Index):
             raise TypeError("MultiIndex lookup failure")
         # if individual vals convert to pdarrays
         if not isinstance(key[0], pdarray):
-            key = [array([x]) for x in key]
+            from arkouda.numeric import cast as akcast
+
+            dt = self.values[0].dtype if isinstance(self.values[0], pdarray) else akint64
+            key = [akcast(array([x]), dt) for x in key]
+
         return in1d(self.index, key)

@@ -163,7 +163,6 @@ module KExtremeMsg
                
                }
            }
-
            otherwise {
                var errorMsg = notImplementedError("maxk",gEnt.dtype);
                keLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
