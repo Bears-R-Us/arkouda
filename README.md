@@ -274,6 +274,8 @@ Setting additionalMemoryPct to 70 would result in the following startup command:
 ./arkouda_server --MemoryMgmt.memMgmtType=MemMgmtType.DYNAMIC ----MemoryMgmt.additionalMemoryPct=70
 ```
 
+Important note: dynamic memory checking _works on Linux and Unix systems only._
+
 In the final, default approach, the max memory utilized by each locale is set as percentage of physical memory on the locale0 host, defaulting to 90 percent. If another percentage is desired, this is set via the --perLocaleMemLimit startup parameter. For example, to set max memory utilized by each locale to seventy (70) percent of physical memory on locale0, the Arkouda startup command would include the following:
 
 ```
