@@ -146,8 +146,7 @@ class TestBitOps:
         # No wraparound, so these should be equal
         assert rotated.to_list() == shifted.to_list()
 
-        r = ak.rotl(self.edge_cases, 1)
-        assert r.to_list() == [1, -1, -2]
+        assert ak.rotl(self.edge_cases, 1).to_list() == [1, -1, -2]
 
         # vector <<< vector
         rotated = self.int_arr.rotl(self.int_arr)
