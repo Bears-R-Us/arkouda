@@ -22,8 +22,8 @@ class TestJoin:
     @pytest.mark.parametrize("dt_type", ["true_dt", "abs_dt", "pos_dt"])
     def test_join_on_eq_by_dt(self, dt_type):
         x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, self.dt, dt_type)
-        assert self.size // pytest.nl, x.size
-        assert self.size // pytest.nl, y.size
+        assert self.size // pytest.nl == x.size
+        assert self.size // pytest.nl == y.size
 
     def test_join_on_eq_with_true_dt_with_result_limit(self):
         lim = (self.size + pytest.nl) * self.size
@@ -31,8 +31,7 @@ class TestJoin:
         x, y = ak.join_on_eq_with_dt(
             self.a1, self.a1, self.a1, self.a1, self.dt, "true_dt", result_limit=lim
         )
-        assert res_size, x.size
-        assert res_size, y.size
+        assert res_size == x.size == y.size
 
     def test_join_on_eq_with_abs_dt_outside_window(self):
         """
@@ -40,12 +39,10 @@ class TestJoin:
         """
         dt = 8
         x, y = ak.join_on_eq_with_dt(self.a1, self.a1, self.t1, self.t1 * 10, dt, "abs_dt")
-        assert 0 == x.size
-        assert 0 == y.size
+        assert 0 == x.size == y.size
 
         x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "abs_dt")
-        assert 0 == x.size
-        assert 0 == y.size
+        assert 0 == x.size == y.size
 
     def test_join_on_eq_with_pos_dt_outside_window(self):
         """
@@ -53,13 +50,11 @@ class TestJoin:
         """
         for dt in 8, np.int64(8):
             x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "pos_dt")
-            assert 0 == x.size
-            assert 0 == y.size
+            assert 0 == x.size == y.size
 
         dt = np.int64(8)
         x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "pos_dt", int(0))
-        assert 0 == x.size
-        assert 0 == y.size
+        assert 0 == x.size == y.size
 
     def test_gen_ranges(self):
         start = ak.array([0, 10, 20])
