@@ -103,11 +103,10 @@ This yielded a >20TB dataframe in Arkouda.
    - [Connecting to Arkouda](#run-ak-connect)
 5. [Logging](#log-ak)
 6. [Type Checking in Arkouda](#typecheck-ak)
-7. [Environment Variables](#env-vars-ak)
-8. [Versioning](#versioning-ak)
-9. [External Systems Integration](#external-integration)
-10. [Metrics](#metrics)
-11. [Contributing](#contrib-ak)
+7. [Versioning](#versioning-ak)
+8. [External Systems Integration](#external-integration)
+9. [Metrics](#metrics)
+10. [Contributing](#contrib-ak)
 
 <a id="prereqs"></a>
 ## Prerequisites <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
@@ -249,22 +248,44 @@ is saved to the .arkouda/tokens.txt file for re-use.
 
 By default, each Arkouda locale utilizes all available memory and CPU cores on the host machine. However, it is possible to set per-locale limits for both memory as well as CPU cores. 
 
-The max number of CPU cores utilized by each locale is set via the CHPL_RT_NUM_THREADS_PER_LOCALE environment variable. An example below sets the maximum number of cores for each locale to 16:
+#### Per-Locale Memory Limits
+
+There are three approaches to setting the max memory used by each Arkouda locale. Firstly, the built-in Chapel approach sets the max per-locale memory to an explicit number of bytes via the --memMax startup parameter. For example, to set the max memory utilized by each locale to 100 GB, the Arkouda startup command would include the following:
 
 ```
-export CHPL_RT_NUM_THREADS_PER_LOCALE=16
+./arkouda_server --memMax=100000000000
 ```
 
-The max memory utilized by each locale can be set in one of two ways: percentage of physical memory or a limit set in bytes. By default, the max per-locale memory is set to ninety (90) percent of the physical memory on each Arkouda locale host. If another percentage is desired, this is set via the --perLocaleMemLimit startup parameter. For example, to set max memory utilized by each locale to seventy (70) percent of physical memory, the Arkouda startup command would be as follows:
+The Arkouda dynamic memory limit approach sets the per-locale memory limit based upon a configurable percentage of available memory on each locale host. Prior to the execution of each comand, the MemoryMgmt [localeMemAvailable](https://github.com/Bears-R-Us/arkouda/blob/e4a48c52eb00097e6e1dfa365cbc586e2e988a85/src/MemoryMgmt.chpl#L133) function does the following on each locale:
+
+1. Verifies if the projected, additional per-locale memory required by the incoming command exceeds the memory currently allocated to Arkouda. If the projected, additional memory is within the memory currently allocated to Arkouda on each locale, the command is allowed to proceed.
+2. If the projected, additional per-locale memory exceeds the memory currently allocated to Arkouda on any locale, localeMemAvailable checks if the configurable percentage of available memory on each node will accommodate the projected, additional memory of the incoming command. If so, the command is allowed to proceed.
+3. If the projected, additional per-locale memory required by the incoming command exceeds the configured percentage of available memory on any locale, localeMemAvailable returns false and a corresponding error is [thrown](https://github.com/Bears-R-Us/arkouda/blob/e4a48c52eb00097e6e1dfa365cbc586e2e988a85/src/ServerConfig.chpl#L348) in the ServerConfig [overMemLimit](https://github.com/Bears-R-Us/arkouda/blob/e4a48c52eb00097e6e1dfa365cbc586e2e988a85/src/ServerConfig.chpl#L286) function. 
+
+In the example below, dynamic memory checking is enabled with the default availableMemoryPct of 90, configuring Arkouda to throw an error if (1) the projected, additional memory required for a command exceeds memory currently allocated to Arkouda on 1..n locales and (2) the projected, additional memory will exceed 90 percent of available memory on 1..n locales. 
+
+```
+./arkouda_server --MemoryMgmt.memMgmtType=MemMgmtType.DYNAMIC
+```
+
+Setting additionalMemoryPct to 70 would result in the following startup command:
+
+```
+./arkouda_server --MemoryMgmt.memMgmtType=MemMgmtType.DYNAMIC ----MemoryMgmt.additionalMemoryPct=70
+```
+
+In the final, default approach, the max memory utilized by each locale is set as percentage of physical memory on the locale0 host, defaulting to 90 percent. If another percentage is desired, this is set via the --perLocaleMemLimit startup parameter. For example, to set max memory utilized by each locale to seventy (70) percent of physical memory on locale0, the Arkouda startup command would include the following:
 
 ```
 ./arkouda_server --perLocaleMemLimit=70
 ```
 
-In addition, the max per-locale memory can instead be set to an explicit number of bytes via the --memMax startup parameter. For example, to set the max memory utilized by each locale to 100 GB, the Arkouda startup command would be as follows:
+#### Per-Locale CPU Core Limits
+
+The max number of CPU cores utilized by each locale is set via the CHPL_RT_NUM_THREADS_PER_LOCALE environment variable. An example below sets the maximum number of cores for each locale to 16:
 
 ```
-./arkouda_server --memMax=100000000000
+export CHPL_RT_NUM_THREADS_PER_LOCALE=16
 ```
 
 <a id="run-ak-connect"></a>
@@ -378,17 +399,13 @@ type checking require type hints. Consequently, to opt-out of type checking, sim
 
 </details>
 
-<a id="env-vars-ak"></a>
-## Environment Variables <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-The various Arkouda aspects (compilation, run-time, client, tests, etc.) can be configured using a number of environment
-variables (env vars).  See the [ENVIRONMENT](ENVIRONMENT.md) documentation for more details.
 
 <a id="versioning-ak"></a>
 ## Versioning <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 Beginning after tag `v2019.12.10` versioning is now performed using [Versioneer](https://github.com/python-versioneer/python-versioneer)
 which determines the version based on the location in `git`.
 
-An example using a hypothetical tag `1.2.3.4`
+An example using a hypothetical tag 1.2.3.4
 
 ```bash
 git checkout 1.2.3.4
@@ -406,6 +423,7 @@ python -m arkouda|tail -n 2
 >> Client Version: 1.2.3.4+1.g9dca4c8
 >> 1.2.3.4+1.g9dca4c8
 ```
+
 In the hypothetical cases above _Versioneer_ tells you the version and how far / how many commits beyond the tag your repo is.
 
 When building the server-side code the same versioning information is included in the build.  If the server and client do not
@@ -423,6 +441,7 @@ arkouda server version = v2019.12.10+1679.abc2f48a.dirty
 ```
 
 For maintainers, creating a new version is as simple as creating a tag in the repository; i.e.
+
 ```bash
 git checkout master
 git tag 1.2.3.4
