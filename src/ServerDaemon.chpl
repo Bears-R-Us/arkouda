@@ -890,7 +890,7 @@ module ServerDaemon {
                         repTuple = new MsgTuple("imok", MsgType.NORMAL);
                     } 
                     
-                    when "memstatus" {
+                    when "getmemstatus" {
                         repTuple = getMemoryStatusMsg(cmd, msgArgs, st);
                     }    
                     when "connect" {
