@@ -737,8 +737,9 @@ module ServerDaemon {
     }
 
     /**
-     * The MetricsServerDaemon provides an endpoint for gathering user, request, 
-     * locale, and server-scoped metrics
+     * The MetricsServerDaemon provides a separate endpoint for gathering user, request, 
+     * locale, and server-scoped metrics. The separate port lessens the possibility of
+     * metrics requests being blocked by command requests.
      */
     class MetricsServerDaemon : ArkoudaServerDaemon {
     
@@ -842,7 +843,7 @@ module ServerDaemon {
     /**
      * The ServerStatusDaemon provides a non-blocking endpoint for retrieving 
      * server status via a separate, dedicated port to lessen the chances of 
-     * blocking incoming requests
+     * blocking incoming status requests with command requests.
      */
     class ServerStatusDaemon : ArkoudaServerDaemon {
     
