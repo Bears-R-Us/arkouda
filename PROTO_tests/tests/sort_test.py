@@ -1,25 +1,29 @@
-import arkouda as ak
+import numpy as np
 import pytest
 
+import arkouda as ak
 from arkouda.sorting import SortingAlgorithm
 
 
 class TestSort:
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
-    def test_sort_dtype(self, size, dtype):
-        pda = ak.randint(0, 100, size, dtype)
+    def test_sort_dtype(self, size):
+        for dtype in ak.int64, ak.uint64:
+            pda = ak.randint(0, 100, size, dtype)
+            for algo in SortingAlgorithm:
+                spda = ak.sort(pda, algo)
+                assert ak.is_sorted(spda)
+
+        pda_float = ak.array(np.random.rand(100) * 10000)
         for algo in SortingAlgorithm:
-            spda = ak.sort(pda, algo)
+            spda = ak.sort(pda_float, algo)
             assert ak.is_sorted(spda)
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_sort_bigint(self, size):
         pda = ak.randint(0, 100, size, dtype=ak.uint64)
-        shift_up = pda + 2**200
+        pda_bigint = pda + 2**200
         for algo in SortingAlgorithm:
             sorted_pda = ak.sort(pda, algo)
-            sorted_bi = ak.sort(shift_up, algo)
+            sorted_bi = ak.sort(pda_bigint, algo)
             assert (sorted_bi - 2**200).to_list() == sorted_pda.to_list()
 
     def test_bit_boundary_hardcode(self):
@@ -54,11 +58,9 @@ class TestSort:
         bools = ak.randint(0, 1, 1000, dtype=bool)
 
         for algo in SortingAlgorithm:
-            with pytest.raises(ValueError):
-                ak.sort(ak_bools, algo)
-
-            with pytest.raises(ValueError):
-                ak.sort(bools, algo)
+            for arr in ak_bools, bools:
+                with pytest.raises(ValueError):
+                    ak.sort(arr, algo)
 
             # Test TypeError from sort attempt on non-pdarray
             with pytest.raises(TypeError):
@@ -66,4 +68,4 @@ class TestSort:
 
             # Test attempt to sort Strings object, which is unsupported
             with pytest.raises(TypeError):
-                ak.sort(ak.array(["String {}".format(i) for i in range(0, 10)]), algo)
+                ak.sort(ak.array([f"string {i}" for i in range(10)]), algo)
