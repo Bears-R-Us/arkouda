@@ -27,10 +27,10 @@ class TestDTypes:
     def test_check_np_dtype(self, dtype):
         dtypes.check_np_dtype(np.dtype(dtype))
 
-    def test_check_np_dtype_errors(self):
-        for dt in np.dtype(np.int16), "np.str", ak.bigint:
-            with pytest.raises(TypeError):
-                dtypes.check_np_dtype(dt)
+    @pytest.mark.parametrize("dtype", [np.dtype(np.int16), "np.str", ak.bigint])
+    def test_check_np_dtype_errors(self, dtype):
+        with pytest.raises(TypeError):
+            dtypes.check_np_dtype(dtype)
 
     def test_translate_np_dtype(self):
         for b in [np.bool_, bool]:
