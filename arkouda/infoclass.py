@@ -95,7 +95,6 @@ def list_registry(detailed: bool = False):
         Raised if there's a server-side error thrown
     """
     data = json.loads(cast(str, generic_msg(cmd="list_registry")))
-    print(data)
     objs = json.loads(data["Objects"]) if data["Objects"] != "" else []
     obj_types = json.loads(data["Object_Types"]) if data["Object_Types"] != "" else []
     return {
