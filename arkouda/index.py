@@ -1,3 +1,4 @@
+import json
 from typing import List, Optional, Union
 
 import pandas as pd  # type: ignore
@@ -8,21 +9,23 @@ from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy, unique
-from arkouda.infoclass import list_registry
-from arkouda.pdarrayclass import pdarray
-from arkouda.pdarraycreation import arange, array, ones
+from arkouda.pdarrayclass import RegistrationError, pdarray
+from arkouda.pdarraycreation import arange, array, create_pdarray, ones
 from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
-from arkouda.util import convert_if_categorical, generic_concat, get_callback, register
+from arkouda.util import convert_if_categorical, generic_concat, get_callback
 
 
 class Index:
+    objType = "Index"
+
     @typechecked
     def __init__(
         self,
         values: Union[List, pdarray, Strings, Categorical, pd.Index, "Index"],
         name: Optional[str] = None,
     ):
+        self.registered_name: Optional[str] = None
         if isinstance(values, Index):
             self.values = values.values
             self.size = values.size
@@ -103,6 +106,22 @@ class Index:
         else:
             return MultiIndex(index)
 
+    @classmethod
+    def from_return_msg(cls, rep_msg):
+        data = json.loads(rep_msg)
+
+        idx = []
+        for d in data:
+            i_comps = d.split("+|+")
+            if i_comps[0].lower() == pdarray.objType.lower():
+                idx.append(create_pdarray(i_comps[1]))
+            elif i_comps[0].lower() == Strings.objType.lower():
+                idx.append(Strings.from_return_msg(i_comps[1]))
+            elif i_comps[0].lower() == Categorical.objType.lower():
+                idx.append(Categorical.from_return_msg(i_comps[1]))
+
+        return cls.factory(idx) if len(idx) > 1 else cls.factory(idx[0])
+
     def to_pandas(self):
         val = convert_if_categorical(self.values).to_ndarray()
         return pd.Index(data=val, dtype=val.dtype, name=self.name)
@@ -123,26 +142,145 @@ class Index:
         self.values = new_idx
         return self
 
-    def register(self, label):
-        register(self.values, f"{label}_key")
-        self.name = label
-        return 1
-
-    def is_registered(self):
+    def register(self, user_defined_name):
         """
-        Return True if the object is contained in the registry
+        Register this Index object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name the Index is to be registered under,
+            this will be the root name for underlying components
 
         Returns
         -------
-        bool
+        Index
+            The same Index which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
+            Please note you cannot register two different Indexes with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the Index with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.client import generic_msg
+
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "num_idxs": 1,
+                "idx_names": [
+                    json.dumps(
+                        {
+                            "codes": self.values.codes.name,
+                            "categories": self.values.categories.name,
+                            "NA_codes": self.values._akNAcode.name,
+                            **(
+                                {"permutation": self.values.permutation.name}
+                                if self.values.permutation is not None
+                                else {}
+                            ),
+                            **(
+                                {"segments": self.values.segments.name}
+                                if self.values.segments is not None
+                                else {}
+                            ),
+                        }
+                    )
+                    if isinstance(self.values, Categorical)
+                    else self.values.name
+                ],
+                "idx_types": [self.values.objType],
+            },
+        )
+        self.registered_name = user_defined_name
+        return self
+
+    def unregister(self):
+        """
+        Unregister this Index object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
+
+        Raises
+        ------
+        RegistrationError
+            If the object is already unregistered or if there is a server error
+            when attempting to unregister
+
+        See also
+        --------
+        register, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
+
+    def is_registered(self):
+        """
+         Return True iff the object is contained in the registry or is a component of a
+         registered object.
+
+        Returns
+        -------
+        numpy.bool
             Indicates if the object is contained in the registry
 
         Raises
         ------
-        RuntimeError
-            Raised if there's a server-side error thrown
+        RegistrationError
+            Raised if there's a server-side error or a mis-match of registered components
+
+        See Also
+        --------
+        register, attach, unregister
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
         """
-        return f"{self.name}_key" in list_registry()
+        from arkouda.util import is_registered
+
+        if self.registered_name is None:
+            if not isinstance(self.values, Categorical):
+                return is_registered(self.values.name, as_component=True)
+            else:
+                result = True
+                result &= is_registered(self.values.codes.name, as_component=True)
+                result &= is_registered(self.values.categories.name, as_component=True)
+                result &= is_registered(self.values._akNAcode.name, as_component=True)
+                if self.values.permutation is not None and self.values.segments is not None:
+                    result &= is_registered(self.values.permutation.name, as_component=True)
+                    result &= is_registered(self.values.segments.name, as_component=True)
+                return result
+        else:
+            return is_registered(self.registered_name)
 
     def to_dict(self, label):
         data = {}
@@ -478,7 +616,10 @@ class Index:
 
 
 class MultiIndex(Index):
+    objType = "MultiIndex"
+
     def __init__(self, values):
+        self.registered_name: Optional[str] = None
         if not (isinstance(values, list) or isinstance(values, tuple)):
             raise TypeError("MultiIndex should be an iterable")
         self.values = values
@@ -537,10 +678,92 @@ class MultiIndex(Index):
         self.index = new_idx
         return self
 
-    def register(self, label):
-        for i, arr in enumerate(self.index):
-            register(arr, f"{label}_key_{i}")
-        return len(self.index)
+    def to_ndarray(self):
+        import numpy as np
+        return np.array([convert_if_categorical(val).to_ndarray() for val in self.values])
+
+    def to_list(self):
+        return self.to_ndarray().tolist()
+
+    def register(self, user_defined_name):
+        """
+        Register this Index object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name the Index is to be registered under,
+            this will be the root name for underlying components
+
+        Returns
+        -------
+        MultiIndex
+            The same Index which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
+            Please note you cannot register two different Indexes with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the Index with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.client import generic_msg
+
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "num_idxs": len(self.values),
+                "idx_names": [
+                    json.dumps(
+                        {
+                            "codes": v.codes.name,
+                            "categories": v.categories.name,
+                            "NA_codes": v._akNAcode.name,
+                            **({"permutation": v.permutation.name} if v.permutation is not None else {}),
+                            **({"segments": v.segments.name} if v.segments is not None else {}),
+                        }
+                    )
+                    if isinstance(v, Categorical)
+                    else v.name
+                    for v in self.values
+                ],
+                "idx_types": [v.objType for v in self.values],
+            },
+        )
+        self.registered_name = user_defined_name
+        return self
+
+    def unregister(self):
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
+
+    def is_registered(self):
+        from arkouda.util import is_registered
+
+        if self.registered_name is None:
+            return False
+        return is_registered(self.registered_name)
 
     def to_dict(self, labels):
         data = {}

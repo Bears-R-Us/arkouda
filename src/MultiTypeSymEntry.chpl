@@ -28,7 +28,6 @@ module MultiTypeSymEntry
         
             GenSymEntry,
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
-                CategoricalSymEntry,  // Categorical
 
             CompositeSymEntry,        // Entries that consist of multiple SymEntries of varying type
 
