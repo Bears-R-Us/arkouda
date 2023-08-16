@@ -37,12 +37,9 @@ class TestJoin:
         """
         Should get 0 answers because N^2 matches but 0 within dt window
         """
-        dt = 8
-        x, y = ak.join_on_eq_with_dt(self.a1, self.a1, self.t1, self.t1 * 10, dt, "abs_dt")
-        assert 0 == x.size == y.size
-
-        x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "abs_dt")
-        assert 0 == x.size == y.size
+        for arr in self.a1, self.a2:
+            x, y = ak.join_on_eq_with_dt(arr, self.a1, self.t1, self.t2, dt=8, pred="abs_dt")
+            assert 0 == x.size == y.size
 
     def test_join_on_eq_with_pos_dt_outside_window(self):
         """
@@ -83,9 +80,7 @@ class TestJoin:
 
         for where_args in ((ak.arange(5), ak.arange(10)), (ak.arange(10), ak.arange(5))):
             with pytest.raises(ValueError):
-                l, r = ak.join.inner_join(
-                    left, right, wherefunc=ak.intersect1d, whereargs=where_args
-                )
+                l, r = ak.join.inner_join(left, right, wherefunc=ak.intersect1d, whereargs=where_args)
 
     def test_str_inner_join(self):
         int_left = ak.arange(50)
