@@ -26,14 +26,14 @@ module FlattenMsg {
         const strings = getSegString(msgArgs.getValueOf("values"), st);
         var (off, val, segs) = strings.flatten(delim, returnSegs, regex);
         var stringsObj = getSegString(off, val, st);
-        repMsg = "created %s+created bytes.size %t".format(st.attrib(stringsObj.name), stringsObj.nBytes);
+        repMsg = "created %s+created bytes.size %?".doFormat(st.attrib(stringsObj.name), stringsObj.nBytes);
         if returnSegs {
           const optName: string = st.nextName();
           st.addEntry(optName, new shared SymEntry(segs));
-          repMsg += "+created %s".format(st.attrib(optName));
+          repMsg += "+created %s".doFormat(st.attrib(optName));
         }
       } otherwise {
-        throw new owned ErrorWithContext("Not implemented for objtype %s".format(objtype),
+        throw new owned ErrorWithContext("Not implemented for objtype %s".doFormat(objtype),
                                          getLineNumber(),
                                          getRoutineName(),
                                          getModuleName(),
@@ -60,7 +60,7 @@ module FlattenMsg {
     const pattern: string = msgArgs.getValueOf("pattern");
 
     fmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                   "cmd: %s objtype: %t".format(cmd, objtype));
+                   "cmd: %s objtype: %?".doFormat(cmd, objtype));
 
     select objtype {
       when "Matcher" {
@@ -68,14 +68,14 @@ module FlattenMsg {
         const strings = getSegString(name, st);
         var (off, val, segs) = strings.split(pattern, maxsplit, returnSegs);
         var retString = getSegString(off, val, st);
-        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
         if returnSegs {
           st.addEntry(optName, new shared SymEntry(segs));
-          repMsg += "+created %s".format(st.attrib(optName));
+          repMsg += "+created %s".doFormat(st.attrib(optName));
         }
       }
       otherwise {
-        throw new owned ErrorWithContext("Not implemented for objtype %s".format(objtype),
+        throw new owned ErrorWithContext("Not implemented for objtype %s".doFormat(objtype),
                                          getLineNumber(),
                                          getRoutineName(),
                                          getModuleName(),

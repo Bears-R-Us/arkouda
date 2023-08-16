@@ -114,14 +114,13 @@ def join_on_eq_with_dt(
     resIAttr, resJAttr = cast(str, repMsg).split("+")
     resI = create_pdarray(resIAttr)
     resJ = create_pdarray(resJAttr)
-    return (resI, resJ)
+    return resI, resJ
 
 
-@typechecked
-def gen_ranges(starts: pdarray, ends: pdarray) -> Tuple[pdarray, pdarray]:
+def gen_ranges(starts, ends, stride=1):
     """
-    Generate a segmented array of variable-length, contiguous
-    ranges between pairs of start- and end-points.
+    Generate a segmented array of variable-length, contiguous ranges between pairs of
+    start- and end-points.
 
     Parameters
     ----------
@@ -129,6 +128,8 @@ def gen_ranges(starts: pdarray, ends: pdarray) -> Tuple[pdarray, pdarray]:
         The start value of each range
     ends : pdarray, int64
         The end value (exclusive) of each range
+    stride: int
+        Difference between successive elements of each range
 
     Returns
     -------
@@ -138,17 +139,25 @@ def gen_ranges(starts: pdarray, ends: pdarray) -> Tuple[pdarray, pdarray]:
         The actual ranges, flattened into a single array
     """
     if starts.size != ends.size:
-        raise ValueError("starts and ends must be same size")
+        raise ValueError("starts and ends must be same length")
     if starts.size == 0:
         return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
-    lengths = ends - starts
-    if not (lengths > 0).all():
-        raise ValueError("all ends must be greater than starts")
+    lengths = (ends - starts) // stride
+    if not (lengths >= 0).all():
+        raise ValueError("all ends must be greater than or equal to starts")
+    non_empty = lengths != 0
     segs = cumsum(lengths) - lengths
     totlen = lengths.sum()
     slices = ones(totlen, dtype=akint64)
-    diffs = concatenate((array([starts[0]]), starts[1:] - starts[:-1] - lengths[:-1] + 1))
-    slices[segs] = diffs
+    non_empty_starts = starts[non_empty]
+    non_empty_lengths = lengths[non_empty]
+    diffs = concatenate(
+        (
+            array([non_empty_starts[0]]),
+            non_empty_starts[1:] - non_empty_starts[:-1] - (non_empty_lengths[:-1] - 1) * stride,
+        )
+    )
+    slices[segs[non_empty]] = diffs
     return segs, cumsum(slices)
 
 

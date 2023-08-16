@@ -39,7 +39,7 @@ module SortMsg
           algorithm = algoName: SortingAlgorithm;
         } catch {
           throw getErrorWithContext(
-                                    msg="Unrecognized sorting algorithm: %s".format(algoName),
+                                    msg="Unrecognized sorting algorithm: %s".doFormat(algoName),
                                     lineNumber=getLineNumber(),
                                     routineName=getRoutineName(),
                                     moduleName=getModuleName(),
@@ -56,7 +56,7 @@ module SortMsg
       overMemLimit(radixSortLSD_keys_memEst(gEnt.size,  gEnt.itemsize));
  
       sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                "cmd: %s name: %s sortedName: %s dtype: %t".format(
+                "cmd: %s name: %s sortedName: %s dtype: %?".doFormat(
                  cmd, name, sortedName, gEnt.dtype));
 
       proc doSort(a: [?D] ?t) throws {
@@ -71,7 +71,7 @@ module SortMsg
           }
           otherwise {
             throw getErrorWithContext(
-                                      msg="Unrecognized sorting algorithm: %s".format(algorithm:string),
+                                      msg="Unrecognized sorting algorithm: %s".doFormat(algorithm:string),
                                       lineNumber=getLineNumber(),
                                       routineName=getRoutineName(),
                                       moduleName=getModuleName(),

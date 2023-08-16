@@ -11,6 +11,7 @@ module StatsMsg {
     use Stats;
 
     use Map;
+    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -24,16 +25,16 @@ module StatsMsg {
 
         select (x.dtype) {
             when (DType.Int64) {
-                repMsg = "float64 %.17r".format(mean(toSymEntry(x,int).a));
+                repMsg = "float64 %.17r".doFormat(mean(toSymEntry(x,int).a));
             }
             when (DType.Float64) {
-                repMsg = "float64 %.17r".format(mean(toSymEntry(x,real).a));
+                repMsg = "float64 %.17r".doFormat(mean(toSymEntry(x,real).a));
             }
             when (DType.Bool) {
-                repMsg = "float64 %.17r".format(mean(toSymEntry(x,bool).a));
+                repMsg = "float64 %.17r".doFormat(mean(toSymEntry(x,bool).a));
             }
             when (DType.UInt64) {
-                repMsg = "float64 %.17r".format(mean(toSymEntry(x,uint).a));
+                repMsg = "float64 %.17r".doFormat(mean(toSymEntry(x,uint).a));
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(x.dtype));
@@ -54,16 +55,16 @@ module StatsMsg {
 
         select (x.dtype) {
             when (DType.Int64) {
-                repMsg = "float64 %.17r".format(variance(toSymEntry(x,int).a, ddof));
+                repMsg = "float64 %.17r".doFormat(variance(toSymEntry(x,int).a, ddof));
             }
             when (DType.Float64) {
-                repMsg = "float64 %.17r".format(variance(toSymEntry(x,real).a, ddof));
+                repMsg = "float64 %.17r".doFormat(variance(toSymEntry(x,real).a, ddof));
             }
             when (DType.Bool) {
-                repMsg = "float64 %.17r".format(variance(toSymEntry(x,bool).a, ddof));
+                repMsg = "float64 %.17r".doFormat(variance(toSymEntry(x,bool).a, ddof));
             }
             when (DType.UInt64) {
-                repMsg = "float64 %.17r".format(variance(toSymEntry(x,uint).a, ddof));
+                repMsg = "float64 %.17r".doFormat(variance(toSymEntry(x,uint).a, ddof));
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(x.dtype));
@@ -84,16 +85,16 @@ module StatsMsg {
 
         select (x.dtype) {
             when (DType.Int64) {
-                repMsg = "float64 %.17r".format(std(toSymEntry(x,int).a, ddof));
+                repMsg = "float64 %.17r".doFormat(std(toSymEntry(x,int).a, ddof));
             }
             when (DType.Float64) {
-                repMsg = "float64 %.17r".format(std(toSymEntry(x,real).a, ddof));
+                repMsg = "float64 %.17r".doFormat(std(toSymEntry(x,real).a, ddof));
             }
             when (DType.Bool) {
-                repMsg = "float64 %.17r".format(std(toSymEntry(x,bool).a, ddof));
+                repMsg = "float64 %.17r".doFormat(std(toSymEntry(x,bool).a, ddof));
             }
             when (DType.UInt64) {
-                repMsg = "float64 %.17r".format(std(toSymEntry(x,uint).a, ddof));
+                repMsg = "float64 %.17r".doFormat(std(toSymEntry(x,uint).a, ddof));
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(x.dtype));
@@ -116,85 +117,85 @@ module StatsMsg {
             when (DType.Int64, DType.Int64) {
                 var eX = toSymEntry(x,int);
                 var eY = toSymEntry(y,int);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Int64, DType.Float64) {
                 var eX = toSymEntry(x,int);
                 var eY = toSymEntry(y,real);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Int64, DType.Bool) {
                 var eX = toSymEntry(x,int);
                 var eY = toSymEntry(y,bool);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Int64, DType.UInt64) {
                 var eX = toSymEntry(x,int);
                 var eY = toSymEntry(y,uint);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Float64, DType.Float64) {
                 var eX = toSymEntry(x,real);
                 var eY = toSymEntry(y,real);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Float64, DType.Int64) {
                 var eX = toSymEntry(x,real);
                 var eY = toSymEntry(y,int);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Float64, DType.Bool) {
                 var eX = toSymEntry(x,real);
                 var eY = toSymEntry(y,bool);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Float64, DType.UInt64) {
                 var eX = toSymEntry(x,real);
                 var eY = toSymEntry(y,uint);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Bool, DType.Bool) {
                 var eX = toSymEntry(x,bool);
                 var eY = toSymEntry(y,bool);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Bool, DType.Float64) {
                 var eX = toSymEntry(x,bool);
                 var eY = toSymEntry(y,real);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Bool, DType.Int64) {
                 var eX = toSymEntry(x,bool);
                 var eY = toSymEntry(y,int);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.Bool, DType.UInt64) {
                 var eX = toSymEntry(x,bool);
                 var eY = toSymEntry(y,uint);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.UInt64, DType.UInt64) {
                 var eX = toSymEntry(x,uint);
                 var eY = toSymEntry(y,uint);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.UInt64, DType.Int64) {
                 var eX = toSymEntry(x,uint);
                 var eY = toSymEntry(y,int);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.UInt64, DType.Float64) {
                 var eX = toSymEntry(x,uint);
                 var eY = toSymEntry(y,real);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             when (DType.UInt64, DType.Bool) {
                 var eX = toSymEntry(x,uint);
                 var eY = toSymEntry(y,bool);
-                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
             }
             otherwise {
-                var errorMsg = unrecognizedTypeError(pn, "(%s,%s)".format(dtype2str(x.dtype),dtype2str(y.dtype)));
+                var errorMsg = unrecognizedTypeError(pn, "(%s,%s)".doFormat(dtype2str(x.dtype),dtype2str(y.dtype)));
                 sLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
@@ -209,7 +210,7 @@ module StatsMsg {
         var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
         var y: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("y"), st);
 
-        var repMsg: string = "float64 %.17r".format(corrHelper(x, y));
+        var repMsg: string = "float64 %.17r".doFormat(corrHelper(x, y));
         sLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
@@ -266,7 +267,7 @@ module StatsMsg {
                 return corr(toSymEntry(x,uint).a, toSymEntry(y,bool).a);
             }
             otherwise {
-                var errorMsg = unrecognizedTypeError(pn, "(%s,%s)".format(dtype2str(x.dtype),dtype2str(y.dtype)));
+                var errorMsg = unrecognizedTypeError(pn, "(%s,%s)".doFormat(dtype2str(x.dtype),dtype2str(y.dtype)));
                 sLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 throw new owned IllegalArgumentError(errorMsg);
             }
@@ -290,9 +291,9 @@ module StatsMsg {
             }
             var retname = st.nextName();
             st.addEntry(retname, new shared SymEntry(corrPdarray));
-            corrDict.add(col, "created %s".format(st.attrib(retname)));
+            corrDict.add(col, "created %s".doFormat(st.attrib(retname)));
         }
-        var repMsg: string = "%jt".format(corrDict);
+        var repMsg: string = formatJson(corrDict);
 
         sLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);

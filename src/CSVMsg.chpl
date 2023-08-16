@@ -19,6 +19,7 @@ module CSVMsg {
 
     use ArkoudaFileCompat;
     use ArkoudaListCompat;
+    use ArkoudaIOCompat;
 
     const CSV_HEADER_OPEN = "**HEADER**";
     const CSV_HEADER_CLOSE = "*/HEADER/*";
@@ -45,10 +46,10 @@ module CSVMsg {
             // Attempt to interpret filename as a glob expression and ls the first result
             var tmp = glob(filename);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "glob-expanded filename: %s to size: %i files".format(filename, tmp.size));
+                      "glob-expanded filename: %s to size: %i files".doFormat(filename, tmp.size));
 
             if tmp.size <= 0 {
-                var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".format(filename);
+                var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".doFormat(filename);
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
@@ -59,7 +60,7 @@ module CSVMsg {
         
         // Check to see if the file exists. If not, return an error message
         if !exists(filename) {
-            var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
+            var errorMsg = "File %s does not exist in a location accessible to Arkouda".doFormat(filename);
             csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg,MsgType.ERROR);
         } 
@@ -77,7 +78,7 @@ module CSVMsg {
         var column_names = lines[idx].split(col_delim);
         reader.close();
         csvFile.close();
-        return new MsgTuple("%jt".format(column_names), MsgType.NORMAL);
+        return new MsgTuple(formatJson(column_names), MsgType.NORMAL);
 
     }
 
@@ -92,14 +93,14 @@ module CSVMsg {
             filenames[i] = generateFilename(prefix, extension, i);
         }
 
-        csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Identified %i files for provided name, %s".format(filenames.size, filename));
+        csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Identified %i files for provided name, %s".doFormat(filenames.size, filename));
 
-        var matchingFilenames = glob("%s_LOCALE*%s".format(prefix, extension));
+        var matchingFilenames = glob("%s_LOCALE*%s".doFormat(prefix, extension));
         var filesExist: bool = matchingFilenames.size > 0;
 
         if !overwrite && filesExist {
             throw getErrorWithContext(
-                msg="Filenames for the provided name exist. Overwrite must be set to true in order to save with the name %s".format(filename),
+                msg="Filenames for the provided name exist. Overwrite must be set to true in order to save with the name %s".doFormat(filename),
                 lineNumber=getLineNumber(),
                 routineName=getRoutineName(), 
                 moduleName=getModuleName(),
@@ -111,7 +112,7 @@ module CSVMsg {
                 var existList = glob(fn);
                 if overwrite && existList.size == 1 {
                     remove(fn);
-                    csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Overwriting CSV File, %s".format(fn));
+                    csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Overwriting CSV File, %s".doFormat(fn));
                 }
             }
         }
@@ -143,7 +144,7 @@ module CSVMsg {
             }
             otherwise {
                 throw getErrorWithContext(
-                    msg="Invalid DType Found, %s".format(dtype2str(GSE.dtype)),
+                    msg="Invalid DType Found, %s".doFormat(dtype2str(GSE.dtype)),
                     lineNumber=getLineNumber(),
                     routineName=getRoutineName(), 
                     moduleName=getModuleName(),
@@ -189,7 +190,7 @@ module CSVMsg {
             }
             otherwise {
                 throw getErrorWithContext(
-                           msg="Invalid DType Found, %s".format(dtype2str(gse.dtype)),
+                           msg="Invalid DType Found, %s".doFormat(dtype2str(gse.dtype)),
                            lineNumber=getLineNumber(),
                            routineName=getRoutineName(), 
                            moduleName=getModuleName(),
@@ -243,7 +244,7 @@ module CSVMsg {
                             
                         } otherwise {
                             throw getErrorWithContext(
-                                    msg="Data Type %s cannot be written to CSV.".format(dtypes[i]),
+                                    msg="Data Type %s cannot be written to CSV.".doFormat(dtypes[i]),
                                     lineNumber=getLineNumber(), 
                                     routineName=getRoutineName(), 
                                     moduleName=getModuleName(), 
@@ -267,7 +268,7 @@ module CSVMsg {
         // Verify that the file exists
         if !exists(filename) {
             throw getErrorWithContext(
-                           msg="The file %s does not exist".format(filename),
+                           msg="The file %s does not exist".doFormat(filename),
                            lineNumber=getLineNumber(),
                            routineName=getRoutineName(), 
                            moduleName=getModuleName(),
@@ -306,10 +307,10 @@ module CSVMsg {
         forall (i, dset) in zip(0..#datasets.size, datasets) {
             var idx: int;
             var col_exists = columns.find(dset, idx);
-            csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: %jt, IDX: %i".format(dset, col_exists, idx));
+            csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: ".doFormat(dset)+formatJson(col_exists)+", IDX: %i".doFormat(idx));
             if !col_exists {
                 throw getErrorWithContext(
-                    msg="The dataset %s was not found in %s".format(dset, filename),
+                    msg="The dataset %s was not found in %s".doFormat(dset, filename),
                     lineNumber=getLineNumber(),
                     routineName=getRoutineName(), 
                     moduleName=getModuleName(),
@@ -333,7 +334,7 @@ module CSVMsg {
             for (filedom, filename, file_idx) in zip(locFiledoms, locFiles, 0..) {
                 if (skips.contains(filename)) {
                     csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "File %s does not contain data for this dataset, skipping".format(filename));
+                             "File %s does not contain data for this dataset, skipping".doFormat(filename));
                     continue;
                 } else {
                     var csvFile = open(filename, ioMode.r);
@@ -349,7 +350,7 @@ module CSVMsg {
                     var colExists = column_names.find(dset, colidx);
                     if !colExists{
                         throw getErrorWithContext(
-                            msg="The dataset %s was not found in %s".format(dset, filename),
+                            msg="The dataset %s was not found in %s".doFormat(dset, filename),
                             lineNumber=getLineNumber(),
                             routineName=getRoutineName(), 
                             moduleName=getModuleName(),
@@ -379,7 +380,7 @@ module CSVMsg {
             if (!vf) {
                 skips.add(fname);
                 csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Adding invalid file to skips, %s".format(fname));
+                        "Adding invalid file to skips, %s".doFormat(fname));
                 continue;
             }
             subdoms[i] = {off..#ct};
@@ -447,12 +448,12 @@ module CSVMsg {
                         data[low..#vbytes.size] = vbytes;
                     }
                     var ss = getSegString(str_offsets, data, st);
-                    var rst = (dset, ObjType.STRINGS, "%s+%t".format(ss.name, ss.nBytes));
+                    var rst = (dset, ObjType.STRINGS, "%s+%?".doFormat(ss.name, ss.nBytes));
                     rtnData.pushBack(rst);
                 }
                 otherwise {
                     throw getErrorWithContext(
-                                    msg="Data Type %s cannot be read into Arkouda.".format(dtypes[i]),
+                                    msg="Data Type %s cannot be read into Arkouda.".doFormat(dtypes[i]),
                                     lineNumber=getLineNumber(), 
                                     routineName=getRoutineName(), 
                                     moduleName=getModuleName(), 
@@ -489,7 +490,7 @@ module CSVMsg {
                 data[low..#vbytes.size] = vbytes;
             }
             var ss = getSegString(str_offsets, data, st);
-            var rst = (dset, ObjType.STRINGS, "%s+%t".format(ss.name, ss.nBytes));
+            var rst = (dset, ObjType.STRINGS, "%s+%?".doFormat(ss.name, ss.nBytes));
             rtnData.pushBack(rst);
         }
         return rtnData;
@@ -509,7 +510,7 @@ module CSVMsg {
             var n: int = 1000;
             var jsonfiles = msgArgs.getValueOf("filenames");
             var files: string = if jsonfiles.size > 2*n then jsonfiles[0..#n]+'...'+jsonfiles[jsonfiles.size-n..#n] else jsonfiles;
-            var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, files);
+            var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".doFormat(nfiles, files);
             csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
@@ -524,7 +525,7 @@ module CSVMsg {
             var n: int = 1000;
             var jsondsets = msgArgs.getValueOf("datasets");
             var dsets: string = if jsondsets.size > 2*n then jsondsets[0..#n]+'...'+jsondsets[jsondsets.size-n..#n] else jsondsets;
-            var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
+            var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".doFormat(
                                                 ndsets, dsets);
             csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -541,9 +542,9 @@ module CSVMsg {
             }
             var tmp = glob(filelist[0]);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "glob expanded %s to %i files".format(filelist[0], tmp.size));
+                                  "glob expanded %s to %i files".doFormat(filelist[0], tmp.size));
             if tmp.size == 0 {
-                var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
+                var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".doFormat(filelist[0]);
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
@@ -571,27 +572,27 @@ module CSVMsg {
                 (row_cts[i], headers[i], dtypes) = get_info(fname, dsetlist, col_delim);
                 data_types.pushBack(dtypes);
             } catch e: FileNotFoundError {
-                fileErrorMsg = "File %s not found".format(fname);
+                fileErrorMsg = "File %s not found".doFormat(fname);
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
                 if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
             } catch e: PermissionError {
-                fileErrorMsg = "Permission error %s opening %s".format(e.message(),fname);
+                fileErrorMsg = "Permission error %s opening %s".doFormat(e.message(),fname);
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
                 if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
             } catch e: DatasetNotFoundError {
-                fileErrorMsg = "1 or more Datasets not found in file %s".format(fname);
+                fileErrorMsg = "1 or more Datasets not found in file %s".doFormat(fname);
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
                 if !allowErrors { return new MsgTuple(e.message(), MsgType.ERROR); }
             } catch e: SegStringError {
-                fileErrorMsg = "SegmentedString error: %s".format(e.message());
+                fileErrorMsg = "SegmentedString error: %s".doFormat(e.message());
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
                 if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
             } catch e : Error {
-                fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
+                fileErrorMsg = "Other error in accessing file %s: %s".doFormat(fname,e.message());
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
                 if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
@@ -613,18 +614,18 @@ module CSVMsg {
         for (isValid, fname, dt, rc, hh) in zip(validFiles, filenames, data_types, row_cts, headers) {
             if isValid {
                 if (dtype != dt) {
-                    var errorMsg = "Inconsistent dtypes in file %s".format(fname);
+                    var errorMsg = "Inconsistent dtypes in file %s".doFormat(fname);
                     csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
                 else if (hasHeader != hh){
-                    var errorMsg = "Inconsistent file formatting. %s has no header.".format(fname);
+                    var errorMsg = "Inconsistent file formatting. %s has no header.".doFormat(fname);
                     csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
             }
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "Verified all dtypes across files for file %s".format(fname));
+                                        "Verified all dtypes across files for file %s".doFormat(fname));
         }
 
         var rtnMsg: string;
