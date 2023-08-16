@@ -1,6 +1,7 @@
 import os
 import tempfile
 
+import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -642,7 +643,7 @@ class SegArrayTest(ArkoudaTest):
         # test filtering single value retain empties
         filter_result = sa.filter(2, discard_empty=False)
         self.assertEqual(sa.size, filter_result.size)
-        #ensure 2 does not exist in return values
+        # ensure 2 does not exist in return values
         self.assertTrue((filter_result.values != 2).all())
         for i in range(sa.size):
             self.assertListEqual(sa[i][(sa[i] != 2)].to_list(), filter_result[i].to_list())
@@ -680,7 +681,79 @@ class SegArrayTest(ArkoudaTest):
             x = ak.in1d(ak.array(sa[i]), ak.array([1, 2]), invert=True)
             v = ak.array(sa[i])[x]
             if v.size != 0:
-                self.assertListEqual(v.to_list(), filter_result[i-offset].to_list())
+                self.assertListEqual(v.to_list(), filter_result[i - offset].to_list())
             else:
                 offset += 1
 
+    def test_equality(self):
+        # reproducer for issue #2617
+        # verify equality no matter position of empty seg
+        for has_empty_seg in [0, 0, 9, 14], [0, 9, 9, 14, 14], [0, 0, 7, 9, 14, 14, 17, 20]:
+            sa = ak.SegArray(ak.array(has_empty_seg), ak.arange(-10, 10))
+            self.assertTrue((sa == sa).all())
+
+        s1 = ak.SegArray(ak.array([0, 4, 14, 14]), ak.arange(-10, 10))
+        s2 = ak.SegArray(ak.array([0, 9, 14, 14]), ak.arange(-10, 10))
+        self.assertTrue((s1 == s2).to_list() == [False, False, True, True])
+
+        # test segarrays with empty segments, multiple types, and edge cases
+        df = ak.DataFrame(
+            {
+                "c_1": ak.SegArray(ak.array([0, 0, 9, 14]), ak.arange(-10, 10)),
+                "c_2": ak.SegArray(
+                    ak.array([0, 5, 10, 10]), ak.arange(2**63, 2**63 + 15, dtype=ak.uint64)
+                ),
+                "c_3": ak.SegArray(ak.array([0, 0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool)),
+                "c_4": ak.SegArray(
+                    ak.array([0, 9, 14, 14]),
+                    ak.array(
+                        [
+                            np.nan,
+                            np.finfo(np.float64).min,
+                            -np.inf,
+                            -7.0,
+                            -3.14,
+                            -0.0,
+                            0.0,
+                            3.14,
+                            7.0,
+                            np.finfo(np.float64).max,
+                            np.inf,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                        ]
+                    ),
+                ),
+                "c_5": ak.SegArray(
+                    ak.array([0, 2, 5, 5]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+                ),
+                "c_6": ak.SegArray(
+                    ak.array([0, 2, 2, 2]), ak.array(["a", "b", "", "c", "d", "e", "f", "g", "h", "i"])
+                ),
+                "c_7": ak.SegArray(
+                    ak.array([0, 0, 2, 2]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+                ),
+                "c_8": ak.SegArray(
+                    ak.array([0, 2, 3, 3]), ak.array(["", "'", " ", "test", "", "'", "", " ", ""])
+                ),
+                "c_9": ak.SegArray(
+                    ak.array([0, 5, 5, 8]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+                ),
+                "c_10": ak.SegArray(
+                    ak.array([0, 5, 8, 8]),
+                    ak.array(["abc", "123", "xyz", "l", "m", "n", "o", "p", "arkouda"]),
+                ),
+            }
+        )
+
+        for col in df.columns:
+            a = df[col]
+            if a.dtype == ak.float64:
+                a = a.to_ndarray()
+                if isinstance(a[0], np.ndarray):
+                    self.assertTrue(all(np.allclose(a1, b1, equal_nan=True) for a1, b1 in zip(a, a)))
+                else:
+                    self.assertTrue(np.allclose(a, a, equal_nan=True))
+            else:
+                self.assertTrue((a == a).all())

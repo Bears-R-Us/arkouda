@@ -759,7 +759,7 @@ class IOTest(ArkoudaTest):
     def test_multi_dim_rdwr(self):
         arr = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            arr.to_hdf(tmp_dirname + "/multi_dim_test", dset="MultiDimObj", mode="append")
+            arr.to_hdf(tmp_dirname + "/multi_dim_test", dataset="MultiDimObj", mode="append")
             # load data back
             read_arr = ak.read_hdf(tmp_dirname + "/multi_dim_test*", datasets="MultiDimObj")
             self.assertTrue(np.array_equal(arr.to_ndarray(), read_arr.to_ndarray()))

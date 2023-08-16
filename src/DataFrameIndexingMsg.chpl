@@ -41,7 +41,7 @@
             throw new owned IllegalArgumentError(errorMsg);
         }
         if idxMax >= columnVals.size {
-            var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,idxMin,columnVals.size-1);
+            var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,idxMax,columnVals.size-1);
             dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             throw new owned IllegalArgumentError(errorMsg);
         }

@@ -58,6 +58,11 @@ module ServerConfig
     Global log channel flag that defaults to LogChannel.CONSOLE
     */
     config var logChannel = LogChannel.CONSOLE;
+    
+    /*
+    Indicates whether arkouda_server commands should be logged.
+    */
+    config var logCommands = false;
 
     /*
     Port for zeromq
@@ -145,6 +150,7 @@ module ServerConfig
     private config const lLevel = ServerConfig.logLevel;
     
     private config const lChannel = ServerConfig.logChannel;
+
     const scLogger = new Logger(lLevel,lChannel);
    
     proc createConfig() {

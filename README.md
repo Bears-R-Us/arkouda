@@ -302,7 +302,7 @@ for all logged messages. An example is shown below:
 2021-04-15:06:22:59 [MultiTypeSymbolTable] addEntry Line 127 DEBUG [Chapel] adding symbol: id_4 
 ```
 
-### Logging Levels
+### Log Levels
 
 Available logging levels are ERROR, CRITICAL, WARN, INFO, and DEBUG. The default logging level is INFO where all messages at the ERROR, CRITICAL, WARN, and INFO levels are printed. The log level can be set globally by passing in the --logLevel parameter upon arkouda\_server startup. For example, passing the --logLevel=LogLevel.DEBUG parameter as shown below sets the global log level to DEBUG:
 
@@ -318,13 +318,23 @@ In addition to setting the global logging level, the logging level for individua
 
 In this example, the logging level for all other Arkouda modules will be set to the global value WARN.
 
-### Logging Channels
+### Log Channels
 
-Arkouda logs can be written either to the console (default) or to the arkouda.log file located in the Arkouda deployment directory. To enable log output to the arkouda.log file, start Arkouda as follows with the --logChannel flag:
+Arkouda logs can be written either to the console (default) or to the arkouda.log file located in the .arkouda directory. To enable log output to the arkouda.log file, start Arkouda as follows with the --logChannel flag:
 
 ```
 ./arkouda_server --logChannel=LogChannel.FILE
 ```
+
+### Arkouda Command Logging
+
+All incoming Arkouda server commands submitted by the Arkouda client can be logged to the commands.log file located in the .arkouda directory. Arkouda command logging is enabled as follows:
+
+```
+./arkouda_server --logCommands=true
+```
+
+The Arkouda command logging capability has a variety of uses, one of which is replaying analytic or data processing scenarios in either interactive or batch mode. Moreover, a sequence of Arkouda server commands provides the possibility of utilizing Arkouda clients developed in other languages such as Rust or Go. In still another use case, command logging in Arkouda provides a command sequence for starting Arkouda via cron job and processing large amounts of data into Arkouda arrays or dataframes, thereby obviating the need for a user to wait for well-known data processing/analysis steps to complete; this use case is of particular value in situations where the data loading process is particularly time-intensive. Finally, command logging provides a means of integrating a non-interactive Arkouda data processing/analysis sequence into a data science workflow implemented in a framework such as Argo Workflows or Kubeflow.
 
 <a id="typecheck-ak"></a>
 ## Type Checking in Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
@@ -379,6 +389,7 @@ Beginning after tag `v2019.12.10` versioning is now performed using [Versioneer]
 which determines the version based on the location in `git`.
 
 An example using a hypothetical tag `1.2.3.4`
+
 ```bash
 git checkout 1.2.3.4
 python -m arkouda |tail -n 2
