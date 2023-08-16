@@ -394,7 +394,7 @@ module CommAggregation {
   // Cacheline aligned and padded allocation to avoid false-sharing
   inline proc bufferIdxAlloc() {
     const cachePaddedLocales = (numLocales + 7) & ~7;
-    return allocate(int, 64, alignment=cachePaddedLocales);
+    return allocate(int, cachePaddedLocales, alignment=64);
   }
 
   module BigIntegerAggregation {
