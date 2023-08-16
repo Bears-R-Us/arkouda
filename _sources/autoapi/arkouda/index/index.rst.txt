@@ -33,8 +33,17 @@ Classes
       Property indicating if all values in the index are unique
       :rtype: bool - True if all values are unique, False otherwise.
 
+   .. py:attribute:: objType
+      :value: 'Index'
+
+      
+
    .. py:method:: factory(index)
       :staticmethod:
+
+
+   .. py:method:: from_return_msg(rep_msg)
+      :classmethod:
 
 
    .. py:method:: to_pandas()
@@ -53,17 +62,63 @@ Classes
       Currently only aku.ip_address and ak.array are supported.
 
 
-   .. py:method:: register(label)
+   .. py:method:: register(user_defined_name)
+
+      Register this Index object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the Index is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same Index which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different Indexes with the same name.
+      :rtype: Index
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the Index with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: unregister()
+
+      Unregister this Index object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
    .. py:method:: is_registered()
 
-      Return True if the object is contained in the registry
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
 
       :returns: Indicates if the object is contained in the registry
-      :rtype: bool
+      :rtype: numpy.bool
 
-      :raises RuntimeError: Raised if there's a server-side error thrown
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
    .. py:method:: to_dict(label)
@@ -288,6 +343,11 @@ Classes
 
       This is maintained to support older code
 
+   .. py:attribute:: objType
+      :value: 'MultiIndex'
+
+      
+
    .. py:method:: to_pandas()
 
 
@@ -298,7 +358,69 @@ Classes
       Currently only aku.ip_address and ak.array are supported.
 
 
-   .. py:method:: register(label)
+   .. py:method:: to_ndarray()
+
+
+   .. py:method:: to_list()
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this Index object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the Index is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same Index which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different Indexes with the same name.
+      :rtype: MultiIndex
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the Index with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: unregister()
+
+      Unregister this Index object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: is_registered()
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
    .. py:method:: to_dict(labels)

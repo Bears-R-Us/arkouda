@@ -143,6 +143,11 @@ Functions
 
       
 
+   .. py:attribute:: special_objType
+      :value: 'Datetime'
+
+      
+
    .. py:method:: isocalendar()
 
 
@@ -157,6 +162,65 @@ Functions
    .. py:method:: sum()
 
       Return the sum of all elements in the array.
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this Datetime object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the Datetime is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same Datetime which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different Datetimes with the same name.
+      :rtype: Datetime
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the Datetimes with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: unregister()
+
+      Unregister this Datetime object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: is_registered() -> numpy.bool_
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
 
@@ -236,6 +300,11 @@ Functions
 
       
 
+   .. py:attribute:: special_objType
+      :value: 'Timedelta'
+
+      
+
    .. py:method:: total_seconds()
 
 
@@ -260,6 +329,65 @@ Functions
    .. py:method:: abs()
 
       Absolute value of time interval.
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this Timedelta object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the timedelta is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same Timedelta which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different Timedeltas with the same name.
+      :rtype: Timedelta
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the timedelta with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: unregister()
+
+      Unregister this timedelta object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: is_registered() -> numpy.bool_
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
 

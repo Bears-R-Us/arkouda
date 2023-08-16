@@ -18,17 +18,18 @@ Functions
    arkouda.util.concatenate
    arkouda.util.generic_concat
    arkouda.util.report_mem
-   arkouda.util.register
-   arkouda.util.register_all
-   arkouda.util.attach_all
-   arkouda.util.unregister_all
    arkouda.util.enrich_inplace
    arkouda.util.expand
    arkouda.util.invert_permutation
    arkouda.util.most_common
    arkouda.util.convert_if_categorical
+   arkouda.util.register
    arkouda.util.attach
-   arkouda.util.unregister_by_name
+   arkouda.util.unregister
+   arkouda.util.is_registered
+   arkouda.util.register_all
+   arkouda.util.unregister_all
+   arkouda.util.attach_all
 
 
 
@@ -45,21 +46,6 @@ Functions
 
 
 .. py:function:: report_mem(pre='')
-
-
-.. py:function:: register(a, name)
-
-   Register an arkouda object with a user-specified name. Backwards compatible
-   with earlier arkouda versions.
-
-
-.. py:function:: register_all(data, prefix, overwrite=True)
-
-
-.. py:function:: attach_all(prefix)
-
-
-.. py:function:: unregister_all(prefix)
 
 
 .. py:function:: enrich_inplace(data, keynames, aggregations, **kwargs)
@@ -104,21 +90,59 @@ Functions
    Convert a Categorical array to Strings for display
 
 
-.. py:function:: attach(name: str, dtype: str = 'infer')
+.. py:function:: register(obj, name)
 
-   Attaches to a known element name. If a type is passed, the server will use that type
-   to pull the corresponding parts, otherwise the server will try to infer the type
+   Register an arkouda object with a user-specified name. Backwards compatible
+   with earlier arkouda versions.
 
 
-.. py:function:: unregister_by_name(name: str, dtype: str = 'infer')
+.. py:function:: attach(name: str)
 
-   Unregisters all components of a given registered object's name
 
-   :param name: Name of the object to be unregistered
+.. py:function:: unregister(name: str)
+
+
+.. py:function:: is_registered(name: str, as_component: bool = False) -> bool
+
+   Determine if the name provided is associated with a registered Object
+
+   :param name: The name to check for in the registry
    :type name: str
-   :param dtype: Name of the type of object being unregistered. If no type is given, we will attempt
-                 to identify the type based on registered symbols
-                 Supported types are: pdarray, strings, categorical, segarray, and series
-   :type dtype: str
+   :param as_component: Default: False
+                        When True, the name will be checked to determine if it is registered as a component of
+                        a registered object
+   :type as_component: bool
+
+   :rtype: bool
+
+
+.. py:function:: register_all(data: dict)
+
+   Register all objects in the provided dictionary
+
+   :param data: Maps name to register the object to the object. For example, {"MyArray": ak.array([0, 1, 2])
+   :type data: dict
+
+   :rtype: None
+
+
+.. py:function:: unregister_all(names: list)
+
+   Unregister all names provided
+
+   :param names: List of names used to register objects to be unregistered
+   :type names: list
+
+   :rtype: None
+
+
+.. py:function:: attach_all(names: list)
+
+   Attach to all objects registered with the names provide
+
+   :param names: List of names to attach to
+   :type names: list
+
+   :rtype: dict
 
 

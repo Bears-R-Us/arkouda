@@ -55,14 +55,16 @@ Attributes
        retrieving information about the objects in names
 
 
-.. py:function:: list_registry() -> List[str]
+.. py:function:: list_registry(detailed: bool = False)
 
    Return a list containing the names of all registered objects
 
-   :param None:
+   :param detailed: Default = False
+                    Return details of registry objects. Currently includes object type for any objects
+   :type detailed: bool
 
-   :returns: List of all object names in the registry
-   :rtype: list
+   :returns: Dict containing keys "Components" and "Objects".
+   :rtype: dict
 
    :raises RuntimeError: Raised if there's a server-side error thrown
 

@@ -1205,7 +1205,7 @@ Please note you cannot register two different DataFrames with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -1227,7 +1227,7 @@ in attached copies.</p>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -1252,7 +1252,7 @@ they are unregistered.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1280,12 +1280,12 @@ arkouda server which was registered using register()</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.dataframe.DataFrame.register" title="arkouda.dataframe.DataFrame.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.dataframe.DataFrame.is_registered" title="arkouda.dataframe.DataFrame.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.dataframe.DataFrame.unregister" title="arkouda.dataframe.DataFrame.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></p>
+<p><a class="reference internal" href="#arkouda.dataframe.DataFrame.register" title="arkouda.dataframe.DataFrame.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.dataframe.DataFrame.is_registered" title="arkouda.dataframe.DataFrame.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.dataframe.DataFrame.unregister" title="arkouda.dataframe.DataFrame.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -1301,7 +1301,7 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 </dl>
@@ -1309,27 +1309,6 @@ with the arkouda server via register()</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.dataframe.DataFrame.register" title="arkouda.dataframe.DataFrame.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.dataframe.DataFrame.unregister" title="arkouda.dataframe.DataFrame.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.dataframe.DataFrame.attach" title="arkouda.dataframe.DataFrame.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.dataframe.DataFrame.is_registered" title="arkouda.dataframe.DataFrame.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
 </div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.from_attach_msg">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_attach_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repMsg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.from_attach_msg" title="Permalink to this definition">#</a></dt>
-<dd><p>Creates and returns a DataFrame based on return components from ak.util.attach</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>repMsg</strong> (<em>string</em>) – A ‘+’ delimited string of the DataFrame components to parse.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A DataFrame representing a set of DataFrame components on the server</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown in the process of creating
-the DataFrame instance</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1523,7 +1502,6 @@ arrays.</p>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.is_registered"><code class="docutils literal notranslate"><span class="pre">DataFrame.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.attach"><code class="docutils literal notranslate"><span class="pre">DataFrame.attach()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.unregister_dataframe_by_name"><code class="docutils literal notranslate"><span class="pre">DataFrame.unregister_dataframe_by_name()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.from_attach_msg"><code class="docutils literal notranslate"><span class="pre">DataFrame.from_attach_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.from_return_msg"><code class="docutils literal notranslate"><span class="pre">DataFrame.from_return_msg()</span></code></a></li>
 </ul>
 </li>

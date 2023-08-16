@@ -298,18 +298,6 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>([pre])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.register" title="arkouda.util.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>(a, name)</p></td>
-<td><p>Register an arkouda object with a user-specified name. Backwards compatible</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register_all" title="arkouda.util.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data, prefix[, overwrite])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.attach_all" title="arkouda.util.attach_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_all</span></code></a>(prefix)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.unregister_all" title="arkouda.util.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(prefix)</p></td>
-<td><p></p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.enrich_inplace" title="arkouda.util.enrich_inplace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enrich_inplace</span></code></a>(data, keynames, aggregations, **kwargs)</p></td>
 <td><p></p></td>
 </tr>
@@ -325,11 +313,26 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.convert_if_categorical" title="arkouda.util.convert_if_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_if_categorical</span></code></a>(values)</p></td>
 <td><p>Convert a Categorical array to Strings for display</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.attach" title="arkouda.util.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>(name[, dtype])</p></td>
-<td><p>Attaches to a known element name. If a type is passed, the server will use that type</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register" title="arkouda.util.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>(obj, name)</p></td>
+<td><p>Register an arkouda object with a user-specified name. Backwards compatible</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.unregister_by_name" title="arkouda.util.unregister_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_by_name</span></code></a>(name[, dtype])</p></td>
-<td><p>Unregisters all components of a given registered object's name</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.attach" title="arkouda.util.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.unregister" title="arkouda.util.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.is_registered" title="arkouda.util.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>(→ bool)</p></td>
+<td><p>Determine if the name provided is associated with a registered Object</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register_all" title="arkouda.util.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data)</p></td>
+<td><p>Register all objects in the provided dictionary</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.unregister_all" title="arkouda.util.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
+<td><p>Unregister all names provided</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.attach_all" title="arkouda.util.attach_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_all</span></code></a>(names)</p></td>
+<td><p>Attach to all objects registered with the names provide</p></td>
 </tr>
 </tbody>
 </table>
@@ -357,28 +360,6 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.report_mem">
 <span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">report_mem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pre</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.report_mem" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.register">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.register" title="Permalink to this definition">#</a></dt>
-<dd><p>Register an arkouda object with a user-specified name. Backwards compatible
-with earlier arkouda versions.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.register_all">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">register_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.register_all" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.attach_all">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.attach_all" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.unregister_all">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">unregister_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.unregister_all" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -439,24 +420,79 @@ proper as ak.broadcast. It is retained here for backwards compatibility.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.attach">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'infer'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.attach" title="Permalink to this definition">#</a></dt>
-<dd><p>Attaches to a known element name. If a type is passed, the server will use that type
-to pull the corresponding parts, otherwise the server will try to infer the type</p>
+<dt class="sig sig-object py" id="arkouda.util.register">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.register" title="Permalink to this definition">#</a></dt>
+<dd><p>Register an arkouda object with a user-specified name. Backwards compatible
+with earlier arkouda versions.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.unregister_by_name">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">unregister_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'infer'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.unregister_by_name" title="Permalink to this definition">#</a></dt>
-<dd><p>Unregisters all components of a given registered object’s name</p>
+<dt class="sig sig-object py" id="arkouda.util.attach">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.attach" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.unregister">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.unregister" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.is_registered">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#arkouda.util.is_registered" title="Permalink to this definition">#</a></dt>
+<dd><p>Determine if the name provided is associated with a registered Object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – Name of the object to be unregistered</p></li>
-<li><p><strong>dtype</strong> (<em>str</em>) – Name of the type of object being unregistered. If no type is given, we will attempt
-to identify the type based on registered symbols
-Supported types are: pdarray, strings, categorical, segarray, and series</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The name to check for in the registry</p></li>
+<li><p><strong>as_component</strong> (<em>bool</em>) – Default: False
+When True, the name will be checked to determine if it is registered as a component of
+a registered object</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.register_all">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">register_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.register_all" title="Permalink to this definition">#</a></dt>
+<dd><p>Register all objects in the provided dictionary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – Maps name to register the object to the object. For example, {“MyArray”: ak.array([0, 1, 2])</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.unregister_all">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">unregister_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.unregister_all" title="Permalink to this definition">#</a></dt>
+<dd><p>Unregister all names provided</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>list</em>) – List of names used to register objects to be unregistered</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.attach_all">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.attach_all" title="Permalink to this definition">#</a></dt>
+<dd><p>Attach to all objects registered with the names provide</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>list</em>) – List of names to attach to</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -528,17 +564,18 @@ Supported types are: pdarray, strings, categorical, segarray, and series</p></li
 <li><a class="reference internal" href="#arkouda.util.concatenate"><code class="docutils literal notranslate"><span class="pre">concatenate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.generic_concat"><code class="docutils literal notranslate"><span class="pre">generic_concat()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.report_mem"><code class="docutils literal notranslate"><span class="pre">report_mem()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.register"><code class="docutils literal notranslate"><span class="pre">register()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.register_all"><code class="docutils literal notranslate"><span class="pre">register_all()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.attach_all"><code class="docutils literal notranslate"><span class="pre">attach_all()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.unregister_all"><code class="docutils literal notranslate"><span class="pre">unregister_all()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.enrich_inplace"><code class="docutils literal notranslate"><span class="pre">enrich_inplace()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.expand"><code class="docutils literal notranslate"><span class="pre">expand()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.invert_permutation"><code class="docutils literal notranslate"><span class="pre">invert_permutation()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.most_common"><code class="docutils literal notranslate"><span class="pre">most_common()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.convert_if_categorical"><code class="docutils literal notranslate"><span class="pre">convert_if_categorical()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.register"><code class="docutils literal notranslate"><span class="pre">register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.attach"><code class="docutils literal notranslate"><span class="pre">attach()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.unregister_by_name"><code class="docutils literal notranslate"><span class="pre">unregister_by_name()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.unregister"><code class="docutils literal notranslate"><span class="pre">unregister()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.is_registered"><code class="docutils literal notranslate"><span class="pre">is_registered()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.register_all"><code class="docutils literal notranslate"><span class="pre">register_all()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.unregister_all"><code class="docutils literal notranslate"><span class="pre">unregister_all()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.attach_all"><code class="docutils literal notranslate"><span class="pre">attach_all()</span></code></a></li>
 </ul>
 </li>
 </ul>

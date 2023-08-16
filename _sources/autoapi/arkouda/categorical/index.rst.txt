@@ -579,7 +579,8 @@ Classes
 
    .. py:method:: is_registered() -> numpy.bool_
 
-       Return True iff the object is contained in the registry
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
 
       :returns: Indicates if the object is contained in the registry
       :rtype: numpy.bool
@@ -616,6 +617,7 @@ Classes
    .. py:method:: attach(user_defined_name: str) -> Categorical
       :staticmethod:
 
+      DEPRECATED
       Function to return a Categorical object attached to the registered name in the
       arkouda server which was registered using register()
 

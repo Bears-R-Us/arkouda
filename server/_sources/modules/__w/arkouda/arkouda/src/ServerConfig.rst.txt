@@ -22,7 +22,7 @@ arkouda server config param and config const
 
 .. enum:: enum Deployment { STANDARD, KUBERNETES }
 
-.. enum:: enum ObjType { UNKNOWN = -1, ARRAYVIEW = 0, PDARRAY = 1, STRINGS = 2, SEGARRAY = 3, CATEGORICAL = 4, GROUPBY = 5, DATAFRAME = 6 }
+.. enum:: enum ObjType { UNKNOWN = -1, ARRAYVIEW = 0, PDARRAY = 1, STRINGS = 2, SEGARRAY = 3, CATEGORICAL = 4, GROUPBY = 5, DATAFRAME = 6, DATETIME = 7, TIMEDELTA = 8, IPV4 = 9, BITVECTOR = 10, SERIES = 11, INDEX = 12, MULTIINDEX = 13 }
 
 .. data:: config const deployment = Deployment.STANDARD
 

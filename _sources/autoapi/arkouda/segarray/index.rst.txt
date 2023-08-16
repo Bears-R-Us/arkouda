@@ -662,26 +662,40 @@ Attributes
 
    .. py:method:: register(user_defined_name)
 
-      Save this SegArray object by registering it to the Symbol Table using a defined name
+      Register this SegArray object and underlying components with the Arkouda server
 
       :param user_defined_name: user defined name which this SegArray object will be registered under
       :type user_defined_name: str
 
-      :returns: This SegArray object
+      :returns: The same SegArray which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different SegArrays with the same name.
       :rtype: SegArray
 
       :raises RegistrationError: Raised if the server could not register the SegArray object
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
       .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
 
    .. py:method:: unregister()
 
-      Remove this SegArray object from the Symbol Table
+      Unregister this SegArray object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
 
       :rtype: None
 
       :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
       .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
 

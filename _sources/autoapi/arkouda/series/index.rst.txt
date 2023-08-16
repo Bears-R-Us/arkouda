@@ -51,6 +51,11 @@ Classes
    .. py:property:: shape
 
 
+   .. py:attribute:: objType
+      :value: 'Series'
+
+      
+
    .. py:attribute:: dt
 
       
@@ -158,19 +163,51 @@ Classes
       :rtype: An arkouda dataframe.
 
 
-   .. py:method:: register(label: str) -> int
+   .. py:method:: register(user_defined_name: str)
 
-      Register the series with arkouda
+      Register this Series object and underlying components with the Arkouda server
 
-      :param label:
-      :type label: Arkouda name used for the series
+      :param user_defined_name: user defined name the Series is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
 
-      :rtype: Numer of keys
+      :returns: The same Series which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different Series with the same name.
+      :rtype: Series
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the Series with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: unregister()
+
+      Unregister this Series object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
    .. py:method:: attach(label: str, nkeys: int = 1) -> Series
       :staticmethod:
 
+      DEPRECATED
       Retrieve a series registered with arkouda
 
       :param label:
@@ -181,16 +218,24 @@ Classes
 
    .. py:method:: is_registered() -> bool
 
-      Checks if all components of the Series object are registered
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
 
-      :returns: True if all components are registered, false if not
-      :rtype: bool
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
 
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
    .. py:method:: from_return_msg(repMsg: str) -> Series
-      :staticmethod:
+      :classmethod:
 
       Return a Series instance pointing to components created by the arkouda server.
       The user should not call this function directly.

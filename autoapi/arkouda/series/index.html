@@ -296,7 +296,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id802" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
+<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
 If empty, it will default to a range of ints whose size match the size of the data.
 optional</p></li>
 <li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em>) – a 1D array. Must not be None.</p></li>
@@ -332,6 +332,11 @@ If entering keywords,</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.series.Series.shape">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.series.Series.shape" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.series.Series.objType">
+<span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Series'</span></em><a class="headerlink" href="#arkouda.series.Series.objType" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -477,22 +482,63 @@ first element is the most frequently-occurring element.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.series.Series.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#arkouda.series.Series.register" title="Permalink to this definition">#</a></dt>
-<dd><p>Register the series with arkouda</p>
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.series.Series.register" title="Permalink to this definition">#</a></dt>
+<dd><p>Register this Series object and underlying components with the Arkouda server</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>label</strong> (<em>Arkouda name used for the series</em>) – </p>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the Series is to be registered under,
+this will be the root name for underlying components</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Numer of keys</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same Series which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support
+a fluid programming style.
+Please note you cannot register two different Series with the same name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series">Series</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Series with the user_defined_name</p></li>
+</ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.series.Series.unregister" title="arkouda.series.Series.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.series.Series.attach" title="arkouda.series.Series.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.series.Series.is_registered" title="arkouda.series.Series.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.series.Series.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.series.Series.unregister" title="Permalink to this definition">#</a></dt>
+<dd><p>Unregister this Series object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+when attempting to unregister</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.series.Series.register" title="arkouda.series.Series.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.series.Series.attach" title="arkouda.series.Series.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.series.Series.is_registered" title="arkouda.series.Series.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.series.Series.attach">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nkeys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">Series</span></a></span></span><a class="headerlink" href="#arkouda.series.Series.attach" title="Permalink to this definition">#</a></dt>
-<dd><p>Retrieve a series registered with arkouda</p>
+<dd><p>DEPRECATED
+Retrieve a series registered with arkouda</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -506,24 +552,33 @@ first element is the most frequently-occurring element.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.series.Series.is_registered">
 <span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#arkouda.series.Series.is_registered" title="Permalink to this definition">#</a></dt>
-<dd><p>Checks if all components of the Series object are registered</p>
+<dd><blockquote>
+<div><p>Return True iff the object is contained in the registry or is a component of a
+registered object.</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if all components are registered, false if not</p>
+<dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dd class="field-even"><p>numpy.bool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.series.Series.register" title="arkouda.series.Series.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code>, <a class="reference internal" href="#arkouda.series.Series.attach" title="arkouda.series.Series.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.series.Series.register" title="arkouda.series.Series.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.series.Series.attach" title="arkouda.series.Series.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.series.Series.unregister" title="arkouda.series.Series.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
 </div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.series.Series.from_return_msg">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repMsg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">Series</span></a></span></span><a class="headerlink" href="#arkouda.series.Series.from_return_msg" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repMsg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">Series</span></a></span></span><a class="headerlink" href="#arkouda.series.Series.from_return_msg" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a Series instance pointing to components created by the arkouda server.
 The user should not call this function directly.</p>
 <dl class="field-list simple">
@@ -667,6 +722,7 @@ converted to a column.</p>
 <li><a class="reference internal" href="#classes">Classes</a><ul>
 <li><a class="reference internal" href="#arkouda.series.Series"><code class="docutils literal notranslate"><span class="pre">Series</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.series.Series.shape"><code class="docutils literal notranslate"><span class="pre">Series.shape</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.series.Series.objType"><code class="docutils literal notranslate"><span class="pre">Series.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.dt"><code class="docutils literal notranslate"><span class="pre">Series.dt</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.str_acc"><code class="docutils literal notranslate"><span class="pre">Series.str_acc</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.isin"><code class="docutils literal notranslate"><span class="pre">Series.isin()</span></code></a></li>
@@ -683,6 +739,7 @@ converted to a column.</p>
 <li><a class="reference internal" href="#arkouda.series.Series.diff"><code class="docutils literal notranslate"><span class="pre">Series.diff()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.to_dataframe"><code class="docutils literal notranslate"><span class="pre">Series.to_dataframe()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.register"><code class="docutils literal notranslate"><span class="pre">Series.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.series.Series.unregister"><code class="docutils literal notranslate"><span class="pre">Series.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.attach"><code class="docutils literal notranslate"><span class="pre">Series.attach()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.is_registered"><code class="docutils literal notranslate"><span class="pre">Series.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.from_return_msg"><code class="docutils literal notranslate"><span class="pre">Series.from_return_msg()</span></code></a></li>

@@ -397,7 +397,7 @@ attach method.</p>
 resulting in an array of rows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>m</strong> (<em>list</em><em> of </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id802" title="arkouda.Strings"><em>Strings</em></a>) – List of columns, the rows of which will form the sub-arrays of the output</p>
+<dd class="field-odd"><p><strong>m</strong> (<em>list</em><em> of </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a>) – List of columns, the rows of which will form the sub-arrays of the output</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Array of rows of input</p>
@@ -1152,21 +1152,27 @@ the return SegArray</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.register">
 <span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.register" title="Permalink to this definition">#</a></dt>
-<dd><p>Save this SegArray object by registering it to the Symbol Table using a defined name</p>
+<dd><p>Register this SegArray object and underlying components with the Arkouda server</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which this SegArray object will be registered under</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This SegArray object</p>
+<dd class="field-even"><p>The same SegArray which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support
+a fluid programming style.
+Please note you cannot register two different SegArrays with the same name.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.segarray.SegArray.unregister" title="arkouda.segarray.SegArray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.segarray.SegArray.attach" title="arkouda.segarray.SegArray.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.segarray.SegArray.is_registered" title="arkouda.segarray.SegArray.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
@@ -1176,7 +1182,8 @@ the return SegArray</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.unregister">
 <span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.unregister" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove this SegArray object from the Symbol Table</p>
+<dd><p>Unregister this SegArray object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
@@ -1185,6 +1192,9 @@ the return SegArray</p></li>
 <dd class="field-even"><p><strong>RuntimeError</strong> – Raised if the server could not unregister the SegArray object from the Symbol Table</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.segarray.SegArray.register" title="arkouda.segarray.SegArray.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.segarray.SegArray.attach" title="arkouda.segarray.SegArray.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.segarray.SegArray.is_registered" title="arkouda.segarray.SegArray.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>

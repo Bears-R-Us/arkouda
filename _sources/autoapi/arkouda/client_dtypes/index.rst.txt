@@ -75,6 +75,11 @@ Functions
 
       
 
+   .. py:attribute:: special_objType
+      :value: 'BitVector'
+
+      
+
    .. py:method:: format(x)
 
       Format a single binary vector as a string.
@@ -91,6 +96,35 @@ Functions
 
 
    .. py:method:: opeq(other, op)
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this BitVector object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the BitVector is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same BitVector which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different BitVectors with the same name.
+      :rtype: BitVector
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the BitVector with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: from_return_msg(rep_msg)
+      :classmethod:
 
 
 
@@ -179,6 +213,11 @@ Functions
    how values are displayed to the user. Operators and methods will
    typically treat this class like an int64 pdarray.
 
+   .. py:attribute:: special_objType
+      :value: 'IPv4'
+
+      
+
    .. py:method:: export_uint()
 
 
@@ -204,6 +243,31 @@ Functions
 
 
    .. py:method:: opeq(other, op)
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this IPv4 object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the IPv4 is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same IPv4 which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different IPv4s with the same name.
+      :rtype: IPv4
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the IPv4 with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
 

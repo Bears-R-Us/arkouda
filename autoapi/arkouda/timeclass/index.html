@@ -464,6 +464,11 @@ prefixes of full names (like ‘sec’) are accepted.</p>
 <span class="sig-name descname"><span class="pre">supported_with_r_pdarray</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.supported_with_r_pdarray" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.special_objType">
+<span class="sig-name descname"><span class="pre">special_objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Datetime'</span></em><a class="headerlink" href="#arkouda.timeclass.Datetime.special_objType" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.timeclass.Datetime.isocalendar">
 <span class="sig-name descname"><span class="pre">isocalendar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Datetime.isocalendar" title="Permalink to this definition">#</a></dt>
@@ -484,6 +489,87 @@ exceeds client.maxTransferBytes, a RuntimeError is raised.</p>
 <dt class="sig sig-object py" id="arkouda.timeclass.Datetime.sum">
 <span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Datetime.sum" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the sum of all elements in the array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Datetime.register" title="Permalink to this definition">#</a></dt>
+<dd><p>Register this Datetime object and underlying components with the Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the Datetime is to be registered under,
+this will be the root name for underlying components</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same Datetime which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support
+a fluid programming style.
+Please note you cannot register two different Datetimes with the same name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.timeclass.Datetime" title="arkouda.timeclass.Datetime">Datetime</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Datetimes with the user_defined_name</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.timeclass.Datetime.unregister" title="arkouda.timeclass.Datetime.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.timeclass.Datetime.is_registered" title="arkouda.timeclass.Datetime.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Datetime.unregister" title="Permalink to this definition">#</a></dt>
+<dd><p>Unregister this Datetime object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+when attempting to unregister</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.timeclass.Datetime.register" title="arkouda.timeclass.Datetime.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.timeclass.Datetime.is_registered" title="arkouda.timeclass.Datetime.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.is_registered">
+<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.bool_</span></span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.is_registered" title="Permalink to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Return True iff the object is contained in the registry or is a component of a
+registered object.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.bool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.timeclass.Datetime.register" title="arkouda.timeclass.Datetime.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.timeclass.Datetime.unregister" title="arkouda.timeclass.Datetime.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
 </dd></dl>
 
 </dd></dl>
@@ -579,6 +665,11 @@ prefixes of full names (like ‘sec’) are accepted.</p>
 <span class="sig-name descname"><span class="pre">supported_with_r_pdarray</span></span><a class="headerlink" href="#arkouda.timeclass.Timedelta.supported_with_r_pdarray" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.special_objType">
+<span class="sig-name descname"><span class="pre">special_objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Timedelta'</span></em><a class="headerlink" href="#arkouda.timeclass.Timedelta.special_objType" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.total_seconds">
 <span class="sig-name descname"><span class="pre">total_seconds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Timedelta.total_seconds" title="Permalink to this definition">#</a></dt>
@@ -611,6 +702,87 @@ exceeds client.maxTransferBytes, a RuntimeError is raised.</p>
 <dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.abs">
 <span class="sig-name descname"><span class="pre">abs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Timedelta.abs" title="Permalink to this definition">#</a></dt>
 <dd><p>Absolute value of time interval.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Timedelta.register" title="Permalink to this definition">#</a></dt>
+<dd><p>Register this Timedelta object and underlying components with the Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the timedelta is to be registered under,
+this will be the root name for underlying components</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same Timedelta which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support
+a fluid programming style.
+Please note you cannot register two different Timedeltas with the same name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.timeclass.Timedelta" title="arkouda.timeclass.Timedelta">Timedelta</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the timedelta with the user_defined_name</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.timeclass.Timedelta.unregister" title="arkouda.timeclass.Timedelta.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.timeclass.Timedelta.is_registered" title="arkouda.timeclass.Timedelta.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Timedelta.unregister" title="Permalink to this definition">#</a></dt>
+<dd><p>Unregister this timedelta object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+when attempting to unregister</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.timeclass.Timedelta.register" title="arkouda.timeclass.Timedelta.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.timeclass.Timedelta.is_registered" title="arkouda.timeclass.Timedelta.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.is_registered">
+<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.bool_</span></span></span><a class="headerlink" href="#arkouda.timeclass.Timedelta.is_registered" title="Permalink to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Return True iff the object is contained in the registry or is a component of a
+registered object.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.bool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.timeclass.Timedelta.register" title="arkouda.timeclass.Timedelta.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.timeclass.Timedelta.unregister" title="arkouda.timeclass.Timedelta.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
 </dd></dl>
 
 </dd></dl>
@@ -779,9 +951,13 @@ exactly three must be specified. If <code class="docutils literal notranslate"><
 <li><a class="reference internal" href="#arkouda.timeclass.Datetime.supported_opeq"><code class="docutils literal notranslate"><span class="pre">Datetime.supported_opeq</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Datetime.supported_with_pdarray"><code class="docutils literal notranslate"><span class="pre">Datetime.supported_with_pdarray</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Datetime.supported_with_r_pdarray"><code class="docutils literal notranslate"><span class="pre">Datetime.supported_with_r_pdarray</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.timeclass.Datetime.special_objType"><code class="docutils literal notranslate"><span class="pre">Datetime.special_objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Datetime.isocalendar"><code class="docutils literal notranslate"><span class="pre">Datetime.isocalendar()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Datetime.to_pandas"><code class="docutils literal notranslate"><span class="pre">Datetime.to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Datetime.sum"><code class="docutils literal notranslate"><span class="pre">Datetime.sum()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.timeclass.Datetime.register"><code class="docutils literal notranslate"><span class="pre">Datetime.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.timeclass.Datetime.unregister"><code class="docutils literal notranslate"><span class="pre">Datetime.unregister()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.timeclass.Datetime.is_registered"><code class="docutils literal notranslate"><span class="pre">Datetime.is_registered()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.timeclass.Timedelta"><code class="docutils literal notranslate"><span class="pre">Timedelta</span></code></a><ul>
@@ -797,11 +973,15 @@ exactly three must be specified. If <code class="docutils literal notranslate"><
 <li><a class="reference internal" href="#arkouda.timeclass.Timedelta.supported_opeq"><code class="docutils literal notranslate"><span class="pre">Timedelta.supported_opeq</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Timedelta.supported_with_pdarray"><code class="docutils literal notranslate"><span class="pre">Timedelta.supported_with_pdarray</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Timedelta.supported_with_r_pdarray"><code class="docutils literal notranslate"><span class="pre">Timedelta.supported_with_r_pdarray</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.timeclass.Timedelta.special_objType"><code class="docutils literal notranslate"><span class="pre">Timedelta.special_objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Timedelta.total_seconds"><code class="docutils literal notranslate"><span class="pre">Timedelta.total_seconds()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Timedelta.to_pandas"><code class="docutils literal notranslate"><span class="pre">Timedelta.to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Timedelta.std"><code class="docutils literal notranslate"><span class="pre">Timedelta.std()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Timedelta.sum"><code class="docutils literal notranslate"><span class="pre">Timedelta.sum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.timeclass.Timedelta.abs"><code class="docutils literal notranslate"><span class="pre">Timedelta.abs()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.timeclass.Timedelta.register"><code class="docutils literal notranslate"><span class="pre">Timedelta.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.timeclass.Timedelta.unregister"><code class="docutils literal notranslate"><span class="pre">Timedelta.unregister()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.timeclass.Timedelta.is_registered"><code class="docutils literal notranslate"><span class="pre">Timedelta.is_registered()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.timeclass.date_range"><code class="docutils literal notranslate"><span class="pre">date_range()</span></code></a></li>

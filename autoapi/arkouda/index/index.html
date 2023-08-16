@@ -294,7 +294,7 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.index.Index">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.index.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#id802" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">arkouda.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.index.Index" title="arkouda.index.Index"><span class="pre">Index</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.index.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">arkouda.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.index.Index" title="arkouda.index.Index"><span class="pre">Index</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index" title="Permalink to this definition">#</a></dt>
 <dd><dl class="py property">
 <dt class="sig sig-object py" id="arkouda.index.Index.index">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.index.Index.index" title="Permalink to this definition">#</a></dt>
@@ -313,9 +313,19 @@
 :rtype: bool - True if all values are unique, False otherwise.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.index.Index.objType">
+<span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Index'</span></em><a class="headerlink" href="#arkouda.index.Index.objType" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.Index.factory">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index.factory" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.index.Index.from_return_msg">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index.from_return_msg" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -342,24 +352,83 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.Index.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index.register" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index.register" title="Permalink to this definition">#</a></dt>
+<dd><p>Register this Index object and underlying components with the Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the Index is to be registered under,
+this will be the root name for underlying components</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same Index which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support
+a fluid programming style.
+Please note you cannot register two different Indexes with the same name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.index.Index" title="arkouda.index.Index">Index</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Index with the user_defined_name</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.index.Index.unregister" title="arkouda.index.Index.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.index.Index.is_registered" title="arkouda.index.Index.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.index.Index.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index.unregister" title="Permalink to this definition">#</a></dt>
+<dd><p>Unregister this Index object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+when attempting to unregister</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.index.Index.register" title="arkouda.index.Index.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.index.Index.is_registered" title="arkouda.index.Index.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.Index.is_registered">
 <span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index.is_registered" title="Permalink to this definition">#</a></dt>
-<dd><p>Return True if the object is contained in the registry</p>
+<dd><blockquote>
+<div><p>Return True iff the object is contained in the registry or is a component of a
+registered object.</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dd class="field-even"><p>numpy.bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.index.Index.register" title="arkouda.index.Index.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.index.Index.unregister" title="arkouda.index.Index.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -618,6 +687,11 @@ file format.</p>
 <dd><p>This is maintained to support older code</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.index.MultiIndex.objType">
+<span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MultiIndex'</span></em><a class="headerlink" href="#arkouda.index.MultiIndex.objType" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.MultiIndex.to_pandas">
 <span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.MultiIndex.to_pandas" title="Permalink to this definition">#</a></dt>
@@ -631,9 +705,95 @@ file format.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.index.MultiIndex.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.MultiIndex.register" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="arkouda.index.MultiIndex.to_ndarray">
+<span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.MultiIndex.to_ndarray" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.index.MultiIndex.to_list">
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.MultiIndex.to_list" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.index.MultiIndex.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.MultiIndex.register" title="Permalink to this definition">#</a></dt>
+<dd><p>Register this Index object and underlying components with the Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the Index is to be registered under,
+this will be the root name for underlying components</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same Index which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support
+a fluid programming style.
+Please note you cannot register two different Indexes with the same name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.index.MultiIndex" title="arkouda.index.MultiIndex">MultiIndex</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Index with the user_defined_name</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.index.MultiIndex.unregister" title="arkouda.index.MultiIndex.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.index.MultiIndex.is_registered" title="arkouda.index.MultiIndex.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.index.MultiIndex.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.MultiIndex.unregister" title="Permalink to this definition">#</a></dt>
+<dd><p>Unregister this Index object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+when attempting to unregister</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.index.MultiIndex.register" title="arkouda.index.MultiIndex.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.index.MultiIndex.is_registered" title="arkouda.index.MultiIndex.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.index.MultiIndex.is_registered">
+<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.MultiIndex.is_registered" title="Permalink to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Return True iff the object is contained in the registry or is a component of a
+registered object.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.bool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.index.MultiIndex.register" title="arkouda.index.MultiIndex.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.index.MultiIndex.unregister" title="arkouda.index.MultiIndex.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.MultiIndex.to_dict">
@@ -723,12 +883,15 @@ file format.</p>
 <li><a class="reference internal" href="#arkouda.index.Index.index"><code class="docutils literal notranslate"><span class="pre">Index.index</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.shape"><code class="docutils literal notranslate"><span class="pre">Index.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.is_unique"><code class="docutils literal notranslate"><span class="pre">Index.is_unique</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.Index.objType"><code class="docutils literal notranslate"><span class="pre">Index.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.factory"><code class="docutils literal notranslate"><span class="pre">Index.factory()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.Index.from_return_msg"><code class="docutils literal notranslate"><span class="pre">Index.from_return_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.to_pandas"><code class="docutils literal notranslate"><span class="pre">Index.to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Index.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.to_list"><code class="docutils literal notranslate"><span class="pre">Index.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.set_dtype"><code class="docutils literal notranslate"><span class="pre">Index.set_dtype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.register"><code class="docutils literal notranslate"><span class="pre">Index.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.Index.unregister"><code class="docutils literal notranslate"><span class="pre">Index.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.is_registered"><code class="docutils literal notranslate"><span class="pre">Index.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.to_dict"><code class="docutils literal notranslate"><span class="pre">Index.to_dict()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.argsort"><code class="docutils literal notranslate"><span class="pre">Index.argsort()</span></code></a></li>
@@ -743,9 +906,14 @@ file format.</p>
 </li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex"><code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.index"><code class="docutils literal notranslate"><span class="pre">MultiIndex.index</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.MultiIndex.objType"><code class="docutils literal notranslate"><span class="pre">MultiIndex.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.to_pandas"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.set_dtype"><code class="docutils literal notranslate"><span class="pre">MultiIndex.set_dtype()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.MultiIndex.to_ndarray"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_ndarray()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.MultiIndex.to_list"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.register"><code class="docutils literal notranslate"><span class="pre">MultiIndex.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.MultiIndex.unregister"><code class="docutils literal notranslate"><span class="pre">MultiIndex.unregister()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.MultiIndex.is_registered"><code class="docutils literal notranslate"><span class="pre">MultiIndex.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.to_dict"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_dict()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.argsort"><code class="docutils literal notranslate"><span class="pre">MultiIndex.argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.concat"><code class="docutils literal notranslate"><span class="pre">MultiIndex.concat()</span></code></a></li>

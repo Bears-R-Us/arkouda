@@ -292,7 +292,7 @@ for aggregating the within-group values of another array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id802" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array to group by value, or if list, the column arrays to group by row</p></li>
+<li><p><strong>keys</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id533" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array to group by value, or if list, the column arrays to group by row</p></li>
 <li><p><strong>assume_sorted</strong> (<em>bool</em>) – If True, assume keys is already sorted (Default: False)</p></li>
 </ul>
 </dd>
@@ -336,7 +336,7 @@ for aggregating the within-group values of another array.</p>
 <dd><p>The unique values of the keys array(s), in grouped order</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(list of) <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id802" title="arkouda.Strings">Strings</a>, or <a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a></p>
+<dd class="field-odd"><p>(list of) <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id533" title="arkouda.Strings">Strings</a>, or <a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -695,12 +695,12 @@ arkouda server which was registered using register()</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.GroupBy" title="arkouda.GroupBy">GroupBy</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.register" title="arkouda.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.is_registered" title="arkouda.GroupBy.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister" title="arkouda.GroupBy.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name" title="arkouda.GroupBy.unregister_groupby_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.GroupBy.register" title="arkouda.GroupBy.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.is_registered" title="arkouda.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.unregister" title="arkouda.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name" title="arkouda.GroupBy.unregister_groupby_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -711,7 +711,7 @@ arkouda server which was registered using register()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id802" title="arkouda.Strings"><em>Strings</em></a>) – The values to put in each group’s segment</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id533" title="arkouda.Strings"><em>Strings</em></a>) – The values to put in each group’s segment</p></li>
 <li><p><strong>permute</strong> (<em>bool</em>) – If True (default), permute broadcast values back to the ordering
 of the original array on which GroupBy was called. If False, the
 broadcast values are grouped by value.</p></li>
@@ -721,7 +721,7 @@ broadcast values are grouped by value.</p></li>
 <dd class="field-even"><p>The broadcasted values</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id802" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id533" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -844,12 +844,12 @@ each key appears.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.register" title="arkouda.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.attach" title="arkouda.GroupBy.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister" title="arkouda.GroupBy.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name" title="arkouda.GroupBy.unregister_groupby_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.GroupBy.register" title="arkouda.GroupBy.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.attach" title="arkouda.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.unregister" title="arkouda.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name" title="arkouda.GroupBy.unregister_groupby_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Objects registered with the server are immune to deletion until
@@ -1160,7 +1160,7 @@ values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html#arkouda.groupbyclass.GroupBy" title="arkouda.groupbyclass.GroupBy"><span class="pre">GroupBy</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.register" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.GroupBy" title="arkouda.GroupBy"><span class="pre">GroupBy</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.register" title="Permalink to this definition">#</a></dt>
 <dd><p>Register this GroupBy object and underlying components with the Arkouda server</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1179,13 +1179,13 @@ Please note you cannot register two different GroupBys with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the GroupBy with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the GroupBy with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.GroupBy.unregister" title="arkouda.GroupBy.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.attach" title="arkouda.GroupBy.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name" title="arkouda.GroupBy.unregister_groupby_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.is_registered" title="arkouda.GroupBy.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+<p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.unregister" title="arkouda.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.attach" title="arkouda.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name" title="arkouda.GroupBy.unregister_groupby_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.is_registered" title="arkouda.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Objects registered with the server are immune to deletion until
@@ -1386,13 +1386,13 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
     when attempting to unregister</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.register" title="arkouda.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.attach" title="arkouda.GroupBy.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name" title="arkouda.GroupBy.unregister_groupby_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.is_registered" title="arkouda.GroupBy.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.GroupBy.register" title="arkouda.GroupBy.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.attach" title="arkouda.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name" title="arkouda.GroupBy.unregister_groupby_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.is_registered" title="arkouda.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Objects registered with the server are immune to deletion until
@@ -1411,13 +1411,13 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.register" title="arkouda.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.unregister" title="arkouda.GroupBy.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.attach" title="arkouda.GroupBy.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.GroupBy.is_registered" title="arkouda.GroupBy.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.GroupBy.register" title="arkouda.GroupBy.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.unregister" title="arkouda.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.attach" title="arkouda.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.is_registered" title="arkouda.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
 </div>
 </dd></dl>
 

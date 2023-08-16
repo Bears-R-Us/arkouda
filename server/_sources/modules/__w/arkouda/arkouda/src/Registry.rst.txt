@@ -1,0 +1,85 @@
+.. default-domain:: chpl
+
+.. module:: Registry
+
+Registry
+========
+**Usage**
+
+.. code-block:: chapel
+
+   use Registry;
+
+
+or
+
+.. code-block:: chapel
+
+   import Registry;
+
+.. data:: const regLogger = new Logger(logLevel, logChannel)
+
+.. class:: RegTab
+
+   .. attribute:: var registered_entries: list(string)
+
+   .. attribute:: var tab: map(string, shared AbstractRegEntry)
+
+   .. method:: proc register_array(name: string, are: shared ArrayRegEntry) throws
+
+   .. method:: proc register_segarray_components(sre: SegArrayRegEntry) throws
+
+   .. method:: proc register_segarray(name: string, sre: shared SegArrayRegEntry) throws
+
+   .. method:: proc register_dataframe(name: string, dfre: shared DataFrameRegEntry) throws
+
+   .. method:: proc register_groupby(name: string, gbre: shared GroupByRegEntry) throws
+
+   .. method:: proc register_categorical_components(cre: CategoricalRegEntry) throws
+
+   .. method:: proc register_categorical(name: string, cre: shared CategoricalRegEntry) throws
+
+   .. method:: proc register_index_components(ire: IndexRegEntry) throws
+
+   .. method:: proc register_index(name: string, ire: shared IndexRegEntry) throws
+
+   .. method:: proc register_series(name: string, sre: shared SeriesRegEntry) throws
+
+   .. method:: proc register_bitvector(name: string, bre: shared BitVectorRegEntry) throws
+
+   .. method:: proc unregister_array(are: borrowed ArrayRegEntry) throws
+
+   .. method:: proc unregister_segarray_components(sre: SegArrayRegEntry) throws
+
+   .. method:: proc unregister_segarray(sre: borrowed SegArrayRegEntry) throws
+
+   .. method:: proc unregister_dataframe(dfre: borrowed DataFrameRegEntry) throws
+
+   .. method:: proc unregister_groupby(gbre: borrowed GroupByRegEntry) throws
+
+   .. method:: proc unregister_categorical_components(cre: CategoricalRegEntry) throws
+
+   .. method:: proc unregister_categorical(cre: borrowed CategoricalRegEntry) throws
+
+   .. method:: proc unregister_index_components(ire: IndexRegEntry) throws
+
+   .. method:: proc unregister_index(ire: borrowed IndexRegEntry) throws
+
+   .. method:: proc unregister_series(sre: borrowed SeriesRegEntry) throws
+
+   .. method:: proc unregister_bitvector(bre: borrowed BitVectorRegEntry) throws
+
+   .. method:: proc lookup(name: string): borrowed AbstractRegEntry throws
+
+   .. method:: proc checkAvailability(name: string) throws
+
+   .. method:: proc checkTable(name: string, calling_func = "check") throws
+
+      *
+      * checks to see if a symbol is defined if it is not it throws an exception 
+      
+
+   .. method:: proc contains(name: string): bool throws
+
+   .. method:: proc list_registry(): string throws
+

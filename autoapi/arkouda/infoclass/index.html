@@ -286,7 +286,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.infoclass.information" title="arkouda.infoclass.information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">information</span></code></a>(→ str)</p></td>
 <td><p>Returns JSON formatted string containing information about the objects in names</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.infoclass.list_registry" title="arkouda.infoclass.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>(→ List[str])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.infoclass.list_registry" title="arkouda.infoclass.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>([detailed])</p></td>
 <td><p>Return a list containing the names of all registered objects</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.infoclass.list_symbol_table" title="arkouda.infoclass.list_symbol_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_symbol_table</span></code></a>(→ List[str])</p></td>
@@ -348,17 +348,18 @@ retrieving information about the objects in names</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.infoclass.list_registry">
-<span class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></span><span class="sig-name descname"><span class="pre">list_registry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.infoclass.list_registry" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></span><span class="sig-name descname"><span class="pre">list_registry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.infoclass.list_registry" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a list containing the names of all registered objects</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>detailed</strong> (<em>bool</em>) – Default = False
+Return details of registry objects. Currently includes object type for any objects</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of all object names in the registry</p>
+<dd class="field-even"><p>Dict containing keys “Components” and “Objects”.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p>dict</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p>

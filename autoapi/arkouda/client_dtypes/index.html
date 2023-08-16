@@ -370,6 +370,11 @@ typically treat this class like a uint64 pdarray.</p>
 <span class="sig-name descname"><span class="pre">conserves</span></span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.conserves" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.special_objType">
+<span class="sig-name descname"><span class="pre">special_objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BitVector'</span></em><a class="headerlink" href="#arkouda.client_dtypes.BitVector.special_objType" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.format">
 <span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.format" title="Permalink to this definition">#</a></dt>
@@ -393,6 +398,45 @@ typically treat this class like a uint64 pdarray.</p>
 <span class="sig-name descname"><span class="pre">opeq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.opeq" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.register" title="Permalink to this definition">#</a></dt>
+<dd><p>Register this BitVector object and underlying components with the Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the BitVector is to be registered under,
+this will be the root name for underlying components</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same BitVector which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support
+a fluid programming style.
+Please note you cannot register two different BitVectors with the same name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.client_dtypes.BitVector" title="arkouda.client_dtypes.BitVector">BitVector</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the BitVector with the user_defined_name</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.from_return_msg">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.from_return_msg" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -403,7 +447,7 @@ typically treat this class like a uint64 pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id802" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
 binary representation of fields. If Strings, the values are converted
 to binary according to the mapping defined by the names and MSB_left
 arguments.</p></li>
@@ -487,6 +531,11 @@ for importing Python lists of IP addresses into Arkouda.</p>
 <p>This class is a thin wrapper around pdarray that mostly affects
 how values are displayed to the user. Operators and methods will
 typically treat this class like an int64 pdarray.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.special_objType">
+<span class="sig-name descname"><span class="pre">special_objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'IPv4'</span></em><a class="headerlink" href="#arkouda.client_dtypes.IPv4.special_objType" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.export_uint">
 <span class="sig-name descname"><span class="pre">export_uint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.export_uint" title="Permalink to this definition">#</a></dt>
@@ -521,6 +570,40 @@ and convert it to an integer.</p>
 <dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.opeq">
 <span class="sig-name descname"><span class="pre">opeq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.opeq" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.register" title="Permalink to this definition">#</a></dt>
+<dd><p>Register this IPv4 object and underlying components with the Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the IPv4 is to be registered under,
+this will be the root name for underlying components</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same IPv4 which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support
+a fluid programming style.
+Please note you cannot register two different IPv4s with the same name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4">IPv4</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the IPv4 with the user_defined_name</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -636,10 +719,13 @@ and convert it to an integer.</p>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVectorizer"><code class="docutils literal notranslate"><span class="pre">BitVectorizer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector"><code class="docutils literal notranslate"><span class="pre">BitVector</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.conserves"><code class="docutils literal notranslate"><span class="pre">BitVector.conserves</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.special_objType"><code class="docutils literal notranslate"><span class="pre">BitVector.special_objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.format"><code class="docutils literal notranslate"><span class="pre">BitVector.format()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.to_ndarray"><code class="docutils literal notranslate"><span class="pre">BitVector.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.to_list"><code class="docutils literal notranslate"><span class="pre">BitVector.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.opeq"><code class="docutils literal notranslate"><span class="pre">BitVector.opeq()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.register"><code class="docutils literal notranslate"><span class="pre">BitVector.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.from_return_msg"><code class="docutils literal notranslate"><span class="pre">BitVector.from_return_msg()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.Fields"><code class="docutils literal notranslate"><span class="pre">Fields</span></code></a><ul>
@@ -649,12 +735,14 @@ and convert it to an integer.</p>
 </li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.ip_address"><code class="docutils literal notranslate"><span class="pre">ip_address()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4"><code class="docutils literal notranslate"><span class="pre">IPv4</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.special_objType"><code class="docutils literal notranslate"><span class="pre">IPv4.special_objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.export_uint"><code class="docutils literal notranslate"><span class="pre">IPv4.export_uint()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.format"><code class="docutils literal notranslate"><span class="pre">IPv4.format()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.normalize"><code class="docutils literal notranslate"><span class="pre">IPv4.normalize()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.to_ndarray"><code class="docutils literal notranslate"><span class="pre">IPv4.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.to_list"><code class="docutils literal notranslate"><span class="pre">IPv4.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.opeq"><code class="docutils literal notranslate"><span class="pre">IPv4.opeq()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.register"><code class="docutils literal notranslate"><span class="pre">IPv4.register()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.is_ipv4"><code class="docutils literal notranslate"><span class="pre">is_ipv4()</span></code></a></li>

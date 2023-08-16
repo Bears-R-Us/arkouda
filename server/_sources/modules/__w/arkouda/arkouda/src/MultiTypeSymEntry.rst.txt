@@ -19,7 +19,7 @@ or
 
 .. data:: const genLogger = new Logger(logLevel, logChannel)
 
-.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GenSymEntry, SegStringSymEntry, CategoricalSymEntry, CompositeSymEntry, AnythingSymEntry, UnknownSymEntry, None }
+.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GenSymEntry, SegStringSymEntry, CompositeSymEntry, AnythingSymEntry, UnknownSymEntry, None }
 
    *
    * Internal Types we can use to build our Symbol type hierarchy.

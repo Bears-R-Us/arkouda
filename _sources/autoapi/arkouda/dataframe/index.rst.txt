@@ -832,7 +832,7 @@ Functions
 
       :raises RegistrationError: if user_defined_name is not registered
 
-      .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_groupby_by_name`
+      .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`
 
 
    .. py:method:: unregister_dataframe_by_name(user_defined_name: str) -> None
@@ -848,21 +848,6 @@ Functions
       :raises RegistrationError: if there is an issue attempting to unregister any underlying components
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
-
-
-   .. py:method:: from_attach_msg(repMsg)
-      :staticmethod:
-
-      Creates and returns a DataFrame based on return components from ak.util.attach
-
-      :param repMsg: A '+' delimited string of the DataFrame components to parse.
-      :type repMsg: string
-
-      :returns: A DataFrame representing a set of DataFrame components on the server
-      :rtype: DataFrame
-
-      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-          the DataFrame instance
 
 
    .. py:method:: from_return_msg(rep_msg)

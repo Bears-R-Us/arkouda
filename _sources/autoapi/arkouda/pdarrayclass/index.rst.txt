@@ -167,6 +167,11 @@ Functions
 
       :raises RuntimeError: Raised if there's a server-side error thrown
 
+      .. note::
+
+         This will return True if the object is registered itself or as a component
+         of another object
+
 
    .. py:method:: info() -> str
 

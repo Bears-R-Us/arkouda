@@ -1219,18 +1219,6 @@ Classes
       only the values.
 
 
-   .. py:method:: is_registered() -> numpy.bool_
-
-      Return True iff the object is contained in the registry
-
-      :param None:
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: bool
-
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
    .. py:method:: info() -> str
 
       Returns a JSON formatted string containing information about all components of self
@@ -1297,6 +1285,18 @@ Classes
 
       Registered names/Strings objects in the server are immune to deletion until
       they are unregistered.
+
+
+   .. py:method:: is_registered() -> numpy.bool_
+
+      Return True iff the object is contained in the registry
+
+      :param None:
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
 
 
    .. py:method:: attach(user_defined_name: str) -> Strings

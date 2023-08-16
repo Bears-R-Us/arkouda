@@ -1866,26 +1866,6 @@ only the values.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.strings.Strings.is_registered">
-<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.bool_</span></span></span><a class="headerlink" href="#arkouda.strings.Strings.is_registered" title="Permalink to this definition">#</a></dt>
-<dd><p>Return True iff the object is contained in the registry</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Indicates if the object is contained in the registry</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.info">
 <span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.strings.Strings.info" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a JSON formatted string containing information about all components of self</p>
@@ -1941,7 +1921,7 @@ Please note you cannot register two different objects with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
+<li><p><a class="reference internal" href="../index.html#id464" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
 If the user is attempting to register more than one object with the same name,
 the former should be unregistered first to free up the registration name.</p></li>
 </ul>
@@ -1976,6 +1956,26 @@ registered using register() and/or attached to using attach()</p>
 <p class="rubric">Notes</p>
 <p>Registered names/Strings objects in the server are immune to deletion until
 they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.strings.Strings.is_registered">
+<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.bool_</span></span></span><a class="headerlink" href="#arkouda.strings.Strings.is_registered" title="Permalink to this definition">#</a></dt>
+<dd><p>Return True iff the object is contained in the registry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Indicates if the object is contained in the registry</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2139,11 +2139,11 @@ until they are unregistered.</p>
 <li><a class="reference internal" href="#arkouda.strings.Strings.update_hdf"><code class="docutils literal notranslate"><span class="pre">Strings.update_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.to_csv"><code class="docutils literal notranslate"><span class="pre">Strings.to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.save"><code class="docutils literal notranslate"><span class="pre">Strings.save()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.strings.Strings.is_registered"><code class="docutils literal notranslate"><span class="pre">Strings.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.info"><code class="docutils literal notranslate"><span class="pre">Strings.info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.pretty_print_info"><code class="docutils literal notranslate"><span class="pre">Strings.pretty_print_info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.register"><code class="docutils literal notranslate"><span class="pre">Strings.register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.unregister"><code class="docutils literal notranslate"><span class="pre">Strings.unregister()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.is_registered"><code class="docutils literal notranslate"><span class="pre">Strings.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.attach"><code class="docutils literal notranslate"><span class="pre">Strings.attach()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.unregister_strings_by_name"><code class="docutils literal notranslate"><span class="pre">Strings.unregister_strings_by_name()</span></code></a></li>
 </ul>

@@ -24,10 +24,10 @@ or
    symbol table 
 
 
-   .. attribute:: var registry: domain(string)
+   .. attribute:: var registry = new owned RegTab()
 
       
-      Associative domain of strings
+      Similar to the Symbol Table but for register object tracking
       
 
    .. attribute:: var tab: map(string, shared AbstractSymEntry)
@@ -45,10 +45,6 @@ or
       
       Gives out symbol names.
       
-
-   .. method:: proc regName(name: string, userDefinedName: string) throws
-
-   .. method:: proc unregName(name: string) throws
 
    .. method:: proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws
 

@@ -59,10 +59,12 @@
 <li class="toctree-l1"><a class="reference internal" href="Message.html">Message</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MetricsMsg.html">MetricsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeRegEntry.html">MultiTypeRegEntry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Registry.html">Registry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SegmentedComputation.html">SegmentedComputation</a></li>
@@ -136,8 +138,8 @@
 <dd><p>symbol table</p>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.registry">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">registry</span></span><span class="pre">:</span> <span class="pre">domain(string)</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.registry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Associative domain of strings</p>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">registry</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">owned</span> <span class="pre">RegTab()</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.registry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to the Symbol Table but for register object tracking</p>
 </dd></dl>
 
 <dl class="chpl attribute">
@@ -161,16 +163,6 @@
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">nextName</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.nextName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gives out symbol names.</p>
 </dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.regName">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">regName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">userDefinedName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.regName" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.unregName">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.unregName" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.addEntry">
