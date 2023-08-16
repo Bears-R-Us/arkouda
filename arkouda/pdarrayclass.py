@@ -27,7 +27,7 @@ from arkouda.dtypes import (
 from arkouda.dtypes import str_ as akstr_
 from arkouda.dtypes import translate_np_dtype
 from arkouda.dtypes import uint64 as akuint64
-from arkouda.infoclass import information, list_registry, pretty_print_information
+from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 
 __all__ = [
@@ -196,6 +196,8 @@ class pdarray:
         self.itemsize = itemsize
         if max_bits:
             self.max_bits = max_bits
+
+        self.registered_name: Optional[str] = None
 
     def __del__(self):
         try:
@@ -727,8 +729,17 @@ class pdarray:
         ------
         RuntimeError
             Raised if there's a server-side error thrown
+        Note
+        -----
+        This will return True if the object is registered itself or as a component
+        of another object
         """
-        return np.bool_(self.name in list_registry())
+        from arkouda.util import is_registered
+
+        if self.registered_name is None:
+            return np.bool_(is_registered(self.name, as_component=True))
+        else:
+            return np.bool_(is_registered(self.registered_name))
 
     def _list_component_names(self) -> List[str]:
         """
@@ -1787,19 +1798,17 @@ class pdarray:
         >>> # ...other work...
         >>> b.unregister()
         """
-        try:
-            rep_msg = generic_msg(cmd="register", args={"array": self, "user_name": user_defined_name})
-            if isinstance(rep_msg, bytes):
-                rep_msg = str(rep_msg, "UTF-8")
-            if rep_msg != "success":
-                raise RegistrationError
-        except (
-            RuntimeError,
-            RegistrationError,
-        ):  # Registering two objects with the same name is not allowed
-            raise RegistrationError(f"Server was unable to register {user_defined_name}")
-
-        self.name = user_defined_name
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "array": self.name,
+            },
+        )
+        self.registered_name = user_defined_name
         return self
 
     def unregister(self) -> None:
@@ -1837,7 +1846,12 @@ class pdarray:
         >>> # ...other work...
         >>> b.unregister()
         """
-        unregister_pdarray_by_name(self.name)
+        from arkouda.util import unregister
+
+        if self.registered_name is None:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
 
     # class method self is not passed in
     # invoke with ak.pdarray.attach('user_defined_name')
@@ -1882,7 +1896,15 @@ class pdarray:
         >>> # ...other work...
         >>> b.unregister()
         """
-        return attach_pdarray(user_defined_name)
+        import warnings
+
+        from arkouda.util import attach
+
+        warnings.warn(
+            "ak.pdarray.attach() is deprecated. Please use ak.attach() instead.",
+            DeprecationWarning,
+        )
+        return attach(user_defined_name)
 
     def _get_grouping_keys(self) -> List[pdarray]:
         """
@@ -3182,6 +3204,14 @@ def attach_pdarray(user_defined_name: str) -> pdarray:
     >>> # ...other work...
     >>> b.unregister()
     """
+    import warnings
+
+    from arkouda.util import attach
+
+    warnings.warn(
+        "ak.attach_pdarray() is deprecated. Please use ak.attach() instead.",
+        DeprecationWarning,
+    )
     return attach(user_defined_name)
 
 
@@ -3225,8 +3255,15 @@ def attach(user_defined_name: str) -> pdarray:
     >>> # ...other work...
     >>> b.unregister()
     """
-    repMsg = generic_msg(cmd="attach", args={"name": user_defined_name})
-    return create_pdarray(repMsg)
+    import warnings
+
+    from arkouda.util import attach
+
+    warnings.warn(
+        "ak.pdarrayclass.attach() is deprecated. Please use ak.attach() instead.",
+        DeprecationWarning,
+    )
+    return attach(user_defined_name)
 
 
 @typechecked
@@ -3267,7 +3304,15 @@ def unregister_pdarray_by_name(user_defined_name: str) -> None:
     >>> # ...other work...
     >>> ak.unregister_pdarray_by_name(b)
     """
-    generic_msg(cmd="unregister", args={"name": user_defined_name})
+    import warnings
+
+    from arkouda.util import unregister
+
+    warnings.warn(
+        "ak.unregister_pdarray_by_name() is deprecated. Please use ak.unregister() instead.",
+        DeprecationWarning,
+    )
+    return unregister(user_defined_name)
 
 
 # TODO In the future move this to a specific errors file

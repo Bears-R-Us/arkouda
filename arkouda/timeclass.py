@@ -14,7 +14,7 @@ from arkouda.client import generic_msg
 from arkouda.dtypes import int64, int_scalars, intTypes, isSupportedInt
 from arkouda.numeric import abs as akabs
 from arkouda.numeric import cast
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.pdarraycreation import from_series
 
 _BASE_UNIT = "ns"
@@ -85,7 +85,6 @@ class _AbstractBaseTime(pdarray):
     """
 
     def __init__(self, pda, unit: str = _BASE_UNIT):  # type: ignore
-
         if isinstance(pda, Datetime) or isinstance(pda, Timedelta):
             self.unit: str = pda.unit
             self._factor: int = pda._factor
@@ -417,6 +416,8 @@ class Datetime(_AbstractBaseTime):
     supported_with_pdarray = frozenset(())  # type: ignore
     supported_with_r_pdarray = frozenset(())  # type: ignore
 
+    special_objType = "Datetime"
+
     def _ensure_components(self):
         if self._is_populated:
             return
@@ -573,6 +574,113 @@ class Datetime(_AbstractBaseTime):
     def sum(self):
         raise TypeError("Cannot sum datetime64 values")
 
+    def register(self, user_defined_name):
+        """
+        Register this Datetime object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name the Datetime is to be registered under,
+            this will be the root name for underlying components
+
+        Returns
+        -------
+        Datetime
+            The same Datetime which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
+            Please note you cannot register two different Datetimes with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the Datetimes with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.client import generic_msg
+
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.special_objType,
+                "array": self.values,
+            },
+        )
+        self.registered_name = user_defined_name
+        return self
+
+    def unregister(self):
+        """
+        Unregister this Datetime object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
+
+        Raises
+        ------
+        RegistrationError
+            If the object is already unregistered or if there is a server error
+            when attempting to unregister
+
+        See also
+        --------
+        register, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
+
+    def is_registered(self) -> np.bool_:
+        """
+         Return True iff the object is contained in the registry or is a component of a
+         registered object.
+
+        Returns
+        -------
+        numpy.bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RegistrationError
+            Raised if there's a server-side error or a mis-match of registered components
+
+        See Also
+        --------
+        register, attach, unregister
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.util import is_registered
+
+        if self.registered_name is None:
+            return np.bool_(is_registered(self.values.name, as_component=True))
+        else:
+            return np.bool_(is_registered(self.registered_name))
+
 
 class Timedelta(_AbstractBaseTime):
     """Represents a duration, the difference between two dates or times.
@@ -612,6 +720,8 @@ class Timedelta(_AbstractBaseTime):
     supported_opeq = frozenset(("+=", "-=", "%="))
     supported_with_pdarray = frozenset(("*", "//"))
     supported_with_r_pdarray = frozenset(("*"))
+
+    special_objType = "Timedelta"
 
     def _ensure_components(self):
         if self._is_populated:
@@ -718,6 +828,113 @@ class Timedelta(_AbstractBaseTime):
     def abs(self):
         """Absolute value of time interval."""
         return self.__class__(cast(akabs(self.values), "int64"))
+
+    def register(self, user_defined_name):
+        """
+        Register this Timedelta object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name the timedelta is to be registered under,
+            this will be the root name for underlying components
+
+        Returns
+        -------
+        Timedelta
+            The same Timedelta which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
+            Please note you cannot register two different Timedeltas with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the timedelta with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.client import generic_msg
+
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.special_objType,
+                "array": self.values,
+            },
+        )
+        self.registered_name = user_defined_name
+        return self
+
+    def unregister(self):
+        """
+        Unregister this timedelta object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
+
+        Raises
+        ------
+        RegistrationError
+            If the object is already unregistered or if there is a server error
+            when attempting to unregister
+
+        See also
+        --------
+        register, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
+
+    def is_registered(self) -> np.bool_:
+        """
+         Return True iff the object is contained in the registry or is a component of a
+         registered object.
+
+        Returns
+        -------
+        numpy.bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RegistrationError
+            Raised if there's a server-side error or a mis-match of registered components
+
+        See Also
+        --------
+        register, attach, unregister
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.util import is_registered
+
+        if self.registered_name is None:
+            return np.bool_(is_registered(self.values.name, as_component=True))
+        else:
+            return np.bool_(is_registered(self.registered_name))
 
 
 def date_range(

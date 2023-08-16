@@ -16,6 +16,7 @@ module MultiTypeSymbolTable
     use ArkoudaFileCompat;
     use ArkoudaMapCompat;
     use ArkoudaIOCompat;
+    use Registry;
     
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -25,9 +26,9 @@ module MultiTypeSymbolTable
     class SymTab
     {
         /*
-          Associative domain of strings
+          Similar to the Symbol Table but for register object tracking
         */
-        var registry: domain(string);
+        var registry = new owned RegTab();
 
         /*
           Map indexed by strings
@@ -44,53 +45,6 @@ module MultiTypeSymbolTable
             nid += 1;
             return serverid + nid:string;
         }
-
-        proc regName(name: string, userDefinedName: string) throws {
-            checkTable(name, "regName");
-
-            // check to see if userDefinedName is already defined, with in-place modification, this will be an error
-            if (registry.contains(userDefinedName)) {
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "regName: requested symbol `%s` is already in use".doFormat(userDefinedName));
-                throw getErrorWithContext(
-                                    msg=incompatibleArgumentsError("regName", name),
-                                    lineNumber=getLineNumber(),
-                                    routineName=getRoutineName(),
-                                    moduleName=getModuleName(),
-                                    errorClass="ArgumentError");
-            } else {
-                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "Registering symbol: %s ".doFormat(userDefinedName));            
-            }
-            
-            // RE: Issue#729 we no longer support multiple name registration of the same object
-            if (registry.contains(name)) {
-                registry -= name;
-            }
-
-            registry += userDefinedName; // add user defined name to registry
-
-            // point at same shared table entry
-            var entry = tab.getAndRemove(name);
-            tab.addOrReplace(userDefinedName, entry);
-            entry.setName(userDefinedName);
-        }
-
-        proc unregName(name: string) throws {
-            checkTable(name, "unregName");
-            if registry.contains(name) {
-                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "Unregistering symbol: %s ".doFormat(name));  
-            } else {
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "The symbol %s is not registered".doFormat(name));                  
-            }
-
-            registry -= name; // take name out of registry
-        }
-        
-        // is it an error to redefine an entry? ... probably not
-        // this addEntry takes stuff to create a new SymEntry
 
         /*
             Takes args and creates a new SymEntry.
@@ -212,7 +166,7 @@ module MultiTypeSymbolTable
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "Skipping registered entry: %s".doFormat(name)); 
                 return false;
-            }  
+            }
         }
 
         /*
@@ -306,7 +260,6 @@ module MultiTypeSymbolTable
             select names
             {
                 when "__AllSymbols__"         {entries = getEntries(tab);}
-                when "__RegisteredSymbols__"  {entries = getEntries(registry);}
                 otherwise                     {entries = getEntries(parseJson(names));}
             }
             return "[%s]".doFormat(','.join(entries));
