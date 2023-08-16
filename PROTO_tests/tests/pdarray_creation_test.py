@@ -1,15 +1,13 @@
 import datetime as dt
 import math
 import statistics
-from contextlib import nullcontext as does_not_raise
-from typing import Union
+from collections import deque
 
 import numpy as np
 import pandas as pd
 import pytest
 
 import arkouda as ak
-from arkouda import full
 
 INT_SCALARS = [
     int,
@@ -22,6 +20,7 @@ INT_SCALARS = [
     np.uint32,
     np.uint64,
 ]
+
 NUMERIC_SCALARS = [
     int,
     np.int8,
@@ -36,52 +35,45 @@ NUMERIC_SCALARS = [
     np.float64,
 ]
 
-NO_BIGINT = [
+DTYPES = [
     bool,
     float,
     ak.float64,
     int,
     ak.int64,
     str,
+    ak.str_,
     ak.uint64,
     ak.uint8,
+    ak.bigint,
 ]
-
-
-"""
-Encapsulates test cases for pdarray creation methods
-"""
 
 
 class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", NO_BIGINT)
-    def test_array_creation(self, dtype, size):
-        # ndarray * dtypes
-        pda = ak.array(np.ones(size), dtype)
-        assert isinstance(pda, Union[ak.pdarray, ak.Strings])
-        assert size == len(pda)
-        assert dtype == pda.dtype
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_array_creation(self, size, dtype):
+        # TODO - remove the 'if' below (to make everything that follows unconditional) after #2645 is complete
+        if dtype != str:
+            for arr in [
+                ak.array(np.ones(size), dtype),
+                ak.array(list(range(0, size)), dtype=dtype),
+                ak.array((range(size)), dtype),
+                ak.array(deque(range(size)), dtype),
+                ak.array([f"{i}" for i in range(size)], dtype=dtype),
+                ak.array(ak.full(size, 1, int), dtype),
+            ]:
+                pda = ak.array(arr, dtype=dtype)
+                assert isinstance(pda, ak.pdarray if dtype != str else ak.Strings)
+                assert size == len(pda)
+                assert dtype == pda.dtype
 
-        # pdarray * dtypes
-        pda = ak.array(full(size, 1), dtype)
-        assert isinstance(pda, Union[ak.pdarray, ak.Strings])
-        assert size == len(pda)
-        assert dtype == pda.dtype
-
-        # other Iterable ; using all dtypes yields error: castMsg: str : str not implemented
-        pda = ak.array(list(range(0, size)), dtype=int)
-        assert isinstance(pda, ak.pdarray)
-        assert size == len(pda)
-        assert int == pda.dtype
-
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_array_creation_misc(self, size):
+    def test_array_creation_misc(self):
         av = ak.array(np.array([[0, 1], [0, 1]]))
         assert isinstance(av, ak.ArrayView)
 
         with pytest.raises(TypeError):
-            ak.array({range(0, size)})
+            ak.array({range(0, 10)})
 
         with pytest.raises(TypeError):
             ak.array("not an iterable")
@@ -89,18 +81,17 @@ class TestPdarrayCreation:
         with pytest.raises(TypeError):
             ak.array(list(list(0)))
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_bigint_creation(self, size):
+    def test_bigint_creation(self):
         bi = 2**200
 
-        pda_from_str = ak.array([f"{i}" for i in range(bi, bi + size)], dtype=ak.bigint)
-        pda_from_int = ak.array([i for i in range(bi, bi + size)])
-        cast_from_segstr = ak.cast(ak.array([f"{i}" for i in range(bi, bi + size)]), ak.bigint)
+        pda_from_str = ak.array([f"{i}" for i in range(bi, bi + 10)], dtype=ak.bigint)
+        pda_from_int = ak.array([i for i in range(bi, bi + 10)])
+        cast_from_segstr = ak.cast(ak.array([f"{i}" for i in range(bi, bi + 10)]), ak.bigint)
         for pda in [pda_from_str, pda_from_int, cast_from_segstr]:
             assert isinstance(pda, ak.pdarray)
-            assert size == len(pda)
+            assert 10 == len(pda)
             assert ak.bigint == pda.dtype
-            assert pda[-1] == bi + size - 1
+            assert pda[-1] == bi + 10 - 1
 
         # test array and arange infer dtype
         assert (
@@ -108,19 +99,19 @@ class TestPdarrayCreation:
         )
 
         # test that max_bits being set results in a mod
-        assert ak.arange(bi, bi + size, max_bits=200).to_list() == ak.arange(size).to_list()
+        assert ak.arange(bi, bi + 5, max_bits=200).to_list() == ak.arange(5).to_list()
 
         # test ak.bigint_from_uint_arrays
         # top bits are all 1 which should be 2**64
-        top_bits = ak.ones(size, ak.uint64)
-        bot_bits = ak.arange(size, dtype=ak.uint64)
+        top_bits = ak.ones(5, ak.uint64)
+        bot_bits = ak.arange(5, dtype=ak.uint64)
         two_arrays = ak.bigint_from_uint_arrays([top_bits, bot_bits])
         assert ak.bigint == two_arrays.dtype
-        assert two_arrays.to_list() == [2**64 + i for i in range(size)]
+        assert two_arrays.to_list() == [2**64 + i for i in range(5)]
         # top bits should represent 2**128
-        mid_bits = ak.zeros(size, ak.uint64)
+        mid_bits = ak.zeros(5, ak.uint64)
         three_arrays = ak.bigint_from_uint_arrays([top_bits, mid_bits, bot_bits])
-        assert three_arrays.to_list() == [2**128 + i for i in range(size)]
+        assert three_arrays.to_list() == [2**128 + i for i in range(5)]
 
         # test round_trip of ak.bigint_to/from_uint_arrays
         t = ak.arange(bi - 1, bi + 9)
@@ -160,19 +151,18 @@ class TestPdarrayCreation:
         assert np.arange(size, size + 5, 2, dtype=dtype).tolist() == start_stop_stride.to_list()
         assert dtype == start_stop_stride.dtype
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_arange_misc(self, size):
+    def test_arange_misc(self):
         # test uint64 handles negatives correctly
-        np_arange_uint = np.arange(2**64 - 5, 2**64 - size, -1, dtype=np.uint64)
-        ak_arange_uint = ak.arange(-5, -size, -1, dtype=ak.uint64)
+        np_arange_uint = np.arange(2**64 - 5, 2**64 - 10, -1, dtype=np.uint64)
+        ak_arange_uint = ak.arange(-5, -10, -1, dtype=ak.uint64)
         # np_arange_uint = array([18446744073709551611, 18446744073709551610, 18446744073709551609,
         #        18446744073709551608, 18446744073709551607], dtype=uint64)
         assert np_arange_uint.tolist() == ak_arange_uint.to_list()
         assert ak.uint64 == ak_arange_uint.dtype
 
         # test correct conversion to float64
-        np_arange_float = np.arange(-5, -size, -1, dtype=np.float64)
-        ak_arange_float = ak.arange(-5, -size, -1, dtype=ak.float64)
+        np_arange_float = np.arange(-5, -10, -1, dtype=np.float64)
+        ak_arange_float = ak.arange(-5, -10, -1, dtype=ak.float64)
         # array([-5., -6., -7., -8., -9.])
         assert np_arange_float.tolist() == ak_arange_float.to_list()
         assert ak.float64 == ak_arange_float.dtype
@@ -184,30 +174,44 @@ class TestPdarrayCreation:
         assert ak.bool == ak_arange_bool.dtype
 
         # test int_scalars covers uint8, uint16, uint32
-        does_not_raise(ak.arange(np.uint8(1), np.uint16(size), np.uint32(1)))
+        uint_array = ak.arange(np.uint8(1), np.uint16(1000), np.uint32(1))
+        int_array = ak.arange(1, 1000, 1)
+        assert (uint_array == int_array).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("low_type", [float, int])
-    @pytest.mark.parametrize("high_type", [float, int])
     @pytest.mark.parametrize("array_type", [ak.int64, ak.float64, bool])
-    def test_randint_dtype(self, size, low_type, high_type, array_type):
-        test_array = ak.randint(low_type(0), high_type(size), size, array_type)
+    def test_randint_array_dtype(self, size, array_type):
+        test_array = ak.randint(0, size, size, array_type)
         assert isinstance(test_array, ak.pdarray)
         assert size == len(test_array)
         assert array_type == test_array.dtype
         assert [size] == test_array.shape
+        assert ((0 <= test_array) & (test_array <= size)).all()
 
-        test_ndarray = test_array.to_ndarray()
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("low_type", NUMERIC_SCALARS)
+    def test_randint_low_dtype(self, size, low_type):
+        test_array = ak.randint(low_type(0), size, size)
+        assert isinstance(test_array, ak.pdarray)
+        assert size == len(test_array)
+        assert ak.int64 == test_array.dtype
+        assert [size] == test_array.shape
+        assert ((0 <= test_array) & (test_array <= size)).all()
 
-        for value in test_ndarray:
-            assert 0 <= value <= size
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("high_type", NUMERIC_SCALARS)
+    def test_randint_high_dtype(self, size, high_type):
+        test_array = ak.randint(0, high_type(size), size)
+        assert isinstance(test_array, ak.pdarray)
+        assert size == len(test_array)
+        assert ak.int64 == test_array.dtype
+        assert [size] == test_array.shape
+        assert ((0 <= test_array) & (test_array <= size)).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_randint_misc(self, size):
         # test resolution of modulus overflow - issue #1174
-        test_array = ak.randint(-(2**63), 2**63 - 1, size)
-        to_validate = np.full(size, -(2**63))
-        assert not (test_array.to_ndarray().tolist() == to_validate.tolist())
+        assert (ak.randint(-(2**63), 2**63 - 1, size) != ak.full(size, -(2**63))).any()
 
         with pytest.raises(TypeError):
             ak.randint(low=5)
@@ -233,17 +237,14 @@ class TestPdarrayCreation:
         with pytest.raises(TypeError):
             ak.randint(0, "1", 1000)
 
-        # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(ak.randint(low=np.uint8(1), high=np.uint16(100), size=np.uint32(size)))
-
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_randint_with_seed(self, size):
+    def test_randint_with_seed(self):
         values = ak.randint(1, 5, 10, seed=2)
 
         assert [4, 3, 1, 3, 2, 4, 4, 2, 3, 4] == values.to_list()
 
         values = ak.randint(1, 5, 10, dtype=ak.float64, seed=2)
-        assert [
+
+        ans = [
             2.9160772326374946,
             4.353429832157099,
             4.5392023718621486,
@@ -254,7 +255,9 @@ class TestPdarrayCreation:
             3.7098921109084522,
             4.5939589352472314,
             4.0337935981006172,
-        ] == values.to_list()
+        ]
+
+        assert ans == values.to_list()
 
         bools = [False, True, True, True, True, False, True, True, True, True]
         values = ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
@@ -264,7 +267,9 @@ class TestPdarrayCreation:
         assert values.to_list() == bools
 
         # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(ak.randint(np.uint8(1), np.uint32(5), np.uint16(size), seed=np.uint8(2)))
+        uint_arr = ak.randint(np.uint8(1), np.uint32(5), np.uint16(10), seed=np.uint8(2))
+        int_arr = ak.randint(1, 5, 10, seed=2)
+        assert (uint_arr == int_arr).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_uniform(self, size):
@@ -289,49 +294,65 @@ class TestPdarrayCreation:
             ak.uniform(low=0, high=5, size="100")
 
         # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(ak.uniform(low=np.uint8(0), high=5, size=np.uint32(size)))
+        uint_arr = ak.uniform(low=np.uint8(0), high=np.uint16(5), size=np.uint32(100), seed=np.uint8(1))
+        int_arr = ak.uniform(low=0, high=5, size=100, seed=1)
+        assert (uint_arr == int_arr).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, float, ak.float64, bool, ak.bool, ak.bigint])
-    def test_zeros(self, size, dtype):
+    def test_zeros_dtype(self, size, dtype):
         zeros = ak.zeros(size, dtype)
         assert isinstance(zeros, ak.pdarray)
         assert dtype == zeros.dtype
+        assert (0 == zeros).all()
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_zeros_errors(self, size):
-        with pytest.raises(TypeError):
-            ak.zeros(size, dtype=ak.uint8)
+    def test_zeros_misc(self):
+        zeros = ak.ones("5")
+        assert 5 == len(zeros)
 
         with pytest.raises(TypeError):
-            ak.zeros(size, dtype=str)
+            ak.zeros(5, dtype=ak.uint8)
+
+        with pytest.raises(TypeError):
+            ak.zeros(5, dtype=str)
 
         # Test that int_scalars covers uint8, uint16, uint32, str
-        does_not_raise(ak.zeros(np.uint8(size), dtype=ak.int64))
-        does_not_raise(ak.zeros(np.uint16(size), dtype=ak.int64))
-        does_not_raise(ak.zeros(np.uint32(size), dtype=ak.int64))
-        does_not_raise(ak.zeros(str(size), dtype=ak.int64))
+        arr_1 = ak.zeros(np.uint8(5), dtype=ak.int64)
+        arr_2 = ak.zeros(np.uint16(5), dtype=ak.int64)
+        arr_3 = ak.zeros(np.uint32(5), dtype=ak.int64)
+        arr_4 = ak.zeros(str(5), dtype=ak.int64)
+        int_arr = ak.zeros(5)
+        assert (int_arr == arr_1).all()
+        assert (int_arr == arr_2).all()
+        assert (int_arr == arr_3).all()
+        assert (int_arr == arr_4).all()
 
     @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool, ak.bigint])
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_ones(self, size, dtype):
+    def test_ones_dtype(self, size, dtype):
         ones = ak.ones(size, dtype)
         assert isinstance(ones, ak.pdarray)
         assert dtype == ones.dtype
-        assert 1 == ones[0]
+        assert (1 == ones).all()
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_ones_errors(self, size):
-        with pytest.raises(TypeError):
-            ak.ones(size, dtype=ak.uint8)
+    def test_ones_misc(self):
+        ones = ak.ones("5")
+        assert 5 == len(ones)
 
         with pytest.raises(TypeError):
-            ak.ones(size, dtype=str)
+            ak.ones(5, dtype=ak.uint8)
+
+        with pytest.raises(TypeError):
+            ak.ones(5, dtype=str)
 
         # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(ak.ones(np.uint8(size), dtype=ak.int64))
-        does_not_raise(ak.ones(np.uint16(size), dtype=ak.int64))
-        does_not_raise(ak.ones(np.uint32(size), dtype=ak.int64))
+        arr_1 = ak.ones(np.uint8(5), dtype=ak.int64)
+        arr_2 = ak.ones(np.uint16(5), dtype=ak.int64)
+        arr_3 = ak.ones(np.uint32(5), dtype=ak.int64)
+        int_arr = ak.ones(5)
+        assert (int_arr == arr_1).all()
+        assert (int_arr == arr_2).all()
+        assert (int_arr == arr_3).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, ak.float64, ak.bool, ak.bigint])
@@ -344,27 +365,43 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool])
-    def test_full(self, size, dtype):
+    def test_full_dtype(self, size, dtype):
         type_full = ak.full(size, 1, dtype)
         assert isinstance(type_full, ak.pdarray)
         assert dtype == type_full.dtype
-        assert type_full[0] == 1
+        assert (1 == type_full).all()
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_full_errors(self, size):
-        string_len_full = ak.full("1000", 5)
-        assert 1000 == len(string_len_full)
+    def test_full_misc(self):
+        bool_full = ak.full(5, -1, dtype=bool)
+        assert bool == bool_full.dtype
+        assert (True == bool_full).all()
+
+        bool_full = ak.full(5, False, dtype=ak.bool)
+        assert ak.bool == bool_full.dtype
+        assert (False == bool_full).all()
+
+        string_len_full = ak.full("5", 5)
+        assert 5 == len(string_len_full)
+
+        strings_full = ak.full(5, "test")
+        assert isinstance(strings_full, ak.Strings)
+        assert 5 == len(strings_full)
+        assert strings_full.to_list() == ["test"] * 5
 
         with pytest.raises(TypeError):
-            ak.full(size, 1, dtype=ak.uint8)
+            ak.full(5, 1, dtype=ak.uint8)
 
         with pytest.raises(TypeError):
-            ak.full(size, 8, dtype=str)
+            ak.full(5, 8, dtype=str)
 
         # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(ak.full(np.uint8(size), np.uint16(size), dtype=int))
-        does_not_raise(ak.full(np.uint8(size), np.uint32(size), dtype=int))
-        does_not_raise(ak.full(np.uint16(size), np.uint32(size), dtype=int))
+        arr_1 = ak.full(np.uint8(5), np.uint16(5), dtype=int)
+        arr_2 = ak.full(np.uint8(5), np.uint32(5), dtype=int)
+        arr_3 = ak.full(np.uint16(5), np.uint32(5), dtype=int)
+        int_arr = ak.full(5, 5)
+        assert (int_arr == arr_1).all()
+        assert (int_arr == arr_2).all()
+        assert (int_arr == arr_3).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool])
@@ -413,9 +450,13 @@ class TestPdarrayCreation:
             ak.linspace(0, 100, "1000")
 
         # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(ak.linspace(np.uint8(0), np.uint16(100), np.uint32(1000)))
-        does_not_raise(ak.linspace(np.uint32(0), np.uint16(100), np.uint8(1000 % 256)))
-        does_not_raise(ak.linspace(np.uint16(0), np.uint8(100), np.uint8(1000 % 256)))
+        arr_1 = ak.linspace(np.uint8(0), np.uint16(100), np.uint32(1000 % 256))
+        arr_2 = ak.linspace(np.uint32(0), np.uint16(100), np.uint8(1000 % 256))
+        arr_3 = ak.linspace(np.uint16(0), np.uint8(100), np.uint8(1000 % 256))
+        int_arr = ak.linspace(0, 100, (1000 % 256))
+        assert (int_arr == arr_1).all()
+        assert (int_arr == arr_2).all()
+        assert (int_arr == arr_3).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INT_SCALARS)
@@ -440,6 +481,7 @@ class TestPdarrayCreation:
 
         assert npda.tolist() == pda.to_list()
 
+    def test_standard_normal_errors(self):
         with pytest.raises(TypeError):
             ak.standard_normal("100")
 
@@ -450,9 +492,13 @@ class TestPdarrayCreation:
             ak.standard_normal(-1)
 
         # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(ak.standard_normal(np.uint8(size)))
-        does_not_raise(ak.standard_normal(np.uint16(size)))
-        does_not_raise(ak.standard_normal(np.uint32(size)))
+        arr_1 = ak.standard_normal(np.uint8(5), seed=np.uint8(1))
+        arr_2 = ak.standard_normal(np.uint16(5), seed=np.uint16(1))
+        arr_3 = ak.standard_normal(np.uint32(5), seed=np.uint32(1))
+        int_arr = ak.standard_normal(5, seed=1)
+        assert (int_arr == arr_1).all()
+        assert (int_arr == arr_2).all()
+        assert (int_arr == arr_3).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INT_SCALARS)
@@ -467,10 +513,9 @@ class TestPdarrayCreation:
             assert 1 <= len(string) <= 5
             assert string.isupper()
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_random_strings_uniform_errors(self, size):
+    def test_random_strings_uniform_errors(self):
         with pytest.raises(ValueError):
-            ak.random_strings_uniform(maxlen=1, minlen=5, size=size)
+            ak.random_strings_uniform(maxlen=1, minlen=5, size=10)
 
         with pytest.raises(ValueError):
             ak.random_strings_uniform(maxlen=5, minlen=1, size=-1)
@@ -488,15 +533,23 @@ class TestPdarrayCreation:
             ak.random_strings_uniform(minlen=1, maxlen=5, size="10")
 
         # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(
-            ak.random_strings_uniform(
-                minlen=np.uint8(1),
-                maxlen=np.uint32(5),
-                seed=np.uint16(1),
-                size=np.uint8(10),
-                characters="printable",
-            )
+        np_arr = ak.random_strings_uniform(
+            minlen=np.uint8(1),
+            maxlen=np.uint32(5),
+            seed=np.uint16(1),
+            size=np.uint8(10),
+            characters="printable",
         )
+
+        int_arr = ak.random_strings_uniform(
+            minlen=(1),
+            maxlen=(5),
+            seed=(1),
+            size=(10),
+            characters="printable",
+        )
+
+        assert (np_arr == int_arr).all()
 
     def test_random_strings_uniform_with_seed(self):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
@@ -524,9 +577,6 @@ class TestPdarrayCreation:
 
         with pytest.raises(TypeError):
             ak.random_strings_lognormal(2, 0.25, 100, 1000000)
-
-        # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(ak.random_strings_lognormal(np.uint8(2), 0.25, np.uint16(100)))
 
     def test_random_strings_lognormal_with_seed(self):
         randoms = [
@@ -560,6 +610,7 @@ class TestPdarrayCreation:
             "0!u~e$Lm",
             "9Q{TtHq",
         ]
+
         pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1, characters="printable")
         assert printable_randoms == pda.to_list()
 
@@ -585,9 +636,8 @@ class TestPdarrayCreation:
         assert isinstance(p_i_objects_array, (ak.pdarray, ak.Strings))
         assert dtype == p_i_objects_array.dtype
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_from_series_misc(self, size):
-        p_array = ak.from_series(pd.Series(np.random.choice([True, False], size=size)))
+    def test_from_series_misc(self):
+        p_array = ak.from_series(pd.Series(np.random.choice([True, False], size=10)))
 
         assert isinstance(p_array, ak.pdarray)
         assert bool == p_array.dtype
@@ -610,32 +660,17 @@ class TestPdarrayCreation:
         assert np.int64 == p_array.dtype
 
         with pytest.raises(TypeError):
-            ak.from_series(np.ones(size))
+            ak.from_series(np.ones(10))
 
         with pytest.raises(ValueError):
-            ak.from_series(pd.Series(np.random.randint(0, 10, size), dtype=np.int8))
+            ak.from_series(pd.Series(np.random.randint(0, 10, 10), dtype=np.int8))
 
     @pytest.mark.parametrize("dtype", NUMERIC_SCALARS)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_fill(self, size, dtype):
         ones = ak.ones(size)
-
         ones.fill(dtype(2))
         assert (dtype(2) == ones.to_ndarray()).all()
-
-        ones.fill(np.int64(2))
-        assert (np.int64(2) == ones.to_ndarray()).all()
-
-        ones.fill(float(2))
-        assert (float(2) == ones.to_ndarray()).all()
-
-        ones.fill(np.float64(2))
-        assert (np.float64(2) == ones.to_ndarray()).all()
-
-        # Test that int_scalars covers uint8, uint16, uint32
-        does_not_raise(ones.fill(np.uint8(2)))
-        does_not_raise(ones.fill(np.uint16(2)))
-        does_not_raise(ones.fill(np.uint32(2)))
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_endian(self, size):
@@ -656,19 +691,19 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_clobber(self, size):
-        narrs = 10
+        n_arrs = 10
 
-        arrs = [np.random.randint(1, size, size) for _ in range(narrs)]
-        akarrs = [ak.array(arr) for arr in arrs]
-        nparrs = [arr.to_ndarray() for arr in akarrs]
-        for a, npa in zip(arrs, nparrs):
+        arrs = [np.random.randint(1, size, size) for _ in range(n_arrs)]
+        ak_arrs = [ak.array(arr) for arr in arrs]
+        np_arrs = [arr.to_ndarray() for arr in ak_arrs]
+        for a, npa in zip(arrs, np_arrs):
             assert np.allclose(a, npa)
 
-        arrs = [np.full(size, i) for i in range(narrs)]
-        akarrs = [ak.array(arr) for arr in arrs]
-        nparrs = [arr.to_ndarray() for arr in akarrs]
+        arrs = [np.full(size, i) for i in range(n_arrs)]
+        ak_arrs = [ak.array(arr) for arr in arrs]
+        np_arrs = [arr.to_ndarray() for arr in ak_arrs]
 
-        for a, npa, i in zip(arrs, nparrs, range(narrs)):
+        for a, npa, i in zip(arrs, np_arrs, range(n_arrs)):
             assert np.all(a == i)
             assert np.all(npa == i)
 
@@ -692,13 +727,13 @@ class TestPdarrayCreation:
     def randint_randomness(self, size):
         # THIS TEST DOES NOT RUN, see Issue #1672
         # To run rename to `test_randint_randomness`
-        minVal = 0
-        maxVal = 2**32
+        min_val = 0
+        max_val = 2**32
         passed = 0
         trials = 20
 
         for x in range(trials):
-            l = ak.randint(minVal, maxVal, size)
+            l = ak.randint(min_val, max_val, size)
             l_median = statistics.median(l.to_ndarray())
 
             runs, n1, n2 = 0, 0, 0
