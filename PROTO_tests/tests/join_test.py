@@ -13,7 +13,7 @@ class TestJoin:
     def setup_class(cls):
         cls.size = 1000
         cls.a1 = ak.ones(cls.size, dtype=np.int64)
-        cls.a2 = ak.arange(0, cls.size, 1)
+        cls.a2 = ak.arange(cls.size)
         cls.t1 = cls.a1
         cls.t2 = cls.a1 * 10
         cls.dt = 10
