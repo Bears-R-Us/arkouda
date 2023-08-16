@@ -19,7 +19,3 @@ or
 
 .. function:: proc getAddr(const ref p): c_ptr(p.type)
 
-.. function:: proc GET(addr, node, rAddr, size)
-
-.. function:: proc PUT(addr, node, rAddr, size)
-

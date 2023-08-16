@@ -24,7 +24,7 @@ or
 .. data:: var printThresh = 30
 
    
-   Threshold for the amount of data that will be printed. 
+   Threshold for the amount of data that will be printed.
    Arrays larger than printThresh will print less data.
    
 
@@ -41,10 +41,10 @@ or
 
 .. function:: proc printOwnership(x)
 
-   1.18 version print out localSubdomains 
+   1.18 version print out localSubdomains
    
    :arg x: array
-   :type x: [] 
+   :type x: []
    
 
 .. function:: proc isSorted(A: [?D] ?t): bool
@@ -97,7 +97,7 @@ or
    * Takes a variable number of array names from a command message and
    * validates them, checking that they all exist and are the same length
    * and returning metadata about them.
-   * 
+   *
    * :arg n: number of arrays
    * :arg fields: the fields derived from the command message
    * :arg st: symbol table
