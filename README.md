@@ -256,7 +256,7 @@ There are three approaches to setting the max memory used by each Arkouda locale
 ./arkouda_server --memMax=100000000000
 ```
 
-The Arkouda dynamic memory limit approach sets the per-locale memory limit based upon a configurable percentage of available memory on each locale host. Prior to the execution of each comand, the MemoryMgmt [localeMemAvailable](https://github.com/Bears-R-Us/arkouda/blob/e4a48c52eb00097e6e1dfa365cbc586e2e988a85/src/MemoryMgmt.chpl#L133) function does the following on each locale:
+The Arkouda dynamic memory limit approach sets the per-locale memory limit based upon a configurable percentage of available memory on each locale host. Prior to the execution of each command, the MemoryMgmt [localeMemAvailable](https://github.com/Bears-R-Us/arkouda/blob/e4a48c52eb00097e6e1dfa365cbc586e2e988a85/src/MemoryMgmt.chpl#L133) function does the following on each locale:
 
 1. Verifies if the projected, additional per-locale memory required by the incoming command exceeds the memory currently allocated to Arkouda. If the projected, additional memory is within the memory currently allocated to Arkouda on each locale, the command is allowed to proceed.
 2. If the projected, additional per-locale memory exceeds the memory currently allocated to Arkouda on any locale, localeMemAvailable checks if the configurable percentage of available memory on each node will accommodate the projected, additional memory of the incoming command. If so, the command is allowed to proceed.
