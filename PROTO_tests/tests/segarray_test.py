@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 import pytest
+from string import ascii_letters, digits
 
 import arkouda as ak
 
@@ -24,7 +25,7 @@ class TestSegArray:
         elif dtype == ak.float64:
             vals = np.linspace(-(size / 2), (size / 2), size)
         elif dtype == ak.str_:
-            alpha_num = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+            alpha_num = list(ascii_letters + digits)
             np_codes = np.random.choice(alpha_num, size=[size, 2])
             vals = np.array(["".join(code) for code in np_codes])
         elif dtype == ak.bool:
@@ -286,9 +287,7 @@ class TestSegArray:
             result = ak.SegArray.concat([sa, c_sa], axis=1)
             assert isinstance(result, ak.SegArray)
             assert result.size == sa.size
-            assert result.lengths.to_list() == [
-                x + y for (x, y) in zip(sa.lengths.to_list(), c_sa.lengths.to_list())
-            ]
+            assert result.lengths.to_list() == (sa.lengths + c_sa.lengths).to_list()
             assert result.to_list() == [x + y for (x, y) in zip(sa.to_list(), c_sa.to_list())]
 
     def test_concat_error_handling(self):
@@ -324,14 +323,12 @@ class TestSegArray:
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
         suffix, origin = sa.get_suffixes(2)
         assert origin.to_list() == [False, True, False, False, True, False, False]
-        sa_list = sa.to_list()
-        expected = [[s[(-2 + i)] for s in sa_list if len(s) > 2] for i in range(2)]
+        expected = [[s[(-2 + i)] for s in sa.to_list() if len(s) > 2] for i in range(2)]
         assert [x.to_list() for x in suffix] == expected
 
         suffix, origin = sa.get_suffixes(2, proper=False)
         assert origin.to_list() == [False, True, True, False, True, False, False]
-        sa_list = sa.to_list()
-        expected = [[s[(-2 + i)] for s in sa_list if len(s) > 1] for i in range(2)]
+        expected = [[s[(-2 + i)] for s in sa.to_list() if len(s) > 1] for i in range(2)]
         assert [x.to_list() for x in suffix] == expected
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -349,14 +346,12 @@ class TestSegArray:
 
         prefix, origin = sa.get_prefixes(2)
         assert origin.to_list() == [False, True, False, False, True, False, False]
-        sa_list = sa.to_list()
-        expected = [[s[(0 + i)] for s in sa_list if len(s) > 2] for i in range(2)]
+        expected = [[s[(i)] for s in sa.to_list() if len(s) > 2] for i in range(2)]
         assert [x.to_list() for x in prefix] == expected
 
         prefix, origin = sa.get_prefixes(2, proper=False)
         assert origin.to_list() == [False, True, True, False, True, False, False]
-        sa_list = sa.to_list()
-        expected = [[s[(0 + i)] for s in sa_list if len(s) > 1] for i in range(2)]
+        expected = [[s[(i)] for s in sa.to_list() if len(s) > 1] for i in range(2)]
         assert [x.to_list() for x in prefix] == expected
 
     @pytest.mark.parametrize("dtype", DTYPES)
@@ -389,6 +384,7 @@ class TestSegArray:
 
         res, origins = sa.get_jth(1)
         assert res.to_list() == [x[1] for x in sa.to_list() if 1 < len(x)]
+        assert origins.to_list() == [4 < len(x) for x in sa.to_list()]
 
         res, origins = sa.get_jth(4)
         if dtype != ak.str_:
@@ -496,9 +492,7 @@ class TestSegArray:
             result = sa.append(sa2, axis=1)
             assert isinstance(result, ak.SegArray)
             assert result.size == sa.size
-            assert result.lengths.to_list() == [
-                x + y for (x, y) in zip(sa.lengths.to_list(), sa2.lengths.to_list())
-            ]
+            assert result.lengths.to_list() == (sa.lengths + sa2.lengths).to_list()
             assert result.to_list() == [x + y for (x, y) in zip(sa.to_list(), sa2.to_list())]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -514,7 +508,7 @@ class TestSegArray:
         assert result.size == sa.size
         assert result.lengths.to_list() == (sa.lengths + 1).to_list()
         sa_list = sa.to_list()
-        for i, s in zip(range(len(sa_list)), sa_list):
+        for i, s in enumerate(sa_list):
             s.append(to_append[i])
         assert result.to_list() == sa_list
 
@@ -524,7 +518,7 @@ class TestSegArray:
         assert result.size == sa.size
         assert result.lengths.to_list() == (sa.lengths + 1).to_list()
         sa_list = sa.to_list()
-        for i, s in zip(range(len(sa_list)), sa_list):
+        for s in sa_list:
             s.append(to_append)
         assert result.to_list() == sa_list
 
@@ -542,7 +536,7 @@ class TestSegArray:
         assert result.size == sa.size
         assert result.lengths.to_list() == (sa.lengths + 1).to_list()
         sa_list = sa.to_list()
-        for i, s in zip(range(len(sa_list)), sa_list):
+        for i, s in enumerate(sa_list):
             s.insert(0, to_prepend[i])
         assert result.to_list() == sa_list
 
@@ -552,7 +546,7 @@ class TestSegArray:
         assert result.size == sa.size
         assert result.lengths.to_list() == (sa.lengths + 1).to_list()
         sa_list = sa.to_list()
-        for i, s in zip(range(len(sa_list)), sa_list):
+        for s in sa_list:
             s.insert(0, to_prepend)
         assert result.to_list() == sa_list
 
@@ -561,8 +555,8 @@ class TestSegArray:
         # Testing with small example to ensure that we are getting duplicates
         a, b = self.build_repeat_filter_data(dtype)
 
-        exp_idx_a = np.array([x == y for (x, y) in zip(a[:-1], a[1:])])
-        exp_idx_b = np.array([x == y for (x, y) in zip(b[:-1], b[1:])])
+        exp_idx_a = np.array(a[:-1]) == np.array(a[1:])
+        exp_idx_b = np.array(b[:-1]) == np.array(b[1:])
         exp_a = np.concatenate([np.array([a[0]]), np.array(a[1:])[~exp_idx_a]])
         exp_b = np.concatenate([np.array([b[0]]), np.array(b[1:])[~exp_idx_b]])
 
