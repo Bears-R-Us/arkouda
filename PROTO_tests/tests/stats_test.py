@@ -37,57 +37,15 @@ class TestStats():
             assert ark.var(ddof=1) == pytest.approx(pand.var())
             assert ark.std(ddof=1) == pytest.approx(pand.std())
 
-        # assert self.x.mean() == pytest.approx(self.pdx.mean())
-        # assert self.y.mean() == pytest.approx(self.pdy.mean())
-        # assert self.u.mean() == pytest.approx(self.pdu.mean())
-        # assert self.b.mean() == pytest.approx(self.pdb.mean())
-        # assert self.f.mean() == pytest.approx(self.pdf.mean())
-
-    # def test_var(self):
-        # Note the numpy and pandas var/std differ, we follow numpy by default
-        # for ark, npy in zip(self.arks, self.npys):
-        #     assert ark.var() == pytest.approx(npy.var())
-        # # The pandas version requires ddof = 1
-        # for ark, pand in zip(self.arks, self.pands):
-        #     assert ark.var(ddof=1) == pytest.approx(pand.var())
-
-        # assert self.x.var() == pytest.approx(self.npx.var())
-        # assert self.y.var() == pytest.approx(self.npy.var())
-        # assert self.u.var() == pytest.approx(self.npu.var())
-        # assert self.b.var() == pytest.approx(self.npb.var())
-        # assert self.f.var() == pytest.approx(self.npf.var())
-
-        # assert self.x.var(ddof=1) == pytest.approx(self.pdx.var())
-        # assert self.y.var(ddof=1) == pytest.approx(self.pdy.var())
-        # assert self.u.var(ddof=1) == pytest.approx(self.pdu.var())
-        # assert self.b.var(ddof=1) == pytest.approx(self.pdb.var())
-        # assert self.f.var(ddof=1) == pytest.approx(self.pdf.var())
-
-        # Note the numpy and pandas var/std differ, we follow numpy by default
-        # for ark, npy in zip(self.arks, self.npys):
-        #     assert ark.std() == pytest.approx(npy.std())
-        # # The pandas version requires ddof = 1
-        # for ark, pand in zip(self.arks, self.pands):
-        #     assert ark.std(ddof=1) == pytest.approx(pand.std())
-
-        # assert self.x.std() == pytest.approx(self.npx.std())
-        # assert self.y.std() == pytest.approx(self.npy.std())
-        # assert self.u.std() == pytest.approx(self.npu.std())
-        # assert self.b.std() == pytest.approx(self.npb.std())
-        # assert self.f.std() == pytest.approx(self.npf.std())
-
-        # assert self.x.std(ddof=1) == pytest.approx(self.pdx.std())
-        # assert self.y.std(ddof=1) == pytest.approx(self.pdy.std())
-        # assert self.u.std(ddof=1) == pytest.approx(self.pdu.std())
-        # assert self.b.std(ddof=1) == pytest.approx(self.pdb.std())
-        # assert self.f.std(ddof=1) == pytest.approx(self.pdf.std())
-
     def test_cov(self):
         # test that variations are equivalent
-        assert self.x.cov(self.y) == pytest.approx(self.pdx.cov(self.pdy))
-        assert self.x.cov(self.y) == pytest.approx(self.y.cov(self.x))
-        assert self.x.cov(self.y) == pytest.approx(ak.cov(self.x, self.y))
-        assert self.x.cov(self.y) == pytest.approx(ak.cov(self.y, self.x))
+        for var in [
+            (self.pdx.cov(self.pdy)),
+            (self.y.cov(self.x)),
+            (ak.cov(self.x, self.y)),
+            (ak.cov(self.y, self.x)),
+        ]:
+            assert self.x.cov(self.y) == pytest.approx(var)
 
         # test int with other types
         assert self.x.cov(self.u) == pytest.approx(self.pdx.cov(self.pdu))
@@ -108,10 +66,13 @@ class TestStats():
 
     def test_corr(self):
         # test that variations are equivalent
-        assert self.x.corr(self.y) == pytest.approx(self.pdx.corr(self.pdy))
-        assert self.x.corr(self.y) == pytest.approx(self.y.corr(self.x))
-        assert self.x.corr(self.y) == pytest.approx(ak.corr(self.x, self.y))
-        assert self.x.corr(self.y) == pytest.approx(ak.corr(self.y, self.x))
+        for var in [
+            (self.pdx.corr(self.pdy)),
+            (self.y.corr(self.x)),
+            (ak.corr(self.x, self.y)),
+            (ak.corr(self.y, self.x)),
+        ]:
+            assert self.x.corr(self.y) == pytest.approx(var)
 
         # test int with other types
         assert self.x.corr(self.u) == pytest.approx(self.pdx.corr(self.pdu))
