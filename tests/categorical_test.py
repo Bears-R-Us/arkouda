@@ -427,7 +427,7 @@ class CategoricalTest(ArkoudaTest):
         self.assertEqual(c.NAvalue, "C")
         # Test that NAval survives registration
         c.register("my_categorical")
-        c2 = ak.Categorical.attach("my_categorical")
+        c2 = ak.attach("my_categorical")
         self.assertEqual(c2.NAvalue, "C")
 
         c.unregister()

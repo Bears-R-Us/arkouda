@@ -12,15 +12,12 @@ from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.join import gen_ranges
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
-from arkouda.pdarrayclass import (
-    create_pdarray,
-    is_sorted,
-    pdarray,
-    unregister_pdarray_by_name,
-)
+from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate
 from arkouda.strings import Strings
@@ -28,40 +25,6 @@ from arkouda.strings import Strings
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"
-
-
-def gen_ranges(starts, ends, stride=1):
-    """
-    Generate a segmented array of variable-length, contiguous ranges between pairs of
-    start- and end-points.
-
-    Parameters
-    ----------
-    starts : pdarray, int64
-        The start value of each range
-    ends : pdarray, int64
-        The end value (exclusive) of each range
-    stride: int
-        Difference between successive elements of each range
-
-    Returns
-    -------
-    segments : pdarray, int64
-        The starting index of each range in the resulting array
-    ranges : pdarray, int64
-        The actual ranges, flattened into a single array
-    """
-    if starts.size != ends.size:
-        raise ValueError("starts and ends must be same length")
-    if starts.size == 0:
-        return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
-    lengths = (ends - starts) // stride
-    segs = cumsum(lengths) - lengths
-    totlen = lengths.sum()
-    slices = ones(totlen, dtype=akint64)
-    diffs = concatenate((array([starts[0]]), starts[1:] - starts[:-1] - (lengths[:-1] - 1) * stride))
-    slices[segs] = diffs
-    return segs, cumsum(slices)
 
 
 def _aggregator(func):
@@ -105,7 +68,7 @@ class SegArray:
 
     def __init__(self, segments, values, lengths=None, grouping=None):
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
-        self.name = ""
+        self.registered_name: Optional[str] = None
 
         # validate inputs
         if not isinstance(segments, pdarray) or segments.dtype != akint64:
@@ -238,17 +201,16 @@ class SegArray:
 
     @property
     def grouping(self):
-        from arkouda.infoclass import list_symbol_table
+        if self._grouping is not None:
+            return self._grouping
 
-        if self._grouping.name not in list_symbol_table():
-            if self.size == 0 or self._non_empty_count == 0:
-                self._grouping = GroupBy(zeros(0, dtype=akint64))
-            else:
-                # Treat each sub-array as a group, for grouped aggregations
-                self._grouping = GroupBy(
-                    broadcast(self.segments[self.non_empty], arange(self._non_empty_count), self.valsize)
-                )
-        return self._grouping
+        if self.size == 0 or self._non_empty_count == 0:
+            self._grouping = GroupBy(zeros(0, dtype=akint64))
+        else:
+            # Treat each sub-array as a group, for grouped aggregations
+            self._grouping = GroupBy(
+                broadcast(self.segments[self.non_empty], arange(self._non_empty_count), self.valsize)
+            )
 
     def _get_lengths(self):
         if self.size == 0:
@@ -263,9 +225,7 @@ class SegArray:
             start = self.segments[i]
             end = self.segments[i] + self.lengths[i]
             return self.values[start:end]
-        elif (isinstance(i, pdarray) and (i.dtype == akint64 or i.dtype == akbool)) or isinstance(
-            i, slice
-        ):
+        elif (isinstance(i, pdarray) and i.dtype in [akint64, akuint64, akbool]) or isinstance(i, slice):
             starts = self.segments[i]
             ends = starts + self.lengths[i]
             newsegs, inds = gen_ranges(starts, ends)
@@ -352,13 +312,16 @@ class SegArray:
     def __eq__(self, other):
         if not isinstance(other, SegArray):
             return NotImplemented
+        if self.size != other.size:
+            raise ValueError("Segarrays must have same size to compare")
         eq = zeros(self.size, dtype=akbool)
         leneq = self.lengths == other.lengths
         if leneq.sum() > 0:
             selfcmp = self[leneq]
             othercmp = other[leneq]
-            intersection = self.all(selfcmp.values == othercmp.values)
-            eq[leneq] = intersection
+            intersection = selfcmp.all(selfcmp.values == othercmp.values)
+            eq[leneq & (self.lengths != 0)] = intersection
+            eq[leneq & (self.lengths == 0)] = True
         return eq
 
     def __len__(self) -> int:
@@ -1433,7 +1396,7 @@ class SegArray:
 
     def register(self, user_defined_name):
         """
-        Save this SegArray object by registering it to the Symbol Table using a defined name
+        Register this SegArray object and underlying components with the Arkouda server
 
         Parameters
         ----------
@@ -1443,26 +1406,44 @@ class SegArray:
         Returns
         -------
         SegArray
-            This SegArray object
+            The same SegArray which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
+            Please note you cannot register two different SegArrays with the same name.
 
         Raises
         ------
         RegistrationError
             Raised if the server could not register the SegArray object
 
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+
         See Also
         --------
         unregister, attach, is_registered
         """
-        self.name = user_defined_name
-        self.segments.register(self.name + SEG_SUFFIX)
-        self.values.register(self.name + VAL_SUFFIX)
-        self.lengths.register(self.name + LEN_SUFFIX)
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "segments": self.segments,
+                "values": self.values,
+                "val_type": self.values.objType,
+            },
+        )
+        self.registered_name = user_defined_name
         return self
 
     def unregister(self):
         """
-        Remove this SegArray object from the Symbol Table
+        Unregister this SegArray object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
 
         Returns
         -------
@@ -1473,11 +1454,21 @@ class SegArray:
         RuntimeError
             Raised if the server could not unregister the SegArray object from the Symbol Table
 
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+
         See Also
         --------
         register, attach, is_registered
         """
-        SegArray.unregister_segarray_by_name(self.name)
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
 
     @staticmethod
     def unregister_segarray_by_name(user_defined_name):
@@ -1502,9 +1493,16 @@ class SegArray:
         --------
         register, unregister, attach, is_registered
         """
-        unregister_pdarray_by_name(user_defined_name + SEG_SUFFIX)
-        unregister_pdarray_by_name(user_defined_name + VAL_SUFFIX)
-        unregister_pdarray_by_name(user_defined_name + LEN_SUFFIX)
+        import warnings
+
+        from arkouda.util import unregister
+
+        warnings.warn(
+            "ak.SegArray.unregister_segarray_by_name() is deprecated. "
+            "Please use ak.unregister() instead.",
+            DeprecationWarning,
+        )
+        return unregister(user_defined_name)
 
     @classmethod
     def attach(cls, user_defined_name):
@@ -1530,12 +1528,15 @@ class SegArray:
         --------
         register, unregister, is_registered
         """
-        from arkouda.pdarrayclass import attach_pdarray
+        import warnings
 
-        segs = attach_pdarray(user_defined_name + SEG_SUFFIX)
-        vals = attach_pdarray(user_defined_name + VAL_SUFFIX)
-        lengths = attach_pdarray(user_defined_name + LEN_SUFFIX)
-        return cls(segs, vals, lengths=lengths)
+        from arkouda.util import attach
+
+        warnings.warn(
+            "ak.SegArray.attach() is deprecated. Please use ak.attach() instead.",
+            DeprecationWarning,
+        )
+        return attach(user_defined_name)
 
     def is_registered(self) -> bool:
         """
@@ -1550,15 +1551,12 @@ class SegArray:
         --------
         register, unregister, attach
         """
-        regParts = [
-            self.segments.is_registered(),
-            self.values.is_registered(),
-            self.lengths.is_registered(),
-        ]
+        from arkouda.util import is_registered
 
-        if any(regParts) and not all(regParts):
-            warn(
-                f"SegArray expected {len(regParts)} components to be registered,"
-                f" but only located {sum(regParts)}"
+        if self.registered_name is None:
+            # if it is registered as a component of DataFrame
+            return is_registered(self.segments.name, as_component=True) and is_registered(
+                self.values.name, as_component=True
             )
-        return all(regParts)
+        else:
+            return is_registered(self.registered_name)

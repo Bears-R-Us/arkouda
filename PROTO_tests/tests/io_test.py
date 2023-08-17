@@ -1197,18 +1197,7 @@ class TestHDF5:
             assert f1_size == f2_size
 
     def test_snapshot(self):
-        # Once issue #2617 is resolved, update to df = ak.DataFrame(make_multi_dtype_dict())
-        df = ak.DataFrame(
-            {
-                "int_col": ak.arange(10),
-                "uint_col": ak.array([i + 2**63 for i in range(10)], dtype=ak.uint64),
-                "float_col": ak.linspace(-3.5, 3.5, 10),
-                "bool_col": ak.randint(0, 2, 10, dtype=ak.bool),
-                "bigint_col": ak.array([i + 2**200 for i in range(10)], dtype=ak.bigint),
-                "segarr_col": ak.SegArray(ak.arange(0, 20, 2), ak.randint(0, 3, 20)),
-                "str_col": ak.random_strings_uniform(0, 3, 10),
-            }
-        )
+        df = ak.DataFrame(make_multi_dtype_dict())
         df_str_idx = df.copy()
         df_str_idx._set_index([f"A{i}" for i in range(len(df))])
         col_order = df.columns
@@ -1333,3 +1322,98 @@ class TestCSV:
             assert data["ColA"].to_list() == d["ColA"].to_list()
             assert data["ColB"].to_list() == d["ColB"].to_list()
             assert data["ColC"].to_list() == d["ColC"].to_list()
+
+
+class TestImportExport:
+    import_export_base_tmp = f"{os.getcwd()}/import_export_test"
+    io_util.get_directory(import_export_base_tmp)
+
+    @classmethod
+    def setup_class(cls):
+        cls.pddf = pd.DataFrame(
+            data={
+                "c_1": np.array([np.iinfo(np.int64).min, -1, 0, np.iinfo(np.int64).max]),
+                "c_3": np.array([False, True, False, False]),
+                "c_4": np.array([-0.0, np.finfo(np.float64).min, np.nan, np.inf]),
+                "c_5": np.array(["abc", " ", "xyz", ""]),
+            },
+            index=np.arange(4),
+        )
+        cls.akdf = ak.DataFrame(cls.pddf)
+
+    def test_import_hdf(self):
+        locales = pytest.nl
+        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/import_hdf_test"
+
+            self.pddf.to_hdf(f"{file_name}_table.h5", "dataframe", format="Table", mode="w")
+            akdf = ak.import_data(f"{file_name}_table.h5", write_file=f"{file_name}_ak_table.h5")
+            assert len(glob.glob(f"{file_name}_ak_table*.h5")) == locales
+            assert self.pddf.equals(akdf.to_pandas())
+
+            self.pddf.to_hdf(
+                f"{file_name}_table_cols.h5", "dataframe", format="Table", data_columns=True, mode="w"
+            )
+            akdf = ak.import_data(
+                f"{file_name}_table_cols.h5", write_file=f"{file_name}_ak_table_cols.h5"
+            )
+            assert len(glob.glob(f"{file_name}_ak_table_cols*.h5")) == locales
+            assert self.pddf.equals(akdf.to_pandas())
+
+            self.pddf.to_hdf(
+                f"{file_name}_fixed.h5", "dataframe", format="fixed", data_columns=True, mode="w"
+            )
+            akdf = ak.import_data(f"{file_name}_fixed.h5", write_file=f"{file_name}_ak_fixed.h5")
+            assert len(glob.glob(f"{file_name}_ak_fixed*.h5")) == locales
+            assert self.pddf.equals(akdf.to_pandas())
+
+            with pytest.raises(FileNotFoundError):
+                ak.import_data(f"{file_name}_foo.h5", write_file=f"{file_name}_ak_fixed.h5")
+            with pytest.raises(RuntimeError):
+                ak.import_data(f"{file_name}_*.h5", write_file=f"{file_name}_ak_fixed.h5")
+
+    def test_export_hdf(self):
+        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/export_hdf_test"
+
+            self.akdf.to_hdf(f"{file_name}_ak_write")
+
+            pddf = ak.export(
+                f"{file_name}_ak_write", write_file=f"{file_name}_pd_from_ak.h5", index=True
+            )
+            assert len(glob.glob(f"{file_name}_pd_from_ak.h5")) == 1
+            assert pddf.equals(self.akdf.to_pandas())
+
+            with pytest.raises(RuntimeError):
+                ak.export(f"{tmp_dirname}_foo.h5", write_file=f"{tmp_dirname}/pd_from_ak.h5", index=True)
+
+    def test_import_parquet(self):
+        locales = pytest.nl
+        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/import_pq_test"
+
+            self.pddf.to_parquet(f"{file_name}_table.parquet")
+            akdf = ak.import_data(
+                f"{file_name}_table.parquet", write_file=f"{file_name}_ak_table.parquet"
+            )
+            assert len(glob.glob(f"{file_name}_ak_table*.parquet")) == locales
+            assert self.pddf.equals(akdf.to_pandas())
+
+    def test_export_parquet(self):
+        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/export_pq_test"
+
+            self.akdf.to_parquet(f"{file_name}_ak_write")
+
+            pddf = ak.export(
+                f"{file_name}_ak_write", write_file=f"{file_name}_pd_from_ak.parquet", index=True
+            )
+            assert len(glob.glob(f"{file_name}_pd_from_ak.parquet")) == 1
+            assert pddf[self.akdf.columns].equals(self.akdf.to_pandas())
+
+            with pytest.raises(RuntimeError):
+                ak.export(
+                    f"{tmp_dirname}_foo.parquet",
+                    write_file=f"{tmp_dirname}/pd_from_ak.parquet",
+                    index=True,
+                )

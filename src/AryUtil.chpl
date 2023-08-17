@@ -16,20 +16,20 @@ module AryUtil
     param bitsPerDigit = RSLSD_bitsPerDigit;
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
     private param maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
-    
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const auLogger = new Logger(logLevel, logChannel);
-    
+
     /*
-      Threshold for the amount of data that will be printed. 
+      Threshold for the amount of data that will be printed.
       Arrays larger than printThresh will print less data.
     */
     var printThresh = 30;
-    
+
     /*
       Prints the passed array.
-      
+
       :arg name: name of the array
       :arg A: array to be printed
     */
@@ -45,11 +45,11 @@ module AryUtil
     proc printAry(name:string, A) {
         try! writeln(name, formatAry(A));
     }
-    
-    /* 1.18 version print out localSubdomains 
-       
+
+    /* 1.18 version print out localSubdomains
+
        :arg x: array
-       :type x: [] 
+       :type x: []
     */
     proc printOwnership(x) {
         for loc in Locales do
@@ -57,13 +57,13 @@ module AryUtil
                 write(x.localSubdomain(), " ");
         writeln();
     }
-    
-    
+
+
     /*
       Determines if the passed array is sorted.
-      
+
       :arg A: array to check
-      
+
     */
     proc isSorted(A:[?D] ?t): bool {
         var sorted: bool;
@@ -75,13 +75,13 @@ module AryUtil
         }
         return sorted;
     }
-    
+
     /*
       Returns stats on a given array in form (int,int,real,real,real).
-      
+
       :arg a: array to produce statistics on
       :type a: [] int
-      
+
       :returns: a_min, a_max, a_mean, a_variation, a_stdDeviation
     */
     proc aStats(a: [?D] int): (int,int,real,real,real) {
@@ -136,7 +136,7 @@ module AryUtil
      * Takes a variable number of array names from a command message and
      * validates them, checking that they all exist and are the same length
      * and returning metadata about them.
-     * 
+     *
      * :arg n: number of arrays
      * :arg fields: the fields derived from the command message
      * :arg st: symbol table
@@ -145,7 +145,7 @@ module AryUtil
      */
     proc validateArraysSameLength(n:int, names:[] string, types: [] string, st: borrowed SymTab) throws {
       // Check that fields contains the stated number of arrays
-      if (names.size != n) { 
+      if (names.size != n) {
           var errorMsg = "Expected %i arrays but got %i".doFormat(n, names.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
@@ -154,7 +154,7 @@ module AryUtil
                                            getModuleName(),
                                            "ArgumentError");
       }
-      if (types.size != n) { 
+      if (types.size != n) {
           var errorMsg = "Expected %i types but got %i".doFormat(n, types.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
@@ -202,7 +202,7 @@ module AryUtil
           }
           otherwise {
               var errorMsg = "Unrecognized object type: %s".doFormat(objtype);
-              auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+              auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               throw new owned ErrorWithContext(errorMsg,
                                                getLineNumber(),
                                                getRoutineName(),
@@ -210,11 +210,11 @@ module AryUtil
                                                "TypeError");
           }
         }
-        
+
         if (i == 1) {
             size = thisSize;
         } else {
-            if (thisSize != size) { 
+            if (thisSize != size) {
               var errorMsg = "Arrays must all be same size; expected size %?, got size %?".doFormat(size, thisSize);
                 auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 throw new owned ErrorWithContext(errorMsg,
@@ -223,7 +223,7 @@ module AryUtil
                                                  getModuleName(),
                                                  "ArgumentError");
             }
-        }   
+        }
       }
       return (size, hasStr, names, types);
     }
@@ -334,7 +334,7 @@ module AryUtil
           when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
           when DType.UInt64  { (bitWidth, neg) = getBitWidth(toSymEntry(g, uint).a); }
           when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
-          otherwise { 
+          otherwise {
             throw getErrorWithContext(
                                       msg=dtype2str(g.dtype),
                                       lineNumber=getLineNumber(),
@@ -377,14 +377,14 @@ module AryUtil
           when DType.Int64   { mergeArray(int); }
           when DType.UInt64  { mergeArray(uint); }
           when DType.Float64 { mergeArray(real); }
-          otherwise { 
+          otherwise {
             throw getErrorWithContext(
                                       msg=dtype2str(g.dtype),
                                       lineNumber=getLineNumber(),
                                       routineName=getRoutineName(),
                                       moduleName=getModuleName(),
                                       errorClass="IllegalArgumentError"
-                                      ); 
+                                      );
           }
         }
       }
@@ -433,7 +433,7 @@ module AryUtil
                     this.ptr = allocate(t, region.size);
                     this.isOwned = true;
                     const byteSize = region.size:c_size_t * c_sizeof(t);
-                    GET(ptr, startLocale, getAddr(start), byteSize);
+                    GET(ptr, getAddr(start), startLocale, byteSize);
                 }
             } else {
                 // If data is non-contiguous or split across nodes, get element
