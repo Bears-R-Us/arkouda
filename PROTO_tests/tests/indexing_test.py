@@ -13,12 +13,10 @@ def key_arrays(size):
 
 
 def value_array(dtype, size):
-    if dtype is ak.int64:
-        return ak.randint(-size, size, size)
+    if dtype in [ak.int64, ak.float64]:
+        return ak.randint(-size, size, size, dtype=dtype)
     elif dtype is ak.uint64:
         return ak.randint(0, size, size, dtype=dtype)
-    elif dtype is ak.float64:
-        return ak.randint(-size, size, size, dtype=dtype)
     elif dtype is ak.bool:
         return (ak.randint(0, size, size) % 2) == 0
     elif dtype is ak.bigint:
@@ -28,11 +26,24 @@ def value_array(dtype, size):
     return None
 
 
+def value_scalar(dtype, size):
+    if dtype in [ak.int64, ak.float64]:
+        return ak.randint(-size, 0, 1, dtype=dtype)
+    elif dtype is ak.uint64:
+        return ak.randint(2**63, 2**64, 1, dtype=dtype)
+    elif dtype is ak.bool:
+        return (ak.randint(0, 2, 1) % 2) == 0
+    elif dtype is ak.bigint:
+        return ak.randint(0, size, 1, dtype=ak.uint64) + 2**200
+    elif dtype is ak.str_:
+        return ak.random_strings_uniform(1, 16, size=1)
+    return None
+
+
 class TestIndexing:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUM_TYPES + [ak.str_])
     def test_pdarray_uint_indexing(self, prob_size, dtype):
-        # for every pda in array_dict test indexing with uint array and uint scalar
         ikeys, ukeys = key_arrays(prob_size)
         pda = value_array(dtype, prob_size)
         assert pda[np.uint(2)] == pda[2]
@@ -46,11 +57,11 @@ class TestIndexing:
         assert u[b].to_list() == ak.cast(u, ak.bigint)[b].to_list()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("num_types", NUM_TYPES)
-    def test_set_uint(self, prob_size, num_types):
+    @pytest.mark.parametrize("dtype", NUM_TYPES)
+    def test_set_uint(self, prob_size, dtype):
         test_size = prob_size // 2
         ikeys, ukeys = key_arrays(prob_size)
-        pda = value_array(num_types, prob_size)
+        pda = value_array(dtype, prob_size)
 
         # set [int] = val with uint key and value
         pda[np.uint(2)] = np.uint(5)
@@ -59,31 +70,31 @@ class TestIndexing:
         # set [slice] = scalar/pdarray
         pda[:test_size] = -2
         assert pda[ukeys].to_list() == pda[ikeys].to_list()
-        pda[:test_size] = ak.cast(ak.arange(test_size), num_types)
+        pda[:test_size] = ak.cast(ak.arange(test_size), dtype)
         assert pda[ukeys].to_list() == pda[ikeys].to_list()
 
         # set [pdarray] = scalar/pdarray with uint key pdarray
         pda[ak.arange(test_size, dtype=ak.uint64)] = np.uint(3)
         assert pda[ukeys].to_list() == pda[ikeys].to_list()
-        pda[ak.arange(test_size, dtype=ak.uint64)] = ak.cast(ak.arange(test_size), num_types)
+        pda[ak.arange(test_size, dtype=ak.uint64)] = ak.cast(ak.arange(test_size), dtype)
         assert pda[ukeys].to_list() == pda[ikeys].to_list()
 
-        if num_types == ak.bigint:
-            # bigint specific set [int] = val with uint key and value
-            pda[np.uint(2)] = 2**200
-            assert pda[2] == 2**200
+        # set [int] = val with uint key and value
+        val = value_scalar(dtype, prob_size)[0]
+        pda[np.uint(2)] = val
+        assert pda[2] == val
 
-            # bigint specific set [slice] = scalar/pdarray
-            pda[:prob_size] = 2**200
-            assert pda[:prob_size].to_list() == ak.full(prob_size, 2**200, ak.bigint).to_list()
-            pda[:prob_size] = ak.arange(prob_size, dtype=ak.bigint)
-            assert pda[:prob_size].to_list() == ak.arange(prob_size, dtype=ak.uint64).to_list()
+        # set [slice] = scalar/pdarray
+        pda[:prob_size] = val
+        assert pda[:prob_size].to_list() == ak.full(prob_size, val, dtype=dtype).to_list()
+        pda[:prob_size] = ak.arange(prob_size, dtype=dtype)
+        assert pda[:prob_size].to_list() == ak.arange(prob_size, dtype=dtype).to_list()
 
-            # bigint specific set [pdarray] = scalar/pdarray with uint key pdarray
-            pda[ak.arange(prob_size, dtype=ak.uint64)] = 2**200
-            assert pda[:prob_size].to_list() == ak.full(prob_size, 2**200, ak.bigint).to_list()
-            pda[ak.arange(prob_size)] = ak.arange(prob_size, dtype=ak.bigint)
-            assert pda[:prob_size].to_list() == ak.arange(prob_size, dtype=ak.uint64).to_list()
+        # set [pdarray] = scalar/pdarray with uint key pdarray
+        pda[ak.arange(prob_size, dtype=ak.uint64)] = val
+        assert pda[:prob_size].to_list() == ak.full(prob_size, val, dtype=dtype).to_list()
+        pda[ak.arange(prob_size)] = ak.arange(prob_size, dtype=dtype)
+        assert pda[:prob_size].to_list() == ak.arange(prob_size, dtype=dtype).to_list()
 
     def test_indexing_with_uint(self):
         # verify reproducer from #1210 no longer fails
