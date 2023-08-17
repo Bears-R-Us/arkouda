@@ -19,15 +19,10 @@ class TestIOUtil:
 
     def test_delimited_file_to_dict(self):
         with tempfile.TemporaryDirectory(dir=self.io_test_dir_base) as tmp_dirname:
-            io_util.write_line_to_file(
-                path="{}/testfile.txt".format(tmp_dirname), line="localhost:5555,9ty4h6olr4"
-            )
-            io_util.write_line_to_file(
-                path="{}/testfile.txt".format(tmp_dirname), line="127.0.0.1:5556,6ky3i91l17"
-            )
-            values = io_util.delimited_file_to_dict(
-                path="{}/testfile.txt".format(tmp_dirname), delimiter=","
-            )
+            file_name = f"{tmp_dirname}/testfile.txt"
+            io_util.write_line_to_file(path=file_name, line="localhost:5555,9ty4h6olr4")
+            io_util.write_line_to_file(path=file_name, line="127.0.0.1:5556,6ky3i91l17")
+            values = io_util.delimited_file_to_dict(path=file_name, delimiter=",")
             assert values
             assert "9ty4h6olr4" == values["localhost:5555"]
             assert "6ky3i91l17" == values["127.0.0.1:5556"]
