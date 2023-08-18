@@ -1572,7 +1572,7 @@ def load(
     with a .parquet appended to the prefix_path.
     Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
 
-    ak.load does not support loading a single file. This function automatically creates a glob expression.
+    ak.load does not support loading a single file.
     For loading single HDF5 files without the _LOCALE#### suffix please use ak.read().
 
     CSV files without the Arkouda Header are not supported.
