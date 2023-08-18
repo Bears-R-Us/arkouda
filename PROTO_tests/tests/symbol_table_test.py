@@ -201,7 +201,6 @@ class TestRegistration:
         segments = ak.arange(0, size, 5)
         values = self.make_pdarray(dtype, size)
         sa = ak.SegArray(segments, values)
-        print(sa)
         sa.register(reg_name)
 
         # validate registered_name set
