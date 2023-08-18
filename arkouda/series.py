@@ -619,9 +619,10 @@ class Series:
         """
         data = json.loads(repMsg)
         val_comps = data["value"].split("+|+")
-        if val_comps[0] == Categorical.objType:
+        if val_comps[0] == Categorical.objType.upper():
             values = Categorical.from_return_msg(val_comps[1])  # type: ignore
-        elif val_comps[0] == Strings.objType:
+        elif val_comps[0] == Strings.objType.upper():
+            print(val_comps[1])
             values = Strings.from_return_msg(val_comps[1])  # type: ignore
         else:
             values = create_pdarray(val_comps[1])  # type: ignore
