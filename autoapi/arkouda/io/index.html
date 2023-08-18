@@ -1097,7 +1097,8 @@ one or more of them</p></li>
 <p>If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it
 with a .parquet appended to the prefix_path.
 Parquet files were previously ALWAYS stored with a <code class="docutils literal notranslate"><span class="pre">.parquet</span></code> extension.</p>
-<p>This function will be deprecated when glob flags are added to read_* functions</p>
+<p>ak.load does not support loading a single file.
+For loading single HDF5 files without the _LOCALE#### suffix please use ak.read().</p>
 <p>CSV files without the Arkouda Header are not supported.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Loading from file without extension</span>
