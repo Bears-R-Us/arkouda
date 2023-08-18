@@ -162,6 +162,17 @@ or
 
    .. method:: proc init()
 
+.. class:: UnsupportedOSError : ErrorWithContext
+
+   
+   * The UnsupportedOSError is thrown if a function cannot be executed on the host OS.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
 .. function:: proc generateErrorContext(msg: string, lineNumber: int, moduleName: string, routineName: string, errorClass: string = "ErrorWithContext"): string
 
    

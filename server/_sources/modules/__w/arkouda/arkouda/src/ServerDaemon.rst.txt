@@ -17,7 +17,7 @@ or
 
    import ServerDaemon;
 
-.. enum:: enum ServerDaemonType { DEFAULT, INTEGRATION, METRICS }
+.. enum:: enum ServerDaemonType { DEFAULT, INTEGRATION, METRICS, STATUS }
 
 .. data:: const sdLogger = new Logger(logLevel, logChannel)
 
@@ -186,8 +186,9 @@ or
 .. class:: MetricsServerDaemon : ArkoudaServerDaemon
 
    *
-   * The MetricsServerDaemon provides an endpoint for gathering user, request, 
-   * locale, and server-scoped metrics
+   * The MetricsServerDaemon provides a separate endpoint for gathering user, request, 
+   * locale, and server-scoped metrics. The separate port lessens the possibility of
+   * metrics requests being blocked by command requests.
    
 
 
@@ -220,6 +221,23 @@ or
       * Overridden shutdown function deregisters Arkouda from an external
       * system and then invokes the parent shutdown() function.
       
+
+.. class:: ServerStatusDaemon : ArkoudaServerDaemon
+
+   *
+   * The ServerStatusDaemon provides a non-blocking endpoint for retrieving 
+   * server status via a separate, dedicated port to lessen the chances of 
+   * blocking incoming status requests with command requests.
+   
+
+
+   .. attribute:: var context: ZMQ.Context
+
+   .. attribute:: var socket: ZMQ.Socket
+
+   .. method:: proc init()
+
+   .. method:: override proc run() throws
 
 .. function:: proc getServerDaemon(daemonType: ServerDaemonType): shared ArkoudaServerDaemon throws
 

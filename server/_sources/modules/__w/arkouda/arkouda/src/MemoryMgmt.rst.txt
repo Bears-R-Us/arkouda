@@ -59,6 +59,8 @@ or
 
    .. attribute:: var locale_hostname: string
 
+.. function:: proc isSupportedOS(): bool throws
+
 .. function:: proc getArkoudaPid(): string throws
 
 .. function:: proc getArkoudaMemAlloc(): uint(64) throws

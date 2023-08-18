@@ -129,7 +129,7 @@
 </div>
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="ServerDaemon.ServerDaemonType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ServerDaemonType</span></span> <span class="pre">{</span> <span class="pre">DEFAULT,</span> <span class="pre">INTEGRATION,</span> <span class="pre">METRICS</span> <span class="pre">}</span><a class="headerlink" href="#ServerDaemon.ServerDaemonType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ServerDaemonType</span></span> <span class="pre">{</span> <span class="pre">DEFAULT,</span> <span class="pre">INTEGRATION,</span> <span class="pre">METRICS,</span> <span class="pre">STATUS</span> <span class="pre">}</span><a class="headerlink" href="#ServerDaemon.ServerDaemonType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
@@ -406,8 +406,9 @@ which stops the arkouda_server listener thread and closes socket.</p>
 <em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MetricsServerDaemon</span></span><span class="pre">:</span> <span class="pre">ArkoudaServerDaemon</span><a class="headerlink" href="#ServerDaemon.MetricsServerDaemon" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
-<li><p>The MetricsServerDaemon provides an endpoint for gathering user, request,</p></li>
-<li><p>locale, and server-scoped metrics</p></li>
+<li><p>The MetricsServerDaemon provides a separate endpoint for gathering user, request,</p></li>
+<li><p>locale, and server-scoped metrics. The separate port lessens the possibility of</p></li>
+<li><p>metrics requests being blocked by command requests.</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ServerDaemon.MetricsServerDaemon.context">
@@ -458,6 +459,37 @@ which stops the arkouda_server listener thread and closes socket.</p>
 <li><p>system and then invokes the parent shutdown() function.</p></li>
 </ul>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="chpl class">
+<dt class="sig sig-object chpl" id="ServerDaemon.ServerStatusDaemon">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ServerStatusDaemon</span></span><span class="pre">:</span> <span class="pre">ArkoudaServerDaemon</span><a class="headerlink" href="#ServerDaemon.ServerStatusDaemon" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>The ServerStatusDaemon provides a non-blocking endpoint for retrieving</p></li>
+<li><p>server status via a separate, dedicated port to lessen the chances of</p></li>
+<li><p>blocking incoming status requests with command requests.</p></li>
+</ul>
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="ServerDaemon.ServerStatusDaemon.context">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">context</span></span><span class="pre">:</span> <span class="pre">ZMQ.Context</span><a class="headerlink" href="#ServerDaemon.ServerStatusDaemon.context" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="ServerDaemon.ServerStatusDaemon.socket">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">socket</span></span><span class="pre">:</span> <span class="pre">ZMQ.Socket</span><a class="headerlink" href="#ServerDaemon.ServerStatusDaemon.socket" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerDaemon.ServerStatusDaemon.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.ServerStatusDaemon.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerDaemon.ServerStatusDaemon.run">
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.ServerStatusDaemon.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
