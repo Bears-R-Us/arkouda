@@ -93,7 +93,7 @@ class TestSegArray:
         elif dtype == ak.float64:
             vals = np.linspace(-5, 5, size)
         elif dtype == ak.str_:
-            alpha_num = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+            alpha_num = list(ascii_letters + digits)
             np_codes = np.random.choice(alpha_num, size=[size, 2])
             vals = np.array(["".join(code) for code in np_codes])
         elif dtype == ak.bool:
