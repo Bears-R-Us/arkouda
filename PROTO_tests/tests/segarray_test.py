@@ -242,7 +242,7 @@ class TestSegArray:
 
         assert isinstance(sa, ak.SegArray)
         assert [0, 4, 4, 6] == sa.segments.to_list()
-        assert [i for i in range(6)] == sa.values.to_list()
+        assert list(range(6)) == sa.values.to_list()
         assert sa.size == 4
 
         expected_lens = [4, 0, 2, 0]
