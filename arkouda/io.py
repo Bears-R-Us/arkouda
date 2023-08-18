@@ -1572,7 +1572,8 @@ def load(
     with a .parquet appended to the prefix_path.
     Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
 
-    This function will be deprecated when glob flags are added to read_* functions
+    ak.load does not support loading a single file. This function automatically creates a glob expression.
+    For loading single HDF5 files without the _LOCALE#### suffix please use ak.read().
 
     CSV files without the Arkouda Header are not supported.
 
@@ -1589,8 +1590,11 @@ def load(
     #### is replaced by each locale numbers. Because filetype is inferred during processing,
     the extension is not required to be a specific format.
     """
+    if "*" in path_prefix:
+        raise ValueError("Glob expressions not supported by ak.load(). "
+                         "To read files using a glob expression, please use ak.read()")
     prefix, extension = os.path.splitext(path_prefix)
-    globstr = f"{prefix}*{extension}"
+    globstr = f"{prefix}_LOCALE*{extension}"
     try:
         file_format = get_filetype(globstr) if file_format.lower() == "infer" else file_format
         if file_format.lower() == "hdf5":
