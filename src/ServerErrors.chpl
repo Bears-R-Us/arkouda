@@ -174,6 +174,20 @@ module ServerErrors {
     }
 
     /*
+     * The UnsupportedOSError is thrown if a function cannot be executed on the host OS.
+     */
+    class UnsupportedOSError: ErrorWithContext {
+
+        proc init(msg : string, lineNumber: int, routineName: string,
+                                                           moduleName: string) {
+           super.init(msg,lineNumber,routineName,moduleName,errorClass='UnsupportedOSError');
+        }
+
+        proc init(){ super.init(); }
+    }
+
+
+    /*
      * Generatea a detailed, context-rich error message for errors such as instances of 
      * built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext
      * error message format. 
