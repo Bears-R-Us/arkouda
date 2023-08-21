@@ -720,7 +720,6 @@ class TestRegistration:
         with pytest.raises(RuntimeError):
             str(a)
 
-
     def test_symentry_cleanup(self):
         pda = self.make_pdarray(ak.int64, 10)
         assert len(ak.list_symbol_table()) > 0
@@ -737,15 +736,17 @@ class TestRegistration:
         cat = None
         assert len(ak.list_symbol_table()) == 0
 
-        seg = ak.SegArray(
-            ak.arange(0, 10, 2), self.make_pdarray(ak.float64, 10)
-        )
+        seg = ak.SegArray(ak.arange(0, 10, 2), self.make_pdarray(ak.float64, 10))
         assert len(ak.list_symbol_table()) > 0
         seg = None
         assert len(ak.list_symbol_table()) == 0
 
         g = ak.GroupBy(
-            [self.make_pdarray(ak.int64, 10), self.make_pdarray(ak.str_, 10), ak.Categorical(self.make_pdarray(ak.str_, 10))]
+            [
+                self.make_pdarray(ak.int64, 10),
+                self.make_pdarray(ak.str_, 10),
+                ak.Categorical(self.make_pdarray(ak.str_, 10)),
+            ]
         )
         assert len(ak.list_symbol_table()) > 0
         g = None
@@ -756,9 +757,7 @@ class TestRegistration:
                 "pda": self.make_pdarray(ak.int64, 10),
                 "s": self.make_pdarray(ak.str_, 10),
                 "cat": ak.Categorical(self.make_pdarray(ak.str_, 10)),
-                "seg": ak.SegArray(
-                    ak.arange(0, 20, 2), self.make_pdarray(ak.uint64, 20)
-                ),
+                "seg": ak.SegArray(ak.arange(0, 20, 2), self.make_pdarray(ak.uint64, 20)),
             }
         )
         assert len(ak.list_symbol_table()) > 0
