@@ -396,26 +396,27 @@ class TestOperator:
         assert [i if i % 2 else i**0.5 for i in range(5)] == ak.sqrt(a, a % 2 == 0).to_list()
 
     def test_uint_and_bigint_operation_equals(self):
-        u_arr = ak.array(
-            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
-            dtype=ak.uint64,
-        )
-        bi_arr = ak.array(
-            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
-            dtype=ak.bigint,
-            max_bits=64,
-        )
-        np_arr = np.array(
-            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
-            dtype=np.uint,
-        )
+        def declare_arrays():
+            u_arr = ak.array(
+                [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+                dtype=ak.uint64,
+            )
+            bi_arr = ak.array(
+                [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+                dtype=ak.bigint,
+                max_bits=64,
+            )
+            np_arr = np.array(
+                [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+                dtype=np.uint,
+            )
+            return u_arr, bi_arr, np_arr
+
+        u_arr, bi_arr, np_arr = declare_arrays()
         i_arr = ak.arange(10)
         f_arr = ak.linspace(1, 5, 10)
         b_arr = i_arr % 2 == 0
-        u = np.uint(7)
-        i = 7
-        f = 3.14
-        b = True
+        u, i, f, b = np.uint(7), 7, 3.14, True
 
         # test uint opequals uint functionality against numpy
         for arr in u_arr, bi_arr, np_arr:
@@ -438,20 +439,9 @@ class TestOperator:
         assert u_arr.to_list() == np_arr.tolist()
         assert bi_arr.to_list() == np_arr.tolist()
 
-        # redeclare minus self zeroed out
-        u_arr = ak.array(
-            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
-            dtype=ak.uint64,
-        )
-        bi_arr = ak.array(
-            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
-            dtype=ak.bigint,
-            max_bits=64,
-        )
-        np_arr = np.array(
-            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
-            dtype=np.uint,
-        )
+        # redeclare because subtract by self zeroed out
+        u_arr, bi_arr, np_arr = declare_arrays()
+
         for arr in u_arr, bi_arr, np_arr:
             arr *= u
         assert u_arr.to_list() == np_arr.tolist()
@@ -482,20 +472,9 @@ class TestOperator:
         assert u_arr.to_list() == np_arr.tolist()
         assert bi_arr.to_list() == np_arr.tolist()
 
-        # redeclare divide zeroed out
-        u_arr = ak.array(
-            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
-            dtype=ak.uint64,
-        )
-        bi_arr = ak.array(
-            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
-            dtype=ak.bigint,
-            max_bits=64,
-        )
-        np_arr = np.array(
-            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
-            dtype=np.uint,
-        )
+        # redeclare because divide zeroed out
+        u_arr, bi_arr, np_arr = declare_arrays()
+
         for arr in u_arr, bi_arr, np_arr:
             arr //= arr
         assert u_arr.to_list() == np_arr.tolist()
