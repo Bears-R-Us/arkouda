@@ -11,13 +11,24 @@ def make_ak_arrays(dtype):
     if dtype in ["int64", "uint64"]:
         return ak.randint(0, 100, 1000, dtype)
     elif dtype == "float64":
-        return ak.array(np.random.rand(100) * 10000)
+        return ak.array(np.random.rand(1000) * 10000)
     elif dtype == "bigint":
         return ak.randint(0, 100, 1000, dtype=ak.uint64)
     return None
 
 
+def np_is_sorted(arr):
+    return np.all(arr[:-1] <= arr[1:])
+
+
 class TestSort:
+    @pytest.mark.parametrize("dtype", NUMERIC_AND_BIGINT_TYPES)
+    def test_is_sorted(self, dtype):
+        pda = make_ak_arrays(dtype)
+        sorted_pda = ak.sort(pda)
+        assert ak.is_sorted(sorted_pda)
+        assert np_is_sorted(sorted_pda.to_ndarray())
+
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_BIGINT_TYPES)
     def test_sort_dtype(self, algo, dtype):
