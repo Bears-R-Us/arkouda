@@ -73,12 +73,6 @@ class TestIndexing:
         pda[:test_size] = ak.cast(ak.arange(test_size), dtype)
         assert pda[ukeys].to_list() == pda[ikeys].to_list()
 
-        # set [pdarray] = scalar/pdarray with uint key pdarray
-        pda[ak.arange(test_size, dtype=ak.uint64)] = np.uint(3)
-        assert pda[ukeys].to_list() == pda[ikeys].to_list()
-        pda[ak.arange(test_size, dtype=ak.uint64)] = ak.cast(ak.arange(test_size), dtype)
-        assert pda[ukeys].to_list() == pda[ikeys].to_list()
-
         # set [int] = val with uint key and value
         val = value_scalar(dtype, prob_size)[0]
         pda[np.uint(2)] = val
@@ -93,7 +87,7 @@ class TestIndexing:
         # set [pdarray] = scalar/pdarray with uint key pdarray
         pda[ak.arange(prob_size, dtype=ak.uint64)] = val
         assert pda[:prob_size].to_list() == ak.full(prob_size, val, dtype=dtype).to_list()
-        pda[ak.arange(prob_size)] = ak.arange(prob_size, dtype=dtype)
+        pda[ak.arange(prob_size)] = value_array(dtype, prob_size)
         assert pda[:prob_size].to_list() == ak.arange(prob_size, dtype=dtype).to_list()
 
     def test_indexing_with_uint(self):
