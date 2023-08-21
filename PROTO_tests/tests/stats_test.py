@@ -6,6 +6,7 @@ import arkouda as ak
 
 
 class TestStats:
+    @classmethod
     def setup_class(cls):
         cls.x = ak.arange(10, 20)
         cls.npx = np.arange(10, 20)
@@ -39,40 +40,28 @@ class TestStats:
             assert ark.std(ddof=1) == pytest.approx(pand.std())
 
     def test_cov_and_corr(self):
-        # test that cov variations are equivalent
-        for arg in [
-            (self.pdx.cov(self.pdy)),
-            (self.y.cov(self.x)),
-            (ak.cov(self.x, self.y)),
-            (ak.cov(self.y, self.x)),
-        ]:
-            assert self.x.cov(self.y) == pytest.approx(arg)
+        # test that cov and corr variations are equivalent
+        for fn in "cov", "corr":
+            for arg in [
+                getattr(self.pdx, fn)(self.pdy),
+                getattr(self.y, fn)(self.x),
+                getattr(ak, fn)(self.x, self.y),
+                getattr(ak, fn)(self.y, self.x),
+            ]:
+                assert getattr(self.x, fn)(self.y) == pytest.approx(arg)
 
-        # test that corr variations are equivalent
-        for arg in [
-            (self.pdx.corr(self.pdy)),
-            (self.y.corr(self.x)),
-            (ak.corr(self.x, self.y)),
-            (ak.corr(self.y, self.x)),
-        ]:
-            assert self.x.corr(self.y) == pytest.approx(arg)
+            # test int, bool, and float with other types
+            for ark, pand in [
+                (self.u, self.pdu),
+                (self.b, self.pdb),
+                (self.f, self.pdf),
+            ]:
+                assert getattr(self.x, fn)(ark) == pytest.approx(getattr(self.pdx, fn)(pand))
+                assert getattr(self.b, fn)(ark) == pytest.approx(getattr(self.pdb, fn)(pand))
+                assert getattr(self.f, fn)(ark) == pytest.approx(getattr(self.pdf, fn)(pand))
 
-        # test int, bool, and float with other types
-        for ark, pand in [
-            (self.u, self.pdu),
-            (self.b, self.pdb),
-            (self.f, self.pdf),
-        ]:
-            assert self.x.cov(ark) == pytest.approx(self.pdx.cov(pand))
-            assert self.b.cov(ark) == pytest.approx(self.pdb.cov(pand))
-            assert self.f.cov(ark) == pytest.approx(self.pdf.cov(pand))
-            assert self.x.corr(ark) == pytest.approx(self.pdx.corr(pand))
-            assert self.b.corr(ark) == pytest.approx(self.pdb.corr(pand))
-            assert self.f.corr(ark) == pytest.approx(self.pdf.corr(pand))
-
-        # test uint with self (other cases covered above)
-        assert self.u.cov(self.u) == pytest.approx(self.pdu.cov(self.pdu))
-        assert self.u.corr(self.u) == pytest.approx(self.pdu.corr(self.pdu))
+            # test uint with self (other cases covered above)
+            assert getattr(self.u, fn)(self.u) == pytest.approx(getattr(self.pdu, fn)(self.pdu))
 
     def test_corr_matrix(self):
         ak_df = ak.DataFrame({"x": self.x, "y": self.y, "u": self.u, "b": self.b, "f": self.f}).corr()
