@@ -4,6 +4,7 @@ import pytest
 import arkouda as ak
 
 NUM_TYPES = [ak.int64, ak.uint64, ak.float64, ak.bool, ak.bigint]
+prob_size = 10
 
 
 def key_arrays(size):
@@ -81,14 +82,16 @@ class TestIndexing:
         # set [slice] = scalar/pdarray
         pda[:prob_size] = val
         assert pda[:prob_size].to_list() == ak.full(prob_size, val, dtype=dtype).to_list()
-        pda[:prob_size] = ak.arange(prob_size, dtype=dtype)
-        assert pda[:prob_size].to_list() == ak.arange(prob_size, dtype=dtype).to_list()
+        pda_value_array = value_array(dtype, prob_size)
+        pda[:prob_size] = pda_value_array
+        assert pda[:prob_size].to_list() == pda_value_array.to_list()
 
         # set [pdarray] = scalar/pdarray with uint key pdarray
         pda[ak.arange(prob_size, dtype=ak.uint64)] = val
         assert pda[:prob_size].to_list() == ak.full(prob_size, val, dtype=dtype).to_list()
-        pda[ak.arange(prob_size)] = value_array(dtype, prob_size)
-        assert pda[:prob_size].to_list() == ak.arange(prob_size, dtype=dtype).to_list()
+        pda_value_array = value_array(dtype, prob_size)
+        pda[ak.arange(prob_size)] = pda_value_array
+        assert pda[:prob_size].to_list() == pda_value_array.to_list()
 
     def test_indexing_with_uint(self):
         # verify reproducer from #1210 no longer fails
