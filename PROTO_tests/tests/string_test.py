@@ -8,7 +8,6 @@ import arkouda as ak
 
 
 class TestString:
-    # NOTE - in1d testing was added to setops_test.py
     Gremlins = namedtuple(
         "Gremlins", "gremlins_base_words gremlins_strings gremlins_test_strings gremlins_cat"
     )
