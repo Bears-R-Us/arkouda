@@ -1,8 +1,11 @@
 module MemoryMgmt {
 
     use Subprocess;
-    use Logging;
+    use FileSystem;
+    use Reflection;
 
+    use Logging;
+    use ServerErrors;
     use ArkoudaMemDiagnosticsCompat;
     use ArkoudaFileCompat;
     
@@ -40,7 +43,19 @@ module MemoryMgmt {
         var locale_hostname: string;
     }
 
+    proc isSupportedOS() : bool  throws {
+        return exists('/proc/meminfo');
+    }
+
     proc getArkoudaPid() : string throws {
+        if !isSupportedOS() {
+            throw new owned ErrorWithContext("getArkoudaPid can only be invoked on Unix and Linux systems",
+                                           getLineNumber(),
+                                           getRoutineName(),
+                                           getModuleName(),
+                                           "UnsupportedOSError");
+        }
+
         var pid = spawn(["pgrep","arkouda_server"], stdout=pipeStyle.pipe);
 
         var pid_string:string;
@@ -55,6 +70,14 @@ module MemoryMgmt {
     }
 
     proc getArkoudaMemAlloc() : uint(64) throws {
+        if !isSupportedOS() {
+            throw new owned ErrorWithContext("getArkoudaMemAlloc can only be invoked on Unix and Linux systems",
+                                           getLineNumber(),
+                                           getRoutineName(),
+                                           getModuleName(),
+                                           "UnsupportedOSError");
+        }
+
         var pid = getArkoudaPid();
 
         var sub = spawn(["pmap", pid], stdout=pipeStyle.pipe);
@@ -74,6 +97,14 @@ module MemoryMgmt {
     }
     
     proc getAvailMemory() : uint(64) throws {
+        if !isSupportedOS() {
+            throw new owned ErrorWithContext("getAvailMemory can only be invoked on Unix and Linux systems",
+                                           getLineNumber(),
+                                           getRoutineName(),
+                                           getModuleName(),
+                                           "UnsupportedOSError");
+        }
+
         var aFile = open('/proc/meminfo', ioMode.r);
         var lines = aFile.reader().lines();
         var line : string;
@@ -92,6 +123,14 @@ module MemoryMgmt {
     }
     
     proc getTotalMemory() : uint(64) throws {
+        if !isSupportedOS() {
+            throw new owned ErrorWithContext("getTotalMemory can only be invoked on Unix and Linux systems",
+                                           getLineNumber(),
+                                           getRoutineName(),
+                                           getModuleName(),
+                                           "UnsupportedOSError");
+        }
+
         var aFile = open('/proc/meminfo', ioMode.r);
         var lines = aFile.reader().lines();
         var line : string;

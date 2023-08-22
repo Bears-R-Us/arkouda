@@ -31,7 +31,7 @@ module ServerDaemon {
     use ArkoudaListCompat;
     use ArkoudaIOCompat;
 
-    enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
+    enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS,STATUS}
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -737,8 +737,9 @@ module ServerDaemon {
     }
 
     /**
-     * The MetricsServerDaemon provides an endpoint for gathering user, request, 
-     * locale, and server-scoped metrics
+     * The MetricsServerDaemon provides a separate endpoint for gathering user, request, 
+     * locale, and server-scoped metrics. The separate port lessens the possibility of
+     * metrics requests being blocked by command requests.
      */
     class MetricsServerDaemon : ArkoudaServerDaemon {
     
@@ -839,6 +840,80 @@ module ServerDaemon {
         }
     }
 
+    /**
+     * The ServerStatusDaemon provides a non-blocking endpoint for retrieving 
+     * server status via a separate, dedicated port to lessen the chances of 
+     * blocking incoming status requests with command requests.
+     */
+    class ServerStatusDaemon : ArkoudaServerDaemon {
+    
+        var context: ZMQ.Context;
+        var socket : ZMQ.Socket;      
+        
+        proc init() {
+            this.socket = this.context.socket(ZMQ.REP); 
+            this.port = try! getEnv('SERVER_STATUS_PORT','5557'):int;
+
+            try! this.socket.bind("tcp://*:%?".doFormat(this.port));
+            try! sdLogger.debug(getModuleName(), 
+                                getRoutineName(), 
+                                getLineNumber(),
+                                "initialized and listening in port %i".doFormat(
+                                this.port));
+        }
+
+        override proc run() throws {
+            while !this.shutdownDaemon {
+                sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                         "awaiting status requests on port %i".doFormat(this.port));
+                var req = this.socket.recv(bytes).decode();
+
+                var msg: RequestMsg = extractRequest(req);
+                var user   = msg.user;
+                var token  = msg.token;
+                var cmd    = msg.cmd;
+                var format = msg.format;
+                var args   = msg.args;
+                var size   = msg.size: int;
+
+                var msgArgs: owned MessageArgs;
+                if size > 0 {
+                    msgArgs = parseMessageArgs(args, size);
+                }
+                else {
+                    msgArgs = new owned MessageArgs();
+                }
+
+                var repTuple: MsgTuple;
+
+                select cmd {
+                    when "ruok" {
+                        repTuple = new MsgTuple("imok", MsgType.NORMAL);
+                    } 
+                    
+                    when "getmemstatus" {
+                        repTuple = getMemoryStatusMsg(cmd, msgArgs, st);
+                    }    
+                    when "connect" {
+                        if authenticate {
+                            repTuple = new MsgTuple("connected to arkouda status server tcp://*:%i as user " +
+                                                "%s with token %s".doFormat(this.port,user,token), MsgType.NORMAL);
+                        } else {
+                            repTuple = new MsgTuple("connected to arkouda status server tcp://*:%i".doFormat(this.port), 
+                                                                                    MsgType.NORMAL);
+                        }
+                    }
+                    when "getconfig" {repTuple = getconfigMsg(cmd, msgArgs, st);}
+                }           
+
+                this.socket.send(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
+                                                msgFormat=MsgFormat.STRING, user=user));
+            }
+
+            return;
+        }
+    }
+
     proc getServerDaemon(daemonType: ServerDaemonType) : shared ArkoudaServerDaemon throws {
         select daemonType {
             when ServerDaemonType.DEFAULT {
@@ -849,6 +924,9 @@ module ServerDaemon {
             }
             when ServerDaemonType.METRICS {
                return new shared MetricsServerDaemon();
+            }
+            when ServerDaemonType.STATUS {
+               return new shared ServerStatusDaemon();
             }
             otherwise {
                 throw getErrorWithContext(

@@ -1126,9 +1126,9 @@ class SegArray:
         -------
         SegArray
         """
-        from arkouda.io import load
+        from arkouda.io import read_hdf
 
-        return load(prefix_path, dataset=dataset)
+        return read_hdf(prefix_path, datasets=dataset)
 
     @classmethod
     def load(cls, prefix_path, dataset="segarray", segment_name="segments", value_name="values"):
