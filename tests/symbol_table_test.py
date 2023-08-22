@@ -2,8 +2,6 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 
 from arkouda.pdarrayclass import RegistrationError
-N = 100
-UNIQUE = N // 4
 
 
 def cleanup():
