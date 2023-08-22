@@ -23,6 +23,7 @@ Functions
    arkouda.client.get_server_commands
    arkouda.client.print_server_commands
    arkouda.client.ruok
+   arkouda.client.generate_history
 
 
 
@@ -198,5 +199,33 @@ Functions
              an error server-side, or if ruok did not return a response (imnotok) in
              both of the latter cases
    :rtype: str
+
+
+.. py:function:: generate_history(num_commands: Optional[int] = None, command_filter: Optional[str] = None) -> List[str]
+
+   Generates list of commands executed within the the Python shell, Jupyter notebook,
+   or IPython notebook, with an optional cmd_filter and number of commands to return.
+
+   :param num_commands: The number of commands from history to retrieve
+   :type num_commands: int
+   :param command_filter: String containing characters used to select a subset of commands.
+   :type command_filter: str
+
+   :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
+   :rtype: List[str]
+
+   .. rubric:: Examples
+
+   >>> ak.connect()
+   connected to arkouda server tcp://*:5555
+   >>> ak.get_config()
+   >>> ak.ones(10000)
+   array([1 1 1 ... 1 1 1])
+   >>> nums = ak.randint(0,500,10000)
+   >>> ak.argsort(nums)
+   array([105 457 647 ... 9362 9602 9683])
+   >>> ak.generate_history(num_commands=5, command_filter='ak.')
+   ['ak.connect()', 'ak.get_config()', 'ak.ones(10000)', 'nums = ak.randint(0,500,10000)',
+   'ak.argsort(nums)']
 
 

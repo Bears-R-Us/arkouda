@@ -1,0 +1,89 @@
+:py:mod:`arkouda.history`
+=========================
+
+.. py:module:: arkouda.history
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.history.HistoryRetriever
+   arkouda.history.ShellHistoryRetriever
+   arkouda.history.NotebookHistoryRetriever
+
+
+
+
+.. py:class:: HistoryRetriever
+
+
+   HistoryRetriever is an abstract base class that defines the retrieve method signature
+   and implements _filter_arkouda_command
+
+   .. py:method:: retrieve(command_filter: Optional[str] = None, num_commands: Optional[int] = None) -> List[str]
+      :abstractmethod:
+
+      Generates list of commands executed within a Python REPL shell, Jupyter notebook,
+      or IPython notebook, with an optional command filter and number of commands to return.
+
+      :param num_commands: The number of commands from history to retrieve
+      :type num_commands: int
+      :param command_filter: String containing characters used to select a subset of command history.
+      :type command_filter: str
+
+      :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
+      :rtype: List[str]
+
+
+
+.. py:class:: ShellHistoryRetriever
+
+
+   Bases: :py:obj:`HistoryRetriever`
+
+   ShellHistoryRetriever implements the retrieve method to get command history from the
+   Python REPL shell.
+
+   .. py:method:: retrieve(command_filter: Optional[str] = None, num_commands: Optional[int] = None) -> List[str]
+
+      Generates list of commands executed within the a Python REPL shell, with an
+      optional command filter and number of commands to return.
+
+      :param num_commands: The number of commands from history to retrieve
+      :type num_commands: int
+      :param command_filter: String containing characters used to select a subset of command history.
+      :type command_filter: str
+
+      :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
+      :rtype: List[str]
+
+
+
+.. py:class:: NotebookHistoryRetriever
+
+
+   Bases: :py:obj:`IPython.core.history.HistoryAccessor`, :py:obj:`HistoryRetriever`
+
+   NotebookHistoryRetriever implements the retrieve method to get command history
+   from a Jupyter notebook or IPython shell.
+
+   .. py:method:: retrieve(command_filter: Optional[str] = None, num_commands: Optional[int] = None) -> List[str]
+
+      Generates list of commands executed within a Jupyter notebook or IPython shell,
+      with an optional command filter and number of commands to return.
+
+      :param num_commands: The number of commands from history to retrieve
+      :type num_commands: int
+      :param command_filter: String containing characters used to select a subset of command history.
+      :type command_filter: str
+
+      :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
+      :rtype: List[str]
+
+
+

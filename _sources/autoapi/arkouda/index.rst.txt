@@ -19,6 +19,7 @@ Submodules
    dataframe/index.rst
    dtypes/index.rst
    groupbyclass/index.rst
+   history/index.rst
    index/index.rst
    infoclass/index.rst
    io/index.rst

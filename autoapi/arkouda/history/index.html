@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.categorical" href="../categorical/index.html" /><link rel="prev" title="arkouda.alignment" href="../alignment/index.html" />
+<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.index" href="../index/index.html" /><link rel="prev" title="arkouda.groupbyclass" href="../groupbyclass/index.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
-        <title>arkouda.array_view - arkouda documentation</title>
+        <title>arkouda.history - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
@@ -197,14 +197,14 @@
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../history/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.history</span></code></a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.history</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
@@ -275,8 +275,8 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-arkouda.array_view">
-<span id="arkouda-array-view"></span><h1><a class="reference internal" href="#module-arkouda.array_view" title="arkouda.array_view"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a><a class="headerlink" href="#module-arkouda.array_view" title="Permalink to this heading">#</a></h1>
+          <section id="module-arkouda.history">
+<span id="arkouda-history"></span><h1><a class="reference internal" href="#module-arkouda.history" title="arkouda.history"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.history</span></code></a><a class="headerlink" href="#module-arkouda.history" title="Permalink to this heading">#</a></h1>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
@@ -284,237 +284,100 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayView</span></code></a></p></td>
-<td><p>A multi-dimensional view of a pdarray. Arkouda <code class="docutils literal notranslate"><span class="pre">ArraryView</span></code> behaves similarly to numpy's ndarray.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.history.HistoryRetriever" title="arkouda.history.HistoryRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HistoryRetriever</span></code></a></p></td>
+<td><p>HistoryRetriever is an abstract base class that defines the retrieve method signature</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.history.ShellHistoryRetriever" title="arkouda.history.ShellHistoryRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShellHistoryRetriever</span></code></a></p></td>
+<td><p>ShellHistoryRetriever implements the retrieve method to get command history from the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.history.NotebookHistoryRetriever" title="arkouda.history.NotebookHistoryRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NotebookHistoryRetriever</span></code></a></p></td>
+<td><p>NotebookHistoryRetriever implements the retrieve method to get command history</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <dl class="py class">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.array_view.</span></span><span class="sig-name descname"><span class="pre">ArrayView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'row_major'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.array_view.ArrayView" title="Permalink to this definition">#</a></dt>
-<dd><p>A multi-dimensional view of a pdarray. Arkouda <code class="docutils literal notranslate"><span class="pre">ArraryView</span></code> behaves similarly to numpy’s ndarray.
-The base pdarray is stored in 1-dimension but can be indexed and treated logically
-as if it were multi-dimensional</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.base">
-<span class="sig-name descname"><span class="pre">base</span></span><a class="headerlink" href="#arkouda.array_view.ArrayView.base" title="Permalink to this definition">#</a></dt>
-<dd><p>The base pdarray that is being viewed as a multi-dimensional object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.dtype">
-<span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.array_view.ArrayView.dtype" title="Permalink to this definition">#</a></dt>
-<dd><p>The element type of the base pdarray (equivalent to base.dtype)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dtype</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.size">
-<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#arkouda.array_view.ArrayView.size" title="Permalink to this definition">#</a></dt>
-<dd><p>The number of elements in the base pdarray (equivalent to base.size)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int_scalars</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.shape">
-<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.array_view.ArrayView.shape" title="Permalink to this definition">#</a></dt>
-<dd><p>A pdarray specifying the sizes of each dimension of the array</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>[int]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.ndim">
-<span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#arkouda.array_view.ArrayView.ndim" title="Permalink to this definition">#</a></dt>
-<dd><p>Number of dimensions (equivalent to shape.size)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int_scalars</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.itemsize">
-<span class="sig-name descname"><span class="pre">itemsize</span></span><a class="headerlink" href="#arkouda.array_view.ArrayView.itemsize" title="Permalink to this definition">#</a></dt>
-<dd><p>The size in bytes of each element (equivalent to base.itemsize)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int_scalars</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.order">
-<span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#arkouda.array_view.ArrayView.order" title="Permalink to this definition">#</a></dt>
-<dd><p>Index order to read and write the elements.
-By default or if ‘C’/’row_major’, read and write data in row_major order
-If ‘F’/’column_major’, read and write data in column_major order</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str {‘C’/’row_major’ | ‘F’/’column_major’}</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.objType">
-<span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ArrayView'</span></em><a class="headerlink" href="#arkouda.array_view.ArrayView.objType" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
+<dt class="sig sig-object py" id="arkouda.history.HistoryRetriever">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.history.</span></span><span class="sig-name descname"><span class="pre">HistoryRetriever</span></span><a class="headerlink" href="#arkouda.history.HistoryRetriever" title="Permalink to this definition">#</a></dt>
+<dd><p>HistoryRetriever is an abstract base class that defines the retrieve method signature
+and implements _filter_arkouda_command</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.to_ndarray">
-<span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#arkouda.array_view.ArrayView.to_ndarray" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert the ArrayView to a np.ndarray, transferring array data from the
-Arkouda server to client-side Python. Note: if the ArrayView size exceeds
-client.maxTransferBytes, a RuntimeError is raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A numpy ndarray with the same attributes and data as the ArrayView</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>np.ndarray</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the ArrayView size
-exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-received does not match expected number of bytes</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">client.maxTransferBytes</span></code>,
-otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
-from overflowing the memory of the system on which the Python client
-is running, under the assumption that the server is running on a
-distributed system with much more memory than the client. The user
-may override this limit by setting client.maxTransferBytes to a larger
-value, but proceed with caution.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="#arkouda.array_view.ArrayView.to_list" title="arkouda.array_view.ArrayView.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
-<span class="go">array([[0, 1, 2],</span>
-<span class="go">       [3, 4, 5]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
-<span class="go">numpy.ndarray</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#arkouda.array_view.ArrayView.to_list" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert the ArrayView to a list, transferring array data from the
-Arkouda server to client-side Python. Note: if the ArrayView size exceeds
-client.maxTransferBytes, a RuntimeError is raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list with the same data as the ArrayView</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the ArrayView size
-exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-received does not match expected number of bytes</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">client.maxTransferBytes</span></code>,
-otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
-from overflowing the memory of the system on which the Python client
-is running, under the assumption that the server is running on a
-distributed system with much more memory than the client. The user
-may override this limit by setting client.maxTransferBytes to a larger
-value, but proceed with caution.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.array_view.ArrayView.to_ndarray" title="arkouda.array_view.ArrayView.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-<span class="go">[[0, 1, 2], [3, 4, 5]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
-<span class="go">list</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.to_hdf">
-<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ArrayView'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.array_view.ArrayView.to_hdf" title="Permalink to this definition">#</a></dt>
-<dd><p>Save the current ArrayView object to hdf5 file</p>
+<dt class="sig sig-object py" id="arkouda.history.HistoryRetriever.retrieve">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">retrieve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_commands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.history.HistoryRetriever.retrieve" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates list of commands executed within a Python REPL shell, Jupyter notebook,
+or IPython notebook, with an optional command filter and number of commands to return.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – Path to the file to write the dataset to</p></li>
-<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to write</p></li>
-<li><p><strong>mode</strong> (<em>str</em><em> (</em><em>truncate</em><em> | </em><em>append</em><em>)</em>) – Default: truncate
-Mode to write the dataset in. Truncate will overwrite any existing files.
-Append will add the dataset to an existing file.</p></li>
-<li><p><strong>file_type</strong> (<em>str</em><em> (</em><em>single</em><em>|</em><em>distribute</em><em>)</em>) – Default: distribute
-Indicates the format to save the file. Single will store in a single file.
-Distribute will store the date in a file per locale.</p></li>
+<li><p><strong>num_commands</strong> (<em>int</em>) – The number of commands from history to retrieve</p></li>
+<li><p><strong>command_filter</strong> (<em>str</em>) – String containing characters used to select a subset of command history.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of commands from the Python shell, Jupyter notebook, or IPython notebook</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda.history.ShellHistoryRetriever">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.history.</span></span><span class="sig-name descname"><span class="pre">ShellHistoryRetriever</span></span><a class="headerlink" href="#arkouda.history.ShellHistoryRetriever" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#arkouda.history.HistoryRetriever" title="arkouda.history.HistoryRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HistoryRetriever</span></code></a></p>
+<p>ShellHistoryRetriever implements the retrieve method to get command history from the
+Python REPL shell.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.update_hdf">
-<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ArrayView'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.array_view.ArrayView.update_hdf" title="Permalink to this definition">#</a></dt>
-<dd><p>Overwrite the dataset with the name provided with this array view object. If
-the dataset does not exist it is added.</p>
+<dt class="sig sig-object py" id="arkouda.history.ShellHistoryRetriever.retrieve">
+<span class="sig-name descname"><span class="pre">retrieve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_commands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.history.ShellHistoryRetriever.retrieve" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates list of commands executed within the a Python REPL shell, with an
+optional command filter and number of commands to return.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
-<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files</p></li>
-<li><p><strong>repack</strong> (<em>bool</em>) – Default: True
-HDF5 does not release memory on delete. When True, the inaccessible
-data (that was overwritten) is removed. When False, the data remains, but is
-inaccessible. Setting to false will yield better performance, but will cause
-file sizes to expand.</p></li>
+<li><p><strong>num_commands</strong> (<em>int</em>) – The number of commands from history to retrieve</p></li>
+<li><p><strong>command_filter</strong> (<em>str</em>) – String containing characters used to select a subset of command history.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str - success message if successful</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of commands from the Python shell, Jupyter notebook, or IPython notebook</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the array view</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>If file does not contain File_Format attribute to indicate how it was saved,
-the file name is checked for _LOCALE#### to determine if it is distributed.</p></li>
-<li><p>If the dataset provided does not exist, it will be added</p></li>
-<li><p>Because HDF5 deletes do not release memory, this will create a copy of the
-file with the new data</p></li>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda.history.NotebookHistoryRetriever">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.history.</span></span><span class="sig-name descname"><span class="pre">NotebookHistoryRetriever</span></span><a class="headerlink" href="#arkouda.history.NotebookHistoryRetriever" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.history.HistoryAccessor</span></code>, <a class="reference internal" href="#arkouda.history.HistoryRetriever" title="arkouda.history.HistoryRetriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HistoryRetriever</span></code></a></p>
+<p>NotebookHistoryRetriever implements the retrieve method to get command history
+from a Jupyter notebook or IPython shell.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.history.NotebookHistoryRetriever.retrieve">
+<span class="sig-name descname"><span class="pre">retrieve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_commands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.history.NotebookHistoryRetriever.retrieve" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates list of commands executed within a Jupyter notebook or IPython shell,
+with an optional command filter and number of commands to return.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_commands</strong> (<em>int</em>) – The number of commands from history to retrieve</p></li>
+<li><p><strong>command_filter</strong> (<em>str</em>) – String containing characters used to select a subset of command history.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of commands from the Python shell, Jupyter notebook, or IPython notebook</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -528,23 +391,23 @@ file with the new data</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../categorical/index.html">
+          <a class="next-page" href="../index/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></div>
+                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../alignment/index.html">
+          <a class="prev-page" href="../groupbyclass/index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></div>
+                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></div>
                 
               </div>
             </a>
@@ -578,22 +441,19 @@ file with the new data</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a><ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.history</span></code></a><ul>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#classes">Classes</a><ul>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView"><code class="docutils literal notranslate"><span class="pre">ArrayView</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.base"><code class="docutils literal notranslate"><span class="pre">ArrayView.base</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.dtype"><code class="docutils literal notranslate"><span class="pre">ArrayView.dtype</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.size"><code class="docutils literal notranslate"><span class="pre">ArrayView.size</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.shape"><code class="docutils literal notranslate"><span class="pre">ArrayView.shape</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.ndim"><code class="docutils literal notranslate"><span class="pre">ArrayView.ndim</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.itemsize"><code class="docutils literal notranslate"><span class="pre">ArrayView.itemsize</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.order"><code class="docutils literal notranslate"><span class="pre">ArrayView.order</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.objType"><code class="docutils literal notranslate"><span class="pre">ArrayView.objType</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.to_ndarray"><code class="docutils literal notranslate"><span class="pre">ArrayView.to_ndarray()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.to_list"><code class="docutils literal notranslate"><span class="pre">ArrayView.to_list()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.to_hdf"><code class="docutils literal notranslate"><span class="pre">ArrayView.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_view.ArrayView.update_hdf"><code class="docutils literal notranslate"><span class="pre">ArrayView.update_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.history.HistoryRetriever"><code class="docutils literal notranslate"><span class="pre">HistoryRetriever</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.history.HistoryRetriever.retrieve"><code class="docutils literal notranslate"><span class="pre">HistoryRetriever.retrieve()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arkouda.history.ShellHistoryRetriever"><code class="docutils literal notranslate"><span class="pre">ShellHistoryRetriever</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.history.ShellHistoryRetriever.retrieve"><code class="docutils literal notranslate"><span class="pre">ShellHistoryRetriever.retrieve()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arkouda.history.NotebookHistoryRetriever"><code class="docutils literal notranslate"><span class="pre">NotebookHistoryRetriever</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.history.NotebookHistoryRetriever.retrieve"><code class="docutils literal notranslate"><span class="pre">NotebookHistoryRetriever.retrieve()</span></code></a></li>
 </ul>
 </li>
 </ul>

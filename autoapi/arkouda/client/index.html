@@ -204,6 +204,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../history/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.history</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
@@ -312,6 +313,9 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client.ruok" title="arkouda.client.ruok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ruok</span></code></a>(→ str)</p></td>
 <td><p>Simply sends an &quot;ruok&quot; message to the server and, if the return message is</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client.generate_history" title="arkouda.client.generate_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_history</span></code></a>(→ List[str])</p></td>
+<td><p>Generates list of commands executed within the the Python shell, Jupyter notebook,</p></td>
 </tr>
 </tbody>
 </table>
@@ -530,6 +534,41 @@ both of the latter cases</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.client.generate_history">
+<span class="sig-prename descclassname"><span class="pre">arkouda.client.</span></span><span class="sig-name descname"><span class="pre">generate_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_commands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.client.generate_history" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates list of commands executed within the the Python shell, Jupyter notebook,
+or IPython notebook, with an optional cmd_filter and number of commands to return.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_commands</strong> (<em>int</em>) – The number of commands from history to retrieve</p></li>
+<li><p><strong>command_filter</strong> (<em>str</em>) – String containing characters used to select a subset of commands.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of commands from the Python shell, Jupyter notebook, or IPython notebook</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="go">connected to arkouda server tcp://*:5555</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="go">array([1 1 1 ... 1 1 1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nums</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+<span class="go">array([105 457 647 ... 9362 9602 9683])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">generate_history</span><span class="p">(</span><span class="n">num_commands</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">command_filter</span><span class="o">=</span><span class="s1">&#39;ak.&#39;</span><span class="p">)</span>
+<span class="go">[&#39;ak.connect()&#39;, &#39;ak.get_config()&#39;, &#39;ak.ones(10000)&#39;, &#39;nums = ak.randint(0,500,10000)&#39;,</span>
+<span class="go">&#39;ak.argsort(nums)&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 </section>
 </section>
@@ -602,6 +641,7 @@ both of the latter cases</p>
 <li><a class="reference internal" href="#arkouda.client.get_server_commands"><code class="docutils literal notranslate"><span class="pre">get_server_commands()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client.print_server_commands"><code class="docutils literal notranslate"><span class="pre">print_server_commands()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client.ruok"><code class="docutils literal notranslate"><span class="pre">ruok()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.client.generate_history"><code class="docutils literal notranslate"><span class="pre">generate_history()</span></code></a></li>
 </ul>
 </li>
 </ul>
