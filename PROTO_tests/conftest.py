@@ -42,6 +42,7 @@ def pytest_configure(config):
     pytest.port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
     pytest.server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
     pytest.timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
+    pytest.verbose = bool(os.getenv("ARKOUDA_VERBOSE", False))
     pytest.nl = _get_test_locales(config)
     pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
     pytest.prob_size = [eval(x) for x in config.getoption("size").split(",")]
