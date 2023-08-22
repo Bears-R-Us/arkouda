@@ -1003,6 +1003,10 @@ def get_mem_avail(unit: str = "b", as_percent: bool = False) -> int:
     """
     Compute the amount of memory available to be used.
 
+    Parameters
+     ----------
+     unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+         unit of return ('b' by default)
      as_percent : bool
          If True, return the percent (as an int) of the memory that's available to be used
          False by default
