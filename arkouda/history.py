@@ -1,5 +1,5 @@
 import readline
-from IPython.core.history import HistoryAccessor # type: ignore
+from IPython.core.history import HistoryAccessor  # type: ignore
 from typing import List, Optional
 
 
