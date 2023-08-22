@@ -78,7 +78,7 @@ def _mem_get_factor(unit: str) -> int:
         )
 
 
-logger = getArkoudaLogger(name="Arkouda Client", logLevel=LogLevel.DEBUG)
+logger = getArkoudaLogger(name="Arkouda Client", logLevel=LogLevel.INFO)
 clientLogger = getArkoudaLogger(name="Arkouda User Logger", logFormat="%(message)s")
 
 
@@ -106,17 +106,43 @@ class ClientMode(Enum):
 
 
 class ShellMode(Enum):
+    """
+    The ShellMode Enum indicates whether the Python shell corresponds
+    to a REPL shell, Jupyter notebook, or IPython shell.
+    """
     IPYTHON_NOTEBOOK = 'TerminalInteractiveShell'
     JUPYTER_NOTEBOOK = 'ZMQInteractiveShell'
-    PYTHON_SHELL = 'PYTHON_SHELL'
+    REPL_SHELL = 'REPL_SHELL'
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
 
 
 def get_shell_mode():
+    """
+    Determines the Python shell type and returns the corresponding
+    ShellMode enum.
+
+    Returns
+    -------
+    ShellMode
+        The shell mode corresponding to a Python shell, Jupyter notebook,
+        or IPython notebook
+    """
     shell_mode = None
     try:
         shell_mode = ShellMode(get_ipython().__class__.__name__)
     except NameError:
-        shell_mode = ShellMode.PYTHON_SHELL
+        shell_mode = ShellMode.REPL_SHELL
     finally:
         return shell_mode
 
@@ -1108,74 +1134,43 @@ def ruok() -> str:
         return f"ruok did not return response: {str(e)}"
 
 
-def generate_history(command_filter: Optional[str] = None,
-                     num_commands: Optional[int] = None) -> List[str]:
+def generate_history(num_commands: Optional[int] = None,
+                     command_filter: Optional[str] = None) -> List[str]:
     """
     Generates list of commands executed within the the Python shell, Jupyter notebook,
     or IPython notebook, with an optional cmd_filter and number of commands to return.
 
+    Parameters
+    ----------
+    num_commands : int
+        The number of commands from history to retrieve
+    command_filter : str
+        String containing characters used to select a subset of commands.
 
     Returns
     -------
     List[str]
         A list of commands from the Python shell, Jupyter notebook, or IPython notebook
+
+    Examples
+    --------
+    >>> ak.connect()
+    connected to arkouda server tcp://*:5555
+    >>> ak.get_config()
+    >>> ak.ones(10000)
+    array([1 1 1 ... 1 1 1])
+    >>> nums = ak.randint(0,500,10000)
+    >>> ak.argsort(nums)
+    array([105 457 647 ... 9362 9602 9683])
+    >>> ak.generate_history(num_commands=5, command_filter='ak.')
+    ['ak.connect()', 'ak.get_config()', 'ak.ones(10000)', 'nums = ak.randint(0,500,10000)',
+    'ak.argsort(nums)']
     """
     shell_mode = get_shell_mode()
 
-    class HistoryRetriever:
-
-        def _filter_arkouda_command(self, command: str, filter_string: str = 'ak') -> Optional[str]:
-            """
-            Returns command string if the filter string is in the command and the
-            command is not generate_history. Otherwise, returns None
-            """
-            return command if (filter_string in command and 'generate_history' not in command) else None
-
-        def retrieve(self, command_filter: Optional[str] = None,
-                     num_commands: Optional[int] = None) -> List[str]:
-            raise NotImplementedError("Derived classes must implement retrieve")
-
-    if shell_mode == ShellMode.PYTHON_SHELL:
-
-        class ShellHistoryRetriever(HistoryRetriever):
-            def retrieve(self, command_filter: Optional[str] = None,
-                         num_commands: Optional[int] = None) -> List[str]:
-                import readline
-                length_of_history = readline.get_current_history_length()
-                num_to_return = num_commands if num_commands else length_of_history
-
-                if command_filter:
-                    return [readline.get_history_item(i + 1) for i in range(length_of_history)
-                           if self._filter_arkouda_command(readline.get_history_item(i + 1),
-                                                     command_filter)][-num_to_return:]
-                else:
-                    return [str(readline.get_history_item(i + 1)) for i in
-                            range(length_of_history)][-num_to_return:]
-                
+    if shell_mode == ShellMode.REPL_SHELL:
+        from arkouda.history import ShellHistoryRetriever
         return ShellHistoryRetriever().retrieve(command_filter, num_commands)
     else:
-        from IPython.core.history import HistoryAccessor
-
-        class NotebookHistoryRetriever(HistoryAccessor,HistoryRetriever):
-            def retrieve(self, command_filter: Optional[str] = None, num_commands: Optional[int] = None) -> List[str]:
-                raw=True 
-                output=False
-                n=0
-                include_latest=False
-                num_to_return = num_commands if num_commands else 100
-                if not include_latest:
-                    n += 1
-                if n == None:
-                    cur = self._run_sql("ORDER BY session DESC, line DESC LIMIT ?",
-                                (n,), raw=raw, output=output)
-                else:
-                    cur = self._run_sql("ORDER BY session DESC, line DESC",
-                        (), raw=raw, output=output)
-
-                if command_filter:
-                    return [cmd[2] for cmd in reversed(list(cur)) if self._filter_arkouda_command(cmd[2], 
-                                                                                command_filter)][-num_to_return:]
-                else:
-                    return [cmd[2] for cmd in reversed(list(cur))][-num_to_return:]
-
+        from arkouda.history import NotebookHistoryRetriever
         return NotebookHistoryRetriever().retrieve(command_filter, num_commands)
