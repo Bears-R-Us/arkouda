@@ -25,8 +25,6 @@ or
 
    CommAggregation/*
 
-.. data:: param defaultBuffSize = if CHPL_COMM == "ugni" then 4096 else 8192
-
 .. function:: proc newDstAggregator(type elemType, param useUnorderedCopy = false)
 
    Creates a new destination aggregator (dst/lhs will be remote). 
