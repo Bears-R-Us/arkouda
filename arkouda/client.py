@@ -16,6 +16,7 @@ from arkouda.message import (
     RequestMessage,
 )
 
+
 __all__ = [
     "connect",
     "disconnect",
@@ -26,6 +27,7 @@ __all__ = [
     "get_mem_status",
     "get_server_commands",
     "print_server_commands",
+    "generate_history",
     "ruok",
 ]
 
@@ -101,6 +103,48 @@ class ClientMode(Enum):
         Overridden method returns value.
         """
         return self.value
+
+
+class ShellMode(Enum):
+    """
+    The ShellMode Enum indicates whether the Python shell corresponds
+    to a REPL shell, Jupyter notebook, or IPython shell.
+    """
+    IPYTHON_NOTEBOOK = 'TerminalInteractiveShell'
+    JUPYTER_NOTEBOOK = 'ZMQInteractiveShell'
+    REPL_SHELL = 'REPL_SHELL'
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+
+def get_shell_mode():
+    """
+    Determines the Python shell type and returns the corresponding
+    ShellMode enum.
+
+    Returns
+    -------
+    ShellMode
+        The shell mode corresponding to a Python shell, Jupyter notebook,
+        or IPython notebook
+    """
+    shell_mode = None
+    try:
+        shell_mode = ShellMode(get_ipython().__class__.__name__)
+    except NameError:
+        shell_mode = ShellMode.REPL_SHELL
+    finally:
+        return shell_mode
 
 
 # Get ClientMode, defaulting to UI
@@ -1092,3 +1136,45 @@ def ruok() -> str:
             return f"imnotok because: {res}"
     except Exception as e:
         return f"ruok did not return response: {str(e)}"
+
+
+def generate_history(num_commands: Optional[int] = None,
+                     command_filter: Optional[str] = None) -> List[str]:
+    """
+    Generates list of commands executed within the the Python shell, Jupyter notebook,
+    or IPython notebook, with an optional cmd_filter and number of commands to return.
+
+    Parameters
+    ----------
+    num_commands : int
+        The number of commands from history to retrieve
+    command_filter : str
+        String containing characters used to select a subset of commands.
+
+    Returns
+    -------
+    List[str]
+        A list of commands from the Python shell, Jupyter notebook, or IPython notebook
+
+    Examples
+    --------
+    >>> ak.connect()
+    connected to arkouda server tcp://*:5555
+    >>> ak.get_config()
+    >>> ak.ones(10000)
+    array([1 1 1 ... 1 1 1])
+    >>> nums = ak.randint(0,500,10000)
+    >>> ak.argsort(nums)
+    array([105 457 647 ... 9362 9602 9683])
+    >>> ak.generate_history(num_commands=5, command_filter='ak.')
+    ['ak.connect()', 'ak.get_config()', 'ak.ones(10000)', 'nums = ak.randint(0,500,10000)',
+    'ak.argsort(nums)']
+    """
+    shell_mode = get_shell_mode()
+
+    if shell_mode == ShellMode.REPL_SHELL:
+        from arkouda.history import ShellHistoryRetriever
+        return ShellHistoryRetriever().retrieve(command_filter, num_commands)
+    else:
+        from arkouda.history import NotebookHistoryRetriever
+        return NotebookHistoryRetriever().retrieve(command_filter, num_commands)
