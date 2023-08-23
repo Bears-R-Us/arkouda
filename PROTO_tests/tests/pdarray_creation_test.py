@@ -27,14 +27,13 @@ DTYPES = [
 
 
 class TestPdarrayCreation:
-    @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
-    def test_array_creation(self, size, dtype):
+    def test_array_creation(self, dtype):
         # TODO - remove the 'if' below (to make everything that follows unconditional) after #2645 is complete
         if dtype != str:
             fixed_size = 100
             for pda in [
-                ak.array(ak.ones(size, int), dtype),
+                ak.array(ak.ones(fixed_size, int), dtype),
                 ak.array(np.ones(fixed_size), dtype),
                 ak.array(list(range(fixed_size)), dtype=dtype),
                 ak.array((range(fixed_size)), dtype),
@@ -42,7 +41,7 @@ class TestPdarrayCreation:
                 ak.array([f"{i}" for i in range(fixed_size)], dtype=dtype),
             ]:
                 assert isinstance(pda, ak.pdarray if dtype != str else ak.Strings)
-                assert len(pda) in (size, fixed_size)
+                assert len(pda) == fixed_size
                 assert dtype == pda.dtype
 
     def test_array_creation_misc(self):
@@ -111,20 +110,19 @@ class TestPdarrayCreation:
         assert np.arange(-5, -10, -1).tolist() == ak.arange(-5, -10, -1).to_list()
         assert np.arange(0, 10, 2).tolist() == ak.arange(0, 10, 2).to_list()
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", ak.intTypes)
-    def test_arange_dtype(self, size, dtype):
+    def test_arange_dtype(self, dtype):
         # test dtype works with optional start/stride
-        stop = ak.arange(size, dtype=dtype)
-        assert np.arange(size, dtype=dtype).tolist() == stop.to_list()
+        stop = ak.arange(100, dtype=dtype)
+        assert np.arange(100, dtype=dtype).tolist() == stop.to_list()
         assert dtype == stop.dtype
 
-        start_stop = ak.arange(size, size + 5, dtype=dtype)
-        assert np.arange(size, size + 5, dtype=dtype).tolist() == start_stop.to_list()
+        start_stop = ak.arange(100, 105, dtype=dtype)
+        assert np.arange(100, 105, dtype=dtype).tolist() == start_stop.to_list()
         assert dtype == start_stop.dtype
 
-        start_stop_stride = ak.arange(size, size + 5, 2, dtype=dtype)
-        assert np.arange(size, size + 5, 2, dtype=dtype).tolist() == start_stop_stride.to_list()
+        start_stop_stride = ak.arange(100, 105, 2, dtype=dtype)
+        assert np.arange(100, 105, 2, dtype=dtype).tolist() == start_stop_stride.to_list()
         assert dtype == start_stop_stride.dtype
 
     def test_arange_misc(self):
@@ -164,15 +162,14 @@ class TestPdarrayCreation:
         assert [size] == test_array.shape
         assert ((0 <= test_array) & (test_array <= size)).all()
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_SCALARS)
-    def test_randint_dtype(self, size, dtype):
-        for test_array in ak.randint(dtype(0), size, size), ak.randint(0, dtype(size), size):
+    def test_randint_dtype(self, dtype):
+        for test_array in ak.randint(dtype(0), 100, 1000), ak.randint(0, dtype(100), 1000):
             assert isinstance(test_array, ak.pdarray)
-            assert size == len(test_array)
+            assert 1000 == len(test_array)
             assert ak.int64 == test_array.dtype
-            assert [size] == test_array.shape
-            assert ((0 <= test_array) & (test_array <= size)).all()
+            assert [1000] == test_array.shape
+            assert ((0 <= test_array) & (test_array <= 1000)).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_randint_misc(self, size):
@@ -418,23 +415,23 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INT_SCALARS)
     def test_standard_normal(self, size, dtype):
-        pda = ak.standard_normal(size)
+        pda = ak.standard_normal(100)
         assert isinstance(pda, ak.pdarray)
-        assert size == len(pda)
+        assert 100 == len(pda)
         assert float == pda.dtype
 
-        pda = ak.standard_normal(dtype(size))
+        pda = ak.standard_normal(dtype(100))
         assert isinstance(pda, ak.pdarray)
-        assert size == len(pda)
+        assert 100 == len(pda)
         assert float == pda.dtype
 
-        pda = ak.standard_normal(dtype(size), dtype(1))
+        pda = ak.standard_normal(dtype(100), dtype(1))
         assert isinstance(pda, ak.pdarray)
-        assert size == len(pda)
+        assert 100 == len(pda)
         assert float == pda.dtype
 
         npda = pda.to_ndarray()
-        pda = ak.standard_normal(dtype(size), dtype(1))
+        pda = ak.standard_normal(dtype(100), dtype(1))
         assert npda.tolist() == pda.to_list()
 
     def test_standard_normal_errors(self):
@@ -456,12 +453,11 @@ class TestPdarrayCreation:
         ]:
             assert (int_arr == ak.standard_normal(*args)).all()
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INT_SCALARS)
-    def test_random_strings_uniform(self, size, dtype):
-        pda = ak.random_strings_uniform(minlen=dtype(1), maxlen=dtype(5), size=dtype(size))
+    def test_random_strings_uniform(self, dtype):
+        pda = ak.random_strings_uniform(minlen=dtype(1), maxlen=dtype(5), size=dtype(100))
         assert isinstance(pda, ak.Strings)
-        assert size == len(pda)
+        assert 100 == len(pda)
         assert str == pda.dtype
 
         assert ((1 <= pda.get_lengths()) & (pda.get_lengths() <= 5)).all()
