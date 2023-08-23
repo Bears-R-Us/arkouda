@@ -16,6 +16,8 @@ from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
+from arkouda.client_dtypes import IPv4
+from arkouda.timeclass import Datetime, Timedelta
 
 __all__ = [
     "get_filetype",
@@ -438,7 +440,7 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
 
 def _parse_obj(
     obj: Dict,
-) -> Union[Strings, pdarray, ArrayView, SegArray, Categorical, DataFrame]:
+) -> Union[Strings, pdarray, ArrayView, SegArray, Categorical, DataFrame, IPv4, Datetime, Timedelta]:
     """
     Helper function to create an Arkouda object from read response
 
@@ -462,6 +464,12 @@ def _parse_obj(
         return SegArray.from_return_msg(obj["created"])
     elif pdarray.objType.upper() == obj["arkouda_type"]:
         return create_pdarray(obj["created"])
+    elif IPv4.special_objType.upper() == obj["arkouda_type"]:
+        return IPv4(create_pdarray(obj["created"]))
+    elif Datetime.special_objType.upper() == obj["arkouda_type"]:
+        return Datetime(create_pdarray(obj["created"]))
+    elif Timedelta.special_objType.upper() == obj["arkouda_type"]:
+        return Timedelta(create_pdarray(obj["created"]))
     elif ArrayView.objType.upper() == obj["arkouda_type"]:
         components = obj["created"].split("+")
         flat = create_pdarray(components[0])
@@ -525,7 +533,10 @@ def _build_objects(
     ArrayView,
     Categorical,
     DataFrame,
-    Mapping[str, Union[Strings, pdarray, SegArray, ArrayView, Categorical, DataFrame]],
+    IPv4,
+    Datetime,
+    Timedelta,
+    Mapping[str, Union[Strings, pdarray, SegArray, ArrayView, Categorical, DataFrame, IPv4, Datetime, Timedelta]],
 ]:
     """
     Helper function to create the Arkouda objects from a read operation

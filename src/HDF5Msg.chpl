@@ -2084,7 +2084,7 @@ module HDF5Msg {
                 // loop columns and write each one.
                 for (dset, name, ot, dt) in zip(dset_names, col_names, col_objTypes, col_dtypes) {
                     select ot.toUpper(): ObjType {
-                        when ObjType.PDARRAY {
+                        when ObjType.PDARRAY, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
                             var dtype: C_HDF5.hid_t;
                             select str2dtype(dt) {
                                 when DType.Int64 {
@@ -2150,6 +2150,7 @@ module HDF5Msg {
                                     errorClass="IllegalArgumentError");
                                 }
                             }
+                            writeArkoudaMetaData(file_id, "/%s/%s".doFormat(group, dset), ot, dtype);
                         }
                         when ObjType.STRINGS {
                             // create/overwrite the group
@@ -2484,7 +2485,7 @@ module HDF5Msg {
                 // call handler for arrayview write msg
                 arrayView_tohdfMsg(msgArgs, st);
             }
-            when ObjType.PDARRAY {
+            when ObjType.PDARRAY, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
                 // call handler for pdarray write
                 pdarray_tohdfMsg(msgArgs, st);
             }
@@ -3110,7 +3111,11 @@ module HDF5Msg {
 
     proc pdarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var pda_name = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
-        return (dset, ObjType.PDARRAY, pda_name);
+        var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
+        var file_id = C_HDF5.H5Fopen(filenames[idx].c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+        var objType = getObjType(file_id, dset);
+        C_HDF5.H5Fclose(file_id);
+        return (dset, objType, pda_name);
     }
 
     /*
@@ -3416,7 +3421,7 @@ module HDF5Msg {
             var readCreate: string;
             (keyObjType, dataclass, bytesize, isSigned) = get_info(filenames[0], "%s/%s".doFormat(dset, col), calcStringOffsets);
             select keyObjType {
-                when ObjType.PDARRAY {
+                when ObjType.PDARRAY, ObjType.IPV4, ObjType.DATETIME, ObjType.TIMEDELTA {
                     var pda_name = readPdarrayFromFile(filenames, "%s/%s".doFormat(dset, col), dataclass, bytesize, isSigned, validFiles, st);
                     readCreate = "created %s".doFormat(st.attrib(pda_name));
                 }
@@ -3908,7 +3913,7 @@ module HDF5Msg {
                 when ObjType.ARRAYVIEW {
                     rtnData.pushBack(arrayView_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
                 }
-                when ObjType.PDARRAY {
+                when ObjType.PDARRAY, ObjType.IPV4, ObjType.DATETIME, ObjType.TIMEDELTA {
                     rtnData.pushBack(pdarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
                 }
                 when ObjType.STRINGS {

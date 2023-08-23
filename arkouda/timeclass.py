@@ -84,6 +84,8 @@ class _AbstractBaseTime(pdarray):
     so that all resulting operations are transparent.
     """
 
+    special_objType = "Time"
+
     def __init__(self, pda, unit: str = _BASE_UNIT):  # type: ignore
         if isinstance(pda, Datetime) or isinstance(pda, Timedelta):
             self.unit: str = pda.unit
@@ -209,6 +211,37 @@ class _AbstractBaseTime(pdarray):
     def to_list(self):
         __doc__ = super().to_list().__doc__  # noqa
         return self.to_ndarray().tolist()
+
+    def to_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "array",
+        mode: str = "truncate",
+        file_type: str = "distribute",
+    ):
+        """
+        Override of the pdarray to_hdf to store the special dtype
+        """
+        from typing import cast as typecast
+
+        from arkouda.client import generic_msg
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
+
+        return typecast(
+            str,
+            generic_msg(
+                cmd="tohdf",
+                args={
+                    "values": self,
+                    "dset": dataset,
+                    "write_mode": _mode_str_to_int(mode),
+                    "filename": prefix_path,
+                    "dtype": self.dtype,
+                    "objType": self.special_objType,
+                    "file_format": _file_type_to_int(file_type),
+                },
+            ),
+        )
 
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
