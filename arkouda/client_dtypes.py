@@ -693,7 +693,7 @@ class IPv4(pdarray):
         file_type: str = "distribute",
     ):
         """
-        Override of the pdarray to_hdf to store the special dtype
+        Override of the pdarray to_hdf to store the special object type
         """
         from typing import cast as typecast
 
