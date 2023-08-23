@@ -2303,7 +2303,7 @@ module HDF5Msg {
                 // loop columns and write each one.
                 for (dset, name, ot, dt) in zip(dset_names, col_names, col_objTypes, col_dtypes) {
                     select ot.toUpper(): ObjType {
-                        when ObjType.PDARRAY {
+                        when ObjType.PDARRAY, ObjType.IPV4, ObjType.DATETIME, ObjType.TIMEDELTA {
                             var entry = st.lookup(name);
                             select str2dtype(dt) {
                                 when DType.Int64 {

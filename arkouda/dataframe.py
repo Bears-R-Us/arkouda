@@ -1545,6 +1545,10 @@ class DataFrame(UserDict):
             str(obj.categories.dtype) if isinstance(obj, Categorical_) else str(obj.dtype)
             for obj in self.values()
         ]
+        col_objTypes = [
+            obj.special_objType if hasattr(obj, "special_objType") else obj.objType
+            for obj in self.values()
+        ]
         return cast(
             str,
             generic_msg(
@@ -1557,7 +1561,7 @@ class DataFrame(UserDict):
                     "objType": self.objType,
                     "num_cols": len(self.columns),
                     "column_names": self.columns,
-                    "column_objTypes": [obj.objType for key, obj in self.items()],
+                    "column_objTypes": col_objTypes,
                     "column_dtypes": dtypes,
                     "columns": column_data,
                     "index": self.index.values.name,
@@ -2239,11 +2243,9 @@ class DataFrame(UserDict):
             if isinstance(obj, Categorical_)
             else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
             if isinstance(obj, SegArray)
-            else json.dumps({  # BitVector Case
-                "name": obj.name,
-                "width": obj.width,
-                "reverse": obj.reverse
-            })
+            else json.dumps(
+                {"name": obj.name, "width": obj.width, "reverse": obj.reverse}  # BitVector Case
+            )
             for obj in self.values()
         ]
 

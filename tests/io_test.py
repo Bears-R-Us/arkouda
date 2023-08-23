@@ -1228,6 +1228,9 @@ class IOTest(ArkoudaTest):
                 "bigint_col": ak.array([i + 2**200 for i in range(10)], dtype=ak.bigint),
                 "segarr_col": ak.SegArray(ak.arange(0, 20, 2), ak.randint(0, 3, 20)),
                 "str_col": ak.random_strings_uniform(0, 3, 10),
+                "ip": ak.IPv4(ak.arange(10)),
+                "datetime": ak.Datetime(ak.arange(10)),
+                "timedelta": ak.Timedelta(ak.arange(10))
             }
         )
         df_str_idx = df.copy()
@@ -1314,6 +1317,46 @@ class IOTest(ArkoudaTest):
             rd_arr = ak.read_hdf(filenames=[f"{tmp_dirname}/seg_test_LOCALE0000", f"{tmp_dirname}/seg_test_MISSING"],
                                  strict_types=False, allow_errors=True)
 
+    def test_special_dtypes(self):
+        """
+        This test is simply to ensure that the dtype is persisted through the io
+        operation. It ultimately uses the process of pdarray, but need to ensure
+        correct Arkouda Object Type is returned
+        """
+        ip = ak.IPv4(ak.arange(10))
+        dt = ak.Datetime(ak.arange(10))
+        td = ak.Timedelta(ak.arange(10))
+        df = ak.DataFrame({
+            "ip": ip,
+            "datetime": dt,
+            "timedelta": td
+        })
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            ip.to_hdf(f"{tmp_dirname}/ip_test")
+            rd_ip = ak.read_hdf(f"{tmp_dirname}/ip_test*")
+            self.assertIsInstance(rd_ip, ak.IPv4)
+            self.assertListEqual(ip.to_list(), rd_ip.to_list())
+
+            dt.to_hdf(f"{tmp_dirname}/dt_test")
+            rd_dt = ak.read_hdf(f"{tmp_dirname}/dt_test*")
+            self.assertIsInstance(rd_dt, ak.Datetime)
+            self.assertListEqual(dt.to_list(), rd_dt.to_list())
+
+            td.to_hdf(f"{tmp_dirname}/td_test")
+            rd_td = ak.read_hdf(f"{tmp_dirname}/td_test*")
+            self.assertIsInstance(rd_td, ak.Timedelta)
+            self.assertListEqual(td.to_list(), rd_td.to_list())
+
+            df.to_hdf(f"{tmp_dirname}/df_test")
+            rd_df = ak.read_hdf(f"{tmp_dirname}/df_test*")
+
+            self.assertIsInstance(rd_df["ip"], ak.IPv4)
+            self.assertIsInstance(rd_df["datetime"], ak.Datetime)
+            self.assertIsInstance(rd_df["timedelta"], ak.Timedelta)
+            self.assertListEqual(df["ip"].to_list(), rd_df["ip"].to_list())
+            self.assertListEqual(df["datetime"].to_list(), rd_df["datetime"].to_list())
+            self.assertListEqual(df["timedelta"].to_list(), rd_df["timedelta"].to_list())
 
     def tearDown(self):
         super(IOTest, self).tearDown()

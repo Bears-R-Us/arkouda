@@ -716,6 +716,38 @@ class IPv4(pdarray):
             ),
         )
 
+    def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
+        """
+        Override the pdarray implementation so that the special object type will be used.
+        """
+        from arkouda.client import generic_msg
+        from arkouda.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
+
+        # determine the format (single/distribute) that the file was saved in
+        file_type = _get_hdf_filetype(prefix_path + "*")
+
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "values": self,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int("append"),
+                "filename": prefix_path,
+                "dtype": self.dtype,
+                "objType": self.special_objType,
+                "file_format": _file_type_to_int(file_type),
+                "overwrite": True,
+            },
+        )
+
+        if repack:
+            _repack_hdf(prefix_path)
+
 
 @typechecked
 def is_ipv4(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
