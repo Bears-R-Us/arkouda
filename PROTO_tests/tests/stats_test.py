@@ -59,9 +59,7 @@ class TestStats:
                 assert getattr(self.x, fn)(ark) == pytest.approx(getattr(self.pdx, fn)(pand))
                 assert getattr(self.b, fn)(ark) == pytest.approx(getattr(self.pdb, fn)(pand))
                 assert getattr(self.f, fn)(ark) == pytest.approx(getattr(self.pdf, fn)(pand))
-
-            # test uint with self (other cases covered above)
-            assert getattr(self.u, fn)(self.u) == pytest.approx(getattr(self.pdu, fn)(self.pdu))
+                assert getattr(self.u, fn)(ark) == pytest.approx(getattr(self.pdu, fn)(pand))
 
     def test_corr_matrix(self):
         ak_df = ak.DataFrame({"x": self.x, "y": self.y, "u": self.u, "b": self.b, "f": self.f}).corr()
