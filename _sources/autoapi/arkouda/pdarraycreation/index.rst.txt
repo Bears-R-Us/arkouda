@@ -241,7 +241,7 @@ Functions
    array([True, True, True, True, True])
 
 
-.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: Union[arkouda.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Create a pdarray filled with fill_value.
 
@@ -339,7 +339,7 @@ Functions
    array([True, True, True, True, True])
 
 
-.. py:function:: full_like(pda: arkouda.pdarrayclass.pdarray, fill_value: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+.. py:function:: full_like(pda: arkouda.pdarrayclass.pdarray, fill_value: arkouda.dtypes.numeric_scalars) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with fill_value of the same size and dtype as an existing
    pdarray.
