@@ -536,7 +536,10 @@ def _build_objects(
     IPv4,
     Datetime,
     Timedelta,
-    Mapping[str, Union[Strings, pdarray, SegArray, ArrayView, Categorical, DataFrame, IPv4, Datetime, Timedelta]],
+    Mapping[
+        str,
+        Union[Strings, pdarray, SegArray, ArrayView, Categorical, DataFrame, IPv4, Datetime, Timedelta],
+    ],
 ]:
     """
     Helper function to create the Arkouda objects from a read operation
@@ -1602,8 +1605,10 @@ def load(
     the extension is not required to be a specific format.
     """
     if "*" in path_prefix:
-        raise ValueError("Glob expressions not supported by ak.load(). "
-                         "To read files using a glob expression, please use ak.read()")
+        raise ValueError(
+            "Glob expressions not supported by ak.load(). "
+            "To read files using a glob expression, please use ak.read()"
+        )
     prefix, extension = os.path.splitext(path_prefix)
     globstr = f"{prefix}_LOCALE*{extension}"
     try:
