@@ -162,6 +162,11 @@ class TestPdarrayCreation:
         assert np_arange_uint.tolist() == ak_arange_uint.to_list()
         assert ak.uint64 == ak_arange_uint.dtype
 
+        uint_start_stop = ak.arange(2**63 + 3, 2**63 + 7)
+        ans = ak.arange(3, 7, dtype=ak.uint64) + 2**63
+        assert ans.to_list() == uint_start_stop.to_list()
+        assert ak.uint64 == uint_start_stop.dtype
+
         # test correct conversion to float64
         np_arange_float = np.arange(-5, -10, -1, dtype=np.float64)
         ak_arange_float = ak.arange(-5, -10, -1, dtype=ak.float64)
@@ -190,8 +195,10 @@ class TestPdarrayCreation:
         assert [size] == test_array.shape
         assert ((0 <= test_array) & (test_array <= size)).all()
 
+    # (The above function tests randint with various ARRAY dtypes; the function below
+    #  tests with various dtypes for the other parameters passed to randint)
     @pytest.mark.parametrize("dtype", NUMERIC_SCALARS)
-    def test_randint_dtype(self, dtype):
+    def test_randint_num_dtype(self, dtype):
         for test_array in ak.randint(dtype(0), 100, 1000), ak.randint(0, dtype(100), 1000):
             assert isinstance(test_array, ak.pdarray)
             assert 1000 == len(test_array)
@@ -338,12 +345,11 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, ak.float64, ak.bool, ak.bigint])
     def test_ones_like(self, size, dtype):
-        int_ones = ak.ones(size, dtype)
-        int_ones_like = ak.ones_like(int_ones)
-
-        assert isinstance(int_ones_like, ak.pdarray)
-        assert dtype == int_ones_like.dtype
-        assert (1 == int_ones_like).all()
+        ones_arr = ak.ones(size, dtype)
+        ones_like_arr = ak.ones_like(ones_arr)
+        assert isinstance(ones_like_arr, ak.pdarray)
+        assert dtype == ones_like_arr.dtype
+        assert (1 == ones_like_arr).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool])
@@ -385,20 +391,20 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool])
     def test_full_like(self, size, dtype):
-        int_full = ak.full(size, 1, dtype)
-        int_full_like = ak.full_like(int_full, 1)
-        assert isinstance(int_full_like, ak.pdarray)
-        assert dtype == int_full_like.dtype
-        assert (int_full_like == 1).all()
+        full_arr = ak.full(size, 1, dtype)
+        full_like_arr = ak.full_like(full_arr, 1)
+        assert isinstance(full_like_arr, ak.pdarray)
+        assert dtype == full_like_arr.dtype
+        assert (full_like_arr == 1).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool])
     def test_zeros_like(self, size, dtype):
-        int_zeros = ak.zeros(size, dtype)
-        int_zeros_like = ak.zeros_like(int_zeros)
-        assert isinstance(int_zeros_like, ak.pdarray)
-        assert dtype == int_zeros_like.dtype
-        assert (int_zeros_like == 0).all()
+        zeros_arr = ak.zeros(size, dtype)
+        zeros_like_arr = ak.zeros_like(zeros_arr)
+        assert isinstance(zeros_like_arr, ak.pdarray)
+        assert dtype == zeros_like_arr.dtype
+        assert (zeros_like_arr == 0).all()
 
     def test_linspace(self):
         pda = ak.linspace(0, 100, 1000)
