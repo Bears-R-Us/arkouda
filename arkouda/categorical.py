@@ -492,14 +492,18 @@ class Categorical:
         )
 
     @typechecked
-    def contains(self, substr: str) -> pdarray:
+    def contains(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
         """
         Check whether each element contains the given substring.
 
         Parameters
         ----------
-        substr : str
+        substr : Union[bytes, str_scalars]
             The substring to search for
+        regex: bool
+            Indicates whether substr is a regular expression
+            Note: only handles regular expressions supported by re2
+            (does not support lookaheads/lookbehinds)
 
         Returns
         -------
@@ -509,86 +513,106 @@ class Categorical:
         Raises
         ------
         TypeError
-            Raised if substr is not a str
+            Raised if the substr parameter is not bytes or str_scalars
+        ValueError
+            Rasied if substr is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Categorical.startswith, Categorical.endswith
 
         Notes
         -----
         This method can be significantly faster than the corresponding method
         on Strings objects, because it searches the unique category labels
         instead of the full array.
-
-        See Also
-        --------
-        Categorical.startswith, Categorical.endswith
         """
-        categoriescontains = self.categories.contains(substr)
-        return categoriescontains[self.codes]
+        categories_contains = self.categories.contains(substr, regex)
+        return categories_contains[self.codes]
 
     @typechecked
-    def startswith(self, substr: str) -> pdarray:
+    def startswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
         """
         Check whether each element starts with the given substring.
 
         Parameters
         ----------
-        substr : str
+        substr : Union[bytes, str_scalars]
             The substring to search for
-
-        Raises
-        ------
-        TypeError
-            Raised if substr is not a str
+        regex: bool
+            Indicates whether substr is a regular expression
+            Note: only handles regular expressions supported by re2
+            (does not support lookaheads/lookbehinds)
 
         Returns
         -------
         pdarray, bool
-            True for elements that contain substr, False otherwise
+            True for elements that start with substr, False otherwise
+
+        Raises
+        ------
+        TypeError
+            Raised if the substr parameter is not bytes or str_scalars
+        ValueError
+            Rasied if substr is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Categorical.contains, Categorical.endswith
 
         Notes
         -----
         This method can be significantly faster than the corresponding
         method on Strings objects, because it searches the unique category
         labels instead of the full array.
-
-        See Also
-        --------
-        Categorical.contains, Categorical.endswith
         """
-        categoriesstartswith = self.categories.startswith(substr)
-        return categoriesstartswith[self.codes]
+        categories_ends_with = self.categories.startswith(substr, regex)
+        return categories_ends_with[self.codes]
 
     @typechecked
-    def endswith(self, substr: str) -> pdarray:
+    def endswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
         """
         Check whether each element ends with the given substring.
 
         Parameters
         ----------
-        substr : str
+        substr : Union[bytes, str_scalars]
             The substring to search for
-
-        Raises
-        ------
-        TypeError
-            Raised if substr is not a str
+        regex: bool
+            Indicates whether substr is a regular expression
+            Note: only handles regular expressions supported by re2
+            (does not support lookaheads/lookbehinds)
 
         Returns
         -------
         pdarray, bool
-            True for elements that contain substr, False otherwise
+            True for elements that end with substr, False otherwise
+
+        Raises
+        ------
+        TypeError
+            Raised if the substr parameter is not bytes or str_scalars
+        ValueError
+            Rasied if substr is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Categorical.startswith, Categorical.contains
 
         Notes
         -----
         This method can be significantly faster than the corresponding method
         on Strings objects, because it searches the unique category labels
         instead of the full array.
-
-        See Also
-        --------
-        Categorical.startswith, Categorical.contains
         """
-        categoriesendswith = self.categories.endswith(substr)
-        return categoriesendswith[self.codes]
+        categories_ends_with = self.categories.endswith(substr, regex)
+        return categories_ends_with[self.codes]
 
     @typechecked
     def in1d(self, test: Union[Strings, Categorical]) -> pdarray:
