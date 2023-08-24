@@ -625,14 +625,16 @@ class MultiIndex(Index):
         self.values = values
         first = True
         for col in self.values:
+            # col can be a python int which doesn't have a size attribute
+            col_size = col.size if not isinstance(col, int) else 0
             if first:
                 # we are implicitly assuming values contains arkouda types and not python lists
                 # because we are using obj.size/obj.dtype instead of len(obj)/type(obj)
                 # this should be made explict using typechecking
-                self.size = col.size
+                self.size = col_size
                 first = False
             else:
-                if col.size != self.size:
+                if col_size != self.size:
                     raise ValueError("All columns in MultiIndex must have same length")
         self.levels = len(self.values)
 
@@ -680,6 +682,7 @@ class MultiIndex(Index):
 
     def to_ndarray(self):
         import numpy as np
+
         return np.array([convert_if_categorical(val).to_ndarray() for val in self.values])
 
     def to_list(self):
