@@ -2,6 +2,7 @@ import datetime as dt
 import math
 import statistics
 from collections import deque
+from typing import Tuple, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -43,6 +44,35 @@ class TestPdarrayCreation:
                 assert isinstance(pda, ak.pdarray if dtype != str else ak.Strings)
                 assert len(pda) == fixed_size
                 assert dtype == pda.dtype
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_large_array_creation(self, size):
+        # Using pytest.prob_size in various other tests can be problematic; this
+        # test is here simply to verify the ability of the various functions to
+        # create large arrays, while the function-specific tests below are testing
+        # the core functionality of each
+        for pda in [
+            ak.ones(size, int),
+            ak.array(ak.ones(size, int)),
+            ak.zeros(size),
+            ak.ones(size),
+            ak.full(size, "test"),
+            ak.zeros_like(ak.ones(size)),
+            ak.ones_like(ak.zeros(size)),
+            ak.full_like(ak.zeros(size), "test"),
+            ak.arange(size),
+            ak.linspace(0, size, size),
+            ak.randint(0, size, size),
+            ak.uniform(size, 0, 100),
+            ak.standard_normal(size),
+            ak.random_strings_uniform(3, 30, size),
+            ak.random_strings_lognormal(2, 0.25, size),
+            ak.from_series(pd.Series(ak.arange(size))),
+            ak.bigint_from_uint_arrays([ak.ones(size, dtype=ak.uint64)])
+        ]:
+            assert isinstance(pda, Union[ak.pdarray, ak.Strings])
+            # assert isinstance(pda, ak.pdarray if pda.dtype != str else ak.Strings)
+            assert len(pda) == size
 
     def test_array_creation_misc(self):
         av = ak.array(np.array([[0, 1], [0, 1]]))
