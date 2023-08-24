@@ -40,7 +40,7 @@ The dependencies listed here are only required if you will be doing development 
 - `pexpect`
 - `pytest>=6.0`
 - `pytest-env`
-- `Sphinx>=5.1.1,<7.2.0`
+- `Sphinx>=5.1.1`
 - `sphinx-argparse`
 - `sphinx-autoapi`
 - `furo`
