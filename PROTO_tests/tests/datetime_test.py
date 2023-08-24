@@ -184,7 +184,7 @@ class TestDatetime:
                 metrics["ak_supported"] += 1
                 compare_flag = True
                 try:
-                    pdret = eval("scsca {} pdfcvec".format(op))
+                    pdret = eval(f"scsca {op} pdfcvec")
                 except TypeError:
                     if verbose:
                         print(
