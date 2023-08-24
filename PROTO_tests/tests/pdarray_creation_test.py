@@ -49,8 +49,8 @@ class TestPdarrayCreation:
     def test_large_array_creation(self, size):
         # Using pytest.prob_size in various other tests can be problematic; this
         # test is here simply to verify the ability of the various functions to
-        # create large arrays, while the function-specific tests below are testing
-        # the core functionality of each
+        # create large pdarrays, while the function-specific tests below are testing
+        # the core functionality of each function
         for pda in [
             ak.ones(size, int),
             ak.array(ak.ones(size, int)),
@@ -59,7 +59,7 @@ class TestPdarrayCreation:
             ak.full(size, "test"),
             ak.zeros_like(ak.ones(size)),
             ak.ones_like(ak.zeros(size)),
-            ak.full_like(ak.zeros(size), "test"),
+            ak.full_like(ak.zeros(size), 9),
             ak.arange(size),
             ak.linspace(0, size, size),
             ak.randint(0, size, size),
@@ -67,11 +67,10 @@ class TestPdarrayCreation:
             ak.standard_normal(size),
             ak.random_strings_uniform(3, 30, size),
             ak.random_strings_lognormal(2, 0.25, size),
-            ak.from_series(pd.Series(ak.arange(size))),
-            ak.bigint_from_uint_arrays([ak.ones(size, dtype=ak.uint64)])
+            ak.from_series(pd.Series(ak.arange(size).to_ndarray())),
+            ak.bigint_from_uint_arrays([ak.ones(size, dtype=ak.uint64)]),
         ]:
-            assert isinstance(pda, Union[ak.pdarray, ak.Strings])
-            # assert isinstance(pda, ak.pdarray if pda.dtype != str else ak.Strings)
+            assert isinstance(pda, ak.pdarray if pda.dtype != str else ak.Strings)
             assert len(pda) == size
 
     def test_array_creation_misc(self):
