@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Release Process" href="RELEASE_PROCESS.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>PyTest Benchmarks - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -276,11 +276,11 @@
         </div>
         <article role="main">
           <section id="pytest-benchmarks">
-<h1>PyTest Benchmarks<a class="headerlink" href="#pytest-benchmarks" title="Permalink to this heading">#</a></h1>
+<h1>PyTest Benchmarks<a class="headerlink" href="#pytest-benchmarks" title="Link to this heading">#</a></h1>
 <p>Arkouda uses <code class="docutils literal notranslate"><span class="pre">pytest-benchmark</span></code> for performance benchmarking. This document provides an overview of running <code class="docutils literal notranslate"><span class="pre">pytest-benchmark</span></code> and the configurations available to the user.</p>
 <p>More information on <code class="docutils literal notranslate"><span class="pre">pytest-benchmark</span></code> can be found <a class="reference external" href="https://pytest-benchmark.readthedocs.io/en/latest/">here</a></p>
 <section id="running-the-full-suite">
-<h2>Running The Full Suite<a class="headerlink" href="#running-the-full-suite" title="Permalink to this heading">#</a></h2>
+<h2>Running The Full Suite<a class="headerlink" href="#running-the-full-suite" title="Link to this heading">#</a></h2>
 <p>In most cases, running the full benchmark suite is desired. The simplest way to do this is to navigate into the
 root-level of arkouda and run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">benchmark</span></code></p>
 <p>This will run the entire benchmark suite with the following command:</p>
@@ -296,7 +296,7 @@ the benchmarks.</p>
 path specified by <code class="docutils literal notranslate"><span class="pre">--benchmark-storage</span></code>.</p>
 </section>
 <section id="benchmark-arguments">
-<h2>Benchmark Arguments<a class="headerlink" href="#benchmark-arguments" title="Permalink to this heading">#</a></h2>
+<h2>Benchmark Arguments<a class="headerlink" href="#benchmark-arguments" title="Link to this heading">#</a></h2>
 <p>There are a large number of commandline arguments available for configuring the benchmarks to run in a way fitting
 to any use case.</p>
 <p><code class="docutils literal notranslate"><span class="pre">--benchmark-autosave</span></code></p>
@@ -430,7 +430,7 @@ Accepted values: none, snappy, gzip, brotli, zstd, and lz4</p>
 </div></blockquote>
 </section>
 <section id="running-single-files-or-tests">
-<h2>Running Single Files or Tests<a class="headerlink" href="#running-single-files-or-tests" title="Permalink to this heading">#</a></h2>
+<h2>Running Single Files or Tests<a class="headerlink" href="#running-single-files-or-tests" title="Link to this heading">#</a></h2>
 <p>In instances where a single test or set of tests needs to be run, use the <code class="docutils literal notranslate"><span class="pre">-k</span> <span class="pre">&lt;expression&gt;</span></code> flag.</p>
 <div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k encoding_benchmark.py
 </pre></div>
@@ -469,7 +469,7 @@ bench_encode[idna]      3.4875 (1.02)     4.5255 (1.24)     3.7912 (1.07)     0.
 <a class="reference external" href="https://docs.pytest.org/en/7.1.x/how-to/usage.html">here</a> under “Specifying which tests to run”.</p>
 </section>
 <section id="reading-the-json-output">
-<h2>Reading the JSON Output<a class="headerlink" href="#reading-the-json-output" title="Permalink to this heading">#</a></h2>
+<h2>Reading the JSON Output<a class="headerlink" href="#reading-the-json-output" title="Link to this heading">#</a></h2>
 <p>The output JSON contains a lot of information. Not all of this information is beneficial for our purposes.
 The main area we care about is the <code class="docutils literal notranslate"><span class="pre">benchmarks.stats</span></code> section and associated information. To a lesser extent,
 machine information can be beneficial to see how different CPU architectures perform differently.</p>
@@ -825,9 +825,9 @@ the number of trials we ran, represented in <code class="docutils literal notran
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>

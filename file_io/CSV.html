@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Import/Export" href="IMPORT_EXPORT.html" /><link rel="prev" title="Parquet" href="PARQUET.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>CSV - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -276,10 +276,10 @@
         </div>
         <article role="main">
           <section id="csv">
-<h1>CSV<a class="headerlink" href="#csv" title="Permalink to this heading">#</a></h1>
+<h1>CSV<a class="headerlink" href="#csv" title="Link to this heading">#</a></h1>
 <p>Arkouda now has support for reading and writing CSV file formats. CSV will not perform at the same level as HDF5 and Parquet. It is intended for interacting with smaller datasets and will prevent the need to convert files already in CSV format to HDF5 or Parquet.</p>
 <section id="support-arkouda-data-types">
-<h2>Support Arkouda Data Types<a class="headerlink" href="#support-arkouda-data-types" title="Permalink to this heading">#</a></h2>
+<h2>Support Arkouda Data Types<a class="headerlink" href="#support-arkouda-data-types" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>pdarray</p></li>
 <li><p>Strings</p></li>
@@ -288,7 +288,7 @@
 </ul>
 </section>
 <section id="file-formatting">
-<h2>File Formatting<a class="headerlink" href="#file-formatting" title="Permalink to this heading">#</a></h2>
+<h2>File Formatting<a class="headerlink" href="#file-formatting" title="Link to this heading">#</a></h2>
 <p>Arkouda supports reading CSV files of various formats. Current limitations include:</p>
 <ul class="simple">
 <li><p>All lines/rows of the CSV file must be newline (<code class="docutils literal notranslate"><span class="pre">\n</span></code>) delimited</p></li>
@@ -298,10 +298,10 @@
 <li><p>Header contents are always comma (<code class="docutils literal notranslate"><span class="pre">,</span></code>) delimited.</p></li>
 </ul>
 <section id="example-files">
-<h3>Example Files<a class="headerlink" href="#example-files" title="Permalink to this heading">#</a></h3>
+<h3>Example Files<a class="headerlink" href="#example-files" title="Link to this heading">#</a></h3>
 <p>To give an idea of arkouda supported formats for CSV files, we have provided two example files that Arkouda can read: one written by arkouda and one written outside of Arkouda.</p>
 <section id="arkouda-formatted-file">
-<h4>Arkouda Formatted File<a class="headerlink" href="#arkouda-formatted-file" title="Permalink to this heading">#</a></h4>
+<h4>Arkouda Formatted File<a class="headerlink" href="#arkouda-formatted-file" title="Link to this heading">#</a></h4>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>**HEADER**
 int64,str,float64
 */HEADER/*
@@ -313,7 +313,7 @@ ColA,ColB,ColC
 </div>
 </section>
 <section id="file-without-header">
-<h4>File Without Header<a class="headerlink" href="#file-without-header" title="Permalink to this heading">#</a></h4>
+<h4>File Without Header<a class="headerlink" href="#file-without-header" title="Link to this heading">#</a></h4>
 <p>Arkouda can read files without the header. All data will be read out to Strings objects in this case.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ColA,ColB,ColC
 0,ABC,3.14
@@ -325,34 +325,34 @@ ColA,ColB,ColC
 </section>
 </section>
 <section id="data-formatting">
-<h2>Data Formatting<a class="headerlink" href="#data-formatting" title="Permalink to this heading">#</a></h2>
+<h2>Data Formatting<a class="headerlink" href="#data-formatting" title="Link to this heading">#</a></h2>
 <p>Because CSV is a text format, all data is stored as a string. If the header is provided, the pdarray resulting from a read will be the assigned type.</p>
 <p>CSV files have one major difference in how they store data in comparison to HDF5 and Parquet, specifically for Strings objects. CSV stores Strings objects as the actual string, not as a <code class="docutils literal notranslate"><span class="pre">uint(8)</span></code> array as in HDF5 and Parquet.</p>
 </section>
 <section id="api-reference">
-<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h2>
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
 <p>Due to differences in execution of the CSV format, generic load/read functionality is not currently supported. As a result, the provided <code class="docutils literal notranslate"><span class="pre">read_csv</span></code> methods must be used at this time.</p>
 <p><code class="docutils literal notranslate"><span class="pre">ls</span></code>/<code class="docutils literal notranslate"><span class="pre">get_dataset</span></code> functionality is supported, but is once again separate from the generic implementation. To return a list of columns in the CSV use the <code class="docutils literal notranslate"><span class="pre">ls_csv()</span></code>/<code class="docutils literal notranslate"><span class="pre">ak.get_columns()</span></code> function.</p>
 <section id="pdarray">
-<h3>pdarray<a class="headerlink" href="#pdarray" title="Permalink to this heading">#</a></h3>
+<h3>pdarray<a class="headerlink" href="#pdarray" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id516" title="arkouda.pdarray.to_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.to_csv()</span></code></a></p></li>
 </ul>
 </section>
 <section id="strings">
-<h3>Strings<a class="headerlink" href="#strings" title="Permalink to this heading">#</a></h3>
+<h3>Strings<a class="headerlink" href="#strings" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id585" title="arkouda.Strings.to_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.to_csv()</span></code></a></p></li>
 </ul>
 </section>
 <section id="index">
-<h3>Index<a class="headerlink" href="#index" title="Permalink to this heading">#</a></h3>
+<h3>Index<a class="headerlink" href="#index" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Index.to_csv" title="arkouda.Index.to_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Index.to_csv()</span></code></a></p></li>
 </ul>
 </section>
 <section id="dataframe">
-<h3>DataFrame<a class="headerlink" href="#dataframe" title="Permalink to this heading">#</a></h3>
+<h3>DataFrame<a class="headerlink" href="#dataframe" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.to_csv" title="arkouda.DataFrame.to_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.DataFrame.to_csv()</span></code></a></p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkodua.DataFrame.read_csv()</span></code></p></li>
@@ -445,9 +445,9 @@ ColA,ColB,ColC
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>

@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="GASNet Development" href="GASNET.html" /><link rel="prev" title="Tips for Reproducing User Bugs" href="USER_BUGS.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>Reducing Memory Usage of Arkouda Builds - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -276,7 +276,7 @@
         </div>
         <article role="main">
           <section id="reducing-memory-usage-of-arkouda-builds">
-<h1>Reducing Memory Usage of Arkouda Builds<a class="headerlink" href="#reducing-memory-usage-of-arkouda-builds" title="Permalink to this heading">#</a></h1>
+<h1>Reducing Memory Usage of Arkouda Builds<a class="headerlink" href="#reducing-memory-usage-of-arkouda-builds" title="Link to this heading">#</a></h1>
 <p>If your builds have been taking up too much memory, this section provides a method to reduce the memory usage by using the C backend and building the server in parallel.</p>
 <p>This feature uses the C-backend to leverage incremental building and avoid building everything at once, which can cut down on the memory usage of the compiler.</p>
 <p>This feature can also speed up build times, but is somewhat of a heroic step, as it requires using Chapel’s (non-default) C back-end and will also negatively impact Arkouda execution performance. It can also only accelerate the <code class="docutils literal notranslate"><span class="pre">makeBinary</span></code> step of compilation, so is most useful in cases where that is a bottleneck in your compilation timings (where, in our full-scale Arkouda compiles, resolve tends to be the current bottleneck).</p>
@@ -343,9 +343,9 @@
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>

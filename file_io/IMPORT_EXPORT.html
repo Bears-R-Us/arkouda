@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Usage Guide" href="../usage.html" /><link rel="prev" title="CSV" href="CSV.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>Import/Export - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -276,20 +276,20 @@
         </div>
         <article role="main">
           <section id="import-export">
-<h1>Import/Export<a class="headerlink" href="#import-export" title="Permalink to this heading">#</a></h1>
+<h1>Import/Export<a class="headerlink" href="#import-export" title="Link to this heading">#</a></h1>
 <p>Arkouda allows for importing and exporting data in Pandas format, specifically DataFrames. This functionality is currently performed on the client. As a result it is assumed that the size of data being imported can be handled by the client because it was written by Pandas. Arkouda natively verifies that the size of data being sent to client can be handled.</p>
 <p>During both import and export operations, file type is maintained. Thus, if you import/export an HDf5 file and elect to save an appropriately formatted file during the operation, the resulting file will also be HDF5.</p>
 <p>This functionality should not be required for Parquet files, but is supported for both HDF5 and Parquet.</p>
 <section id="export">
-<h2>Export<a class="headerlink" href="#export" title="Permalink to this heading">#</a></h2>
+<h2>Export<a class="headerlink" href="#export" title="Link to this heading">#</a></h2>
 <p>Export takes a file that was saved using Arkouda and reads it into Pandas. The user is able to specify if they would like to save the result to a file that can be read by Pandas and/or return the resulting Pandas object.</p>
 </section>
 <section id="import">
-<h2>Import<a class="headerlink" href="#import" title="Permalink to this heading">#</a></h2>
+<h2>Import<a class="headerlink" href="#import" title="Link to this heading">#</a></h2>
 <p>Importing data takes a file that was saved using Pandas and reads it into Arkouda. The user is able to specify if they would like to save the result to a file that can be read by Arkouda and/or return the resulting Arkouda object.</p>
 </section>
 <section id="api-reference">
-<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h2>
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../autoapi/arkouda/io/index.html#arkouda.io.import_data" title="arkouda.io.import_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">arkouda.io.import_data()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../autoapi/arkouda/io/index.html#arkouda.io.export" title="arkouda.io.export"><code class="xref py py-func docutils literal notranslate"><span class="pre">arkouda.io.export()</span></code></a></p></li>
@@ -367,9 +367,9 @@
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>

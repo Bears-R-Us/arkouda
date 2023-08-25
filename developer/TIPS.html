@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Tips for Reproducing User Bugs" href="USER_BUGS.html" /><link rel="prev" title="Developer Documentation" href="dev_menu.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>Speeding up Arkouda Compilation - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -276,9 +276,9 @@
         </div>
         <article role="main">
           <section id="speeding-up-arkouda-compilation">
-<h1>Speeding up Arkouda Compilation<a class="headerlink" href="#speeding-up-arkouda-compilation" title="Permalink to this heading">#</a></h1>
+<h1>Speeding up Arkouda Compilation<a class="headerlink" href="#speeding-up-arkouda-compilation" title="Link to this heading">#</a></h1>
 <section id="environment-variables-to-always-set">
-<h2>Environment Variables to <em>Always</em> Set<a class="headerlink" href="#environment-variables-to-always-set" title="Permalink to this heading">#</a></h2>
+<h2>Environment Variables to <em>Always</em> Set<a class="headerlink" href="#environment-variables-to-always-set" title="Link to this heading">#</a></h2>
 <p>This section has a couple of environment variables that should <em>always</em> be set/unset if you are looking for compilation time improvements.</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">ARKOUDA_QUICK_COMPILE=1</span></code></p>
@@ -302,7 +302,7 @@
 </ol>
 </section>
 <section id="using-the-modular-build-system">
-<h2>Using the Modular Build System<a class="headerlink" href="#using-the-modular-build-system" title="Permalink to this heading">#</a></h2>
+<h2>Using the Modular Build System<a class="headerlink" href="#using-the-modular-build-system" title="Link to this heading">#</a></h2>
 <p>This is the single biggest way to save on compilation time, but is a bit more involved than the others. For reference, a full build on my machine takes ~500 seconds, but with minimal modules, it only takes ~30 seconds.</p>
 <p>If you are looking to speed up build times, this section contains information for using the modular build system. This system can significantly decrease compilation times by reducing the number of features built into the server, focusing on just the crucial ones. In general, developers should always be using the modular build system when working on server-side development.</p>
 <p>If you already have a full-server build:</p>
@@ -402,9 +402,9 @@
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>

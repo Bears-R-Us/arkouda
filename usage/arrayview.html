@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Examples" href="../examples.html" /><link rel="prev" title="SegArrays in Arkouda" href="segarray.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>ArrayView in Arkouda - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -276,16 +276,16 @@
         </div>
         <article role="main">
           <section id="arrayview-in-arkouda">
-<h1>ArrayView in Arkouda<a class="headerlink" href="#arrayview-in-arkouda" title="Permalink to this heading">#</a></h1>
+<h1>ArrayView in Arkouda<a class="headerlink" href="#arrayview-in-arkouda" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.ArrayView">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ArrayView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'row_major'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.ArrayView" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ArrayView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'row_major'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.ArrayView" title="Link to this definition">#</a></dt>
 <dd><p>A multi-dimensional view of a pdarray. Arkouda <code class="docutils literal notranslate"><span class="pre">ArraryView</span></code> behaves similarly to numpy’s ndarray.
 The base pdarray is stored in 1-dimension but can be indexed and treated logically
 as if it were multi-dimensional</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.ArrayView.base">
-<span class="sig-name descname"><span class="pre">base</span></span><a class="headerlink" href="#arkouda.ArrayView.base" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">base</span></span><a class="headerlink" href="#arkouda.ArrayView.base" title="Link to this definition">#</a></dt>
 <dd><p>The base pdarray that is being viewed as a multi-dimensional object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -296,7 +296,7 @@ as if it were multi-dimensional</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.ArrayView.dtype">
-<span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.ArrayView.dtype" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.ArrayView.dtype" title="Link to this definition">#</a></dt>
 <dd><p>The element type of the base pdarray (equivalent to base.dtype)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -307,7 +307,7 @@ as if it were multi-dimensional</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.ArrayView.size">
-<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#arkouda.ArrayView.size" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#arkouda.ArrayView.size" title="Link to this definition">#</a></dt>
 <dd><p>The number of elements in the base pdarray (equivalent to base.size)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -318,7 +318,7 @@ as if it were multi-dimensional</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.ArrayView.shape">
-<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.ArrayView.shape" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.ArrayView.shape" title="Link to this definition">#</a></dt>
 <dd><p>A pdarray specifying the sizes of each dimension of the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -329,7 +329,7 @@ as if it were multi-dimensional</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.ArrayView.ndim">
-<span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#arkouda.ArrayView.ndim" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#arkouda.ArrayView.ndim" title="Link to this definition">#</a></dt>
 <dd><p>Number of dimensions (equivalent to shape.size)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -340,7 +340,7 @@ as if it were multi-dimensional</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.ArrayView.itemsize">
-<span class="sig-name descname"><span class="pre">itemsize</span></span><a class="headerlink" href="#arkouda.ArrayView.itemsize" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">itemsize</span></span><a class="headerlink" href="#arkouda.ArrayView.itemsize" title="Link to this definition">#</a></dt>
 <dd><p>The size in bytes of each element (equivalent to base.itemsize)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -351,7 +351,7 @@ as if it were multi-dimensional</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.ArrayView.order">
-<span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#arkouda.ArrayView.order" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#arkouda.ArrayView.order" title="Link to this definition">#</a></dt>
 <dd><p>Index order to read and write the elements.
 By default or if ‘C’/’row_major’, read and write data in row_major order
 If ‘F’/’column_major’, read and write data in column_major order</p>
@@ -365,7 +365,7 @@ If ‘F’/’column_major’, read and write data in column_major order</p>
 </dd></dl>
 
 <section id="creation">
-<h2>Creation<a class="headerlink" href="#creation" title="Permalink to this heading">#</a></h2>
+<h2>Creation<a class="headerlink" href="#creation" title="Link to this heading">#</a></h2>
 <p>ArrayViews can be created using ak.array or pdarray.reshape</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
 <span class="go">array([[0, 0],</span>
@@ -391,7 +391,7 @@ If ‘F’/’column_major’, read and write data in column_major order</p>
 </div>
 </section>
 <section id="indexing">
-<h2>Indexing<a class="headerlink" href="#indexing" title="Permalink to this heading">#</a></h2>
+<h2>Indexing<a class="headerlink" href="#indexing" title="Link to this heading">#</a></h2>
 <p>Arkouda <code class="docutils literal notranslate"><span class="pre">ArrayView</span></code> objects support basic indexing</p>
 <ul class="simple">
 <li><p>Indexing with an integer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> (of size ndim) or</p></li>
@@ -421,11 +421,11 @@ If ‘F’/’column_major’, read and write data in column_major order</p>
 <p>so <code class="docutils literal notranslate"><span class="pre">n[:,</span> <span class="pre">:]</span></code> gets indices <code class="docutils literal notranslate"><span class="pre">[0,0],</span> <span class="pre">[0,1],</span> <span class="pre">[1,0],</span> <span class="pre">[1,1]</span></code> whereas <code class="docutils literal notranslate"><span class="pre">n[[0,1],[0,1]]</span></code> only gets indices <code class="docutils literal notranslate"><span class="pre">[0,0],</span> <span class="pre">[1,1]</span></code></p>
 </section>
 <section id="iteration">
-<h2>Iteration<a class="headerlink" href="#iteration" title="Permalink to this heading">#</a></h2>
+<h2>Iteration<a class="headerlink" href="#iteration" title="Link to this heading">#</a></h2>
 <p>Iterating directly over an <code class="docutils literal notranslate"><span class="pre">ArrayView</span></code> with <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">array_view</span></code> is not supported to discourage transferring all array data from the arkouda server to the Python client. To force this transfer, use the <code class="docutils literal notranslate"><span class="pre">to_ndarray</span></code> function to return the <code class="docutils literal notranslate"><span class="pre">ArrayView</span></code> as a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>. This transfer will raise an error if it exceeds the byte limit defined in <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.ArrayView.to_ndarray">
-<span class="sig-prename descclassname"><span class="pre">arkouda.ArrayView.</span></span><span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#arkouda.ArrayView.to_ndarray" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.ArrayView.</span></span><span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#arkouda.ArrayView.to_ndarray" title="Link to this definition">#</a></dt>
 <dd><p>Convert the ArrayView to a np.ndarray, transferring array data from the
 Arkouda server to client-side Python. Note: if the ArrayView size exceeds
 client.maxTransferBytes, a RuntimeError is raised.</p>
@@ -551,9 +551,9 @@ value, but proceed with caution.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>

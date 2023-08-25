@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Performance Testing" href="testing.html" /><link rel="prev" title="Building the Server" href="BUILD.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>Modular Server Builds - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -276,17 +276,17 @@
         </div>
         <article role="main">
           <section id="modular-server-builds">
-<h1>Modular Server Builds<a class="headerlink" href="#modular-server-builds" title="Permalink to this heading">#</a></h1>
+<h1>Modular Server Builds<a class="headerlink" href="#modular-server-builds" title="Link to this heading">#</a></h1>
 <p>For information specifically about using the modular build system to speed up compilation, please see the developer documentation <a class="reference internal" href="../developer/TIPS.html"><span class="std std-doc">here</span></a>.</p>
 <p>The modules that are included in each build of Arkouda can be found in the <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/blob/master/ServerModules.cfg">ServerModules.cfg</a> file.</p>
 <p>If only a certain subset of the Arkouda funcionality is required, modules can be commented out using a <code class="docutils literal notranslate"><span class="pre">#</span></code> prior to the module name in <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/blob/master/ServerModules.cfg">ServerModules.cfg</a>. This will exclude those modules from the next build of Arkouda, which can have significant improvements on build times, which can be particularly valuable during development when only a single feature is desired to be tested.</p>
 <section id="specifying-a-custom-configuration-file">
-<h2>Specifying a custom configuration file<a class="headerlink" href="#specifying-a-custom-configuration-file" title="Permalink to this heading">#</a></h2>
+<h2>Specifying a custom configuration file<a class="headerlink" href="#specifying-a-custom-configuration-file" title="Link to this heading">#</a></h2>
 <p>In the case of having multiple configurations frequently switched between, the default <code class="docutils literal notranslate"><span class="pre">ServerModules.cfg</span></code> file can be replaced by setting the environment variable <code class="docutils literal notranslate"><span class="pre">ARKOUDA_CONFIG_FILE</span></code>.</p>
 <p>New config files must follow the same format, listing one module name per line with comments having a <code class="docutils literal notranslate"><span class="pre">#</span></code> as the first character of the line.</p>
 </section>
 <section id="adding-new-modules-into-the-build-process">
-<h2>Adding new modules into the build process<a class="headerlink" href="#adding-new-modules-into-the-build-process" title="Permalink to this heading">#</a></h2>
+<h2>Adding new modules into the build process<a class="headerlink" href="#adding-new-modules-into-the-build-process" title="Link to this heading">#</a></h2>
 <p>Adding a module from outside of the Arkouda <code class="docutils literal notranslate"><span class="pre">src/</span></code> directory can be done in one of two ways: (1) adding the absolute path of the module as a new line to the <code class="docutils literal notranslate"><span class="pre">ServerModules.cfg</span></code> file or (2) setting the <code class="docutils literal notranslate"><span class="pre">ARKOUDA_SERVER_USER_MODULES</span></code> environment variable to a string of the absolute path to the Chapel module. If multiple user modules are included, the paths must be separated by a space. For example, Arkouda could be built with a custom module <code class="docutils literal notranslate"><span class="pre">/path/toTestMsg.chpl</span></code> by adding <code class="docutils literal notranslate"><span class="pre">/path/to/TestMsg</span></code> to the <code class="docutils literal notranslate"><span class="pre">ServerModules.cfg</span></code> file and running <code class="docutils literal notranslate"><span class="pre">make</span></code> or by running the command <code class="docutils literal notranslate"><span class="pre">ARKOUDA_SERVER_USER_MODULES='/path/to/TestMsg.chpl'</span> <span class="pre">make</span></code> in the Arkouda home directory. Note that for this to work, the absolute path to the <code class="docutils literal notranslate"><span class="pre">.chpl</span></code> file must be specified in the <code class="docutils literal notranslate"><span class="pre">ARKOUDA_SERVER_USER_MODULES</span></code> environment variable.</p>
 <p>Additionally, code to add the functions contained in the new module must be in module-level scope. Here is an example of what that might look like in practice (taken from <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/blob/master/src/KExtremeMsg.chpl">src/KEXtremeMsg.chpl</a>):</p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="nx">CommandMap</span><span class="p">;</span>
@@ -306,7 +306,7 @@
 </div>
 <p>With the key elements being (1) the function calls <code class="docutils literal notranslate"><span class="pre">generic_msg()</span></code>, which will execute the command string specified by the argument <code class="docutils literal notranslate"><span class="pre">cmd</span></code> and (2) the function is added to the ak dictionary, enabling it to be called as <code class="docutils literal notranslate"><span class="pre">ak.test_command()</span></code>.</p>
 <section id="saving-modules-used-in-an-arkouda-server-run">
-<h3>Saving modules used in an Arkouda server run<a class="headerlink" href="#saving-modules-used-in-an-arkouda-server-run" title="Permalink to this heading">#</a></h3>
+<h3>Saving modules used in an Arkouda server run<a class="headerlink" href="#saving-modules-used-in-an-arkouda-server-run" title="Link to this heading">#</a></h3>
 <p>When testing a specific workflow, it can sometimes be difficult to determine which modules are needed, but doing so can allow you to save significant amounts of build time. To help with this process of discovering which modules your workflow needs, the <code class="docutils literal notranslate"><span class="pre">--saveUsedModules</span></code> flag has been added to the Arkouda server.</p>
 <p>To use this flag:</p>
 <ol class="arabic simple">
@@ -392,9 +392,9 @@
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>

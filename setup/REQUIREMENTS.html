@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Installation" href="install_menu.html" /><link rel="prev" title="Quickstart" href="../quickstart.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>Requirements - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -276,9 +276,9 @@
         </div>
         <article role="main">
           <section id="requirements">
-<h1>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">#</a></h1>
+<h1>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h1>
 <section id="dependency-list">
-<h2>Dependency List<a class="headerlink" href="#dependency-list" title="Permalink to this heading">#</a></h2>
+<h2>Dependency List<a class="headerlink" href="#dependency-list" title="Link to this heading">#</a></h2>
 <p>The dependencies listed here have varying installation instructions depending upon your preferred operating system. Please use in the installation instructions provided in the <a class="reference internal" href="install_menu.html"><span class="std std-doc">Installation Section</span></a>.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Chapel</span> <span class="pre">1.30.0</span> <span class="pre">or</span> <span class="pre">later</span></code></p></li>
@@ -292,7 +292,7 @@
 </ul>
 </section>
 <section id="python-dependencies">
-<h2>Python Dependencies<a class="headerlink" href="#python-dependencies" title="Permalink to this heading">#</a></h2>
+<h2>Python Dependencies<a class="headerlink" href="#python-dependencies" title="Link to this heading">#</a></h2>
 <p>The following python packages are required by the Arkouda client package.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">python&gt;=3.8</span></code></p></li>
@@ -312,13 +312,13 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">pyarrow&gt;=1.0.1</span></code></p></li>
 </ul>
 <section id="developer-specific">
-<h3>Developer Specific<a class="headerlink" href="#developer-specific" title="Permalink to this heading">#</a></h3>
+<h3>Developer Specific<a class="headerlink" href="#developer-specific" title="Link to this heading">#</a></h3>
 <p>The dependencies listed here are only required if you will be doing development for Arkouda.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pexpect</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pytest&gt;=6.0</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pytest-env</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Sphinx&gt;=5.1.1,&lt;7.2.0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Sphinx&gt;=5.1.1</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sphinx-argparse</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sphinx-autoapi</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">furo</span></code></p></li>
@@ -330,10 +330,10 @@
 </ul>
 </section>
 <section id="installing-updating-python-dependencies">
-<h3>Installing/Updating Python Dependencies<a class="headerlink" href="#installing-updating-python-dependencies" title="Permalink to this heading">#</a></h3>
+<h3>Installing/Updating Python Dependencies<a class="headerlink" href="#installing-updating-python-dependencies" title="Link to this heading">#</a></h3>
 <p>Dependencies can be installed using <code class="docutils literal notranslate"><span class="pre">Anaconda</span></code> (Recommended) or <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
 <section id="using-anaconda">
-<h4>Using Anaconda<a class="headerlink" href="#using-anaconda" title="Permalink to this heading">#</a></h4>
+<h4>Using Anaconda<a class="headerlink" href="#using-anaconda" title="Link to this heading">#</a></h4>
 <p>Arkouda provides 2 files for installing dependencies, one for users and one for developers.</p>
 <ul class="simple">
 <li><p>Users Environment YAML: <code class="docutils literal notranslate"><span class="pre">arkouda-env.yml</span></code></p></li>
@@ -350,7 +350,7 @@ conda env update -n &lt;env_name&gt; -f &lt;yaml_file&gt; --prune
 </div>
 </section>
 <section id="using-pip">
-<h4>Using Pip<a class="headerlink" href="#using-pip" title="Permalink to this heading">#</a></h4>
+<h4>Using Pip<a class="headerlink" href="#using-pip" title="Link to this heading">#</a></h4>
 <p>When you <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">Arkouda</span></code>, dependencies should be installed as well. However, dependencies may change during the life-cycle of Arkouda, so here we detail how to update dependencies when using <code class="docutils literal notranslate"><span class="pre">pip</span></code> for package management.</p>
 <div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span># navigate to arkouda directory
 cd &lt;path_to_arkouda&gt;/arkouda
@@ -444,9 +444,9 @@ pip install --upgrade --upgrade-strategy eager -e .[dev]
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>

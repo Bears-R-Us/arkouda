@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Reducing Memory Usage of Arkouda Builds" href="MEMORY.html" /><link rel="prev" title="Speeding up Arkouda Compilation" href="TIPS.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>Tips for Reproducing User Bugs - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -276,9 +276,9 @@
         </div>
         <article role="main">
           <section id="tips-for-reproducing-user-bugs">
-<h1>Tips for Reproducing User Bugs<a class="headerlink" href="#tips-for-reproducing-user-bugs" title="Permalink to this heading">#</a></h1>
+<h1>Tips for Reproducing User Bugs<a class="headerlink" href="#tips-for-reproducing-user-bugs" title="Link to this heading">#</a></h1>
 <section id="saving-full-builds">
-<h2>Saving Full Builds<a class="headerlink" href="#saving-full-builds" title="Permalink to this heading">#</a></h2>
+<h2>Saving Full Builds<a class="headerlink" href="#saving-full-builds" title="Link to this heading">#</a></h2>
 <p>This section contains suggestions for cutting down the number of full module and/or gasnet builds that are needed for debugging.</p>
 <p>When a user reports a bug, that typically comes from the previous release. It can be pretty frustrating to have to go back and rebuild the entire server for the past release just to reproduce that bug that you don’t have a good idea what modules it needs.</p>
 <p>To avoid having to recompile the release to reproduce a bug, here is what I like to do:</p>
@@ -298,7 +298,7 @@
 <p>Now, we have a full build of the release, so there shouldn’t be any reason to need to rebuild the full server again until the next release. What I would recommend is doing a full <a class="reference internal" href="GASNET.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">gasnet</span></code> build of the server</span></a> overnight so you don’t have to be impacted by the long build times and memory hogging during development. This <em>will</em> take a while, especially for a gasnet build, but you should only have to do it once per release (and it can be done overnight).</p>
 </section>
 <section id="reproducing-user-bugs-efficiently">
-<h2>Reproducing User Bugs Efficiently<a class="headerlink" href="#reproducing-user-bugs-efficiently" title="Permalink to this heading">#</a></h2>
+<h2>Reproducing User Bugs Efficiently<a class="headerlink" href="#reproducing-user-bugs-efficiently" title="Link to this heading">#</a></h2>
 <p>This section contains suggestions for effectively reproducing user-reported bugs in combination with the <code class="docutils literal notranslate"><span class="pre">--saveUsedModules</span></code> flag to efficiently figure out which modules are required for testing changes for a specific bug to minimize build times. See the <a class="reference internal" href="../setup/MODULAR.html"><span class="std std-doc">modular build documentation</span></a> for more information on the <code class="docutils literal notranslate"><span class="pre">--saveUsedModules</span></code> flag.</p>
 <p>Now that you’ve got your one-time Arkouda release built (from the previous section), to reproduce a reported bug:</p>
 <ol class="arabic simple">
@@ -389,9 +389,9 @@
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>

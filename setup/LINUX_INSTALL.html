@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Windows (WSL2)" href="WINDOWS_INSTALL.html" /><link rel="prev" title="Installation" href="install_menu.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.08.19 -->
+    <!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>Linux - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -276,10 +276,10 @@
         </div>
         <article role="main">
           <section id="linux">
-<h1>Linux<a class="headerlink" href="#linux" title="Permalink to this heading">#</a></h1>
+<h1>Linux<a class="headerlink" href="#linux" title="Link to this heading">#</a></h1>
 <p>There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are to install the Chapel dependencies followed by downloading and building Chapel. The Ubuntu and RHEL Chapel installations are different for installing Chapel dependencies, particularly regarding older RHEL distro versions such as CentOS 7. Specifically, the gcc compiler on RHEL distros such as CentOS 7 do not support building Chapel. Consequently, a newer version of the gcc compiler must be installed via the <a class="reference external" href="https://centos.pkgs.org/7/centos-sclo-rh-x86_64/devtoolset-9-gcc-c++-9.1.1-2.6.el7.x86_64.rpm.html">devtoolset-9-gcc-c++</a> package. In addition, the CentOS <a class="reference external" href="https://wiki.centos.org/AdditionalResources/Repositories/SCL">Software Collections packager</a> must be installed to enable the newer version of gcc to be leveraged for building Chapel.</p>
 <section id="install-chapel-ubuntu">
-<h2>Install Chapel (Ubuntu)<a class="headerlink" href="#install-chapel-ubuntu" title="Permalink to this heading">#</a></h2>
+<h2>Install Chapel (Ubuntu)<a class="headerlink" href="#install-chapel-ubuntu" title="Link to this heading">#</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update Linux kernel and install Chapel dependencies</span>
 sudo<span class="w"> </span>apt-get<span class="w"> </span>update
 sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>g++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span>python3-venv<span class="w"> </span>python3-dev<span class="w"> </span>bash<span class="w"> </span>make<span class="w"> </span>mawk<span class="w"> </span>git<span class="w"> </span>pkg-config<span class="w"> </span>cmake<span class="w"> </span>llvm-12-dev<span class="w"> </span>llvm-12<span class="w"> </span>llvm-12-tools<span class="w"> </span>clang-12<span class="w"> </span>libclang-12-dev<span class="w"> </span>libclang-cpp12-dev<span class="w"> </span>libedit-dev
@@ -321,7 +321,7 @@ make<span class="w"> </span>chpldoc
 </div>
 </section>
 <section id="install-chapel-rhel">
-<h2>Install Chapel (RHEL)<a class="headerlink" href="#install-chapel-rhel" title="Permalink to this heading">#</a></h2>
+<h2>Install Chapel (RHEL)<a class="headerlink" href="#install-chapel-rhel" title="Link to this heading">#</a></h2>
 <p>For all RHEL distros, Chapel dependencies are installed as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum<span class="w"> </span>update<span class="w"> </span>-y<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>gcc-c++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-devel<span class="w"> </span><span class="se">\</span>
 make<span class="w"> </span>gawk<span class="w"> </span>git<span class="w"> </span>cmake<span class="w"> </span>llvm-devel<span class="w"> </span>clang<span class="w"> </span>clang-devel<span class="w"> </span>curl-devel<span class="w"> </span>-y
@@ -338,7 +338,7 @@ make<span class="w"> </span>gawk<span class="w"> </span>git<span class="w"> </sp
 <p>The remaining RHEL Chapel download and build instructions follow those detailed above for Ubuntu Linux.</p>
 </section>
 <section id="python-environment-anaconda-linux">
-<h2>Python Environment - Anaconda (Linux)<a class="headerlink" href="#python-environment-anaconda-linux" title="Permalink to this heading">#</a></h2>
+<h2>Python Environment - Anaconda (Linux)<a class="headerlink" href="#python-environment-anaconda-linux" title="Link to this heading">#</a></h2>
 <p>As is the case with the MacOS install, it is highly recommended to <a class="reference external" href="https://docs.anaconda.com/anaconda/install/linux/">install Anaconda</a> to provide a Python environment and manage Python dependencies:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>wget<span class="w"> </span>https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
 <span class="w"> </span>sh<span class="w"> </span>Anaconda3-2020.07-Linux-x86_64.sh
@@ -432,9 +432,9 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>
