@@ -103,7 +103,7 @@ def parse_single_value(msg: str) -> object:
     mydtype = dtype(dtname)
     if mydtype == bigint:
         # we have to strip off quotes prior to 1.32
-        if value[0] == "\"":
+        if value[0] == '"':
             return int(value[1:-1])
         else:
             return int(value)
@@ -832,13 +832,13 @@ class pdarray:
         """
         return max(self)
 
-    def argmin(self) -> np.int64:
+    def argmin(self) -> Union[np.int64, np.uint64]:
         """
         Return the index of the first occurrence of the array min value
         """
         return argmin(self)
 
-    def argmax(self) -> np.int64:
+    def argmax(self) -> Union[np.int64, np.uint64]:
         """
         Return the index of the first occurrence of the array max value.
         """
@@ -2179,7 +2179,7 @@ def max(pda: pdarray) -> numpy_scalars:
 
 
 @typechecked
-def argmin(pda: pdarray) -> np.int64:
+def argmin(pda: pdarray) -> Union[np.int64, np.uint64]:
     """
     Return the index of the first occurrence of the array min value.
 
@@ -2190,7 +2190,7 @@ def argmin(pda: pdarray) -> np.int64:
 
     Returns
     -------
-    np.int64
+    Union[np.int64, np.uint64]
         The index of the argmin calculated from the pda
 
     Raises
@@ -2205,7 +2205,7 @@ def argmin(pda: pdarray) -> np.int64:
 
 
 @typechecked
-def argmax(pda: pdarray) -> np.int64:
+def argmax(pda: pdarray) -> Union[np.int64, np.uint64]:
     """
     Return the index of the first occurrence of the array max value.
 
@@ -2216,7 +2216,7 @@ def argmax(pda: pdarray) -> np.int64:
 
     Returns
     -------
-    np.int64
+    Union[np.int64, np.uint64]
         The index of the argmax calculated from the pda
 
     Raises
