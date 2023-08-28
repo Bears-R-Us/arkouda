@@ -127,6 +127,62 @@ class ShellMode(Enum):
         return self.value
 
 
+class RequestMode(Enum):
+    """
+    The RequestMode Enum indicates whether the Arkouda client-server
+    communication pattern will be synchronous or asynchronous.
+    """
+    SYNCHRONOUS = 'SYNCHRONOUS'
+    ASYNCHRONOUS = 'ASYNCHRONOUS'
+    
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+
+class RequestStatus(Enum):
+    """
+    The RequestStatus Enum indicates whether an asynchronous method 
+    invocation has completed.
+    """
+    PENDING = 'PENDING'
+    RUNNING = 'RUNNING'
+    COMPLETE = 'COMPLETE'
+    
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+
+def get_request_id() -> str:
+    """
+    Returns a randomized 32 character alphanumeric string that serves as a means
+    of differentiating each incoming Arkouda request.
+    
+    Returns
+    -------
+    str
+        A randomized alphanumeric string that serves as a request id
+    """
+    import random, string
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
+
 def get_shell_mode():
     """
     Determines the Python shell type and returns the corresponding
@@ -1058,6 +1114,32 @@ def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
     except Exception as e:
         raise RuntimeError(f"{e} in retrieving Arkouda server config")
 
+def get_request_status(request_id: str) -> RequestStatus:
+    """
+    Retrieves the status of the Arkouda request corresponding to the request_id.
+
+    Parameters
+     ----------
+     request_id : Optional[str]
+         id of the request of interest
+
+    Returns
+    -------
+    RequestStatus
+        The RequestStatus enum that indicates if the request is pending, running, or complete
+        
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in executing get_request_status request
+    """
+    # get_request_status is not supported for the default ZmqChannel
+    if channelType == ChannelType.ZMQ:
+        raise NotImplementedError('Request status functionality is unsupported by ZmqChannel')
+
+    raw_message = cast(str, generic_msg(cmd="getrequeststatus", args=f'{request_id}'))
+    return json.loads(raw_message)
 
 def get_server_commands() -> Mapping[str, str]:
     """
