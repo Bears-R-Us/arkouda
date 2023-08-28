@@ -270,6 +270,16 @@ Functions
       they are unregistered.
 
 
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute')
+
+      Override of the pdarray to_hdf to store the special object type
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
+
+      Override the pdarray implementation so that the special object type will be used.
+
+
 
 .. py:function:: is_ipv4(ip: Union[arkouda.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.pdarrayclass.pdarray] = None) -> arkouda.pdarrayclass.pdarray
 

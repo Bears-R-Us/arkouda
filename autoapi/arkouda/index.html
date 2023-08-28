@@ -6064,6 +6064,18 @@ Please note you cannot register two different IPv4s with the same name.</p>
 they are unregistered.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.IPv4.to_hdf">
+<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.IPv4.to_hdf" title="Link to this definition">#</a></dt>
+<dd><p>Override of the pdarray to_hdf to store the special object type</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.IPv4.update_hdf">
+<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.IPv4.update_hdf" title="Link to this definition">#</a></dt>
+<dd><p>Override the pdarray implementation so that the special object type will be used.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -28954,6 +28966,8 @@ a registered object</p></li>
 <li><a class="reference internal" href="#arkouda.IPv4.to_list"><code class="docutils literal notranslate"><span class="pre">IPv4.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.IPv4.opeq"><code class="docutils literal notranslate"><span class="pre">IPv4.opeq()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.IPv4.register"><code class="docutils literal notranslate"><span class="pre">IPv4.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.IPv4.to_hdf"><code class="docutils literal notranslate"><span class="pre">IPv4.to_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.IPv4.update_hdf"><code class="docutils literal notranslate"><span class="pre">IPv4.update_hdf()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.is_ipv4"><code class="docutils literal notranslate"><span class="pre">is_ipv4()</span></code></a></li>
