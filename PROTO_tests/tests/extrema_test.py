@@ -3,12 +3,14 @@ import pytest
 
 import arkouda as ak
 
-NO_UINT = ["int64", "float64", "bool"]
+NUMERIC_TYPES = ["int64", "uint64", "float64", "bool"]
 
 
 def make_np_arrays(size, dtype):
     if dtype == "int64":
         return np.random.randint(-(2**32), 2**32, size=size, dtype=dtype)
+    elif dtype == "uint64":
+        return ak.cast(ak.randint(-(2**32), 2**32, size=size), dtype)
     elif dtype == "float64":
         return np.random.uniform(-(2**32), 2**32, size=size)
     elif dtype == "bool":
@@ -18,10 +20,9 @@ def make_np_arrays(size, dtype):
 
 class TestExtrema:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", ["int64", "float64"])
+    @pytest.mark.parametrize("dtype", ["int64", "uint64", "float64"])
     def test_extrema(self, prob_size, dtype):
-        # TODO add testing for uint once #2695 is completed
-        pda = ak.randint(-(2**32), 2**32, size=prob_size, dtype=dtype)
+        pda = ak.array(make_np_arrays(prob_size, dtype))
         ak_sorted = ak.sort(pda)
         K = prob_size // 2
 
@@ -33,9 +34,8 @@ class TestExtrema:
         assert (ak.maxk(pda, K) == ak_sorted[-K:]).all()
         assert (pda[ak.argmaxk(pda, K)] == ak_sorted[-K:]).all()
 
-    @pytest.mark.parametrize("dtype", NO_UINT)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     def test_argmin_and_argmax(self, dtype):
-        # TODO add testing for uint once #2695 is completed
         np_arr = make_np_arrays(1000, dtype)
         ak_arr = ak.array(np_arr)
 
