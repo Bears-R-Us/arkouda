@@ -70,6 +70,7 @@ module MultiTypeRegEntry {
         proc init(array_name: string, objType: ObjType) {
             super.init(objType);
             this.array = array_name;
+            this.name = array_name;
         }
 
         proc asMap(st: borrowed SymTab): map(string, string) throws {
@@ -96,6 +97,7 @@ module MultiTypeRegEntry {
             this.array = array_name;
             this.width = width;
             this.reverse = reverse;
+            this.name = array_name;
         }
 
         proc asMap(st:borrowed SymTab): map(string, string) throws {
