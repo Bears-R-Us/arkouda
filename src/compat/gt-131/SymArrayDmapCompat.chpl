@@ -1,5 +1,5 @@
 
-module SymArrayDmap
+module SymArrayDmapCompat
 {
     use ChplConfig;
 
@@ -54,9 +54,9 @@ module SymArrayDmap
 
     :returns: [] ?etype
     */
-    proc makeDistArray(size:int, type etype) {
-        var a: [makeDistDom(size)] etype;
-        return a;
+    proc makeDistArray(size:int, type etype) throws {
+      var dom = makeDistDom(size);
+      return dom.tryCreateArray(etype);
     }
 
     /* 

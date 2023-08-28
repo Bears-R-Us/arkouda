@@ -1191,7 +1191,7 @@ module SegmentedString {
       return ranks;
     }
 
-    proc getFixes(n: int, kind: Fixes, proper: bool) {
+    proc getFixes(n: int, kind: Fixes, proper: bool) throws {
       const lengths = getLengths() - 1;
       var longEnough = makeDistArray(size, bool);
       if proper {

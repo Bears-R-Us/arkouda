@@ -9,7 +9,7 @@ module MultiTypeSymEntry
     use AryUtil;
 
     public use NumPyDType;
-    public use SymArrayDmap;
+    public use SymArrayDmapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -209,24 +209,6 @@ module MultiTypeSymEntry
         var max_bits = -1;
 
         /*
-        This init takes length and element type
-
-        :arg len: length of array to be allocated
-        :type len: int
-
-        :arg etype: type to be instantiated
-        :type etype: type
-        */
-        proc init(len: int, type etype) {
-            super.init(etype, len);
-            this.entryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
-            assignableTypes.add(this.entryType);
-
-            this.etype = etype;
-            this.a = makeDistArray(size, etype);
-        }
-
-        /*
         This init takes an array whose type matches `makeDistArray()`
 
         :arg a: array
@@ -240,18 +222,6 @@ module MultiTypeSymEntry
             this.etype = etype;
             this.a = a;
             this.max_bits=max_bits;
-        }
-
-        /*
-        This init takes an array whose type is defaultRectangular (convenience
-        function for creating a distributed array from a non-distributed one)
-
-        :arg a: array
-        :type a: [] ?etype
-        */
-        proc init(a: [?D] ?etype) where MyDmap != Dmap.defaultRectangular && a.isDefaultRectangular() {
-            this.init(D.size, etype);
-            this.a = a;
         }
 
         /*
@@ -324,6 +294,17 @@ module MultiTypeSymEntry
             return prefix + s + suffix;
         }
     }
+    
+    inline proc createSymEntry(len: int, type etype) throws {
+      var a = makeDistArray(len, etype);
+      return new shared SymEntry(a);
+    }
+
+    inline proc createSymEntry(a: [?D] ?etype) throws {
+      var A = makeDistArray(D.size, etype);
+      A = a;
+      return new shared SymEntry(A);
+    }
 
     /*
         Base class for any entry that consists of multiple SymEntries that have varying types.
@@ -353,7 +334,7 @@ module MultiTypeSymEntry
     */
     proc createTypedSymEntry(len: int, type t) throws {
         if t == bool {overMemLimit(len);} else {overMemLimit(len*numBytes(t));}
-        return new shared SymEntry(len, t);
+        return createSymEntry(len,t);
     }
 
     class SegStringSymEntry:GenSymEntry {

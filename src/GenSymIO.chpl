@@ -58,7 +58,7 @@ module GenSymIO {
                                           "dtype: %? size: %i".doFormat(dtype,size));
 
         proc bytesToSymEntry(size:int, type t, st: borrowed SymTab, ref data:bytes): string throws {
-            var entry = new shared SymEntry(size, t);
+            var entry = createSymEntry(size, t);
             var localA = makeArrayFromPtr(data.c_str():c_void_ptr:c_ptr(t), size:uint);
             entry.a = localA;
             var name = st.nextName();
@@ -90,7 +90,7 @@ module GenSymIO {
                     var values = toSymEntry( (g:GenSymEntry), uint(8) );
                     var offsets = segmentedCalcOffsets(values.a, values.a.domain);
                     var oname = st.nextName();
-                    var offsetsEntry = new shared SymEntry(offsets);
+                    var offsetsEntry = createSymEntry(offsets);
                     st.addEntry(oname, offsetsEntry);
                     msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
                 } else {
