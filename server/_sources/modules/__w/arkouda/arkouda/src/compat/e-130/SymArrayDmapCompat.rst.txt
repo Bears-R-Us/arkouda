@@ -1,21 +1,21 @@
 .. default-domain:: chpl
 
-.. module:: SymArrayDmap
+.. module:: SymArrayDmapCompat
 
-SymArrayDmap
-============
+SymArrayDmapCompat
+==================
 **Usage**
 
 .. code-block:: chapel
 
-   use SymArrayDmap;
+   use SymArrayDmapCompat;
 
 
 or
 
 .. code-block:: chapel
 
-   import SymArrayDmap;
+   import SymArrayDmapCompat;
 
 .. enum:: enum Dmap { defaultRectangular, blockDist }
 

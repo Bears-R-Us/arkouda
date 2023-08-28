@@ -291,7 +291,7 @@ or
 
    .. method:: proc argsort(checkSorted: bool = false): [offsets.a.domain] int throws
 
-   .. method:: proc getFixes(n: int, kind: Fixes, proper: bool)
+   .. method:: proc getFixes(n: int, kind: Fixes, proper: bool) throws
 
 .. function:: proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int
 

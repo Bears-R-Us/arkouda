@@ -73,7 +73,6 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/ServerErrors.html">ServerErrors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/SipHash.html">SipHash</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/StatusMsg.html">StatusMsg</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/arkouda_server.html">arkouda_server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
@@ -89,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/compat/e-130/SymArrayDmapCompat.html">SymArrayDmapCompat</a></li>
 </ul>
 
         </div>
@@ -615,10 +615,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannel.configureSsl">configureSsl() (ExternalIntegration.HttpChannel method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.connectUrl">connectUrl (ServerDaemon.DefaultServerDaemon attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.ConsoleOutputHandler">ConsoleOutputHandler (class in Logging)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.contains">contains() (Message.MessageArgs method)</a>
@@ -686,6 +686,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.createMsg">createMsg() (in module MsgProcessing)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.createServerConnectionInfo">createServerConnectionInfo() (ServerDaemon.DefaultServerDaemon method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.createSymEntry">createSymEntry() (in module MultiTypeSymEntry)</a>, <a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.createSymEntry">[1]</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.createTypedSymEntry">createTypedSymEntry() (in module MultiTypeSymEntry)</a>
 </li>
@@ -825,7 +827,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.deserialize">deserialize() (in module Message)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.Dmap">Dmap (in module SymArrayDmap)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/SymArrayDmapCompat.html#SymArrayDmapCompat.Dmap">Dmap (in module SymArrayDmapCompat)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaIOCompat.html#ArkoudaIOCompat.string.doFormat">doFormat() (ArkoudaIOCompat.string method)</a>
 </li>
@@ -1390,7 +1392,7 @@
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SegStringSymEntry.init">(MultiTypeSymEntry.SegStringSymEntry method)</a>
 </li>
-        <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.init">(MultiTypeSymEntry.SymEntry method)</a>, <a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.init">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.init">[2]</a>
+        <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.init">(MultiTypeSymEntry.SymEntry method)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.init">(SegmentedString.SegString method)</a>
 </li>
@@ -1657,11 +1659,11 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/arkouda_server.html#arkouda_server.main">main() (in module arkouda_server)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">makeDistArray() (in module SymArrayDmap)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/SymArrayDmapCompat.html#SymArrayDmapCompat.makeDistArray">makeDistArray() (in module SymArrayDmapCompat)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistDom">makeDistDom() (in module SymArrayDmap)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/SymArrayDmapCompat.html#SymArrayDmapCompat.makeDistDom">makeDistDom() (in module SymArrayDmapCompat)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistDomType">makeDistDomType() (in module SymArrayDmap)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/SymArrayDmapCompat.html#SymArrayDmapCompat.makeDistDomType">makeDistDomType() (in module SymArrayDmapCompat)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.markFreed">markFreed() (CommAggregation.remoteBuffer method)</a>
 </li>
@@ -1813,7 +1815,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#module-MultiTypeSymEntry">MultiTypeSymEntry (module)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.MyDmap">MyDmap (in module SymArrayDmap)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/SymArrayDmapCompat.html#SymArrayDmapCompat.MyDmap">MyDmap (in module SymArrayDmapCompat)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html#BigIntegerAggregation.DstAggregatorBigint.myLocaleSpace">myLocaleSpace (BigIntegerAggregation.DstAggregatorBigint attribute)</a>
 
@@ -2529,7 +2531,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.substringSearch">substringSearch() (SegmentedString.SegString method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#module-SymArrayDmap">SymArrayDmap (module)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-130/SymArrayDmapCompat.html#module-SymArrayDmapCompat">SymArrayDmapCompat (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymbolEntryType">SymbolEntryType (in module MultiTypeSymEntry)</a>
 </li>
