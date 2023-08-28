@@ -1753,12 +1753,12 @@ Attributes
       Return the maximum value of the array.
 
 
-   .. py:method:: argmin() -> numpy.int64
+   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array min value
 
 
-   .. py:method:: argmax() -> numpy.int64
+   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array max value.
 
@@ -4475,12 +4475,12 @@ Attributes
       Return the maximum value of the array.
 
 
-   .. py:method:: argmin() -> numpy.int64
+   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array min value
 
 
-   .. py:method:: argmax() -> numpy.int64
+   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array max value.
 
@@ -5268,7 +5268,7 @@ Attributes
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: argmin(pda: pdarray) -> numpy.int64
+.. py:function:: argmin(pda: pdarray) -> Union[numpy.int64, numpy.uint64]
 
    Return the index of the first occurrence of the array min value.
 
@@ -5276,13 +5276,13 @@ Attributes
    :type pda: pdarray
 
    :returns: The index of the argmin calculated from the pda
-   :rtype: np.int64
+   :rtype: Union[np.int64, np.uint64]
 
    :raises TypeError: Raised if pda is not a pdarray instance
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: argmax(pda: pdarray) -> numpy.int64
+.. py:function:: argmax(pda: pdarray) -> Union[numpy.int64, numpy.uint64]
 
    Return the index of the first occurrence of the array max value.
 
@@ -5290,7 +5290,7 @@ Attributes
    :type pda: pdarray
 
    :returns: The index of the argmax calculated from the pda
-   :rtype: np.int64
+   :rtype: Union[np.int64, np.uint64]
 
    :raises TypeError: Raised if pda is not a pdarray instance
    :raises RuntimeError: Raised if there's a server-side error thrown
@@ -10108,12 +10108,12 @@ Attributes
       Return the maximum value of the array.
 
 
-   .. py:method:: argmin() -> numpy.int64
+   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array min value
 
 
-   .. py:method:: argmax() -> numpy.int64
+   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array max value.
 
@@ -12612,12 +12612,12 @@ Attributes
       Return the maximum value of the array.
 
 
-   .. py:method:: argmin() -> numpy.int64
+   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array min value
 
 
-   .. py:method:: argmax() -> numpy.int64
+   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array max value.
 
@@ -17568,12 +17568,12 @@ Attributes
       Return the maximum value of the array.
 
 
-   .. py:method:: argmin() -> numpy.int64
+   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array min value
 
 
-   .. py:method:: argmax() -> numpy.int64
+   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array max value.
 

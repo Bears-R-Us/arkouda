@@ -231,17 +231,25 @@ Classes
       :rtype: Categorical
 
 
-   .. py:method:: contains(substr: str) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: contains(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element contains the given substring.
 
       :param substr: The substring to search for
-      :type substr: str
+      :type substr: Union[bytes, str_scalars]
+      :param regex: Indicates whether substr is a regular expression
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
+      :type regex: bool
 
       :returns: True for elements that contain substr, False otherwise
       :rtype: pdarray, bool
 
-      :raises TypeError: Raised if substr is not a str
+      :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
+      :raises ValueError: Rasied if substr is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.endswith`
 
       .. rubric:: Notes
 
@@ -249,20 +257,26 @@ Classes
       on Strings objects, because it searches the unique category labels
       instead of the full array.
 
-      .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.endswith`
 
-
-   .. py:method:: startswith(substr: str) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: startswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element starts with the given substring.
 
       :param substr: The substring to search for
-      :type substr: str
+      :type substr: Union[bytes, str_scalars]
+      :param regex: Indicates whether substr is a regular expression
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
+      :type regex: bool
 
-      :raises TypeError: Raised if substr is not a str
-
-      :returns: True for elements that contain substr, False otherwise
+      :returns: True for elements that start with substr, False otherwise
       :rtype: pdarray, bool
+
+      :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
+      :raises ValueError: Rasied if substr is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Categorical.contains`, :obj:`Categorical.endswith`
 
       .. rubric:: Notes
 
@@ -270,28 +284,32 @@ Classes
       method on Strings objects, because it searches the unique category
       labels instead of the full array.
 
-      .. seealso:: :obj:`Categorical.contains`, :obj:`Categorical.endswith`
 
-
-   .. py:method:: endswith(substr: str) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: endswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
 
       :param substr: The substring to search for
-      :type substr: str
+      :type substr: Union[bytes, str_scalars]
+      :param regex: Indicates whether substr is a regular expression
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
+      :type regex: bool
 
-      :raises TypeError: Raised if substr is not a str
-
-      :returns: True for elements that contain substr, False otherwise
+      :returns: True for elements that end with substr, False otherwise
       :rtype: pdarray, bool
+
+      :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
+      :raises ValueError: Rasied if substr is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.contains`
 
       .. rubric:: Notes
 
       This method can be significantly faster than the corresponding method
       on Strings objects, because it searches the unique category labels
       instead of the full array.
-
-      .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.contains`
 
 
    .. py:method:: in1d(test: Union[arkouda.strings.Strings, Categorical]) -> arkouda.pdarrayclass.pdarray

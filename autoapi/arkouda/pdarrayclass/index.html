@@ -320,10 +320,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.max" title="arkouda.pdarrayclass.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></a>(→ arkouda.dtypes.numpy_scalars)</p></td>
 <td><p>Return the maximum value of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmin" title="arkouda.pdarrayclass.argmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmin</span></code></a>(→ numpy.int64)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmin" title="arkouda.pdarrayclass.argmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmin</span></code></a>(→ Union[numpy.int64, numpy.uint64])</p></td>
 <td><p>Return the index of the first occurrence of the array min value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmax" title="arkouda.pdarrayclass.argmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmax</span></code></a>(→ numpy.int64)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmax" title="arkouda.pdarrayclass.argmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmax</span></code></a>(→ Union[numpy.int64, numpy.uint64])</p></td>
 <td><p>Return the index of the first occurrence of the array max value.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mean" title="arkouda.pdarrayclass.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a>(→ numpy.float64)</p></td>
@@ -652,13 +652,13 @@ always a np.float64 or np.int64.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.argmin">
-<span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.int64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.argmin" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.int64</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.uint64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.argmin" title="Link to this definition">#</a></dt>
 <dd><p>Return the index of the first occurrence of the array min value</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.argmax">
-<span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.int64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.argmax" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.int64</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.uint64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.argmax" title="Link to this definition">#</a></dt>
 <dd><p>Return the index of the first occurrence of the array max value.</p>
 </dd></dl>
 
@@ -1685,7 +1685,7 @@ always a np.float64 or np.int64</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.argmin">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.int64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.argmin" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.int64</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.uint64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.argmin" title="Link to this definition">#</a></dt>
 <dd><p>Return the index of the first occurrence of the array min value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1695,7 +1695,7 @@ always a np.float64 or np.int64</p>
 <dd class="field-even"><p>The index of the argmin calculated from the pda</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.int64</p>
+<dd class="field-odd"><p>Union[np.int64, np.uint64]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1708,7 +1708,7 @@ always a np.float64 or np.int64</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.argmax">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.int64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.argmax" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.int64</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.uint64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.argmax" title="Link to this definition">#</a></dt>
 <dd><p>Return the index of the first occurrence of the array max value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1718,7 +1718,7 @@ always a np.float64 or np.int64</p>
 <dd class="field-even"><p>The index of the argmax calculated from the pda</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.int64</p>
+<dd class="field-odd"><p>Union[np.int64, np.uint64]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">

@@ -585,11 +585,16 @@ other operations.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.contains">
-<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.contains" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.contains" title="Link to this definition">#</a></dt>
 <dd><p>Check whether each element contains the given substring.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>substr</strong> (<em>str</em>) – The substring to search for</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>substr</strong> (<em>Union</em><em>[</em><em>bytes</em><em>, </em><em>str_scalars</em><em>]</em>) – The substring to search for</p></li>
+<li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
+Note: only handles regular expressions supported by re2
+(does not support lookaheads/lookbehinds)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True for elements that contain substr, False otherwise</p>
@@ -598,73 +603,95 @@ other operations.</p>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, bool</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if substr is not a str</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the substr parameter is not bytes or str_scalars</p></li>
+<li><p><strong>ValueError</strong> – Rasied if substr is not a valid regex</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>This method can be significantly faster than the corresponding method
-on Strings objects, because it searches the unique category labels
-instead of the full array.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.categorical.Categorical.startswith" title="arkouda.categorical.Categorical.startswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.startswith</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.endswith" title="arkouda.categorical.Categorical.endswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.endswith</span></code></a></p>
 </div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.categorical.Categorical.startswith">
-<span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.startswith" title="Link to this definition">#</a></dt>
-<dd><p>Check whether each element starts with the given substring.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>substr</strong> (<em>str</em>) – The substring to search for</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if substr is not a str</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True for elements that contain substr, False otherwise</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, bool</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This method can be significantly faster than the corresponding
-method on Strings objects, because it searches the unique category
-labels instead of the full array.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.categorical.Categorical.contains" title="arkouda.categorical.Categorical.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.contains</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.endswith" title="arkouda.categorical.Categorical.endswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.endswith</span></code></a></p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.categorical.Categorical.endswith">
-<span class="sig-name descname"><span class="pre">endswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.endswith" title="Link to this definition">#</a></dt>
-<dd><p>Check whether each element ends with the given substring.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>substr</strong> (<em>str</em>) – The substring to search for</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if substr is not a str</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True for elements that contain substr, False otherwise</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, bool</p>
-</dd>
-</dl>
 <p class="rubric">Notes</p>
 <p>This method can be significantly faster than the corresponding method
 on Strings objects, because it searches the unique category labels
 instead of the full array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.categorical.Categorical.startswith">
+<span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.startswith" title="Link to this definition">#</a></dt>
+<dd><p>Check whether each element starts with the given substring.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>substr</strong> (<em>Union</em><em>[</em><em>bytes</em><em>, </em><em>str_scalars</em><em>]</em>) – The substring to search for</p></li>
+<li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
+Note: only handles regular expressions supported by re2
+(does not support lookaheads/lookbehinds)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True for elements that start with substr, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the substr parameter is not bytes or str_scalars</p></li>
+<li><p><strong>ValueError</strong> – Rasied if substr is not a valid regex</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.contains" title="arkouda.categorical.Categorical.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.contains</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.endswith" title="arkouda.categorical.Categorical.endswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.endswith</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>This method can be significantly faster than the corresponding
+method on Strings objects, because it searches the unique category
+labels instead of the full array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.categorical.Categorical.endswith">
+<span class="sig-name descname"><span class="pre">endswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.endswith" title="Link to this definition">#</a></dt>
+<dd><p>Check whether each element ends with the given substring.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>substr</strong> (<em>Union</em><em>[</em><em>bytes</em><em>, </em><em>str_scalars</em><em>]</em>) – The substring to search for</p></li>
+<li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
+Note: only handles regular expressions supported by re2
+(does not support lookaheads/lookbehinds)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True for elements that end with substr, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the substr parameter is not bytes or str_scalars</p></li>
+<li><p><strong>ValueError</strong> – Rasied if substr is not a valid regex</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.categorical.Categorical.startswith" title="arkouda.categorical.Categorical.startswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.startswith</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.contains" title="arkouda.categorical.Categorical.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.contains</span></code></a></p>
 </div>
+<p class="rubric">Notes</p>
+<p>This method can be significantly faster than the corresponding method
+on Strings objects, because it searches the unique category labels
+instead of the full array.</p>
 </dd></dl>
 
 <dl class="py method">
