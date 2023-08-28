@@ -1276,6 +1276,47 @@ class TestHDF5:
             ret_idx = ak.read_hdf(f"{file_name}*")
             assert (idx == ret_idx).all()
 
+    def test_special_objtype(self):
+        """
+                This test is simply to ensure that the dtype is persisted through the io
+                operation. It ultimately uses the process of pdarray, but need to ensure
+                correct Arkouda Object Type is returned
+                """
+        ip = ak.IPv4(ak.arange(10))
+        dt = ak.Datetime(ak.arange(10))
+        td = ak.Timedelta(ak.arange(10))
+        df = ak.DataFrame({
+            "ip": ip,
+            "datetime": dt,
+            "timedelta": td
+        })
+
+        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            ip.to_hdf(f"{tmp_dirname}/ip_test")
+            rd_ip = ak.read_hdf(f"{tmp_dirname}/ip_test*")
+            assert isinstance(rd_ip, ak.IPv4)
+            assert ip.to_list() == rd_ip.to_list()
+
+            dt.to_hdf(f"{tmp_dirname}/dt_test")
+            rd_dt = ak.read_hdf(f"{tmp_dirname}/dt_test*")
+            assert isinstance(rd_dt, ak.Datetime)
+            assert dt.to_list() == rd_dt.to_list()
+
+            td.to_hdf(f"{tmp_dirname}/td_test")
+            rd_td = ak.read_hdf(f"{tmp_dirname}/td_test*")
+            assert isinstance(rd_td, ak.Timedelta)
+            assert td.to_list() == rd_td.to_list()
+
+            df.to_hdf(f"{tmp_dirname}/df_test")
+            rd_df = ak.read_hdf(f"{tmp_dirname}/df_test*")
+
+            assert isinstance(rd_df["ip"], ak.IPv4)
+            assert isinstance(rd_df["datetime"], ak.Datetime)
+            assert isinstance(rd_df["timedelta"], ak.Timedelta)
+            assert df["ip"].to_list() == rd_df["ip"].to_list()
+            assert df["datetime"].to_list() == rd_df["datetime"].to_list()
+            assert df["timedelta"].to_list() == rd_df["timedelta"].to_list()
+
 
 class TestCSV:
     csv_test_base_tmp = f"{os.getcwd()}/csv_io_test"

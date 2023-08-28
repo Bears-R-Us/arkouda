@@ -202,23 +202,24 @@ module GenSymIO {
             item.add("dataset_name", dsetName.replace(Q, ESCAPED_QUOTES, -1));
             item.add("arkouda_type", akType: string);
             var create_str: string;
-            if akType == ObjType.ARRAYVIEW {
-                var (valName, segName) = id.splitMsgToTuple("+", 2);
+            select akType {
+                when ObjType.ARRAYVIEW {
+                    var (valName, segName) = id.splitMsgToTuple("+", 2);
                 create_str = "created " + st.attrib(valName) + "+created " + st.attrib(segName);
-            }
-            else if akType == ObjType.PDARRAY {
-                create_str = "created " + st.attrib(id);
-            }
-            else if akType == ObjType.STRINGS {
-                var (segName, nBytes) = id.splitMsgToTuple("+", 2);
-                create_str = "created " + st.attrib(segName) + "+created bytes.size " + nBytes;
-            }
-            else if (akType == ObjType.SEGARRAY || akType == ObjType.CATEGORICAL || 
-                        akType == ObjType.GROUPBY || akType == ObjType.DATAFRAME) {
-                create_str = id;
-            }
-            else {
-                continue;
+                }
+                when ObjType.PDARRAY, ObjType.IPV4, ObjType.DATETIME, ObjType.TIMEDELTA {
+                    create_str = "created " + st.attrib(id);
+                }
+                when ObjType.STRINGS {
+                    var (segName, nBytes) = id.splitMsgToTuple("+", 2);
+                    create_str = "created " + st.attrib(segName) + "+created bytes.size " + nBytes;
+                }
+                when ObjType.SEGARRAY, ObjType.CATEGORICAL, ObjType.GROUPBY, ObjType.DATAFRAME {
+                    create_str = id;
+                }
+                otherwise {
+                    continue;
+                }
             }
             item.add("created", create_str);
             items.pushBack(item);

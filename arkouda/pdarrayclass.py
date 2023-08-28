@@ -1518,7 +1518,7 @@ class pdarray:
                     "write_mode": _mode_str_to_int(mode),
                     "filename": prefix_path,
                     "dtype": self.dtype,
-                    "objType": "pdarray",
+                    "objType": self.objType,
                     "file_format": _file_type_to_int(file_type),
                 },
             ),
