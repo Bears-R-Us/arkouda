@@ -134,7 +134,7 @@ class RequestMode(Enum):
     """
     SYNCHRONOUS = 'SYNCHRONOUS'
     ASYNCHRONOUS = 'ASYNCHRONOUS'
-    
+
     def __str__(self) -> str:
         """
         Overridden method returns value.
@@ -150,13 +150,13 @@ class RequestMode(Enum):
 
 class RequestStatus(Enum):
     """
-    The RequestStatus Enum indicates whether an asynchronous method 
+    The RequestStatus Enum indicates whether an asynchronous method
     invocation has completed.
     """
     PENDING = 'PENDING'
     RUNNING = 'RUNNING'
     COMPLETE = 'COMPLETE'
-    
+
     def __str__(self) -> str:
         """
         Overridden method returns value.
@@ -169,19 +169,6 @@ class RequestStatus(Enum):
         """
         return self.value
 
-
-def get_request_id() -> str:
-    """
-    Returns a randomized 32 character alphanumeric string that serves as a means
-    of differentiating each incoming Arkouda request.
-    
-    Returns
-    -------
-    str
-        A randomized alphanumeric string that serves as a request id
-    """
-    import random, string
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
 
 def get_shell_mode():
     """
@@ -287,6 +274,20 @@ class Channel():
         self.user = user
         self._set_access_token(server, port, token)
         self.logger = getArkoudaLogger(name="Arkouda Client")
+
+    def _generate_request_id(self) -> str:
+        """
+        Returns a randomized 32 character alphanumeric string that serves as a means
+        of differentiating each incoming Arkouda request.
+
+        Returns
+        -------
+        str
+            A randomized alphanumeric string that serves as a request id
+        """
+        import random
+        import string
+        return ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
 
     def _set_url(self, server: str, port: int, connect_url: str = None) -> None:
         """
@@ -1114,6 +1115,7 @@ def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
     except Exception as e:
         raise RuntimeError(f"{e} in retrieving Arkouda server config")
 
+
 def get_request_status(request_id: str) -> RequestStatus:
     """
     Retrieves the status of the Arkouda request corresponding to the request_id.
@@ -1127,7 +1129,7 @@ def get_request_status(request_id: str) -> RequestStatus:
     -------
     RequestStatus
         The RequestStatus enum that indicates if the request is pending, running, or complete
-        
+
 
     Raises
     ------
@@ -1138,8 +1140,9 @@ def get_request_status(request_id: str) -> RequestStatus:
     if channelType == ChannelType.ZMQ:
         raise NotImplementedError('Request status functionality is unsupported by ZmqChannel')
 
-    raw_message = cast(str, generic_msg(cmd="getrequeststatus", args=f'{request_id}'))
+    raw_message = cast(str, generic_msg(cmd="getrequeststatus", args={'request_id': f'{request_id}'}))
     return json.loads(raw_message)
+
 
 def get_server_commands() -> Mapping[str, str]:
     """
