@@ -1037,6 +1037,21 @@ class TestHDF5:
                 else:
                     assert g_load.keys.to_list() == g.keys.to_list()
 
+    def test_hdf_categorical(self):
+        cat = ak.Categorical(ak.array(["a", "b", "a", "b", "c"]))
+        cat_from_codes = ak.Categorical.from_codes(
+            codes=ak.array([0, 1, 0, 1, 2]), categories=ak.array(["a", "b", "c"])
+        )
+        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            for c in cat, cat_from_codes:
+                c.to_hdf(f"{tmp_dirname}/categorical_test")
+                c_load = ak.read(f"{tmp_dirname}/categorical_test*")
+
+                assert c_load.categories.to_list() == (["a", "b", "c", "N/A"])
+                if c.segments is not None:
+                    assert c.segments.to_list() == c_load.segments.to_list()
+                    assert c.permutation.to_list() == c_load.permutation.to_list()
+
     def test_hdf_overwrite_pdarray(self):
         # test repack with a single object
         a = ak.arange(1000)
@@ -1114,6 +1129,20 @@ class TestHDF5:
                 assert new_size < orig_size if repack else new_size >= orig_size
                 data = ak.read_hdf(f"{file_name}*")
                 assert (data["test_cat"] == c).all()
+
+            dset_name = "categorical_array"  # name of categorical array
+            dset_name2 = "to_replace"
+            dset_name3 = "cat_array2"
+            a.to_hdf(file_name, dataset=dset_name)
+            b.to_hdf(file_name, dataset=dset_name2, mode="append")
+            c.to_hdf(file_name, dataset=dset_name3, mode="append")
+
+            a.update_hdf(file_name, dataset=dset_name2)
+            data = ak.read_hdf(f"{file_name}*")
+            assert all(name in data for name in (dset_name, dset_name2, dset_name3))
+            d = data[dset_name2]
+            for attr in "categories", "codes", "permutation", "segments", "_akNAcode":
+                assert getattr(d, attr).to_list() == getattr(a, attr).to_list()
 
     def test_hdf_overwrite_dataframe(self):
         df = ak.DataFrame(
