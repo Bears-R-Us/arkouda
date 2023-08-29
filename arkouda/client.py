@@ -275,20 +275,6 @@ class Channel():
         self._set_access_token(server, port, token)
         self.logger = getArkoudaLogger(name="Arkouda Client")
 
-    def _generate_request_id(self) -> str:
-        """
-        Returns a randomized 32 character alphanumeric string that serves as a means
-        of differentiating each incoming Arkouda request.
-
-        Returns
-        -------
-        str
-            A randomized alphanumeric string that serves as a request id
-        """
-        import random
-        import string
-        return ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
-
     def _set_url(self, server: str, port: int, connect_url: str = None) -> None:
         """
         If the connect_url is None, generates and sets the Channel url per the
@@ -1114,34 +1100,6 @@ def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
         raise ValueError(f"Returned memory status is not valid JSON: {raw_message}")
     except Exception as e:
         raise RuntimeError(f"{e} in retrieving Arkouda server config")
-
-
-def get_request_status(request_id: str) -> RequestStatus:
-    """
-    Retrieves the status of the Arkouda request corresponding to the request_id.
-
-    Parameters
-     ----------
-     request_id : Optional[str]
-         id of the request of interest
-
-    Returns
-    -------
-    RequestStatus
-        The RequestStatus enum that indicates if the request is pending, running, or complete
-
-
-    Raises
-    ------
-    RuntimeError
-        Raised if there is a server-side error in executing get_request_status request
-    """
-    # get_request_status is not supported for the default ZmqChannel
-    if channelType == ChannelType.ZMQ:
-        raise NotImplementedError('Request status functionality is unsupported by ZmqChannel')
-
-    raw_message = cast(str, generic_msg(cmd="getrequeststatus", args={'request_id': f'{request_id}'}))
-    return json.loads(raw_message)
 
 
 def get_server_commands() -> Mapping[str, str]:
