@@ -361,7 +361,7 @@ module ConcatenateMsg
                               start += o.size;
                             }
                         }
-                        st.addEntry(rname, new shared SymEntry(tmp, max_bits));
+                        st.addEntry(rname, createSymEntry(tmp, max_bits));
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                          "created concatenated pdarray: %s".doFormat(st.attrib(rname)));
                     }

@@ -66,28 +66,28 @@ module TimeClassMsg {
         }
 
         var retname = st.nextName();
-        st.addEntry(retname, new shared SymEntry(day));
+        st.addEntry(retname, createSymEntry(day));
         attributesDict.addOrReplace("day", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
-        st.addEntry(retname, new shared SymEntry(month));
+        st.addEntry(retname, createSymEntry(month));
         attributesDict.add("month", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
-        st.addEntry(retname, new shared SymEntry(year));
+        st.addEntry(retname, createSymEntry(year));
         attributesDict.add("year", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
-        st.addEntry(retname, new shared SymEntry(is_leap_year));
+        st.addEntry(retname, createSymEntry(is_leap_year));
         attributesDict.add("isLeapYear", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
-        st.addEntry(retname, new shared SymEntry(dayOfYear));
+        st.addEntry(retname, createSymEntry(dayOfYear));
         attributesDict.add("dayOfYear", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
-        st.addEntry(retname, new shared SymEntry(isoYear));
+        st.addEntry(retname, createSymEntry(isoYear));
         attributesDict.add("isoYear", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
-        st.addEntry(retname, new shared SymEntry(weekOfYear));
+        st.addEntry(retname, createSymEntry(weekOfYear));
         attributesDict.add("weekOfYear", "created %s".doFormat(st.attrib(retname)));
         retname = st.nextName();
-        st.addEntry(retname, new shared SymEntry(dayOfWeek));
+        st.addEntry(retname, createSymEntry(dayOfWeek));
         attributesDict.add("dayOfWeek", "created %s".doFormat(st.attrib(retname)));
 
         var repMsg: string = formatJson(attributesDict);

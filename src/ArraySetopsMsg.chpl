@@ -58,7 +58,7 @@ module ArraySetopsMsg
             var f = toSymEntry(gEnt2,int);
 
             var aV = intersect1d(e.a, f.a, isUnique);
-            st.addEntry(vname, new shared SymEntry(aV));
+            st.addEntry(vname, createSymEntry(aV));
 
             repMsg = "created " + st.attrib(vname);
             asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -69,7 +69,7 @@ module ArraySetopsMsg
             var f = toSymEntry(gEnt2,uint);
 
             var aV = intersect1d(e.a, f.a, isUnique);
-            st.addEntry(vname, new shared SymEntry(aV));
+            st.addEntry(vname, createSymEntry(aV));
 
             repMsg = "created " + st.attrib(vname);
             asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -112,7 +112,7 @@ module ArraySetopsMsg
              var f = toSymEntry(gEnt2,int);
              
              var aV = setxor1d(e.a, f.a, isUnique);
-             st.addEntry(vname, new shared SymEntry(aV));
+             st.addEntry(vname, createSymEntry(aV));
 
              repMsg = "created " + st.attrib(vname);
              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -123,7 +123,7 @@ module ArraySetopsMsg
              var f = toSymEntry(gEnt2,uint);
              
              var aV = setxor1d(e.a, f.a, isUnique);
-             st.addEntry(vname, new shared SymEntry(aV));
+             st.addEntry(vname, createSymEntry(aV));
 
              repMsg = "created " + st.attrib(vname);
              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -166,7 +166,7 @@ module ArraySetopsMsg
              var f = toSymEntry(gEnt2, int);
              
              var aV = setdiff1d(e.a, f.a, isUnique);
-             st.addEntry(vname, new shared SymEntry(aV));
+             st.addEntry(vname, createSymEntry(aV));
 
              var repMsg = "created " + st.attrib(vname);
              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -177,7 +177,7 @@ module ArraySetopsMsg
              var f = toSymEntry(gEnt2, uint);
              
              var aV = setdiff1d(e.a, f.a, isUnique);
-             st.addEntry(vname, new shared SymEntry(aV));
+             st.addEntry(vname, createSymEntry(aV));
 
              var repMsg = "created " + st.attrib(vname);
              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -219,7 +219,7 @@ module ArraySetopsMsg
            var f = toSymEntry(gEnt2,int);
 
            var aV = union1d(e.a, f.a);
-           st.addEntry(vname, new shared SymEntry(aV));
+           st.addEntry(vname, createSymEntry(aV));
 
            var repMsg = "created " + st.attrib(vname);
            asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -230,7 +230,7 @@ module ArraySetopsMsg
            var f = toSymEntry(gEnt2,uint);
 
            var aV = union1d(e.a, f.a);
-           st.addEntry(vname, new shared SymEntry(aV));
+           st.addEntry(vname, createSymEntry(aV));
 
            var repMsg = "created " + st.attrib(vname);
            asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);

@@ -630,32 +630,32 @@ module ParquetMsg {
     var listSizes: [filedom] int = calcListSizesandOffset(seg_sizes, filenames, sizes, dsetname);
     var segments = (+ scan seg_sizes) - seg_sizes; // converts segment sizes into offsets
     var sname = st.nextName();
-    st.addEntry(sname, new shared SymEntry(segments));
+    st.addEntry(sname, createSymEntry(segments));
     rtnmap.add("segments", "created " + st.attrib(sname));
 
     var vname = st.nextName();
     if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
       var values = makeDistArray((+ reduce listSizes), int);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
       var values = makeDistArray((+ reduce listSizes), uint);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.double || ty == ArrowTypes.float {
       var values = makeDistArray((+ reduce listSizes), real);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.boolean {
       var values = makeDistArray((+ reduce listSizes), bool);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.stringArr {
