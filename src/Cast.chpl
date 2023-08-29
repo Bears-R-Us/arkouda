@@ -48,7 +48,7 @@ module Cast {
       castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return "Error: %s".doFormat(errorMsg);
     }
-    var after = st.addEntry(name, new shared SymEntry(tmp));
+    var after = st.addEntry(name, createSymEntry(tmp));
 
     var returnMsg = "created " + st.attrib(name);
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
@@ -185,11 +185,11 @@ module Cast {
       // do something like segmented computation w/o the aggregation
       select errors {
         when ErrorMode.strict {
-          var entry = st.addEntry(name, new shared SymEntry(computeOnSegmentsWithoutAggregation(oa, va, SegFunction.StringToNumericStrict, bigint)));
+          var entry = st.addEntry(name, createSymEntry(computeOnSegmentsWithoutAggregation(oa, va, SegFunction.StringToNumericStrict, bigint)));
           returnMsg = "created " + st.attrib(name);
         }
         when ErrorMode.ignore {
-          var entry = st.addEntry(name, new shared SymEntry(computeOnSegmentsWithoutAggregation(oa, va, SegFunction.StringToNumericIgnore, bigint)));
+          var entry = st.addEntry(name, createSymEntry(computeOnSegmentsWithoutAggregation(oa, va, SegFunction.StringToNumericIgnore, bigint)));
           returnMsg = "created " + st.attrib(name);
         }
         when ErrorMode.return_validity {
@@ -200,7 +200,7 @@ module Cast {
           forall (t, v, vf) in zip(tmp, valid.a, valWithFlag) {
             (t, v) = vf;
           }
-          var entry = st.addEntry(name, new shared SymEntry(tmp));
+          var entry = st.addEntry(name, createSymEntry(tmp));
           returnMsg = "created " + st.attrib(name);
           returnMsg += "+created " + st.attrib(vname);
         }

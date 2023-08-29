@@ -290,7 +290,7 @@ module ReductionMsg
           return new MsgTuple(errorMsg, MsgType.ERROR); 
       }
       var counts = segCount(segments.a, size);
-      st.addEntry(rname, new shared SymEntry(counts));
+      st.addEntry(rname, createSymEntry(counts));
 
       var repMsg = "created " + st.attrib(rname);
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       
@@ -366,59 +366,59 @@ module ReductionMsg
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "prod" {
                         var res = segProduct(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "var" {
                         var res = segVar(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "std" {
                         var res = segStd(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "mean" {
                         var res = segMean(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "median" {
                         var res = segMedian(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "min" {
                         var res = segMin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "max" {
                         var res = segMax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "argmin" {
                         var (vals, locs) = segArgmin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "argmax" {
                         var (vals, locs) = segArgmax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "or" {
                         var res = segOr(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "and" {
                         var res = segAnd(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "xor" {
                         var res = segXor(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "nunique" {
                         var res = segNumUnique(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
@@ -432,59 +432,59 @@ module ReductionMsg
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "prod" {
                         var res = segProduct(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "var" {
                         var res = segVar(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "std" {
                         var res = segStd(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "mean" {
                         var res = segMean(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "median" {
                         var res = segMedian(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "min" {
                         var res = segMin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "max" {
                         var res = segMax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "argmin" {
                         var (vals, locs) = segArgmin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "argmax" {
                         var (vals, locs) = segArgmax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "or" {
                         var res = segOr(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "and" {
                         var res = segAnd(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "xor" {
                         var res = segXor(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "nunique" {
                         var res = segNumUnique(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
@@ -498,43 +498,43 @@ module ReductionMsg
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "prod" {
                         var res = segProduct(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     } 
                     when "var" {
                         var res = segVar(values.a, segments.a, ddof, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "std" {
                         var res = segStd(values.a, segments.a, ddof, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "mean" {
                         var res = segMean(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "median" {
                         var res = segMedian(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "min" {
                         var res = segMin(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "max" {
                         var res = segMax(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "argmin" {
                         var (vals, locs) = segArgmin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "argmax" {
                         var (vals, locs) = segArgmax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
@@ -548,39 +548,39 @@ module ReductionMsg
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "any" {
                         var res = segAny(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "all" {
                         var res = segAll(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "var" {
                         var res = segVar(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "std" {
                         var res = segStd(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "mean" {
                         var res = segMean(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "median" {
                         var res = segMedian(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "argmin" {
                         var (vals, locs) = segArgmin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "argmax" {
                         var (vals, locs) = segArgmax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
@@ -599,32 +599,32 @@ module ReductionMsg
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "min" {
                         if !has_max_bits {
                           throw new Error("Must set max_bits to MIN");
                         }
                         var res = segMin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "max" {
                         if !has_max_bits {
                           throw new Error("Must set max_bits to MAX");
                         }
                         var res = segMax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "or" {
                         var res = segOr(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "and" {
                         if !has_max_bits {
                           throw new Error("Must set max_bits to AND");
                         }
                         var res = segAnd(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);

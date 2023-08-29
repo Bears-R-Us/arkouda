@@ -54,9 +54,9 @@ module HashMsg {
     st.checkTable(codesName);
     var (upper, lower) = categoricalHash(categoriesName, codesName, st);
     var upperName = st.nextName();
-    st.addEntry(upperName, new shared SymEntry(upper));
+    st.addEntry(upperName, createSymEntry(upper));
     var lowerName = st.nextName();
-    st.addEntry(lowerName, new shared SymEntry(lower));
+    st.addEntry(lowerName, createSymEntry(lower));
     var createdMap = new map(keyType=string,valType=string);
     createdMap.add("upperHash", "created %s".doFormat(st.attrib(upperName)));
     createdMap.add("lowerHash", "created %s".doFormat(st.attrib(lowerName)));
@@ -83,9 +83,9 @@ module HashMsg {
     }
 
     var upperName = st.nextName();
-    st.addEntry(upperName, new shared SymEntry(upper));
+    st.addEntry(upperName, createSymEntry(upper));
     var lowerName = st.nextName();
-    st.addEntry(lowerName, new shared SymEntry(lower));
+    st.addEntry(lowerName, createSymEntry(lower));
 
     var createdMap = new map(keyType=string,valType=string);
     createdMap.add("upperHash", "created %s".doFormat(st.attrib(upperName)));

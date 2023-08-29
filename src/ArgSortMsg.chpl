@@ -257,7 +257,7 @@ module ArgSortMsg
           var merged = mergeNumericArrays(numDigits, arrSize, totalDigits, bitWidths, negs, names, st);
 
           var iv = argsortDefault(merged, algorithm=algorithm);
-          st.addEntry(ivname, new shared SymEntry(iv));
+          st.addEntry(ivname, createSymEntry(iv));
 
           var repMsg = "created " + st.attrib(ivname);
           asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -360,17 +360,17 @@ module ArgSortMsg
                 when (DType.Int64) {
                     var e = toSymEntry(gEnt,int);
                     var iv = argsortDefault(e.a, algorithm=algorithm);
-                    st.addEntry(ivname, new shared SymEntry(iv));
+                    st.addEntry(ivname, createSymEntry(iv));
                 }
                 when (DType.UInt64) {
                     var e = toSymEntry(gEnt,uint);
                     var iv = argsortDefault(e.a, algorithm=algorithm);
-                    st.addEntry(ivname, new shared SymEntry(iv));
+                    st.addEntry(ivname, createSymEntry(iv));
                 }
                 when (DType.Float64) {
                     var e = toSymEntry(gEnt, real);
                     var iv = argsortDefault(e.a);
-                    st.addEntry(ivname, new shared SymEntry(iv));
+                    st.addEntry(ivname, createSymEntry(iv));
                 }
                 otherwise {
                     var errorMsg = notImplementedError(pn,gEnt.dtype);
@@ -385,7 +385,7 @@ module ArgSortMsg
             overMemLimit((8 * strings.size * 8)
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
             var iv = strings.argsort();
-            st.addEntry(ivname, new shared SymEntry(iv));
+            st.addEntry(ivname, createSymEntry(iv));
           }
           otherwise {
               var errorMsg = notImplementedError(pn, objtype: string);

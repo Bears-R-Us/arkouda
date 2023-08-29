@@ -89,9 +89,9 @@
         }
 
         var s_name = st.nextName();
-        st.addEntry(s_name, new shared SymEntry(rsegs));
+        st.addEntry(s_name, createSymEntry(rsegs));
         var v_name = st.nextName();
-        st.addEntry(v_name, new shared SymEntry(rvals));
+        st.addEntry(v_name, createSymEntry(rvals));
 
         return "SegArray+%s+created %s+created %s".doFormat(col, st.attrib(s_name), st.attrib(v_name));
     }

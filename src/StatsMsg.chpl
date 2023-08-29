@@ -290,7 +290,7 @@ module StatsMsg {
                 corrPdarray[j] = corrHelper(d1gEnt, d2gEnt);
             }
             var retname = st.nextName();
-            st.addEntry(retname, new shared SymEntry(corrPdarray));
+            st.addEntry(retname, createSymEntry(corrPdarray));
             corrDict.add(col, "created %s".doFormat(st.attrib(retname)));
         }
         var repMsg: string = formatJson(corrDict);

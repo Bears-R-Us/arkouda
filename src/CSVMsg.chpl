@@ -400,7 +400,7 @@ module CSVMsg {
                 when DType.Int64 {
                     var a = makeDistArray(record_count, int);
                     read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
-                    var entry = new shared SymEntry(a);
+                    var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
                     rtnData.pushBack((dset, ObjType.PDARRAY, rname));
@@ -408,7 +408,7 @@ module CSVMsg {
                 when DType.UInt64 {
                     var a = makeDistArray(record_count, uint);
                     read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
-                    var entry = new shared SymEntry(a);
+                    var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
                     rtnData.pushBack((dset, ObjType.PDARRAY, rname));
@@ -416,7 +416,7 @@ module CSVMsg {
                 when DType.Float64 {
                     var a = makeDistArray(record_count, real);
                     read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
-                    var entry = new shared SymEntry(a);
+                    var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
                     rtnData.pushBack((dset, ObjType.PDARRAY, rname));
@@ -424,7 +424,7 @@ module CSVMsg {
                 when DType.Bool {
                     var a = makeDistArray(record_count, bool);
                     read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
-                    var entry = new shared SymEntry(a);
+                    var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
                     rtnData.pushBack((dset, ObjType.PDARRAY, rname));

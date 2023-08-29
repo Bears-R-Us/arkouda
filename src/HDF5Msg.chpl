@@ -859,7 +859,7 @@ module HDF5Msg {
                 const ushift = 64:uint;
                 while !all_zero {
                     low = tmp:uint;
-                    limbs.pushBack(new shared SymEntry(low));
+                    limbs.pushBack(createSymEntry(low));
 
                     all_zero = true;
                     forall t in tmp with (&& reduce all_zero) {
@@ -2960,7 +2960,7 @@ module HDF5Msg {
         C_HDF5.H5Fclose(file_id);
         
         var sname = st.nextName();
-        st.addEntry(sname, new shared SymEntry(shape));
+        st.addEntry(sname, createSymEntry(shape));
         var rname = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
         return (dset, ObjType.ARRAYVIEW, "%s+%s".doFormat(rname, sname));
     }
@@ -3035,7 +3035,7 @@ module HDF5Msg {
         }
 
         var rname = st.nextName();
-        st.addEntry(rname, new shared SymEntry(bigIntArray, max_bits));
+        st.addEntry(rname, createSymEntry(bigIntArray, max_bits));
         return rname;
     }
 
@@ -3150,7 +3150,7 @@ module HDF5Msg {
 
         proc _buildEntryCalcOffsets(): shared SymEntry throws {
             var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.a.domain);
-            return new shared SymEntry(offsetsArray);
+            return createSymEntry(offsetsArray);
         }
 
         proc _buildEntryLoadOffsets() throws {
@@ -3204,7 +3204,7 @@ module HDF5Msg {
         read_files_into_distributed_array(segDist, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
         fixupSegBoundaries(segDist, segSubdoms, valSubdoms);
         var sname = st.nextName();
-        st.addEntry(sname, new shared SymEntry(segDist));
+        st.addEntry(sname, createSymEntry(segDist));
         rtnMap.add("segments", "created " + st.attrib(sname));
         
         return rtnMap;
@@ -3227,7 +3227,7 @@ module HDF5Msg {
         read_files_into_distributed_array(codes, subdoms, filenames, "%s/%s".doFormat(dset, CODES_NAME), skips);
         // create symEntry
         var codesName = st.nextName();
-        var codesEntry = new shared SymEntry(codes);
+        var codesEntry = createSymEntry(codes);
         st.addEntry(codesName, codesEntry);
 
         // read the categories
@@ -3244,7 +3244,7 @@ module HDF5Msg {
         read_files_into_distributed_array(naCodes, nacodes_subdoms, filenames, "%s/%s".doFormat(dset, NACODES_NAME), nacodes_skips);
         // create symEntry
         var naCodesName = st.nextName();
-        var naCodesEntry = new shared SymEntry(naCodes);
+        var naCodesEntry = createSymEntry(naCodes);
         st.addEntry(naCodesName, naCodesEntry);
 
         rtnMap.add("codes", "created " + st.attrib(codesEntry.name));
@@ -3267,7 +3267,7 @@ module HDF5Msg {
             var segments = makeDistArray(segs_len, int);
             read_files_into_distributed_array(segments, segs_subdoms, filenames, "%s/%s".doFormat(dset, SEGMENTS_NAME), segs_skips);
             var segName = st.nextName();
-            var segEntry = new shared SymEntry(segments);
+            var segEntry = createSymEntry(segments);
             st.addEntry(segName, segEntry);
 
             // get domain and size info for permutation
@@ -3279,7 +3279,7 @@ module HDF5Msg {
             var perm = makeDistArray(perm_len, int);
             read_files_into_distributed_array(perm, perm_subdoms, filenames, "%s/%s".doFormat(dset, PERMUTATION_NAME), perm_skips);
             var permName = st.nextName();
-            var permEntry = new shared SymEntry(perm);
+            var permEntry = createSymEntry(perm);
             st.addEntry(permName, permEntry);
 
             rtnMap.add("segments", "created " + st.attrib(segEntry.name));
@@ -3299,7 +3299,7 @@ module HDF5Msg {
         read_files_into_distributed_array(perm, perm_subdoms, filenames, "%s/%s".doFormat(dset, PERMUTATION_NAME), perm_skips);
         // create symEntry
         var permName = st.nextName();
-        var permEntry = new shared SymEntry(perm);
+        var permEntry = createSymEntry(perm);
         st.addEntry(permName, permEntry);
 
         var seg_subdoms: [fD] domain(1);
@@ -3310,7 +3310,7 @@ module HDF5Msg {
         read_files_into_distributed_array(segs, seg_subdoms, filenames, "%s/%s".doFormat(dset, SEGMENTS_NAME), seg_skips);
         // create symEntry
         var segName = st.nextName();
-        var segEntry = new shared SymEntry(segs);
+        var segEntry = createSymEntry(segs);
         st.addEntry(segName, segEntry);
 
         var uki_subdoms: [fD] domain(1);
@@ -3321,7 +3321,7 @@ module HDF5Msg {
         read_files_into_distributed_array(uki, uki_subdoms, filenames, "%s/%s".doFormat(dset, UKI_NAME), uki_skips);
         // create symEntry
         var ukiName = st.nextName();
-        var ukiEntry = new shared SymEntry(uki);
+        var ukiEntry = createSymEntry(uki);
         st.addEntry(ukiName, ukiEntry);
 
         rtnMap.add("permutation", "created " + st.attrib(permEntry.name));
