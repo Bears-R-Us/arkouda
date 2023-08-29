@@ -297,7 +297,7 @@ module ServerConfig
             if total > getMemLimit() {
                 var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
                 var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
-                                   total, getMemLimit(), pct);
+                                   total * numLocales, getMemLimit() * numLocales, pct);
                 scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                 throw getErrorWithContext(
                           msg=msg,
@@ -338,7 +338,7 @@ module ServerConfig
                 if total > getMemLimit() {
                     var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
                     var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
-                                   total, getMemLimit(), pct);
+                                   total * numLocales, getMemLimit() * numLocales, pct);
                     scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                     throw getErrorWithContext(
                               msg=msg,
