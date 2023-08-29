@@ -6,10 +6,10 @@ from typing import List, Mapping, Union
 
 import h5py
 import numpy as np
+import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-import pytest
 from arkouda import io_util
 
 """
@@ -1219,6 +1219,7 @@ class IOTest(ArkoudaTest):
 
     def test_snapshot(self):
         from pandas.testing import assert_frame_equal
+
         df = ak.DataFrame(
             {
                 "int_col": ak.arange(10),
@@ -1230,7 +1231,7 @@ class IOTest(ArkoudaTest):
                 "str_col": ak.random_strings_uniform(0, 3, 10),
                 "ip": ak.IPv4(ak.arange(10)),
                 "datetime": ak.Datetime(ak.arange(10)),
-                "timedelta": ak.Timedelta(ak.arange(10))
+                "timedelta": ak.Timedelta(ak.arange(10)),
             }
         )
         df_str_idx = df.copy()
@@ -1283,10 +1284,14 @@ class IOTest(ArkoudaTest):
 
             # validate that restored variables are correct
             self.assertTrue(
-                assert_frame_equal(df_ref[col_order], data["df"].to_pandas(retain_index=True)[col_order]) is None
+                assert_frame_equal(df_ref[col_order], data["df"].to_pandas(retain_index=True)[col_order])
+                is None
             )
             self.assertTrue(
-                assert_frame_equal(df_str_idx_ref[col_order], data["df_str_idx"].to_pandas(retain_index=True)[col_order]) is None
+                assert_frame_equal(
+                    df_str_idx_ref[col_order], data["df_str_idx"].to_pandas(retain_index=True)[col_order]
+                )
+                is None
             )
             self.assertListEqual(a_ref, data["a"].to_list())
             self.assertListEqual(s_ref, data["s"].to_list())
@@ -1300,9 +1305,13 @@ class IOTest(ArkoudaTest):
         This test was added specifically for issue #2612.
         Pierce will be adding testing to the new framework for this.
         """
-        df = ak.DataFrame({
-            "c_11": ak.SegArray(ak.array([0, 2, 3, 3]), ak.array(["a", "b", "", "c", "d", "e", "f", "g", "h", "i"]))
-        })
+        df = ak.DataFrame(
+            {
+                "c_11": ak.SegArray(
+                    ak.array([0, 2, 3, 3]), ak.array(["a", "b", "", "c", "d", "e", "f", "g", "h", "i"])
+                )
+            }
+        )
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             df.to_hdf(f"{tmp_dirname}/seg_test")
 
@@ -1314,8 +1323,11 @@ class IOTest(ArkoudaTest):
             df.to_hdf(f"{tmp_dirname}/seg_test")
 
             # only verifying the read is successful
-            rd_arr = ak.read_hdf(filenames=[f"{tmp_dirname}/seg_test_LOCALE0000", f"{tmp_dirname}/seg_test_MISSING"],
-                                 strict_types=False, allow_errors=True)
+            rd_arr = ak.read_hdf(
+                filenames=[f"{tmp_dirname}/seg_test_LOCALE0000", f"{tmp_dirname}/seg_test_MISSING"],
+                strict_types=False,
+                allow_errors=True,
+            )
 
     def test_special_dtypes(self):
         """
@@ -1326,11 +1338,7 @@ class IOTest(ArkoudaTest):
         ip = ak.IPv4(ak.arange(10))
         dt = ak.Datetime(ak.arange(10))
         td = ak.Timedelta(ak.arange(10))
-        df = ak.DataFrame({
-            "ip": ip,
-            "datetime": dt,
-            "timedelta": td
-        })
+        df = ak.DataFrame({"ip": ip, "datetime": dt, "timedelta": td})
 
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             ip.to_hdf(f"{tmp_dirname}/ip_test")
@@ -1357,6 +1365,41 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(df["ip"].to_list(), rd_df["ip"].to_list())
             self.assertListEqual(df["datetime"].to_list(), rd_df["datetime"].to_list())
             self.assertListEqual(df["timedelta"].to_list(), rd_df["timedelta"].to_list())
+
+    def test_index(self):
+        tests = [
+            ak.arange(10),
+            ak.linspace(-2.5, 2.5, 10),
+            ak.random_strings_uniform(1, 2, 10),
+            ak.Categorical(ak.random_strings_uniform(1, 2, 10)),
+        ]
+
+        for t in tests:
+            idx = ak.Index(t)
+            with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+                idx.to_hdf(f"{tmp_dirname}/idx_test")
+                rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*")
+
+                self.assertIsInstance(rd_idx, ak.Index)
+                self.assertEqual(type(rd_idx.values), type(idx.values))
+                self.assertListEqual(idx.to_list(), rd_idx.to_list())
+
+    def test_multi_index(self):
+        tests = [
+            ak.arange(10),
+            ak.linspace(-2.5, 2.5, 10),
+            ak.random_strings_uniform(1, 2, 10),
+            ak.Categorical(ak.random_strings_uniform(1, 2, 10)),
+        ]
+        for t1 in tests:
+            for t2 in tests:
+                idx = ak.Index.factory([t1, t2])
+                with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+                    idx.to_hdf(f"{tmp_dirname}/idx_test")
+                    rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*")
+
+                    self.assertIsInstance(rd_idx, ak.MultiIndex)
+                    self.assertListEqual(idx.to_list(), rd_idx.to_list())
 
     def tearDown(self):
         super(IOTest, self).tearDown()

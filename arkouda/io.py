@@ -10,13 +10,14 @@ from typeguard import typechecked
 from arkouda.array_view import ArrayView
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
+from arkouda.client_dtypes import IPv4
 from arkouda.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy
+from arkouda.index import Index, MultiIndex
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
-from arkouda.client_dtypes import IPv4
 from arkouda.timeclass import Datetime, Timedelta
 
 __all__ = [
@@ -440,7 +441,19 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
 
 def _parse_obj(
     obj: Dict,
-) -> Union[Strings, pdarray, ArrayView, SegArray, Categorical, DataFrame, IPv4, Datetime, Timedelta]:
+) -> Union[
+    Strings,
+    pdarray,
+    ArrayView,
+    SegArray,
+    Categorical,
+    DataFrame,
+    IPv4,
+    Datetime,
+    Timedelta,
+    Index,
+    MultiIndex,
+]:
     """
     Helper function to create an Arkouda object from read response
 
@@ -481,6 +494,11 @@ def _parse_obj(
         return GroupBy.from_return_msg(obj["created"])
     elif DataFrame.objType.upper() == obj["arkouda_type"]:
         return DataFrame.from_return_msg(obj["created"])
+    elif (
+        obj["arkouda_type"].lower() == Index.objType.lower()
+        or obj["arkouda_type"].lower() == MultiIndex.objType.lower()
+    ):
+        return Index.from_return_msg(obj["created"])
     else:
         raise TypeError(f"Unknown arkouda type:{obj['arkouda_type']}")
 
@@ -536,9 +554,21 @@ def _build_objects(
     IPv4,
     Datetime,
     Timedelta,
+    Index,
     Mapping[
         str,
-        Union[Strings, pdarray, SegArray, ArrayView, Categorical, DataFrame, IPv4, Datetime, Timedelta],
+        Union[
+            Strings,
+            pdarray,
+            SegArray,
+            ArrayView,
+            Categorical,
+            DataFrame,
+            IPv4,
+            Datetime,
+            Timedelta,
+            Index,
+        ],
     ],
 ]:
     """
@@ -590,7 +620,25 @@ def read_hdf(
     ArrayView,
     Categorical,
     DataFrame,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
+    IPv4,
+    Datetime,
+    Timedelta,
+    Index,
+    Mapping[
+        str,
+        Union[
+            pdarray,
+            Strings,
+            SegArray,
+            ArrayView,
+            Categorical,
+            DataFrame,
+            IPv4,
+            Datetime,
+            Timedelta,
+            Index,
+        ],
+    ],
 ]:
     """
     Read Arkouda objects from HDF5 file/s
@@ -720,7 +768,25 @@ def read_parquet(
     ArrayView,
     Categorical,
     DataFrame,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
+    IPv4,
+    Datetime,
+    Timedelta,
+    Index,
+    Mapping[
+        str,
+        Union[
+            pdarray,
+            Strings,
+            SegArray,
+            ArrayView,
+            Categorical,
+            DataFrame,
+            IPv4,
+            Datetime,
+            Timedelta,
+            Index,
+        ],
+    ],
 ]:
     """
     Read Arkouda objects from Parquet file/s
@@ -848,7 +914,25 @@ def read_csv(
     ArrayView,
     Categorical,
     DataFrame,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
+    IPv4,
+    Datetime,
+    Timedelta,
+    Index,
+    Mapping[
+        str,
+        Union[
+            pdarray,
+            Strings,
+            SegArray,
+            ArrayView,
+            Categorical,
+            DataFrame,
+            IPv4,
+            Datetime,
+            Timedelta,
+            Index,
+        ],
+    ],
 ]:
     """
     Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
@@ -1540,7 +1624,25 @@ def load(
     ArrayView,
     Categorical,
     DataFrame,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
+    IPv4,
+    Datetime,
+    Timedelta,
+    Index,
+    Mapping[
+        str,
+        Union[
+            pdarray,
+            Strings,
+            SegArray,
+            ArrayView,
+            Categorical,
+            DataFrame,
+            IPv4,
+            Datetime,
+            Timedelta,
+            Index,
+        ],
+    ],
 ]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
@@ -1738,7 +1840,25 @@ def read(
     ArrayView,
     Categorical,
     DataFrame,
-    Mapping[str, Union[pdarray, Strings, SegArray, ArrayView, Categorical, DataFrame]],
+    IPv4,
+    Datetime,
+    Timedelta,
+    Index,
+    Mapping[
+        str,
+        Union[
+            pdarray,
+            Strings,
+            SegArray,
+            ArrayView,
+            Categorical,
+            DataFrame,
+            IPv4,
+            Datetime,
+            Timedelta,
+            Index,
+        ],
+    ],
 ]:
     """
     Read datasets from files.
@@ -1969,6 +2089,7 @@ def snapshot(filename):
     """
     import inspect
     from types import ModuleType
+
     from arkouda.dataframe import DataFrame
 
     filename = filename + "_SNAPSHOT"
