@@ -47,29 +47,29 @@ or
 
    .. method:: proc register_bitvector(name: string, bre: shared BitVectorRegEntry) throws
 
-   .. method:: proc unregister_array(are: borrowed ArrayRegEntry) throws
+   .. method:: proc unregister_array(are: shared ArrayRegEntry) throws
 
    .. method:: proc unregister_segarray_components(sre: SegArrayRegEntry) throws
 
-   .. method:: proc unregister_segarray(sre: borrowed SegArrayRegEntry) throws
+   .. method:: proc unregister_segarray(sre: shared SegArrayRegEntry) throws
 
-   .. method:: proc unregister_dataframe(dfre: borrowed DataFrameRegEntry) throws
+   .. method:: proc unregister_dataframe(dfre: shared DataFrameRegEntry) throws
 
-   .. method:: proc unregister_groupby(gbre: borrowed GroupByRegEntry) throws
+   .. method:: proc unregister_groupby(gbre: shared GroupByRegEntry) throws
 
    .. method:: proc unregister_categorical_components(cre: CategoricalRegEntry) throws
 
-   .. method:: proc unregister_categorical(cre: borrowed CategoricalRegEntry) throws
+   .. method:: proc unregister_categorical(cre: shared CategoricalRegEntry) throws
 
    .. method:: proc unregister_index_components(ire: IndexRegEntry) throws
 
-   .. method:: proc unregister_index(ire: borrowed IndexRegEntry) throws
+   .. method:: proc unregister_index(ire: shared IndexRegEntry) throws
 
-   .. method:: proc unregister_series(sre: borrowed SeriesRegEntry) throws
+   .. method:: proc unregister_series(sre: shared SeriesRegEntry) throws
 
-   .. method:: proc unregister_bitvector(bre: borrowed BitVectorRegEntry) throws
+   .. method:: proc unregister_bitvector(bre: shared BitVectorRegEntry) throws
 
-   .. method:: proc lookup(name: string): borrowed AbstractRegEntry throws
+   .. method:: proc lookup(name: string): shared AbstractRegEntry throws
 
    .. method:: proc checkAvailability(name: string) throws
 

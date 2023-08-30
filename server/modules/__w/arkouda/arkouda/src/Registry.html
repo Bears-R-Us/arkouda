@@ -202,7 +202,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Registry.RegTab.unregister_array">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">are:</span> <span class="pre">borrowed</span> <span class="pre">ArrayRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_array" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">are:</span> <span class="pre">shared</span> <span class="pre">ArrayRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_array" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -212,17 +212,17 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Registry.RegTab.unregister_segarray">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_segarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sre:</span> <span class="pre">borrowed</span> <span class="pre">SegArrayRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_segarray" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_segarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sre:</span> <span class="pre">shared</span> <span class="pre">SegArrayRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_segarray" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Registry.RegTab.unregister_dataframe">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dfre:</span> <span class="pre">borrowed</span> <span class="pre">DataFrameRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_dataframe" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dfre:</span> <span class="pre">shared</span> <span class="pre">DataFrameRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Registry.RegTab.unregister_groupby">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">gbre:</span> <span class="pre">borrowed</span> <span class="pre">GroupByRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_groupby" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">gbre:</span> <span class="pre">shared</span> <span class="pre">GroupByRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_groupby" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -232,7 +232,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Registry.RegTab.unregister_categorical">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_categorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cre:</span> <span class="pre">borrowed</span> <span class="pre">CategoricalRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_categorical" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_categorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cre:</span> <span class="pre">shared</span> <span class="pre">CategoricalRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_categorical" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -242,22 +242,22 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Registry.RegTab.unregister_index">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ire:</span> <span class="pre">borrowed</span> <span class="pre">IndexRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_index" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ire:</span> <span class="pre">shared</span> <span class="pre">IndexRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_index" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Registry.RegTab.unregister_series">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sre:</span> <span class="pre">borrowed</span> <span class="pre">SeriesRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_series" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sre:</span> <span class="pre">shared</span> <span class="pre">SeriesRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_series" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Registry.RegTab.unregister_bitvector">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_bitvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">bre:</span> <span class="pre">borrowed</span> <span class="pre">BitVectorRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_bitvector" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregister_bitvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">bre:</span> <span class="pre">shared</span> <span class="pre">BitVectorRegEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.unregister_bitvector" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Registry.RegTab.lookup">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractRegEntry</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.lookup" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">AbstractRegEntry</span> <span class="pre">throws</span><a class="headerlink" href="#Registry.RegTab.lookup" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
