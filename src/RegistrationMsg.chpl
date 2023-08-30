@@ -320,42 +320,42 @@ module RegistrationMsg {
     proc unregisterMsg(cmd: string, msgArgs: borrowed MessageArgs,
                         st: borrowed SymTab): MsgTuple throws {
         var name = msgArgs.getValueOf("name");
-        var gre = st.registry.lookup(name): borrowed GenRegEntry;
+        var gre = st.registry.lookup(name): shared GenRegEntry;
         select gre.objType {
             when ObjType.PDARRAY, ObjType.STRINGS, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
-                var are = gre: borrowed ArrayRegEntry;
+                var are = gre: shared ArrayRegEntry;
                 st.registry.unregister_array(are);
             }
             when ObjType.SEGARRAY {
-                var sre = gre: borrowed SegArrayRegEntry;
+                var sre = gre: shared SegArrayRegEntry;
                 st.registry.unregister_segarray(sre);
             }
             when ObjType.DATAFRAME {
-                var dfre = gre: borrowed DataFrameRegEntry;
+                var dfre = gre: shared DataFrameRegEntry;
                 st.registry.unregister_dataframe(dfre);
             }
             when ObjType.GROUPBY {
-                var gbre = gre: borrowed GroupByRegEntry;
+                var gbre = gre: shared GroupByRegEntry;
                 st.registry.unregister_groupby(gbre);
             }
             when ObjType.CATEGORICAL {
-                var cre = gre: borrowed CategoricalRegEntry;
+                var cre = gre: shared CategoricalRegEntry;
                 st.registry.unregister_categorical(cre);
             }
             when ObjType.INDEX {
-                var ire = gre: borrowed IndexRegEntry;
+                var ire = gre: shared IndexRegEntry;
                 st.registry.unregister_index(ire);
             }
             when ObjType.MULTIINDEX {
-                var ire = gre: borrowed IndexRegEntry;
+                var ire = gre: shared IndexRegEntry;
                 st.registry.unregister_index(ire);
             }
             when ObjType.SERIES {
-                var sre = gre: borrowed SeriesRegEntry;
+                var sre = gre: shared SeriesRegEntry;
                 st.registry.unregister_series(sre);
             }
             when ObjType.BITVECTOR {
-                var bre = gre: borrowed BitVectorRegEntry;
+                var bre = gre: shared BitVectorRegEntry;
                 st.registry.unregister_bitvector(bre);
             }
             otherwise {
@@ -374,59 +374,59 @@ module RegistrationMsg {
     proc attachMsg(cmd: string, msgArgs: borrowed MessageArgs,
                         st: borrowed SymTab): MsgTuple throws {
         var name = msgArgs.getValueOf("name");
-        var gre = st.registry.lookup(name): borrowed GenRegEntry;
+        var gre = st.registry.lookup(name): shared GenRegEntry;
         var rtnMap: map(string, string);
         select gre.objType {
             when ObjType.PDARRAY {
-                var are = gre: borrowed ArrayRegEntry;
+                var are = gre: shared ArrayRegEntry;
                 rtnMap = are.asMap(st);
             }
             when ObjType.STRINGS {
-                var are = gre: borrowed ArrayRegEntry;
+                var are = gre: shared ArrayRegEntry;
                 rtnMap = are.asMap(st);
             }
             when ObjType.DATETIME {
-                var are = gre: borrowed ArrayRegEntry;
+                var are = gre: shared ArrayRegEntry;
                 rtnMap = are.asMap(st);
             }
             when ObjType.TIMEDELTA {
-                var are = gre: borrowed ArrayRegEntry;
+                var are = gre: shared ArrayRegEntry;
                 rtnMap = are.asMap(st);
             }
             when ObjType.IPV4 {
-                var are = gre: borrowed ArrayRegEntry;
+                var are = gre: shared ArrayRegEntry;
                 rtnMap = are.asMap(st);
             }
             when ObjType.SEGARRAY {
-                var sre = gre: borrowed SegArrayRegEntry;
+                var sre = gre: shared SegArrayRegEntry;
                 rtnMap = sre.asMap(st);
             }
             when ObjType.DATAFRAME {
-                var dfre = gre: borrowed DataFrameRegEntry;
+                var dfre = gre: shared DataFrameRegEntry;
                 rtnMap = dfre.asMap(st);
             }
             when ObjType.GROUPBY {
-                var gbre = gre: borrowed GroupByRegEntry;
+                var gbre = gre: shared GroupByRegEntry;
                 rtnMap = gbre.asMap(st);
             }
             when ObjType.CATEGORICAL {
-                var cre = gre: borrowed CategoricalRegEntry;
+                var cre = gre: shared CategoricalRegEntry;
                 rtnMap = cre.asMap(st);
             }
             when ObjType.INDEX {
-                var ire = gre: borrowed IndexRegEntry;
+                var ire = gre: shared IndexRegEntry;
                 rtnMap = ire.asMap(st);
             }
             when ObjType.MULTIINDEX {
-                var ire = gre: borrowed IndexRegEntry;
+                var ire = gre: shared IndexRegEntry;
                 rtnMap = ire.asMap(st);
             }
             when ObjType.SERIES {
-                var sre = gre: borrowed SeriesRegEntry;
+                var sre = gre: shared SeriesRegEntry;
                 rtnMap = sre.asMap(st);
             }
             when ObjType.BITVECTOR {
-                var bre = gre: borrowed BitVectorRegEntry;
+                var bre = gre: shared BitVectorRegEntry;
                 rtnMap = bre.asMap(st);
             }
             otherwise {

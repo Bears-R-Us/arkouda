@@ -418,7 +418,6 @@ class CategoricalTest(ArkoudaTest):
             self.assertCountEqual(x["pda1"].to_list(), pda1.to_list())
             self.assertCountEqual(x["strings1"].to_list(), strings1.to_list())
 
-    @pytest.mark.skip(reason="Bug with new registration code")
     def testNA(self):
         s = ak.array(["A", "B", "C", "B", "C"])
         # NAval present in categories
