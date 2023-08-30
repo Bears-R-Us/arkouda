@@ -286,7 +286,9 @@ module Registry {
 
         proc lookup(name: string): shared AbstractRegEntry throws {
             checkTable(name, "lookup");
-            return tab[name];
+            // TODO update to return tab[name]; when 1.31 is our lowest supported version
+            var (found, slot) = tab.table.findFullSlot(name);
+            return tab.table.table[slot].val;
         }
 
         proc checkAvailability(name: string) throws {
