@@ -160,7 +160,7 @@ module Registry {
             bre.setName(name);
         }
 
-        proc unregister_array(are: borrowed ArrayRegEntry) throws {
+        proc unregister_array(are: shared ArrayRegEntry) throws {
             registered_entries.remove(are.array);
             tab.remove(are.name);
         }
@@ -173,12 +173,12 @@ module Registry {
             }
         }
 
-        proc unregister_segarray(sre: borrowed SegArrayRegEntry) throws {
+        proc unregister_segarray(sre: shared SegArrayRegEntry) throws {
             unregister_segarray_components(sre);
             tab.remove(sre.name);
         }
 
-        proc unregister_dataframe(dfre: borrowed DataFrameRegEntry) throws {
+        proc unregister_dataframe(dfre: shared DataFrameRegEntry) throws {
             registered_entries.remove(dfre.idx);
             for c in dfre.columns {
                 var gre = c: borrowed GenRegEntry;
@@ -213,7 +213,7 @@ module Registry {
             tab.remove(dfre.name);
         }
 
-        proc unregister_groupby(gbre: borrowed GroupByRegEntry) throws {
+        proc unregister_groupby(gbre: shared GroupByRegEntry) throws {
             registered_entries.remove(gbre.segments);
             registered_entries.remove(gbre.permutation);
             registered_entries.remove(gbre.uki);
@@ -241,7 +241,7 @@ module Registry {
             }
         }
 
-        proc unregister_categorical(cre: borrowed CategoricalRegEntry) throws {
+        proc unregister_categorical(cre: shared CategoricalRegEntry) throws {
             unregister_categorical_components(cre);
             tab.remove(cre.name);            
         }
@@ -260,12 +260,12 @@ module Registry {
             }
         }
 
-        proc unregister_index(ire: borrowed IndexRegEntry) throws {
+        proc unregister_index(ire: shared IndexRegEntry) throws {
             unregister_index_components(ire);
             tab.remove(ire.name);
         }
 
-        proc unregister_series(sre: borrowed SeriesRegEntry) throws {
+        proc unregister_series(sre: shared SeriesRegEntry) throws {
             unregister_index_components(sre.idx);
 
             if sre.values.objType == ObjType.PDARRAY || sre.values.objType == ObjType.STRINGS {
@@ -279,12 +279,12 @@ module Registry {
             tab.remove(sre.name);
         }
 
-        proc unregister_bitvector(bre: borrowed BitVectorRegEntry) throws {
+        proc unregister_bitvector(bre: shared BitVectorRegEntry) throws {
             registered_entries.remove(bre.array);
             tab.remove(bre.name);
         }
 
-        proc lookup(name: string): borrowed AbstractRegEntry throws {
+        proc lookup(name: string): shared AbstractRegEntry throws {
             checkTable(name, "lookup");
             return tab[name];
         }
