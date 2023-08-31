@@ -57,8 +57,8 @@ module RandArray {
   }
 
   proc fillNormal(ref a:[?D] real, const seedStr:string="None") throws {
-    var u1:[D] real;
-    var u2:[D] real;
+    var u1 = makeDistArray(D, real);
+    var u2 = makeDistArray(D, real);
     if (seedStr.toLower() == "none") {
       fillRandom(u1);
       fillRandom(u2);

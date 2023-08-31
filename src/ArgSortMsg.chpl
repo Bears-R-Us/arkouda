@@ -121,13 +121,13 @@ module ArgSortMsg
      */
     proc incrementalArgSort(g: GenSymEntry, iv: [?aD] int): [] int throws {
       // Store the incremental permutation to be applied on top of the initial perm
-      var deltaIV: [aD] int;
+      var deltaIV = makeDistArray(aD, int);
       // Discover the dtype of the entry holding the keys array
       select g.dtype {
           when DType.Int64 {
               var e = toSymEntry(g, int);
               // Permute the keys array with the initial iv
-              var newa: [e.a.domain] int;
+              var newa = makeDistArray(e.a.domain, int);
               ref olda = e.a;
               // Effectively: newa = olda[iv]
               forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(int)) {
@@ -139,7 +139,7 @@ module ArgSortMsg
           when DType.UInt64 {
               var e = toSymEntry(g, uint);
               // Permute the keys array with the initial iv
-              var newa: [e.a.domain] uint;
+              var newa = makeDistArray(e.a.domain, uint);
               ref olda = e.a;
               // Effectively: newa = olda[iv]
               forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(uint)) {
@@ -150,7 +150,7 @@ module ArgSortMsg
           }
           when DType.Float64 {
               var e = toSymEntry(g, real);
-              var newa: [e.a.domain] real;
+              var newa = makeDistArray(e.a.domain, real);
               ref olda = e.a;
               forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(real)) {
                   agg.copy(newai, olda[idx]);
@@ -179,7 +179,7 @@ module ArgSortMsg
           }
       }
       // The output permutation is the composition of the initial and incremental permutations
-      var newIV: [aD] int;
+      var newIV = makeDistArray(aD, int);
       // Effectively: newIV = iv[deltaIV] 
       forall (newIVi, idx) in zip(newIV, deltaIV) with (var agg = newSrcAggregator(int)) {
         agg.copy(newIVi, iv[idx]);
@@ -189,14 +189,14 @@ module ArgSortMsg
 
     proc incrementalArgSort(s: SegString, iv: [?aD] int): [] int throws {
       var hashes = s.siphash();
-      var newHashes: [aD] 2*uint;
+      var newHashes = makeDistArray(aD, 2*uint);
       forall (nh, idx) in zip(newHashes, iv) with (var agg = newSrcAggregator((2*uint))) {
         agg.copy(nh, hashes[idx]);
       }
       var deltaIV = argsortDefault(newHashes);
       // var (newOffsets, newVals) = s[iv];
       // var deltaIV = newStr.argGroup();
-      var newIV: [aD] int;
+      var newIV = makeDistArray(aD, int);
       forall (newIVi, idx) in zip(newIV, deltaIV) with (var agg = newSrcAggregator(int)) {
         agg.copy(newIVi, iv[idx]);
       }
@@ -311,10 +311,11 @@ module ArgSortMsg
     
     proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm):[D] int throws {
       var t1 = Time.timeSinceEpoch().totalSeconds();
-      var iv: [D] int;
+      var iv = makeDistArray(D, int);
       select algorithm {
         when SortingAlgorithm.TwoArrayRadixSort {
-          var AI = [(a, i) in zip(A, D)] (a, i);
+          var AI = makeDistArray(D, (t,int));
+          AI = [(a, i) in zip(A, D)] (a, i);
           Sort.TwoArrayRadixSort.twoArrayRadixSort(AI, comparator=myDefaultComparator);
           iv = [(a, i) in AI] i;
         }

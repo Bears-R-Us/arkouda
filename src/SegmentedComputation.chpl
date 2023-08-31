@@ -11,7 +11,7 @@ module SegmentedComputation {
     // Locale that owns each segment's bytes
     var startLocales: [D] int = [seg in segments] ((seg - low)*numLocales) / size;
     // Index of first segment each locale owns bytes for
-    var startSegInds: [LocaleSpace] int;
+    var startSegInds = makeDistArray(LocaleSpace, int);
     // Mark true where owning locale changes
     const change = [(i, sl) in zip(D, startLocales)] if (i == D.low) then true else (sl != startLocales[i-1]);
     // Wherever the owning locale increments, record that as first segment for the locale
@@ -22,7 +22,7 @@ module SegmentedComputation {
     }
 
     // Number of segments each locale owns bytes for
-    var numSegs: [LocaleSpace] int;
+    var numSegs = makeDistArray(LocaleSpace, int);
     // small number of iterations, no comms
     for l in Locales {
       if (l.id == numLocales - 1) {
@@ -53,7 +53,7 @@ module SegmentedComputation {
   
   proc computeOnSegments(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
     // type retType = if (function == SegFunction.StringToNumericReturnValidity) then (outType, bool) else outType;
-    var res: [D] retType;
+    var res = makeDistArray(D, retType);
     if (D.size == 0) {
       return res;
     }
@@ -68,7 +68,7 @@ module SegmentedComputation {
         const mySegInds = {myFirstSegIdx..#myNumSegs};
         // Segment offsets whose bytes are owned by loc
         // Lengths of segments whose bytes are owned by loc
-        var mySegs, myLens: [mySegInds] int;
+        var mySegs, myLens = makeDistArray(mySegInds, int);
         forall i in mySegInds with (var agg = new SrcAggregator(int)) {
           agg.copy(mySegs[i], segments[i]);
           agg.copy(myLens[i], lengths[i]);
@@ -132,7 +132,7 @@ module SegmentedComputation {
 
   proc computeOnSegmentsWithoutAggregation(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
     // perform computeOnSegments logic for types that dont support aggregation (namely bigint)
-    var res: [D] retType;
+    var res = makeDistArray(D, retType);
     if (D.size == 0) {
       return res;
     }
@@ -147,7 +147,7 @@ module SegmentedComputation {
         const mySegInds = {myFirstSegIdx..#myNumSegs};
         // Segment offsets whose bytes are owned by loc
         // Lengths of segments whose bytes are owned by loc
-        var mySegs, myLens: [mySegInds] int;
+        var mySegs, myLens = makeDistArray(mySegInds, int);
         forall i in mySegInds with (var agg = new SrcAggregator(int)) {
           agg.copy(mySegs[i], segments[i]);
           agg.copy(myLens[i], lengths[i]);

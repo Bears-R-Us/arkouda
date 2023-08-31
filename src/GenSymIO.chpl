@@ -126,7 +126,7 @@ module GenSymIO {
         var nb_locs = forall (i,v) in zip(valuesDom, values) do if v == NULL_STRINGS_VALUE then i+1;
         // We need to adjust nb_locs b/c offsets is really the starting position of each string
         // So allocated a new array of zeros and assign nb_locs offset by one
-        var offsets: [nb_locs.domain] int;
+        var offsets = makeDistArray(nb_locs.domain, int);
         offsets[1..offsets.domain.high] = nb_locs[0..#nb_locs.domain.high];
         return offsets;
     }

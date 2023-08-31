@@ -36,7 +36,7 @@ module In1d
      * size and space when ar2 is "small".
      */
     proc in1dAr2PerLocAssoc(ar1: [?aD1] ?t, ref ar2: [?aD2] t) {
-        var truth: [aD1] bool;
+        var truth = makeDistArray(aD1, bool);
         
         coforall loc in Locales with (ref truth, ref ar2) {
             on loc {
@@ -70,18 +70,18 @@ module In1d
         const ar = concatArrays(u1, u2);
         const D = ar.domain;
         // Sort unique arrays together to find duplicates
-        var sar: [D] t;
-        var order: [D] int;
+        var sar = makeDistArray(D, t);
+        var order = makeDistArray(D, int);
         forall (s, o, so) in zip(sar, order, radixSortLSD(ar)) {
             (s, o) = so;
         }
         // Duplicates correspond to values in both arrays
-        var flag: [D] bool;
+        var flag = makeDistArray(D, bool);
         forall i in D[D.low..<D.high] with (var agg = newDstAggregator(bool)) {
             agg.copy(flag[order[i]], sar[i+1] == sar[i]);
         }
         // Use the inverse index to map from u1 domain to ar1 domain
-        var truth: [aD1] bool;
+        var truth = makeDistArray(aD1, bool);
         forall (t, idx) in zip(truth, inv) with (var agg = newSrcAggregator(bool)) {
             agg.copy(t, flag[idx]);
         }

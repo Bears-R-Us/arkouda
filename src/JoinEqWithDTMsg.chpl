@@ -101,9 +101,9 @@ module JoinEqWithDTMsg
         var locResJ: [PrivateSpace] [0..#resLimitPerLocale] int;
 
         // atomic result counter per locale
-        var resCounters: [PrivateSpace] atomic int;
+        var resCounters = makeDistArray(PrivateSpace, atomic int);
         // actual number of results per locale
-        var locNumResults: [PrivateSpace] int;
+        var locNumResults = makeDistArray(PrivateSpace, int);
         
         coforall loc in Locales with (ref locResI, ref locResJ, ref locNumResults, ref resCounters) {
             on loc {

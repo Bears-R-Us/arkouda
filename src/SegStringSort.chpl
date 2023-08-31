@@ -56,7 +56,7 @@ module SegStringSort {
     overMemLimit(numBytes(int) * isLong.size);
     var longLocs = + scan isLong;
     locs -= longLocs;
-    var gatherInds: [ss.offsets.a.domain] int;
+    var gatherInds = makeDistArray(ss.offsets.a.domain, int);
     forall (i, l, ll, t) in zip(ss.offsets.a.domain, locs, longLocs, isLong) 
       with (var agg = newDstAggregator(int)) {
       if !t {
@@ -145,8 +145,8 @@ module SegStringSort {
     ref oa = ss.offsets.a;
     ref va = ss.values.a;
     const myD: domain(1) = D;
-    const myInds: [myD] int = longInds;
-    var stringsWithInds: [myD] (string, int);
+    const myInd = makeDistArray(longInds);
+    var stringsWithInds = makeDistArray(myD, (string, int);
     forall (i, si) in zip(myInds, stringsWithInds) {
       const l = lengths[i];
       var buf: [0..#(l+1)] uint(8);
@@ -219,16 +219,16 @@ module SegStringSort {
       }
     }
     
-    var kr0: [aD] state;
+    var kr0 = makeDistArray(aD, state);
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = 0");
     forall (k, rank) in zip(kr0, inds) with (var agg = newSrcAggregator(uint(8))) {
       copyDigit(k, offsets[rank], lengths[rank], rank, pivot, agg);
     }
-    var kr1: [aD] state;
+    var kr1 = makeDistArray(aD, state);
     // create a global count array to scan
     var gD = blockDist.createDomain({0..#(numLocales * numTasks * numBuckets)});
-    var globalCounts: [gD] int;
-    var globalStarts: [gD] int;
+    var globalCounts = makeDistArray(gD, int);
+    var globalStarts = makeDistArray(gD, int);
         
     // loop over digits
     for rshift in {2..#pivot by 2} {
@@ -240,7 +240,7 @@ module SegStringSort {
             // bucket domain
             var bD = {0..#numBuckets};
             // allocate counts
-            var taskBucketCounts: [bD] int;
+            var taskBucketCounts = makeDistArray(bD, int);
             // get local domain's indices
             var lD = kr0.localSubdomain();
             // calc task's indices from local domain's indices
@@ -275,7 +275,7 @@ module SegStringSort {
             // bucket domain
             var bD = {0..#numBuckets};
             // allocate counts
-            var taskBucketPos: [bD] int;
+            var taskBucketPos = makeDistArray(bD, int);
             // get local domain's indices
             var lD = kr0.localSubdomain();
             // calc task's indices from local domain's indices

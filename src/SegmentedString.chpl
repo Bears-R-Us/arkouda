@@ -241,7 +241,8 @@ module SegmentedString {
       // Gather the right and left boundaries of the indexed strings
       // NOTE: cannot compute lengths inside forall because agg.copy will
       // experience race condition with loop-private variable
-      var right: [D] int, left: [D] int;
+      var right = makeDistArray(D, int);
+      var left = makeDistArray(D, int);
       forall (r, l, idx) in zip(right, left, iv) with (var agg = newSrcAggregator(int)) {
         if (idx == high) {
           agg.copy(r, values.size);
@@ -277,7 +278,7 @@ module SegmentedString {
         */
         var srcIdx = makeDistArray(retBytes, int);
         srcIdx = 1;
-        var diffs: [D] int;
+        var diffs = makeDistArray(D, int);
         diffs[D.low] = left[D.low]; // first offset is not affected by scan
 
         forall idx in D {
@@ -550,13 +551,13 @@ module SegmentedString {
       const lengths = this.getLengths();
 
       overMemLimit((4 * this.offsets.size * numBytes(int)) + (3 * this.values.size * numBytes(int)));
-      var numMatches: [this.offsets.a.domain] int;
-      var matchStartBool: [this.values.a.domain] bool = false;
-      var sparseLens: [this.values.a.domain] int;
-      var sparseStarts: [this.values.a.domain] int;
-      var searchBools: [this.offsets.a.domain] bool = false;
-      var matchBools: [this.offsets.a.domain] bool = false;
-      var fullMatchBools: [this.offsets.a.domain] bool = false;
+      var numMatches = makeDistArray(this.offsets.a.domain, int);
+      var matchStartBool = makeDistArray(this.values.a.domain, false);
+      var sparseLens = makeDistArray(this.values.a.domain, int);
+      var sparseStarts = makeDistArray(this.values.a.domain, int);
+      var searchBools = makeDistArray(this.offsets.a.domain, false);
+      var matchBools = makeDistArray(this.offsets.a.domain, false);
+      var fullMatchBools = makeDistArray(this.offsets.a.domain, false);
       forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern),
                                                                                var lenAgg = newDstAggregator(int),
                                                                                var startPosAgg = newDstAggregator(int),
@@ -593,8 +594,8 @@ module SegmentedString {
       // when looping over the origVals domain, matchTransform acts as a function: origVals.domain -> makeDistDom(totalMatches)
       var matchTransform = + scan matchStartBool - matchStartBool;
       var matchesIndicies = (+ scan numMatches) - numMatches;
-      var matchStarts: [makeDistDom(totalMatches)] int;
-      var matchLens: [makeDistDom(totalMatches)] int;
+      var matchStarts = makeDistArray(totalMatches, int);
+      var matchLens = makeDistArray(totalMatches, int);
       [i in this.values.a.domain] if (matchStartBool[i] == true) {
         matchStarts[matchTransform[i]] = sparseStarts[i];
         matchLens[matchTransform[i]] = sparseLens[i];
@@ -627,7 +628,7 @@ module SegmentedString {
       ref indices = indicesEntry.a;
 
       overMemLimit(matchLens.size * numBytes(int));
-      var absoluteStarts: [makeDistDom(matchLens.size)] int;
+      var absoluteStarts = makeDistArray(matchLens.size, int);
       forall (off, numMatch, matchInd) in zip(origOffsets, numMatches, indices) with (var absAgg = newDstAggregator(int)) {
         var localizedStarts = new lowLevelLocalizingSlice(matchStarts, matchInd..#numMatch);
         for k in 0..#numMatch {
@@ -640,8 +641,8 @@ module SegmentedString {
       var matchesValsSize = (+ reduce matchLens) + matchLens.size;
       // check there's enough room to create a copy for scan and to allocate matchesVals/Offsets
       overMemLimit((matchesValsSize * numBytes(uint(8))) + (2 * matchLens.size * numBytes(int)));
-      var matchesVals: [makeDistDom(matchesValsSize)] uint(8);
-      var matchesOffsets: [makeDistDom(matchLens.size)] int;
+      var matchesVals = makeDistArray(matchesValsSize, uint(8));
+      var matchesOffsets = makeDistArray(matchLens.size, int);
       // + current index to account for null bytes
       var matchesIndicies = + scan matchLens - matchLens + lensEntry.a.domain;
       forall (i, start, len, matchesInd) in zip(lensEntry.a.domain, absoluteStarts, matchLens, matchesIndicies) with (var valAgg = newDstAggregator(uint(8)), var offAgg = newDstAggregator(int)) {
@@ -661,7 +662,7 @@ module SegmentedString {
 
       // build matchOrigins mapping from matchesStrings (pattern matches) to the original Strings they were found in
       const matchOriginsDom = if returnMatchOrig then makeDistDom(matchesOffsets.size) else makeDistDom(0);
-      var matchOrigins: [matchOriginsDom] int;
+      var matchOrigins = makeDistArray(matchOriginsDom, int);
       if returnMatchOrig {
         forall (stringInd, matchInd) in zip(this.offsets.a.domain, indices) with (var originAgg = newDstAggregator(int)) {
           for k in matchInd..#numMatches[stringInd] {
@@ -698,10 +699,10 @@ module SegmentedString {
       const lengths = this.getLengths();
 
       overMemLimit((2 * this.offsets.size * numBytes(int)) + (2 * this.values.size * numBytes(int)));
-      var numReplacements: [this.offsets.a.domain] int;
-      var replacedLens: [this.offsets.a.domain] int;
-      var nonMatch: [this.values.a.domain] bool = true;
-      var matchStartBool: [this.values.a.domain] bool = false;
+      var numReplacements = makeDistArray(this.offsets.a.domain, int);
+      var replacedLens = makeDistArray(this.offsets.a.domain, int);
+      var nonMatch = makeDistArray(this.values.a.domain, true);
+      var matchStartBool = makeDistArray(this.values.a.domain, false);
 
       var repl = replStr:bytes;
       // count = 0 means substitute all occurances, so we set count equal to 10**9
@@ -821,7 +822,7 @@ module SegmentedString {
       ref origVals = this.values.a;
       const lengths = this.getLengths();
 
-      var replacedLens: [this.offsets.a.domain] int;
+      var replacedLens = makeDistArray(this.offsets.a.domain, int);
 
       forall (off, len, rlen) in zip(origOffsets, lengths, replacedLens) {
         if chars.isEmpty() {
@@ -899,8 +900,8 @@ module SegmentedString {
       ref oa = offsets.a;
       ref va = values.a;
       const lengths = getLengths() - 1;
-      var leftEnd: [offsets.a.domain] int;
-      var rightStart: [offsets.a.domain] int;
+      var leftEnd = makeDistArray(offsets.a.domain, int);
+      var rightStart = makeDistArray(offsets.a.domain, int);
 
       forall (o, len, i) in zip(oa, lengths, offsets.a.domain) with (var myRegex = _unsafeCompileRegex(delimiter)) {
         var matches = myRegex.matches(interpretAsString(va, o..#len, borrow=true));
@@ -975,8 +976,8 @@ module SegmentedString {
       param stride = if left then 1 else -1;
       const dBytes = delimiter.numBytes;
       const lengths = getLengths() - 1;
-      var leftEnd: [offsets.a.domain] int;
-      var rightStart: [offsets.a.domain] int;
+      var leftEnd = makeDistArray(offsets.a.domain, int);
+      var rightStart = makeDistArray(offsets.a.domain, int);
       const truth = findSubstringInBytes(delimiter);
       const D = truth.domain;
       ref oa = offsets.a;
@@ -1155,7 +1156,7 @@ module SegmentedString {
     }
 
     proc ediff():[offsets.a.domain] int {
-      var diff: [offsets.a.domain] int;
+      var diff = makeDistArray(offsets.a.domain, int);
       if (size < 2) {
         return diff;
       }
@@ -1298,7 +1299,7 @@ module SegmentedString {
     const ref oD = lss.offsets.a.domain;
     // Start by assuming all elements differ, then correct for those that are equal
     // This translates to an initial value of false for == and true for !=
-    var truth: [oD] bool = !polarity;
+    var truth = makeDistArray(oD, !polarity);
     // Early exit for zero-length result
     if (lss.size == 0) {
       return truth;
@@ -1446,7 +1447,7 @@ module SegmentedString {
     use In1d;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
-      var truth: [mainStr.offsets.a.domain] bool;
+      var truth = makeDistArray(mainStr.offsets.a.domain, bool);
       return truth;
     }
     var a = mainStr.siphash();
@@ -1470,7 +1471,7 @@ module SegmentedString {
   private config const in1dSortThreshold = 64;
   
   proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where !useHash {
-    var truth: [mainStr.offsets.a.domain] bool;
+    var truth = makeDistArray(mainStr.offsets.a.domain, bool);
     // Early exit for zero-length result
     if (mainStr.size == 0) {
       return truth;
@@ -1502,7 +1503,7 @@ module SegmentedString {
       }
       const D = sortedSegs.domain;
       // First compare lengths and only check pairs whose lengths are equal (because gathering them is expensive)
-      var flag: [D] bool;
+      var flag = makeDistArray(D, bool);
       const lengths = sar.getLengths();
       const ref saro = sar.offsets.a;
       const ref sarv = sar.values.a;
@@ -1531,7 +1532,7 @@ module SegmentedString {
       // Now flag contains true for both elements of duplicate pairs
       if invert {flag = !flag;}
       // Permute back to unique order
-      var ret: [D] bool;
+      var ret = makeDistArray(D, bool);
       forall (o, f) in zip(order, flag) with (var agg = newDstAggregator(bool)) {
         agg.copy(ret[o], f);
       }
@@ -1540,7 +1541,7 @@ module SegmentedString {
                                                 "Ret pop: %?".doFormat(+ reduce ret));
       }
       // Broadcast back to original (pre-unique) order
-      var truth: [mainStr.offsets.a.domain] bool;
+      var truth = makeDistArray(mainStr.offsets.a.domain, bool);
       forall (t, i) in zip(truth, revIdx) with (var agg = newSrcAggregator(bool)) {
         agg.copy(t, ret[i]);
       }
