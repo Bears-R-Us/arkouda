@@ -127,6 +127,49 @@ class ShellMode(Enum):
         return self.value
 
 
+class RequestMode(Enum):
+    """
+    The RequestMode Enum indicates whether the Arkouda client-server
+    communication pattern will be synchronous or asynchronous.
+    """
+    SYNCHRONOUS = 'SYNCHRONOUS'
+    ASYNCHRONOUS = 'ASYNCHRONOUS'
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+
+class RequestStatus(Enum):
+    """
+    The RequestStatus Enum indicates whether an asynchronous method
+    invocation has completed.
+    """
+    PENDING = 'PENDING'
+    RUNNING = 'RUNNING'
+    COMPLETE = 'COMPLETE'
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+
 def get_shell_mode():
     """
     Determines the Python shell type and returns the corresponding
@@ -313,7 +356,7 @@ class Channel():
             self.token = tokens.get(url)
 
     def send_string_message(self, cmd: str, recv_binary: bool = False, args: str = None,
-                            size: int = -1) -> Union[str, memoryview]:
+                            size: int = -1, request_id: str = None) -> Union[str, memoryview]:
         """
         Generates a RequestMessage encapsulating command and requesting
         user information, sends it to the Arkouda server, and returns
@@ -325,11 +368,13 @@ class Channel():
             The name of the command to be executed by the Arkouda server
         recv_binary : bool, defaults to False
             Indicates if the return message will be a string or binary data
-        args : str
+        args : str, defaults to None
             A delimited string containing 1..n command arguments
         size : int
             Default -1
             Number of parameters contained in args. Only set if args is json.
+        request_id: str, defaults to None
+            Specifies an identifier for each request submitted to Arkouda
 
         Returns
         -------
@@ -352,7 +397,8 @@ class Channel():
         raise NotImplementedError('send_string_message must be implemented in derived class')
 
     def send_binary_message(self, cmd: str, payload: memoryview, recv_binary: bool = False,
-                            args: str = None, size: int = -1) -> Union[str, memoryview]:
+                            args: str = None, size: int = -1,
+                            request_id: str = None) -> Union[str, memoryview]:
         """
         Generates a RequestMessage encapsulating command and requesting user information,
         information prepends the binary payload, sends the binary request to the Arkouda
@@ -369,6 +415,8 @@ class Channel():
             Indicates if the return message will be a string or binary data
         args : str
             A delimited string containing 1..n command arguments
+        request_id: str, defaults to None
+            Specifies an identifier for each request submitted to Arkouda
 
         Returns
         -------
@@ -424,12 +472,13 @@ class ZmqChannel(Channel):
     __slots__ = ('socket')
 
     def send_string_message(self, cmd: str, recv_binary: bool = False, args: str = None,
-                            size: int = -1) -> Union[str, memoryview]:
+                            size: int = -1, request_id: str = None) -> Union[str, memoryview]:
 
         message = RequestMessage(
             user=username, token=self.token, cmd=cmd, format=MessageFormat.STRING, args=args, size=size
         )
-
+        # Note - Size is a placeholder here because Binary msg not yet support json args and
+        # request_id is a noop for now
         logger.debug(f"sending message {json.dumps(message.asdict())}")
 
         self.socket.send_string(json.dumps(message.asdict()))
@@ -458,8 +507,10 @@ class ZmqChannel(Channel):
                 raise ValueError(f"Return message is not valid JSON: {raw_message}")
 
     def send_binary_message(self, cmd: str, payload: memoryview, recv_binary: bool = False,
-                            args: str = None, size: int = -1) -> Union[str, memoryview]:
-        # Note - Size is a placeholder here because Binary msg not yet support json args
+                            args: str = None, size: int = -1,
+                            request_id: str = None) -> Union[str, memoryview]:
+        # Note - Size is a placeholder here because Binary msg not yet support json args and
+        # request_id is a noop for now
         message = RequestMessage(
             user=username, token=self.token, cmd=cmd, format=MessageFormat.BINARY, args=args, size=size
         )
