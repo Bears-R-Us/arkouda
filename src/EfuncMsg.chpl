@@ -249,13 +249,15 @@ module EfuncMsg
                 select efunc
                 {
                     when "cumsum" {
-                        var ia = makeDistArray(e.a:int); // make a copy of bools as ints blah!
+                        var ia = makeDistArray(e.a.domain, int); // make a copy of bools as ints blah!
+                        ia = e.a:int;
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
                         overMemLimit(numBytes(int) * ia.size);
                         st.addEntry(rname, new shared SymEntry(+ scan ia));
                     }
                     when "cumprod" {
-                        var ia = makeDistArray(e.a:int); // make a copy of bools as ints blah!
+                        var ia = makeDistArray(e.a.domain, int); // make a copy of bools as ints blah!
+                        ia = e.a:int;
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
                         overMemLimit(numBytes(int) * ia.size);
                         st.addEntry(rname, new shared SymEntry(* scan ia));
@@ -1181,7 +1183,7 @@ module EfuncMsg
        :arg kind:
        :type kind: param
        */
-    proc where_helper(cond:[?D] bool, A:[D] ?t, B:[D] t, param kind):[D] t where (kind == 0) {
+    proc where_helper(cond:[?D] bool, A:[D] ?t, B:[D] t, param kind):[D] t throws where (kind == 0) {
       var C = makeDistArray(D, t);
       forall (ch, a, b, c) in zip(cond, A, B, C) {
         c = if ch then a else b;
@@ -1203,7 +1205,7 @@ module EfuncMsg
     :arg kind:
     :type kind: param
     */
-    proc where_helper(cond:[?D] bool, A:[D] ?t, b:t, param kind):[D] t where (kind == 1) {
+    proc where_helper(cond:[?D] bool, A:[D] ?t, b:t, param kind):[D] t throws where (kind == 1) {
       var C = makeDistArray(D, t);
       forall (ch, a, c) in zip(cond, A, C) {
         c = if ch then a else b;
@@ -1225,7 +1227,7 @@ module EfuncMsg
     :arg kind:
     :type kind: param
     */
-    proc where_helper(cond:[?D] bool, a:?t, B:[D] t, param kind):[D] t where (kind == 2) {
+    proc where_helper(cond:[?D] bool, a:?t, B:[D] t, param kind):[D] t throws where (kind == 2) {
       var C = makeDistArray(D, t);
       forall (ch, b, c) in zip(cond, B, C) {
         c = if ch then a else b;
@@ -1247,7 +1249,7 @@ module EfuncMsg
     :arg kind:
     :type kind: param
     */
-    proc where_helper(cond:[?D] bool, a:?t, b:t, param kind):[D] t where (kind == 3) {
+    proc where_helper(cond:[?D] bool, a:?t, b:t, param kind):[D] t throws where (kind == 3) {
       var C = makeDistArray(D, t);
       forall (ch, c) in zip(cond, C) {
         c = if ch then a else b;

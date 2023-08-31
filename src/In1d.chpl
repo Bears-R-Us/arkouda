@@ -35,7 +35,7 @@ module In1d
      * localize ar2 and put it in the set, so only appropriate in terms of
      * size and space when ar2 is "small".
      */
-    proc in1dAr2PerLocAssoc(ar1: [?aD1] ?t, ref ar2: [?aD2] t) {
+    proc in1dAr2PerLocAssoc(ar1: [?aD1] ?t, ref ar2: [?aD2] t) throws {
         var truth = makeDistArray(aD1, bool);
         
         coforall loc in Locales with (ref truth, ref ar2) {

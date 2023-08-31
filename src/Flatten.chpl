@@ -168,7 +168,7 @@ module Flatten {
       matchAgg.copy(numMatches[i], matchessize);
     }
     // writeToVal is true for positions to copy origVals (non-matches) and positions to write a null byte
-    var splitVals = makeDistArray(+ redue writeToVal, uint(8));
+    var splitVals = makeDistArray(+ reduce writeToVal, uint(8));
     // Each match is replaced with a null byte, so new offsets.size = totalNumMatches + old offsets.size
     var splitOffsets = makeDistArray((+ reduce numMatches) + this.offsets.size, int);
 

@@ -305,7 +305,7 @@ module ReductionMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc segCount(segments:[?D] int, upper: int):[D] int {
+    proc segCount(segments:[?D] int, upper: int):[D] int throws {
       var counts = makeDistArray(D, int);
       if (D.size == 0) { return counts; }
       forall (c, low, i) in zip(counts, segments, D) {
@@ -897,7 +897,7 @@ module ReductionMsg
       }
 
       var tmp1 = makeDistArray(D, t);
-      var tmp = makeDistArray(D, t);
+      var tmp2 = makeDistArray(D, t);
       forall (s, c, r, t1, t2) in zip(segments, counts, res, tmp1, tmp2) with (var resAgg = newSrcAggregator(t)) {
         if c % 2 != 0 {
           // odd case: grab middle of sorted values
@@ -1204,7 +1204,7 @@ module ReductionMsg
     }
 
     proc segAnd(values:[?vD] ?t, segments:[?D] int): [D] t throws {
-      var res = makeDistArray(D, int);
+      var res = makeDistArray(D, t);
       if (D.size == 0) { return res; }
       // Set reset flag at segment boundaries
       var flagvalues: [vD] (bool, t) = [v in values] (false, v);

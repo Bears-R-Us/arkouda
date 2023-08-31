@@ -5,7 +5,7 @@ module SegmentedComputation {
   private use Cast;
   use Reflection;
 
-  proc computeSegmentOwnership(segments: [?D] int, vD) {
+  proc computeSegmentOwnership(segments: [?D] int, vD) throws {
     const low = vD.low;
     const size = vD.size;
     // Locale that owns each segment's bytes

@@ -1155,7 +1155,7 @@ module SegmentedString {
       return (newOffsets, newVals);
     }
 
-    proc ediff():[offsets.a.domain] int {
+    proc ediff():[offsets.a.domain] int throws {
       var diff = makeDistArray(offsets.a.domain, int);
       if (size < 2) {
         return diff;
@@ -1181,7 +1181,7 @@ module SegmentedString {
       return diff;
     }
 
-    proc isSorted():bool {
+    proc isSorted():bool throws {
       if (size < 2) {
         return true;
       }

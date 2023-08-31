@@ -141,12 +141,12 @@ module SegStringSort {
     }
   }
   
-  proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int) {
+  proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int) throws {
     ref oa = ss.offsets.a;
     ref va = ss.values.a;
     const myD: domain(1) = D;
-    const myInd = makeDistArray(longInds);
-    var stringsWithInds = makeDistArray(myD, (string, int);
+    const myInds = makeDistArray(longInds);
+    var stringsWithInds = makeDistArray(myD, (string, int));
     forall (i, si) in zip(myInds, stringsWithInds) {
       const l = lengths[i];
       var buf: [0..#(l+1)] uint(8);
