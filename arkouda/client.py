@@ -127,6 +127,49 @@ class ShellMode(Enum):
         return self.value
 
 
+class RequestMode(Enum):
+    """
+    The RequestMode Enum indicates whether the Arkouda client-server
+    communication pattern will be synchronous or asynchronous.
+    """
+    SYNCHRONOUS = 'SYNCHRONOUS'
+    ASYNCHRONOUS = 'ASYNCHRONOUS'
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+
+class RequestStatus(Enum):
+    """
+    The RequestStatus Enum indicates whether an asynchronous method
+    invocation has completed.
+    """
+    PENDING = 'PENDING'
+    RUNNING = 'RUNNING'
+    COMPLETE = 'COMPLETE'
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+
 def get_shell_mode():
     """
     Determines the Python shell type and returns the corresponding
