@@ -13,9 +13,9 @@ class TestAlignment:
         v = ak.array(vals, dtype)
 
         if dtype == ak.uint64:
-            lb += 2 ** 63
-            ub += 2 ** 63
-            v += 2 ** 63
+            lb += 2**63
+            ub += 2**63
+            v += 2**63
         elif dtype == ak.float64:
             lb += 0.5
             ub += 0.5
@@ -33,29 +33,30 @@ class TestAlignment:
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
         assert expected_result == interval_idxs.to_list()
 
-    def test_multi_array_search_interval(self):
+    @pytest.mark.parametrize("dtype", DATA_TYPES)
+    def test_multi_array_search_interval(self, dtype):
         # Added for Issue #1548
-        starts = (ak.array([0, 10, 20]), ak.array([0, 10, 20]))
-        ends = (ak.array([4, 14, 24]), ak.array([4, 14, 24]))
-        vals = (ak.array([3, 13, 23]), ak.array([23, 13, 3]))
+        starts = (ak.array([0, 10, 20], dtype), ak.array([0, 10, 20], dtype))
+        ends = (ak.array([4, 14, 24], dtype), ak.array([4, 14, 24], dtype))
+        vals = (ak.array([3, 13, 23], dtype), ak.array([23, 13, 3], dtype))
         ans = [-1, 1, -1]
         assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
         assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list()
 
-        vals = (ak.array([23, 13, 3]), ak.array([23, 13, 3]))
+        vals = (ak.array([23, 13, 3], dtype), ak.array([23, 13, 3], dtype))
         ans = [2, 1, 0]
         assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
         assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list()
 
-        vals = (ak.array([23, 13, 33]), ak.array([23, 13, 3]))
+        vals = (ak.array([23, 13, 33], dtype), ak.array([23, 13, 3], dtype))
         ans = [2, 1, -1]
         assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
         assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list()
 
         # test hierarchical flag
-        starts = (ak.array([0, 5]), ak.array([0, 11]))
-        ends = (ak.array([5, 9]), ak.array([10, 20]))
-        vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
+        starts = (ak.array([0, 5], dtype), ak.array([0, 11], dtype))
+        ends = (ak.array([5, 9], dtype), ak.array([10, 20], dtype))
+        vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9], dtype), ak.array([0, 20, 1, 5, 15, 0, 12, 30], dtype))
 
         search_intervals = ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
         assert search_intervals == [0, -1, 0, 0, 1, -1, 1, -1]
