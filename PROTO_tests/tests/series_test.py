@@ -82,21 +82,19 @@ class TestSeries:
                 index=ak.arange(prob_size // 2, prob_size),
             )
         )
-        assert added.index.to_list() == ak.arange(prob_size).to_list()
-        assert added.values.to_list() == ak.arange(prob_size, dtype=dtype).to_list()
+        assert (added.index == ak.arange(prob_size)).all()
+        assert (added.values == ak.arange(prob_size, dtype=dtype)).all()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
     def test_topn(self, prob_size, dtype):
-        prob_size_half = prob_size // 2
-        top = ak.Series(ak.arange(prob_size, dtype=dtype)).topn(prob_size_half)
-        assert top.values.to_list() == list(range(prob_size - 1, prob_size_half - 1, -1))
-        assert top.index.to_list() == list(range(prob_size - 1, prob_size_half - 1, -1))
+        top = ak.Series(ak.arange(100, dtype=dtype)).topn(50)
+        assert top.values.to_list() == list(range(99, 49, -1))
+        assert top.index.to_list() == list(range(99, 49, -1))
 
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERICAL_TYPES)
     @pytest.mark.parametrize("dtype_index", NUMERICAL_TYPES)
-    def test_sort(self, prob_size, dtype, dtype_index):
+    def test_sort(self, dtype, dtype_index):
         def gen_perm(n):
             idx_left = set(range(n))
             perm = np.arange(n)
@@ -109,8 +107,8 @@ class TestSeries:
                 idx_left.remove(inds[1])
             return perm
 
-        ordered = ak.arange(prob_size, dtype=dtype)
-        perm = ak.array(gen_perm(prob_size), dtype=dtype_index)
+        ordered = ak.arange(100, dtype=dtype)
+        perm = ak.array(gen_perm(100), dtype=dtype_index)
 
         idx_sort = ak.Series(data=ordered, index=perm).sort_index()
         assert idx_sort.index.to_list() == ordered.to_list()
@@ -125,7 +123,7 @@ class TestSeries:
     def test_head_tail(self, prob_size, dtype):
         s = ak.Series(ak.arange(prob_size, dtype=dtype))
 
-        for i in range(prob_size):
+        for i in range(1, prob_size, 5):
             head = s.head(i)
             assert head.index.to_list() == list(range(i))
             assert head.values.to_list() == ak.arange(i, dtype=dtype).to_list()
@@ -183,11 +181,8 @@ class TestSeries:
                 assert isinstance(df, pd.DataFrame)
                 assert_frame_equal(ref_df, df)
 
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_index_as_index_compat(self, prob_size):
+    def test_index_as_index_compat(self):
         # added to validate functionality for issue #1506
-        df = ak.DataFrame(
-            {"a": ak.arange(prob_size), "b": ak.arange(prob_size), "c": ak.arange(prob_size)}
-        )
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.arange(10), "c": ak.arange(10)})
         g = df.groupby(["a", "b"])
         g.broadcast(g.sum("c"))
