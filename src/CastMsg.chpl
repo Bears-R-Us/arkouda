@@ -76,13 +76,13 @@ module CastMsg {
             when (DType.UInt64, "uint64") {
                 return new MsgTuple(castGenSymEntry(gse, st, uint, uint), MsgType.NORMAL);
             }
-            when (DType.UInt64, "float") {
+            when (DType.UInt64, "float64") {
                 return new MsgTuple(castGenSymEntry(gse, st, uint, real), MsgType.NORMAL);
             }
             when (DType.UInt64, "bool") {
                 return new MsgTuple(castGenSymEntry(gse, st, uint, bool), MsgType.NORMAL);
             }
-            when (DType.UInt64, "string") {
+            when (DType.UInt64, "str") {
                 return new MsgTuple(castGenSymEntryToString(gse, st, uint), MsgType.NORMAL);
             }
             when (DType.UInt64, "bigint") {
@@ -167,6 +167,13 @@ module CastMsg {
               }
               when "bigint" {
                   return new MsgTuple(castStringToBigInt(strings, st, errors), MsgType.NORMAL);
+              }
+              when "str" {
+                  const oname = st.nextName();
+                  const vname = st.nextName();
+                  var offsets = st.addEntry(oname, createSymEntry(strings.offsets.a));
+                  var values = st.addEntry(vname, createSymEntry(strings.values.a));
+                  return new MsgTuple("created " + st.attrib(oname) + "+created " + st.attrib(vname), MsgType.NORMAL);
               }
               otherwise {
                  var errorMsg = notImplementedError(pn,"str",":",targetDtype);
