@@ -1307,7 +1307,7 @@ class DataFrame(UserDict):
             return self
         return self[array(random.sample(range(self._size), n))]
 
-    def GroupBy(self, keys, use_series=False):
+    def GroupBy(self, keys=None, use_series=False):
         """
         Group the dataframe by a column or a list of columns.
 
@@ -1328,6 +1328,9 @@ class DataFrame(UserDict):
         """
 
         self.update_size()
+        # If keys are not provided, use all columns
+        if keys is None:
+            keys = self.columns         
         if isinstance(keys, str):
             cols = self.data[keys]
         elif not isinstance(keys, (list, tuple)):
