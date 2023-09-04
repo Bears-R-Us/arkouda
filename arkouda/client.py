@@ -221,6 +221,9 @@ class ChannelType(Enum):
     to be used for an Arkouda client deployment.
     """
     ZMQ = 'ZMQ'
+    GRPC = 'GRPC'
+    ASYNC_GRPC = 'ASYNC_GRPC'
+    STREAMING_GRPC = 'STREAMING_GRPC'
 
     def __str__(self) -> str:
         """
