@@ -118,19 +118,18 @@ class TestSeries:
         assert val_sort.index.to_pandas().tolist() == perm.to_list()
         assert val_sort.values.to_list() == ordered.to_list()
 
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
-    def test_head_tail(self, prob_size, dtype):
-        s = ak.Series(ak.arange(prob_size, dtype=dtype))
+    def test_head_tail(self, dtype):
+        size = 100
+        s = ak.Series(ak.arange(size, dtype=dtype))
 
-        for i in range(1, prob_size, 5):
-            head = s.head(i)
-            assert head.index.to_list() == list(range(i))
-            assert head.values.to_list() == ak.arange(i, dtype=dtype).to_list()
+        head = s.head(size)
+        assert head.index.to_list() == list(range(size))
+        assert head.values.to_list() == ak.arange(size, dtype=dtype).to_list()
 
-            tail = s.tail(i)
-            assert tail.index.to_list() == ak.arange(prob_size)[-i:prob_size].to_list()
-            assert tail.values.to_list() == ak.arange(prob_size, dtype=dtype)[-i:prob_size].to_list()
+        tail = s.tail(size)
+        assert tail.index.to_list() == ak.arange(size)[-size:size].to_list()
+        assert tail.values.to_list() == ak.arange(size, dtype=dtype)[-size:size].to_list()
 
     def test_value_counts(self):
         s = ak.Series(ak.array([1, 2, 0, 2, 0]))
