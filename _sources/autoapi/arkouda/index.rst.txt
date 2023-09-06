@@ -226,6 +226,7 @@ Functions
    arkouda.invert_permutation
    arkouda.intx
    arkouda.unique
+   arkouda.akcast
    arkouda.arange
    arkouda.array
    arkouda.create_pdarray
@@ -17388,6 +17389,50 @@ Attributes
    >>> A = ak.array([3, 2, 1, 1, 2, 3])
    >>> ak.unique(A)
    array([1, 2, 3])
+
+
+.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+
+   Cast an array to another dtype.
+
+   :param pda: The array of values to cast
+   :type pda: pdarray or Strings
+   :param dt: The target dtype to cast values to
+   :type dt: np.dtype, type, or str
+   :param errors: Controls how errors are handled when casting strings to a numeric type
+                  (ignored for casts from numeric types).
+                      - strict: raise RuntimeError if *any* string cannot be converted
+                      - ignore: never raise an error. Uninterpretable strings get
+                          converted to NaN (float64), -2**63 (int64), zero (uint64 and
+                          uint8), or False (bool)
+                      - return_validity: in addition to returning the same output as
+                        "ignore", also return a bool array indicating where the cast
+                        was successful.
+   :type errors: {strict, ignore, return_validity}
+
+   :returns: * *pdarray or Strings* -- Array of values cast to desired dtype
+             * **[validity** (*pdarray(bool)]*) -- If errors="return_validity" and input is Strings, a second array is
+               returned with True where the cast succeeded and False where it failed.
+
+   .. rubric:: Notes
+
+   The cast is performed according to Chapel's casting rules and is NOT safe
+   from overflows or underflows. The user must ensure that the target dtype
+   has the precision and capacity to hold the desired result.
+
+   .. rubric:: Examples
+
+   >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
+   array([1, 2, 3, 4, 5])
+
+   >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
+   dtype('float64')
+
+   >>> ak.cast(ak.arange(0,5), dt=ak.bool)
+   array([False, True, True, True, True])
+
+   >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
+   array([False, True, True, True, True])
 
 
 .. py:exception:: RegistrationError
