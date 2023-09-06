@@ -85,9 +85,8 @@ class TestSeries:
         assert (added.index == ak.arange(prob_size)).all()
         assert (added.values == ak.arange(prob_size, dtype=dtype)).all()
 
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
-    def test_topn(self, prob_size, dtype):
+    def test_topn(self, dtype):
         top = ak.Series(ak.arange(100, dtype=dtype)).topn(50)
         assert top.values.to_list() == list(range(99, 49, -1))
         assert top.index.to_list() == list(range(99, 49, -1))
