@@ -83,3 +83,11 @@ class TestSort:
         # Test attempt to sort Strings object, which is unsupported
         with pytest.raises(TypeError):
             ak.sort(ak.array([f"string {i}" for i in range(10)]), algo)
+
+    @pytest.mark.parametrize("algo", SortingAlgorithm)
+    def test_nan_sort(self, algo):
+        # Reproducer from #2703
+        neg_arr = np.array([-3.14, np.inf, np.nan, -np.inf, 3.14, 0.0, 3.14, -8])
+        pos_arr = np.array([3.14, np.inf, np.nan, np.inf, 7.7, 0.0, 3.14, 8])
+        for npa in neg_arr, pos_arr:
+            assert np.allclose(np.sort(npa), ak.sort(ak.array(npa), algo).to_ndarray(), equal_nan=True)

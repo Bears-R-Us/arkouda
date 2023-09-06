@@ -248,7 +248,7 @@ module AryUtil
 
     inline proc getBitWidth(a: [?aD] real): (int, bool) {
       const bitWidth = numBits(real);
-      const negs = signbit(min reduce a);
+      const negs = | reduce signbit(a);
       return (bitWidth, negs);
     }
 
