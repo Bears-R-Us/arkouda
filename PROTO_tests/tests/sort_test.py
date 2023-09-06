@@ -87,5 +87,7 @@ class TestSort:
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     def test_nan_sort(self, algo):
         # Reproducer from #2703
-        np_arr = np.array([-3.14, np.inf, np.nan, -np.inf, 3.14, 0.0, 3.14, -8])
-        assert np.allclose(np.sort(np_arr), ak.sort(ak.array(np_arr), algo).to_ndarray(), equal_nan=True)
+        neg_arr = np.array([-3.14, np.inf, np.nan, -np.inf, 3.14, 0.0, 3.14, -8])
+        pos_arr = np.array([3.14, np.inf, np.nan, np.inf, 7.7, 0.0, 3.14, 8])
+        for npa in neg_arr, pos_arr:
+            assert np.allclose(np.sort(npa), ak.sort(ak.array(npa), algo).to_ndarray(), equal_nan=True)

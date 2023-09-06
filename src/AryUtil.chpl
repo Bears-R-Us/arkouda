@@ -248,9 +248,7 @@ module AryUtil
 
     inline proc getBitWidth(a: [?aD] real): (int, bool) {
       const bitWidth = numBits(real);
-      const minVal = min reduce a;
-      // nan is returned for a `min reduce` even if negatives are present in that case do an `| reduce` over all signbits
-      const negs = if isnan(minVal) then | reduce signbit(a) else signbit(minVal);
+      const negs = | reduce signbit(a);
       return (bitWidth, negs);
     }
 
