@@ -17,13 +17,12 @@ from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
+from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index
 from arkouda.numeric import cast as akcast
-from arkouda.numeric import cumsum
-from arkouda.numeric import isnan as akisnan
-from arkouda.numeric import where
+from arkouda.numeric import cumsum, where
 from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
@@ -48,46 +47,13 @@ __all__ = [
 
 
 def groupby_operators(cls):
-    for name in [
-        "all",
-        "any",
-        "argmax",
-        "argmin",
-        "max",
-        "mean",
-        "min",
-        "nunique",
-        "prod",
-        "sum",
-        "OR",
-        "AND",
-        "XOR",
-    ]:
+    for name in GROUPBY_REDUCTION_TYPES:
         setattr(cls, name, cls._make_aggop(name))
     return cls
 
 
-class AggregateOps:
-    """Base class for GroupBy and DiffAggregate containing common functions"""
-
-    def _gbvar(self, values):
-        """Calculate the variance in a groupby"""
-
-        values = akcast(values, "float64")
-        mean = self.gb.mean(values)
-        mean_broad = self.gb.broadcast(mean[1])
-        centered = values - mean_broad
-        var = Series(self.gb.sum(centered * centered))
-        n = self.gb.sum(~akisnan(centered))
-        return var / (n[1] - 1)
-
-    def _gbstd(self, values):
-        """Calculates  the standard deviation in a groupby"""
-        return self._gbvar(values) ** 0.5
-
-
 @groupby_operators
-class GroupBy(AggregateOps):
+class GroupBy:
     """A DataFrame that has been grouped by a subset of columns"""
 
     def __init__(self, gb, df):
@@ -98,8 +64,17 @@ class GroupBy(AggregateOps):
 
     @classmethod
     def _make_aggop(cls, opname):
-        def aggop(self, colname):
-            return Series(self.gb.aggregate(self.df.data[colname], opname))
+        def aggop(self, colnames=None):
+            if isinstance(colnames, str):
+                return Series(self.gb.aggregate(self.df.data[colnames], opname))
+            else:
+                if colnames is None:
+                    colnames = list(self.df.data.keys())
+                if isinstance(colnames, List):
+                    return DataFrame(
+                        {c: self.gb.aggregate(self.df.data[c], opname)[1] for c in colnames},
+                        index=self.gb.unique_keys,
+                    )
 
         return aggop
 
@@ -126,14 +101,6 @@ class GroupBy(AggregateOps):
 
         return DiffAggregate(self.gb, self.df.data[colname])
 
-    def var(self, colname):
-        """Calculate variance of the difference in each group"""
-        return self._gbvar(self.df.data[colname])
-
-    def std(self, colname):
-        """Calculate standard deviation of the difference in each group"""
-        return self._gbstd(self.df.data[colname])
-
     def broadcast(self, x, permute=True):
         """Fill each group’s segment with a constant value.
 
@@ -155,7 +122,7 @@ class GroupBy(AggregateOps):
 
 
 @groupby_operators
-class DiffAggregate(AggregateOps):
+class DiffAggregate:
     """
     A column in a GroupBy that has been differenced.
     Aggregation operations can be done on the result.
@@ -169,14 +136,6 @@ class DiffAggregate(AggregateOps):
         values[1:] = akcast(series_permuted[1:] - series_permuted[:-1], "float64")
         values[gb.segments] = np.nan
         self.values = values
-
-    def var(self):
-        """Calculate variance of the difference in each group"""
-        return self._gbvar(self.values)
-
-    def std(self):
-        """Calculate standard deviation of the difference in each group"""
-        return self._gbstd(self.values)
 
     @classmethod
     def _make_aggop(cls, opname):
