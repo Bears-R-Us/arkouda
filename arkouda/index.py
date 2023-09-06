@@ -9,6 +9,7 @@ from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy, unique
+from arkouda.numeric import cast as akcast
 from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarraycreation import arange, array, create_pdarray, ones
 from arkouda.pdarraysetops import argsort, in1d
@@ -806,8 +807,6 @@ class MultiIndex(Index):
             raise TypeError("MultiIndex lookup failure")
         # if individual vals convert to pdarrays
         if not isinstance(key[0], pdarray):
-            from arkouda.numeric import cast as akcast
-
             dt = self.values[0].dtype if isinstance(self.values[0], pdarray) else akint64
             key = [akcast(array([x]), dt) for x in key]
 

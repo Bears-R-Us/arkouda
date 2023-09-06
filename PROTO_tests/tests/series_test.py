@@ -119,16 +119,17 @@ class TestSeries:
 
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_head_tail(self, dtype):
-        size = 100
-        s = ak.Series(ak.arange(size, dtype=dtype))
+        n = 10
+        s = ak.Series(ak.arange(n, dtype=dtype))
+        for i in range(n):
 
-        head = s.head(size)
-        assert head.index.to_list() == list(range(size))
-        assert head.values.to_list() == ak.arange(size, dtype=dtype).to_list()
+            head = s.head(i)
+            assert head.index.to_list() == list(range(i))
+            assert head.values.to_list() == ak.arange(i, dtype=dtype).to_list()
 
-        tail = s.tail(size)
-        assert tail.index.to_list() == ak.arange(size)[-size:size].to_list()
-        assert tail.values.to_list() == ak.arange(size, dtype=dtype)[-size:size].to_list()
+            tail = s.tail(i)
+            assert tail.index.to_list() == ak.arange(n)[-i:n].to_list()
+            assert tail.values.to_list() == ak.arange(n, dtype=dtype)[-i:n].to_list()
 
     def test_value_counts(self):
         s = ak.Series(ak.array([1, 2, 0, 2, 0]))
