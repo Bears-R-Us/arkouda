@@ -29,20 +29,18 @@ DTYPES = [
 class TestPdarrayCreation:
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_array_creation(self, dtype):
-        # TODO - remove the 'if' below (to make everything that follows unconditional) after #2645 is complete
-        if dtype != str:
-            fixed_size = 100
-            for pda in [
-                ak.array(ak.ones(fixed_size, int), dtype),
-                ak.array(np.ones(fixed_size), dtype),
-                ak.array(list(range(fixed_size)), dtype=dtype),
-                ak.array((range(fixed_size)), dtype),
-                ak.array(deque(range(fixed_size)), dtype),
-                ak.array([f"{i}" for i in range(fixed_size)], dtype=dtype),
-            ]:
-                assert isinstance(pda, ak.pdarray if dtype != str else ak.Strings)
-                assert len(pda) == fixed_size
-                assert dtype == pda.dtype
+        fixed_size = 100
+        for pda in [
+            ak.array(ak.ones(fixed_size, int), dtype),
+            ak.array(np.ones(fixed_size), dtype),
+            ak.array(list(range(fixed_size)), dtype=dtype),
+            ak.array((range(fixed_size)), dtype),
+            ak.array(deque(range(fixed_size)), dtype),
+            ak.array([f"{i}" for i in range(fixed_size)], dtype=dtype),
+        ]:
+            assert isinstance(pda, ak.pdarray if dtype != str else ak.Strings)
+            assert len(pda) == fixed_size
+            assert dtype == pda.dtype
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large_array_creation(self, size):
