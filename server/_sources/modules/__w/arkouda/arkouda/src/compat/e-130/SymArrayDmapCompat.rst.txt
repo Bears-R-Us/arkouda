@@ -54,6 +54,8 @@ or
    :returns: [] ?etype
    
 
+.. function:: proc makeDistArray(in a: [?D] ?etype)
+
 .. function:: proc makeDistDomType(size: int) type
 
     

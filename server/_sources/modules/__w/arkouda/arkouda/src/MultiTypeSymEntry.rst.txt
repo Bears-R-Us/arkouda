@@ -229,7 +229,7 @@ or
 
 .. function:: proc createSymEntry(len: int, type etype) throws
 
-.. function:: proc createSymEntry(a: [?D] ?etype, max_bits = -1) throws
+.. function:: proc createSymEntry(in a: [?D] ?etype, max_bits = -1) throws
 
 .. class:: CompositeSymEntry : AbstractSymEntry
 
