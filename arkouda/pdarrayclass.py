@@ -3077,7 +3077,7 @@ def sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 def skew(pda: pdarray) -> np.float64:
 
     """
-    Computes the sample skewness of an array. 
+    Computes the sample skewness of an array.
     Skewness > 0 means there's greater weight in the right tail of the distribution.
     Skewness < 0 means there's greater weight in the left tail of the distribution.
     Skewness == 0 means the data is normally distributed.
@@ -3110,7 +3110,6 @@ def skew(pda: pdarray) -> np.float64:
         skewness = 0
 
     return skewness
-
 
 
 # there's no need for typechecking, % can handle that

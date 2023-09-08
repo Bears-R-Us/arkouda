@@ -79,7 +79,7 @@ def hist_all(ak_df: DataFrame, cols: list = [], log: bool = True):
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.plotting import hist_all 
+    >>> from arkouda.plotting import hist_all
     >>> ak_df = ak.DataFrame({"a": ak.array(np.random.randn(100)),
                               "b": ak.array(np.random.randn(100)),
                               "c": ak.array(np.random.randn(100)),
@@ -112,7 +112,7 @@ def hist_all(ak_df: DataFrame, cols: list = [], log: bool = True):
             n = len(x)
             g1 = skew(x)
 
-        except:
+        except ValueError:
             GB_df = GroupBy(ak_df[col])
             new_labels = arange(GB_df.unique_keys.size)
             newcol = GB_df.broadcast(new_labels)
