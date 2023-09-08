@@ -58,6 +58,11 @@ module SymArrayDmapCompat
         var a: [makeDistDom(size)] etype;
         return a;
     }
+
+    proc makeDistArray(in a: [?D] ?etype) {
+        return a;
+    }
+    
     /* 
     Returns the type of the distributed domain
 
