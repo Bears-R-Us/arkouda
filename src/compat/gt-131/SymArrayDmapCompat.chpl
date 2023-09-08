@@ -60,7 +60,7 @@ module SymArrayDmapCompat
     }
 
     proc makeDistArray(in a: [?D] ?etype) throws {
-      var res = D.tryCreateArray(a);
+      var res = D.tryCreateArray(etype);
       res = a;
       return res;
     }
