@@ -3,7 +3,7 @@ from __future__ import annotations
 import builtins
 import json
 from functools import reduce
-from math import ceil, sqrt, log2
+from math import ceil
 from typing import List, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np  # type: ignore
