@@ -59,6 +59,12 @@ module SymArrayDmapCompat
       return dom.tryCreateArray(etype);
     }
 
+    proc makeDistArray(in a: [?D] ?etype) throws {
+      var res = D.tryCreateArray(a);
+      res = a;
+      return res;
+    }
+
     /* 
     Returns the type of the distributed domain
 
