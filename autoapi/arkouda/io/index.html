@@ -350,6 +350,12 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.restore" title="arkouda.io.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(filename)</p></td>
 <td><p>Return data saved using <cite>ak.snapshot</cite></p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.receive" title="arkouda.io.receive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive</span></code></a>(hostname, port)</p></td>
+<td><p>Receive a pdarray sent by <cite>pdarray.transfer()</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.receive_dataframe" title="arkouda.io.receive_dataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive_dataframe</span></code></a>(hostname, port)</p></td>
+<td><p>Receive a pdarray sent by <cite>dataframe.transfer()</cite>.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1078,7 +1084,7 @@ it from the null-byte terminators.  Defaults to False currently</p></li>
 <dd class="field-even"><p>The pdarray or Strings that was previously saved</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id534" title="arkouda.Strings">Strings</a>]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id541" title="arkouda.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1140,7 +1146,7 @@ Parquet files only</p></li>
 with the previously saved pdarrays, Strings, SegArrays, or Categoricals</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Mapping[str, Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id534" title="arkouda.Strings">Strings</a>, <a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a>, <a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>]]</p>
+<dd class="field-odd"><p>Mapping[str, Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id541" title="arkouda.Strings">Strings</a>, <a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a>, <a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>]]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1313,6 +1319,80 @@ Arkouda objects will be written to an HDF5 file.</p>
 objects in HDF5. Thus, they are returned within the dictionary as a dataframe.</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io.receive">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">receive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hostname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.io.receive" title="Link to this definition">#</a></dt>
+<dd><p>Receive a pdarray sent by <cite>pdarray.transfer()</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hostname</strong> (<em>str</em>) – The hostname of the pdarray that sent the array</p></li>
+<li><p><strong>port</strong> (<em>int_scalars</em>) – The port to send the array over. This needs to be an
+open port (i.e., not one that the Arkouda server is
+running on). This will open up <cite>numLocales</cite> ports,
+each of which in succession, so will use ports of the
+range {port..(port+numLocales)} (e.g., running an
+Arkouda server of 4 nodes, port 1234 is passed as
+<cite>port</cite>, Arkouda will use ports 1234, 1235, 1236,
+and 1237 to send the array data).
+This port much match the port passed to the call to
+<cite>pdarray.transfer()</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pdarray sent from the sending server to the current
+receiving server.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set</p></li>
+<li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
+a supported dtype</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io.receive_dataframe">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">receive_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hostname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.io.receive_dataframe" title="Link to this definition">#</a></dt>
+<dd><p>Receive a pdarray sent by <cite>dataframe.transfer()</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hostname</strong> (<em>str</em>) – The hostname of the dataframe that sent the array</p></li>
+<li><p><strong>port</strong> (<em>int_scalars</em>) – The port to send the dataframe over. This needs to be an
+open port (i.e., not one that the Arkouda server is
+running on). This will open up <cite>numLocales</cite> ports,
+each of which in succession, so will use ports of the
+range {port..(port+numLocales)} (e.g., running an
+Arkouda server of 4 nodes, port 1234 is passed as
+<cite>port</cite>, Arkouda will use ports 1234, 1235, 1236,
+and 1237 to send the array data).
+This port much match the port passed to the call to
+<cite>pdarray.send_array()</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dataframe sent from the sending server to the
+current receiving server.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set</p></li>
+<li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
+a supported dtype</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 </section>
@@ -1397,6 +1477,8 @@ objects in HDF5. Thus, they are returned within the dictionary as a dataframe.</
 <li><a class="reference internal" href="#arkouda.io.read_tagged_data"><code class="docutils literal notranslate"><span class="pre">read_tagged_data()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.snapshot"><code class="docutils literal notranslate"><span class="pre">snapshot()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.restore"><code class="docutils literal notranslate"><span class="pre">restore()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.io.receive"><code class="docutils literal notranslate"><span class="pre">receive()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.io.receive_dataframe"><code class="docutils literal notranslate"><span class="pre">receive_dataframe()</span></code></a></li>
 </ul>
 </li>
 </ul>

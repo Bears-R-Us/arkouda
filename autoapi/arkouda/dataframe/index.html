@@ -406,6 +406,40 @@ DataFrame([‘userID’, ‘day’] [6 rows : 96 B])</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.transfer">
+<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hostname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.transfer" title="Link to this definition">#</a></dt>
+<dd><p>Sends a DataFrame to a different Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hostname</strong> (<em>str</em>) – The hostname where the Arkouda server intended to
+receive the DataFrame is running.</p></li>
+<li><p><strong>port</strong> (<em>int_scalars</em>) – The port to send the array over. This needs to be an
+open port (i.e., not one that the Arkouda server is
+running on). This will open up <cite>numLocales</cite> ports,
+each of which in succession, so will use ports of the
+range {port..(port+numLocales)} (e.g., running an
+Arkouda server of 4 nodes, port 1234 is passed as
+<cite>port</cite>, Arkouda will use ports 1234, 1235, 1236,
+and 1237 to send the array data).
+This port much match the port passed to the call to
+<cite>ak.receive_array()</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>A message indicating a complete transfer</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set</p></li>
+<li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
+a supported dtype</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.from_pandas">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pd_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.from_pandas" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1206,7 +1240,7 @@ Please note you cannot register two different DataFrames with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id465" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#id471" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -1228,7 +1262,7 @@ in attached copies.</p>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id465" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id471" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -1253,7 +1287,7 @@ they are unregistered.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id465" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id471" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1281,7 +1315,7 @@ arkouda server which was registered using register()</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id465" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id471" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1302,7 +1336,7 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../index.html#id465" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../index.html#id471" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 </dl>
@@ -1468,6 +1502,7 @@ arrays.</p>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.info"><code class="docutils literal notranslate"><span class="pre">DataFrame.info</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.COLUMN_CLASSES"><code class="docutils literal notranslate"><span class="pre">DataFrame.COLUMN_CLASSES</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.objType"><code class="docutils literal notranslate"><span class="pre">DataFrame.objType</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.transfer"><code class="docutils literal notranslate"><span class="pre">DataFrame.transfer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.from_pandas"><code class="docutils literal notranslate"><span class="pre">DataFrame.from_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.drop"><code class="docutils literal notranslate"><span class="pre">DataFrame.drop()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.drop_duplicates"><code class="docutils literal notranslate"><span class="pre">DataFrame.drop_duplicates()</span></code></a></li>

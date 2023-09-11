@@ -35,6 +35,8 @@ Functions
    arkouda.io.read_tagged_data
    arkouda.io.snapshot
    arkouda.io.restore
+   arkouda.io.receive
+   arkouda.io.receive_dataframe
 
 
 
@@ -849,5 +851,59 @@ Functions
 
    Unlike other save/load methods using snapshot restore will save DataFrames alongside other
    objects in HDF5. Thus, they are returned within the dictionary as a dataframe.
+
+
+.. py:function:: receive(hostname: str, port)
+
+   Receive a pdarray sent by `pdarray.transfer()`.
+
+   :param hostname: The hostname of the pdarray that sent the array
+   :type hostname: str
+   :param port: The port to send the array over. This needs to be an
+                open port (i.e., not one that the Arkouda server is
+                running on). This will open up `numLocales` ports,
+                each of which in succession, so will use ports of the
+                range {port..(port+numLocales)} (e.g., running an
+                Arkouda server of 4 nodes, port 1234 is passed as
+                `port`, Arkouda will use ports 1234, 1235, 1236,
+                and 1237 to send the array data).
+                This port much match the port passed to the call to
+                `pdarray.transfer()`.
+   :type port: int_scalars
+
+   :returns: The pdarray sent from the sending server to the current
+             receiving server.
+   :rtype: pdarray
+
+   :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+   :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+       a supported dtype
+
+
+.. py:function:: receive_dataframe(hostname: str, port)
+
+   Receive a pdarray sent by `dataframe.transfer()`.
+
+   :param hostname: The hostname of the dataframe that sent the array
+   :type hostname: str
+   :param port: The port to send the dataframe over. This needs to be an
+                open port (i.e., not one that the Arkouda server is
+                running on). This will open up `numLocales` ports,
+                each of which in succession, so will use ports of the
+                range {port..(port+numLocales)} (e.g., running an
+                Arkouda server of 4 nodes, port 1234 is passed as
+                `port`, Arkouda will use ports 1234, 1235, 1236,
+                and 1237 to send the array data).
+                This port much match the port passed to the call to
+                `pdarray.send_array()`.
+   :type port: int_scalars
+
+   :returns: The dataframe sent from the sending server to the
+             current receiving server.
+   :rtype: pdarray
+
+   :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+   :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+       a supported dtype
 
 
