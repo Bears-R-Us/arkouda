@@ -255,6 +255,12 @@ module ReductionMsg
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
                         repMsg = "int64 %i".doFormat(minLoc);
                     }
+                    when "is_sorted" {
+                        var sorted = isSorted(e.a);
+                        var val:string;
+                        if sorted {val = "True";} else {val = "False";}
+                        repMsg = "bool %s".doFormat(val);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

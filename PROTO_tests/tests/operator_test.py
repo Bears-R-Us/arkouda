@@ -512,9 +512,6 @@ class TestOperator:
             with pytest.raises(NotImplementedError):
                 iter(arr)
 
-        with pytest.raises(RuntimeError):
-            ak.concatenate([ak.array([True]), ak.array([True])]).is_sorted()
-
         with pytest.raises(TypeError):
             ak.ones(100).any([0])
 

@@ -97,9 +97,6 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             ak.setxor1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
 
-        with self.assertRaises(RuntimeError):
-            ak.setxor1d(ak.array([True, False, True]), ak.array([True, True]))
-
     def testSetxor1d_Multi(self):
         # Test Numeric pdarray
         a = [1, 2, 3, 4, 5]
@@ -208,9 +205,6 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             ak.intersect1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
 
-        with self.assertRaises(RuntimeError):
-            ak.intersect1d(ak.array([True, False, True]), ak.array([True, True]))
-
     def testIntersect1d_Multi(self):
         # Test for numeric
         a = [1, 2, 3, 4, 5]
@@ -259,9 +253,6 @@ class SetOpsTest(ArkoudaTest):
 
         with self.assertRaises(TypeError):
             ak.union1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-
-        # with self.assertRaises(RuntimeError):
-        #     ak.union1d(ak.array([True, True, True]), ak.array([True,False,True]))
 
     def testUnion1d_Multi(self):
         # test for numeric

@@ -103,8 +103,9 @@ class TestSetOps:
 
         # # bool is not supported by argsortMsg (only impacts single array case)
         a, b = self.make_np_arrays(size, ak.bool)
-        with pytest.raises(RuntimeError):
-            func(ak.array(a, dtype=ak.bool), ak.array(b, dtype=ak.bool))
+        if op in ["in1d", "setdiff1d"]:
+            with pytest.raises(RuntimeError):
+                func(ak.array(a, dtype=ak.bool), ak.array(b, dtype=ak.bool))
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("op", OPS)
