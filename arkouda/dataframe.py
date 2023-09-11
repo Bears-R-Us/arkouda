@@ -32,7 +32,6 @@ from arkouda.series import Series
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
-from arkouda.io import _build_objects
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
