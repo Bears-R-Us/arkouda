@@ -147,8 +147,6 @@ def hist_all(ak_df: DataFrame, cols: list = [], log: bool = True):
         else:
             bins = np.linspace(x.min(), x.max(), num_bins + 1)[:-1]
 
-        print(col, num_bins)
-
         ax.bar(bins, h[1].to_ndarray(), width=bins[1] - bins[0])
         ax.set_title(col, size=8)
         if x.max() > 100 * x.min():
