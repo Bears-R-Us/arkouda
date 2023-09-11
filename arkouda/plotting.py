@@ -91,7 +91,7 @@ def hist_all(ak_df: DataFrame, cols: list = [], log: bool = True):
     if len(cols) == 0:
         cols = ak_df.columns
 
-    num_rows = int(len(cols) ** 0.5)
+    num_rows = int(math.ceil(len(cols) ** 0.5))
     num_cols = (len(cols) + num_rows - 1) // num_rows
     fig, axes = plt.subplots(num_rows, num_cols, figsize=(10, 10))
     fig.tight_layout(pad=2.0)
@@ -116,7 +116,7 @@ def hist_all(ak_df: DataFrame, cols: list = [], log: bool = True):
             GB_df = GroupBy(ak_df[col])
             new_labels = arange(GB_df.unique_keys.size)
             newcol = GB_df.broadcast(new_labels)
-            x = newcol[0 : ak_df.size]
+            x = newcol[:ak_df.size]
 
             if x.dtype == "float64":
                 x = x[~isnan(x)]
