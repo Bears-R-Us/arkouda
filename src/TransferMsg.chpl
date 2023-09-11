@@ -246,28 +246,28 @@ module TransferMsg
           var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
           if typeString == "int(64)" {
             overMemLimit(2*size*numBytes(int));
-            var entry = new shared SymEntry(size, int);
+            var entry = createSymEntry(size, int);
             receiveInto(entry, nodeNames, port, colName, rname, st);
           } else if typeString == "uint(64)" {
             overMemLimit(2*size*numBytes(uint));
-            var entry = new shared SymEntry(size, uint);
+            var entry = createSymEntry(size, uint);
             receiveInto(entry, nodeNames, port, colName, rname, st);
           } else if typeString == "real(64)" {
             overMemLimit(2*size*numBytes(real));
-            var entry = new shared SymEntry(size, real);
+            var entry = createSymEntry(size, real);
             receiveInto(entry, nodeNames, port, colName, rname, st);
           } else if typeString == "bool" {
             overMemLimit(2*size*8);
-            var entry = new shared SymEntry(size, bool);
+            var entry = createSymEntry(size, bool);
             receiveInto(entry, nodeNames, port, colName, rname, st);
           }
         } else if currObjType == "Strings" {
           var (size, typeString, nodeNames, objType) = receiveSetupInfo(hostname, port);
           overMemLimit(3*size*numBytes(uint(8)));
-          var values = new shared SymEntry(size, uint(8));
+          var values = createSymEntry(size, uint(8));
           receiveData(values.a, nodeNames, port);
           var (offSize, _, _, _) = receiveSetupInfo(hostname, port);
-          var offsets = new shared SymEntry(offSize, int);
+          var offsets = createSymEntry(offSize, int);
           receiveData(offsets.a, nodeNames, port);
           var stringsEntry = assembleSegStringFromParts(offsets, values, st);
           rnames.append((colName, ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
@@ -276,22 +276,22 @@ module TransferMsg
           overMemLimit(4*size*numBytes(uint));
           var rtnMap: map(string, string) = new map(string, string);
           // GET CODES
-          var codes = new shared SymEntry(size, int);
+          var codes = createSymEntry(size, int);
           receiveData(codes.a, nodeNames, port);
           var cname = st.nextName();
           st.addEntry(cname, codes);
         
           // GET CATS STRING
           var (valSize, _, _, _) = receiveSetupInfo(hostname, port);
-          var values = new shared SymEntry(valSize, uint(8));
+          var values = createSymEntry(valSize, uint(8));
           receiveData(values.a, nodeNames, port);
           var (offSize, _, _, _) = receiveSetupInfo(hostname, port);
-          var offsets = new shared SymEntry(offSize, int);
+          var offsets = createSymEntry(offSize, int);
           receiveData(offsets.a, nodeNames, port);
           var cats = assembleSegStringFromParts(offsets, values, st);
 
           // GET NA CODES
-          var nacodes = new shared SymEntry(size, int);
+          var nacodes = createSymEntry(size, int);
           receiveData(nacodes.a, nodeNames, port);
           var nname = st.nextName();
           st.addEntry(nname, nacodes);
@@ -305,12 +305,12 @@ module TransferMsg
           overMemLimit(3*size*numBytes(uint));
           var rtnMap: map(string, string) = new map(string, string);
           if typeString == "int(64)" {
-            var entry = new shared SymEntry(size, int);
+            var entry = createSymEntry(size, int);
             var vname = st.nextName();
             receiveData(entry.a, nodeNames, port);
 
             var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
-            var segments = new shared SymEntry(segSize, int);
+            var segments = createSymEntry(segSize, int);
             var sname = st.nextName();
             receiveData(segments.a, nodeNames, port);
 
@@ -320,12 +320,12 @@ module TransferMsg
             rtnMap.add("segments", "created " + st.attrib(sname));
             rtnMap.add("values", "created " + st.attrib(vname));
           } else if typeString == "uint(64)" {
-            var entry = new shared SymEntry(size, uint);
+            var entry = createSymEntry(size, uint);
             var vname = st.nextName();
             receiveData(entry.a, nodeNames, port);
 
             var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
-            var segments = new shared SymEntry(segSize, int);
+            var segments = createSymEntry(segSize, int);
             var sname = st.nextName();
             st.addEntry(sname, segments);
             st.addEntry(vname, entry);
@@ -333,12 +333,12 @@ module TransferMsg
             rtnMap.add("segments", "created " + st.attrib(sname));
             rtnMap.add("values", "created " + st.attrib(vname));
           } else if typeString == "real(64)" {
-            var entry = new shared SymEntry(size, real);
+            var entry = createSymEntry(size, real);
             var vname = st.nextName();
             receiveData(entry.a, nodeNames, port);
 
             var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
-            var segments = new shared SymEntry(segSize, int);
+            var segments = createSymEntry(segSize, int);
             var sname = st.nextName();
             receiveData(segments.a, nodeNames, port);
           
@@ -348,12 +348,12 @@ module TransferMsg
             rtnMap.add("segments", "created " + st.attrib(sname));
             rtnMap.add("values", "created " + st.attrib(vname));
           } else if typeString == "bool" {
-            var entry = new shared SymEntry(size, bool);
+            var entry = createSymEntry(size, bool);
             receiveData(entry.a, nodeNames, port);
             var vname = st.nextName();
 
             var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
-            var segments = new shared SymEntry(segSize, int);
+            var segments = createSymEntry(segSize, int);
             receiveData(segments.a, nodeNames, port);
             var sname = st.nextName();
           
@@ -566,10 +566,10 @@ module TransferMsg
       if objType == "string" {
         overMemLimit(3*size*numBytes(uint(8)));
         // this is a strings, so we know there are going to be two receives
-        var values = new shared SymEntry(size, uint(8));
+        var values = createSymEntry(size, uint(8));
         receiveData(values.a, nodeNames, port);
         var (offSize, _, _, _) = receiveSetupInfo(hostname, port);
-        var offsets = new shared SymEntry(offSize, int);
+        var offsets = createSymEntry(offSize, int);
         receiveData(offsets.a, nodeNames, port);
         var stringsEntry = assembleSegStringFromParts(offsets, values, st);
         //getSegString(offsets.a, values.a, st);
@@ -578,12 +578,12 @@ module TransferMsg
         var rtnMap: map(string, string) = new map(string, string);
         overMemLimit(4*size*numBytes(uint(8)));
         if typeString == "int(64)" {
-          var entry = new shared SymEntry(size, int);
+          var entry = createSymEntry(size, int);
           var vname = st.nextName();
           receiveData(entry.a, nodeNames, port);
 
           var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
-          var segments = new shared SymEntry(segSize, int);
+          var segments = createSymEntry(segSize, int);
           var sname = st.nextName();
           receiveData(segments.a, nodeNames, port);
 
@@ -593,12 +593,12 @@ module TransferMsg
           rtnMap.add("segments", "created " + st.attrib(sname));
           rtnMap.add("values", "created " + st.attrib(vname));
         } else if typeString == "uint(64)" {
-          var entry = new shared SymEntry(size, uint);
+          var entry = createSymEntry(size, uint);
           var vname = st.nextName();
           receiveData(entry.a, nodeNames, port);
 
           var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
-          var segments = new shared SymEntry(segSize, int);
+          var segments = createSymEntry(segSize, int);
           var sname = st.nextName();
           st.addEntry(sname, segments);
           st.addEntry(vname, entry);
@@ -606,12 +606,12 @@ module TransferMsg
           rtnMap.add("segments", "created " + st.attrib(sname));
           rtnMap.add("values", "created " + st.attrib(vname));
         } else if typeString == "real(64)" {
-          var entry = new shared SymEntry(size, real);
+          var entry = createSymEntry(size, real);
           var vname = st.nextName();
           receiveData(entry.a, nodeNames, port);
 
           var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
-          var segments = new shared SymEntry(segSize, int);
+          var segments = createSymEntry(segSize, int);
           var sname = st.nextName();
           receiveData(segments.a, nodeNames, port);
           
@@ -621,12 +621,12 @@ module TransferMsg
           rtnMap.add("segments", "created " + st.attrib(sname));
           rtnMap.add("values", "created " + st.attrib(vname));
         } else if typeString == "bool" {
-          var entry = new shared SymEntry(size, bool);
+          var entry = createSymEntry(size, bool);
           receiveData(entry.a, nodeNames, port);
           var vname = st.nextName();
 
           var (segSize, _, _, _) = receiveSetupInfo(hostname, port);
-          var segments = new shared SymEntry(segSize, int);
+          var segments = createSymEntry(segSize, int);
           receiveData(segments.a, nodeNames, port);
           var sname = st.nextName();
           
@@ -641,23 +641,23 @@ module TransferMsg
         overMemLimit(5*size*numBytes(uint(8)));
         var rtnMap: map(string, string) = new map(string, string);
         // GET CODES
-        var codes = new shared SymEntry(size, int);
+        var codes = createSymEntry(size, int);
         receiveData(codes.a, nodeNames, port);
         var cname = st.nextName();
         st.addEntry(cname, codes);
         
         // GET CATS STRING
         var (valSize, _, _, _) = receiveSetupInfo(hostname, port);
-        var values = new shared SymEntry(valSize, uint(8));
+        var values = createSymEntry(valSize, uint(8));
         receiveData(values.a, nodeNames, port);
         var (offSize, _, _, _) = receiveSetupInfo(hostname, port);
-        var offsets = new shared SymEntry(offSize, int);
+        var offsets = createSymEntry(offSize, int);
         receiveData(offsets.a, nodeNames, port);
         var cats = assembleSegStringFromParts(offsets, values, st);
 
         // GET NACODES
         var (naCodesSize, _, _, _) = receiveSetupInfo(hostname, port);
-        var naCodes = new shared SymEntry(naCodesSize, int);
+        var naCodes = createSymEntry(naCodesSize, int);
         receiveData(naCodes.a, nodeNames, port);
         var nname = st.nextName();
         st.addEntry(nname, naCodes);
@@ -669,19 +669,19 @@ module TransferMsg
       } else {
         var rname = st.nextName();
         if typeString == "int(64)" {
-          var entry = new shared SymEntry(size, int);
+          var entry = createSymEntry(size, int);
           receiveData(entry.a, nodeNames, port);
           st.addEntry(rname, entry);
         } else if typeString == "uint(64)" {
-          var entry = new shared SymEntry(size, uint);
+          var entry = createSymEntry(size, uint);
           receiveData(entry.a, nodeNames, port);
           st.addEntry(rname, entry);
         } else if typeString == "real(64)" {
-          var entry = new shared SymEntry(size, real);
+          var entry = createSymEntry(size, real);
           receiveData(entry.a, nodeNames, port);
           st.addEntry(rname, entry);
         } else if typeString == "bool" {
-          var entry = new shared SymEntry(size, bool);
+          var entry = createSymEntry(size, bool);
           receiveData(entry.a, nodeNames, port);
           st.addEntry(rname, entry);
         }
