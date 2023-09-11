@@ -252,6 +252,10 @@ module AryUtil
       return (bitWidth, negs);
     }
 
+    inline proc getBitWidth(a: [?aD] bool): (int, bool) {
+      return (1, false);
+    }
+
     inline proc getBitWidth(a: [?aD] (uint, uint)): (int, bool) {
       const negs = false;
       var highMax = max reduce [(ai,_) in a] ai;
@@ -334,6 +338,7 @@ module AryUtil
           when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
           when DType.UInt64  { (bitWidth, neg) = getBitWidth(toSymEntry(g, uint).a); }
           when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
+          when DType.Bool { (bitWidth, neg) = getBitWidth(toSymEntry(g, bool).a); }
           otherwise {
             throw getErrorWithContext(
                                       msg=dtype2str(g.dtype),
@@ -377,6 +382,7 @@ module AryUtil
           when DType.Int64   { mergeArray(int); }
           when DType.UInt64  { mergeArray(uint); }
           when DType.Float64 { mergeArray(real); }
+          when DType.Bool { mergeArray(bool); }
           otherwise {
             throw getErrorWithContext(
                                       msg=dtype2str(g.dtype),

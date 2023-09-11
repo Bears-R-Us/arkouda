@@ -157,6 +157,18 @@ module ArgSortMsg
               }
               deltaIV = argsortDefault(newa);
           }
+          when DType.Bool {
+              var e = toSymEntry(g, bool);
+              // Permute the keys array with the initial iv
+              var newa: [e.a.domain] int;
+              ref olda = e.a;
+              // Effectively: newa = olda[iv]
+              forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(int)) {
+                  agg.copy(newai, olda[idx]:int);
+              }
+              // Generate the next incremental permutation
+              deltaIV = argsortDefault(newa);
+          }
           otherwise { throw getErrorWithContext(
                                 msg="Unsupported DataType: %?".doFormat(dtype2str(g.dtype)),
                                 lineNumber=getLineNumber(),
@@ -370,6 +382,12 @@ module ArgSortMsg
                 when (DType.Float64) {
                     var e = toSymEntry(gEnt, real);
                     var iv = argsortDefault(e.a);
+                    st.addEntry(ivname, createSymEntry(iv));
+                }
+                when (DType.Bool) {
+                    var e = toSymEntry(gEnt,bool);
+                    var int_ea = e.a:int;
+                    var iv = argsortDefault(int_ea, algorithm=algorithm);
                     st.addEntry(ivname, createSymEntry(iv));
                 }
                 otherwise {
