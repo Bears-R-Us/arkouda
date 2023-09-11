@@ -107,7 +107,7 @@ def hist_all(ak_df: DataFrame, cols: list = [], log: bool = True):
             x = ak_df[col]
 
             if x.dtype == "float64":
-                x = x[isnan(x)]
+                x = x[~isnan(x)]
 
             n = len(x)
             g1 = skew(x)
@@ -119,7 +119,7 @@ def hist_all(ak_df: DataFrame, cols: list = [], log: bool = True):
             x = newcol[0 : ak_df.size]
 
             if x.dtype == "float64":
-                x = x[isnan(x)]
+                x = x[~isnan(x)]
 
             n = len(x)
             g1 = skew(x)
