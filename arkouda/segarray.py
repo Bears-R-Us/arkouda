@@ -1600,4 +1600,3 @@ class SegArray:
                                                   "port": port,
                                                   "dtype": self.dtype,
                                                   "objType": "segarray"})
-

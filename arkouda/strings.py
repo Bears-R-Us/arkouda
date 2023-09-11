@@ -2555,5 +2555,3 @@ class Strings:
                                                   "hostname": hostname,
                                                   "port": port,
                                                   "objType": "strings"})
-
-
