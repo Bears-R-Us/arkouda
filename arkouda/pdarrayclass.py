@@ -3074,7 +3074,7 @@ def sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 
 
 @typechecked
-def skew(pda: pdarray, bias: bool=True) -> np.float64:
+def skew(pda: pdarray, bias: bool = True) -> np.float64:
 
     """
     Computes the sample skewness of an array.
