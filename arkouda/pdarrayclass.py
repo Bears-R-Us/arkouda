@@ -3074,7 +3074,7 @@ def sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 
 
 @typechecked
-def skew(pda: pdarray) -> np.float64:
+def skew(pda: pdarray, bias: bool=True) -> np.float64:
 
     """
     Computes the sample skewness of an array.
@@ -3087,6 +3087,8 @@ def skew(pda: pdarray) -> np.float64:
     ----------
     pda : pdarray
         A pdarray of values that will be calculated to find the skew
+    bias : bool, optional
+        If False, then the calculations are corrected for statistical bias.
 
     Returns
     -------
@@ -3106,6 +3108,11 @@ def skew(pda: pdarray) -> np.float64:
 
     if std_dev != 0:
         skewness = cubed_deviations.mean() / (std_dev ** 3)
+        # Apply bias correction using the Fisher-Pearson method
+        if not bias:
+            n = len(pda)
+            correction = np.sqrt((n-1)*n)/(n-2)
+            skewness = correction * skewness
     else:
         skewness = 0
 
