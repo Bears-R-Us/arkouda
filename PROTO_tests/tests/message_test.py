@@ -48,17 +48,20 @@ class TestMessage:
         assert msg != msgNonDupe
 
         assert (
-            "RequestMessage(user='user1', token='token', cmd='connect', format=STRING, args=None, size=-1)"
+            "RequestMessage(user='user1', token='token', "
+            "cmd='connect', format=STRING, args=None, size=-1)"
             == str(msg)
         )
 
         assert (
-            "RequestMessage(user='user1', token='token', cmd='connect', format=STRING, args=None, size=-1)"
+            "RequestMessage(user='user1', token='token', "
+            "cmd='connect', format=STRING, args=None, size=-1)"
             == repr(msg)
         )
 
         assert (
-            '{"user": "user1", "token": "token", "cmd": "connect", "format": "STRING", "args": "", "size": -1}'
+            '{"user": "user1", "token": "token", "cmd": "connect", '
+            '"format": "STRING", "args": "", "size": -1}'
             == json.dumps(msg.asdict())
         )
 
@@ -67,17 +70,20 @@ class TestMessage:
         min_msg = RequestMessage(user="user1", cmd="connect")
 
         assert (
-            "RequestMessage(user='user1', token=None, cmd='connect', format=STRING, args=None, size=-1)"
+            "RequestMessage(user='user1', token=None, cmd='connect', "
+            "format=STRING, args=None, size=-1)"
             == str(min_msg)
         )
 
         assert (
-            "RequestMessage(user='user1', token=None, cmd='connect', format=STRING, args=None, size=-1)"
+            "RequestMessage(user='user1', token=None, cmd='connect', "
+            "format=STRING, args=None, size=-1)"
             == repr(min_msg)
         )
 
         assert (
-            '{"user": "user1", "token": "", "cmd": "connect", "format": "STRING", "args": "", "size": -1}'
+            '{"user": "user1", "token": "", "cmd": "connect", '
+            '"format": "STRING", "args": "", "size": -1}'
             == json.dumps(min_msg.asdict())
         )
 

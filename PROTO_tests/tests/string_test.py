@@ -1,5 +1,5 @@
 from collections import Counter, namedtuple
-from typing import List, Tuple
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -86,7 +86,6 @@ class TestString:
         npset = set(np.unique(strings.to_ndarray()))
         # When converted to a set, should agree with numpy
         assert akset == npset
-        return akset
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_groupby(self, size):
@@ -136,8 +135,10 @@ class TestString:
         strings = self.get_strings(size, base_words)
         test_strings = strings.to_ndarray()
         cat = ak.Categorical(strings)
-        assert self.compare_strings(strings[size // 4: size // 3].to_ndarray(), test_strings[size // 4: size // 3])
-        assert self.compare_strings(cat[size // 4: size // 3].to_ndarray(), test_strings[size // 4: size // 3])
+        assert self.compare_strings(strings[size // 4: size // 3].to_ndarray(),
+                                    test_strings[size // 4: size // 3])
+        assert self.compare_strings(cat[size // 4: size // 3].to_ndarray(),
+                                    test_strings[size // 4: size // 3])
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_pdarray_index(self, size):
@@ -487,7 +488,7 @@ class TestString:
 
         isupper = lmut.is_upper()
         expected = (30 > ak.arange(40)) & (ak.arange(40) >= 20)
-        assert isupper.to_list() ==  expected.to_list()
+        assert isupper.to_list() == expected.to_list()
 
         istitle = lmut.is_title()
         expected = ak.arange(40) >= 30
@@ -629,4 +630,3 @@ class TestString:
         s1 = ak.array(v1)
         nd1 = s1.to_ndarray()
         assert nd1.tolist() == v1
-

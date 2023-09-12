@@ -114,7 +114,7 @@ class TestGroupBy:
                 akkeys, akvals = akg.count() if op == "count" else akg.aggregate(akdf[vname], op)
             except Exception as E:
                 print("Arkouda error: ", E)
-                continue # skip check
+                continue  # skip check
             if do_check:
                 if op.startswith("arg"):
                     pdextrema = df[vname][pdvals]

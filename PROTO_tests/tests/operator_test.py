@@ -81,7 +81,10 @@ class TestOperator:
                 continue
             for lscalar, rscalar in ((False, False), (False, True), (True, False)):
                 tests += 1
-                expression = f'{ltype}({("array", "scalar")[lscalar]}) {op} {rtype}({("array", "scalar")[rscalar]})'
+                expression = (
+                    f'{ltype}({("array", "scalar")[lscalar]}) '
+                    f'{op} {rtype}({("array", "scalar")[rscalar]})'
+                )
                 try:
                     npres = do_op(ltype, rtype, lscalar, rscalar, False, op)
                 except TypeError:  # numpy doesn't implement operation
@@ -171,7 +174,6 @@ class TestOperator:
         print(f"  Value mismatches:         {len(valueerrors)} / {nboth}")
         if verbose:
             print("\n".join(map(": ".join, valueerrors)))
-        return matches == nboth
 
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     def test_pdarray_and_scalar_ops(self, dtype):
@@ -549,9 +551,11 @@ class TestOperator:
         assert ak.array([1.1, 2.3, 5]).__repr__() in answers
 
         answers = [
-            "array([0 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10])",
+            "array([0 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 "
+            "9.473684210526315 10])",
             "array([0 0.5 1.1 ... 8.9 9.5 10])",
-            "array([0.00000000000000000 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10.00000000000000000])",
+            "array([0.00000000000000000 0.52631578947368418 "
+            "1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10.00000000000000000])",
         ]
         assert ak.linspace(0, 10, 20).__repr__() in answers
         assert "array([False False False])" == ak.isnan(ak.array([1.1, 2.3, 5])).__repr__()

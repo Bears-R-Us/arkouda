@@ -153,7 +153,8 @@ class TestDatetime:
                     except AssertionError as e:
                         if verbose:
                             print(
-                                f"arkouda vs pandas discrepancy in {firstclass.__name__} {op} {secondclass.__name__}:\n {ret} {pdret}"
+                                f"arkouda vs pandas discrepancy in {firstclass.__name__}"
+                                f" {op} {secondclass.__name__}:\n {ret} {pdret}"
                             )
                         raise e
 
@@ -188,7 +189,8 @@ class TestDatetime:
                 except TypeError:
                     if verbose:
                         print(
-                            f"Pandas does not support {secondclass.__name__}(scalar) {op} {firstclass.__name__}"
+                            f"Pandas does not support {secondclass.__name__}(scalar) "
+                            f"{op} {firstclass.__name__}"
                         )
                     metrics["ak_yes_pd_no"] += 1
                     compare_flag = False
@@ -198,7 +200,8 @@ class TestDatetime:
                     except AttributeError:
                         if verbose:
                             print(
-                                f"Unexpected pandas return: {secondclass}(scalar) {op} {firstclass} -> {type(pdret)}: {pdret}"
+                                f"Unexpected pandas return: {secondclass}(scalar) "
+                                f"{op} {firstclass} -> {type(pdret)}: {pdret}"
                             )
         if verbose:
             print(f"{metrics.items()}")
@@ -327,10 +330,14 @@ class TestDatetime:
         # https://github.com/pandas-dev/pandas/blob/main/pandas/tests/scalar/timestamp/test_timestamp.py
         for date in "2013-12-31", "2008-12-28", "2009-12-31", "2010-01-01", "2010-01-03":
             ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="w")).week.to_list()
-            pd_week = pd.Series(pd.date_range(date, periods=10, freq="w")).dt.isocalendar().week.to_list()
+            pd_week = (
+                pd.Series(pd.date_range(date, periods=10, freq="w")).dt.isocalendar().week.to_list()
+            )
             assert ak_week == pd_week
 
         for date in "2000-01-01", "2005-01-01":
             ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="d")).week.to_list()
-            pd_week = pd.Series(pd.date_range(date, periods=10, freq="d")).dt.isocalendar().week.to_list()
+            pd_week = (
+                pd.Series(pd.date_range(date, periods=10, freq="d")).dt.isocalendar().week.to_list()
+            )
             assert ak_week == pd_week
