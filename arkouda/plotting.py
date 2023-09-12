@@ -59,7 +59,7 @@ def plot_dist(b, h, log=True, xlabel=None, newfig=True):
         plt.gca().set_xlabel(xlabel, fontsize=14)
 
 
-def hist_all(ak_df: DataFrame, cols: list = [], log: bool = True):
+def hist_all(ak_df: DataFrame, cols: list = []):
     """
     Create a grid plot histogramming all numeric columns in ak dataframe
 
@@ -69,8 +69,6 @@ def hist_all(ak_df: DataFrame, cols: list = [], log: bool = True):
         Full Arkouda DataFrame containing data to be visualized
     cols : list
         (Optional) A specified list of columns to be plotted
-    log : bool
-        use log to scale y
 
     Notes
     -----
