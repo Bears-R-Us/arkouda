@@ -29,7 +29,7 @@ module FlattenMsg {
         repMsg = "created %s+created bytes.size %?".doFormat(st.attrib(stringsObj.name), stringsObj.nBytes);
         if returnSegs {
           const optName: string = st.nextName();
-          st.addEntry(optName, new shared SymEntry(segs));
+          st.addEntry(optName, createSymEntry(segs));
           repMsg += "+created %s".doFormat(st.attrib(optName));
         }
       } otherwise {
@@ -70,7 +70,7 @@ module FlattenMsg {
         var retString = getSegString(off, val, st);
         repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
         if returnSegs {
-          st.addEntry(optName, new shared SymEntry(segs));
+          st.addEntry(optName, createSymEntry(segs));
           repMsg += "+created %s".doFormat(st.attrib(optName));
         }
       }

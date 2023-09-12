@@ -2,6 +2,7 @@ import glob
 import os
 import shutil
 import tempfile
+import pytest
 
 import numpy as np
 from base_test import ArkoudaTest
@@ -95,17 +96,15 @@ class CategoricalTest(ArkoudaTest):
         self.assertListEqual(codes.to_list(), cat.codes.to_list())
         self.assertListEqual(categories.to_list(), cat.categories.to_list())
 
-    def testContains(self):
-        cat = self._getCategorical()
-        self.assertTrue(cat.contains("string").all())
+    def test_substring_search(self):
+        cat = ak.Categorical(ak.array([f"{i} string {i}" for i in range(10)]))
+        self.assertTrue(cat.contains("tri").all())
+        self.assertTrue(cat.endswith("ing 1").any())
+        self.assertTrue(cat.startswith("1 str").any())
 
-    def testEndsWith(self):
-        cat = self._getCategorical()
-        self.assertTrue(cat.endswith("1").any())
-
-    def testStartsWith(self):
-        cat = self._getCategorical()
-        self.assertTrue(cat.startswith("string").all())
+        self.assertTrue(cat.contains("\\w", regex=True).all())
+        self.assertTrue(cat.endswith("ing \\d", regex=True).all())
+        self.assertTrue(cat.startswith("\\d str", regex=True).all())
 
     def testGroup(self):
         group = self._getRandomizedCategorical().group()
@@ -427,7 +426,7 @@ class CategoricalTest(ArkoudaTest):
         self.assertEqual(c.NAvalue, "C")
         # Test that NAval survives registration
         c.register("my_categorical")
-        c2 = ak.Categorical.attach("my_categorical")
+        c2 = ak.attach("my_categorical")
         self.assertEqual(c2.NAvalue, "C")
 
         c.unregister()

@@ -5,12 +5,13 @@ from typing import Optional, Union
 import numpy as np  # type: ignore
 from typeguard import typechecked
 
-from arkouda.dtypes import bitType, intTypes, isSupportedInt, uint64 as akuint64
+from arkouda.dtypes import bitType, intTypes, isSupportedInt
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import where
-from arkouda.pdarrayclass import pdarray
-from arkouda.pdarraycreation import arange, array, zeros
+from arkouda.pdarrayclass import RegistrationError, pdarray
+from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.strings import Strings
 
 
@@ -65,8 +66,10 @@ class BitVector(pdarray):
     """
 
     conserves = frozenset(("+", "-", "|", "&", "^", ">>", "<<"))
+    special_objType = "BitVector"
 
     def __init__(self, values, width=64, reverse=False):
+        self.registered_name = None
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
             raise TypeError("Argument must be integer pdarray")
@@ -195,6 +198,69 @@ class BitVector(pdarray):
         else:
             return NotImplemented
         self.values.opeq(otherdata, op)
+
+    def register(self, user_defined_name):
+        """
+        Register this BitVector object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name the BitVector is to be registered under,
+            this will be the root name for underlying components
+
+        Returns
+        -------
+        BitVector
+            The same BitVector which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
+            Please note you cannot register two different BitVectors with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the BitVector with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.client import generic_msg
+
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.special_objType,
+                "values": self.values.name,
+                "width": self.width,
+                "reverse": self.reverse,
+            },
+        )
+        self.registered_name = user_defined_name
+        return self
+
+    @classmethod
+    def from_return_msg(cls, rep_msg):
+        import json
+
+        data = json.loads(rep_msg)
+
+        return cls(
+            create_pdarray(data["values"]),
+            width=data["width"],
+            reverse=json.loads(data["reverse"].lower()),
+        )
 
 
 class Fields(BitVector):
@@ -440,6 +506,8 @@ class IPv4(pdarray):
     typically treat this class like an int64 pdarray.
     """
 
+    special_objType = "IPv4"
+
     def __init__(self, values):
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
@@ -567,6 +635,118 @@ class IPv4(pdarray):
         else:
             return NotImplemented
         self.values.opeq(otherdata, op)
+
+    def register(self, user_defined_name):
+        """
+        Register this IPv4 object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name the IPv4 is to be registered under,
+            this will be the root name for underlying components
+
+        Returns
+        -------
+        IPv4
+            The same IPv4 which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
+            Please note you cannot register two different IPv4s with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the IPv4 with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.client import generic_msg
+
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.special_objType,
+                "array": self.values,
+            },
+        )
+        self.registered_name = user_defined_name
+        return self
+
+    def to_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "array",
+        mode: str = "truncate",
+        file_type: str = "distribute",
+    ):
+        """
+        Override of the pdarray to_hdf to store the special object type
+        """
+        from typing import cast as typecast
+
+        from arkouda.client import generic_msg
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
+
+        return typecast(
+            str,
+            generic_msg(
+                cmd="tohdf",
+                args={
+                    "values": self,
+                    "dset": dataset,
+                    "write_mode": _mode_str_to_int(mode),
+                    "filename": prefix_path,
+                    "dtype": self.dtype,
+                    "objType": self.special_objType,
+                    "file_format": _file_type_to_int(file_type),
+                },
+            ),
+        )
+
+    def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
+        """
+        Override the pdarray implementation so that the special object type will be used.
+        """
+        from arkouda.client import generic_msg
+        from arkouda.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
+
+        # determine the format (single/distribute) that the file was saved in
+        file_type = _get_hdf_filetype(prefix_path + "*")
+
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "values": self,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int("append"),
+                "filename": prefix_path,
+                "dtype": self.dtype,
+                "objType": self.special_objType,
+                "file_format": _file_type_to_int(file_type),
+                "overwrite": True,
+            },
+        )
+
+        if repack:
+            _repack_hdf(prefix_path)
 
 
 @typechecked

@@ -711,8 +711,6 @@ class OperatorsTest(ArkoudaTest):
         # Test ak,histogram against unsupported dtype
         # with self.assertRaises(ValueError) as cm:
         #    ak.histogram((ak.randint(0, 1, 100, dtype=ak.bool)))
-        with self.assertRaises(RuntimeError):
-            ak.concatenate([ak.array([True]), ak.array([True])]).is_sorted()
 
         with self.assertRaises(TypeError):
             ak.ones(100).any([0])
@@ -746,11 +744,14 @@ class OperatorsTest(ArkoudaTest):
         # Test __repr__()
         self.assertEqual("array([1 2 3])", ak.array([1, 2, 3]).__repr__())
         self.assertEqual("array([1 2 3 ... 17 18 19])", ak.arange(1, 20).__repr__())
-        answers = ["array([1.1000000000000001 2.2999999999999998 5])", "array([1.1 2.3 5])"]
+        answers = ["array([1.1000000000000001 2.2999999999999998 5])",
+                   "array([1.1 2.3 5])",
+                   "array([1.1000000000000001 2.2999999999999998 5.00000000000000000])"]
         self.assertTrue(ak.array([1.1, 2.3, 5]).__repr__() in answers)
 
         answers = ["array([0 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10])",
-                   "array([0 0.5 1.1 ... 8.9 9.5 10])"]
+                   "array([0 0.5 1.1 ... 8.9 9.5 10])",
+                   "array([0.00000000000000000 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10.00000000000000000])"]
         self.assertTrue(ak.linspace(0, 10, 20).__repr__() in answers)
         self.assertEqual("array([False False False])", ak.isnan(ak.array([1.1, 2.3, 5])).__repr__())
         self.assertEqual(

@@ -4,7 +4,7 @@ module Flatten {
   use AryUtil;
   use SegmentedString;
   use ServerErrors;
-  use SymArrayDmap;
+  use SymArrayDmapCompat;
   use CommAggregation;
   use Reflection;
   use Regex;

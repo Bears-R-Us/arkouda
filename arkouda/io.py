@@ -16,6 +16,8 @@ from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
+from arkouda.client_dtypes import IPv4
+from arkouda.timeclass import Datetime, Timedelta
 
 __all__ = [
     "get_filetype",
@@ -40,6 +42,8 @@ __all__ = [
     "update_hdf",
     "snapshot",
     "restore",
+    "receive",
+    "receive_dataframe",
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -438,7 +442,7 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
 
 def _parse_obj(
     obj: Dict,
-) -> Union[Strings, pdarray, ArrayView, SegArray, Categorical, DataFrame]:
+) -> Union[Strings, pdarray, ArrayView, SegArray, Categorical, DataFrame, IPv4, Datetime, Timedelta]:
     """
     Helper function to create an Arkouda object from read response
 
@@ -462,6 +466,12 @@ def _parse_obj(
         return SegArray.from_return_msg(obj["created"])
     elif pdarray.objType.upper() == obj["arkouda_type"]:
         return create_pdarray(obj["created"])
+    elif IPv4.special_objType.upper() == obj["arkouda_type"]:
+        return IPv4(create_pdarray(obj["created"]))
+    elif Datetime.special_objType.upper() == obj["arkouda_type"]:
+        return Datetime(create_pdarray(obj["created"]))
+    elif Timedelta.special_objType.upper() == obj["arkouda_type"]:
+        return Timedelta(create_pdarray(obj["created"]))
     elif ArrayView.objType.upper() == obj["arkouda_type"]:
         components = obj["created"].split("+")
         flat = create_pdarray(components[0])
@@ -525,7 +535,13 @@ def _build_objects(
     ArrayView,
     Categorical,
     DataFrame,
-    Mapping[str, Union[Strings, pdarray, SegArray, ArrayView, Categorical, DataFrame]],
+    IPv4,
+    Datetime,
+    Timedelta,
+    Mapping[
+        str,
+        Union[Strings, pdarray, SegArray, ArrayView, Categorical, DataFrame, IPv4, Datetime, Timedelta],
+    ],
 ]:
     """
     Helper function to create the Arkouda objects from a read operation
@@ -1572,7 +1588,8 @@ def load(
     with a .parquet appended to the prefix_path.
     Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
 
-    This function will be deprecated when glob flags are added to read_* functions
+    ak.load does not support loading a single file.
+    For loading single HDF5 files without the _LOCALE#### suffix please use ak.read().
 
     CSV files without the Arkouda Header are not supported.
 
@@ -1589,8 +1606,13 @@ def load(
     #### is replaced by each locale numbers. Because filetype is inferred during processing,
     the extension is not required to be a specific format.
     """
+    if "*" in path_prefix:
+        raise ValueError(
+            "Glob expressions not supported by ak.load(). "
+            "To read files using a glob expression, please use ak.read()"
+        )
     prefix, extension = os.path.splitext(path_prefix)
-    globstr = f"{prefix}*{extension}"
+    globstr = f"{prefix}_LOCALE*{extension}"
     try:
         file_format = get_filetype(globstr) if file_format.lower() == "infer" else file_format
         if file_format.lower() == "hdf5":
@@ -1985,3 +2007,83 @@ def restore(filename):
     """
     restore_files = glob.glob(f"{filename}_SNAPSHOT_LOCALE*")
     return read_hdf(sorted(restore_files))
+
+
+def receive(hostname : str, port):
+    """
+    Receive a pdarray sent by `pdarray.transfer()`.
+
+    Parameters
+    ----------
+    hostname : str
+        The hostname of the pdarray that sent the array
+    port : int_scalars
+        The port to send the array over. This needs to be an
+        open port (i.e., not one that the Arkouda server is
+        running on). This will open up `numLocales` ports,
+        each of which in succession, so will use ports of the
+        range {port..(port+numLocales)} (e.g., running an
+        Arkouda server of 4 nodes, port 1234 is passed as
+        `port`, Arkouda will use ports 1234, 1235, 1236,
+        and 1237 to send the array data).
+        This port much match the port passed to the call to
+        `pdarray.transfer()`.
+
+    Returns
+    -------
+    pdarray
+        The pdarray sent from the sending server to the current
+        receiving server.
+
+    Raises
+    ------
+    ValueError
+        Raised if the op is not within the pdarray.BinOps set
+    TypeError
+        Raised if other is not a pdarray or the pdarray.dtype is not
+        a supported dtype
+    """
+    rep_msg = generic_msg(cmd="receiveArray", args={"hostname": hostname,
+                                                    "port"    : port})
+    rep = json.loads(rep_msg)
+    return _build_objects(rep)
+
+
+def receive_dataframe(hostname : str, port):
+    """
+    Receive a pdarray sent by `dataframe.transfer()`.
+
+    Parameters
+    ----------
+    hostname : str
+        The hostname of the dataframe that sent the array
+    port : int_scalars
+        The port to send the dataframe over. This needs to be an
+        open port (i.e., not one that the Arkouda server is
+        running on). This will open up `numLocales` ports,
+        each of which in succession, so will use ports of the
+        range {port..(port+numLocales)} (e.g., running an
+        Arkouda server of 4 nodes, port 1234 is passed as
+        `port`, Arkouda will use ports 1234, 1235, 1236,
+        and 1237 to send the array data).
+        This port much match the port passed to the call to
+        `pdarray.send_array()`.
+
+    Returns
+    -------
+    pdarray
+        The dataframe sent from the sending server to the
+        current receiving server.
+
+    Raises
+    ------
+    ValueError
+        Raised if the op is not within the pdarray.BinOps set
+    TypeError
+        Raised if other is not a pdarray or the pdarray.dtype is not
+        a supported dtype
+    """
+    rep_msg = generic_msg(cmd="receiveDataframe", args={"hostname": hostname,
+                                                        "port"    : port})
+    rep = json.loads(rep_msg)
+    return DataFrame(_build_objects(rep))

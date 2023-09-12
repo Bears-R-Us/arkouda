@@ -630,40 +630,40 @@ module ParquetMsg {
     var listSizes: [filedom] int = calcListSizesandOffset(seg_sizes, filenames, sizes, dsetname);
     var segments = (+ scan seg_sizes) - seg_sizes; // converts segment sizes into offsets
     var sname = st.nextName();
-    st.addEntry(sname, new shared SymEntry(segments));
+    st.addEntry(sname, createSymEntry(segments));
     rtnmap.add("segments", "created " + st.attrib(sname));
 
     var vname = st.nextName();
     if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
       var values = makeDistArray((+ reduce listSizes), int);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
       var values = makeDistArray((+ reduce listSizes), uint);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.double || ty == ArrowTypes.float {
       var values = makeDistArray((+ reduce listSizes), real);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.boolean {
       var values = makeDistArray((+ reduce listSizes), bool);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.stringArr {
-      var entrySeg = new shared SymEntry((+ reduce listSizes), int);
+      var entrySeg = createSymEntry((+ reduce listSizes), int);
       var byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, listSizes, dsetname);
       entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
-      
-      var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
+
+      var entryVal = createSymEntry((+ reduce byteSizes), uint(8));
       readListFilesByName(entryVal.a, sizes, seg_sizes, segments, filenames, byteSizes, dsetname, ty);
       var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
       rtnmap.add("values", "created %s+created bytes.size %?".doFormat(st.attrib(stringsEntry.name), stringsEntry.nBytes));
@@ -810,7 +810,7 @@ module ParquetMsg {
         // If tagging is turned on, tag the data
         if tagData {
           pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Tagging Data with File Code");
-          var tagEntry = new shared SymEntry(len, int); // this will always contain integer values
+          var tagEntry = createSymEntry(len, int);
           populateTagData(tagEntry.a, filenames, sizes);
           var rname = st.nextName();
           st.addEntry(rname, tagEntry);
@@ -821,13 +821,13 @@ module ParquetMsg {
         // Only integer is implemented for now, do nothing if the Parquet
         // file has a different type
         if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
-          var entryVal = new shared SymEntry(len, int);
+          var entryVal = createSymEntry(len, int);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
-          var entryVal = new shared SymEntry(len, uint);
+          var entryVal = createSymEntry(len, uint);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           if (ty == ArrowTypes.uint32){ // correction for high bit 
             ref ea = entryVal.a;
@@ -839,23 +839,23 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.boolean {
-          var entryVal = new shared SymEntry(len, bool);
+          var entryVal = createSymEntry(len, bool);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.stringArr {
-          var entrySeg = new shared SymEntry(len, int);
+          var entrySeg = createSymEntry(len, int);
           byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
           
-          var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
+          var entryVal = createSymEntry((+ reduce byteSizes), uint(8));
           readStrFilesByName(entryVal.a, filenames, byteSizes, dsetname, ty);
           
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.pushBack((dsetname, ObjType.STRINGS, "%s+%?".doFormat(stringsEntry.name, stringsEntry.nBytes)));
         } else if ty == ArrowTypes.double || ty == ArrowTypes.float {
-          var entryVal = new shared SymEntry(len, real);
+          var entryVal = createSymEntry(len, real);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
@@ -1920,7 +1920,7 @@ module ParquetMsg {
         var ty = types[dsetidx];
         
         if ty == ArrowTypes.stringArr {
-          var entryVal = new shared SymEntry(len, int);
+          var entryVal = createSymEntry(len, int);
           getNullIndices(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);

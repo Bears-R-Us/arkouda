@@ -501,7 +501,7 @@ def ones(
 @typechecked
 def full(
     size: Union[int_scalars, str],
-    fill_value: Union[int_scalars, str],
+    fill_value: Union[numeric_scalars, str],
     dtype: Union[np.dtype, type, str, BigInt] = float64,
     max_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
@@ -677,7 +677,7 @@ def ones_like(pda: pdarray) -> pdarray:
 
 
 @typechecked
-def full_like(pda: pdarray, fill_value: int_scalars) -> pdarray:
+def full_like(pda: pdarray, fill_value: numeric_scalars) -> pdarray:
     """
     Create a pdarray filled with fill_value of the same size and dtype as an existing
     pdarray.

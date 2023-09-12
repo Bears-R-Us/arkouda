@@ -4,7 +4,6 @@ import json
 import os
 import random
 from collections import UserDict
-from re import compile, match
 from typing import Callable, Dict, List, Optional, Union, cast
 from warnings import warn
 
@@ -12,23 +11,19 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
-from arkouda import list_registry
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
+from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index
 from arkouda.numeric import cast as akcast
-from arkouda.numeric import cumsum
-from arkouda.numeric import isnan as akisnan
-from arkouda.numeric import where
-from arkouda.pdarrayclass import RegistrationError
-from arkouda.pdarrayclass import attach as pd_attach
-from arkouda.pdarrayclass import pdarray, unregister_pdarray_by_name
+from arkouda.numeric import cumsum, where
+from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.row import Row
@@ -36,7 +31,7 @@ from arkouda.segarray import SegArray
 from arkouda.series import Series
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
-from arkouda.timeclass import Datetime
+from arkouda.timeclass import Datetime, Timedelta
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -52,46 +47,13 @@ __all__ = [
 
 
 def groupby_operators(cls):
-    for name in [
-        "all",
-        "any",
-        "argmax",
-        "argmin",
-        "max",
-        "mean",
-        "min",
-        "nunique",
-        "prod",
-        "sum",
-        "OR",
-        "AND",
-        "XOR",
-    ]:
+    for name in GROUPBY_REDUCTION_TYPES:
         setattr(cls, name, cls._make_aggop(name))
     return cls
 
 
-class AggregateOps:
-    """Base class for GroupBy and DiffAggregate containing common functions"""
-
-    def _gbvar(self, values):
-        """Calculate the variance in a groupby"""
-
-        values = akcast(values, "float64")
-        mean = self.gb.mean(values)
-        mean_broad = self.gb.broadcast(mean[1])
-        centered = values - mean_broad
-        var = Series(self.gb.sum(centered * centered))
-        n = self.gb.sum(~akisnan(centered))
-        return var / (n[1] - 1)
-
-    def _gbstd(self, values):
-        """Calculates  the standard deviation in a groupby"""
-        return self._gbvar(values) ** 0.5
-
-
 @groupby_operators
-class GroupBy(AggregateOps):
+class GroupBy:
     """A DataFrame that has been grouped by a subset of columns"""
 
     def __init__(self, gb, df):
@@ -102,8 +64,17 @@ class GroupBy(AggregateOps):
 
     @classmethod
     def _make_aggop(cls, opname):
-        def aggop(self, colname):
-            return Series(self.gb.aggregate(self.df.data[colname], opname))
+        def aggop(self, colnames=None):
+            if isinstance(colnames, str):
+                return Series(self.gb.aggregate(self.df.data[colnames], opname))
+            else:
+                if colnames is None:
+                    colnames = list(self.df.data.keys())
+                if isinstance(colnames, List):
+                    return DataFrame(
+                        {c: self.gb.aggregate(self.df.data[c], opname)[1] for c in colnames},
+                        index=self.gb.unique_keys,
+                    )
 
         return aggop
 
@@ -130,14 +101,6 @@ class GroupBy(AggregateOps):
 
         return DiffAggregate(self.gb, self.df.data[colname])
 
-    def var(self, colname):
-        """Calculate variance of the difference in each group"""
-        return self._gbvar(self.df.data[colname])
-
-    def std(self, colname):
-        """Calculate standard deviation of the difference in each group"""
-        return self._gbstd(self.df.data[colname])
-
     def broadcast(self, x, permute=True):
         """Fill each group’s segment with a constant value.
 
@@ -159,7 +122,7 @@ class GroupBy(AggregateOps):
 
 
 @groupby_operators
-class DiffAggregate(AggregateOps):
+class DiffAggregate:
     """
     A column in a GroupBy that has been differenced.
     Aggregation operations can be done on the result.
@@ -173,14 +136,6 @@ class DiffAggregate(AggregateOps):
         values[1:] = akcast(series_permuted[1:] - series_permuted[:-1], "float64")
         values[gb.segments] = np.nan
         self.values = values
-
-    def var(self):
-        """Calculate variance of the difference in each group"""
-        return self._gbvar(self.values)
-
-    def std(self):
-        """Calculate standard deviation of the difference in each group"""
-        return self._gbstd(self.values)
 
     @classmethod
     def _make_aggop(cls, opname):
@@ -250,6 +205,7 @@ class DataFrame(UserDict):
 
     def __init__(self, initialdata=None, index=None):
         super().__init__()
+        self.registered_name = None
 
         if isinstance(initialdata, DataFrame):
             # Copy constructor
@@ -290,7 +246,6 @@ class DataFrame(UserDict):
         self._size = 0
         self._bytes = 0
         self._empty = True
-        self.name: Optional[str] = None
 
         # Initial attempts to keep an order on the columns
         self._columns = []
@@ -637,6 +592,77 @@ class DataFrame(UserDict):
         new_df = DataFrame(df_dict)
         new_df._set_index(self.index.index[idx])
         return new_df.to_pandas(retain_index=True)[self._columns]
+
+    def transfer(self, hostname, port):
+        """
+        Sends a DataFrame to a different Arkouda server
+
+        Parameters
+        ----------
+        hostname : str
+            The hostname where the Arkouda server intended to
+            receive the DataFrame is running.
+        port : int_scalars
+            The port to send the array over. This needs to be an
+            open port (i.e., not one that the Arkouda server is
+            running on). This will open up `numLocales` ports,
+            each of which in succession, so will use ports of the
+            range {port..(port+numLocales)} (e.g., running an
+            Arkouda server of 4 nodes, port 1234 is passed as
+            `port`, Arkouda will use ports 1234, 1235, 1236,
+            and 1237 to send the array data).
+            This port much match the port passed to the call to
+            `ak.receive_array()`.
+
+
+        Returns
+        -------
+        A message indicating a complete transfer
+
+        Raises
+        ------
+        ValueError
+            Raised if the op is not within the pdarray.BinOps set
+        TypeError
+            Raised if other is not a pdarray or the pdarray.dtype is not
+            a supported dtype
+        """
+        self.update_size()
+        idx = self._index
+        msg_list = []
+        for col in self._columns:
+            if isinstance(self[col], Categorical):
+                msg_list.append(f"Categorical+{col}+{self[col].codes.name} \
+                +{self[col].categories.name}+{self[col]._akNAcode.name}")
+            elif isinstance(self[col], SegArray):
+                msg_list.append(f"SegArray+{col}+{self[col].segments.name}+{self[col].values.name}")
+            elif isinstance(self[col], Strings):
+                msg_list.append(f"Strings+{col}+{self[col].name}")
+            elif isinstance(self[col], Fields):
+                msg_list.append(f"Fields+{col}+{self[col].name}")
+            elif isinstance(self[col], IPv4):
+                msg_list.append(f"IPv4+{col}+{self[col].name}")
+            elif isinstance(self[col], Datetime):
+                msg_list.append(f"Datetime+{col}+{self[col].name}")
+            elif isinstance(self[col], BitVector):
+                msg_list.append(f"BitVector+{col}+{self[col].name}")
+            else:
+                msg_list.append(f"pdarray+{col}+{self[col].name}")
+
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd="sendDataframe",
+                args={
+                    "size"     : len(msg_list),
+                    "idx_name" : idx.name,
+                    "columns"  : msg_list,
+                    "hostname" : hostname,
+                    "port"     : port
+                },
+            ),
+        )
+        return repMsg
 
     def _shape_str(self):
         return f"{self.size} rows x {self._ncols()} columns"
@@ -1549,6 +1575,10 @@ class DataFrame(UserDict):
             str(obj.categories.dtype) if isinstance(obj, Categorical_) else str(obj.dtype)
             for obj in self.values()
         ]
+        col_objTypes = [
+            obj.special_objType if hasattr(obj, "special_objType") else obj.objType
+            for obj in self.values()
+        ]
         return cast(
             str,
             generic_msg(
@@ -1561,7 +1591,7 @@ class DataFrame(UserDict):
                     "objType": self.objType,
                     "num_cols": len(self.columns),
                     "column_names": self.columns,
-                    "column_objTypes": [obj.objType for key, obj in self.items()],
+                    "column_objTypes": col_objTypes,
                     "column_dtypes": dtypes,
                     "columns": column_data,
                     "index": self.index.values.name,
@@ -2224,14 +2254,49 @@ class DataFrame(UserDict):
         Any changes made to a DataFrame object after registering with the server may not be reflected
         in attached copies.
         """
+        from arkouda.categorical import Categorical as Categorical_
 
-        self.index.register(f"df_index_{user_defined_name}")
-        array(self.columns).register(f"df_columns_{user_defined_name}")
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        column_data = [
+            obj.name
+            if not isinstance(obj, (Categorical_, SegArray, BitVector))
+            else json.dumps(
+                {
+                    "codes": obj.codes.name,
+                    "categories": obj.categories.name,
+                    "NA_codes": obj._akNAcode.name,
+                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
+                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                }
+            )
+            if isinstance(obj, Categorical_)
+            else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
+            if isinstance(obj, SegArray)
+            else json.dumps(
+                {"name": obj.name, "width": obj.width, "reverse": obj.reverse}  # BitVector Case
+            )
+            for obj in self.values()
+        ]
 
-        for col, data in self.data.items():
-            data.register(f"df_data_{data.objType}_{col}_{user_defined_name}")
+        col_objTypes = [
+            obj.special_objType if hasattr(obj, "special_objType") else obj.objType
+            for obj in self.values()
+        ]
 
-        self.name = user_defined_name
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "idx": self.index.values.name,
+                "num_cols": len(self.columns),
+                "column_names": self.columns,
+                "columns": column_data,
+                "col_objTypes": col_objTypes,
+            },
+        )
+        self.registered_name = user_defined_name
         return self
 
     def unregister(self):
@@ -2254,15 +2319,12 @@ class DataFrame(UserDict):
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
+        from arkouda.util import unregister
 
-        if not self.name:
-            raise RegistrationError(
-                "This DataFrame does not have a name and does not appear to be registered."
-            )
-
-        DataFrame.unregister_dataframe_by_name(self.name)
-
-        self.name = None  # Clear our internal DataFrame object name
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None  # Clear our internal DataFrame object name
 
     def is_registered(self) -> bool:
         """
@@ -2287,27 +2349,11 @@ class DataFrame(UserDict):
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
+        from arkouda.util import is_registered
 
-        if self.name is None:
-            return False
-
-        # Total number of registered parts should equal number of columns plus an entry
-        # for the index and the column order
-        total = len(self.data) + 2
-        registered = sum(data.is_registered() for col, data in self.data.items())
-
-        if self.index.values.is_registered():
-            registered += 1
-        if f"df_columns_{self.name}" in list_registry():
-            registered += 1
-
-        if 0 < registered < total:
-            warn(
-                f"WARNING: DataFrame {self.name} expected {total} components to be registered,"
-                f" but only located {registered}."
-            )
-
-        return registered == total
+        if self.registered_name is None:
+            return False  # Dataframe cannot be registered as a component
+        return is_registered(self.registered_name)
 
     @staticmethod
     def attach(user_defined_name: str) -> DataFrame:
@@ -2332,54 +2378,17 @@ class DataFrame(UserDict):
 
         See Also
         --------
-        register, is_registered, unregister, unregister_groupby_by_name
+        register, is_registered, unregister
         """
+        import warnings
 
-        col_resp = cast(
-            str, generic_msg(cmd="stringsToJSON", args={"name": f"df_columns_{user_defined_name}"})
+        from arkouda.util import attach
+
+        warnings.warn(
+            "ak.DataFrame.attach() is deprecated. Please use ak.attach() instead.",
+            DeprecationWarning,
         )
-        columns = dict.fromkeys(json.loads(col_resp))
-        matches = []
-        regEx = compile(
-            f"^df_data_({pdarray.objType}|{Strings.objType}|"
-            f"{Categorical.objType}|{SegArray.objType})_.*_{user_defined_name}"
-        )
-        # Using the regex, cycle through the registered items and find all the columns in the DataFrame
-        for name in list_registry():
-            x = match(regEx, name)
-            if x is not None:
-                matches.append(x.group())
-
-        if len(matches) == 0:
-            raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
-
-        # Remove duplicates caused by multiple components in Categorical or SegArray and
-        # loop through
-        for name in set(matches):
-            colName = DataFrame._parse_col_name(name, user_defined_name)[0]
-            if f"_{Strings.objType}_" in name:
-                columns[colName] = Strings.attach(name)
-            elif f"_{pdarray.objType}_" in name:
-                columns[colName] = pd_attach(name)
-            elif f"_{Categorical.objType}_" in name:
-                columns[colName] = Categorical.attach(name)
-            elif f"_{SegArray.objType}_" in name:
-                columns[colName] = SegArray.attach(name)
-
-        index_resp = cast(
-            str, generic_msg(cmd="attach", args={"name": f"df_index_{user_defined_name}_key"})
-        )
-        dtype = index_resp.split()[2]
-        if dtype == "str":  # TODO - this should be updated in the future to Strings
-            ind = Strings.from_return_msg(index_resp)
-        else:  # pdarray
-            ind = create_pdarray(index_resp)
-
-        index = Index.factory(ind)
-
-        df = DataFrame(columns, index)
-        df.name = user_defined_name
-        return df
+        return attach(user_defined_name)
 
     @staticmethod
     @typechecked
@@ -2404,34 +2413,16 @@ class DataFrame(UserDict):
         --------
         register, unregister, attach, is_registered
         """
+        import warnings
 
-        matches = []
-        regEx = compile(
-            f"^df_data_({pdarray.objType}|{Strings.objType}|"
-            f"{Categorical.objType}|{SegArray.objType})_.*_{user_defined_name}"
+        from arkouda.util import unregister
+
+        warnings.warn(
+            "ak.DataFrame.unregister_dataframe_by_name() is deprecated. "
+            "Please use ak.unregister() instead.",
+            DeprecationWarning,
         )
-        # Using the regex, cycle through the registered items and find all the columns in the DataFrame
-        for name in list_registry():
-            x = match(regEx, name)
-            if x is not None:
-                matches.append(x.group())
-
-        if len(matches) == 0:
-            raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
-
-        # Remove duplicates caused by multiple components in categorical and loop through
-        for name in set(matches):
-            if f"_{Strings.objType}_" in name:
-                Strings.unregister_strings_by_name(name)
-            elif f"_{pdarray.objType}_" in name:
-                unregister_pdarray_by_name(name)
-            elif f"_{Categorical.objType}_" in name:
-                Categorical.unregister_categorical_by_name(name)
-            elif f"_{SegArray.objType}_" in name:
-                SegArray.unregister_segarray_by_name(name)
-
-        unregister_pdarray_by_name(f"df_index_{user_defined_name}_key")
-        Strings.unregister_strings_by_name(f"df_columns_{user_defined_name}")
+        return unregister(user_defined_name)
 
     @staticmethod
     def _parse_col_name(entryName, dfName):
@@ -2464,71 +2455,6 @@ class DataFrame(UserDict):
         else:
             return colParts[3], colType
 
-    @staticmethod
-    def from_attach_msg(repMsg):
-        """
-        Creates and returns a DataFrame based on return components from ak.util.attach
-
-        Parameters
-        ----------
-        repMsg : string
-            A '+' delimited string of the DataFrame components to parse.
-
-        Returns
-        -------
-        DataFrame
-            A DataFrame representing a set of DataFrame components on the server
-
-        Raises
-        ------
-        RuntimeError
-            Raised if a server-side error is thrown in the process of creating
-            the DataFrame instance
-        """
-        parts = repMsg.split("+")
-        dfName = parts[1]
-        cols = dict.fromkeys(json.loads(parts[2][4:]))
-
-        # index could be a pdarray or a Strings
-        idxType = parts[3].split()[2]
-        if (
-            idxType == "str"
-        ):  # TODO - we should update the create statment to check for Strings.objType here
-            idx = Index.factory(Strings.from_return_msg(f"{parts[3]}+{parts[4]}"))
-            i = 5
-        else:  # pdarray
-            idx = Index.factory(create_pdarray(parts[3]))
-            i = 4
-
-        # Column parsing
-        while i < len(parts):
-            if parts[i][:7] == "created":
-                colName, colType = DataFrame._parse_col_name(parts[i], dfName)
-                if colType == "pdarray":
-                    cols[colName] = create_pdarray(parts[i])
-                elif colType == "str":
-                    cols[colName] = Strings.from_return_msg(f"{parts[i]}+{parts[i+1]}")
-                    i += 1
-                else:
-                    raise ValueError(f"Unknown object type defined in return message - {colType}")
-
-            elif parts[i] == "categorical":
-                colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
-                cols[colName] = Categorical.from_return_msg(parts[i + 2] + "+" + parts[i + 3])
-                i += 3
-
-            elif parts[i] == "segarray":
-                info = json.loads(parts[i + 1])
-                colName = DataFrame._parse_col_name(info["segments"], dfName)[0]
-                cols[colName] = SegArray.from_return_msg(parts[i + 1])
-                i += 1
-
-            i += 1
-
-        df = DataFrame(cols, idx)
-        df.name = dfName
-        return df
-
     @classmethod
     def from_return_msg(cls, rep_msg):
         from arkouda.categorical import Categorical as Categorical_
@@ -2548,10 +2474,18 @@ class DataFrame(UserDict):
                     columns[k] = create_pdarray(comps[1])
                 elif comps[0] == Strings.objType.upper():
                     columns[k] = Strings.from_return_msg(comps[1])
+                elif comps[0] == IPv4.special_objType.upper():
+                    columns[k] = IPv4(create_pdarray(comps[1]))
+                elif comps[0] == Datetime.special_objType.upper():
+                    columns[k] = Datetime(create_pdarray(comps[1]))
+                elif comps[0] == Timedelta.special_objType.upper():
+                    columns[k] = Timedelta(create_pdarray(comps[1]))
                 elif comps[0] == Categorical_.objType.upper():
                     columns[k] = Categorical_.from_return_msg(comps[1])
                 elif comps[0] == SegArray.objType.upper():
                     columns[k] = SegArray.from_return_msg(comps[1])
+                elif comps[0] == BitVector.special_objType.upper():
+                    columns[k] = BitVector.from_return_msg(comps[1])
 
         return cls(columns, idx)
 

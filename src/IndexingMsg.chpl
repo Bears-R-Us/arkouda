@@ -363,7 +363,7 @@ module IndexingMsg
                 return new MsgTuple(errorMsg,MsgType.ERROR);               
             }
             if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,ivMin,e.size-1);
+                var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,ivMax,e.size-1);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);             
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -399,7 +399,7 @@ module IndexingMsg
                 return new MsgTuple(errorMsg,MsgType.ERROR);               
             }
             if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,ivMin,e.size-1);
+                var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,ivMax,e.size-1);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);             
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }

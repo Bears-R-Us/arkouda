@@ -27,7 +27,7 @@ from arkouda.dtypes import (
 from arkouda.dtypes import str_ as akstr_
 from arkouda.dtypes import translate_np_dtype
 from arkouda.dtypes import uint64 as akuint64
-from arkouda.infoclass import information, list_registry, pretty_print_information
+from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 
 __all__ = [
@@ -103,7 +103,7 @@ def parse_single_value(msg: str) -> object:
     mydtype = dtype(dtname)
     if mydtype == bigint:
         # we have to strip off quotes prior to 1.32
-        if value[0] == "\"":
+        if value[0] == '"':
             return int(value[1:-1])
         else:
             return int(value)
@@ -196,6 +196,8 @@ class pdarray:
         self.itemsize = itemsize
         if max_bits:
             self.max_bits = max_bits
+
+        self.registered_name: Optional[str] = None
 
     def __del__(self):
         try:
@@ -372,6 +374,46 @@ class pdarray:
             args={"op": op, "dtype": dt, "value": other, "a": self},
         )
         return create_pdarray(repMsg)
+
+    def transfer(self, hostname: str, port: int_scalars):
+        """
+        Sends a pdarray to a different Arkouda server
+
+        Parameters
+        ----------
+        hostname : str
+            The hostname where the Arkouda server intended to
+            receive the pdarray is running.
+        port : int_scalars
+            The port to send the array over. This needs to be an
+            open port (i.e., not one that the Arkouda server is
+            running on). This will open up `numLocales` ports,
+            each of which in succession, so will use ports of the
+            range {port..(port+numLocales)} (e.g., running an
+            Arkouda server of 4 nodes, port 1234 is passed as
+            `port`, Arkouda will use ports 1234, 1235, 1236,
+            and 1237 to send the array data).
+            This port much match the port passed to the call to
+            `ak.receive_array()`.
+
+
+        Returns
+        -------
+        A message indicating a complete transfer
+
+        Raises
+        ------
+        ValueError
+            Raised if the op is not within the pdarray.BinOps set
+        TypeError
+            Raised if other is not a pdarray or the pdarray.dtype is not
+            a supported dtype
+        """
+        # hostname is the hostname to send to
+        return generic_msg(cmd="sendArray", args={"arg1": self,
+                                                  "hostname": hostname,
+                                                  "port": port,
+                                                  "objType": "pdarray"})
 
     # overload + for pdarray, other can be {pdarray, int, float}
     def __add__(self, other):
@@ -727,8 +769,17 @@ class pdarray:
         ------
         RuntimeError
             Raised if there's a server-side error thrown
+        Note
+        -----
+        This will return True if the object is registered itself or as a component
+        of another object
         """
-        return np.bool_(self.name in list_registry())
+        from arkouda.util import is_registered
+
+        if self.registered_name is None:
+            return np.bool_(is_registered(self.name, as_component=True))
+        else:
+            return np.bool_(is_registered(self.registered_name))
 
     def _list_component_names(self) -> List[str]:
         """
@@ -821,13 +872,13 @@ class pdarray:
         """
         return max(self)
 
-    def argmin(self) -> np.int64:
+    def argmin(self) -> Union[np.int64, np.uint64]:
         """
         Return the index of the first occurrence of the array min value
         """
         return argmin(self)
 
-    def argmax(self) -> np.int64:
+    def argmax(self) -> Union[np.int64, np.uint64]:
         """
         Return the index of the first occurrence of the array max value.
         """
@@ -1507,7 +1558,7 @@ class pdarray:
                     "write_mode": _mode_str_to_int(mode),
                     "filename": prefix_path,
                     "dtype": self.dtype,
-                    "objType": "pdarray",
+                    "objType": self.objType,
                     "file_format": _file_type_to_int(file_type),
                 },
             ),
@@ -1787,19 +1838,17 @@ class pdarray:
         >>> # ...other work...
         >>> b.unregister()
         """
-        try:
-            rep_msg = generic_msg(cmd="register", args={"array": self, "user_name": user_defined_name})
-            if isinstance(rep_msg, bytes):
-                rep_msg = str(rep_msg, "UTF-8")
-            if rep_msg != "success":
-                raise RegistrationError
-        except (
-            RuntimeError,
-            RegistrationError,
-        ):  # Registering two objects with the same name is not allowed
-            raise RegistrationError(f"Server was unable to register {user_defined_name}")
-
-        self.name = user_defined_name
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "array": self.name,
+            },
+        )
+        self.registered_name = user_defined_name
         return self
 
     def unregister(self) -> None:
@@ -1837,7 +1886,12 @@ class pdarray:
         >>> # ...other work...
         >>> b.unregister()
         """
-        unregister_pdarray_by_name(self.name)
+        from arkouda.util import unregister
+
+        if self.registered_name is None:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
 
     # class method self is not passed in
     # invoke with ak.pdarray.attach('user_defined_name')
@@ -1882,7 +1936,15 @@ class pdarray:
         >>> # ...other work...
         >>> b.unregister()
         """
-        return attach_pdarray(user_defined_name)
+        import warnings
+
+        from arkouda.util import attach
+
+        warnings.warn(
+            "ak.pdarray.attach() is deprecated. Please use ak.attach() instead.",
+            DeprecationWarning,
+        )
+        return attach(user_defined_name)
 
     def _get_grouping_keys(self) -> List[pdarray]:
         """
@@ -2157,7 +2219,7 @@ def max(pda: pdarray) -> numpy_scalars:
 
 
 @typechecked
-def argmin(pda: pdarray) -> np.int64:
+def argmin(pda: pdarray) -> Union[np.int64, np.uint64]:
     """
     Return the index of the first occurrence of the array min value.
 
@@ -2168,7 +2230,7 @@ def argmin(pda: pdarray) -> np.int64:
 
     Returns
     -------
-    np.int64
+    Union[np.int64, np.uint64]
         The index of the argmin calculated from the pda
 
     Raises
@@ -2183,7 +2245,7 @@ def argmin(pda: pdarray) -> np.int64:
 
 
 @typechecked
-def argmax(pda: pdarray) -> np.int64:
+def argmax(pda: pdarray) -> Union[np.int64, np.uint64]:
     """
     Return the index of the first occurrence of the array max value.
 
@@ -2194,7 +2256,7 @@ def argmax(pda: pdarray) -> np.int64:
 
     Returns
     -------
-    np.int64
+    Union[np.int64, np.uint64]
         The index of the argmax calculated from the pda
 
     Raises
@@ -3228,6 +3290,14 @@ def attach_pdarray(user_defined_name: str) -> pdarray:
     >>> # ...other work...
     >>> b.unregister()
     """
+    import warnings
+
+    from arkouda.util import attach
+
+    warnings.warn(
+        "ak.attach_pdarray() is deprecated. Please use ak.attach() instead.",
+        DeprecationWarning,
+    )
     return attach(user_defined_name)
 
 
@@ -3271,8 +3341,15 @@ def attach(user_defined_name: str) -> pdarray:
     >>> # ...other work...
     >>> b.unregister()
     """
-    repMsg = generic_msg(cmd="attach", args={"name": user_defined_name})
-    return create_pdarray(repMsg)
+    import warnings
+
+    from arkouda.util import attach
+
+    warnings.warn(
+        "ak.pdarrayclass.attach() is deprecated. Please use ak.attach() instead.",
+        DeprecationWarning,
+    )
+    return attach(user_defined_name)
 
 
 @typechecked
@@ -3313,7 +3390,15 @@ def unregister_pdarray_by_name(user_defined_name: str) -> None:
     >>> # ...other work...
     >>> ak.unregister_pdarray_by_name(b)
     """
-    generic_msg(cmd="unregister", args={"name": user_defined_name})
+    import warnings
+
+    from arkouda.util import unregister
+
+    warnings.warn(
+        "ak.unregister_pdarray_by_name() is deprecated. Please use ak.unregister() instead.",
+        DeprecationWarning,
+    )
+    return unregister(user_defined_name)
 
 
 # TODO In the future move this to a specific errors file

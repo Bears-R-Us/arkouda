@@ -377,16 +377,16 @@ module SegmentedMsg {
       var strings = getSegString(name, st);
 
       var (numMatches, matchStarts, matchLens, matchesIndices, searchBools, searchScan, matchBools, matchScan, fullMatchBools, fullMatchScan) = strings.findMatchLocations(pattern, groupNum);
-      st.addEntry(rNumMatchesName, new shared SymEntry(numMatches));
-      st.addEntry(rStartsName, new shared SymEntry(matchStarts));
-      st.addEntry(rLensName, new shared SymEntry(matchLens));
-      st.addEntry(rIndicesName, new shared SymEntry(matchesIndices));
-      st.addEntry(rSearchBoolName, new shared SymEntry(searchBools));
-      st.addEntry(rSearchScanName, new shared SymEntry(searchScan));
-      st.addEntry(rMatchBoolName, new shared SymEntry(matchBools));
-      st.addEntry(rMatchScanName, new shared SymEntry(matchScan));
-      st.addEntry(rfullMatchBoolName, new shared SymEntry(fullMatchBools));
-      st.addEntry(rfullMatchScanName, new shared SymEntry(fullMatchScan));
+      st.addEntry(rNumMatchesName, createSymEntry(numMatches));
+      st.addEntry(rStartsName, createSymEntry(matchStarts));
+      st.addEntry(rLensName, createSymEntry(matchLens));
+      st.addEntry(rIndicesName, createSymEntry(matchesIndices));
+      st.addEntry(rSearchBoolName, createSymEntry(searchBools));
+      st.addEntry(rSearchScanName, createSymEntry(searchScan));
+      st.addEntry(rMatchBoolName, createSymEntry(matchBools));
+      st.addEntry(rMatchScanName, createSymEntry(matchScan));
+      st.addEntry(rfullMatchBoolName, createSymEntry(fullMatchBools));
+      st.addEntry(rfullMatchScanName, createSymEntry(fullMatchScan));
 
       var createdMap = new map(keyType=string,valType=string);
       createdMap.add("NumMatches", "created %s".doFormat(st.attrib(rNumMatchesName)));
@@ -445,7 +445,7 @@ module SegmentedMsg {
         repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
         if returnMatchOrig {
           const optName: string = if returnMatchOrig then st.nextName() else "";
-          st.addEntry(optName, new shared SymEntry(matchOrigins));
+          st.addEntry(optName, createSymEntry(matchOrigins));
           repMsg += "+created %s".doFormat(st.attrib(optName));
         }
       }
@@ -462,7 +462,7 @@ module SegmentedMsg {
         var retString = getSegString(off, val, st);
         repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
         if returnMatchOrig {
-          st.addEntry(optName, new shared SymEntry(matchOrigins));
+          st.addEntry(optName, createSymEntry(matchOrigins));
           repMsg += "+created %s".doFormat(st.attrib(optName));
         }
       }
@@ -501,7 +501,7 @@ module SegmentedMsg {
         var retString = getSegString(off, val, st);
         repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
         if returnNumSubs {
-          st.addEntry(optName, new shared SymEntry(numSubs));
+          st.addEntry(optName, createSymEntry(numSubs));
           repMsg += "+created %s".doFormat(st.attrib(optName));
         }
       }
@@ -672,9 +672,9 @@ module SegmentedMsg {
             st.checkTable(valName);
             var (upper, lower) = segarrayHash(segName, valName, valObjType, st);
             var upperName = st.nextName();
-            st.addEntry(upperName, new shared SymEntry(upper));
+            st.addEntry(upperName, createSymEntry(upper));
             var lowerName = st.nextName();
-            st.addEntry(lowerName, new shared SymEntry(lower));
+            st.addEntry(lowerName, createSymEntry(lower));
             repMsg = "created %s+created %s".doFormat(st.attrib(upperName), st.attrib(lowerName));
         }
         otherwise {
@@ -1105,7 +1105,7 @@ module SegmentedMsg {
         repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
         if returnOrigins {
           var leName = st.nextName();
-          st.addEntry(leName, new shared SymEntry(longEnough));
+          st.addEntry(leName, createSymEntry(longEnough));
           repMsg += "+created " + st.attrib(leName);
         } 
         return new MsgTuple(repMsg, MsgType.NORMAL);
