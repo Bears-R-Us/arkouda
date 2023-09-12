@@ -14,6 +14,7 @@ Functions
 .. autoapisummary::
 
    arkouda.plotting.plot_dist
+   arkouda.plotting.hist_all
 
 
 
@@ -47,5 +48,30 @@ Functions
    >>> ak.plot_dist(b, h.to_ndarray())
    >>> # to show the plot
    >>> plt.show()
+
+
+.. py:function:: hist_all(ak_df: arkouda.dataframe.DataFrame, cols: list = [])
+
+   Create a grid plot histogramming all numeric columns in ak dataframe
+
+   :param ak_df: Full Arkouda DataFrame containing data to be visualized
+   :type ak_df: ak.DataFrame
+   :param cols: (Optional) A specified list of columns to be plotted
+   :type cols: list
+
+   .. rubric:: Notes
+
+   This function displays the plot.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> from arkouda.plotting import hist_all
+   >>> ak_df = ak.DataFrame({"a": ak.array(np.random.randn(100)),
+                             "b": ak.array(np.random.randn(100)),
+                             "c": ak.array(np.random.randn(100)),
+                             "d": ak.array(np.random.randn(100))
+                             })
+   >>> hist_all(ak_df)
 
 
