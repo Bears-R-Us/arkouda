@@ -14,6 +14,8 @@ module TransferMsg
     use ServerErrorStrings;
 
     use SegmentedString;
+    use ArkoudaListCompat;
+    use ArkoudaStringBytesCompat;
 
     proc sendDataFrameSetupInfo(port:string, numColumns: int, elements: string) throws {
       var context: Context;
@@ -233,7 +235,7 @@ module TransferMsg
 
       proc receiveInto(entry, nodeNames, port, colName, rname, st) throws {
         receiveData(entry.a, nodeNames, port);
-        rnames.append((colName, ObjType.PDARRAY, rname));
+        rnames.pushBack((colName, ObjType.PDARRAY, rname));
         st.addEntry(rname, entry);
       }
       
@@ -270,7 +272,7 @@ module TransferMsg
           var offsets = createSymEntry(offSize, int);
           receiveData(offsets.a, nodeNames, port);
           var stringsEntry = assembleSegStringFromParts(offsets, values, st);
-          rnames.append((colName, ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
+          rnames.pushBack((colName, ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
         } else if currObjType == "Categorical" {
           var (size, typeString, nodeNames, objType) = receiveSetupInfo(hostname, port);
           overMemLimit(4*size*numBytes(uint));
@@ -299,7 +301,7 @@ module TransferMsg
           rtnMap.add("codes", "created " + st.attrib(codes.name));
           rtnMap.add("categories", "created %s+created %t".format(st.attrib(cats.name), cats.nBytes));
           rtnMap.add("_akNAcode", "created " + st.attrib(codes.name));
-          rnames.append((colName, ObjType.CATEGORICAL, "%jt".format(rtnMap)));
+          rnames.pushBack((colName, ObjType.CATEGORICAL, "%jt".format(rtnMap)));
         } else if currObjType == "SegArray" {
           var (size, typeString, nodeNames, _) = receiveSetupInfo(hostname, port);
           overMemLimit(3*size*numBytes(uint));
@@ -363,7 +365,7 @@ module TransferMsg
             rtnMap.add("segments", "created " + st.attrib(sname));
             rtnMap.add("values", "created " + st.attrib(vname));
           }
-          rnames.append((colName, ObjType.SEGARRAY, "%jt".format(rtnMap)));
+          rnames.pushBack((colName, ObjType.SEGARRAY, "%jt".format(rtnMap)));
         }
       }
       
@@ -573,7 +575,7 @@ module TransferMsg
         receiveData(offsets.a, nodeNames, port);
         var stringsEntry = assembleSegStringFromParts(offsets, values, st);
         //getSegString(offsets.a, values.a, st);
-        rnames.append(("", ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
+        rnames.pushBack(("", ObjType.STRINGS, "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
       } else if objType == "seg_array" {
         var rtnMap: map(string, string) = new map(string, string);
         overMemLimit(4*size*numBytes(uint(8)));
@@ -636,7 +638,7 @@ module TransferMsg
           rtnMap.add("segments", "created " + st.attrib(sname));
           rtnMap.add("values", "created " + st.attrib(vname));
         }
-        rnames.append(("", ObjType.SEGARRAY, "%jt".format(rtnMap)));
+        rnames.pushBack(("", ObjType.SEGARRAY, "%jt".format(rtnMap)));
       } else if objType == "categorical" {
         overMemLimit(5*size*numBytes(uint(8)));
         var rtnMap: map(string, string) = new map(string, string);
@@ -665,7 +667,7 @@ module TransferMsg
         rtnMap.add("codes", "created " + st.attrib(codes.name));
         rtnMap.add("categories", "created %s+created %t".format(st.attrib(cats.name), cats.nBytes));
         rtnMap.add("_akNAcode", "created " + st.attrib(naCodes.name));
-        rnames.append(("", ObjType.CATEGORICAL, "%jt".format(rtnMap)));
+        rnames.pushBack(("", ObjType.CATEGORICAL, "%jt".format(rtnMap)));
       } else {
         var rname = st.nextName();
         if typeString == "int(64)" {
@@ -685,7 +687,7 @@ module TransferMsg
           receiveData(entry.a, nodeNames, port);
           st.addEntry(rname, entry);
         }
-        rnames.append(("", ObjType.PDARRAY, rname));
+        rnames.pushBack(("", ObjType.PDARRAY, rname));
       }
 
       var transferErrors: list(string);
@@ -804,7 +806,7 @@ module TransferMsg
       var socket = context.socket(ZMQ.PUSH);
       socket.bind("tcp://*:"+port:string);
       const size = intersection.size*c_sizeof(t):int;
-      var locBuff = createBytesWithBorrowedBuffer(c_ptrTo(A[intersection.low]):c_ptr(uint(8)), size, size);
+      var locBuff = bytes.createBorrowingBuffer(c_ptrTo(A[intersection.low]):c_ptr(uint(8)), size, size);
       socket.send(locBuff);
     }
 
@@ -854,7 +856,7 @@ module TransferMsg
         for d2 in receivingDoms {
           const intersection = getIntersection(d1, d2);
           if intersection.size > 0 then
-            intersections.append(intersection);
+            intersections.pushBack(intersection);
         }
       }
       return intersections;
