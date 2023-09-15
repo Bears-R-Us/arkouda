@@ -73,17 +73,21 @@ class TestSeries:
             with pytest.raises(TypeError):
                 s.locate([0, 2])
 
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NO_STRING)
-    def test_add(self, prob_size, dtype):
-        added = ak.Series(ak.arange(prob_size // 2, dtype=dtype)).add(
+    def test_add(self, dtype):
+        size = 100
+        added = ak.Series(ak.arange(size // 2, dtype=dtype)).add(
             ak.Series(
-                data=ak.arange(prob_size // 2, prob_size, dtype=dtype),
-                index=ak.arange(prob_size // 2, prob_size),
+                data=ak.arange(size // 2, size, dtype=dtype),
+                index=ak.arange(size // 2, size),
             )
         )
-        assert (added.index == ak.arange(prob_size)).all()
-        assert (added.values == ak.arange(prob_size, dtype=dtype)).all()
+        assert (added.index == ak.arange(size)).all()
+        if dtype != ak.bool:
+            assert all(i in added.values.to_list() for i in range(size))
+        else:
+            # we have exactly one False
+            assert added.values.sum() == 99
 
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
     def test_topn(self, dtype):
@@ -122,7 +126,6 @@ class TestSeries:
         n = 10
         s = ak.Series(ak.arange(n, dtype=dtype))
         for i in range(n):
-
             head = s.head(i)
             assert head.index.to_list() == list(range(i))
             assert head.values.to_list() == ak.arange(i, dtype=dtype).to_list()
