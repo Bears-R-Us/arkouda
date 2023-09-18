@@ -410,10 +410,10 @@ class pdarray:
             a supported dtype
         """
         # hostname is the hostname to send to
-        return generic_msg(cmd="sendArray", args={"arg1": self,
-                                                  "hostname": hostname,
-                                                  "port": port,
-                                                  "objType": "pdarray"})
+        return generic_msg(
+            cmd="sendArray",
+            args={"arg1": self, "hostname": hostname, "port": port, "objType": "pdarray"},
+        )
 
     # overload + for pdarray, other can be {pdarray, int, float}
     def __add__(self, other):
@@ -1105,6 +1105,27 @@ class pdarray:
         Rotate bits right by <other>.
         """
         return rotr(self, other)
+
+    def value_counts(self):
+        """
+        Count the occurrences of the unique values of self.
+
+        Returns
+        -------
+        unique_values : pdarray
+            The unique values, sorted in ascending order
+
+        counts : pdarray, int64
+            The number of times the corresponding unique value occurs
+
+        Examples
+        --------
+        >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
+        (array([0, 2, 4]), array([3, 2, 1]))
+        """
+        from arkouda.numeric import value_counts
+
+        return value_counts(self)
 
     def astype(self, dtype) -> pdarray:
         """
@@ -3137,7 +3158,6 @@ def sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 
 @typechecked
 def skew(pda: pdarray, bias: bool = True) -> np.float64:
-
     """
     Computes the sample skewness of an array.
     Skewness > 0 means there's greater weight in the right tail of the distribution.
@@ -3164,16 +3184,16 @@ def skew(pda: pdarray, bias: bool = True) -> np.float64:
     """
 
     deviations = pda - pda.mean()
-    cubed_deviations = deviations ** 3
+    cubed_deviations = deviations**3
 
     std_dev = pda.std()
 
     if std_dev != 0:
-        skewness = cubed_deviations.mean() / (std_dev ** 3)
+        skewness = cubed_deviations.mean() / (std_dev**3)
         # Apply bias correction using the Fisher-Pearson method
         if not bias:
             n = len(pda)
-            correction = np.sqrt((n-1)*n)/(n-2)
+            correction = np.sqrt((n - 1) * n) / (n - 2)
             skewness = correction * skewness
     else:
         skewness = 0
