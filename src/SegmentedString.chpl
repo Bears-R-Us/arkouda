@@ -23,6 +23,7 @@ module SegmentedString {
 
   use ArkoudaRegexCompat;
   use ArkoudaStringBytesCompat;
+  use ArkoudaRangeCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -205,6 +206,14 @@ module SegmentedString {
         agg.copy(nv, va[start + i]);
       }
       return (newSegs, newVals);
+    }
+
+    proc this(const slice: stridableRange()) throws {
+      var aa = makeDistArray(slice.size, int);
+      forall (elt,j) in zip(aa, slice) with (var agg = newSrcAggregator(int)) {
+        agg.copy(elt,j);
+      }
+      return this[aa];
     }
 
     /* Gather strings by index. Returns arrays for the segment offsets

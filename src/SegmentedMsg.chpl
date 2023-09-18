@@ -17,6 +17,7 @@ module SegmentedMsg {
 
   use Map;
   use ArkoudaStringBytesCompat;
+  use ArkoudaRangeCompat;
   use ArkoudaCTypesCompat;
   use ArkoudaIOCompat;
 
@@ -795,23 +796,13 @@ module SegmentedMsg {
     var stop = key[1]:int;
     var stride = key[2]:int;
 
-    // Only stride-1 slices are allowed for now
-    if (stride != 1) { 
-        var errorMsg = notImplementedError(pn, "stride != 1"); 
-        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-        return new MsgTuple(errorMsg, MsgType.ERROR);
-    }
-
-    // TO DO: in the future, we will force the client to handle this
-    var slice = convertPythonSliceToChapel(start, stop);
-
     select objtype {
         when ObjType.STRINGS {
             // Make a temporary string array
             var strings = getSegString(objName, st);
 
             // Compute the slice
-            var (newSegs, newVals) = strings[slice];
+            var (newSegs, newVals) = if stride == 1 then strings[convertPythonSliceToChapel(start, stop)] else strings[convertSliceToStridableRange(start, stop, stride)];
             // Store the resulting offsets and bytes arrays
             var newStringsObj = getSegString(newSegs, newVals, st);
             repMsg = "created " + st.attrib(newStringsObj.name) + "+created bytes.size %?".doFormat(newStringsObj.nBytes);
@@ -832,6 +823,18 @@ module SegmentedMsg {
     } else {
       return 1..0;
     }
+  }
+
+
+  proc convertSliceToStridableRange(start: int, stop: int, stride: int): stridableRange {
+    var slice: stridableRange;
+    // backwards iteration with negative stride
+    if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
+    // forward iteration with positive stride
+    else if (start <= stop) & (stride > 0) {slice = start..(stop-1) by stride;}
+    // BAD FORM start < stop and stride is negative
+    else {slice = 1..0;}
+    return slice;
   }
 
   proc segPdarrayIndex(objtype: ObjType, objName: string, iname: string, dtype: DType,
