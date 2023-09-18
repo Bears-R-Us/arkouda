@@ -1948,6 +1948,19 @@ Attributes
       Rotate bits right by <other>.
 
 
+   .. py:method:: value_counts()
+
+      Count the occurrences of the unique values of self.
+
+      :returns: * **unique_values** (*pdarray*) -- The unique values, sorted in ascending order
+                * **counts** (*pdarray, int64*) -- The number of times the corresponding unique value occurs
+
+      .. rubric:: Examples
+
+      >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
+      (array([0, 2, 4]), array([3, 2, 1]))
+
+
    .. py:method:: astype(dtype) -> pdarray
 
       Cast values of pdarray to provided dtype
@@ -4720,6 +4733,19 @@ Attributes
    .. py:method:: rotr(other) -> pdarray
 
       Rotate bits right by <other>.
+
+
+   .. py:method:: value_counts()
+
+      Count the occurrences of the unique values of self.
+
+      :returns: * **unique_values** (*pdarray*) -- The unique values, sorted in ascending order
+                * **counts** (*pdarray, int64*) -- The number of times the corresponding unique value occurs
+
+      .. rubric:: Examples
+
+      >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
+      (array([0, 2, 4]), array([3, 2, 1]))
 
 
    .. py:method:: astype(dtype) -> pdarray
@@ -10407,6 +10433,19 @@ Attributes
       Rotate bits right by <other>.
 
 
+   .. py:method:: value_counts()
+
+      Count the occurrences of the unique values of self.
+
+      :returns: * **unique_values** (*pdarray*) -- The unique values, sorted in ascending order
+                * **counts** (*pdarray, int64*) -- The number of times the corresponding unique value occurs
+
+      .. rubric:: Examples
+
+      >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
+      (array([0, 2, 4]), array([3, 2, 1]))
+
+
    .. py:method:: astype(dtype) -> pdarray
 
       Cast values of pdarray to provided dtype
@@ -12939,6 +12978,19 @@ Attributes
    .. py:method:: rotr(other) -> pdarray
 
       Rotate bits right by <other>.
+
+
+   .. py:method:: value_counts()
+
+      Count the occurrences of the unique values of self.
+
+      :returns: * **unique_values** (*pdarray*) -- The unique values, sorted in ascending order
+                * **counts** (*pdarray, int64*) -- The number of times the corresponding unique value occurs
+
+      .. rubric:: Examples
+
+      >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
+      (array([0, 2, 4]), array([3, 2, 1]))
 
 
    .. py:method:: astype(dtype) -> pdarray
@@ -18043,6 +18095,19 @@ Attributes
    .. py:method:: rotr(other) -> pdarray
 
       Rotate bits right by <other>.
+
+
+   .. py:method:: value_counts()
+
+      Count the occurrences of the unique values of self.
+
+      :returns: * **unique_values** (*pdarray*) -- The unique values, sorted in ascending order
+                * **counts** (*pdarray, int64*) -- The number of times the corresponding unique value occurs
+
+      .. rubric:: Examples
+
+      >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
+      (array([0, 2, 4]), array([3, 2, 1]))
 
 
    .. py:method:: astype(dtype) -> pdarray

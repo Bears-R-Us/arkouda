@@ -912,6 +912,26 @@ always a np.float64 or np.int64.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.value_counts">
+<span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.value_counts" title="Link to this definition">#</a></dt>
+<dd><p>Count the occurrences of the unique values of self.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>unique_values</strong> (<em>pdarray</em>) – The unique values, sorted in ascending order</p></li>
+<li><p><strong>counts</strong> (<em>pdarray, int64</em>) – The number of times the corresponding unique value occurs</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="go">(array([0, 2, 4]), array([3, 2, 1]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.astype">
 <span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.astype" title="Link to this definition">#</a></dt>
 <dd><p>Cast values of pdarray to provided dtype</p>
@@ -2615,6 +2635,7 @@ they are unregistered.</p>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.ctz"><code class="docutils literal notranslate"><span class="pre">pdarray.ctz()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.rotl"><code class="docutils literal notranslate"><span class="pre">pdarray.rotl()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.rotr"><code class="docutils literal notranslate"><span class="pre">pdarray.rotr()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.value_counts"><code class="docutils literal notranslate"><span class="pre">pdarray.value_counts()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.astype"><code class="docutils literal notranslate"><span class="pre">pdarray.astype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.slice_bits"><code class="docutils literal notranslate"><span class="pre">pdarray.slice_bits()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.bigint_to_uint_arrays"><code class="docutils literal notranslate"><span class="pre">pdarray.bigint_to_uint_arrays()</span></code></a></li>
