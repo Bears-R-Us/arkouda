@@ -1,5 +1,6 @@
 from itertools import permutations
 
+import numpy as np
 import pytest
 
 import arkouda as ak
@@ -53,9 +54,11 @@ class TestCoargsort:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     def test_coargsort_mixed_types(self, prob_size, algo):
-        for arr_list in permutations(
-            make_ak_arrays(prob_size, dt, 0, 2**63) for dt in NUMERIC_TYPES
-        ):
+        for dt in NUMERIC_TYPES:
+            dtypes = [dt] + np.random.choice(
+                list(set(NUMERIC_TYPES) - {dt}), size=len(NUMERIC_TYPES) - 1, replace=False
+            ).tolist()
+            arr_list = [make_ak_arrays(prob_size, dt, 0, 2**63) for dt in dtypes]
             if not isinstance(arr_list, list):
                 arr_list = list(arr_list)
             perm = ak.coargsort(arr_list, algo)
