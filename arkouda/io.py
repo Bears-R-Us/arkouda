@@ -965,7 +965,7 @@ def import_data(read_path: str, write_file: str = None, return_obj: bool = True,
     from arkouda.dataframe import DataFrame
 
     # verify file path
-    is_glob = False if os.path.isfile(read_path) else True
+    is_glob = not os.path.isfile(read_path)
     file_list = glob.glob(read_path)
     if len(file_list) == 0:
         raise FileNotFoundError(f"Invalid read_path, {read_path}. No files found.")
@@ -1080,6 +1080,7 @@ def _bulk_write_prep(
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
     names: List[str] = None,
+    convert_categoricals: bool = False,
 ):
     datasetNames = []
     if names is not None:
@@ -1101,6 +1102,11 @@ def _bulk_write_prep(
     if len(data) == 0:
         raise RuntimeError("No data was found.")
 
+    if convert_categoricals:
+        for i, val in enumerate(data):
+            if isinstance(val, Categorical):
+                data[i] = val.categories[val.codes]
+
     col_objtypes = [c.objType for c in data]
 
     return datasetNames, data, col_objtypes
@@ -1115,6 +1121,7 @@ def to_parquet(
     names: List[str] = None,
     mode: str = "truncate",
     compression: Optional[str] = None,
+    convert_categoricals: bool = False,
 ) -> None:
     """
     Save multiple named pdarrays to Parquet files.
@@ -1135,7 +1142,10 @@ def to_parquet(
             Default None
             Provide the compression type to use when writing the file.
             Supported values: snappy, gzip, brotli, zstd, lz4
-
+        convert_categoricals: bool
+            Defaults to False
+            Parquet requires all columns to be the same size and Categoricals don't satisfy that requirement.
+            if set, write the equivalent Strings in place of any Categorical columns.
 
     Returns
     -------
@@ -1176,7 +1186,6 @@ def to_parquet(
     """
     if mode.lower() not in ["append", "truncate"]:
         raise ValueError("Allowed modes are 'truncate' and 'append'")
-
     if mode.lower() == "append":
         warn(
             "Append has been deprecated when writing Parquet files. "
@@ -1184,7 +1193,7 @@ def to_parquet(
             DeprecationWarning,
         )
 
-    datasetNames, data, col_objtypes = _bulk_write_prep(columns, names)
+    datasetNames, data, col_objtypes = _bulk_write_prep(columns, names, convert_categoricals)
     # append or single column use the old logic
     if mode.lower() == "append" or len(data) == 1:
         for arr, name in zip(data, cast(List[str], datasetNames)):
