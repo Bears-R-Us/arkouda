@@ -474,7 +474,7 @@ class TestGroupBy:
         assert u_group_sums.to_list() == i_group_sums.to_list()
 
         # verify the multidim unsigned version doesnt break
-        multi_gu = ak.GroupBy([u, u])  # noqa: F841
+        ak.GroupBy([u, u])
 
         u_data = ak.array(np.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4], dtype=np.uint64))
         i_data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])

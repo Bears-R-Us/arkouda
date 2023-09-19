@@ -421,22 +421,15 @@ class TestString:
 
         # Test gremlins delimiters
         g = self._get_ak_gremlins(size)
-        self._stick_help(
-            g.gremlins_strings, g.gremlins_test_strings, g.gremlins_base_words, " ", size + 3
-        )
-        self._stick_help(
-            g.gremlins_strings, g.gremlins_test_strings, g.gremlins_base_words, "", size + 3
-        )
-        self._stick_help(
-            g.gremlins_strings, g.gremlins_test_strings, g.gremlins_base_words, '"', size + 3
-        )
+        for delim in " ", "", '"':
+            self._stick_help(
+                g.gremlins_strings, g.gremlins_test_strings, g.gremlins_base_words, delim, size + 3
+            )
 
     def test_str_output(self):
         strings = ak.array(["string {}".format(i) for i in range(0, 101)])
-        assert (
-            "['string 0', 'string 1', 'string 2', ... , 'string 98', "
-            "'string 99', 'string 100']" == str(strings)
-        )
+        str_ans = "['string 0', 'string 1', 'string 2', ... , 'string 98', 'string 99', 'string 100']"
+        assert str_ans == str(strings)
 
     def test_flatten(self):
         orig = ak.array(["one|two", "three|four|five", "six"])
