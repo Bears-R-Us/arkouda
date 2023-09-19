@@ -721,27 +721,27 @@ class TestRegistration:
             str(a)
 
     def test_symentry_cleanup(self):
-        pda = self.make_pdarray(ak.int64, 10)
+        pda = self.make_pdarray(ak.int64, 10)  # noqa: F841
         assert len(ak.list_symbol_table()) > 0
-        pda = None
+        pda = None  # noqa: F841
         assert len(ak.list_symbol_table()) == 0
 
-        s = self.make_pdarray(ak.str_, 10)
+        s = self.make_pdarray(ak.str_, 10)  # noqa: F841
         assert len(ak.list_symbol_table()) > 0
-        s = None
+        s = None  # noqa: F841
         assert len(ak.list_symbol_table()) == 0
 
-        cat = ak.Categorical(self.make_pdarray(ak.str_, 10))
+        cat = ak.Categorical(self.make_pdarray(ak.str_, 10))  # noqa: F841
         assert len(ak.list_symbol_table()) > 0
-        cat = None
+        cat = None  # noqa: F841
         assert len(ak.list_symbol_table()) == 0
 
-        seg = ak.SegArray(ak.arange(0, 10, 2), self.make_pdarray(ak.float64, 10))
+        seg = ak.SegArray(ak.arange(0, 10, 2), self.make_pdarray(ak.float64, 10))  # noqa: F841
         assert len(ak.list_symbol_table()) > 0
-        seg = None
+        seg = None  # noqa: F841
         assert len(ak.list_symbol_table()) == 0
 
-        g = ak.GroupBy(
+        g = ak.GroupBy(  # noqa: F841
             [
                 self.make_pdarray(ak.int64, 10),
                 self.make_pdarray(ak.str_, 10),
@@ -749,10 +749,10 @@ class TestRegistration:
             ]
         )
         assert len(ak.list_symbol_table()) > 0
-        g = None
+        g = None  # noqa: F841
         assert len(ak.list_symbol_table()) == 0
 
-        d = ak.DataFrame(
+        d = ak.DataFrame(  # noqa: F841
             {
                 "pda": self.make_pdarray(ak.int64, 10),
                 "s": self.make_pdarray(ak.str_, 10),
@@ -761,5 +761,5 @@ class TestRegistration:
             }
         )
         assert len(ak.list_symbol_table()) > 0
-        d = None
+        d = None  # noqa: F841
         assert len(ak.list_symbol_table()) == 0

@@ -116,12 +116,11 @@ class TestDatetime:
             r_is_supported,
             return_type,
         ) in build_op_table().items():
-            fcvec = vectors[firstclass]
-            pdfcvec = pdvectors[firstclass]
-            fcsca = scalars[firstclass]
-            scvec = vectors[secondclass]
-            pdscvec = pdvectors[secondclass]
-            scsca = scalars[secondclass]
+            fcvec = vectors[firstclass]  # noqa: F841
+            pdfcvec = pdvectors[firstclass]  # noqa: F841
+            scvec = vectors[secondclass]  # noqa: F841
+            pdscvec = pdvectors[secondclass]  # noqa: F841
+            scsca = scalars[secondclass]  # noqa: F841
             if not is_supported:
                 with pytest.raises(TypeError):
                     eval(f"fcvec {op} scvec")

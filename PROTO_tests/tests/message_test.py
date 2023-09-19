@@ -181,8 +181,8 @@ class TestJSONArgs:
         assert args == expected
 
     def test_list_addl_str(self):
-        l = ["abc", "def", "l", "mn", "op"]
-        size, args = _json_args_to_str({"str_list": l})
+        string_list = ["abc", "def", "l", "mn", "op"]
+        size, args = _json_args_to_str({"str_list": string_list})
 
         expected = json.dumps(
             [
@@ -190,8 +190,8 @@ class TestJSONArgs:
                     {
                         "key": "str_list",
                         "objType": "LIST",
-                        "dtype": ak.resolve_scalar_dtype(l[0]),
-                        "val": json.dumps(l),
+                        "dtype": ak.resolve_scalar_dtype(string_list[0]),
+                        "val": json.dumps(string_list),
                     }
                 ),
             ]
