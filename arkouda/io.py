@@ -1144,7 +1144,8 @@ def to_parquet(
             Supported values: snappy, gzip, brotli, zstd, lz4
         convert_categoricals: bool
             Defaults to False
-            Parquet requires all columns to be the same size and Categoricals don't satisfy that requirement.
+            Parquet requires all columns to be the same size and Categoricals
+            don't satisfy that requirement.
             if set, write the equivalent Strings in place of any Categorical columns.
 
     Returns
@@ -2018,7 +2019,7 @@ def restore(filename):
     return read_hdf(sorted(restore_files))
 
 
-def receive(hostname : str, port):
+def receive(hostname: str, port):
     """
     Receive a pdarray sent by `pdarray.transfer()`.
 
@@ -2052,13 +2053,12 @@ def receive(hostname : str, port):
         Raised if other is not a pdarray or the pdarray.dtype is not
         a supported dtype
     """
-    rep_msg = generic_msg(cmd="receiveArray", args={"hostname": hostname,
-                                                    "port"    : port})
+    rep_msg = generic_msg(cmd="receiveArray", args={"hostname": hostname, "port": port})
     rep = json.loads(rep_msg)
     return _build_objects(rep)
 
 
-def receive_dataframe(hostname : str, port):
+def receive_dataframe(hostname: str, port):
     """
     Receive a pdarray sent by `dataframe.transfer()`.
 
@@ -2092,7 +2092,6 @@ def receive_dataframe(hostname : str, port):
         Raised if other is not a pdarray or the pdarray.dtype is not
         a supported dtype
     """
-    rep_msg = generic_msg(cmd="receiveDataframe", args={"hostname": hostname,
-                                                        "port"    : port})
+    rep_msg = generic_msg(cmd="receiveDataframe", args={"hostname": hostname, "port": port})
     rep = json.loads(rep_msg)
     return DataFrame(_build_objects(rep))

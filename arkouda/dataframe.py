@@ -1666,7 +1666,8 @@ class DataFrame(UserDict):
             Supported values: snappy, gzip, brotli, zstd, lz4
         convert_categoricals: bool
             Defaults to False
-            Parquet requires all columns to be the same size and Categoricals don't satisfy that requirement.
+            Parquet requires all columns to be the same size and Categoricals
+            don't satisfy that requirement.
             if set, write the equivalent Strings in place of any Categorical columns.
         Returns
         -------
@@ -1688,9 +1689,11 @@ class DataFrame(UserDict):
 
         data = self._prep_data(index=index, columns=columns)
         if not convert_categoricals and any(isinstance(val, Categorical) for val in data.values()):
-            raise ValueError("to_parquet doesn't support Categorical columns. To write the equivalent "
-                             "Strings in place of any Categorical columns, rerun with convert_categoricals "
-                             "set to True.")
+            raise ValueError(
+                "to_parquet doesn't support Categorical columns. To write the equivalent "
+                "Strings in place of any Categorical columns, rerun with convert_categoricals "
+                "set to True."
+            )
         to_parquet(
             data, prefix_path=path, compression=compression, convert_categoricals=convert_categoricals
         )
