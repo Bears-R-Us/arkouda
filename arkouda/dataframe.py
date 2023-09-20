@@ -632,8 +632,10 @@ class DataFrame(UserDict):
         msg_list = []
         for col in self._columns:
             if isinstance(self[col], Categorical):
-                msg_list.append(f"Categorical+{col}+{self[col].codes.name} \
-                +{self[col].categories.name}+{self[col]._akNAcode.name}")
+                msg_list.append(
+                    f"Categorical+{col}+{self[col].codes.name} \
+                +{self[col].categories.name}+{self[col]._akNAcode.name}"
+                )
             elif isinstance(self[col], SegArray):
                 msg_list.append(f"SegArray+{col}+{self[col].segments.name}+{self[col].values.name}")
             elif isinstance(self[col], Strings):
@@ -654,11 +656,11 @@ class DataFrame(UserDict):
             generic_msg(
                 cmd="sendDataframe",
                 args={
-                    "size"     : len(msg_list),
-                    "idx_name" : idx.name,
-                    "columns"  : msg_list,
-                    "hostname" : hostname,
-                    "port"     : port
+                    "size": len(msg_list),
+                    "idx_name": idx.name,
+                    "columns": msg_list,
+                    "hostname": hostname,
+                    "port": port,
                 },
             ),
         )
@@ -1639,7 +1641,14 @@ class DataFrame(UserDict):
         data = self._prep_data(index=index, columns=columns)
         update_hdf(data, prefix_path=prefix_path, repack=repack)
 
-    def to_parquet(self, path, index=False, columns=None, compression: Optional[str] = None):
+    def to_parquet(
+        self,
+        path,
+        index=False,
+        columns=None,
+        compression: Optional[str] = None,
+        convert_categoricals: bool = False,
+    ):
         """
         Save DataFrame to disk as parquet, preserving column names.
 
@@ -1655,6 +1664,11 @@ class DataFrame(UserDict):
             Default None
             Provide the compression type to use when writing the file.
             Supported values: snappy, gzip, brotli, zstd, lz4
+        convert_categoricals: bool
+            Defaults to False
+            Parquet requires all columns to be the same size and Categoricals
+            don't satisfy that requirement.
+            if set, write the equivalent Strings in place of any Categorical columns.
         Returns
         -------
         None
@@ -1674,7 +1688,15 @@ class DataFrame(UserDict):
         from arkouda.io import to_parquet
 
         data = self._prep_data(index=index, columns=columns)
-        to_parquet(data, prefix_path=path, compression=compression)
+        if not convert_categoricals and any(isinstance(val, Categorical) for val in data.values()):
+            raise ValueError(
+                "to_parquet doesn't support Categorical columns. To write the equivalent "
+                "Strings in place of any Categorical columns, rerun with convert_categoricals "
+                "set to True."
+            )
+        to_parquet(
+            data, prefix_path=path, compression=compression, convert_categoricals=convert_categoricals
+        )
 
     @typechecked
     def to_csv(
