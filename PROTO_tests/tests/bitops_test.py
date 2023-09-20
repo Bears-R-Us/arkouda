@@ -68,7 +68,8 @@ class TestBitOps:
         # every elem has one more set bit, so popcount increases by one and parity swaps/is XORed by 1
         pop_ans += 1
         par_ans = par_ans ^ 1
-        # clz_ans will be max_bits - 201 for all indices since that's the first nonzero bit everywhere now
+        # clz_ans will be max_bits - 201 for all indices since that's the
+        # first nonzero bit everywhere now
         # ctz_ans is unchanged other than first position which previously had no set bits
         ctz_ans[0] = 200
         for max_bits in [201, 256]:
@@ -100,7 +101,8 @@ class TestBitOps:
             bi.max_bits = max_bits
             # base_clz plus the amount that max_bits exceeds the bits used to store the bigint
             clz_ans = base_clz + (max_bits - 192)
-            # except for the first position doesn't have any set bits, so we want the 128 bits after accounted
+            # except for the first position doesn't have any set bits,
+            # so we want the 128 bits after accounted
             clz_ans[0] += 128
 
             assert pop_ans.to_list() == bi.popcount().to_list()
@@ -113,7 +115,8 @@ class TestBitOps:
         bi = ak.bigint_from_uint_arrays([edge_case, edge_case, edge_case])
 
         pop_ans = ak.popcount(edge_case) * 3
-        # parity is the same as edge cases, because anything XORed with itself becomes zero so (x ^ x ^ x) = x
+        # parity is the same as edge cases,
+        # because anything XORed with itself becomes zero so (x ^ x ^ x) = x
         par_ans = ak.parity(edge_case)
         base_clz = ak.clz(edge_case)
         ctz_ans = ak.ctz(edge_case)

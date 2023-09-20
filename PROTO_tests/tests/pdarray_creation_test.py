@@ -717,19 +717,19 @@ class TestPdarrayCreation:
         trials = 20
 
         for x in range(trials):
-            l = ak.randint(min_val, max_val, size)
-            l_median = statistics.median(l.to_ndarray())
+            l_int = ak.randint(min_val, max_val, size)
+            l_median = statistics.median(l_int.to_ndarray())
 
             runs, n1, n2 = 0, 0, 0
 
             # Checking for start of new run
-            for i in range(len(l)):
+            for i in range(len(l_int)):
                 # no. of runs
-                if (l[i] >= l_median > l[i - 1]) or (l[i] < l_median <= l[i - 1]):
+                if (l_int[i] >= l_median > l_int[i - 1]) or (l_int[i] < l_median <= l_int[i - 1]):
                     runs += 1
 
                 # no. of positive values
-                if (l[i]) >= l_median:
+                if (l_int[i]) >= l_median:
                     n1 += 1
                 # no. of negative values
                 else:

@@ -85,7 +85,6 @@ class TestExtrema:
             if (arg_max_k != -1).all():
                 assert np.allclose(pda[arg_max_k].to_ndarray(), non_nan_sorted[-K:], equal_nan=True)
 
-
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     def test_argmin_and_argmax(self, dtype):
         np_arr = make_np_arrays(1000, dtype)

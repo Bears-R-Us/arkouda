@@ -81,7 +81,10 @@ class TestOperator:
                 continue
             for lscalar, rscalar in ((False, False), (False, True), (True, False)):
                 tests += 1
-                expression = f'{ltype}({("array", "scalar")[lscalar]}) {op} {rtype}({("array", "scalar")[rscalar]})'
+                expression = (
+                    f'{ltype}({("array", "scalar")[lscalar]}) '
+                    f'{op} {rtype}({("array", "scalar")[rscalar]})'
+                )
                 try:
                     npres = do_op(ltype, rtype, lscalar, rscalar, False, op)
                 except TypeError:  # numpy doesn't implement operation
@@ -171,7 +174,6 @@ class TestOperator:
         print(f"  Value mismatches:         {len(valueerrors)} / {nboth}")
         if verbose:
             print("\n".join(map(": ".join, valueerrors)))
-        return matches == nboth
 
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     def test_pdarray_and_scalar_ops(self, dtype):

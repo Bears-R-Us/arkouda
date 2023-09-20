@@ -1,9 +1,10 @@
 from collections import Counter, namedtuple
-from typing import List, Tuple
+from typing import List
 
 import numpy as np
 import pandas as pd
 import pytest
+
 import arkouda as ak
 
 
@@ -18,8 +19,8 @@ class TestString:
 
     @staticmethod
     def base_words(size):
-        base_words1 = ak.random_strings_uniform(1, 10, size//4, characters="printable")
-        base_words2 = ak.random_strings_lognormal(2, 0.25, size//4, characters="printable")
+        base_words1 = ak.random_strings_uniform(1, 10, size // 4, characters="printable")
+        base_words2 = ak.random_strings_lognormal(2, 0.25, size // 4, characters="printable")
         base_words = ak.concatenate((base_words1, base_words2))
         np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
 
@@ -86,7 +87,6 @@ class TestString:
         npset = set(np.unique(strings.to_ndarray()))
         # When converted to a set, should agree with numpy
         assert akset == npset
-        return akset
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_groupby(self, size):
@@ -105,10 +105,10 @@ class TestString:
         lengths = np.diff(np.hstack((g.segments.to_ndarray(), np.array([g.length]))))
         for uk, s, l in zip(g.unique_keys.to_ndarray(), g.segments.to_ndarray(), lengths):
             # All values in group should equal key
-            assert (permStrings[s: s + l] == uk).all()
+            assert (permStrings[s : s + l] == uk).all()
             # Key should not appear anywhere outside of group
             assert not (permStrings[:s] == uk).any()
-            assert not (permStrings[s + l:] == uk).any()
+            assert not (permStrings[s + l :] == uk).any()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_index(self, size):
@@ -136,8 +136,12 @@ class TestString:
         strings = self.get_strings(size, base_words)
         test_strings = strings.to_ndarray()
         cat = ak.Categorical(strings)
-        assert self.compare_strings(strings[size // 4: size // 3].to_ndarray(), test_strings[size // 4: size // 3])
-        assert self.compare_strings(cat[size // 4: size // 3].to_ndarray(), test_strings[size // 4: size // 3])
+        assert self.compare_strings(
+            strings[size // 4 : size // 3].to_ndarray(), test_strings[size // 4 : size // 3]
+        )
+        assert self.compare_strings(
+            cat[size // 4 : size // 3].to_ndarray(), test_strings[size // 4 : size // 3]
+        )
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_pdarray_index(self, size):
@@ -249,8 +253,8 @@ class TestString:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_error_handling(self, size):
-        stringsOne = ak.random_strings_uniform(1, 10, size//4, characters="printable")
-        stringsTwo = ak.random_strings_uniform(1, 10, size//4, characters="printable")
+        stringsOne = ak.random_strings_uniform(1, 10, size // 4, characters="printable")
+        stringsTwo = ak.random_strings_uniform(1, 10, size // 4, characters="printable")
 
         with pytest.raises(TypeError):
             stringsOne.lstick(stringsTwo, delimiter=1)
@@ -414,22 +418,19 @@ class TestString:
         delim = self.delim(np_base_words)
         self._stick_help(strings, test_strings, base_words, delim, size)
         self._stick_help(strings, test_strings, base_words, np.str_(delim), size)
-        self._stick_help(
-            strings, test_strings, base_words, str.encode(str(delim)), size
-        )
+        self._stick_help(strings, test_strings, base_words, str.encode(str(delim)), size)
 
         # Test gremlins delimiters
         g = self._get_ak_gremlins(size)
-        self._stick_help(g.gremlins_strings, g.gremlins_test_strings, g.gremlins_base_words, " ", size+3)
-        self._stick_help(g.gremlins_strings, g.gremlins_test_strings, g.gremlins_base_words, "", size+3)
-        self._stick_help(g.gremlins_strings, g.gremlins_test_strings, g.gremlins_base_words, '"', size+3)
+        for delim in " ", "", '"':
+            self._stick_help(
+                g.gremlins_strings, g.gremlins_test_strings, g.gremlins_base_words, delim, size + 3
+            )
 
     def test_str_output(self):
         strings = ak.array(["string {}".format(i) for i in range(0, 101)])
-        assert (
-            "['string 0', 'string 1', 'string 2', ... , 'string 98', 'string 99', 'string 100']" ==
-            str(strings),
-        )
+        str_ans = "['string 0', 'string 1', 'string 2', ... , 'string 98', 'string 99', 'string 100']"
+        assert str_ans == str(strings)
 
     def test_flatten(self):
         orig = ak.array(["one|two", "three|four|five", "six"])
@@ -487,7 +488,7 @@ class TestString:
 
         isupper = lmut.is_upper()
         expected = (30 > ak.arange(40)) & (ak.arange(40) >= 20)
-        assert isupper.to_list() ==  expected.to_list()
+        assert isupper.to_list() == expected.to_list()
 
         istitle = lmut.is_title()
         expected = ak.arange(40) >= 30
@@ -570,15 +571,15 @@ class TestString:
             assert [x[0:n] for x in a if len(x) >= n] == prefix.to_list()
 
             suffix, origin = strings.get_suffixes(n, return_origins=True, proper=True)
-            assert [x[len(x)-n:] for x in a if len(x) > n] == suffix.to_list()
+            assert [x[len(x) - n :] for x in a if len(x) > n] == suffix.to_list()
             assert [True if len(x) >= n else False for x in a]
 
             suffix, origin = strings.get_suffixes(n, return_origins=True, proper=False)
-            assert [x[len(x) - n:] for x in a if len(x) >= n] == suffix.to_list()
+            assert [x[len(x) - n :] for x in a if len(x) >= n] == suffix.to_list()
             assert [True if len(x) >= n else False for x in a]
 
             suffix = strings.get_suffixes(n, return_origins=False, proper=False)
-            assert [x[len(x) - n:] for x in a if len(x) >= n] == suffix.to_list()
+            assert [x[len(x) - n :] for x in a if len(x) >= n] == suffix.to_list()
 
     def test_encoding(self):
         idna_strings = ak.array(["Bücher.example", "ドメイン.テスト", "домен.испытание", "Königsgäßchen"])
@@ -610,7 +611,7 @@ class TestString:
         # using the below assertion due to a bug in `Strings.to_ndarray`. See issue #1828
         assert ["münchen", "zürich", "", "", "example.com"] == result.to_list()
 
-        a3 = ak.random_strings_uniform(1, 10, 100//4, characters="printable")
+        a3 = ak.random_strings_uniform(1, 10, 100 // 4, characters="printable")
         assert (a3 == a3.encode("ascii").decode("ascii")).all()
 
     def test_idna_utf16(self):
@@ -629,4 +630,3 @@ class TestString:
         s1 = ak.array(v1)
         nd1 = s1.to_ndarray()
         assert nd1.tolist() == v1
-

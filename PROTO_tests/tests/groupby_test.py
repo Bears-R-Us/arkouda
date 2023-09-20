@@ -114,7 +114,7 @@ class TestGroupBy:
                 akkeys, akvals = akg.count() if op == "count" else akg.aggregate(akdf[vname], op)
             except Exception as E:
                 print("Arkouda error: ", E)
-                continue # skip check
+                continue  # skip check
             if do_check:
                 if op.startswith("arg"):
                     pdextrema = df[vname][pdvals]
@@ -474,7 +474,7 @@ class TestGroupBy:
         assert u_group_sums.to_list() == i_group_sums.to_list()
 
         # verify the multidim unsigned version doesnt break
-        multi_gu = ak.GroupBy([u, u])
+        ak.GroupBy([u, u])
 
         u_data = ak.array(np.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4], dtype=np.uint64))
         i_data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])

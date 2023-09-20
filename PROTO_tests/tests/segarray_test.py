@@ -1,8 +1,8 @@
 import math
+from string import ascii_letters, digits
 
 import numpy as np
 import pytest
-from string import ascii_letters, digits
 
 import arkouda as ak
 

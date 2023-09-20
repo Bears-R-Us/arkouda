@@ -1,7 +1,7 @@
-import arkouda as ak
-import pytest
 import numpy as np
+import pytest
 
+import arkouda as ak
 from arkouda.dtypes import npstr
 
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64]
