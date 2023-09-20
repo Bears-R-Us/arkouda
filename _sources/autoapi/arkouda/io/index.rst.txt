@@ -392,7 +392,7 @@ Functions
      the same file type, but formatted to be read by Pandas.
 
 
-.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', compression: Optional[str] = None) -> None
+.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', compression: Optional[str] = None, convert_categoricals: bool = False) -> None
 
    Save multiple named pdarrays to Parquet files.
 
@@ -406,9 +406,14 @@ Functions
                 If 'append', attempt to create new dataset in existing files.
                 'append' is deprecated, please use the multi-column write
    :type mode: {'truncate' | 'append'}
-   :param compression: Default None
-                       Provide the compression type to use when writing the file.
-                       Supported values: snappy, gzip, brotli, zstd, lz4
+   :param compression:     Default None
+                           Provide the compression type to use when writing the file.
+                           Supported values: snappy, gzip, brotli, zstd, lz4
+                       convert_categoricals: bool
+                           Defaults to False
+                           Parquet requires all columns to be the same size and Categoricals
+                           don't satisfy that requirement.
+                           if set, write the equivalent Strings in place of any Categorical columns.
    :type compression: str (Optional)
 
    :rtype: None

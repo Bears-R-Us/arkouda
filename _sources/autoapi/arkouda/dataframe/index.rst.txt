@@ -437,7 +437,7 @@ Functions
       - If the dataset provided does not exist, it will be added
 
 
-   .. py:method:: to_parquet(path, index=False, columns=None, compression: Optional[str] = None)
+   .. py:method:: to_parquet(path, index=False, columns=None, compression: Optional[str] = None, convert_categoricals: bool = False)
 
       Save DataFrame to disk as parquet, preserving column names.
 
@@ -451,6 +451,11 @@ Functions
                           Provide the compression type to use when writing the file.
                           Supported values: snappy, gzip, brotli, zstd, lz4
       :type compression: str (Optional)
+      :param convert_categoricals: Defaults to False
+                                   Parquet requires all columns to be the same size and Categoricals
+                                   don't satisfy that requirement.
+                                   if set, write the equivalent Strings in place of any Categorical columns.
+      :type convert_categoricals: bool
 
       :rtype: None
 
