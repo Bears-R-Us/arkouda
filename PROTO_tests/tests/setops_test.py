@@ -1,7 +1,7 @@
-import arkouda as ak
 import numpy as np
-
 import pytest
+
+import arkouda as ak
 
 OPS = ["in1d", "intersect1d", "union1d", "setxor1d", "setdiff1d"]
 INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bigint]

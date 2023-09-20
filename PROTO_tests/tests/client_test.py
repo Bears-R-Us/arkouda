@@ -1,6 +1,6 @@
-import arkouda as ak
 import pytest
 
+import arkouda as ak
 from server_util.test.server_test_util import start_arkouda_server
 
 

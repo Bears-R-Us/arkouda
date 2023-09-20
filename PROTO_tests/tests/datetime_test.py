@@ -1,8 +1,8 @@
-import arkouda as ak
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 import pytest
+
+import arkouda as ak
 
 
 def build_op_table():
