@@ -70,8 +70,7 @@ module RadixSortLSD
         var temp = a;
         
         // create a global count array to scan
-        var gD = blockDist.createDomain({0..#(numLocales * numTasks * numBuckets)});
-        var globalCounts = makeDistArray(gD, int);
+        var globalCounts = makeDistArray((numLocales*numTasks*numBuckets), int);
         
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {

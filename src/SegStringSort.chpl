@@ -226,9 +226,8 @@ module SegStringSort {
     }
     var kr1 = makeDistArray(aD, state);
     // create a global count array to scan
-    var gD = blockDist.createDomain({0..#(numLocales * numTasks * numBuckets)});
-    var globalCounts = makeDistArray(gD, int);
-    var globalStarts = makeDistArray(gD, int);
+    var globalCounts = makeDistArray(numLocales * numTasks * numBuckets, int);
+    var globalStarts = makeDistArray(numLocales * numTasks * numBuckets, int);
         
     // loop over digits
     for rshift in {2..#pivot by 2} {

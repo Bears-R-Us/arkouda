@@ -1373,7 +1373,7 @@ module ReductionMsg
       var count: [kD] int = (+ scan truth);
       var pop = count[kD.high];
       // find steps to get unique (key, val) pairs
-      var hD: domain(1) dmapped blockDist(boundingBox={0..#pop}) = {0..#pop};
+      var hD = makeDistDom(pop);
       // save off only the key from each pair (now there will be nunique of each key)
       var keyhits = makeDistArray(hD, int);
       forall i in truth.domain with (var agg = newDstAggregator(int)) {
@@ -1388,13 +1388,13 @@ module ReductionMsg
                                        "Finding unique keys and num unique vals per key.");
       // find steps in keys
       var truth2 = makeDistArray(hD, bool);
-      truth2[hD.low] = true;
+      truth2[0] = true;
       [(tr, k, i) in zip(truth2, keyhits, hD)] if (i > hD.low) { tr = (keyhits[i-1] != k); }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
       overMemLimit(numBytes(int) * truth2.size);
       var kiv: [hD] int = (+ scan truth2);
       var nKeysPresent = kiv[hD.high];
-      var nD: domain(1) dmapped blockDist(boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)};
+      var nD = makeDistDom(nKeysPresent+1);
       // get step indices and take diff to get number of times each key appears
       var stepInds = makeDistArray(nD, int);
       stepInds[nKeysPresent] = keyhits.size;
