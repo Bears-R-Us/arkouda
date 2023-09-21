@@ -55,7 +55,7 @@ module EfuncMsg
         
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                            "cmd: %s efunc: %s pdarray: %s".doFormat(cmd,efunc,st.attrib(name)));
-       
+
         select (gEnt.dtype) {
             when (DType.Int64) {
                 var e = toSymEntry(gEnt,int);
@@ -369,6 +369,7 @@ module EfuncMsg
             }
         }
         // Append instead of assign here, to allow for 2 return arrays from hash128
+
         repMsg += "created " + st.attrib(rname);
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
         return new MsgTuple(repMsg, MsgType.NORMAL);         

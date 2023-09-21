@@ -376,13 +376,17 @@ def cumprod(pda: pdarray) -> pdarray:
 
 
 @typechecked
-def sin(pda: pdarray) -> pdarray:
+def sin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise sine of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the sine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -395,24 +399,50 @@ def sin(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "sin",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "sin",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "sin",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def cos(pda: pdarray) -> pdarray:
+def cos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise cosine of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the cosine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -425,27 +455,50 @@ def cos(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = type_cast(
-        str,
-        generic_msg(
-            cmd="efunc",
-            args={
-                "func": "cos",
-                "array": pda,
-            },
-        ),
-    )
-    return create_pdarray(repMsg)
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "cos",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "cos",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def tan(pda: pdarray) -> pdarray:
+def tan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise tangent of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the tangent will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -458,24 +511,50 @@ def tan(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "tan",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "tan",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "tan",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def arcsin(pda: pdarray) -> pdarray:
+def arcsin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise inverse sine of the array. The result is between -pi/2 and pi/2.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse sine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -488,24 +567,50 @@ def arcsin(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "arcsin",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arcsin",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arcsin",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def arccos(pda: pdarray) -> pdarray:
+def arccos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise inverse cosine of the array. The result is between 0 and pi.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse cosine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -518,24 +623,50 @@ def arccos(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "arccos",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arccos",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arccos",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def arctan(pda: pdarray) -> pdarray:
+def arctan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise inverse tangent of the array. The result is between -pi/2 and pi/2.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse tangent will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -548,18 +679,44 @@ def arctan(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "arctan",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arctan",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arctan",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def arctan2(num: Union[pdarray, numeric_scalars], denom: Union[pdarray, numeric_scalars]) -> pdarray:
+def arctan2(
+    num: Union[pdarray, numeric_scalars],
+    denom: Union[pdarray, numeric_scalars],
+    where: Union[bool, pdarray] = True,
+) -> pdarray:
     """
     Return the element-wise inverse tangent of the array pair. The result chosen is the
     signed angle in radians between the ray ending at the origin and passing through the
@@ -572,6 +729,11 @@ def arctan2(num: Union[pdarray, numeric_scalars], denom: Union[pdarray, numeric_
         Numerator of the arctan2 argument.
     denom : Union[numeric_scalars, pdarray]
         Denominator of the arctan2 argument.
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain
+        its original value. Default set to True.
+
     Returns
     -------
     pdarray
@@ -594,8 +756,8 @@ def arctan2(num: Union[pdarray, numeric_scalars], denom: Union[pdarray, numeric_
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
-    return create_pdarray(
-        type_cast(
+    if where is True:
+        repMsg = type_cast(
             str,
             generic_msg(
                 cmd="efunc2",
@@ -606,17 +768,40 @@ def arctan2(num: Union[pdarray, numeric_scalars], denom: Union[pdarray, numeric_
                 },
             ),
         )
-    )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return num / denom
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc2",
+                args={
+                    "func": "arctan2",
+                    "A": num[where],
+                    "B": denom[where],
+                },
+            ),
+        )
+        new_pda = num / denom
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def sinh(pda: pdarray) -> pdarray:
+def sinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise hyperbolic sine of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -629,24 +814,50 @@ def sinh(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "sinh",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "sinh",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "sinh",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def cosh(pda: pdarray) -> pdarray:
+def cosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise hyperbolic cosine of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -659,24 +870,50 @@ def cosh(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "cosh",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "cosh",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "cosh",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def tanh(pda: pdarray) -> pdarray:
+def tanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise hyperbolic tangent of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the hyperbolic tangent will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -689,24 +926,50 @@ def tanh(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "tanh",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "tanh",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "tanh",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def arcsinh(pda: pdarray) -> pdarray:
+def arcsinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise inverse hyperbolic sine of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -719,24 +982,50 @@ def arcsinh(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "arcsinh",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arcsinh",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arcsinh",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def arccosh(pda: pdarray) -> pdarray:
+def arccosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise inverse hyperbolic cosine of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -749,24 +1038,50 @@ def arccosh(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "arccosh",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arccosh",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arccosh",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def arctanh(pda: pdarray) -> pdarray:
+def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise inverse hyperbolic tangent of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse hyperbolic tangent will be applied to the corresponding value. Elsewhere,
+        it will retain its original value. Default set to True.
 
     Returns
     -------
@@ -779,24 +1094,50 @@ def arctanh(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameters are not a pdarray or numeric scalar.
     """
-    repMsg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "arctanh",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arctanh",
+                    "array": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd="efunc",
+                args={
+                    "func": "arctanh",
+                    "array": pda[where],
+                },
+            ),
+        )
+        new_pda = pda
+        ret = create_pdarray(repMsg)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def rad2deg(pda: pdarray) -> pdarray:
+def rad2deg(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Converts angles element-wise from radians to degrees.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True, the
+        corresponding value will be converted from radians to degrees. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -809,17 +1150,30 @@ def rad2deg(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return 180 * (pda / np.pi)
+    if where is True:
+        return 180 * (pda / np.pi)
+    elif where is False:
+        return pda
+    else:
+        new_pda = pda
+        ret = 180 * (pda[where] / np.pi)
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 @typechecked
-def deg2rad(pda: pdarray) -> pdarray:
+def deg2rad(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Converts angles element-wise from degrees to radians.
 
     Parameters
     ----------
     pda : pdarray
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True, the
+        corresponding value will be converted from degrees to radians. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -832,7 +1186,16 @@ def deg2rad(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return np.pi * pda / 180
+    if where is True:
+        return np.pi * pda / 180
+    elif where is False:
+        return pda
+    else:
+        new_pda = pda
+        ret = np.pi * pda[where] / 180
+        new_pda = cast(new_pda, ret.dtype)
+        new_pda[where] = ret
+        return new_pda
 
 
 def _hash_helper(a):
