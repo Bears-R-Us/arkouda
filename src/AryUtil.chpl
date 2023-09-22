@@ -129,7 +129,7 @@ module AryUtil
     */
     proc contiguousIndices(A: []) param {
         use BlockDist;
-        return A.isDefaultRectangular() || isSubtype(A.domain.dist.type, Block);
+        return A.isDefaultRectangular() || isSubtype(A.domain.distribution.type, Block);
     }
 
     /*
