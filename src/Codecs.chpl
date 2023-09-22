@@ -5,6 +5,7 @@ module Codecs {
   use AryUtil;
 
   use ArkoudaCTypesCompat;
+  use CTypes;
   
   proc encodeStr(obj: c_ptr(uint(8)), inBufSize: int, outBufSize: int, toEncoding: string = "UTF-8", fromEncoding: string = "UTF-8"): [] uint(8) throws {
     if toEncoding == "IDNA" {

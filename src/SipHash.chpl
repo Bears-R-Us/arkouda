@@ -89,7 +89,7 @@ module SipHash {
     return res;
   }
 
-  proc sipHash128(msg: [] ?t, D): 2*uint(64) where ((t == uint(8)) ||
+  proc sipHash128(ref msg: [] ?t, D): 2*uint(64) where ((t == uint(8)) ||
                                                     (t == int(64)) ||
                                                     (t == real(64))) {
     return computeSipHashLocalized(msg, D, 16);
@@ -107,7 +107,7 @@ module SipHash {
     return computeSipHash(c_ptrTo(val), 0..#1, 16, 8);
   }
   
-  private proc computeSipHashLocalized(msg: [] ?t, region: range(?), param outlen: int) {
+  private proc computeSipHashLocalized(ref msg: [] ?t, region: range(?), param outlen: int) {
     const localSlice = new lowLevelLocalizingSlice(msg, region);
     return computeSipHash(localSlice.ptr, 0..#region.size, outlen, numBytes(t));
   }

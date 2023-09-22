@@ -801,7 +801,7 @@ module TransferMsg
       return (size, typeString, nodeNames, objType);
     }
 
-    proc sendArrChunk(port: int, A: [] ?t, intersection: domain(1)) throws {
+    proc sendArrChunk(port: int, ref A: [] ?t, intersection: domain(1)) throws {
       var context: Context;
       var socket = context.socket(ZMQ.PUSH);
       socket.bind("tcp://*:"+port:string);

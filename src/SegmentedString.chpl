@@ -753,7 +753,7 @@ module SegmentedString {
       return (subbedOffsets, subbedVals, numReplacements);
     }
 
-    proc segStrWhere(otherStr: ?t, condition: [] bool, newLens: [] int) throws where t == string {
+    proc segStrWhere(otherStr: ?t, condition: [] bool, ref newLens: [] int) throws where t == string {
       // add one to account for null bytes
       newLens += 1;
       ref origOffs = this.offsets.a;
@@ -783,7 +783,7 @@ module SegmentedString {
       return (whereOffs, whereVals);
     }
 
-    proc segStrWhere(other: ?t, condition: [] bool, newLens: [] int) throws where t == owned SegString {
+    proc segStrWhere(other: ?t, condition: [] bool, ref newLens: [] int) throws where t == owned SegString {
       // add one to account for null bytes
       newLens += 1;
       ref origOffs = this.offsets.a;
@@ -1352,7 +1352,7 @@ module SegmentedString {
     return compare(ss, testStr, SegFunction.StringCompareLiteralNeq);
   }
 
-  inline proc stringCompareLiteralEq(values, rng, testStr) {
+  inline proc stringCompareLiteralEq(ref values, rng, testStr) {
     if rng.size == (testStr.numBytes + 1) {
       const s = interpretAsString(values, rng);
       return (s == testStr);
@@ -1361,7 +1361,7 @@ module SegmentedString {
     }
   }
 
-  inline proc stringCompareLiteralNeq(values, rng, testStr) {
+  inline proc stringCompareLiteralNeq(ref values, rng, testStr) {
     if rng.size == (testStr.numBytes + 1) {
       const s = interpretAsString(values, rng);
       return (s != testStr);
@@ -1407,35 +1407,35 @@ module SegmentedString {
     return try! compile(pattern);
   }
 
-  inline proc stringSearch(values, rng, myRegex) throws {
+  inline proc stringSearch(ref values, rng, myRegex) throws {
     return myRegex.search(interpretAsString(values, rng, borrow=true)).matched;
   }
 
   /*
     The SegFunction called by computeOnSegments for isLower
   */
-  inline proc stringIsLower(values, rng) throws {
+  inline proc stringIsLower(ref values, rng) throws {
     return interpretAsString(values, rng, borrow=true).isLower();
   }
 
   /*
     The SegFunction called by computeOnSegments for isUpper
   */
-  inline proc stringIsUpper(values, rng) throws {
+  inline proc stringIsUpper(ref values, rng) throws {
     return interpretAsString(values, rng, borrow=true).isUpper();
   }
 
   /*
     The SegFunction called by computeOnSegments for isTitle
   */
-  inline proc stringIsTitle(values, rng) throws {
+  inline proc stringIsTitle(ref values, rng) throws {
     return interpretAsString(values, rng, borrow=true).isTitle();
   }
 
   /*
     The SegFunction called by computeOnSegments for bytesToUintArr
   */
-  inline proc stringBytesToUintArr(values, rng) throws {
+  inline proc stringBytesToUintArr(ref values, rng) throws {
       var localSlice = new lowLevelLocalizingSlice(values, rng);
       return | reduce [i in 0..#rng.size] (localSlice.ptr(i):uint)<<(8*(rng.size-1-i));
   }
@@ -1449,7 +1449,9 @@ module SegmentedString {
       var truth: [mainStr.offsets.a.domain] bool;
       return truth;
     }
-    return in1d(mainStr.siphash(), testStr.siphash(), invert);
+    var a = mainStr.siphash();
+    var b = testStr.siphash();
+    return in1d(a, b, invert);
   }
 
   proc concat(s1: [] int, v1: [] uint(8), s2: [] int, v2: [] uint(8)) throws {
@@ -1567,7 +1569,7 @@ module SegmentedString {
      new string is returned, otherwise the string borrows memory from the array
      (reduces memory allocations if the string isn't needed after array)
    */
-  proc interpretAsString(bytearray: [?D] uint(8), region: range(?), borrow=false): string {
+  proc interpretAsString(ref bytearray: [?D] uint(8), region: range(?), borrow=false): string {
     var localSlice = new lowLevelLocalizingSlice(bytearray, region);
     // Byte buffer is null-terminated, so length is region.size - 1
     try {
@@ -1587,7 +1589,7 @@ module SegmentedString {
   /*
      Interpret a region of a byte array as bytes. Modeled after interpretAsString
    */
-  proc interpretAsBytes(bytearray: [?D] uint(8), region: range(?), borrow=false): bytes {
+  proc interpretAsBytes(ref bytearray: [?D] uint(8), region: range(?), borrow=false): bytes {
     var localSlice = new lowLevelLocalizingSlice(bytearray, region);
     // Byte buffer is null-terminated, so length is region.size - 1
     try {

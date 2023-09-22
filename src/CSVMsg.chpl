@@ -323,7 +323,7 @@ module CSVMsg {
         return (row_ct, hasHeader, new list(dtypes));
     }
 
-    proc read_files_into_dist_array(A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int) throws {
+    proc read_files_into_dist_array(ref A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int) throws {
 
         coforall loc in A.targetLocales() with (ref A) do on loc {
             // Create local copies of args

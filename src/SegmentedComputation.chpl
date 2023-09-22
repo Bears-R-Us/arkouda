@@ -51,7 +51,7 @@ module SegmentedComputation {
     StringBytesToUintArr,
   }
   
-  proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
+  proc computeOnSegments(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
     // type retType = if (function == SegFunction.StringToNumericReturnValidity) then (outType, bool) else outType;
     var res: [D] retType;
     if (D.size == 0) {
@@ -130,7 +130,7 @@ module SegmentedComputation {
     return res;
   }
 
-  proc computeOnSegmentsWithoutAggregation(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
+  proc computeOnSegmentsWithoutAggregation(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
     // perform computeOnSegments logic for types that dont support aggregation (namely bigint)
     var res: [D] retType;
     if (D.size == 0) {

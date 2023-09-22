@@ -805,7 +805,7 @@ module ReductionMsg
       return res;
     }
 
-    proc segVar(values:[?vD] ?t, segments:[?D] int, ddof:int, skipNan=false): [D] real throws {
+    proc segVar(ref values:[?vD] ?t, segments:[?D] int, ddof:int, skipNan=false): [D] real throws {
       var res: [D] real;
       if D.size == 0 { return res; }
 
@@ -829,12 +829,12 @@ module ReductionMsg
       return res;
     }
 
-    proc segStd(values:[] ?t, segments:[?D] int, ddof:int, skipNan=false): [D] real throws {
+    proc segStd(ref values:[] ?t, segments:[?D] int, ddof:int, skipNan=false): [D] real throws {
       if D.size == 0 { return [D] 0.0; }
       return sqrt(segVar(values, segments, ddof, skipNan));
     }
 
-    proc segMean(values:[] ?t, segments:[?D] int, skipNan=false): [D] real throws {
+    proc segMean(ref values:[] ?t, segments:[?D] int, skipNan=false): [D] real throws {
       var res: [D] real;
       if (D.size == 0) { return res; }
       // convert to real early to avoid int overflow
@@ -861,7 +861,7 @@ module ReductionMsg
       return res;
     }
 
-    proc segMedian(values:[?vD] ?intype, segments:[?D] int, skipNan=false): [D] real throws {
+    proc segMedian(ref values:[?vD] ?intype, segments:[?D] int, skipNan=false): [D] real throws {
       type t = if intype == bool then int else intype;
       var res: [D] real;
       if (D.size == 0) { return res; }

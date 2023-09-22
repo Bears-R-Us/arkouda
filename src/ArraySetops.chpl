@@ -78,7 +78,7 @@ module ArraySetops
     }
 
     // returns the set difference of 2 arrays
-    proc setdiff1d(a: [] ?t, b: [] t, assume_unique: bool) throws {
+    proc setdiff1d(ref a: [] ?t, ref b: [] t, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
       if (!assume_unique) {
         var a1  = uniqueSort(a, false);
@@ -94,7 +94,7 @@ module ArraySetops
     // as a boolean array and inverts these
     // values and returns the array indexed
     // with this inverted array
-    proc setdiff1dHelper(a: [] ?t, b: [] t) throws {
+    proc setdiff1dHelper(ref a: [] ?t, ref b: [] t) throws {
         var truth = in1d(a, b, invert=true);
         var ret = boolIndexer(a, truth);
         return ret;

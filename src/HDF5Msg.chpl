@@ -1136,7 +1136,7 @@ module HDF5Msg {
      * :arg items: the array containing the data to be written for te specified Strings array component
      * :type items: [] ?etype
      */
-    private proc writeSegmentedComponentToHdf(fileId: int, group: string, component: string, items: [] ?etype) throws {
+    private proc writeSegmentedComponentToHdf(fileId: int, group: string, component: string, ref items: [] ?etype) throws {
         var numItems = items.size: uint(64);
         C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/%s".doFormat(group, component).c_str(), 1,
                 c_ptrTo(numItems), getDataType(etype), c_ptrTo(items));
@@ -2913,7 +2913,7 @@ module HDF5Msg {
     /*
         Read an ArrayView object from the files provided into a distributed array
     */
-    proc arrayView_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc arrayView_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, ref validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);
         var dset_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, dset.c_str(), C_HDF5.H5P_DEFAULT);
@@ -3042,7 +3042,7 @@ module HDF5Msg {
     /*
         Read an pdarray object from the files provided into a distributed array
     */
-    proc readPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): string throws {
+    proc readPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, ref validFiles: [] bool, st: borrowed SymTab): string throws {
         // identify the index of the first valid file
         var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
 
@@ -3109,7 +3109,7 @@ module HDF5Msg {
         return rname;
     }
 
-    proc pdarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc pdarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, ref validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var pda_name = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
         var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
         var file_id = C_HDF5.H5Fopen(filenames[idx].c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
@@ -3170,7 +3170,7 @@ module HDF5Msg {
         return (dset, ObjType.STRINGS, "%s+%?".doFormat(stringsEntry.name, stringsEntry.nBytes));
     }
 
-    proc readSegArrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab) throws {        
+    proc readSegArrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, ref validFiles: [] bool, st: borrowed SymTab) throws {        
         var segSubdoms: [fD] domain(1);
         var skips = new set(string);
         var nSeg: int;
@@ -3210,7 +3210,7 @@ module HDF5Msg {
         return rtnMap;
     }
 
-    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, ref validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var rtnMap = readSegArrayFromFile(filenames, dset, dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
         return (dset, ObjType.SEGARRAY, formatJson(rtnMap));
     }
@@ -3288,7 +3288,7 @@ module HDF5Msg {
         return (dset, ObjType.CATEGORICAL, formatJson(rtnMap));
     }
 
-    proc groupby_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc groupby_readhdfMsg(filenames: [?fD] string, dset: string, ref validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var rtnMap: map(string, string);
         // domain and size info for codes
         var perm_subdoms: [fD] domain(1);
@@ -3393,7 +3393,7 @@ module HDF5Msg {
         return (dset, ObjType.GROUPBY, formatJson(rtnMap));
     }
 
-    proc dataframe_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc dataframe_readhdfMsg(filenames: [?fD] string, dset: string, ref validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var rtnMap: map(string, string);
         var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);

@@ -55,7 +55,7 @@ module EncodingMsg {
       return (encodeOffsets, encodedValues);
     }
 
-    proc getBufLengths(segments: [?D] int, values: [?vD] ?t, toEncoding: string, fromEncoding: string) throws {
+    proc getBufLengths(segments: [?D] int, ref values: [?vD] ?t, toEncoding: string, fromEncoding: string) throws {
       var res: [D] int;
       if (D.size == 0) {
         return res;
@@ -96,7 +96,7 @@ module EncodingMsg {
       return res;
     }
 
-    proc encodeSegments(segments: [?D] int, values: [?vD] uint(8), encodeOffsets: [D] int, encodeLengths: [D] int, toEncoding: string, fromEncoding: string) throws {
+    proc encodeSegments(segments: [?D] int, ref values: [?vD] uint(8), encodeOffsets: [D] int, encodeLengths: [D] int, toEncoding: string, fromEncoding: string) throws {
       var res = makeDistArray(+ reduce encodeLengths, uint(8));
       if (D.size == 0) {
         return res;

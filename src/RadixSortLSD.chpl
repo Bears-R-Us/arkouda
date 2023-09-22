@@ -63,7 +63,7 @@ module RadixSortLSD
        In-place radix sort a block distributed array
        comparator is used to extract the key from array elements
      */
-    private proc radixSortLSDCore(a:[?aD] ?t, nBits, negs, comparator) {
+    private proc radixSortLSDCore(ref a:[?aD] ?t, nBits, negs, comparator) {
         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "type = %s nBits = %?".doFormat(t:string,nBits));
         var temp = a;

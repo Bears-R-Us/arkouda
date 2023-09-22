@@ -118,7 +118,7 @@ module ParquetMsg {
     return (subdoms, (+ reduce lengths));
   }
 
-  proc readFilesByName(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
+  proc readFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
     extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     var fileOffsets = (+ scan sizes) - sizes;
@@ -294,7 +294,7 @@ module ParquetMsg {
     }
   }
 
-  proc getStrColSize(filename: string, dsetname: string, offsets: [] int) throws {
+  proc getStrColSize(filename: string, dsetname: string, ref offsets: [] int) throws {
     extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
@@ -309,7 +309,7 @@ module ParquetMsg {
     return byteSize;
   }
 
-  proc getListColSize(filename: string, dsetname: string, seg_sizes: [] int) throws {
+  proc getListColSize(filename: string, dsetname: string, ref seg_sizes: [] int) throws {
     extern proc c_getListColumnSize(filename, colname, seg_sizes, numElems, startIdx, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
@@ -559,7 +559,7 @@ module ParquetMsg {
     return filesExist && mode == TRUNCATE;
   }
 
-  private proc writeStringsComponentToParquet(filename, dsetname, values: [] uint(8), offsets: [] int, rowGroupSize, compression, mode, filesExist) throws {
+  private proc writeStringsComponentToParquet(filename, dsetname, ref values: [] uint(8), ref offsets: [] int, rowGroupSize, compression, mode, filesExist) throws {
     extern proc c_writeStrColumnToParquet(filename, chpl_arr, chpl_offsets,
                                           dsetname, numelems, rowGroupSize,
                                           dtype, compression, errMsg): int;

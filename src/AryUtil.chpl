@@ -412,7 +412,7 @@ module AryUtil
         /* Do we own the memory? */
         var isOwned: bool = false;
 
-        proc init(A: [] ?t, region: range()) {
+        proc init(ref A: [] ?t, region: range()) {
             use CommPrimitives;
             use CTypes;
 
