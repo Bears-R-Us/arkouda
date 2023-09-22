@@ -19,6 +19,7 @@ module ReductionMsg
     use AryUtil;
     use PrivateDist;
     use RadixSortLSD;
+    use ArkoudaMathCompat
 
     private config const lBins = 2**25 * numLocales;
 
@@ -320,7 +321,7 @@ module ReductionMsg
 
     proc nanCounts(values:[] ?t, segments:[?D] int) throws {
       // count cumulative nans over all values
-      var cumnans = isnan(values):int;
+      var cumnans = isNan(values):int;
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
       overMemLimit(numBytes(int) * values.size);
       cumnans = + scan cumnans;
@@ -664,7 +665,7 @@ module ReductionMsg
       var flagvalues: [vD] (bool, t); // = [v in values] (false, v);
       if isRealType(t) && skipNan {
         forall (fv, val) in zip(flagvalues, values) {
-          fv = if isnan(val) then (false, 0.0) else (false, val);
+          fv = if isNan(val) then (false, 0.0) else (false, val);
         }
       } else {
         forall (fv, val) in zip(flagvalues, values) {
@@ -777,7 +778,7 @@ module ReductionMsg
       var magnitudes: [values.domain] real;
       if (isRealType(t) && skipNan) {
         forall (m, v, z) in zip(magnitudes, values, isZero) {
-          if isnan(v) {
+          if isNan(v) {
             m = 1.0;
           } else {
             m = abs(v) + z:real;
@@ -813,17 +814,17 @@ module ReductionMsg
       // expand mean per segment to be size of values
       const expandedMeans = [k in expandKeys(vD, segments)] means[k];
       var squaredDiffs: [vD] real;
-      // First deal with any NANs and calculate squaredDiffs
+      // First deal with any nans and calculate squaredDiffs
       if isRealType(t) && skipNan {
-        // calculate counts with nan values excluded and 0 out the NANs
-        squaredDiffs = [(v,m) in zip(values, expandedMeans)] if isnan(v) then 0:real else (v - m)**2;
+        // calculate counts with nan values excluded and 0 out the nans
+        squaredDiffs = [(v,m) in zip(values, expandedMeans)] if isNan(v) then 0:real else (v - m)**2;
         counts -= nanCounts(values, segments);
       }
       else {
         squaredDiffs = [(v,m) in zip(values, expandedMeans)] (v:real - m)**2;
       }
       forall (r, s, c) in zip(res, segSum(squaredDiffs, segments), counts) {
-        r = if c-ddof > 0 then s / (c-ddof):real else NAN;
+        r = if c-ddof > 0 then s / (c-ddof):real else nan;
       }
       return res;
     }
@@ -845,7 +846,7 @@ module ReductionMsg
         // first verify that we can make a copy of real_values
         overMemLimit(numBytes(real) * real_values.size);
         // calculate sum and counts with nan real_values replaced with 0.0
-        var arrCopy = [elem in real_values] if isnan(elem) then 0.0 else elem;
+        var arrCopy = [elem in real_values] if isNan(elem) then 0.0 else elem;
         sums = segSum(arrCopy, segments);
         counts = segCount(segments, real_values.size) - nanCounts(real_values, segments);
       } else {
@@ -867,12 +868,12 @@ module ReductionMsg
 
       var counts = segCount(segments, values.size);
       var noNanVals = values: t;
-      // First deal with any NANs
+      // First deal with any nans
       if isRealType(t) && skipNan {
         // calculate counts with nan values excluded and replace nan with max(real)
         // this will force them at the very end of the sorted segment and since
         // counts has been corrected, they won't affect the result
-        noNanVals = [elem in values] if isnan(elem) then max(real) else elem;
+        noNanVals = [elem in values] if isNan(elem) then max(real) else elem;
         counts -= nanCounts(values, segments);
       }
 
@@ -925,7 +926,7 @@ module ReductionMsg
       var keys = expandKeys(vD, segments);
       var kv: [keys.domain] (int, t);
       if (isRealType(t) && skipNan) {
-        var arrCopy = [elem in values] if isnan(elem) then max(real) else elem;
+        var arrCopy = [elem in values] if isNan(elem) then max(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (-k, v);
       } else {
         kv = [(k, v) in zip(keys, values)] (-k, v);
@@ -986,7 +987,7 @@ module ReductionMsg
       var keys = expandKeys(vD, segments);
       var kv: [keys.domain] (int, t);
       if (isRealType(t) && skipNan) {
-        var arrCopy = [elem in values] if isnan(elem) then min(real) else elem;
+        var arrCopy = [elem in values] if isNan(elem) then min(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (k, v);
       } else {
         kv = [(k, v) in zip(keys, values)] (k, v);
