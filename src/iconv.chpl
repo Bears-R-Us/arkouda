@@ -8,17 +8,17 @@ require "iconv.h";
 use ArkoudaCTypesCompat;
 extern var _libiconv_version : c_int;
 
-extern proc libiconv_open(tocode : c_string, fromcode : c_string) : libiconv_t;
+extern proc libiconv_open(tocode : c_string_ptr, fromcode : c_string_ptr) : libiconv_t;
 
-extern proc libiconv(cd : libiconv_t, ref inbuf : c_string, ref inbytesleft : c_size_t, ref outbuf : c_string, ref outbytesleft : c_size_t) : c_size_t;
+extern proc libiconv(cd : libiconv_t, ref inbuf : c_string_ptr, ref inbytesleft : c_size_t, ref outbuf : c_string_ptr, ref outbytesleft : c_size_t) : c_size_t;
 
-extern proc libiconv(cd : libiconv_t, inbuf : c_ptr(c_string), inbytesleft : c_ptr(c_size_t), outbuf : c_ptr(c_string), outbytesleft : c_ptr(c_size_t)) : c_size_t;
+extern proc libiconv(cd : libiconv_t, inbuf : c_ptr(c_string_ptr), inbytesleft : c_ptr(c_size_t), outbuf : c_ptr(c_string_ptr), outbytesleft : c_ptr(c_size_t)) : c_size_t;
 
 extern proc libiconv_close(cd : libiconv_t) : c_int;
 
-extern proc libiconv_open_into(tocode : c_string, fromcode : c_string, ref resultp : iconv_allocation_t) : c_int;
+extern proc libiconv_open_into(tocode : c_string_ptr, fromcode : c_string_ptr, ref resultp : iconv_allocation_t) : c_int;
 
-extern proc libiconv_open_into(tocode : c_string, fromcode : c_string, resultp : c_ptr(iconv_allocation_t)) : c_int;
+extern proc libiconv_open_into(tocode : c_string_ptr, fromcode : c_string_ptr, resultp : c_ptr(iconv_allocation_t)) : c_int;
 
 extern proc libiconvctl(cd : libiconv_t, request : c_int, argument : c_void_ptr) : c_int;
 
@@ -38,9 +38,9 @@ extern "struct iconv_fallbacks" record iconv_fallbacks {
 
 extern proc libiconvlist(do_one : c_fn_ptr, data : c_void_ptr) : void;
 
-extern proc iconv_canonicalize(name : c_string) : c_string;
+extern proc iconv_canonicalize(name : c_string_ptr) : c_string_ptr;
 
-extern proc libiconv_set_relocation_prefix(orig_prefix : c_string, curr_prefix : c_string) : void;
+extern proc libiconv_set_relocation_prefix(orig_prefix : c_string_ptr, curr_prefix : c_string_ptr) : void;
 
 // ==== c2chapel typedefs ====
 

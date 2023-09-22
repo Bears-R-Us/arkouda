@@ -12,4 +12,6 @@ module ArkoudaCTypesCompat {
 
   // Redefine c_void_ptr to a usable form, without deprecation warning.
   type c_void_ptr = c_ptr(void);
+
+  type c_string_ptr = c_ptrConst(c_char);
 }

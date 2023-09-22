@@ -14,8 +14,8 @@ module Codecs {
         var ret: [0..0] uint(8) = 0x00;
         return ret;
       }
-      var cRes: c_string;
-      var rc = idn2_to_ascii_lz(obj:c_string, cRes, 0);
+      var cRes: c_string_ptr;
+      var rc = idn2_to_ascii_lz(obj:c_string_ptr, cRes, 0);
       if (rc != IDNA_SUCCESS) {
         throw new Error("Encode failed");
       }
@@ -31,8 +31,8 @@ module Codecs {
         var ret: [0..0] uint(8) = 0x00;
         return ret;
       }
-      var cRes: c_string;
-      var rc = idn2_to_unicode_8z8z(obj:c_string, cRes, 0);
+      var cRes: c_string_ptr;
+      var rc = idn2_to_unicode_8z8z(obj:c_string_ptr, cRes, 0);
       if (rc != IDNA_SUCCESS) {
         throw new Error("Decode failed");
       }
@@ -45,14 +45,14 @@ module Codecs {
       var cd = libiconv_open(toEncoding.c_str(), fromEncoding.c_str());
       if cd == (-1):libiconv_t then
         throw new Error("Unsupported encoding: " + toEncoding + " " + fromEncoding);
-      var inBuf = obj:c_string;
+      var inBuf = obj:c_string_ptr;
       // Null terminator already accounted for
       var inSize = (inBufSize): c_size_t;
 
       var chplRes: [0..#(outBufSize+1)] uint(8);
       var outSize = (outBufSize+1): c_size_t;
       
-      var outBuf = c_ptrTo(chplRes):c_string;
+      var outBuf = c_ptrTo(chplRes):c_string_ptr;
 
       if libiconv(cd, inBuf, inSize, outBuf, outSize) != 0 then
         throw new Error("Encoding to " + toEncoding + " failed");
@@ -64,8 +64,8 @@ module Codecs {
 
     proc getBufLength(obj: c_ptr(uint(8)), inBufSize: int, toEncoding: string = "IDNA", fromEncoding: string = "UTF-8"): int throws {
       if toEncoding == "IDNA" {
-        var cRes: c_string;
-        var rc = idn2_to_ascii_lz(obj:c_string, cRes, 0);
+        var cRes: c_string_ptr;
+        var rc = idn2_to_ascii_lz(obj:c_string_ptr, cRes, 0);
         if (rc != IDNA_SUCCESS) {
           // Error condition, we just want this to be empty string
           idn2_free(cRes: c_void_ptr);
@@ -80,8 +80,8 @@ module Codecs {
         if validChars != 0 {
           return 1;
         }
-        var cRes: c_string;
-        var rc = idn2_to_unicode_8z8z(obj:c_string, cRes, 0);
+        var cRes: c_string_ptr;
+        var rc = idn2_to_unicode_8z8z(obj:c_string_ptr, cRes, 0);
         if (rc != IDNA_SUCCESS) {
           // Error condition, we just want this to be empty string
           idn2_free(cRes: c_void_ptr);
@@ -94,7 +94,7 @@ module Codecs {
         var cd = libiconv_open(toEncoding.c_str(), fromEncoding.c_str());
         if cd == (-1):libiconv_t then
           throw new Error("Unsupported encoding: " + toEncoding + " " + fromEncoding);
-        var inBuf = obj:c_string;
+        var inBuf = obj:c_string_ptr;
         // Add 1 for null terminator
         var inSize = (inBufSize): c_size_t;
 
@@ -106,7 +106,7 @@ module Codecs {
         var origSize = chplRes.size;
         var outSize = chplRes.size: c_size_t;
       
-        var outBuf = c_ptrTo(chplRes):c_string;
+        var outBuf = c_ptrTo(chplRes):c_string_ptr;
 
         if libiconv(cd, inBuf, inSize, outBuf, outSize) != 0 then
           throw new Error("Getting buf length for " + toEncoding + " failed");

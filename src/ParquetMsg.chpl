@@ -91,7 +91,7 @@ module ParquetMsg {
   }
   
   proc getVersionInfo() {
-    extern proc c_getVersionInfo(): c_string;
+    extern proc c_getVersionInfo(): c_string_ptr;
     extern proc strlen(str): c_int;
     extern proc c_free_string(ptr);
     var cVersionString = c_getVersionInfo();
@@ -1295,7 +1295,7 @@ module ParquetMsg {
       var segarray_sizes: [0..#ncols] int; // track # of values in each column. Used to determine last segment size.
 
       var my_column_names = col_names;
-      var c_names: [0..#ncols] c_string;
+      var c_names: [0..#ncols] c_string_ptr;
 
       var segment_ct: [0..#ncols] int;
       var seg_sizes_str: [0..#ncols] int; // Track the sizes of string columns and # of segments in segarray str column
