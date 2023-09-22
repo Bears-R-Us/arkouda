@@ -72,12 +72,12 @@ module SymArrayDmapCompat
       return res;
     }
 
-    proc makeDistArray(D: domain(1), type etype) throws {
+    proc makeDistArray(D: domain(?), type etype) throws {
       var res = D.tryCreateArray(etype);
       return res;
     }
 
-    proc makeDistArray(D: domain(1), initExpr: ?t) throws {
+    proc makeDistArray(D: domain(?), initExpr: ?t) throws {
       return D.tryCreateArray(t, initExpr);
     }
 
