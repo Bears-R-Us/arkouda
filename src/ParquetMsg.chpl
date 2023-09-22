@@ -123,7 +123,7 @@ module ParquetMsg {
     var (subdoms, length) = getSubdomains(sizes);
     var fileOffsets = (+ scan sizes) - sizes;
     
-    coforall loc in A.targetLocales() do on loc {
+    coforall loc in A.targetLocales() with (ref A) do on loc {
       var locFiles = filenames;
       var locFiledoms = subdoms;
       var locOffsets = fileOffsets;
@@ -227,7 +227,7 @@ module ParquetMsg {
 
     var listSizes: [filenames.domain] int;
     var file_offset: int = 0;
-    coforall loc in seg_sizes.targetLocales() do on loc{
+    coforall loc in seg_sizes.targetLocales() with (ref listSizes) do on loc{
       var locFiles = filenames;
       var locFiledoms = subdoms;
       
@@ -250,7 +250,7 @@ module ParquetMsg {
 
     var byteSizes: [filenames.domain] int;
 
-    coforall loc in offsets.targetLocales() do on loc {
+    coforall loc in offsets.targetLocales() with (ref byteSizes) do on loc {
       var locFiles = filenames;
       var locFiledoms = subdoms;
       

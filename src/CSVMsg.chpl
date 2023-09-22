@@ -325,7 +325,7 @@ module CSVMsg {
 
     proc read_files_into_dist_array(A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int) throws {
 
-        coforall loc in A.targetLocales() do on loc {
+        coforall loc in A.targetLocales() with (ref A) do on loc {
             // Create local copies of args
             var locFiles = filenames;
             var locFiledoms = filedomains;

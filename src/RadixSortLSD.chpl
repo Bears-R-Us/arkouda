@@ -78,11 +78,11 @@ module RadixSortLSD
             try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                         "rshift = %?".doFormat(rshift));
             // count digits
-            coforall loc in Locales {
+            coforall loc in Locales with (ref globalCounts) {
                 on loc {
                     // allocate counts
                     var tasksBucketCounts: [Tasks] [0..#numBuckets] int;
-                    coforall task in Tasks {
+                    coforall task in Tasks with (ref tasksBucketCounts) {
                         ref taskBucketCounts = tasksBucketCounts[task];
                         // get local domain's indices
                         var lD = aD.localSubdomain();
@@ -96,7 +96,7 @@ module RadixSortLSD
                         }
                     }//coforall task
                     // write counts in to global counts in transposed order
-                    coforall tid in Tasks {
+                    coforall tid in Tasks with (ref tasksBucketCounts, ref globalCounts) {
                         var aggregator = newDstAggregator(int);
                         for task in Tasks {
                             ref taskBucketCounts = tasksBucketCounts[task];
@@ -118,12 +118,12 @@ module RadixSortLSD
             if vv {printAry("globalStarts =",globalStarts);try! stdout.flush();}
             
             // calc new positions and permute
-            coforall loc in Locales {
+            coforall loc in Locales with (ref a) {
                 on loc {
                     // allocate counts
                     var tasksBucketPos: [Tasks] [0..#numBuckets] int;
                     // read start pos in to globalStarts back from transposed order
-                    coforall tid in Tasks {
+                    coforall tid in Tasks with (ref tasksBucketPos) {
                         var aggregator = newSrcAggregator(int);
                         for task in Tasks {
                             ref taskBucketPos = tasksBucketPos[task];
@@ -134,7 +134,7 @@ module RadixSortLSD
                         }
                         aggregator.flush();
                     }//coforall task
-                    coforall task in Tasks {
+                    coforall task in Tasks with (ref tasksBucketPos, ref a) {
                         ref taskBucketPos = tasksBucketPos[task];
                         // get local domain's indices
                         var lD = aD.localSubdomain();

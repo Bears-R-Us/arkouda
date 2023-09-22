@@ -61,7 +61,7 @@ module SegmentedComputation {
     const (startSegInds, numSegs, lengths) = computeSegmentOwnership(segments, vD);
     
     // Start task parallelism
-    coforall loc in Locales {
+    coforall loc in Locales with (ref res, ref values) {
       on loc {
         const myFirstSegIdx = startSegInds[loc.id];
         const myNumSegs = max(0, numSegs[loc.id]);
@@ -140,7 +140,7 @@ module SegmentedComputation {
     const (startSegInds, numSegs, lengths) = computeSegmentOwnership(segments, vD);
 
     // Start task parallelism
-    coforall loc in Locales {
+    coforall loc in Locales with (ref values, ref res) {
       on loc {
         const myFirstSegIdx = startSegInds[loc.id];
         const myNumSegs = max(0, numSegs[loc.id]);

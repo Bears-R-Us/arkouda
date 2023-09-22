@@ -38,7 +38,7 @@ module In1d
     proc in1dAr2PerLocAssoc(ar1: [?aD1] ?t, ar2: [?aD2] t) {
         var truth: [aD1] bool;
         
-        coforall loc in Locales {
+        coforall loc in Locales with (ref truth, ref ar2) {
             on loc {
                 var ar2Set: domain(t, parSafe=false); // create a set to hold ar2, parSafe modification is OFF
                 ar2Set.requestCapacity(ar2.size); // request a capacity for the initial set

@@ -19,7 +19,7 @@ module ReductionMsg
     use AryUtil;
     use PrivateDist;
     use RadixSortLSD;
-    use ArkoudaMathCompat
+    use ArkoudaMathCompat;
 
     private config const lBins = 2**25 * numLocales;
 
@@ -96,7 +96,7 @@ module ReductionMsg
                     }
                     when "is_locally_sorted" {
                       var locSorted: [LocaleSpace] bool;
-                      coforall loc in Locales {
+                      coforall loc in Locales with (ref locSorted) {
                         on loc {
                           ref myA = e.a[e.a.localSubdomain()];
                           locSorted[here.id] = isSorted(myA);

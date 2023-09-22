@@ -64,7 +64,7 @@ module EncodingMsg {
       const (startSegInds, numSegs, lengths) = computeSegmentOwnership(segments, vD);
     
       // Start task parallelism
-      coforall loc in Locales {
+      coforall loc in Locales with (ref values, ref res) {
         on loc {
           const locTo = toEncoding;
           const locFrom = fromEncoding;
@@ -106,7 +106,7 @@ module EncodingMsg {
       const (eStartSegInds, eNumSegs, eLengths) = computeSegmentOwnership(encodeOffsets, res.domain);
     
       // Start task parallelism
-      coforall loc in Locales {
+      coforall loc in Locales with (ref values, ref res) {
         on loc {
           const locTo = toEncoding;
           const locFrom = fromEncoding;
