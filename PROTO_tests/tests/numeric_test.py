@@ -136,7 +136,7 @@ class TestNumeric:
         assert valid.to_list() == validans.to_list()
         assert np.allclose(ans, res.to_ndarray(), equal_nan=True)
 
-    @pytest.mark.parametrize("num_type", INT_FLOAT)
+    @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_histogram(self, num_type):
         pda = ak.randint(10, 30, 40, dtype=num_type)
         bins, result = ak.histogram(pda, bins=20)

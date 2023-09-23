@@ -66,6 +66,7 @@ module HistogramMsg
 
         select (gEnt.dtype) {
             when (DType.Int64)   {histogramHelper(int);}
+            when (DType.UInt64)   {histogramHelper(uint);}
             when (DType.Float64) {histogramHelper(real);}
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
