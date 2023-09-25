@@ -2807,7 +2807,7 @@ def right_join_merge(left: DataFrame,
 
         try:
             not_in_left[col] = left_col_type(nan_arr)
-        except ValueError:
+        except TypeError:
             not_in_left[col] = nan_arr
 
     right_ak_df = DataFrame.append(in_left, not_in_left)
