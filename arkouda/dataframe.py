@@ -11,7 +11,6 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
-from arkouda import list_registry, numeric
 from arkouda.alignment import find, right_align
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
@@ -2803,7 +2802,7 @@ def right_join_merge(left: DataFrame,
         # Create a nan array for all values not in the left df
         nan_arr = zeros(len(not_in_left))
         nan_arr.fill(np.nan)
-        nan_arr = numeric.cast(nan_arr, in_left[col].dtype)
+        nan_arr = cast(nan_arr, in_left[col].dtype)
         left_col_type = type(in_left[col])
 
         try:
