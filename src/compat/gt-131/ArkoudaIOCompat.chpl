@@ -49,4 +49,13 @@ module ArkoudaIOCompat {
     var nreader = f.reader(deserializer=new JsonDeserializer());
     nreader.readf("%?", obj);
   }
+
+  proc getByteOrderCompat() throws {
+    use IO;
+    var writeVal = 1, readVal = 0;
+    var tmpf = openMemFile();
+    tmpf.writer(serializer = new binarySerializer(endian=ioendian.big)).write(writeVal);
+    tmpf.reader(deserializer=new binaryDeserializer(endian=ioendian.native)).read(readVal);
+    return if writeVal == readVal then "big" else "little";
+  }
 }
