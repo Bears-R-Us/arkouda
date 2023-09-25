@@ -12,6 +12,7 @@ module SegStringSort {
   use BlockDist;
 
   use ArkoudaStringBytesCompat;
+  use ArkoudaBlockCompat;
 
   private config const SSS_v = false;
   private const vv = SSS_v;
@@ -225,7 +226,7 @@ module SegStringSort {
     }
     var kr1: [aD] state;
     // create a global count array to scan
-    var gD = Block.createDomain({0..#(numLocales * numTasks * numBuckets)});
+    var gD = blockDist.createDomain({0..#(numLocales * numTasks * numBuckets)});
     var globalCounts: [gD] int;
     var globalStarts: [gD] int;
         

@@ -20,6 +20,7 @@ module ReductionMsg
     use PrivateDist;
     use RadixSortLSD;
     use ArkoudaMathCompat;
+    use ArkoudaBlockCompat;
 
     private config const lBins = 2**25 * numLocales;
 
@@ -1372,7 +1373,7 @@ module ReductionMsg
       var count: [kD] int = (+ scan truth);
       var pop = count[kD.high];
       // find steps to get unique (key, val) pairs
-      var hD: domain(1) dmapped Block(boundingBox={0..#pop}) = {0..#pop};
+      var hD: domain(1) dmapped blockDist(boundingBox={0..#pop}) = {0..#pop};
       // save off only the key from each pair (now there will be nunique of each key)
       var keyhits: [hD] int;
       forall i in truth.domain with (var agg = newDstAggregator(int)) {
@@ -1393,7 +1394,7 @@ module ReductionMsg
       overMemLimit(numBytes(int) * truth2.size);
       var kiv: [hD] int = (+ scan truth2);
       var nKeysPresent = kiv[hD.high];
-      var nD: domain(1) dmapped Block(boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)};
+      var nD: domain(1) dmapped blockDist(boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)};
       // get step indices and take diff to get number of times each key appears
       var stepInds: [nD] int;
       stepInds[nKeysPresent] = keyhits.size;

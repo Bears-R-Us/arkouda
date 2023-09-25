@@ -22,6 +22,7 @@ module RadixSortLSD
     use RangeChunk;
     use Logging;
     use ServerConfig;
+    use ArkoudaBlockCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -69,7 +70,7 @@ module RadixSortLSD
         var temp = a;
         
         // create a global count array to scan
-        var gD = Block.createDomain({0..#(numLocales * numTasks * numBuckets)});
+        var gD = blockDist.createDomain({0..#(numLocales * numTasks * numBuckets)});
         var globalCounts: [gD] int;
         
         // loop over digits
