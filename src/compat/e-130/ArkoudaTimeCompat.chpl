@@ -144,6 +144,10 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
       return c_string; // const char *
   }
 
+  proc createFromTimestampCompat(d) {
+    return date.createFromTimestamp(d);
+  }
+  
   /* Get the `time` since Unix Epoch in seconds
   */
   proc timeSinceEpoch(): timedelta {
@@ -307,6 +311,9 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
     }
   }
 
+  proc isoWeekDate() {
+    return this.isoCalendar();
+  }
 
   /* initializers/factories for date values */
 

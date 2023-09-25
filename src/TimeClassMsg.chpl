@@ -58,8 +58,8 @@ module TimeClassMsg {
 
         forall (v, y, m, d, iso_y, is_ly, woy, doy, dow) in zip(valuesEntry.a, year, month, day, isoYear, is_leap_year, weekOfYear, dayOfYear, dayOfWeek) {
             // convert to seconds and create date
-            var t = date.createFromTimestamp(floorDivisionHelper(v, 10**9):int);
-            (y, m, d, (iso_y, woy, dow)) = (t.year, t.month, t.day, t.isoCalendar());
+            var t = createFromTimestampCompat(floorDivisionHelper(v, 10**9):int);
+            (y, m, d, (iso_y, woy, dow)) = (t.year, t.month, t.day, t.isoWeekDate());
             dow -= 1;
             is_ly = isLeapYear(y);
             doy = MONTHOFFSET[is_ly * 13 + m - 1] + d;
