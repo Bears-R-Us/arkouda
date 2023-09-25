@@ -7,7 +7,6 @@ import arkouda as ak
 
 
 class TestDataFrame:
-
     @staticmethod
     def build_pd_df():
         username = ["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"]
@@ -15,7 +14,7 @@ class TestDataFrame:
         item = [0, 0, 1, 1, 2, 0]
         day = [5, 5, 6, 5, 6, 6]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6]
-        bi = [2 ** 200, 2 ** 200 + 1, 2 ** 200 + 2, 2 ** 200 + 3, 2 ** 200 + 4, 2 ** 200 + 5]
+        bi = [2**200, 2**200 + 1, 2**200 + 2, 2**200 + 3, 2**200 + 4, 2**200 + 5]
         ui = (np.arange(6).astype(ak.uint64)) + 2**63
         return pd.DataFrame(
             {
@@ -25,7 +24,7 @@ class TestDataFrame:
                 "day": day,
                 "amount": amount,
                 "bi": bi,
-                "ui": ui
+                "ui": ui,
             }
         )
 
@@ -62,7 +61,7 @@ class TestDataFrame:
                 "day": day,
                 "amount": amount,
                 "bi": bi,
-                "ui": ui
+                "ui": ui,
             }
         )
 
@@ -83,7 +82,7 @@ class TestDataFrame:
                 "day": day,
                 "amount": amount,
                 "bi": bi,
-                "ui": ui
+                "ui": ui,
             }
         )
 
@@ -110,7 +109,7 @@ class TestDataFrame:
                 "day": day,
                 "amount": amount,
                 "bi": bi,
-                "ui": ui
+                "ui": ui,
             }
         )
 
@@ -458,6 +457,32 @@ class TestDataFrame:
         assert c.index.to_list() == ["Bob", "Alice", "Carol"]
         assert c.values.to_list() == [2, 3, 1]
 
+    @pytest.mark.parametrize("agg", ["sum", "first"])
+    def test_gb_aggregations(self, agg):
+        df = self.build_ak_df()
+        pd_df = self.build_pd_df()
+        # remove strings col because many aggregations don't support it
+        cols_without_str = list(set(df.columns) - {"userName"})
+        df = df[cols_without_str]
+        pd_df = pd_df[cols_without_str]
+
+        group_on = "userID"
+        for col in df.columns:
+            if col == group_on:
+                # pandas groupby doesn't return the column used to group
+                continue
+            ak_ans = getattr(df.groupby(group_on), agg)(col)
+            pd_ans = getattr(pd_df.groupby(group_on), agg)()[col]
+            assert ak_ans.to_list() == pd_ans.to_list()
+
+        # pandas groupby doesn't return the column used to group
+        cols_without_group_on = list(set(df.columns) - {group_on})
+        ak_ans = getattr(df.groupby(group_on), agg)()[cols_without_group_on]
+        pd_ans = getattr(pd_df.groupby(group_on), agg)()[cols_without_group_on]
+        # we don't currently support index names in arkouda
+        pd_ans.index.name = None
+        assert_frame_equal(pd_ans, ak_ans.to_pandas(retain_index=True))
+
     def test_argsort(self):
         df = self.build_ak_df()
 
@@ -595,7 +620,7 @@ class TestDataFrame:
     def test_head_tail_datetime_display(self):
         # Reproducer for issue #2596
         values = ak.array([1689221916000000] * 100, dtype=ak.int64)
-        dt = ak.Datetime(values, unit='u')
+        dt = ak.Datetime(values, unit="u")
         df = ak.DataFrame({"Datetime from Microseconds": dt})
         # verify _get_head_tail and _get_head_tail_server match
         assert df._get_head_tail_server().__repr__() == df._get_head_tail().__repr__()

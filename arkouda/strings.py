@@ -18,15 +18,14 @@ from arkouda.dtypes import (
     str_scalars,
     translate_np_dtype,
 )
-from arkouda.infoclass import information, list_registry, list_symbol_table
+from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import getArkoudaLogger
 from arkouda.match import Match, MatchType
 from arkouda.pdarrayclass import (
+    RegistrationError,
     create_pdarray,
     parse_single_value,
     pdarray,
-    unregister_pdarray_by_name,
-    attach_pdarray,
 )
 
 __all__ = ["Strings"]
@@ -175,6 +174,7 @@ class Strings:
             from either the offset_attrib or bytes_attrib parameter
         """
         self.entry: pdarray = strings_pdarray
+        self.registered_name: Optional[str] = None
         try:
             self.size = self.entry.size
             self.nbytes = bytes_size  # This is a deficiency of server GenSymEntry right now
@@ -374,12 +374,6 @@ class Strings:
         >>> x.get_bytes()
         [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
         """
-        bytes_name = self.name + "_bytes"
-        registry = list_registry()
-
-        if self._bytes is None and bytes_name in registry:
-            self._bytes = attach_pdarray(bytes_name)
-
         if self._bytes is None or self._bytes.name not in list_symbol_table():
             self._bytes = create_pdarray(
                 generic_msg(
@@ -387,8 +381,6 @@ class Strings:
                 )
             )
 
-        if self.is_registered() and self._bytes.name not in registry:
-            self._bytes.register(self.name + "_bytes")
         return self._bytes
 
     def get_offsets(self):
@@ -406,21 +398,12 @@ class Strings:
         >>> x.get_offsets()
         [0 4 8]
         """
-        offsets_name = self.name + "_offsets"
-        registry = list_registry()
-
-        if self._offsets is None and offsets_name in registry:
-            self._offsets = attach_pdarray(offsets_name)
-
         if self._offsets is None or self._offsets.name not in list_symbol_table():
             self._offsets = create_pdarray(
                 generic_msg(
                     cmd="getSegStringProperty", args={"property": "get_offsets", "obj": self.entry}
                 )
             )
-
-        if self.is_registered() and self._offsets.name not in registry:
-            self._offsets.register(self.name + "_offsets")
         return self._offsets
 
     def encode(self, toEncoding: str, fromEncoding: str = "UTF-8"):
@@ -2310,26 +2293,6 @@ class Strings:
         else:
             raise ValueError("Valid file types are HDF5 or Parquet")
 
-    def is_registered(self) -> np.bool_:
-        """
-        Return True iff the object is contained in the registry
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        bool
-            Indicates if the object is contained in the registry
-
-        Raises
-        ------
-        RuntimeError
-            Raised if there's a server-side error thrown
-        """
-        return np.bool_(self.entry.is_registered())
-
     def _list_component_names(self) -> List[str]:
         """
         Internal Function that returns a list of all component names
@@ -2415,12 +2378,17 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        self.entry.register(user_defined_name)
-        self.name = user_defined_name
-        if self._bytes is not None:
-            self._bytes.register(self.name + "_bytes")
-        if self._offsets is not None:
-            self._offsets.register(self.name + "_offsets")
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "array": self.name,
+            },
+        )
+        self.registered_name = user_defined_name
         return self
 
     def unregister(self) -> None:
@@ -2449,12 +2417,37 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion until
         they are unregistered.
         """
-        self.entry.unregister()
-        self.name = None
-        if self._bytes is not None:
-            self._bytes.unregister()
-        if self._offsets is not None:
-            self._offsets.unregister()
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
+
+    def is_registered(self) -> np.bool_:
+        """
+        Return True iff the object is contained in the registry
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there's a server-side error thrown
+        """
+        from arkouda.util import is_registered
+
+        if self.registered_name is None:
+            return np.bool_(is_registered(self.name, as_component=True))
+        else:
+            return np.bool_(is_registered(self.registered_name))
 
     @staticmethod
     @typechecked
@@ -2487,18 +2480,15 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        from arkouda.pdarrayclass import attach_pdarray
+        import warnings
 
-        rep_msg: str = cast(str, generic_msg(cmd="attach", args={"name": user_defined_name}))
-        s = Strings.from_return_msg(rep_msg)
-        s.name = user_defined_name
-        registry = list_registry()
-        bytes_name, offsets_name = f"{user_defined_name}_bytes", f"{user_defined_name}_offsets"
-        if bytes_name in registry:
-            s._bytes = attach_pdarray(bytes_name)
-        if offsets_name in registry:
-            s._offsets = attach_pdarray(offsets_name)
-        return s
+        from arkouda.util import attach
+
+        warnings.warn(
+            "ak.Strings.attach() is deprecated. Please use ak.attach() instead.",
+            DeprecationWarning,
+        )
+        return attach(user_defined_name)
 
     @staticmethod
     @typechecked
@@ -2515,10 +2505,53 @@ class Strings:
         --------
         register, unregister, attach, is_registered
         """
-        unregister_pdarray_by_name(user_defined_name)
-        registry = list_registry()
-        bytes_name, offsets_name = f"{user_defined_name}_bytes", f"{user_defined_name}_offsets"
-        if bytes_name in registry:
-            unregister_pdarray_by_name(bytes_name)
-        if offsets_name in registry:
-            unregister_pdarray_by_name(offsets_name)
+        import warnings
+
+        from arkouda.util import unregister
+
+        warnings.warn(
+            "ak.Strings.unregister_segarray_by_name() is deprecated. "
+            "Please use ak.unregister() instead.",
+            DeprecationWarning,
+        )
+        return unregister(user_defined_name)
+
+    def transfer(self, hostname: str, port: int_scalars):
+        """
+        Sends a Strings object to a different Arkouda server
+
+        Parameters
+        ----------
+        hostname : str
+            The hostname where the Arkouda server intended to
+            receive the Strings object is running.
+        port : int_scalars
+            The port to send the array over. This needs to be an
+            open port (i.e., not one that the Arkouda server is
+            running on). This will open up `numLocales` ports,
+            each of which in succession, so will use ports of the
+            range {port..(port+numLocales)} (e.g., running an
+            Arkouda server of 4 nodes, port 1234 is passed as
+            `port`, Arkouda will use ports 1234, 1235, 1236,
+            and 1237 to send the array data).
+            This port much match the port passed to the call to
+            `ak.receive_array()`.
+
+
+        Returns
+        -------
+        A message indicating a complete transfer
+
+        Raises
+        ------
+        ValueError
+            Raised if the op is not within the pdarray.BinOps set
+        TypeError
+            Raised if other is not a pdarray or the pdarray.dtype is not
+            a supported dtype
+        """
+        # hostname is the hostname to send to
+        return generic_msg(cmd="sendArray", args={"values": self.entry,
+                                                  "hostname": hostname,
+                                                  "port": port,
+                                                  "objType": "strings"})

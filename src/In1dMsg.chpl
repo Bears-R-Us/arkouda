@@ -49,14 +49,14 @@ module In1dMsg
                 var ar2 = toSymEntry(gAr2,int);
 
                 var truth = in1d(ar1.a, ar2.a, invert);
-                st.addEntry(rname, new shared SymEntry(truth));
+                st.addEntry(rname, createSymEntry(truth));
             }
             when (DType.UInt64, DType.UInt64) {
                 var ar1 = toSymEntry(gAr1,uint);
                 var ar2 = toSymEntry(gAr2,uint);
 
                 var truth = in1d(ar1.a, ar2.a, invert);
-                st.addEntry(rname, new shared SymEntry(truth));
+                st.addEntry(rname, createSymEntry(truth));
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,gAr1.dtype,"in",gAr2.dtype);

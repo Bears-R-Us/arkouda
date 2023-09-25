@@ -3,7 +3,7 @@ module ServerConfig
 {
     use ZMQ only;
     use HDF5.C_HDF5 only H5get_libversion;
-    use SymArrayDmap only makeDistDom;
+    use SymArrayDmapCompat only makeDistDom;
 
     public use IO;
     public use ArkoudaIOCompat;
@@ -27,7 +27,14 @@ module ServerConfig
       SEGARRAY=3,
       CATEGORICAL=4,
       GROUPBY=5,
-      DATAFRAME=6
+      DATAFRAME=6,
+      DATETIME=7,
+      TIMEDELTA=8,
+      IPV4=9,
+      BITVECTOR=10,
+      SERIES=11,
+      INDEX=12,
+      MULTIINDEX=13,
     };
     
     /*
@@ -290,7 +297,7 @@ module ServerConfig
             if total > getMemLimit() {
                 var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
                 var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
-                                   total, getMemLimit(), pct);
+                                   total * numLocales, getMemLimit() * numLocales, pct);
                 scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                 throw getErrorWithContext(
                           msg=msg,
@@ -331,7 +338,7 @@ module ServerConfig
                 if total > getMemLimit() {
                     var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
                     var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
-                                   total, getMemLimit(), pct);
+                                   total * numLocales, getMemLimit() * numLocales, pct);
                     scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                     throw getErrorWithContext(
                               msg=msg,

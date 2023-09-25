@@ -1,11 +1,12 @@
 from itertools import permutations
 
+import numpy as np
 import pytest
 
 import arkouda as ak
 from arkouda.sorting import SortingAlgorithm
 
-NUMERIC_AND_BIGINT_TYPES = ["int64", "float64", "uint64", "bigint"]
+NUMERIC_TYPES = ["int64", "float64", "uint64", "bigint", "bool"]
 
 
 def make_ak_arrays(size, dtype, minimum=-(2**32), maximum=2**32):
@@ -14,6 +15,8 @@ def make_ak_arrays(size, dtype, minimum=-(2**32), maximum=2**32):
         return ak.randint(minimum, maximum, size=size, dtype=dtype)
     elif dtype == "uint64":
         return ak.cast(ak.randint(minimum, maximum, size=size), dtype)
+    elif dtype == "bool":
+        return ak.cast(ak.randint(0, 2, size=size), dtype)
     elif dtype == "bigint":
         return ak.cast(ak.randint(minimum, maximum, size=size), dtype) + 2**200
     return None
@@ -21,7 +24,7 @@ def make_ak_arrays(size, dtype, minimum=-(2**32), maximum=2**32):
 
 class TestCoargsort:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", NUMERIC_AND_BIGINT_TYPES)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     def test_coargsort_single_type(self, prob_size, dtype, algo):
         # add test for large number of arrays and all permutations of mixed sizes
@@ -51,9 +54,11 @@ class TestCoargsort:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     def test_coargsort_mixed_types(self, prob_size, algo):
-        for arr_list in permutations(
-            make_ak_arrays(prob_size, dt, 0, 2**63) for dt in NUMERIC_AND_BIGINT_TYPES
-        ):
+        for dt in NUMERIC_TYPES:
+            dtypes = [dt] + np.random.choice(
+                list(set(NUMERIC_TYPES) - {dt}), size=len(NUMERIC_TYPES) - 1, replace=False
+            ).tolist()
+            arr_list = [make_ak_arrays(prob_size, dt, 0, 2**63) for dt in dtypes]
             if not isinstance(arr_list, list):
                 arr_list = list(arr_list)
             perm = ak.coargsort(arr_list, algo)
@@ -85,6 +90,13 @@ class TestCoargsort:
         empty_str = ak.random_strings_uniform(1, 16, 0)
         for empty in empty_str, ak.Categorical(empty_str):
             assert [] == ak.coargsort([empty], algo).to_list()
+
+    def test_coargsort_bool(self):
+        # Reproducer for issue #2675
+        args = [ak.arange(5) % 2 == 0, ak.arange(5, 0, -1)]
+        perm = ak.coargsort(args)
+        assert args[0][perm].to_list() == [False, False, True, True, True]
+        assert args[1][perm].to_list() == [2, 4, 1, 3, 5]
 
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     def test_error_handling(self, algo):

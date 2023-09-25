@@ -23,16 +23,11 @@ from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import int_scalars, npstr, resolve_scalar_dtype, str_, str_scalars
 from arkouda.groupbyclass import GroupBy, unique
-from arkouda.infoclass import information, list_registry
+from arkouda.infoclass import information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import where
-from arkouda.pdarrayclass import (
-    RegistrationError,
-    create_pdarray,
-    pdarray,
-    unregister_pdarray_by_name,
-)
+from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort
@@ -141,7 +136,7 @@ class Categorical:
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
         self.dtype = str_
-        self.name: Optional[str] = None
+        self.registered_name: Optional[str] = None
 
     @classmethod
     @typechecked
@@ -497,14 +492,18 @@ class Categorical:
         )
 
     @typechecked
-    def contains(self, substr: str) -> pdarray:
+    def contains(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
         """
         Check whether each element contains the given substring.
 
         Parameters
         ----------
-        substr : str
+        substr : Union[bytes, str_scalars]
             The substring to search for
+        regex: bool
+            Indicates whether substr is a regular expression
+            Note: only handles regular expressions supported by re2
+            (does not support lookaheads/lookbehinds)
 
         Returns
         -------
@@ -514,86 +513,106 @@ class Categorical:
         Raises
         ------
         TypeError
-            Raised if substr is not a str
+            Raised if the substr parameter is not bytes or str_scalars
+        ValueError
+            Rasied if substr is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Categorical.startswith, Categorical.endswith
 
         Notes
         -----
         This method can be significantly faster than the corresponding method
         on Strings objects, because it searches the unique category labels
         instead of the full array.
-
-        See Also
-        --------
-        Categorical.startswith, Categorical.endswith
         """
-        categoriescontains = self.categories.contains(substr)
-        return categoriescontains[self.codes]
+        categories_contains = self.categories.contains(substr, regex)
+        return categories_contains[self.codes]
 
     @typechecked
-    def startswith(self, substr: str) -> pdarray:
+    def startswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
         """
         Check whether each element starts with the given substring.
 
         Parameters
         ----------
-        substr : str
+        substr : Union[bytes, str_scalars]
             The substring to search for
-
-        Raises
-        ------
-        TypeError
-            Raised if substr is not a str
+        regex: bool
+            Indicates whether substr is a regular expression
+            Note: only handles regular expressions supported by re2
+            (does not support lookaheads/lookbehinds)
 
         Returns
         -------
         pdarray, bool
-            True for elements that contain substr, False otherwise
+            True for elements that start with substr, False otherwise
+
+        Raises
+        ------
+        TypeError
+            Raised if the substr parameter is not bytes or str_scalars
+        ValueError
+            Rasied if substr is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Categorical.contains, Categorical.endswith
 
         Notes
         -----
         This method can be significantly faster than the corresponding
         method on Strings objects, because it searches the unique category
         labels instead of the full array.
-
-        See Also
-        --------
-        Categorical.contains, Categorical.endswith
         """
-        categoriesstartswith = self.categories.startswith(substr)
-        return categoriesstartswith[self.codes]
+        categories_ends_with = self.categories.startswith(substr, regex)
+        return categories_ends_with[self.codes]
 
     @typechecked
-    def endswith(self, substr: str) -> pdarray:
+    def endswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
         """
         Check whether each element ends with the given substring.
 
         Parameters
         ----------
-        substr : str
+        substr : Union[bytes, str_scalars]
             The substring to search for
-
-        Raises
-        ------
-        TypeError
-            Raised if substr is not a str
+        regex: bool
+            Indicates whether substr is a regular expression
+            Note: only handles regular expressions supported by re2
+            (does not support lookaheads/lookbehinds)
 
         Returns
         -------
         pdarray, bool
-            True for elements that contain substr, False otherwise
+            True for elements that end with substr, False otherwise
+
+        Raises
+        ------
+        TypeError
+            Raised if the substr parameter is not bytes or str_scalars
+        ValueError
+            Rasied if substr is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Categorical.startswith, Categorical.contains
 
         Notes
         -----
         This method can be significantly faster than the corresponding method
         on Strings objects, because it searches the unique category labels
         instead of the full array.
-
-        See Also
-        --------
-        Categorical.startswith, Categorical.contains
         """
-        categoriesendswith = self.categories.endswith(substr)
-        return categoriesendswith[self.codes]
+        categories_ends_with = self.categories.endswith(substr, regex)
+        return categories_ends_with[self.codes]
 
     @typechecked
     def in1d(self, test: Union[Strings, Categorical]) -> pdarray:
@@ -1104,11 +1123,21 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        [
-            p.register(f"{user_defined_name}.{n}")
-            for n, p in Categorical._get_components_dict(self).items()
-        ]
-        self.name = user_defined_name
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "codes": self.codes,
+                "categories": self.categories,
+                "_akNAcode": self._akNAcode,
+                "segments": self.segments if self.segments is not None else "",
+                "permutation": self.permutation if self.permutation is not None else "",
+            },
+        )
+        self.registered_name = user_defined_name
         return self
 
     def unregister(self) -> None:
@@ -1131,16 +1160,17 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        if not self.name:
-            raise RegistrationError(
-                "This item does not have a name and does not appear to be registered."
-            )
-        [p.unregister() for p in Categorical._get_components_dict(self).values()]
-        self.name = None  # Clear our internal Categorical object name
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
 
     def is_registered(self) -> np.bool_:
         """
-         Return True iff the object is contained in the registry
+         Return True iff the object is contained in the registry or is a component of a
+         registered object.
 
         Returns
         -------
@@ -1161,15 +1191,19 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        parts_registered: List[np.bool_] = [
-            p.is_registered() for p in Categorical._get_components_dict(self).values()
-        ]
-        if np.any(parts_registered) and not np.all(parts_registered):  # test for error
-            raise RegistrationError(
-                f"Not all registerable components of Categorical {self.name} are registered."
-            )
+        from arkouda.util import is_registered
 
-        return np.bool_(np.any(parts_registered))
+        if self.registered_name is None:
+            result = True
+            result &= is_registered(self.codes.name, as_component=True)
+            result &= is_registered(self.categories.name, as_component=True)
+            result &= is_registered(self._akNAcode.name, as_component=True)
+            if self.permutation is not None and self.segments is not None:
+                result &= is_registered(self.permutation.name, as_component=True)
+                result &= is_registered(self.segments.name, as_component=True)
+            return np.bool_(result)
+        else:
+            return np.bool_(is_registered(self.registered_name))
 
     def _get_components_dict(self) -> Dict:
         """
@@ -1245,6 +1279,7 @@ class Categorical:
     @typechecked
     def attach(user_defined_name: str) -> Categorical:
         """
+        DEPRECATED
         Function to return a Categorical object attached to the registered name in the
         arkouda server which was registered using register()
 
@@ -1267,9 +1302,15 @@ class Categorical:
         --------
         register, is_registered, unregister, unregister_categorical_by_name
         """
+        import warnings
+
         from arkouda.util import attach
 
-        return attach(user_defined_name, dtype="categorical")
+        warnings.warn(
+            "ak.Categorical.attach() is deprecated. Please use ak.attach() instead.",
+            DeprecationWarning,
+        )
+        return attach(user_defined_name)
 
     @staticmethod
     @typechecked
@@ -1294,17 +1335,16 @@ class Categorical:
         --------
         register, unregister, attach, is_registered
         """
-        # We have 4 subcomponents, unregister each of them
-        Strings.unregister_strings_by_name(f"{user_defined_name}.categories")
-        unregister_pdarray_by_name(f"{user_defined_name}.codes")
-        unregister_pdarray_by_name(f"{user_defined_name}._akNAcode")
+        import warnings
 
-        # Unregister optional pieces only if they are contained in the registry
-        registry = list_registry()
-        if f"{user_defined_name}.permutation" in registry:
-            unregister_pdarray_by_name(f"{user_defined_name}.permutation")
-        if f"{user_defined_name}.segments" in registry:
-            unregister_pdarray_by_name(f"{user_defined_name}.segments")
+        from arkouda.util import unregister
+
+        warnings.warn(
+            "ak.Categorical.unregister_categorical_by_name() is deprecated. "
+            "Please use ak.unregister() instead.",
+            DeprecationWarning,
+        )
+        return unregister(user_defined_name)
 
     @staticmethod
     @typechecked
@@ -1356,3 +1396,51 @@ class Categorical:
                 result_categoricals[base_name] = Categorical.from_codes(**cat_parts)
 
         return removal_names, result_categoricals
+
+    def transfer(self, hostname: str, port: int_scalars):
+        """
+        Sends a Categorical object to a different Arkouda server
+
+        Parameters
+        ----------
+        hostname : str
+            The hostname where the Arkouda server intended to
+            receive the Categorical is running.
+        port : int_scalars
+            The port to send the array over. This needs to be an
+            open port (i.e., not one that the Arkouda server is
+            running on). This will open up `numLocales` ports,
+            each of which in succession, so will use ports of the
+            range {port..(port+numLocales)} (e.g., running an
+            Arkouda server of 4 nodes, port 1234 is passed as
+            `port`, Arkouda will use ports 1234, 1235, 1236,
+            and 1237 to send the array data).
+            This port much match the port passed to the call to
+            `ak.receive_array()`.
+
+
+        Returns
+        -------
+        A message indicating a complete transfer
+
+        Raises
+        ------
+        ValueError
+            Raised if the op is not within the pdarray.BinOps set
+        TypeError
+            Raised if other is not a pdarray or the pdarray.dtype is not
+            a supported dtype
+        """
+        # hostname is the hostname to send to
+        args = {
+            "codes": self.codes,
+            "categories": self.categories,
+            "objType": self.objType,
+            "NA_codes": self._akNAcode,
+            "hostname": hostname,
+            "port": port
+        }
+        return generic_msg(
+            cmd="sendArray",
+            args=args,
+        )

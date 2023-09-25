@@ -1,6 +1,6 @@
 module Broadcast {
   use AryUtil;
-  use SymArrayDmap;
+  use SymArrayDmapCompat;
   use CommAggregation;
   use BigInteger;
   use SegmentedString;

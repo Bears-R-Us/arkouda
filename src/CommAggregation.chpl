@@ -8,7 +8,10 @@ module CommAggregation {
   use ArkoudaPOSIXCompat;
 
   // TODO should tune these values at startup
-  param defaultBuffSize = if CHPL_COMM == "ugni" then 4096 else 8192;
+  private param defaultBuffSize =
+    if CHPL_TARGET_PLATFORM == "hpe-cray-ex" then 1024
+    else if CHPL_COMM == "ugni" then 4096
+    else 8192;
   private config const yieldFrequency = getEnvInt("ARKOUDA_SERVER_AGGREGATION_YIELD_FREQUENCY", 1024);
   private config const dstBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_DST_BUFF_SIZE", defaultBuffSize);
   private config const srcBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_SRC_BUFF_SIZE", defaultBuffSize);
@@ -354,7 +357,7 @@ module CommAggregation {
         assert(lArr.locale.id == here.id);
       }
       const byte_size = size:c_size_t * c_sizeof(elemType);
-      CommPrimitives.PUT(c_ptrTo(lArr[0]), loc, data, byte_size);
+      CommPrimitives.PUT(data, c_ptrTo(lArr[0]), loc, byte_size);
     }
 
     proc PUT(lArr: c_ptr(elemType), size: int) {
@@ -362,7 +365,7 @@ module CommAggregation {
         assert(size <= this.size);
       }
       const byte_size = size:c_size_t * c_sizeof(elemType);
-      CommPrimitives.PUT(lArr, loc, data, byte_size);
+      CommPrimitives.PUT(data, lArr, loc, byte_size);
     }
 
     proc GET(lArr: [] elemType, size: int) where lArr.isDefaultRectangular() {
@@ -373,7 +376,7 @@ module CommAggregation {
         assert(lArr.locale.id == here.id);
       }
       const byte_size = size:c_size_t * c_sizeof(elemType);
-      CommPrimitives.GET(c_ptrTo(lArr[0]), loc, data, byte_size);
+      CommPrimitives.GET(c_ptrTo(lArr[0]), data, loc, byte_size);
     }
 
     proc deinit() {
@@ -394,7 +397,7 @@ module CommAggregation {
   // Cacheline aligned and padded allocation to avoid false-sharing
   inline proc bufferIdxAlloc() {
     const cachePaddedLocales = (numLocales + 7) & ~7;
-    return allocate(int, 64, alignment=cachePaddedLocales);
+    return allocate(int, cachePaddedLocales, alignment=64);
   }
 
   module BigIntegerAggregation {

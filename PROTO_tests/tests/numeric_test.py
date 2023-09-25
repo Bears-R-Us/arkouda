@@ -1,7 +1,7 @@
-import arkouda as ak
-import pytest
 import numpy as np
+import pytest
 
+import arkouda as ak
 from arkouda.dtypes import npstr
 
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64]
@@ -88,13 +88,16 @@ class TestNumeric:
     def test_cast(self, prob_size, cast_to):
         arrays = {
             ak.int64: ak.randint(-(2**48), 2**48, prob_size),
+            ak.uint64: ak.randint(0, 2**48, prob_size, dtype=ak.uint64),
             ak.float64: ak.randint(0, 1, prob_size, dtype=ak.float64),
             ak.bool: ak.randint(0, 2, prob_size, dtype=ak.bool),
+            ak.str_: ak.cast(ak.randint(0, 2**48, prob_size), "str"),
         }
 
         for t1, orig in arrays.items():
-            if t1 == ak.float64 and cast_to == ak.bigint:
+            if (t1 == ak.float64 and cast_to == ak.bigint) or (t1 == ak.str_ and cast_to == ak.bool):
                 # we don't support casting a float to a bigint
+                # we do support str to bool, but it's expected to contain "true/false" not numerics
                 continue
             other = ak.cast(orig, cast_to)
             assert orig.size == other.size

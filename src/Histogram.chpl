@@ -6,7 +6,7 @@ module Histogram
     use Math only;
 
     use PrivateDist;
-    use SymArrayDmap;
+    use SymArrayDmapCompat;
     use Logging;
     use Reflection;
 
@@ -38,7 +38,7 @@ module Histogram
     :returns: [] int
 
     */
-    proc histogramGlobalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
+    proc histogramGlobalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) throws {
 
         var hD = makeDistDom(bins);
         var atomicHist: [hD] atomic int;
@@ -86,7 +86,7 @@ module Histogram
     :returns: [] int
 
     */
-    proc histogramLocalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
+    proc histogramLocalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) throws {
 
         // allocate per-locale atomic histogram
         var atomicHist: [PrivateSpace] [0..#bins] atomic int;
@@ -133,7 +133,7 @@ module Histogram
     :returns: [] int
 
     */
-    proc histogramReduceIntent(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
+    proc histogramReduceIntent(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) throws {
 
         var gHist: [0..#bins] int;
         

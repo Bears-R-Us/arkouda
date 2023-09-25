@@ -859,7 +859,7 @@ module HDF5Msg {
                 const ushift = 64:uint;
                 while !all_zero {
                     low = tmp:uint;
-                    limbs.pushBack(new shared SymEntry(low));
+                    limbs.pushBack(createSymEntry(low));
 
                     all_zero = true;
                     forall t in tmp with (&& reduce all_zero) {
@@ -2084,7 +2084,7 @@ module HDF5Msg {
                 // loop columns and write each one.
                 for (dset, name, ot, dt) in zip(dset_names, col_names, col_objTypes, col_dtypes) {
                     select ot.toUpper(): ObjType {
-                        when ObjType.PDARRAY {
+                        when ObjType.PDARRAY, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
                             var dtype: C_HDF5.hid_t;
                             select str2dtype(dt) {
                                 when DType.Int64 {
@@ -2150,6 +2150,7 @@ module HDF5Msg {
                                     errorClass="IllegalArgumentError");
                                 }
                             }
+                            writeArkoudaMetaData(file_id, "/%s/%s".doFormat(group, dset), ot, dtype);
                         }
                         when ObjType.STRINGS {
                             // create/overwrite the group
@@ -2302,7 +2303,7 @@ module HDF5Msg {
                 // loop columns and write each one.
                 for (dset, name, ot, dt) in zip(dset_names, col_names, col_objTypes, col_dtypes) {
                     select ot.toUpper(): ObjType {
-                        when ObjType.PDARRAY {
+                        when ObjType.PDARRAY, ObjType.IPV4, ObjType.DATETIME, ObjType.TIMEDELTA {
                             var entry = st.lookup(name);
                             select str2dtype(dt) {
                                 when DType.Int64 {
@@ -2484,7 +2485,7 @@ module HDF5Msg {
                 // call handler for arrayview write msg
                 arrayView_tohdfMsg(msgArgs, st);
             }
-            when ObjType.PDARRAY {
+            when ObjType.PDARRAY, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
                 // call handler for pdarray write
                 pdarray_tohdfMsg(msgArgs, st);
             }
@@ -2959,7 +2960,7 @@ module HDF5Msg {
         C_HDF5.H5Fclose(file_id);
         
         var sname = st.nextName();
-        st.addEntry(sname, new shared SymEntry(shape));
+        st.addEntry(sname, createSymEntry(shape));
         var rname = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
         return (dset, ObjType.ARRAYVIEW, "%s+%s".doFormat(rname, sname));
     }
@@ -3008,7 +3009,7 @@ module HDF5Msg {
             var skips = new set(string);
             var len: int;
             (subdoms, len, skips) = get_subdoms(filenames, "%s/Limb_%i".doFormat(dset, l), validFiles);
-            var limb = new shared SymEntry(len, uint);
+            var limb = createSymEntry(len, uint);
             read_files_into_distributed_array(limb.a, subdoms, filenames, "%s/Limb_%i".doFormat(dset, l), skips);
             limbs.pushBack(limb);
         }
@@ -3034,7 +3035,7 @@ module HDF5Msg {
         }
 
         var rname = st.nextName();
-        st.addEntry(rname, new shared SymEntry(bigIntArray, max_bits));
+        st.addEntry(rname, createSymEntry(bigIntArray, max_bits));
         return rname;
     }
 
@@ -3057,12 +3058,12 @@ module HDF5Msg {
         select dataclass {
             when C_HDF5.H5T_INTEGER {
                 if (!isSigned && 8 == bytesize) {
-                    var entryUInt = new shared SymEntry(len, uint);
+                    var entryUInt = createSymEntry(len, uint);
                     h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Initialized uint entry for dataset %s".doFormat(dset));
                     read_files_into_distributed_array(entryUInt.a, subdoms, filenames, dset, skips);
                     rname = st.nextName();
                     if isBoolDataset(filenames[idx], dset) {
-                        var entryBool = new shared SymEntry(len, bool);
+                        var entryBool = createSymEntry(len, bool);
                         entryBool.a = entryUInt.a:bool;
                         st.addEntry(rname, entryBool);
                     } else {
@@ -3071,12 +3072,12 @@ module HDF5Msg {
                     }
                 }
                 else {
-                    var entryInt = new shared SymEntry(len, int);
+                    var entryInt = createSymEntry(len, int);
                     h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Initialized int entry for dataset %s".doFormat(dset));
                     read_files_into_distributed_array(entryInt.a, subdoms, filenames, dset, skips);
                     rname = st.nextName();
                     if isBoolDataset(filenames[idx], dset) {
-                        var entryBool = new shared SymEntry(len, bool);
+                        var entryBool = createSymEntry(len, bool);
                         entryBool.a = entryInt.a:bool;
                         st.addEntry(rname, entryBool);
                     } else {
@@ -3086,7 +3087,7 @@ module HDF5Msg {
                 }
             }
             when C_HDF5.H5T_FLOAT {
-                var entryReal = new shared SymEntry(len, real);
+                var entryReal = createSymEntry(len, real);
                 h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                                     "Initialized float entry");
                 read_files_into_distributed_array(entryReal.a, subdoms, filenames, dset, skips);
@@ -3110,7 +3111,11 @@ module HDF5Msg {
 
     proc pdarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var pda_name = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
-        return (dset, ObjType.PDARRAY, pda_name);
+        var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
+        var file_id = C_HDF5.H5Fopen(filenames[idx].c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+        var objType = getObjType(file_id, dset);
+        C_HDF5.H5Fclose(file_id);
+        return (dset, objType, pda_name);
     }
 
     /*
@@ -3140,16 +3145,16 @@ module HDF5Msg {
         }
 
         // Load the strings bytes/values first
-        var entryVal = new shared SymEntry(len, uint(8));
+        var entryVal = createSymEntry(len, uint(8));
         read_files_into_distributed_array(entryVal.a, subdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
 
         proc _buildEntryCalcOffsets(): shared SymEntry throws {
             var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.a.domain);
-            return new shared SymEntry(offsetsArray);
+            return createSymEntry(offsetsArray);
         }
 
         proc _buildEntryLoadOffsets() throws {
-            var offsetsEntry = new shared SymEntry(nSeg, int);
+            var offsetsEntry = createSymEntry(nSeg, int);
             read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
             fixupSegBoundaries(offsetsEntry.a, segSubdoms, subdoms);
             return offsetsEntry;
@@ -3199,7 +3204,7 @@ module HDF5Msg {
         read_files_into_distributed_array(segDist, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
         fixupSegBoundaries(segDist, segSubdoms, valSubdoms);
         var sname = st.nextName();
-        st.addEntry(sname, new shared SymEntry(segDist));
+        st.addEntry(sname, createSymEntry(segDist));
         rtnMap.add("segments", "created " + st.attrib(sname));
         
         return rtnMap;
@@ -3222,7 +3227,7 @@ module HDF5Msg {
         read_files_into_distributed_array(codes, subdoms, filenames, "%s/%s".doFormat(dset, CODES_NAME), skips);
         // create symEntry
         var codesName = st.nextName();
-        var codesEntry = new shared SymEntry(codes);
+        var codesEntry = createSymEntry(codes);
         st.addEntry(codesName, codesEntry);
 
         // read the categories
@@ -3239,7 +3244,7 @@ module HDF5Msg {
         read_files_into_distributed_array(naCodes, nacodes_subdoms, filenames, "%s/%s".doFormat(dset, NACODES_NAME), nacodes_skips);
         // create symEntry
         var naCodesName = st.nextName();
-        var naCodesEntry = new shared SymEntry(naCodes);
+        var naCodesEntry = createSymEntry(naCodes);
         st.addEntry(naCodesName, naCodesEntry);
 
         rtnMap.add("codes", "created " + st.attrib(codesEntry.name));
@@ -3262,7 +3267,7 @@ module HDF5Msg {
             var segments = makeDistArray(segs_len, int);
             read_files_into_distributed_array(segments, segs_subdoms, filenames, "%s/%s".doFormat(dset, SEGMENTS_NAME), segs_skips);
             var segName = st.nextName();
-            var segEntry = new shared SymEntry(segments);
+            var segEntry = createSymEntry(segments);
             st.addEntry(segName, segEntry);
 
             // get domain and size info for permutation
@@ -3274,7 +3279,7 @@ module HDF5Msg {
             var perm = makeDistArray(perm_len, int);
             read_files_into_distributed_array(perm, perm_subdoms, filenames, "%s/%s".doFormat(dset, PERMUTATION_NAME), perm_skips);
             var permName = st.nextName();
-            var permEntry = new shared SymEntry(perm);
+            var permEntry = createSymEntry(perm);
             st.addEntry(permName, permEntry);
 
             rtnMap.add("segments", "created " + st.attrib(segEntry.name));
@@ -3294,7 +3299,7 @@ module HDF5Msg {
         read_files_into_distributed_array(perm, perm_subdoms, filenames, "%s/%s".doFormat(dset, PERMUTATION_NAME), perm_skips);
         // create symEntry
         var permName = st.nextName();
-        var permEntry = new shared SymEntry(perm);
+        var permEntry = createSymEntry(perm);
         st.addEntry(permName, permEntry);
 
         var seg_subdoms: [fD] domain(1);
@@ -3305,7 +3310,7 @@ module HDF5Msg {
         read_files_into_distributed_array(segs, seg_subdoms, filenames, "%s/%s".doFormat(dset, SEGMENTS_NAME), seg_skips);
         // create symEntry
         var segName = st.nextName();
-        var segEntry = new shared SymEntry(segs);
+        var segEntry = createSymEntry(segs);
         st.addEntry(segName, segEntry);
 
         var uki_subdoms: [fD] domain(1);
@@ -3316,7 +3321,7 @@ module HDF5Msg {
         read_files_into_distributed_array(uki, uki_subdoms, filenames, "%s/%s".doFormat(dset, UKI_NAME), uki_skips);
         // create symEntry
         var ukiName = st.nextName();
-        var ukiEntry = new shared SymEntry(uki);
+        var ukiEntry = createSymEntry(uki);
         st.addEntry(ukiName, ukiEntry);
 
         rtnMap.add("permutation", "created " + st.attrib(permEntry.name));
@@ -3416,7 +3421,7 @@ module HDF5Msg {
             var readCreate: string;
             (keyObjType, dataclass, bytesize, isSigned) = get_info(filenames[0], "%s/%s".doFormat(dset, col), calcStringOffsets);
             select keyObjType {
-                when ObjType.PDARRAY {
+                when ObjType.PDARRAY, ObjType.IPV4, ObjType.DATETIME, ObjType.TIMEDELTA {
                     var pda_name = readPdarrayFromFile(filenames, "%s/%s".doFormat(dset, col), dataclass, bytesize, isSigned, validFiles, st);
                     readCreate = "created %s".doFormat(st.attrib(pda_name));
                 }
@@ -3731,7 +3736,7 @@ module HDF5Msg {
             }
         }
         // create the tag entry
-        var tagEntry = new shared SymEntry(len, int); // this will always contain integer values
+        var tagEntry = createSymEntry(len, int);
         assign_tags(tagEntry.a, subdoms, filenames, dset, skips);
         var rname = st.nextName();
         st.addEntry(rname, tagEntry);
@@ -3908,7 +3913,7 @@ module HDF5Msg {
                 when ObjType.ARRAYVIEW {
                     rtnData.pushBack(arrayView_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
                 }
-                when ObjType.PDARRAY {
+                when ObjType.PDARRAY, ObjType.IPV4, ObjType.DATETIME, ObjType.TIMEDELTA {
                     rtnData.pushBack(pdarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
                 }
                 when ObjType.STRINGS {

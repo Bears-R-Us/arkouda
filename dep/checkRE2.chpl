@@ -1,6 +1,6 @@
 proc main() {
   use Regex;
-  var myRegex = compile("a+");
+  var myRegex = new regex("a+");
   writeln("Chapel correctly made with RE2 support\n");
   return 0;
 }

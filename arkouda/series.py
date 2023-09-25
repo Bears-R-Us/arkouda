@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from typing import List, Optional, Tuple, Union
-from warnings import warn
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from pandas._config import get_option  # type: ignore
 from typeguard import typechecked
+import json
 
 import arkouda.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
@@ -17,11 +17,11 @@ from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import value_counts
-from arkouda.pdarrayclass import argmaxk, attach_pdarray, create_pdarray, pdarray
+from arkouda.pdarrayclass import argmaxk, create_pdarray, pdarray, RegistrationError
 from arkouda.pdarraycreation import arange, array, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.strings import Strings
-from arkouda.util import convert_if_categorical, get_callback, register
+from arkouda.util import convert_if_categorical, get_callback
 
 # pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
 # truncation issues. If issues arise, that's where to look for it.
@@ -115,15 +115,18 @@ class Series:
         'index' (optional) must match size of 'data'
     """
 
+    objType = "Series"
+
     @typechecked
     def __init__(
         self,
         data: Union[Tuple, List, groupable_element_type],
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
+        self.registered_name: Optional[str] = None
         if isinstance(data, (tuple, list)) and len(data) == 2:
             # handles the previous `ar_tuple` case
-            if not isinstance(data[0], (pdarray, Strings, Categorical, list, tuple)):
+            if not isinstance(data[0], (pdarray, Index, Strings, Categorical, list, tuple)):
                 raise TypeError("indices must be a pdarray, Strings, Categorical, List, or Tuple")
             if not isinstance(data[1], (pdarray, Strings, Categorical)):
                 raise TypeError("values must be a pdarray, Strings, or Categorical")
@@ -419,70 +422,181 @@ class Series:
         return Series.concat([self], axis=1, index_labels=index_labels, value_labels=list_value_label)
 
     @typechecked
-    def register(self, label: str) -> int:
-        """Register the series with arkouda
+    def register(self, user_defined_name: str):
+        """
+        Register this Series object and underlying components with the Arkouda server
 
         Parameters
         ----------
-        label : Arkouda name used for the series
+        user_defined_name : str
+            user defined name the Series is to be registered under,
+            this will be the root name for underlying components
 
         Returns
         -------
-        Numer of keys
-        """
+        Series
+            The same Series which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
+            Please note you cannot register two different Series with the same name.
 
-        retval = self.index.register(label)
-        register(self.values, f"{label}_value")
-        return retval
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the Series with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.client import generic_msg
+
+        if self.registered_name is not None and self.is_registered():
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
+        generic_msg(
+            cmd="register",
+            args={
+                "name": user_defined_name,
+                "objType": self.objType,
+                "num_idxs": 1,
+                "idx_names": [
+                    json.dumps(
+                        {
+                            "codes": self.index.values.codes.name,
+                            "categories": self.index.values.categories.name,
+                            "NA_codes": self.index.values._akNAcode.name,
+                            **(
+                                {"permutation": self.index.values.permutation.name}
+                                if self.index.values.permutation is not None
+                                else {}
+                            ),
+                            **(
+                                {"segments": self.index.values.segments.name}
+                                if self.index.values.segments is not None
+                                else {}
+                            ),
+                        }
+                    )
+                    if isinstance(self.index.values, Categorical)
+                    else self.index.values.name
+                ],
+                "idx_types": [self.index.values.objType],
+                "values": json.dumps(
+                    {
+                        "codes": self.values.codes.name,
+                        "categories": self.values.categories.name,
+                        "NA_codes": self.values._akNAcode.name,
+                        **(
+                            {"permutation": self.values.permutation.name}
+                            if self.values.permutation is not None
+                            else {}
+                        ),
+                        **(
+                            {"segments": self.values.segments.name}
+                            if self.values.segments is not None
+                            else {}
+                        ),
+                    }
+                )
+                if isinstance(self.values, Categorical)
+                else self.values.name,
+                "val_type": self.values.objType,
+            },
+        )
+        self.registered_name = user_defined_name
+        return self
+
+    def unregister(self):
+        """
+        Unregister this Series object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
+
+        Raises
+        ------
+        RegistrationError
+            If the object is already unregistered or if there is a server error
+            when attempting to unregister
+
+        See also
+        --------
+        register, attach, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        from arkouda.util import unregister
+
+        if not self.registered_name:
+            raise RegistrationError("This object is not registered")
+        unregister(self.registered_name)
+        self.registered_name = None
 
     @staticmethod
     @typechecked
     def attach(label: str, nkeys: int = 1) -> Series:
-        """Retrieve a series registered with arkouda
+        """
+        DEPRECATED
+        Retrieve a series registered with arkouda
 
         Parameters
         ----------
         label: name used to register the series
         nkeys: number of keys, if a multi-index was registerd
         """
-        v = attach_pdarray(label + "_value")
+        import warnings
 
-        if nkeys == 1:
-            k = attach_pdarray(label + "_key")
-        else:
-            k = [attach_pdarray(f"{label}_key_{i}") for i in range(nkeys)]
+        from arkouda.util import attach
 
-        return Series((k, v))
+        warnings.warn(
+            "ak.Series.attach() is deprecated. Please use ak.attach() instead.",
+            DeprecationWarning,
+        )
+        return attach(label)
 
     @typechecked
     def is_registered(self) -> bool:
         """
-        Checks if all components of the Series object are registered
+         Return True iff the object is contained in the registry or is a component of a
+         registered object.
 
         Returns
         -------
-        bool
-            True if all components are registered, false if not
+        numpy.bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RegistrationError
+            Raised if there's a server-side error or a mis-match of registered components
 
         See Also
         --------
-        register, unregister, attach
+        register, attach, unregister
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
         """
+        from arkouda.util import is_registered
 
-        # Series contains 2 parts - index and values
-        regParts = [self.index.is_registered(), self.values.is_registered()]
+        if self.registered_name is None:
+            return False
+        else:
+            return is_registered(self.registered_name)
 
-        if any(regParts) and not all(regParts):
-            warn(
-                f"Series expected {len(regParts)} components to be registered, but only located"
-                f" {sum(regParts)}"
-            )
-
-        return all(regParts)
-
-    @staticmethod
+    @classmethod
     @typechecked
-    def from_return_msg(repMsg: str) -> Series:
+    def from_return_msg(cls, repMsg: str) -> Series:
         """
         Return a Series instance pointing to components created by the arkouda server.
         The user should not call this function directly.
@@ -503,19 +617,18 @@ class Series:
             Raised if a server-side error is thrown in the process of creating
             the Series instance
         """
-        # parts[0] will be "series"
-        parts = repMsg.split("+")
-        vals = create_pdarray(parts[1])
+        data = json.loads(repMsg)
+        val_comps = data["value"].split("+|+")
+        if val_comps[0] == Categorical.objType.upper():
+            values = Categorical.from_return_msg(val_comps[1])  # type: ignore
+        elif val_comps[0] == Strings.objType.upper():
+            values = Strings.from_return_msg(val_comps[1])  # type: ignore
+        else:
+            values = create_pdarray(val_comps[1])  # type: ignore
 
-        # if parts = ['series', vals, ind] -> Single Index
-        if len(parts) == 3:
-            ind = create_pdarray(parts[2])
-        else:  # if parts = ['series', vals, ind_0, ... ind_n] -> MultiIndex
-            ind = []
-            for i in range(2, len(parts)):
-                ind.append(create_pdarray(parts[i]))
+        index = Index.from_return_msg(data["index"])
 
-        return Series(data=vals, index=ind)
+        return cls(values, index)
 
     @staticmethod
     @typechecked

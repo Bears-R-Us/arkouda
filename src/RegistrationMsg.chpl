@@ -1,5 +1,4 @@
-module RegistrationMsg
-{
+module RegistrationMsg {
     use ServerConfig;
 
     use ArkoudaTimeCompat as Time;
@@ -17,627 +16,440 @@ module RegistrationMsg
     use ServerErrorStrings;
     use SegmentedString;
     use SegmentedMsg;
+    use Registry;
 
     use Map;
+    use MultiTypeRegEntry;
+    use GenSymIO;
 
     use ArkoudaIOCompat;
+    use ArkoudaListCompat;
+    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const regLogger = new Logger(logLevel, logChannel);
 
-    private var simpleTypes: list(string) = ["pdarray","int64", "uint8", "uint64", "float64", "bool", "strings", "string", "str"];
+    private proc register_array(msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var reg_name = msgArgs.getValueOf("name");
+        var objType = msgArgs.getValueOf("objType").toUpper(): ObjType;
+        var array_name = msgArgs.getValueOf("array");
 
-    /* 
-    Parse, execute, and respond to a register message 
-
-    :arg reqMsg: request containing (name,user_defined_name)
-    :type reqMsg: string 
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: MsgTuple response message
-    */
-    proc registerMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                                        st: borrowed SymTab): MsgTuple throws {
-        var repMsg: string; // response message
-        const name = msgArgs.getValueOf("array");
-        const userDefinedName = msgArgs.getValueOf("user_name");
-
-        // if verbose print action
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-               "cmd: %s name: %s userDefinedName: %s".doFormat(cmd,name,userDefinedName));
-
-        // register new user_defined_name for name
-        var msgTuple:MsgTuple;
-        try {
-            st.regName(name, userDefinedName);
-            repMsg = "success";
-            regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            msgTuple = new MsgTuple(repMsg, MsgType.NORMAL);
-        } catch e: ArgumentError {
-            repMsg = "Error: requested name '%s' was already in use.".doFormat(userDefinedName);
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            msgTuple = new MsgTuple(repMsg, MsgType.ERROR);
-        }
-
-        return msgTuple;
+        var are = new shared ArrayRegEntry(array_name, objType);
+        st.registry.register_array(reg_name, are);
+        return new MsgTuple("Registered %s".doFormat(objType: string), MsgType.NORMAL);
     }
 
-    /* 
-    Parse, execute, and respond to a attach message 
+    private proc register_segarray(msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var reg_name = msgArgs.getValueOf("name");
+        var segments = msgArgs.getValueOf("segments");
+        var values = msgArgs.getValueOf("values");
+        var val_type = msgArgs.getValueOf("val_type").toUpper(): ObjType;
+        var lengths = if msgArgs.contains("lengths") then msgArgs.getValueOf("lengths") else "";
 
-    :arg reqMsg: request containing (name)
-    :type reqMsg: string 
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: MsgTuple response message
-    */
-    proc attachMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                                          st: borrowed SymTab): MsgTuple throws {
-        var repMsg: string; // response message
-
-        const name = msgArgs.getValueOf("name");
-
-        var objType: ObjType = ObjType.UNKNOWN;
-        if msgArgs.contains("objtype") {
-            objType = msgArgs.getValueOf("objtype").toUpper(): ObjType;
-        }
-
-        // if verbose print action
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "%s %s".doFormat(cmd,name));
-
-        // lookup name in symbol table to get attributes
-        var attrib = st.attrib(name);
-        
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "requested attrib: %s".doFormat(attrib));
-
-        // response message
-        if (attrib.startsWith("Error:")) { 
-            var errorMsg = attrib;
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        } else {
-            if objType == ObjType.UNKNOWN || objType == ObjType.STRINGS || objType == ObjType.PDARRAY {
-                repMsg = "created %s".doFormat(attrib);
-                if (isStringAttrib(attrib)) {
-                    var s = getSegString(name, st);
-                    repMsg += "+created bytes.size %?".doFormat(s.nBytes);
-                }
-            }
-            else {
-                var errorMsg = "Error: Unkown object type passed to attachMsg - %s".doFormat(objType);
-                regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR); 
-            }
-            regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL); 
-        }
+        var vre = new shared ArrayRegEntry(values, val_type);
+        var sre = new shared SegArrayRegEntry(segments, vre, lengths);
+        st.registry.register_segarray(reg_name, sre);
+        return new MsgTuple("Registered SegArray", MsgType.NORMAL);
     }
 
-    /* 
-    Compile the component parts of a Categorical attach message 
+    private proc register_dataframe(msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var reg_name = msgArgs.getValueOf("name");
+        var idx_name = msgArgs.getValueOf("idx");
+        var num_cols = msgArgs.get("num_cols").getIntValue();
+        var column_names: list(string) = new list(msgArgs.get("column_names").getList(num_cols));
+        var columns: list(string) = new list(msgArgs.get("columns").getList(num_cols));
+        var col_objTypes: list(string) = new list(msgArgs.get("col_objTypes").getList(num_cols));
 
-    :arg cmd: calling command 
-    :type cmd: string 
-
-    :arg name: name of SymTab element
-    :type name: string
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: MsgTuple response message
-    */
-    proc attachCategoricalMsg(cmd: string, name: string, 
-                                            st: borrowed SymTab): MsgTuple throws {
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "%s: Collecting Categorical components for '%s'".doFormat(cmd, name));
-
-        var rtnMap: map(string, string);
-                
-        var cats = st.attrib("%s.categories".doFormat(name));
-        var codes = st.attrib("%s.codes".doFormat(name));
-        var naCode = st.attrib("%s._akNAcode".doFormat(name));
-
-        if (cats.startsWith("Error:")) { 
-            var errorMsg = cats;
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-        if (codes.startsWith("Error:")) { 
-            var errorMsg = codes;
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-        if (naCode.startsWith("Error:")) { 
-            var errorMsg = naCode;
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-
-        // categories should always be string, add bytes for string return message
-        if (isStringAttrib(cats)) {
-            var s = getSegString("%s.categories".doFormat(name), st);
-            rtnMap.add("categories", "created %s+created %?".doFormat(st.attrib(s.name), s.nBytes));
-        }
-        rtnMap.add("codes", "created " + codes);
-        rtnMap.add("_akNAcode", "created " + naCode);
-
-
-        // Optional components of categorical
-        if st.contains("%s.permutation".doFormat(name)) {
-            var perm = st.attrib("%s.permutation".doFormat(name));
-            if (perm.startsWith("Error:")) { 
-                var errorMsg = perm;
-                regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR); 
-            }
-            rtnMap.add("permutation", "created " + perm);
-        }
-        if st.contains("%s.segments".doFormat(name)) {
-            var segs = st.attrib("%s.segments".doFormat(name));
-            if (segs.startsWith("Error:")) { 
-                var errorMsg = segs;
-                regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR); 
-            }
-            rtnMap.add("segments", "created " + segs);
-        }
-
-        var repMsg: string = "categorical+%s+".doFormat(name)+formatJson(rtnMap);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
-
-
-    /* 
-    Compile the component parts of a Series attach message 
-
-    :arg cmd: calling command 
-    :type cmd: string 
-
-    :arg name: name of SymTab element
-    :type name: string
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: MsgTuple response message
-    */
-    proc attachSeriesMsg(cmd: string, name: string, st: borrowed SymTab): MsgTuple throws {
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "%s: Collecting Series components for '%s'".doFormat(cmd, name));
-
-        var repMsg: string;
-
-        var ind = "";
-
-        // if Series matches MultiIndex format
-        if st.contains("%s_key_0".doFormat(name)) {
-            var nameList = st.findAll("%s_key_\\d".doFormat(name));
-            sort(nameList);
-            for regName in nameList {
-                var entry = st.attrib(regName);
-                if (regName.startsWith("Error:")) { 
-                    var errorMsg = regName;
-                    regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR); 
+        var col_list: list(shared AbstractRegEntry);
+        for (c, ot) in zip(columns, col_objTypes) {
+            var objType: ObjType = ot.toUpper(): ObjType;
+            select objType {
+                when ObjType.PDARRAY, ObjType.STRINGS, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.TIMEDELTA, ObjType.IPV4 {
+                    var are = new shared ArrayRegEntry(c, objType);
+                    col_list.pushBack(are);
                 }
-                ind += "+created %s".doFormat(entry);
-            }
-        }
-        else {  // Series only contains one key for index
-            ind = st.attrib("%s_key".doFormat(name));
-            if (ind.startsWith("Error:")) { 
-                var errorMsg = ind;
-                regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR); 
-            }
-            ind = "+created %s".doFormat(ind);
-        }
-
-        var vals = st.attrib("%s_value".doFormat(name));
-        if (vals.startsWith("Error:")) { 
-            var errorMsg = vals;
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-
-        repMsg = "series+created %s%s".doFormat(vals, ind);
-
-        return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
-
-    /* 
-    Compile the component parts of a DataFrame attach message 
-
-    :arg cmd: calling command 
-    :type cmd: string 
-
-    :arg payload: name of SymTab element
-    :type payload: string
-
-    :arg argSize: number of arguments in payload
-    :type argSize: int
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: MsgTuple response message
-    */
-    proc attachDataFrameMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                                 st: borrowed SymTab): MsgTuple throws {
-        const name = msgArgs.getValueOf("name"); 
-        var colName = "df_columns_%s".doFormat(name);
-        var repMsg = "dataframe+%s".doFormat(name);
-
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "%s: Collecting DataFrame components for '%s'".doFormat(cmd, name));
-
-        var jsonParam = new ParameterObj("name", colName, ObjectType.VALUE, "str");
-        var subArgs1 = new MessageArgs(new list([jsonParam, ]));
-        // Add columns as a json list
-        var cols = stringsToJSONMsg(cmd, subArgs1, st).msg;
-        repMsg += "+json %s".doFormat(cols);
-
-        // Get index 
-        var indParam = new ParameterObj("name", "df_index_%s_key".doFormat(name), ObjectType.VALUE, "");
-        var subArgs2 = new MessageArgs(new list([indParam, ]));
-        var ind = attachMsg(cmd, subArgs2, st).msg;
-        if ind.startsWith("Error:") { 
-            var errorMsg = ind;
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-        repMsg += "+%s".doFormat(ind);
-
-        // Get column data
-        var nameList = st.findAll("df_data_(pdarray|str|SegArray|Categorical)_.*_%s".doFormat(name));
-        
-        if nameList.size == 1 && nameList[0] == "" {
-            var errorMsg = "No data values found for DataFrame %s".doFormat(name);
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
-
-        // Convert nameList to a Set to get unique values
-        var u : set(string) = new set(string, nameList);
-
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                        "%s: Data components found for dataframe: '".doFormat(cmd)+formatJson(u)+"'");
-
-        // Use existing attach functionality to build the response message based on the objType of each data column
-        forall regName in u with (+ reduce repMsg) {
-            var parts = regName.split("_");
-            var objtype: ObjType = parts[2].toUpper(): ObjType;
-            var msg: string;
-            select (objtype){
-                when (ObjType.PDARRAY) {
-                    var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
-                    var subArgs = new MessageArgs(new list([attParam, ]));
-                    msg = attachMsg(cmd, subArgs, st).msg;
+                when ObjType.CATEGORICAL {
+                    var comps = jsonToMap(c);
+                    var perm = if comps.contains["permutation"] then comps["permutation"] else "";
+                    var seg = if comps.contains["segments"] then comps["segments"] else "";
+                    var cre = new shared CategoricalRegEntry(comps["codes"], comps["categories"], comps["NA_codes"], perm, seg);
+                    col_list.pushBack(cre);
                 }
-                when (ObjType.SEGARRAY) {
-                    var sa_map: map(string, string);
-                    var attParam = new ParameterObj("name", regName+"_segments", ObjectType.VALUE, "");
-                    var subArgs = new MessageArgs(new list([attParam, ]));
-                    sa_map.add("segments", attachMsg(cmd, subArgs, st).msg);
+                when ObjType.SEGARRAY {
+                    var comps = jsonToMap(c);
 
-                    var attParam2 = new ParameterObj("name", regName+"_values", ObjectType.VALUE, "");
-                    var subArgs2 = new MessageArgs(new list([attParam2, ]));
-                    sa_map.add("values", attachMsg(cmd, subArgs2, st).msg);
+                    var gse = toGenSymEntry(st.lookup(comps["values"]));
+                    var val_type: ObjType = if gse.dtype == DType.Strings then ObjType.STRINGS else ObjType.PDARRAY;
+                    var vre = new shared ArrayRegEntry(comps["values"], val_type);
 
-                    // attach to lengths
-                    var attParam3 = new ParameterObj("name", regName+"_lengths", ObjectType.VALUE, "");
-                    var subArgs3 = new MessageArgs(new list([attParam3, ]));
-                    sa_map.add("lengths", attachMsg(cmd, subArgs3, st).msg);
-                    msg = "segarray+"+formatJson(sa_map);
+                    var lengths = if comps.contains("lengths") then comps["lengths"] else "";
+                    var sre = new shared SegArrayRegEntry(comps["segments"], vre, lengths);
+                    col_list.pushBack(sre);
                 }
-                when (ObjType.STRINGS) {
-                    var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
-                    var subArgs = new MessageArgs(new list([attParam, ]));
-                    msg = attachMsg(cmd, subArgs, st).msg;
-                }
-                when (ObjType.CATEGORICAL) {
-                    msg = attachCategoricalMsg(cmd, regName, st).msg;
+                when ObjType.BITVECTOR {
+                    var comps = jsonToMap(c);
+
+                    var bre = new shared BitVectorRegEntry(comps["name"], comps["width"]: int, comps["reverse"]: bool);
+                    col_list.pushBack(bre);
                 }
                 otherwise {
-                    regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                                "Unsupported column type found in DataFrame: '%s'. \
-                                Supported types are: pdarray, str, Categorical, and SegArray".doFormat(objtype));
-                    
+                    var errorMsg = "DataFrames only support columns of type pdarray, Strings, Datetime, Timedelta, IPv4, Categorical, BitVector and SegArray. Found %s".doFormat(objType: string);
                     throw getErrorWithContext(
-                                        msg="Unknown column type (%s) found in DataFrame: %s".doFormat(objtype, name),
-                                        lineNumber=getLineNumber(),
-                                        routineName=getRoutineName(),
-                                        moduleName=getModuleName(),
-                                        errorClass="ValueError"
-                                        );
+                        msg=errorMsg,
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="IllegalArgumentError");
                 }
             }
-
-            if (msg.startsWith("Error:")) {
-                regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                repMsg = msg;
-            } else {
-                repMsg += "+%s".doFormat(msg);
-            }
         }
-
-        var msgType = if repMsg.startsWith("Error:") then MsgType.ERROR else MsgType.NORMAL;
-        return new MsgTuple(repMsg, msgType);
-    }
-
-    /*
-    Attempt to determine the type of object base on a given name
-
-    :arg cmd: calling command 
-    :type cmd: string 
-
-    :arg name: entry name to find type of
-    :type name: string
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-    */
-    proc findType(cmd: string, name: string, st: borrowed SymTab): string throws {
-        // Try to determine the type from the entries in the symbol table
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                        "Attempting to find type of registered element '%s'".doFormat(name));
-
-        var objtype: string;
-
-        if st.contains(name) {
-            // SegArray is now also represented in the SymbolTable as a single entry with no extras attached to the name
-            var entry = st.lookup(name);
-            // pdarray or Strings
-            objtype = "simple";
-        } else if st.contains("%s.categories".doFormat(name)) && st.contains("%s.codes".doFormat(name)) {
-            objtype = "categorical";
-        } else if st.contains("%s_value".doFormat(name)) && (st.contains("%s_key".doFormat(name)) || st.contains("%s_key_0".doFormat(name))) {
-            objtype = "series";
-        } else if st.contains("df_columns_%s".doFormat(name)) && (st.contains("df_index_%s_key".doFormat(name))) {
-            objtype = "dataframe";
-        } else if st.contains("%s_segments".doFormat(name)) && st.contains("%s_values".doFormat(name)) {
-            objtype = "segarray";
-        } 
-        else {
-            throw getErrorWithContext(
-                                msg="Unable to determine type for given name: %s".doFormat(name),
-                                lineNumber=getLineNumber(),
-                                routineName=getRoutineName(),
-                                moduleName=getModuleName(),
-                                errorClass="ValueError"
-                                );
-        }
-
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                        "Type determined to be: '%s'".doFormat(objtype));
-
-        return objtype;
-    }
-
-    /* 
-    Parse, execute, and respond to a generic attach message
-
-    :arg cmd: calling command 
-    :type cmd: string 
-
-    :arg payload: request containing (dtype+name)
-    :type payload: string
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: MsgTuple response message
-    */
-    proc genAttachMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                                            st: borrowed SymTab): MsgTuple throws {
-        var repMsg: string; // response message
-        var dtype = msgArgs.getValueOf("dtype");
-        const name = msgArgs.getValueOf("name");
-
-        if dtype == "infer" {
-            dtype = findType(cmd, name, st);
-        }
-
-        // type possibilities for pdarray and strings
-        if simpleTypes.contains(dtype.toLower()) {
-            dtype = "simple";
-        }
-
-        select (dtype.toLower()) {
-            when ("simple") {
-                // pdarray, strings can use the attachMsg method
-                var aRet = attachMsg(cmd, msgArgs, st);
-                var msg = aRet.msg;
-                var msgType = aRet.msgType;
-                repMsg = "simple+%s".doFormat(msg);
-                return new MsgTuple(repMsg, msgType);
-            }
-            when ("categorical") {
-                return attachCategoricalMsg(cmd, name, st);
-            }
-            when ("series") {
-                return attachSeriesMsg(cmd, name, st);
-            }
-            when ("dataframe") {
-                return attachDataFrameMsg(cmd, msgArgs, st);
-            }
-            when ("segarray"){
-                // attach to segments
-                var sa_map: map(string, string);
-                var attParam = new ParameterObj("name", name+"_segments", ObjectType.VALUE, "");
-                var subArgs = new MessageArgs(new list([attParam, ]));
-                sa_map.add("segments", attachMsg(cmd, subArgs, st).msg);
-
-                // attach to values
-                var attParam2 = new ParameterObj("name", name+"_values", ObjectType.VALUE, "");
-                var subArgs2 = new MessageArgs(new list([attParam2, ]));
-                sa_map.add("values", attachMsg(cmd, subArgs2, st).msg);
-
-                // attach to lengths
-                var attParam3 = new ParameterObj("name", name+"_lengths", ObjectType.VALUE, "");
-                var subArgs3 = new MessageArgs(new list([attParam3, ]));
-                sa_map.add("lengths", attachMsg(cmd, subArgs3, st).msg);
-
-                return new MsgTuple("segarray+"+formatJson(sa_map), MsgType.NORMAL); 
-            }
-            otherwise {
-                regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray, series, and dataframe".doFormat(dtype));
-                
-                throw getErrorWithContext(
-                                    msg="Unknown type (%s) supplied for given name: %s".doFormat(dtype, name),
-                                    lineNumber=getLineNumber(),
-                                    routineName=getRoutineName(),
-                                    moduleName=getModuleName(),
-                                    errorClass="ValueError"
-                                    );
-            }
-        }
-    }
-
-    /*
-     * Determine if the attributes belong to a SegString
-     * :arg attrs: attributes from SymTab
-     * :type attrs: string
-     * :returns: bool
-     */
-    proc isStringAttrib(attrs:string):bool throws {
-        var parts = attrs.split();
-        return parts.size >=6 && "str" == parts[1];
-    }
-
-    /* 
-    Parse, execute, and respond to a unregister message 
-
-    :arg reqMsg: request containing (name)
-    :type reqMsg: string 
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: MsgTuple response message
-    */
-    proc unregisterMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                                      st: borrowed SymTab): MsgTuple throws {
-        var repMsg: string; // response message
-        const name = msgArgs.getValueOf("name");
-
-        // if verbose print action
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                          "%s %s".doFormat(cmd,name));
-
-        // take name out of the registry
-        st.unregName(name);
         
-        repMsg = "success";
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+        var dfre = new shared DataFrameRegEntry(idx_name, column_names, col_list);
+        st.registry.register_dataframe(reg_name, dfre);
+        return new MsgTuple("Registered DataFrame", MsgType.NORMAL);
     }
 
-    proc unregisterByNameMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        var dtype = msgArgs.getValueOf("dtype");
-        const name = msgArgs.getValueOf("name");
-        var status = "";
+    private proc register_groupby(msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var reg_name = msgArgs.getValueOf("name");
+        var seg_name = msgArgs.getValueOf("segments");
+        var perm_name = msgArgs.getValueOf("permutation");
+        var uki = msgArgs.getValueOf("uki");
+        var num_keys = msgArgs.get("num_keys").getIntValue();
+        var keys: list(string) = new list(msgArgs.get("keys").getList(num_keys));
+        var key_objTypes: list(string) = new list(msgArgs.get("key_objTypes").getList(num_keys));
 
-        if dtype == "infer" {
-            dtype = findType(cmd, name, st);
+        var key_list: list(shared AbstractRegEntry);
+        for (k, ot) in zip(keys, key_objTypes) {
+            var objType: ObjType = ot.toUpper(): ObjType;
+            if objType == ObjType.PDARRAY || objType == ObjType.STRINGS {
+                var are = new shared ArrayRegEntry(k, objType);
+                key_list.pushBack(are);
+            }
+            else if objType == ObjType.CATEGORICAL {
+                var comps = jsonToMap(k);
+                var perm = if comps.contains["permutation"] then comps["permutation"] else "";
+                var seg = if comps.contains["segments"] then comps["segments"] else "";
+                var cre = new shared CategoricalRegEntry(comps["codes"], comps["categories"], comps["NA_codes"], perm, seg);
+                key_list.pushBack(cre);
+            }
+            else {
+                var errorMsg = "GroupBys only support pdarray, Strings, and Categorical keys. Found %s".doFormat(objType: string);
+                throw getErrorWithContext(
+                    msg=errorMsg,
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="IllegalArgumentError");
+            }
         }
 
-        if simpleTypes.contains(dtype.toLower()) {
-            dtype = "simple";
+        var gbre = new shared GroupByRegEntry(seg_name, perm_name, key_list, uki);
+        st.registry.register_groupby(reg_name, gbre);
+        return new MsgTuple("Registered GroupBy", MsgType.NORMAL);
+    }
+
+    private proc register_categorical(msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var reg_name = msgArgs.getValueOf("name");
+        var codes = msgArgs.getValueOf("codes");
+        var categories = msgArgs.getValueOf("categories");
+        var naCode = msgArgs.getValueOf("_akNAcode");
+        var permutation: string;
+        var segments: string;
+        var perm_seg_exist: bool = false;
+        if msgArgs.contains("permutation") && msgArgs.contains("segments") {
+            permutation = msgArgs.getValueOf("permutation");
+            segments = msgArgs.getValueOf("segments");
+        }
+        var cre = new shared CategoricalRegEntry(codes, categories, naCode, permutation, segments);
+        st.registry.register_categorical(reg_name, cre);
+        return new MsgTuple("Registered Categorical", MsgType.NORMAL);
+    }
+
+    private proc register_index(msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var reg_name = msgArgs.getValueOf("name");
+        var num_idxs = msgArgs.get("num_idxs").getIntValue();
+        var idx_names = msgArgs.get("idx_names").getList(num_idxs);
+        var idx_types = msgArgs.get("idx_types").getList(num_idxs);
+        var idx_objType = msgArgs.getValueOf("objType").toUpper(): ObjType;
+
+        var idx: list(shared AbstractRegEntry);
+        for (i, ot) in zip(idx_names, idx_types) {
+            var objType: ObjType = ot.toUpper(): ObjType;
+            if objType == ObjType.PDARRAY || objType == ObjType.STRINGS {
+                var are = new shared ArrayRegEntry(i, objType);
+                idx.pushBack(are);
+            }
+            else if objType == ObjType.CATEGORICAL {
+                var comps = jsonToMap(i);
+                var perm = if comps.contains["permutation"] then comps["permutation"] else "";
+                var seg = if comps.contains["segments"] then comps["segments"] else "";
+                var cre = new shared CategoricalRegEntry(comps["codes"], comps["categories"], comps["NA_codes"], perm, seg);
+                idx.pushBack(cre);
+            }
+            else {
+                var errorMsg = "Index only support pdarray, Strings, and Categorical ObjTypes. Found %s".doFormat(objType: string);
+                throw getErrorWithContext(
+                    msg=errorMsg,
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="IllegalArgumentError");
+            }
+        }
+        var ire = new shared IndexRegEntry(idx, idx_objType);
+        st.registry.register_index(reg_name, ire);
+        return new MsgTuple("Registered Index", MsgType.NORMAL);
+    }
+
+    private proc register_series(msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var reg_name = msgArgs.getValueOf("name");
+        var num_idxs = msgArgs.get("num_idxs").getIntValue();
+        var idx_names = msgArgs.get("idx_names").getList(num_idxs);
+        var idx_types = msgArgs.get("idx_types").getList(num_idxs);
+        var idx_objType = msgArgs.getValueOf("objType").toUpper(): ObjType;
+
+        var idx: list(shared AbstractRegEntry);
+        for (i, ot) in zip(idx_names, idx_types) {
+            var objType: ObjType = ot.toUpper(): ObjType;
+            if objType == ObjType.PDARRAY || objType == ObjType.STRINGS {
+                var are = new shared ArrayRegEntry(i, objType);
+                idx.pushBack(are);
+            }
+            else if objType == ObjType.CATEGORICAL {
+                var comps = jsonToMap(i);
+                var perm = if comps.contains["permutation"] then comps["permutation"] else "";
+                var seg = if comps.contains["segments"] then comps["segments"] else "";
+                var cre = new shared CategoricalRegEntry(comps["codes"], comps["categories"], comps["NA_codes"], perm, seg);
+                idx.pushBack(cre);
+            }
+            else {
+                var errorMsg = "Index only support pdarray, Strings, and Categorical ObjTypes. Found %s".doFormat(objType: string);
+                throw getErrorWithContext(
+                    msg=errorMsg,
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="IllegalArgumentError");
+            }
+        }
+        var ire = new shared IndexRegEntry(idx, idx_objType);
+
+        var sre: shared SeriesRegEntry;
+        // values can be pdarray, strings, categorical
+        var values = msgArgs.getValueOf("values");
+        var val_type = msgArgs.getValueOf("val_type").toUpper(): ObjType;
+        if val_type == ObjType.PDARRAY || val_type == ObjType.STRINGS {
+            var are = new shared ArrayRegEntry(values, val_type);
+            sre = new shared SeriesRegEntry(ire, are: shared GenRegEntry);
+        }
+        else if val_type == ObjType.CATEGORICAL {
+            var comps = jsonToMap(values);
+            var perm = if comps.contains["permutation"] then comps["permutation"] else "";
+            var seg = if comps.contains["segments"] then comps["segments"] else "";
+            var cre = new shared CategoricalRegEntry(comps["codes"], comps["categories"], comps["NA_codes"], perm, seg);
+            sre = new shared SeriesRegEntry(ire, cre: shared GenRegEntry);
+        }
+        else {
+            var errorMsg = "Series only support pdarray, Strings, and Categorical ObjTypes. Found %s".doFormat(val_type: string);
+            throw getErrorWithContext(
+                msg=errorMsg,
+                lineNumber=getLineNumber(),
+                routineName=getRoutineName(),
+                moduleName=getModuleName(),
+                errorClass="IllegalArgumentError");
         }
 
-        select (dtype.toLower()) {
-            when ("simple") {
-                // pdarray and strings can use the unregisterMsg method without any other processing
-                var subArgs = new MessageArgs(new list([msgArgs.get("name"), ]));
-                return unregisterMsg(cmd, subArgs, st);
+        st.registry.register_series(reg_name, sre);
+        return new MsgTuple("Registered Series", MsgType.NORMAL);
+    }
+
+    proc register_bitvector(msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var reg_name = msgArgs.getValueOf("name");
+        var values = msgArgs.getValueOf("values");
+        var width = msgArgs.get("width").getIntValue();
+        var reverse = msgArgs.get("reverse").getBoolValue();
+        var bre = new shared BitVectorRegEntry(values, width, reverse);
+        st.registry.register_bitvector(reg_name, bre);
+        return new MsgTuple("Registered BitVector", MsgType.NORMAL);
+    }
+
+    proc registerMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                        st: borrowed SymTab): MsgTuple throws {
+        var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
+        select objtype {
+            when ObjType.PDARRAY, ObjType.STRINGS, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
+                return register_array(msgArgs, st);
             }
-            when ("categorical") {
-                // Create an array with 5 strings, one for each component of categorical, and assign the names
-                var nameList: [0..4] string;
-                nameList[0] = "%s.categories".doFormat(name);
-                nameList[1] = "%s.codes".doFormat(name);
-                nameList[2] = "%s._akNAcode".doFormat(name);
-                
-                if st.contains("%s.permutation".doFormat(name)) {
-                    nameList[3] = "%s.permutation".doFormat(name);
-                }
-                if st.contains("%s.segments".doFormat(name)) {
-                    nameList[4] = "%s.segments".doFormat(name);
-                }
-
-                var base_json = msgArgs.get("name");
-
-                for n in nameList {
-                    // Check for "" in case optional components aren't found
-                    if n != "" {
-                        base_json.setVal(n);
-                        var subArgs = new MessageArgs(new list([base_json, ]));
-                        var resp = unregisterMsg(cmd, subArgs, st);
-                        status += " %s: %s ".doFormat(n, resp.msg);
-                    }
-                }
+            when ObjType.SEGARRAY {
+                return register_segarray(msgArgs, st);
             }
-            when ("series") {
-                // Identify if the series contains MultiIndex or Single Index components
-                var nameStr = "";
-
-                // MultiIndex
-                if st.contains("%s_key_0".doFormat(name)) {
-                    // Get an array of all the multi-index parts
-                    var indexList = st.findAll("%s_key_\\d".doFormat(name));
-                    // Convert the array into a + delimited string
-                    nameStr = "+".join(indexList);
-                } 
-                else {  // Single index
-                    // Add the name of the single key to the name String
-                    nameStr = "%s_key".doFormat(name);
-                }
-                // Add the name of the values to the name String
-                nameStr += "+%s_value".doFormat(name);
-
-                // Convert the string back into an array for looping
-                var nameList = nameStr.split("+");
-                var base_json = msgArgs.get("name");
-                forall n in nameList with (in base_json, + reduce status) {
-                    base_json.setVal(n);
-                    var subArgs = new MessageArgs(new list([base_json, ]));
-                    var resp = unregisterMsg(cmd, subArgs, st);
-                    status += " %s: %s ".doFormat(n, resp.msg);
-                }
+            when ObjType.DATAFRAME {
+                return register_dataframe(msgArgs, st);
+            }
+            when ObjType.GROUPBY {
+                return register_groupby(msgArgs, st);
+            }
+            when ObjType.CATEGORICAL {
+                return register_categorical(msgArgs, st);
+            }
+            when ObjType.INDEX {
+                return register_index(msgArgs, st);
+            }
+            when ObjType.MULTIINDEX {
+                return register_index(msgArgs, st);
+            }
+            when ObjType.SERIES {
+                return register_series(msgArgs, st);
+            }
+            when ObjType.BITVECTOR {
+                return register_bitvector(msgArgs, st);
             }
             otherwise {
-                regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray and series".doFormat(dtype));
-                
+                var errorMsg = "ObjType Not Supported by Registry: %s".doFormat(objtype: string);
                 throw getErrorWithContext(
-                                    msg="Unknown type (%s) supplied for given name: %s".doFormat(dtype, name),
-                                    lineNumber=getLineNumber(),
-                                    routineName=getRoutineName(),
-                                    moduleName=getModuleName(),
-                                    errorClass="ValueError"
-                                    );
+                    msg=errorMsg,
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="TypeError");
             }
         }
-
-        var repMsg = status;
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    proc unregisterMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                        st: borrowed SymTab): MsgTuple throws {
+        var name = msgArgs.getValueOf("name");
+        var gre = st.registry.lookup(name): shared GenRegEntry;
+        select gre.objType {
+            when ObjType.PDARRAY, ObjType.STRINGS, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
+                var are = gre: shared ArrayRegEntry;
+                st.registry.unregister_array(are);
+            }
+            when ObjType.SEGARRAY {
+                var sre = gre: shared SegArrayRegEntry;
+                st.registry.unregister_segarray(sre);
+            }
+            when ObjType.DATAFRAME {
+                var dfre = gre: shared DataFrameRegEntry;
+                st.registry.unregister_dataframe(dfre);
+            }
+            when ObjType.GROUPBY {
+                var gbre = gre: shared GroupByRegEntry;
+                st.registry.unregister_groupby(gbre);
+            }
+            when ObjType.CATEGORICAL {
+                var cre = gre: shared CategoricalRegEntry;
+                st.registry.unregister_categorical(cre);
+            }
+            when ObjType.INDEX {
+                var ire = gre: shared IndexRegEntry;
+                st.registry.unregister_index(ire);
+            }
+            when ObjType.MULTIINDEX {
+                var ire = gre: shared IndexRegEntry;
+                st.registry.unregister_index(ire);
+            }
+            when ObjType.SERIES {
+                var sre = gre: shared SeriesRegEntry;
+                st.registry.unregister_series(sre);
+            }
+            when ObjType.BITVECTOR {
+                var bre = gre: shared BitVectorRegEntry;
+                st.registry.unregister_bitvector(bre);
+            }
+            otherwise {
+                var errorMsg = "ObjType Not Supported by Registry: %s".doFormat(gre.objType: string);
+                throw getErrorWithContext(
+                    msg=errorMsg,
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="TypeError");
+            }
+        }
+        return new MsgTuple("Unregistered %s %s".doFormat(gre.objType: string, name), MsgType.NORMAL);
+    }
+
+    proc attachMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                        st: borrowed SymTab): MsgTuple throws {
+        var name = msgArgs.getValueOf("name");
+        var gre = st.registry.lookup(name): shared GenRegEntry;
+        var rtnMap: map(string, string);
+        select gre.objType {
+            when ObjType.PDARRAY {
+                var are = gre: shared ArrayRegEntry;
+                rtnMap = are.asMap(st);
+            }
+            when ObjType.STRINGS {
+                var are = gre: shared ArrayRegEntry;
+                rtnMap = are.asMap(st);
+            }
+            when ObjType.DATETIME {
+                var are = gre: shared ArrayRegEntry;
+                rtnMap = are.asMap(st);
+            }
+            when ObjType.TIMEDELTA {
+                var are = gre: shared ArrayRegEntry;
+                rtnMap = are.asMap(st);
+            }
+            when ObjType.IPV4 {
+                var are = gre: shared ArrayRegEntry;
+                rtnMap = are.asMap(st);
+            }
+            when ObjType.SEGARRAY {
+                var sre = gre: shared SegArrayRegEntry;
+                rtnMap = sre.asMap(st);
+            }
+            when ObjType.DATAFRAME {
+                var dfre = gre: shared DataFrameRegEntry;
+                rtnMap = dfre.asMap(st);
+            }
+            when ObjType.GROUPBY {
+                var gbre = gre: shared GroupByRegEntry;
+                rtnMap = gbre.asMap(st);
+            }
+            when ObjType.CATEGORICAL {
+                var cre = gre: shared CategoricalRegEntry;
+                rtnMap = cre.asMap(st);
+            }
+            when ObjType.INDEX {
+                var ire = gre: shared IndexRegEntry;
+                rtnMap = ire.asMap(st);
+            }
+            when ObjType.MULTIINDEX {
+                var ire = gre: shared IndexRegEntry;
+                rtnMap = ire.asMap(st);
+            }
+            when ObjType.SERIES {
+                var sre = gre: shared SeriesRegEntry;
+                rtnMap = sre.asMap(st);
+            }
+            when ObjType.BITVECTOR {
+                var bre = gre: shared BitVectorRegEntry;
+                rtnMap = bre.asMap(st);
+            }
+            otherwise {
+                var errorMsg = "Unexpected ObjType, %s, found in registry.".doFormat(gre.objType: string);
+                throw getErrorWithContext(
+                    msg=errorMsg,
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="TypeError");
+            }
+        }
+        return new MsgTuple(formatJson(rtnMap), MsgType.NORMAL);
+    }
+
+    proc listRegistryMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                            st: borrowed SymTab): MsgTuple throws {
+        return new MsgTuple(st.registry.list_registry(), MsgType.NORMAL);
+    }
+    
     use CommandMap;
     registerFunction("register", registerMsg, getModuleName());
-    registerFunction("attach", attachMsg, getModuleName());
-    registerFunction("genericAttach", genAttachMsg, getModuleName());
+    registerFunction("list_registry", listRegistryMsg, getModuleName());
     registerFunction("unregister", unregisterMsg, getModuleName());
-    registerFunction("genericUnregisterByName", unregisterByNameMsg, getModuleName());
+    registerFunction("attach", attachMsg, getModuleName());
 }

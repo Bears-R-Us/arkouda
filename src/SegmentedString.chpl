@@ -23,6 +23,7 @@ module SegmentedString {
 
   use ArkoudaRegexCompat;
   use ArkoudaStringBytesCompat;
+  use ArkoudaRangeCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -57,8 +58,8 @@ module SegmentedString {
    * offset and value SymTab lookup names to the alternate init method
    */
   proc getSegString(segments: [] int, values: [] uint(8), st: borrowed SymTab): owned SegString throws {
-      var offsetsEntry = new shared SymEntry(segments);
-      var valuesEntry = new shared SymEntry(values);
+      var offsetsEntry = createSymEntry(segments);
+      var valuesEntry = createSymEntry(values);
       var stringsEntry = new shared SegStringSymEntry(offsetsEntry, valuesEntry, string);
       var name = st.nextName();
       st.addEntry(name, stringsEntry);
@@ -205,6 +206,14 @@ module SegmentedString {
         agg.copy(nv, va[start + i]);
       }
       return (newSegs, newVals);
+    }
+
+    proc this(const slice: stridableRange()) throws {
+      var aa = makeDistArray(slice.size, int);
+      forall (elt,j) in zip(aa, slice) with (var agg = newSrcAggregator(int)) {
+        agg.copy(elt,j);
+      }
+      return this[aa];
     }
 
     /* Gather strings by index. Returns arrays for the segment offsets
@@ -490,7 +499,7 @@ module SegmentedString {
         // we only need one uint array
         var numeric = computeOnSegments(offsets.a, values.a, SegFunction.StringBytesToUintArr, uint);
         const concatName = st.nextName();
-        st.addEntry(concatName, new shared SymEntry(numeric));
+        st.addEntry(concatName, createSymEntry(numeric));
         return concatName;
       }
       else {
@@ -507,8 +516,8 @@ module SegmentedString {
         }
         const concat1Name = st.nextName();
         const concat2Name = st.nextName();
-        st.addEntry(concat1Name, new shared SymEntry(numeric1));
-        st.addEntry(concat2Name, new shared SymEntry(numeric2));
+        st.addEntry(concat1Name, createSymEntry(numeric1));
+        st.addEntry(concat2Name, createSymEntry(numeric2));
         return "%s+%s".doFormat(concat1Name, concat2Name);
       }
     }
@@ -1191,7 +1200,7 @@ module SegmentedString {
       return ranks;
     }
 
-    proc getFixes(n: int, kind: Fixes, proper: bool) {
+    proc getFixes(n: int, kind: Fixes, proper: bool) throws {
       const lengths = getLengths() - 1;
       var longEnough = makeDistArray(size, bool);
       if proper {

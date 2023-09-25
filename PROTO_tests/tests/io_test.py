@@ -1037,6 +1037,21 @@ class TestHDF5:
                 else:
                     assert g_load.keys.to_list() == g.keys.to_list()
 
+    def test_hdf_categorical(self):
+        cat = ak.Categorical(ak.array(["a", "b", "a", "b", "c"]))
+        cat_from_codes = ak.Categorical.from_codes(
+            codes=ak.array([0, 1, 0, 1, 2]), categories=ak.array(["a", "b", "c"])
+        )
+        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            for c in cat, cat_from_codes:
+                c.to_hdf(f"{tmp_dirname}/categorical_test")
+                c_load = ak.read(f"{tmp_dirname}/categorical_test*")
+
+                assert c_load.categories.to_list() == (["a", "b", "c", "N/A"])
+                if c.segments is not None:
+                    assert c.segments.to_list() == c_load.segments.to_list()
+                    assert c.permutation.to_list() == c_load.permutation.to_list()
+
     def test_hdf_overwrite_pdarray(self):
         # test repack with a single object
         a = ak.arange(1000)
@@ -1114,6 +1129,20 @@ class TestHDF5:
                 assert new_size < orig_size if repack else new_size >= orig_size
                 data = ak.read_hdf(f"{file_name}*")
                 assert (data["test_cat"] == c).all()
+
+            dset_name = "categorical_array"  # name of categorical array
+            dset_name2 = "to_replace"
+            dset_name3 = "cat_array2"
+            a.to_hdf(file_name, dataset=dset_name)
+            b.to_hdf(file_name, dataset=dset_name2, mode="append")
+            c.to_hdf(file_name, dataset=dset_name3, mode="append")
+
+            a.update_hdf(file_name, dataset=dset_name2)
+            data = ak.read_hdf(f"{file_name}*")
+            assert all(name in data for name in (dset_name, dset_name2, dset_name3))
+            d = data[dset_name2]
+            for attr in "categories", "codes", "permutation", "segments", "_akNAcode":
+                assert getattr(d, attr).to_list() == getattr(a, attr).to_list()
 
     def test_hdf_overwrite_dataframe(self):
         df = ak.DataFrame(
@@ -1197,18 +1226,7 @@ class TestHDF5:
             assert f1_size == f2_size
 
     def test_snapshot(self):
-        # Once issue #2617 is resolved, update to df = ak.DataFrame(make_multi_dtype_dict())
-        df = ak.DataFrame(
-            {
-                "int_col": ak.arange(10),
-                "uint_col": ak.array([i + 2**63 for i in range(10)], dtype=ak.uint64),
-                "float_col": ak.linspace(-3.5, 3.5, 10),
-                "bool_col": ak.randint(0, 2, 10, dtype=ak.bool),
-                "bigint_col": ak.array([i + 2**200 for i in range(10)], dtype=ak.bigint),
-                "segarr_col": ak.SegArray(ak.arange(0, 20, 2), ak.randint(0, 3, 20)),
-                "str_col": ak.random_strings_uniform(0, 3, 10),
-            }
-        )
+        df = ak.DataFrame(make_multi_dtype_dict())
         df_str_idx = df.copy()
         df_str_idx._set_index([f"A{i}" for i in range(len(df))])
         col_order = df.columns
@@ -1226,7 +1244,7 @@ class TestHDF5:
                 # delete variables and verify no longer in the namespace
                 del v
                 with pytest.raises(NameError):
-                    assert not v
+                    assert not v  # noqa: F821
 
             # restore the variables
             data = ak.restore(f"{tmp_dirname}/snapshot_test")
@@ -1257,6 +1275,47 @@ class TestHDF5:
             assert len(glob.glob(f"{file_name}*.h5")) == pytest.nl
             ret_idx = ak.read_hdf(f"{file_name}*")
             assert (idx == ret_idx).all()
+
+    def test_special_objtype(self):
+        """
+                This test is simply to ensure that the dtype is persisted through the io
+                operation. It ultimately uses the process of pdarray, but need to ensure
+                correct Arkouda Object Type is returned
+                """
+        ip = ak.IPv4(ak.arange(10))
+        dt = ak.Datetime(ak.arange(10))
+        td = ak.Timedelta(ak.arange(10))
+        df = ak.DataFrame({
+            "ip": ip,
+            "datetime": dt,
+            "timedelta": td
+        })
+
+        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            ip.to_hdf(f"{tmp_dirname}/ip_test")
+            rd_ip = ak.read_hdf(f"{tmp_dirname}/ip_test*")
+            assert isinstance(rd_ip, ak.IPv4)
+            assert ip.to_list() == rd_ip.to_list()
+
+            dt.to_hdf(f"{tmp_dirname}/dt_test")
+            rd_dt = ak.read_hdf(f"{tmp_dirname}/dt_test*")
+            assert isinstance(rd_dt, ak.Datetime)
+            assert dt.to_list() == rd_dt.to_list()
+
+            td.to_hdf(f"{tmp_dirname}/td_test")
+            rd_td = ak.read_hdf(f"{tmp_dirname}/td_test*")
+            assert isinstance(rd_td, ak.Timedelta)
+            assert td.to_list() == rd_td.to_list()
+
+            df.to_hdf(f"{tmp_dirname}/df_test")
+            rd_df = ak.read_hdf(f"{tmp_dirname}/df_test*")
+
+            assert isinstance(rd_df["ip"], ak.IPv4)
+            assert isinstance(rd_df["datetime"], ak.Datetime)
+            assert isinstance(rd_df["timedelta"], ak.Timedelta)
+            assert df["ip"].to_list() == rd_df["ip"].to_list()
+            assert df["datetime"].to_list() == rd_df["datetime"].to_list()
+            assert df["timedelta"].to_list() == rd_df["timedelta"].to_list()
 
 
 class TestCSV:
@@ -1333,3 +1392,98 @@ class TestCSV:
             assert data["ColA"].to_list() == d["ColA"].to_list()
             assert data["ColB"].to_list() == d["ColB"].to_list()
             assert data["ColC"].to_list() == d["ColC"].to_list()
+
+
+class TestImportExport:
+    import_export_base_tmp = f"{os.getcwd()}/import_export_test"
+    io_util.get_directory(import_export_base_tmp)
+
+    @classmethod
+    def setup_class(cls):
+        cls.pddf = pd.DataFrame(
+            data={
+                "c_1": np.array([np.iinfo(np.int64).min, -1, 0, np.iinfo(np.int64).max]),
+                "c_3": np.array([False, True, False, False]),
+                "c_4": np.array([-0.0, np.finfo(np.float64).min, np.nan, np.inf]),
+                "c_5": np.array(["abc", " ", "xyz", ""]),
+            },
+            index=np.arange(4),
+        )
+        cls.akdf = ak.DataFrame(cls.pddf)
+
+    def test_import_hdf(self):
+        locales = pytest.nl
+        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/import_hdf_test"
+
+            self.pddf.to_hdf(f"{file_name}_table.h5", "dataframe", format="Table", mode="w")
+            akdf = ak.import_data(f"{file_name}_table.h5", write_file=f"{file_name}_ak_table.h5")
+            assert len(glob.glob(f"{file_name}_ak_table*.h5")) == locales
+            assert self.pddf.equals(akdf.to_pandas())
+
+            self.pddf.to_hdf(
+                f"{file_name}_table_cols.h5", "dataframe", format="Table", data_columns=True, mode="w"
+            )
+            akdf = ak.import_data(
+                f"{file_name}_table_cols.h5", write_file=f"{file_name}_ak_table_cols.h5"
+            )
+            assert len(glob.glob(f"{file_name}_ak_table_cols*.h5")) == locales
+            assert self.pddf.equals(akdf.to_pandas())
+
+            self.pddf.to_hdf(
+                f"{file_name}_fixed.h5", "dataframe", format="fixed", data_columns=True, mode="w"
+            )
+            akdf = ak.import_data(f"{file_name}_fixed.h5", write_file=f"{file_name}_ak_fixed.h5")
+            assert len(glob.glob(f"{file_name}_ak_fixed*.h5")) == locales
+            assert self.pddf.equals(akdf.to_pandas())
+
+            with pytest.raises(FileNotFoundError):
+                ak.import_data(f"{file_name}_foo.h5", write_file=f"{file_name}_ak_fixed.h5")
+            with pytest.raises(RuntimeError):
+                ak.import_data(f"{file_name}_*.h5", write_file=f"{file_name}_ak_fixed.h5")
+
+    def test_export_hdf(self):
+        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/export_hdf_test"
+
+            self.akdf.to_hdf(f"{file_name}_ak_write")
+
+            pddf = ak.export(
+                f"{file_name}_ak_write", write_file=f"{file_name}_pd_from_ak.h5", index=True
+            )
+            assert len(glob.glob(f"{file_name}_pd_from_ak.h5")) == 1
+            assert pddf.equals(self.akdf.to_pandas())
+
+            with pytest.raises(RuntimeError):
+                ak.export(f"{tmp_dirname}_foo.h5", write_file=f"{tmp_dirname}/pd_from_ak.h5", index=True)
+
+    def test_import_parquet(self):
+        locales = pytest.nl
+        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/import_pq_test"
+
+            self.pddf.to_parquet(f"{file_name}_table.parquet")
+            akdf = ak.import_data(
+                f"{file_name}_table.parquet", write_file=f"{file_name}_ak_table.parquet"
+            )
+            assert len(glob.glob(f"{file_name}_ak_table*.parquet")) == locales
+            assert self.pddf.equals(akdf.to_pandas())
+
+    def test_export_parquet(self):
+        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/export_pq_test"
+
+            self.akdf.to_parquet(f"{file_name}_ak_write")
+
+            pddf = ak.export(
+                f"{file_name}_ak_write", write_file=f"{file_name}_pd_from_ak.parquet", index=True
+            )
+            assert len(glob.glob(f"{file_name}_pd_from_ak.parquet")) == 1
+            assert pddf[self.akdf.columns].equals(self.akdf.to_pandas())
+
+            with pytest.raises(RuntimeError):
+                ak.export(
+                    f"{tmp_dirname}_foo.parquet",
+                    write_file=f"{tmp_dirname}/pd_from_ak.parquet",
+                    index=True,
+                )
