@@ -72,7 +72,7 @@ module Codecs {
           idn2_free(cRes: c_void_ptr);
           return 1;
         }
-        var tmp = cRes: bytes;
+        var tmp = bytes.createCopyingBuffer(cRes);
         idn2_free(cRes: c_void_ptr);
         return tmp.size+1;
       } else if fromEncoding == "IDNA" {
@@ -88,7 +88,7 @@ module Codecs {
           idn2_free(cRes: c_void_ptr);
           return 1;
         }
-        var tmp = cRes: bytes;
+        var tmp = bytes.createCopyingBuffer(cRes);
         idn2_free(cRes: c_void_ptr);
         return tmp.size+1;
       } else {
