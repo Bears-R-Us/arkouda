@@ -13,6 +13,7 @@ module ServerConfig
     use ServerErrors;
     use Logging;
     use MemoryMgmt;
+    use CTypes;
 
     use ArkoudaFileCompat;
     private use ArkoudaCTypesCompat;
