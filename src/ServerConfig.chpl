@@ -243,8 +243,8 @@ module ServerConfig
     */ 
     proc getPhysicalMemHere() {
         use ArkoudaMemDiagnosticsCompat, ArkoudaCTypesCompat;
-        extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_void_ptr), size: c_ptr(c_size_t)): void;
-        var unused: c_void_ptr;
+        extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_ptr_void), size: c_ptr(c_size_t)): void;
+        var unused: c_ptr_void;
         var heap_size: c_size_t;
         chpl_comm_regMemHeapInfo(c_ptrTo(unused), c_ptrTo(heap_size));
         if heap_size != 0 then

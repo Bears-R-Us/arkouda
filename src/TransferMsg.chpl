@@ -819,7 +819,7 @@ module TransferMsg
       else
         socket.connect("tcp://"+hostname+":"+port:string);
       var locData = socket.recv(bytes);
-      var locArr = makeArrayFromPtr(locData.c_str():c_void_ptr:c_ptr(t), intersection.size:uint);
+      var locArr = makeArrayFromPtr(locData.c_str():c_ptr_void:c_ptr(t), intersection.size:uint);
       A[intersection] = locArr;
     }
 
@@ -899,7 +899,7 @@ module TransferMsg
     }
 
     proc bytesToLocArray(size:int, type t, ref data:bytes) throws {
-      var res = makeArrayFromPtr(data.c_str():c_void_ptr:c_ptr(t), size:uint);
+      var res = makeArrayFromPtr(data.c_str():c_ptr_void:c_ptr(t), size:uint);
       return res;
     }
     
