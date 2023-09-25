@@ -13,6 +13,7 @@ module ParquetMsg {
   use Sort;
   use CommAggregation;
   use AryUtil;
+  use CTypes;
 
   use SegmentedString;
 

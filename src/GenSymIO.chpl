@@ -17,6 +17,7 @@ module GenSymIO {
     use ServerConfig;
     use SegmentedString;
     use Map;
+    use CTypes;
     use ArkoudaMapCompat;
 
     use ArkoudaListCompat;
