@@ -12,7 +12,8 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
-from arkouda import list_registry
+from arkouda import list_registry, numeric
+from arkouda.alignment import find, right_align
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
@@ -22,6 +23,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index
+from arkouda.join import inner_join
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum
 from arkouda.numeric import isnan as akisnan
@@ -30,7 +32,7 @@ from arkouda.pdarrayclass import RegistrationError
 from arkouda.pdarrayclass import attach as pd_attach
 from arkouda.pdarrayclass import pdarray, unregister_pdarray_by_name
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
-from arkouda.pdarraysetops import concatenate, in1d, intersect1d
+from arkouda.pdarraysetops import concatenate, in1d, intersect1d, setdiff1d
 from arkouda.row import Row
 from arkouda.segarray import SegArray
 from arkouda.series import Series
@@ -2750,3 +2752,154 @@ def invert_permutation(perm):
     if (unique(perm).size != perm.size) and (perm.size != rng + 1):
         raise ValueError("The array is not a permutation.")
     return coargsort([perm, arange(perm.size)])
+
+
+@typechecked
+def inner_join_merge(left: DataFrame,
+                     right: DataFrame,
+                     on: str
+                     ) -> DataFrame:
+    """
+    Utilizes the ak.join.inner_join function to return an ak
+    DataFrame object containing only rows that are in both
+    the left and right Dataframes, (based on the "on" param),
+    as well as their associated values.
+
+    Parameters
+    ----------
+    left : DataFrame
+        The Left DataFrame to be joined
+    right : DataFrame
+        The Right DataFrame to be joined
+    on : str
+        The name of the DataFrame column the join is being
+        performed on
+
+    Returns
+    -------
+    ij_ak_df : DataFrame
+        Inner-Joined Arkouda DataFrame
+    """
+
+    ij = inner_join(left[on], right[on])
+
+    left_cols = left.columns.copy()
+    left_cols.remove(on)
+    right_cols = right.columns.copy()
+    right_cols.remove(on)
+
+    new_dict = {on: left[on][ij[0]]}
+
+    for col in left_cols:
+        new_dict[col] = left[col][ij[0]]
+    for col in right_cols:
+        new_dict[col] = right[col][ij[1]]
+
+    ij_ak_df = DataFrame(new_dict)
+
+    return ij_ak_df
+
+
+@typechecked
+def right_join_merge(left: DataFrame,
+                     right: DataFrame,
+                     on: str
+                     ) -> DataFrame:
+    """
+    Utilizes the ak.join.inner_join_merge function to return an
+    ak DataFrame object containing all the rows in the right Dataframe,
+    as well as corresponding rows in the left (based on the "on" param),
+    and all of their associated values.
+    Based on pandas merge functionality.
+
+    Parameters
+    ----------
+    left : DataFrame
+        The Left DataFrame to be joined
+    right : DataFrame
+        The Right DataFrame to be joined
+    on : str
+        The name of the DataFrame column the join is being
+        performed on
+
+    Returns
+    -------
+    right_ak_df : DataFrame
+        Right-Joined Arkouda DataFrame
+    """
+
+    keep, (denseLeft, denseRight) = right_align(left[on], right[on])
+    if keep.sum() == 0:
+        # Intersection is empty
+        return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
+
+    left_cols = left.columns.copy()
+    left_cols.remove(on)
+    right_cols = right.columns.copy()
+    right_cols.remove(on)
+
+    in_left = inner_join_merge(left, right, on)
+
+    # Add a try/except statement in case there are no values in right that aren't in left
+    not_in_left = right[find(setdiff1d(right[on], left[on]), right[on])]
+    for col in left_cols:
+        # Create a nan array for all values not in the left df
+        nan_arr = zeros(len(not_in_left))
+        nan_arr.fill(np.nan)
+        nan_arr = numeric.cast(nan_arr, in_left[col].dtype)
+        left_col_type = type(in_left[col])
+
+        try:
+            not_in_left[col] = left_col_type(nan_arr)
+        except ValueError:
+            not_in_left[col] = nan_arr
+
+    right_ak_df = DataFrame.append(in_left, not_in_left)
+
+    return right_ak_df
+
+
+@typechecked
+def merge(
+    left: DataFrame,
+    right: DataFrame,
+    on: str,
+    how: str
+) -> DataFrame:
+    """
+    Utilizes the ak.join.inner_join_merge and the ak.join.right_join_merge
+    functions to return a merged Arkouda DataFrame object
+    containing rows from both DataFrames as specified by the merge
+    condition (based on the "how" and "on" parameters).
+    Based on pandas merge functionality.
+    https://github.com/pandas-dev/pandas/blob/main/pandas/core/reshape/merge.py#L137
+
+    Parameters
+    ----------
+    left : DataFrame
+        The Left DataFrame to be joined
+    right : DataFrame
+        The Right DataFrame to be joined
+    on : str
+        The name of the DataFrame column the join is being
+        performed on
+    how : str
+        The merge condition.
+        Must be "inner", "left", or "right"
+
+    Returns
+    -------
+    merged_ak_df : DataFrame
+        Joined Arkouda DataFrame
+    """
+
+    if how == 'inner':
+        merged_ak_df = inner_join_merge(left, right, on)
+
+    if how == 'right':
+        merged_ak_df = right_join_merge(left, right, on)
+
+    if how == 'left':
+        merged_ak_df = right_join_merge(right, left, on)
+
+    return merged_ak_df
