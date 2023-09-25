@@ -6,6 +6,7 @@ module CommAggregation {
 
   use ArkoudaCTypesCompat;
   use ArkoudaPOSIXCompat;
+  use ArkoudaAggCompat;
 
   // TODO should tune these values at startup
   private param defaultBuffSize =
@@ -103,7 +104,7 @@ module CommAggregation {
         _flushBuffer(loc, bufferIdx, freeData=false);
         opsUntilYield = yieldFrequency;
       } else if opsUntilYield == 0 {
-        chpl_task_yield();
+        yieldTask();
         opsUntilYield = yieldFrequency;
       } else {
         opsUntilYield -= 1;
@@ -225,7 +226,7 @@ module CommAggregation {
         _flushBuffer(loc, bufferIdx, freeData=false);
         opsUntilYield = yieldFrequency;
       } else if opsUntilYield == 0 {
-        chpl_task_yield();
+        yieldTask();
         opsUntilYield = yieldFrequency;
       } else {
         opsUntilYield -= 1;
@@ -528,7 +529,7 @@ module CommAggregation {
         // If it's been a while since we've let other tasks run, yield so that
         // we're not blocking remote tasks from flushing their buffers.
         if opsUntilYield == 0 {
-          chpl_task_yield();
+          yieldTask();
           opsUntilYield = yieldFrequency;
         } else {
           opsUntilYield -= 1;
@@ -637,7 +638,7 @@ module CommAggregation {
           _flushBuffer(loc, bufferIdx, freeData=false);
           opsUntilYield = yieldFrequency;
         } else if opsUntilYield == 0 {
-          chpl_task_yield();
+          yieldTask();
           opsUntilYield = yieldFrequency;
         } else {
           opsUntilYield -= 1;
