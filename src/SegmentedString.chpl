@@ -391,8 +391,8 @@ module SegmentedString {
     }
 
     /* Return lengths of all strings, including null terminator. */
-    proc getLengths() {
-      var lengths: [offsets.a.domain] int;
+    proc getLengths() throws {
+      var lengths = makeDistArray(offsets.a.domain, int);
       if (size == 0) {
         return lengths;
       }
@@ -418,7 +418,7 @@ module SegmentedString {
     proc lower() throws {
       ref origVals = this.values.a;
       ref offs = this.offsets.a;
-      var lowerVals: [this.values.a.domain] uint(8);
+      var lowerVals = makeDistArray(this.values.a.domain, uint(8));
       const lengths = this.getLengths();
       forall (off, len) in zip(offs, lengths) with (var valAgg = newDstAggregator(uint(8))) {
         var i = 0;
@@ -509,7 +509,7 @@ module SegmentedString {
         ref vals = values.a;
         // should we do strings.getLengths()-1 to not account for null byte
         const lens = getLengths();
-        var numeric1, numeric2: [offsets.a.domain] uint;
+        var numeric1, numeric2 = makeDistArray(offsets.a.domain, uint);
         forall (o, l, n1, n2) in zip(off, lens, numeric1, numeric2) {
           const half = (l/2):int;
           n1 = stringBytesToUintArr(vals, o..#half);

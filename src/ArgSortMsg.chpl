@@ -160,7 +160,7 @@ module ArgSortMsg
           when DType.Bool {
               var e = toSymEntry(g, bool);
               // Permute the keys array with the initial iv
-              var newa: [e.a.domain] int;
+              var newa = makeDistArray(e.a.domain, int);
               ref olda = e.a;
               // Effectively: newa = olda[iv]
               forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(int)) {
