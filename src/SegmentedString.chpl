@@ -208,7 +208,7 @@ module SegmentedString {
       return (newSegs, newVals);
     }
 
-    proc this(const slice: stridableRange()) throws {
+    proc this(const slice: stridableRange) throws {
       var aa = makeDistArray(slice.size, int);
       forall (elt,j) in zip(aa, slice) with (var agg = newSrcAggregator(int)) {
         agg.copy(elt,j);
