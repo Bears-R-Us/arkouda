@@ -104,7 +104,7 @@ module TimeClassMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc simpleAttributesHelper(values: [?aD] ?t, st: borrowed SymTab): map throws {
+    proc simpleAttributesHelper(values: [?aD] ?t, st: borrowed SymTab): map(string, string) throws {
         var attributesDict = new map(keyType=string, valType=string);
         var denominator = 1;
         for (u, f) in zip(UNITS, FACTORS) {

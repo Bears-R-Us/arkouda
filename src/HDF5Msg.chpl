@@ -574,7 +574,7 @@ module HDF5Msg {
             - Shape: [] int - stores the shape of object.
         Calls to writeArkoudaMetaData to write the arkouda metadata
     */
-    proc writeArrayViewAttrs(file_id: C_HDF5.hid_t, dset_name: string, objType: string, shape: SymEntry, dtype:C_HDF5.hid_t) throws {
+    proc writeArrayViewAttrs(file_id: C_HDF5.hid_t, dset_name: string, objType: string, shape, dtype:C_HDF5.hid_t) throws {
         h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         "Writing ArrayView Attrs");
         //open the created dset so we can add attributes.
@@ -3148,7 +3148,7 @@ module HDF5Msg {
         var entryVal = createSymEntry(len, uint(8));
         read_files_into_distributed_array(entryVal.a, subdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
 
-        proc _buildEntryCalcOffsets(): shared SymEntry throws {
+        proc _buildEntryCalcOffsets() throws {
             var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.a.domain);
             return createSymEntry(offsetsArray);
         }

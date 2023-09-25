@@ -321,7 +321,7 @@ module MultiTypeSymEntry
         var offsetsEntry: shared SymEntry(int);
         var bytesEntry: shared SymEntry(uint(8));
 
-        proc init(offsetsSymEntry: shared SymEntry, bytesSymEntry: shared SymEntry, type etype) {
+        proc init(offsetsSymEntry: shared SymEntry(int), bytesSymEntry: shared SymEntry(uint(8)), type etype) {
             super.init(etype, bytesSymEntry.size);
             this.entryType = SymbolEntryType.SegStringSymEntry;
             assignableTypes.add(this.entryType);
