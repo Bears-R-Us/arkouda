@@ -7,13 +7,13 @@ module ArkoudaIOCompat {
 
   proc formatJson(input): string throws {
     var f = openMemFile();
-    f.writer(serializer = new JsonSerializer()).write(input);
+    f.writer(serializer = new jsonSerializer()).write(input);
     return f.reader().readAll(string);
   }
 
   proc formatJson(input:string, vals...?): string throws {
     var f = openMemFile();
-    f.writer(serializer = new JsonSerializer()).writef(input, (...vals));
+    f.writer(serializer = new jsonSerializer()).writef(input, (...vals));
     return f.reader().readAll(string);
   }
 
@@ -26,7 +26,7 @@ module ArkoudaIOCompat {
     var w = f.writer();
     w.write(json);
     w.close();
-    var r = f.reader(deserializer=new JsonDeserializer());
+    var r = f.reader(deserializer=new jsonDeserializer());
     var tup: t;
     r.readf("%?", tup);
     r.close();
@@ -38,7 +38,7 @@ module ArkoudaIOCompat {
     var w = f.writer();
     w.write(json);
     w.close();
-    var r = f.reader(deserializer=new JsonDeserializer());
+    var r = f.reader(deserializer=new jsonDeserializer());
     var array: [0..#size] string;
     r.readf("%?", array);
     r.close();
@@ -46,7 +46,7 @@ module ArkoudaIOCompat {
   }
 
   proc readfCompat(f: file, str: string, ref obj) throws {
-    var nreader = f.reader(deserializer=new JsonDeserializer());
+    var nreader = f.reader(deserializer=new jsonDeserializer());
     nreader.readf("%?", obj);
   }
 
