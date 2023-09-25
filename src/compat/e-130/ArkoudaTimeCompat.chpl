@@ -309,10 +309,10 @@ enum Day       { sunday=0, monday, tuesday, wednesday, thursday, friday, saturda
     proc type resolution {
       return new timedelta(days=1);
     }
-  }
 
-  proc isoWeekDate() {
-    return this.isoCalendar();
+    proc isoWeekDate() {
+      return this.isoCalendar();
+    }
   }
 
   /* initializers/factories for date values */
