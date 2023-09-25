@@ -16,6 +16,7 @@ module TransferMsg
     use SegmentedString;
     use ArkoudaListCompat;
     use ArkoudaStringBytesCompat;
+    use ArkoudaCTypesCompat;
 
     proc sendDataFrameSetupInfo(port:string, numColumns: int, elements: string) throws {
       var context: Context;

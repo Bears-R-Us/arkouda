@@ -11,7 +11,7 @@ proc getVersionInfo() {
   extern proc c_free_string(ptr);
   var cVersionString = c_getVersionInfo();
   defer {
-    c_free_string(cVersionString: c_void_ptr);
+    c_free_string(cVersionString: c_ptr_void);
   }
   var ret: string;
   try {

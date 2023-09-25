@@ -58,4 +58,12 @@ module ArkoudaIOCompat {
     tmpf.reader(deserializer=new binaryDeserializer(endian=ioendian.native)).read(readVal);
     return if writeVal == readVal then "big" else "little";
   }
+
+  proc fileIOReaderCompat(infile) throws {
+    return infile.reader(deserializer=new binarySerializer(endian=ioendian.native));
+  }
+
+  proc binaryCheckCompat(reader) throws {
+    return reader.deserializerType == binarySerializer;
+  }
 }

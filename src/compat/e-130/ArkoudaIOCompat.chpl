@@ -56,4 +56,12 @@ module ArkoudaIOCompat {
     tmpf.reader(kind=ionative).read(readVal);
     return if writeVal == readVal then "big" else "little";
   }
+
+  proc fileIOReaderCompat(infile) throws {
+    return infile.reader(kind=ionative);
+  }
+
+  proc binaryCheckCompat(reader) throws {
+    return reader.binary();
+  }
 }
