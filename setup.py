@@ -155,7 +155,7 @@ setup(
     # Similar to `install_requires` above, these must be valid existing
     # projects.
     extras_require={  # Optional
-        'dev': ['pexpect', 'pytest>=6.0', 'pytest-env',
+        'dev': ['pexpect', 'pytest>=6.0', 'pytest-env', 'astroid<3.0.0',
                 'Sphinx>=5.1.1', 'sphinx-argparse', 'sphinx-autoapi',
                 'mypy>=0.931,<0.990', 'typed-ast', 'black', 'isort',
                 'flake8', 'furo', 'myst-parser', 'linkify-it-py'],

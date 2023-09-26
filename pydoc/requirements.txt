@@ -21,6 +21,7 @@ libidn2
 pexpect
 pytest>=6.0
 pytest-env
+astroid<3.0.0
 Sphinx>=5.1.1
 sphinx-argparse
 sphinx-autoapi
