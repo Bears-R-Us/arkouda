@@ -10,6 +10,7 @@ module MultiTypeSymEntry
 
     public use NumPyDType;
     public use SymArrayDmapCompat;
+    use ArkoudaSymEntryCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
