@@ -16,6 +16,7 @@ module TransferMsg
     use SegmentedString;
     use ArkoudaListCompat;
     use ArkoudaStringBytesCompat;
+    use ArkoudaCTypesCompat;
 
     proc sendDataFrameSetupInfo(port:string, numColumns: int, elements: string) throws {
       var context: Context;
@@ -55,7 +56,7 @@ module TransferMsg
 
       var localeCount = receiveLocaleCount(hostname, port:string);
       
-      sendDataFrameSetupInfo(port:string, numColumns, eleList: string);
+      sendDataFrameSetupInfo(port:string, numColumns, formatString(eleList));
 
       var colNames = "";
       for ele in eleList {
@@ -801,7 +802,7 @@ module TransferMsg
       return (size, typeString, nodeNames, objType);
     }
 
-    proc sendArrChunk(port: int, A: [] ?t, intersection: domain(1)) throws {
+    proc sendArrChunk(port: int, ref A: [] ?t, intersection: domain(1)) throws {
       var context: Context;
       var socket = context.socket(ZMQ.PUSH);
       socket.bind("tcp://*:"+port:string);
@@ -819,7 +820,7 @@ module TransferMsg
       else
         socket.connect("tcp://"+hostname+":"+port:string);
       var locData = socket.recv(bytes);
-      var locArr = makeArrayFromPtr(locData.c_str():c_void_ptr:c_ptr(t), intersection.size:uint);
+      var locArr = makeArrayFromPtr(locData.c_str():c_ptr_void:c_ptr(t), intersection.size:uint);
       A[intersection] = locArr;
     }
 
@@ -899,7 +900,7 @@ module TransferMsg
     }
 
     proc bytesToLocArray(size:int, type t, ref data:bytes) throws {
-      var res = makeArrayFromPtr(data.c_str():c_void_ptr:c_ptr(t), size:uint);
+      var res = makeArrayFromPtr(data.c_str():c_ptr_void:c_ptr(t), size:uint);
       return res;
     }
     

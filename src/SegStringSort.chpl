@@ -12,6 +12,7 @@ module SegStringSort {
   use BlockDist;
 
   use ArkoudaStringBytesCompat;
+  use ArkoudaBlockCompat;
 
   private config const SSS_v = false;
   private const vv = SSS_v;
@@ -108,12 +109,12 @@ module SegStringSort {
       const NBINS = 2**16;
       const BINDOM = {0..#NBINS};
       var pBins: [PrivateSpace][BINDOM] int;
-      coforall loc in Locales {
+      coforall loc in Locales with (ref pBins) {
         on loc {
           const lD = D.localSubdomain();
           ref locLengths = lengths.localSlice[lD];
           var locBins: [0..#numTasks][BINDOM] int;
-          coforall task in 0..#numTasks {
+          coforall task in 0..#numTasks with (ref locBins) {
             const tD = calcBlock(task, lD.low, lD.high);
             for i in tD {
               var bin = min(locLengths[i], NBINS-1);
@@ -225,7 +226,7 @@ module SegStringSort {
     }
     var kr1: [aD] state;
     // create a global count array to scan
-    var gD = Block.createDomain({0..#(numLocales * numTasks * numBuckets)});
+    var gD = blockDist.createDomain({0..#(numLocales * numTasks * numBuckets)});
     var globalCounts: [gD] int;
     var globalStarts: [gD] int;
         
@@ -233,9 +234,9 @@ module SegStringSort {
     for rshift in {2..#pivot by 2} {
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = %?".doFormat(rshift));
       // count digits
-      coforall loc in Locales {
+      coforall loc in Locales with (ref globalCounts) {
         on loc {
-          coforall task in 0..#numTasks {
+          coforall task in 0..#numTasks with (ref globalCounts) {
             // bucket domain
             var bD = {0..#numBuckets};
             // allocate counts
@@ -268,9 +269,9 @@ module SegStringSort {
       globalStarts = globalStarts - globalCounts;
             
       // calc new positions and permute
-      coforall loc in Locales {
+      coforall loc in Locales with (ref kr0, ref kr1) {
         on loc {
-          coforall task in 0..#numTasks {
+          coforall task in 0..#numTasks with (ref kr0, ref kr1) {
             // bucket domain
             var bD = {0..#numBuckets};
             // allocate counts

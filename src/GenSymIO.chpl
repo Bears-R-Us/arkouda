@@ -17,6 +17,7 @@ module GenSymIO {
     use ServerConfig;
     use SegmentedString;
     use Map;
+    use CTypes;
     use ArkoudaMapCompat;
 
     use ArkoudaListCompat;
@@ -59,7 +60,7 @@ module GenSymIO {
 
         proc bytesToSymEntry(size:int, type t, st: borrowed SymTab, ref data:bytes): string throws {
             var entry = createSymEntry(size, t);
-            var localA = makeArrayFromPtr(data.c_str():c_void_ptr:c_ptr(t), size:uint);
+            var localA = makeArrayFromPtr(data.c_str():c_ptr_void:c_ptr(t), size:uint);
             entry.a = localA;
             var name = st.nextName();
             st.addEntry(name, entry);
@@ -120,7 +121,7 @@ module GenSymIO {
      * by finding the null terminators given the values/bytes array which should have already been
      * converted to uint8
      */
-    proc segmentedCalcOffsets(values:[] uint(8), valuesDom:domain): [] int throws {
+    proc segmentedCalcOffsets(values:[] uint(8), valuesDom): [] int throws {
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Calculating offsets for SegString");
         var nb_locs = forall (i,v) in zip(valuesDom, values) do if v == NULL_STRINGS_VALUE then i+1;
         // We need to adjust nb_locs b/c offsets is really the starting position of each string

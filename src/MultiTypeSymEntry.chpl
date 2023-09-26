@@ -10,6 +10,7 @@ module MultiTypeSymEntry
 
     public use NumPyDType;
     public use SymArrayDmapCompat;
+    use ArkoudaSymEntryCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -230,27 +231,6 @@ module MultiTypeSymEntry
         proc deinit() {
             if logLevel == LogLevel.DEBUG {writeln("deinit SymEntry");try! stdout.flush();}
         }
-        
-        override proc writeThis(f) throws {
-          use Reflection;
-          proc writeField(f, param i) throws {
-            if !isArray(getField(this, i)) {
-              f.write(getFieldName(this.type, i), " = ", getField(this, i):string);
-            } else {
-              f.write(getFieldName(this.type, i), " = ", formatAry(getField(this, i)));
-            }
-          }
-
-          super.writeThis(f);
-          f.write(" {");
-          param nFields = numFields(this.type);
-          for param i in 0..nFields-2 {
-            writeField(f, i);
-            f.write(", ");
-          }
-          writeField(f, nFields-1);
-          f.write("}");
-        }
 
         /*
         Formats and returns data in this entry up to the specified threshold. 
@@ -342,7 +322,7 @@ module MultiTypeSymEntry
         var offsetsEntry: shared SymEntry(int);
         var bytesEntry: shared SymEntry(uint(8));
 
-        proc init(offsetsSymEntry: shared SymEntry, bytesSymEntry: shared SymEntry, type etype) {
+        proc init(offsetsSymEntry: shared SymEntry(int), bytesSymEntry: shared SymEntry(uint(8)), type etype) {
             super.init(etype, bytesSymEntry.size);
             this.entryType = SymbolEntryType.SegStringSymEntry;
             assignableTypes.add(this.entryType);

@@ -9,6 +9,7 @@ module Cast {
   use ServerConfig;
 
   use ArkoudaBigIntCompat;
+  use ArkoudaMathCompat;
   
   private config const logLevel = ServerConfig.logLevel;
   const castLogger = new Logger(logLevel);
@@ -105,7 +106,7 @@ module Cast {
     return_validity,
   }
 
-  inline proc stringToNumericStrict(values, rng, type toType): toType throws {
+  inline proc stringToNumericStrict(ref values, rng, type toType): toType throws {
     if toType == bool {
       return interpretAsString(values, rng).toLower() : toType;
     } else {
@@ -113,13 +114,13 @@ module Cast {
     }
   }
 
-  inline proc stringToNumericIgnore(values, rng, type toType): toType {
+  inline proc stringToNumericIgnore(ref values, rng, type toType): toType {
     var num: toType;
     try {
       num = stringToNumericStrict(values, rng, toType);
     } catch {
       if toType == real {
-        num = NAN;
+        num = nan;
       } else if toType == int {
         // Use pandas.NaT, i.e. -2**63, as NaN for int
         num = min(int);
@@ -129,14 +130,14 @@ module Cast {
     return num;
   }
 
-  inline proc stringToNumericReturnValidity(values, rng, type toType): (toType, bool) {
+  inline proc stringToNumericReturnValidity(ref values, rng, type toType): (toType, bool) {
     var num: toType;
     var valid = true;
     try {
       num = stringToNumericStrict(values, rng, toType);
     } catch {
       if toType == real {
-        num = NAN;
+        num = nan;
       } else if toType == int {
         // Use pandas.NaT, i.e. -2**63, as NaN for int
         num = min(int);
