@@ -1064,7 +1064,7 @@ class MultiIndex(Index):
                 "file_format": _file_type_to_int(file_type),
                 "write_mode": _mode_str_to_int("append"),
                 "objType": self.objType,
-                "num_idx": 1,
+                "num_idx": len(self.values),
                 "idx": index_data,
                 "idx_objTypes": [obj.objType for obj in self.values],
                 "idx_dtypes": [str(obj.dtype) for obj in self.values],
