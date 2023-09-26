@@ -215,7 +215,7 @@ module GenSymIO {
                     var (segName, nBytes) = id.splitMsgToTuple("+", 2);
                     create_str = "created " + st.attrib(segName) + "+created bytes.size " + nBytes;
                 }
-                when ObjType.SEGARRAY, ObjType.CATEGORICAL, ObjType.GROUPBY, ObjType.DATAFRAME {
+                when ObjType.SEGARRAY, ObjType.CATEGORICAL, ObjType.GROUPBY, ObjType.DATAFRAME, ObjType.INDEX, ObjType.MULTIINDEX {
                     create_str = id;
                 }
                 otherwise {

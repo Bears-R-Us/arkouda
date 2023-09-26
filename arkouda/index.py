@@ -389,7 +389,50 @@ class Index:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
-        return self.values.to_hdf(prefix_path, dataset=dataset, mode=mode, file_type=file_type)
+        from typing import cast as typecast
+
+        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.client import generic_msg
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
+
+        index_data = [
+            self.values.name
+            if not isinstance(self.values, (Categorical_))
+            else json.dumps(
+                {
+                    "codes": self.values.codes.name,
+                    "categories": self.values.categories.name,
+                    "NA_codes": self.values._akNAcode.name,
+                    **(
+                        {"permutation": self.values.permutation.name}
+                        if self.values.permutation is not None
+                        else {}
+                    ),
+                    **(
+                        {"segments": self.values.segments.name}
+                        if self.values.segments is not None
+                        else {}
+                    ),
+                }
+            )
+        ]
+        return typecast(
+            str,
+            generic_msg(
+                cmd="tohdf",
+                args={
+                    "filename": prefix_path,
+                    "dset": dataset,
+                    "file_format": _file_type_to_int(file_type),
+                    "write_mode": _mode_str_to_int(mode),
+                    "objType": self.objType,
+                    "num_idx": 1,
+                    "idx": index_data,
+                    "idx_objTypes": [self.values.objType],  # this will be pdarray, strings, or cat
+                    "idx_dtypes": [str(self.values.dtype)],
+                },
+            ),
+        )
 
     def update_hdf(
         self,
@@ -431,7 +474,58 @@ class Index:
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
         """
-        return self.values.update_hdf(prefix_path, dataset=dataset, repack=repack)
+        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.client import generic_msg
+        from arkouda.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
+
+        # determine the format (single/distribute) that the file was saved in
+        file_type = _get_hdf_filetype(prefix_path + "*")
+
+        index_data = [
+            self.values.name
+            if not isinstance(self.values, (Categorical_))
+            else json.dumps(
+                {
+                    "codes": self.values.codes.name,
+                    "categories": self.values.categories.name,
+                    "NA_codes": self.values._akNAcode.name,
+                    **(
+                        {"permutation": self.values.permutation.name}
+                        if self.values.permutation is not None
+                        else {}
+                    ),
+                    **(
+                        {"segments": self.values.segments.name}
+                        if self.values.segments is not None
+                        else {}
+                    ),
+                }
+            )
+        ]
+
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "filename": prefix_path,
+                "dset": dataset,
+                "file_format": _file_type_to_int(file_type),
+                "write_mode": _mode_str_to_int("append"),
+                "objType": self.objType,
+                "num_idx": 1,
+                "idx": index_data,
+                "idx_objTypes": [self.values.objType],  # this will be pdarray, strings, or cat
+                "idx_dtypes": [str(self.values.dtype)],
+                "overwrite": True,
+            },
+        ),
+
+        if repack:
+            _repack_hdf(prefix_path)
 
     def to_parquet(
         self,
@@ -811,3 +905,172 @@ class MultiIndex(Index):
             key = [akcast(array([x]), dt) for x in key]
 
         return in1d(self.index, key)
+
+    def to_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "index",
+        mode: str = "truncate",
+        file_type: str = "distribute",
+    ) -> str:
+        """
+        Save the Index to HDF5.
+        The object can be saved to a collection of files or single file.
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in files (must not already exist)
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', attempt to create new dataset in existing files.
+        file_type: str ("single" | "distribute")
+            Default: "distribute"
+            When set to single, dataset is written to a single file.
+            When distribute, dataset is written on a file per locale.
+            This is only supported by HDF5 files and will have no impact of Parquet Files.
+        Returns
+        -------
+        string message indicating result of save operation
+        Raises
+        -------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+        Notes
+        -----
+        - The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+        - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+        the file name will be `prefix_path`.
+        - If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+        - Any file extension can be used.The file I/O does not rely on the extension to
+        determine the file format.
+        """
+        from typing import cast as typecast
+
+        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.client import generic_msg
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
+
+        index_data = [
+            obj.name
+            if not isinstance(obj, (Categorical_))
+            else json.dumps(
+                {
+                    "codes": obj.codes.name,
+                    "categories": obj.categories.name,
+                    "NA_codes": obj._akNAcode.name,
+                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
+                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                }
+            )
+            for obj in self.values
+        ]
+        return typecast(
+            str,
+            generic_msg(
+                cmd="tohdf",
+                args={
+                    "filename": prefix_path,
+                    "dset": dataset,
+                    "file_format": _file_type_to_int(file_type),
+                    "write_mode": _mode_str_to_int(mode),
+                    "objType": self.objType,
+                    "num_idx": len(self.values),
+                    "idx": index_data,
+                    "idx_objTypes": [obj.objType for obj in self.values],
+                    "idx_dtypes": [str(obj.dtype) for obj in self.values],
+                },
+            ),
+        )
+
+    def update_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "index",
+        repack: bool = True,
+    ):
+        """
+        Overwrite the dataset with the name provided with this Index object. If
+        the dataset does not exist it is added.
+
+        Parameters
+        -----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in files
+        repack: bool
+            Default: True
+            HDF5 does not release memory on delete. When True, the inaccessible
+            data (that was overwritten) is removed. When False, the data remains, but is
+            inaccessible. Setting to false will yield better performance, but will cause
+            file sizes to expand.
+
+        Returns
+        --------
+        str - success message if successful
+
+        Raises
+        -------
+        RuntimeError
+            Raised if a server-side error is thrown saving the index
+
+        Notes
+        ------
+        - If file does not contain File_Format attribute to indicate how it was saved,
+          the file name is checked for _LOCALE#### to determine if it is distributed.
+        - If the dataset provided does not exist, it will be added
+        - Because HDF5 deletes do not release memory, this will create a copy of the
+          file with the new data
+        """
+        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.client import generic_msg
+        from arkouda.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
+
+        # determine the format (single/distribute) that the file was saved in
+        file_type = _get_hdf_filetype(prefix_path + "*")
+
+        index_data = [
+            obj.name
+            if not isinstance(obj, (Categorical_))
+            else json.dumps(
+                {
+                    "codes": obj.codes.name,
+                    "categories": obj.categories.name,
+                    "NA_codes": obj._akNAcode.name,
+                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
+                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                }
+            )
+            for obj in self.values
+        ]
+
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "filename": prefix_path,
+                "dset": dataset,
+                "file_format": _file_type_to_int(file_type),
+                "write_mode": _mode_str_to_int("append"),
+                "objType": self.objType,
+                "num_idx": len(self.values),
+                "idx": index_data,
+                "idx_objTypes": [obj.objType for obj in self.values],
+                "idx_dtypes": [str(obj.dtype) for obj in self.values],
+                "overwrite": True,
+            },
+        ),
+
+        if repack:
+            _repack_hdf(prefix_path)
