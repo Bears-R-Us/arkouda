@@ -21,7 +21,7 @@ or
 
 .. method:: proc bigint._serializeInto(x: c_ptr(uint(8)))
 
-.. method:: proc bigint._deserializeFrom(x: c_ptr(uint(8)))
+.. method:: proc ref bigint._deserializeFrom(x: c_ptr(uint(8)))
 
 .. record:: DstAggregatorBigint
 
@@ -41,15 +41,15 @@ or
 
    .. attribute:: var bufferIdxs: c_ptr(int)
 
-   .. method:: proc postinit()
+   .. method:: proc ref postinit()
 
-   .. method:: proc deinit()
+   .. method:: proc ref deinit()
 
-   .. method:: proc flush()
+   .. method:: proc ref flush()
 
-   .. method:: proc copy(ref dst: bigint, const ref src: bigint)
+   .. method:: proc ref copy(ref dst: bigint, const ref src: bigint)
 
-   .. method:: proc _flushBuffer(loc: int, ref bufferIdx, freeData)
+   .. method:: proc ref _flushBuffer(loc: int, ref bufferIdx, freeData)
 
 .. record:: SrcAggregatorBigint
 
@@ -77,13 +77,13 @@ or
 
    .. attribute:: var bufferIdxs: c_ptr(int)
 
-   .. method:: proc postinit()
+   .. method:: proc ref postinit()
 
-   .. method:: proc deinit()
+   .. method:: proc ref deinit()
 
-   .. method:: proc flush()
+   .. method:: proc ref flush()
 
-   .. method:: proc copy(ref dst: bigint, const ref src: bigint)
+   .. method:: proc ref copy(ref dst: bigint, const ref src: bigint)
 
-   .. method:: proc _flushBuffer(loc: int, ref bufferIdx, freeData)
+   .. method:: proc ref _flushBuffer(loc: int, ref bufferIdx, freeData)
 

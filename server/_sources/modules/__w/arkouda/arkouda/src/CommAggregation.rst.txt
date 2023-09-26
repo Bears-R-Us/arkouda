@@ -60,15 +60,15 @@ or
 
    .. attribute:: var bufferIdxs: c_ptr(int)
 
-   .. method:: proc postinit()
+   .. method:: proc ref postinit()
 
-   .. method:: proc deinit()
+   .. method:: proc ref deinit()
 
-   .. method:: proc flush()
+   .. method:: proc ref flush()
 
-   .. method:: proc copy(ref dst: elemType, const in srcVal: elemType)
+   .. method:: proc ref copy(ref dst: elemType, const in srcVal: elemType)
 
-   .. method:: proc _flushBuffer(loc: int, ref bufferIdx, freeData)
+   .. method:: proc ref _flushBuffer(loc: int, ref bufferIdx, freeData)
 
 .. record:: DstUnorderedAggregator
 
