@@ -1,0 +1,21 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaAggCompat
+
+ArkoudaAggCompat
+================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaAggCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaAggCompat;
+
+.. function:: proc yieldTask()
+

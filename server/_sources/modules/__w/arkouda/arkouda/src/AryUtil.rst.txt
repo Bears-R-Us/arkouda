@@ -153,7 +153,7 @@ or
 
       Do we own the memory? 
 
-   .. method:: proc init(A: [] ?t, region: range())
+   .. method:: proc init(ref A: [] ?t, region: range())
 
    .. method:: proc deinit()
 

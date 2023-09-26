@@ -185,7 +185,7 @@ or
       :returns: array of JSON formatted strings
       
 
-   .. method:: proc getEntries(infoList: map): [] string throws
+   .. method:: proc getEntries(infoList: map(string, shared AbstractSymEntry)): [] string throws
 
       
       Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])

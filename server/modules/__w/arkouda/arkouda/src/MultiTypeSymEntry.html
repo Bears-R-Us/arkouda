@@ -77,18 +77,22 @@
 <li class="toctree-l1"><a class="reference internal" href="StatusMsg.html">StatusMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaAggCompat.html">ArkoudaAggCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaBitOpsCompat.html">ArkoudaBitOpsCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaListCompat.html">ArkoudaListCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaMathCompat.html">ArkoudaMathCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaSymEntryCompat.html">ArkoudaSymEntryCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/SymArrayDmapCompat.html">SymArrayDmapCompat</a></li>
 </ul>
@@ -434,11 +438,6 @@ makeDist{Dom,Array}() to support varying distributions</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.writeThis">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeThis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">f</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.writeThis" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.__str__">
 <em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">6</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;[&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;]&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;%\?&quot;</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats and returns data in this entry up to the specified threshold.
@@ -566,7 +565,7 @@ For Example, group by contains multiple SymEntries that are all considered part 
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">offsetsSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry</span></em>, <em class="sig-param"><span class="pre">bytesSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.init" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">offsetsSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">bytesSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry(uint(8))</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">

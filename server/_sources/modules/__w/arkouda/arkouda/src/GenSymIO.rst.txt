@@ -28,7 +28,7 @@ or
    * retrieve the pdarray from the SymTab.
    
 
-.. function:: proc segmentedCalcOffsets(values: [] uint(8), valuesDom: domain): [] int throws
+.. function:: proc segmentedCalcOffsets(values: [] uint(8), valuesDom): [] int throws
 
    *
    * For creating the Strings/SegString object we can calculate the offsets array on the server

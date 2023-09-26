@@ -21,7 +21,7 @@ or
 
 .. enum:: enum SegFunction { SipHash128, StringToNumericStrict, StringToNumericIgnore, StringToNumericReturnValidity, StringCompareLiteralEq, StringCompareLiteralNeq, StringSearch, StringIsLower, StringIsUpper, StringIsTitle, StringBytesToUintArr }
 
-.. function:: proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws
+.. function:: proc computeOnSegments(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws
 
-.. function:: proc computeOnSegmentsWithoutAggregation(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws
+.. function:: proc computeOnSegmentsWithoutAggregation(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws
 

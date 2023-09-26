@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ArkoudaPOSIXCompat &mdash; chpldoc 0.0.1 documentation</title>
+  <title>ArkoudaMathCompat &mdash; chpldoc 0.0.1 documentation</title>
       <link rel="stylesheet" href="../../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     <script src="../../../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="ArkoudaRangeCompat" href="ArkoudaRangeCompat.html" />
-    <link rel="prev" title="ArkoudaMemDiagnosticsCompat" href="ArkoudaMemDiagnosticsCompat.html" /> 
+    <link rel="next" title="ArkoudaMemDiagnosticsCompat" href="ArkoudaMemDiagnosticsCompat.html" />
+    <link rel="prev" title="ArkoudaMapCompat" href="ArkoudaMapCompat.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -86,9 +86,9 @@
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaListCompat.html">ArkoudaListCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaMathCompat.html">ArkoudaMathCompat</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaMathCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaPOSIXCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
@@ -111,9 +111,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ArkoudaPOSIXCompat</li>
+      <li>ArkoudaMathCompat</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaPOSIXCompat.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaMathCompat.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -121,19 +121,34 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-ArkoudaPOSIXCompat"></span><div class="section" id="arkoudaposixcompat">
-<h1>ArkoudaPOSIXCompat<a class="headerlink" href="#arkoudaposixcompat" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-ArkoudaMathCompat"></span><div class="section" id="arkoudamathcompat">
+<h1>ArkoudaMathCompat<a class="headerlink" href="#arkoudamathcompat" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaPOSIXCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaMathCompat</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaPOSIXCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaMathCompat</span><span class="p">;</span>
 </pre></div>
 </div>
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaPOSIXCompat.memcpy">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">memcpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dest:</span> <span class="pre">c_void_ptr</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">src:</span> <span class="pre">c_void_ptr</span></em>, <em class="sig-param"><span class="pre">n:</span> <span class="pre">c_size_t</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaPOSIXCompat.memcpy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaMathCompat.nan">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">nan</span></span> <span class="pre">param:</span> <span class="pre">real(64)</span><a class="headerlink" href="#ArkoudaMathCompat.nan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaMathCompat.inf">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">inf</span></span> <span class="pre">param:</span> <span class="pre">real(64)</span><a class="headerlink" href="#ArkoudaMathCompat.inf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaMathCompat.isNan">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isNan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x:</span> <span class="pre">real(64)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span><a class="headerlink" href="#ArkoudaMathCompat.isNan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaMathCompat.isInf">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isInf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x:</span> <span class="pre">real(64)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span><a class="headerlink" href="#ArkoudaMathCompat.isInf" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -142,8 +157,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ArkoudaMemDiagnosticsCompat.html" class="btn btn-neutral float-left" title="ArkoudaMemDiagnosticsCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ArkoudaRangeCompat.html" class="btn btn-neutral float-right" title="ArkoudaRangeCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ArkoudaMapCompat.html" class="btn btn-neutral float-left" title="ArkoudaMapCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ArkoudaMemDiagnosticsCompat.html" class="btn btn-neutral float-right" title="ArkoudaMemDiagnosticsCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

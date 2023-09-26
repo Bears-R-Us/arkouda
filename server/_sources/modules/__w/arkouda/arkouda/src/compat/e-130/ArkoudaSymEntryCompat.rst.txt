@@ -1,0 +1,25 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaSymEntryCompat
+
+ArkoudaSymEntryCompat
+=====================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaSymEntryCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaSymEntryCompat;
+
+.. type:: type SymEntryAny = SymEntry
+
+.. type:: type mapAny = map
+
+.. method:: override proc SymEntry.writeThis(f) throws
+

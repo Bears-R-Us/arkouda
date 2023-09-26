@@ -37,7 +37,7 @@ or
 
 .. function:: proc assembleSegStringFromParts(offsets: GenSymEntry, values: GenSymEntry, st: borrowed SymTab): owned SegString throws
 
-.. function:: proc assembleSegStringFromParts(offsets: SymEntry, values: SymEntry, st: borrowed SymTab): owned SegString throws
+.. function:: proc assembleSegStringFromParts(offsets: SymEntry(int), values: SymEntry(uint(8)), st: borrowed SymTab): owned SegString throws
 
 .. class:: SegString
 
@@ -102,7 +102,7 @@ or
       Chapel range, i.e. low..high by stride, not a Python slice.
       Returns arrays for the segment offsets and bytes of the slice.
 
-   .. method:: proc this(const slice: stridableRange()) throws
+   .. method:: proc this(const slice: stridableRange) throws
 
    .. method:: proc this(iv: [?D] ?t) throws
 
@@ -224,9 +224,9 @@ or
       :returns: Strings – Substrings with pattern matches substituted and (optional) int64 pdarray – For each original string, the number of susbstitutions
       
 
-   .. method:: proc segStrWhere(otherStr: ?t, condition: [] bool, newLens: [] int) throws
+   .. method:: proc segStrWhere(otherStr: ?t, condition: [] bool, ref newLens: [] int) throws
 
-   .. method:: proc segStrWhere(other: ?t, condition: [] bool, newLens: [] int) throws
+   .. method:: proc segStrWhere(other: ?t, condition: [] bool, ref newLens: [] int) throws
 
    .. method:: proc strip(chars: string) throws
 
@@ -317,9 +317,9 @@ or
    Test an array of strings for inequality against a constant string. Return a boolean
    vector the same size as the array. 
 
-.. function:: proc stringCompareLiteralEq(values, rng, testStr)
+.. function:: proc stringCompareLiteralEq(ref values, rng, testStr)
 
-.. function:: proc stringCompareLiteralNeq(values, rng, testStr)
+.. function:: proc stringCompareLiteralNeq(ref values, rng, testStr)
 
 .. function:: proc compare(ss: SegString, const testStr: string, param function: SegFunction) throws
 
@@ -337,27 +337,27 @@ or
 
 .. function:: proc _unsafeCompileRegex(const pattern: ?t)
 
-.. function:: proc stringSearch(values, rng, myRegex) throws
+.. function:: proc stringSearch(ref values, rng, myRegex) throws
 
-.. function:: proc stringIsLower(values, rng) throws
+.. function:: proc stringIsLower(ref values, rng) throws
 
    
    The SegFunction called by computeOnSegments for isLower
    
 
-.. function:: proc stringIsUpper(values, rng) throws
+.. function:: proc stringIsUpper(ref values, rng) throws
 
    
    The SegFunction called by computeOnSegments for isUpper
    
 
-.. function:: proc stringIsTitle(values, rng) throws
+.. function:: proc stringIsTitle(ref values, rng) throws
 
    
    The SegFunction called by computeOnSegments for isTitle
    
 
-.. function:: proc stringBytesToUintArr(values, rng) throws
+.. function:: proc stringBytesToUintArr(ref values, rng) throws
 
    
    The SegFunction called by computeOnSegments for bytesToUintArr
@@ -374,7 +374,7 @@ or
 
 .. function:: proc segStrFull(arrSize: int, fillValue: string) throws
 
-.. function:: proc interpretAsString(bytearray: [?D] uint(8), region: range(?), borrow = false): string
+.. function:: proc interpretAsString(ref bytearray: [?D] uint(8), region: range(?), borrow = false): string
 
    
    Interpret a region of a byte array as a Chapel string. If `borrow=false` a
@@ -382,7 +382,7 @@ or
    (reduces memory allocations if the string isn't needed after array)
    
 
-.. function:: proc interpretAsBytes(bytearray: [?D] uint(8), region: range(?), borrow = false): bytes
+.. function:: proc interpretAsBytes(ref bytearray: [?D] uint(8), region: range(?), borrow = false): bytes
 
    
    Interpret a region of a byte array as bytes. Modeled after interpretAsString

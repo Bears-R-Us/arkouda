@@ -31,3 +31,9 @@ or
 
 .. function:: proc readfCompat(f: file, str: string, ref obj) throws
 
+.. function:: proc getByteOrderCompat() throws
+
+.. function:: proc fileIOReaderCompat(infile) throws
+
+.. function:: proc binaryCheckCompat(reader) throws
+

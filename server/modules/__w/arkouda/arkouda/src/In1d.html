@@ -77,18 +77,22 @@
 <li class="toctree-l1"><a class="reference internal" href="StatusMsg.html">StatusMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaAggCompat.html">ArkoudaAggCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaBitOpsCompat.html">ArkoudaBitOpsCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaListCompat.html">ArkoudaListCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaMathCompat.html">ArkoudaMathCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaSymEntryCompat.html">ArkoudaSymEntryCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-130/SymArrayDmapCompat.html">SymArrayDmapCompat</a></li>
 </ul>
@@ -129,7 +133,7 @@
 </div>
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="In1d.in1d">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ar1:</span> <span class="pre">[?aD1]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">ar2:</span> <span class="pre">[?aD2]</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">invert:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[aD1]</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#In1d.in1d" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ar1:</span> <span class="pre">[?aD1]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">ar2:</span> <span class="pre">[?aD2]</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">invert:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[aD1]</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#In1d.in1d" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each value in the first array, check membership in the second array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -147,7 +151,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="In1d.in1dAr2PerLocAssoc">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1dAr2PerLocAssoc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ar1:</span> <span class="pre">[?aD1]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">ar2:</span> <span class="pre">[?aD2]</span> <span class="pre">t</span></em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dAr2PerLocAssoc" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1dAr2PerLocAssoc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ar1:</span> <span class="pre">[?aD1]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">ar2:</span> <span class="pre">[?aD2]</span> <span class="pre">t</span></em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dAr2PerLocAssoc" title="Permalink to this definition">¶</a></dt>
 <dd><p>in1d that uses a per-locale set/associative-domain. Each locale will
 * localize ar2 and put it in the set, so only appropriate in terms of
 * size and space when ar2 is “small”.</p>

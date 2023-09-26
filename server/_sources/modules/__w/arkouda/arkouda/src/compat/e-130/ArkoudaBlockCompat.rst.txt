@@ -1,0 +1,23 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaBlockCompat
+
+ArkoudaBlockCompat
+==================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaBlockCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaBlockCompat;
+
+.. type:: type blockDist = Block
+
+.. method:: proc BlockDom.distribution
+

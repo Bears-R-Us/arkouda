@@ -29,7 +29,7 @@ or
 
 .. function:: proc sipHash64(msg: [] ?t, D): uint(64)
 
-.. function:: proc sipHash128(msg: [] ?t, D): 2*(uint(64))
+.. function:: proc sipHash128(ref msg: [] ?t, D): 2*(uint(64))
 
 .. function:: proc sipHash64(in val): uint(64)
 

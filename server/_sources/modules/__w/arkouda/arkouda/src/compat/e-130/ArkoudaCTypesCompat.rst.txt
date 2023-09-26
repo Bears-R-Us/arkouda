@@ -21,3 +21,7 @@ or
 
 .. function:: proc deallocate(data: c_void_ptr)
 
+.. type:: type c_string_ptr = c_string
+
+.. type:: type c_ptr_void = c_void_ptr
+

@@ -69,6 +69,8 @@ performance testing.
 
    The Unix Epoch date and time 
 
+.. function:: proc createFromTimestampCompat(d)
+
 .. function:: proc timeSinceEpoch(): timedelta
 
    Get the `time` since Unix Epoch in seconds
@@ -137,6 +139,8 @@ performance testing.
    .. method:: proc type resolution
 
       The minimum non-zero difference between two dates 
+
+   .. method:: proc isoWeekDate()
 
 .. method:: proc date.init()
 

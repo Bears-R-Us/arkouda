@@ -116,15 +116,15 @@ or
 
    .. attribute:: var bufferIdxs: c_ptr(int)
 
-   .. method:: proc postinit()
+   .. method:: proc ref postinit()
 
-   .. method:: proc deinit()
+   .. method:: proc ref deinit()
 
-   .. method:: proc flush()
+   .. method:: proc ref flush()
 
-   .. method:: proc copy(ref dst: elemType, const ref src: elemType)
+   .. method:: proc ref copy(ref dst: elemType, const ref src: elemType)
 
-   .. method:: proc _flushBuffer(loc: int, ref bufferIdx, freeData)
+   .. method:: proc ref _flushBuffer(loc: int, ref bufferIdx, freeData)
 
 .. record:: SrcUnorderedAggregator
 
@@ -149,21 +149,21 @@ or
 
    .. attribute:: var data: c_ptr(elemType)
 
-   .. method:: proc cachedAlloc(): c_ptr(elemType)
+   .. method:: proc ref cachedAlloc(): c_ptr(elemType)
 
    .. itermethod:: iter localIter(data: c_ptr(elemType), size: int) ref: elemType
 
    .. method:: proc localFree(data: c_ptr(elemType))
 
-   .. method:: proc markFreed()
+   .. method:: proc ref markFreed()
 
    .. method:: proc PUT(lArr: [] elemType, size: int)
 
    .. method:: proc PUT(lArr: c_ptr(elemType), size: int)
 
-   .. method:: proc GET(lArr: [] elemType, size: int)
+   .. method:: proc ref GET(ref lArr: [] elemType, size: int)
 
-   .. method:: proc deinit()
+   .. method:: proc ref deinit()
 
 .. function:: proc bufferIdxAlloc()
 

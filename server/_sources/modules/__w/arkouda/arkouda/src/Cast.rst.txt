@@ -27,11 +27,11 @@ or
 
 .. enum:: enum ErrorMode { strict, ignore, return_validity }
 
-.. function:: proc stringToNumericStrict(values, rng, type toType): toType throws
+.. function:: proc stringToNumericStrict(ref values, rng, type toType): toType throws
 
-.. function:: proc stringToNumericIgnore(values, rng, type toType): toType
+.. function:: proc stringToNumericIgnore(ref values, rng, type toType): toType
 
-.. function:: proc stringToNumericReturnValidity(values, rng, type toType): (toType, bool)
+.. function:: proc stringToNumericReturnValidity(ref values, rng, type toType): (toType, bool)
 
 .. function:: proc castStringToSymEntry(s: SegString, st: borrowed SymTab, type toType, errors: ErrorMode): string throws
 

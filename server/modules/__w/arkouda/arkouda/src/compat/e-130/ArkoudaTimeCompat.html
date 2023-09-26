@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
     <link rel="next" title="SymArrayDmapCompat" href="SymArrayDmapCompat.html" />
-    <link rel="prev" title="ArkoudaStringBytesCompat" href="ArkoudaStringBytesCompat.html" /> 
+    <link rel="prev" title="ArkoudaSymEntryCompat" href="ArkoudaSymEntryCompat.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -77,18 +77,22 @@
 <li class="toctree-l1"><a class="reference internal" href="../../StatusMsg.html">StatusMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../arkouda_server.html">arkouda_server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArkoudaAggCompat.html">ArkoudaAggCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaBitOpsCompat.html">ArkoudaBitOpsCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaListCompat.html">ArkoudaListCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArkoudaMathCompat.html">ArkoudaMathCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArkoudaSymEntryCompat.html">ArkoudaSymEntryCompat</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaTimeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmapCompat.html">SymArrayDmapCompat</a></li>
 </ul>
@@ -193,6 +197,11 @@ performance testing.</p>
 <em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">unixEpoch</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">dateTime(1970,</span> <span class="pre">1,</span> <span class="pre">1)</span><a class="headerlink" href="#ArkoudaTimeCompat.unixEpoch" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Unix Epoch date and time</p>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.createFromTimestampCompat">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createFromTimestampCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.createFromTimestampCompat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ArkoudaTimeCompat.timeSinceEpoch">
@@ -317,6 +326,11 @@ The number for a month can change from year to year due to leap years.</p>
 <em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">resolution</span></span><a class="headerlink" href="#ArkoudaTimeCompat.date.resolution" title="Permalink to this definition">¶</a></dt>
 <dd><p>The minimum non-zero difference between two dates</p>
 </dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ArkoudaTimeCompat.date.isoWeekDate">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isoWeekDate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaTimeCompat.date.isoWeekDate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -1509,7 +1523,7 @@ If the timer is running, the elapsed time since the last call to
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ArkoudaStringBytesCompat.html" class="btn btn-neutral float-left" title="ArkoudaStringBytesCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ArkoudaSymEntryCompat.html" class="btn btn-neutral float-left" title="ArkoudaSymEntryCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="SymArrayDmapCompat.html" class="btn btn-neutral float-right" title="SymArrayDmapCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

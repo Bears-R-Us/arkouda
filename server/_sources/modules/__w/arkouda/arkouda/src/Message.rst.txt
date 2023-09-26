@@ -95,13 +95,13 @@ or
 
    .. method:: proc getJSON() throws
 
-   .. method:: proc setKey(value: string)
+   .. method:: proc ref setKey(value: string)
 
-   .. method:: proc setVal(value: string)
+   .. method:: proc ref setVal(value: string)
 
-   .. method:: proc setObjType(value: ObjectType)
+   .. method:: proc ref setObjType(value: ObjectType)
 
-   .. method:: proc setDType(value: string)
+   .. method:: proc ref setDType(value: string)
 
    .. method:: proc getObjType()
 
