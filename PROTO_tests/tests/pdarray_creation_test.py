@@ -29,20 +29,18 @@ DTYPES = [
 class TestPdarrayCreation:
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_array_creation(self, dtype):
-        # TODO - remove the 'if' below (to make everything that follows unconditional) after #2645 is complete
-        if dtype != str:
-            fixed_size = 100
-            for pda in [
-                ak.array(ak.ones(fixed_size, int), dtype),
-                ak.array(np.ones(fixed_size), dtype),
-                ak.array(list(range(fixed_size)), dtype=dtype),
-                ak.array((range(fixed_size)), dtype),
-                ak.array(deque(range(fixed_size)), dtype),
-                ak.array([f"{i}" for i in range(fixed_size)], dtype=dtype),
-            ]:
-                assert isinstance(pda, ak.pdarray if dtype != str else ak.Strings)
-                assert len(pda) == fixed_size
-                assert dtype == pda.dtype
+        fixed_size = 100
+        for pda in [
+            ak.array(ak.ones(fixed_size, int), dtype),
+            ak.array(np.ones(fixed_size), dtype),
+            ak.array(list(range(fixed_size)), dtype=dtype),
+            ak.array((range(fixed_size)), dtype),
+            ak.array(deque(range(fixed_size)), dtype),
+            ak.array([f"{i}" for i in range(fixed_size)], dtype=dtype),
+        ]:
+            assert isinstance(pda, ak.pdarray if dtype != str else ak.Strings)
+            assert len(pda) == fixed_size
+            assert dtype == pda.dtype
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large_array_creation(self, size):
@@ -719,19 +717,19 @@ class TestPdarrayCreation:
         trials = 20
 
         for x in range(trials):
-            l = ak.randint(min_val, max_val, size)
-            l_median = statistics.median(l.to_ndarray())
+            l_int = ak.randint(min_val, max_val, size)
+            l_median = statistics.median(l_int.to_ndarray())
 
             runs, n1, n2 = 0, 0, 0
 
             # Checking for start of new run
-            for i in range(len(l)):
+            for i in range(len(l_int)):
                 # no. of runs
-                if (l[i] >= l_median > l[i - 1]) or (l[i] < l_median <= l[i - 1]):
+                if (l_int[i] >= l_median > l_int[i - 1]) or (l_int[i] < l_median <= l_int[i - 1]):
                     runs += 1
 
                 # no. of positive values
-                if (l[i]) >= l_median:
+                if (l_int[i]) >= l_median:
                     n1 += 1
                 # no. of negative values
                 else:

@@ -101,7 +101,7 @@ module ConcatenateMsg
             size += entrySize;
             if mode == "interleave" {
               const dummyDomain = makeDistDom(entrySize);
-              coforall loc in Locales {
+              coforall loc in Locales with (ref blocksizes, ref blockValSizes) {
                 on loc {
                   const mynumsegs = dummyDomain.localSubdomain().size;
                   blocksizes[here.id] += mynumsegs;
@@ -169,7 +169,7 @@ module ConcatenateMsg
                     var newSegs = thisSegs.a + valStart;
                     var thisVals = segString.values;
                     if mode == "interleave" {
-                      coforall loc in Locales {
+                      coforall loc in Locales with (ref blockstarts, ref blockValStarts) {
                         on loc {
                           // Number of strings on this locale for this input array
                           const mynsegs = thisSegs.a.domain.localSubdomain().size;
@@ -227,7 +227,7 @@ module ConcatenateMsg
                             // lookup and cast operand to copy from
                             const o = toSymEntry(getGenericTypedArrayEntry(name, st), int);
                             if mode == "interleave" {
-                              coforall loc in Locales {
+                              coforall loc in Locales with (ref blockstarts) {
                                 on loc {
                                   const size = o.a.domain.localSubdomain().size;
                                   e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.a.domain.localSubdomain()];
@@ -256,7 +256,7 @@ module ConcatenateMsg
                             // lookup and cast operand to copy from
                             const o = toSymEntry(getGenericTypedArrayEntry(name, st), real);
                             if mode == "interleave" {
-                              coforall loc in Locales {
+                              coforall loc in Locales with (ref blockstarts) {
                                 on loc {
                                   const size = o.a.domain.localSubdomain().size;
                                   e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.a.domain.localSubdomain()];
@@ -285,7 +285,7 @@ module ConcatenateMsg
                             // lookup and cast operand to copy from
                             const o = toSymEntry(getGenericTypedArrayEntry(name, st), bool);
                             if mode == "interleave" {
-                              coforall loc in Locales {
+                              coforall loc in Locales with (ref blockstarts) {
                                 on loc {
                                   const size = o.a.domain.localSubdomain().size;
                                   e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.a.domain.localSubdomain()];
@@ -314,7 +314,7 @@ module ConcatenateMsg
                             // lookup and cast operand to copy from
                             const o = toSymEntry(getGenericTypedArrayEntry(name, st), uint);
                             if mode == "interleave" {
-                              coforall loc in Locales {
+                              coforall loc in Locales with (ref blockstarts) {
                                 on loc {
                                   const size = o.a.domain.localSubdomain().size;
                                   e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.a.domain.localSubdomain()];
@@ -344,7 +344,7 @@ module ConcatenateMsg
                             const o = toSymEntry(getGenericTypedArrayEntry(name, st), bigint);
                             max_bits = max(max_bits, o.max_bits);
                             if mode == "interleave" {
-                              coforall loc in Locales {
+                              coforall loc in Locales with (ref blockstarts) {
                                 on loc {
                                   const size = o.a.domain.localSubdomain().size;
                                   tmp[{blockstarts[here.id]..#size}] = o.a.localSlice[o.a.domain.localSubdomain()];
@@ -361,7 +361,7 @@ module ConcatenateMsg
                               start += o.size;
                             }
                         }
-                        st.addEntry(rname, new shared SymEntry(tmp, max_bits));
+                        st.addEntry(rname, createSymEntry(tmp, max_bits));
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                          "created concatenated pdarray: %s".doFormat(st.attrib(rname)));
                     }

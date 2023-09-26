@@ -19,6 +19,7 @@ module EfuncMsg
     use AryUtil;
 
     use ArkoudaBitOpsCompat;
+    use ArkoudaMathCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -215,7 +216,7 @@ module EfuncMsg
                         st.addEntry(rname, new shared SymEntry(atanh(ea)));
                     }
                     when "isnan" {
-                        st.addEntry(rname, new shared SymEntry(isnan(ea)));
+                        st.addEntry(rname, new shared SymEntry(isNan(ea)));
                     }
                     when "hash64" {
                         overMemLimit(numBytes(real) * e.size);

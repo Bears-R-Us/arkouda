@@ -81,19 +81,19 @@ module Message {
             return formatJson(this);
         }
 
-        proc setKey(value: string) {
+        proc ref setKey(value: string) {
             this.key = value;
         }
 
-        proc setVal(value: string) {
+        proc ref setVal(value: string) {
             this.val = value;
         }
 
-        proc setObjType(value: ObjectType) {
+        proc ref setObjType(value: ObjectType) {
             this.ObjectType = value;
         }
 
-        proc setDType(value: string) {
+        proc ref setDType(value: string) {
             this.dtype = value;
         }
 

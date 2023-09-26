@@ -18,6 +18,29 @@ def make_np_arrays(size, dtype):
     return None
 
 
+def make_np_edge_cases(dtype):
+    if dtype == "int64":
+        return np.array([np.iinfo(np.int64).min, -1, 0, 3, np.iinfo(np.int64).max])
+    elif dtype == "uint64":
+        return np.array([17, 2**64-1, 0, 3, 2**63 + 10], dtype=np.uint64)
+    elif dtype == "float64":
+        return np.array(
+            [
+                np.nan,
+                -np.inf,
+                np.finfo(np.float64).min,
+                -3.14,
+                0.0,
+                3.14,
+                8,
+                np.finfo(np.float64).max,
+                np.inf,
+                np.nan,
+            ]
+        )
+    return None
+
+
 class TestExtrema:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", ["int64", "uint64", "float64"])
@@ -33,6 +56,34 @@ class TestExtrema:
         # compare maximums against last K elements from sorted array
         assert (ak.maxk(pda, K) == ak_sorted[-K:]).all()
         assert (pda[ak.argmaxk(pda, K)] == ak_sorted[-K:]).all()
+
+    @pytest.mark.parametrize("dtype", ["int64", "uint64", "float64"])
+    def test_extrema_edge_cases(self, dtype):
+        edge_cases = make_np_edge_cases(dtype)
+        size = edge_cases.size // 2
+        # Due to #2754, we need to have replacement off to avoid all values = min/max(dtype)
+        npa = np.random.choice(edge_cases, edge_cases.size // 2, replace=False)
+        pda = ak.array(npa)
+        K = size // 2
+        np_sorted = np.sort(npa)
+
+        # extremas ignore nans
+        non_nan_sorted = np_sorted[~np.isnan(np_sorted)]
+
+        if non_nan_sorted.size >= K:
+            # compare minimums against first K elements from sorted array
+            assert np.allclose(ak.mink(pda, K).to_ndarray(), non_nan_sorted[:K], equal_nan=True)
+            # check for -1s to avoid oob due to #2754
+            arg_min_k = ak.argmink(pda, K)
+            if (arg_min_k != -1).all():
+                assert np.allclose(pda[arg_min_k].to_ndarray(), non_nan_sorted[:K], equal_nan=True)
+
+            # compare maximums against last K elements from sorted array
+            assert np.allclose(ak.maxk(pda, K).to_ndarray(), non_nan_sorted[-K:], equal_nan=True)
+            # check for -1s to avoid oob due to #2754
+            arg_max_k = ak.argmaxk(pda, K)
+            if (arg_max_k != -1).all():
+                assert np.allclose(pda[arg_max_k].to_ndarray(), non_nan_sorted[-K:], equal_nan=True)
 
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     def test_argmin_and_argmax(self, dtype):

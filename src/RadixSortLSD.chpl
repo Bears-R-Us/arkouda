@@ -22,6 +22,7 @@ module RadixSortLSD
     use RangeChunk;
     use Logging;
     use ServerConfig;
+    use ArkoudaBlockCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -63,13 +64,13 @@ module RadixSortLSD
        In-place radix sort a block distributed array
        comparator is used to extract the key from array elements
      */
-    private proc radixSortLSDCore(a:[?aD] ?t, nBits, negs, comparator) {
+    private proc radixSortLSDCore(ref a:[?aD] ?t, nBits, negs, comparator) {
         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "type = %s nBits = %?".doFormat(t:string,nBits));
         var temp = a;
         
         // create a global count array to scan
-        var gD = Block.createDomain({0..#(numLocales * numTasks * numBuckets)});
+        var gD = blockDist.createDomain({0..#(numLocales * numTasks * numBuckets)});
         var globalCounts: [gD] int;
         
         // loop over digits
@@ -78,11 +79,11 @@ module RadixSortLSD
             try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                         "rshift = %?".doFormat(rshift));
             // count digits
-            coforall loc in Locales {
+            coforall loc in Locales with (ref globalCounts) {
                 on loc {
                     // allocate counts
                     var tasksBucketCounts: [Tasks] [0..#numBuckets] int;
-                    coforall task in Tasks {
+                    coforall task in Tasks with (ref tasksBucketCounts) {
                         ref taskBucketCounts = tasksBucketCounts[task];
                         // get local domain's indices
                         var lD = aD.localSubdomain();
@@ -96,7 +97,7 @@ module RadixSortLSD
                         }
                     }//coforall task
                     // write counts in to global counts in transposed order
-                    coforall tid in Tasks {
+                    coforall tid in Tasks with (ref tasksBucketCounts, ref globalCounts) {
                         var aggregator = newDstAggregator(int);
                         for task in Tasks {
                             ref taskBucketCounts = tasksBucketCounts[task];
@@ -118,12 +119,12 @@ module RadixSortLSD
             if vv {printAry("globalStarts =",globalStarts);try! stdout.flush();}
             
             // calc new positions and permute
-            coforall loc in Locales {
+            coforall loc in Locales with (ref a) {
                 on loc {
                     // allocate counts
                     var tasksBucketPos: [Tasks] [0..#numBuckets] int;
                     // read start pos in to globalStarts back from transposed order
-                    coforall tid in Tasks {
+                    coforall tid in Tasks with (ref tasksBucketPos) {
                         var aggregator = newSrcAggregator(int);
                         for task in Tasks {
                             ref taskBucketPos = tasksBucketPos[task];
@@ -134,7 +135,7 @@ module RadixSortLSD
                         }
                         aggregator.flush();
                     }//coforall task
-                    coforall task in Tasks {
+                    coforall task in Tasks with (ref tasksBucketPos, ref a) {
                         ref taskBucketPos = tasksBucketPos[task];
                         // get local domain's indices
                         var lD = aD.localSubdomain();

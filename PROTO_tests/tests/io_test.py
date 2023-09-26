@@ -1244,7 +1244,7 @@ class TestHDF5:
                 # delete variables and verify no longer in the namespace
                 del v
                 with pytest.raises(NameError):
-                    assert not v
+                    assert not v  # noqa: F821
 
             # restore the variables
             data = ak.restore(f"{tmp_dirname}/snapshot_test")

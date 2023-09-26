@@ -17,13 +17,12 @@ from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
+from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index
 from arkouda.numeric import cast as akcast
-from arkouda.numeric import cumsum
-from arkouda.numeric import isnan as akisnan
-from arkouda.numeric import where
+from arkouda.numeric import cumsum, where
 from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
@@ -48,46 +47,13 @@ __all__ = [
 
 
 def groupby_operators(cls):
-    for name in [
-        "all",
-        "any",
-        "argmax",
-        "argmin",
-        "max",
-        "mean",
-        "min",
-        "nunique",
-        "prod",
-        "sum",
-        "OR",
-        "AND",
-        "XOR",
-    ]:
+    for name in GROUPBY_REDUCTION_TYPES:
         setattr(cls, name, cls._make_aggop(name))
     return cls
 
 
-class AggregateOps:
-    """Base class for GroupBy and DiffAggregate containing common functions"""
-
-    def _gbvar(self, values):
-        """Calculate the variance in a groupby"""
-
-        values = akcast(values, "float64")
-        mean = self.gb.mean(values)
-        mean_broad = self.gb.broadcast(mean[1])
-        centered = values - mean_broad
-        var = Series(self.gb.sum(centered * centered))
-        n = self.gb.sum(~akisnan(centered))
-        return var / (n[1] - 1)
-
-    def _gbstd(self, values):
-        """Calculates  the standard deviation in a groupby"""
-        return self._gbvar(values) ** 0.5
-
-
 @groupby_operators
-class GroupBy(AggregateOps):
+class GroupBy:
     """A DataFrame that has been grouped by a subset of columns"""
 
     def __init__(self, gb, df):
@@ -98,8 +64,17 @@ class GroupBy(AggregateOps):
 
     @classmethod
     def _make_aggop(cls, opname):
-        def aggop(self, colname):
-            return Series(self.gb.aggregate(self.df.data[colname], opname))
+        def aggop(self, colnames=None):
+            if isinstance(colnames, str):
+                return Series(self.gb.aggregate(self.df.data[colnames], opname))
+            else:
+                if colnames is None:
+                    colnames = list(self.df.data.keys())
+                if isinstance(colnames, List):
+                    return DataFrame(
+                        {c: self.gb.aggregate(self.df.data[c], opname)[1] for c in colnames},
+                        index=self.gb.unique_keys,
+                    )
 
         return aggop
 
@@ -126,14 +101,6 @@ class GroupBy(AggregateOps):
 
         return DiffAggregate(self.gb, self.df.data[colname])
 
-    def var(self, colname):
-        """Calculate variance of the difference in each group"""
-        return self._gbvar(self.df.data[colname])
-
-    def std(self, colname):
-        """Calculate standard deviation of the difference in each group"""
-        return self._gbstd(self.df.data[colname])
-
     def broadcast(self, x, permute=True):
         """Fill each group’s segment with a constant value.
 
@@ -155,7 +122,7 @@ class GroupBy(AggregateOps):
 
 
 @groupby_operators
-class DiffAggregate(AggregateOps):
+class DiffAggregate:
     """
     A column in a GroupBy that has been differenced.
     Aggregation operations can be done on the result.
@@ -169,14 +136,6 @@ class DiffAggregate(AggregateOps):
         values[1:] = akcast(series_permuted[1:] - series_permuted[:-1], "float64")
         values[gb.segments] = np.nan
         self.values = values
-
-    def var(self):
-        """Calculate variance of the difference in each group"""
-        return self._gbvar(self.values)
-
-    def std(self):
-        """Calculate standard deviation of the difference in each group"""
-        return self._gbstd(self.values)
 
     @classmethod
     def _make_aggop(cls, opname):
@@ -633,6 +592,79 @@ class DataFrame(UserDict):
         new_df = DataFrame(df_dict)
         new_df._set_index(self.index.index[idx])
         return new_df.to_pandas(retain_index=True)[self._columns]
+
+    def transfer(self, hostname, port):
+        """
+        Sends a DataFrame to a different Arkouda server
+
+        Parameters
+        ----------
+        hostname : str
+            The hostname where the Arkouda server intended to
+            receive the DataFrame is running.
+        port : int_scalars
+            The port to send the array over. This needs to be an
+            open port (i.e., not one that the Arkouda server is
+            running on). This will open up `numLocales` ports,
+            each of which in succession, so will use ports of the
+            range {port..(port+numLocales)} (e.g., running an
+            Arkouda server of 4 nodes, port 1234 is passed as
+            `port`, Arkouda will use ports 1234, 1235, 1236,
+            and 1237 to send the array data).
+            This port much match the port passed to the call to
+            `ak.receive_array()`.
+
+
+        Returns
+        -------
+        A message indicating a complete transfer
+
+        Raises
+        ------
+        ValueError
+            Raised if the op is not within the pdarray.BinOps set
+        TypeError
+            Raised if other is not a pdarray or the pdarray.dtype is not
+            a supported dtype
+        """
+        self.update_size()
+        idx = self._index
+        msg_list = []
+        for col in self._columns:
+            if isinstance(self[col], Categorical):
+                msg_list.append(
+                    f"Categorical+{col}+{self[col].codes.name} \
+                +{self[col].categories.name}+{self[col]._akNAcode.name}"
+                )
+            elif isinstance(self[col], SegArray):
+                msg_list.append(f"SegArray+{col}+{self[col].segments.name}+{self[col].values.name}")
+            elif isinstance(self[col], Strings):
+                msg_list.append(f"Strings+{col}+{self[col].name}")
+            elif isinstance(self[col], Fields):
+                msg_list.append(f"Fields+{col}+{self[col].name}")
+            elif isinstance(self[col], IPv4):
+                msg_list.append(f"IPv4+{col}+{self[col].name}")
+            elif isinstance(self[col], Datetime):
+                msg_list.append(f"Datetime+{col}+{self[col].name}")
+            elif isinstance(self[col], BitVector):
+                msg_list.append(f"BitVector+{col}+{self[col].name}")
+            else:
+                msg_list.append(f"pdarray+{col}+{self[col].name}")
+
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd="sendDataframe",
+                args={
+                    "size": len(msg_list),
+                    "idx_name": idx.name,
+                    "columns": msg_list,
+                    "hostname": hostname,
+                    "port": port,
+                },
+            ),
+        )
+        return repMsg
 
     def _shape_str(self):
         return f"{self.size} rows x {self._ncols()} columns"
@@ -1609,7 +1641,14 @@ class DataFrame(UserDict):
         data = self._prep_data(index=index, columns=columns)
         update_hdf(data, prefix_path=prefix_path, repack=repack)
 
-    def to_parquet(self, path, index=False, columns=None, compression: Optional[str] = None):
+    def to_parquet(
+        self,
+        path,
+        index=False,
+        columns=None,
+        compression: Optional[str] = None,
+        convert_categoricals: bool = False,
+    ):
         """
         Save DataFrame to disk as parquet, preserving column names.
 
@@ -1625,6 +1664,11 @@ class DataFrame(UserDict):
             Default None
             Provide the compression type to use when writing the file.
             Supported values: snappy, gzip, brotli, zstd, lz4
+        convert_categoricals: bool
+            Defaults to False
+            Parquet requires all columns to be the same size and Categoricals
+            don't satisfy that requirement.
+            if set, write the equivalent Strings in place of any Categorical columns.
         Returns
         -------
         None
@@ -1644,7 +1688,15 @@ class DataFrame(UserDict):
         from arkouda.io import to_parquet
 
         data = self._prep_data(index=index, columns=columns)
-        to_parquet(data, prefix_path=path, compression=compression)
+        if not convert_categoricals and any(isinstance(val, Categorical) for val in data.values()):
+            raise ValueError(
+                "to_parquet doesn't support Categorical columns. To write the equivalent "
+                "Strings in place of any Categorical columns, rerun with convert_categoricals "
+                "set to True."
+            )
+        to_parquet(
+            data, prefix_path=path, compression=compression, convert_categoricals=convert_categoricals
+        )
 
     @typechecked
     def to_csv(

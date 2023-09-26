@@ -128,6 +128,7 @@ def coargsort(
     array([0, 1, 0, 1])
     """
     from arkouda.categorical import Categorical
+    from arkouda.numeric import cast as akcast
 
     check_type(
         argname="coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
@@ -137,14 +138,17 @@ def coargsort(
     atypes = []
     expanded_arrays = []
     for a in arrays:
-        if isinstance(a, pdarray) and a.dtype == bigint:
+        if not isinstance(a, pdarray) or a.dtype not in [bigint, bool]:
+            expanded_arrays.append(a)
+        elif a.dtype == bigint:
             expanded_arrays.extend(a.bigint_to_uint_arrays())
         else:
-            expanded_arrays.append(a)
+            # cast bool arrays to int
+            expanded_arrays.append(akcast(a, "int"))
 
     for a in expanded_arrays:
         if isinstance(a, pdarray):
-            anames.append("+".join(a._list_component_names()))
+            anames.append(a.name)
             atypes.append(a.objType)
         elif isinstance(a, Categorical):
             anames.append(a.codes.name)

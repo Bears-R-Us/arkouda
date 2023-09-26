@@ -13,6 +13,7 @@ module ParquetMsg {
   use Sort;
   use CommAggregation;
   use AryUtil;
+  use CTypes;
 
   use SegmentedString;
 
@@ -91,12 +92,12 @@ module ParquetMsg {
   }
   
   proc getVersionInfo() {
-    extern proc c_getVersionInfo(): c_string;
+    extern proc c_getVersionInfo(): c_string_ptr;
     extern proc strlen(str): c_int;
     extern proc c_free_string(ptr);
     var cVersionString = c_getVersionInfo();
     defer {
-      c_free_string(cVersionString: c_void_ptr);
+      c_free_string(cVersionString: c_ptr_void);
     }
     var ret: string;
     try {
@@ -118,12 +119,12 @@ module ParquetMsg {
     return (subdoms, (+ reduce lengths));
   }
 
-  proc readFilesByName(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
+  proc readFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
     extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     var fileOffsets = (+ scan sizes) - sizes;
     
-    coforall loc in A.targetLocales() do on loc {
+    coforall loc in A.targetLocales() with (ref A) do on loc {
       var locFiles = filenames;
       var locFiledoms = subdoms;
       var locOffsets = fileOffsets;
@@ -227,7 +228,7 @@ module ParquetMsg {
 
     var listSizes: [filenames.domain] int;
     var file_offset: int = 0;
-    coforall loc in seg_sizes.targetLocales() do on loc{
+    coforall loc in seg_sizes.targetLocales() with (ref listSizes) do on loc{
       var locFiles = filenames;
       var locFiledoms = subdoms;
       
@@ -250,7 +251,7 @@ module ParquetMsg {
 
     var byteSizes: [filenames.domain] int;
 
-    coforall loc in offsets.targetLocales() do on loc {
+    coforall loc in offsets.targetLocales() with (ref byteSizes) do on loc {
       var locFiles = filenames;
       var locFiledoms = subdoms;
       
@@ -294,7 +295,7 @@ module ParquetMsg {
     }
   }
 
-  proc getStrColSize(filename: string, dsetname: string, offsets: [] int) throws {
+  proc getStrColSize(filename: string, dsetname: string, ref offsets: [] int) throws {
     extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
@@ -309,7 +310,7 @@ module ParquetMsg {
     return byteSize;
   }
 
-  proc getListColSize(filename: string, dsetname: string, seg_sizes: [] int) throws {
+  proc getListColSize(filename: string, dsetname: string, ref seg_sizes: [] int) throws {
     extern proc c_getListColumnSize(filename, colname, seg_sizes, numElems, startIdx, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
@@ -447,7 +448,7 @@ module ParquetMsg {
 
         var locDom = A.localSubdomain();
         var locArr = A[locDom];
-        var valPtr: c_void_ptr = nil;
+        var valPtr: c_ptr_void = nil;
         if locArr.size != 0 {
           valPtr = c_ptrTo(locArr);
         }
@@ -559,7 +560,7 @@ module ParquetMsg {
     return filesExist && mode == TRUNCATE;
   }
 
-  private proc writeStringsComponentToParquet(filename, dsetname, values: [] uint(8), offsets: [] int, rowGroupSize, compression, mode, filesExist) throws {
+  private proc writeStringsComponentToParquet(filename, dsetname, ref values: [] uint(8), ref offsets: [] int, rowGroupSize, compression, mode, filesExist) throws {
     extern proc c_writeStrColumnToParquet(filename, chpl_arr, chpl_offsets,
                                           dsetname, numelems, rowGroupSize,
                                           dtype, compression, errMsg): int;
@@ -630,32 +631,32 @@ module ParquetMsg {
     var listSizes: [filedom] int = calcListSizesandOffset(seg_sizes, filenames, sizes, dsetname);
     var segments = (+ scan seg_sizes) - seg_sizes; // converts segment sizes into offsets
     var sname = st.nextName();
-    st.addEntry(sname, new shared SymEntry(segments));
+    st.addEntry(sname, createSymEntry(segments));
     rtnmap.add("segments", "created " + st.attrib(sname));
 
     var vname = st.nextName();
     if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
       var values = makeDistArray((+ reduce listSizes), int);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
       var values = makeDistArray((+ reduce listSizes), uint);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.double || ty == ArrowTypes.float {
       var values = makeDistArray((+ reduce listSizes), real);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.boolean {
       var values = makeDistArray((+ reduce listSizes), bool);
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, new shared SymEntry(values));
+      st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
     }
     else if ty == ArrowTypes.stringArr {
@@ -996,7 +997,7 @@ module ParquetMsg {
 
     var pqErr = new parquetErrorMsg();
 
-    var valPtr: c_void_ptr = nil;
+    var valPtr: c_ptr_void = nil;
     if localVals.size != 0 {
       valPtr = c_ptrTo(localVals);
     }
@@ -1108,8 +1109,8 @@ module ParquetMsg {
 
         var pqErr = new parquetErrorMsg();
         var dtypeRep = ARROWSTRING;
-        var valPtr: c_void_ptr = nil;
-        var offPtr: c_void_ptr = nil;
+        var valPtr: c_ptr_void = nil;
+        var offPtr: c_ptr_void = nil;
 
         // need to get the local string values
         if offIdxRange.size > 0 {
@@ -1287,15 +1288,15 @@ module ParquetMsg {
       var pqErr = new parquetErrorMsg();
       const fname = filenames[idx];
 
-      var ptrList: [0..#ncols] c_void_ptr;
-      var segmentPtr: [0..#ncols] c_void_ptr; // ptrs to offsets for SegArray. Know number of rows so we know where to stop
+      var ptrList: [0..#ncols] c_ptr_void;
+      var segmentPtr: [0..#ncols] c_ptr_void; // ptrs to offsets for SegArray. Know number of rows so we know where to stop
       var objTypes: [0..#ncols] int; // ObjType enum integer values
       var datatypes: [0..#ncols] int;
       var sizeList: [0..#ncols] int;
       var segarray_sizes: [0..#ncols] int; // track # of values in each column. Used to determine last segment size.
 
       var my_column_names = col_names;
-      var c_names: [0..#ncols] c_string;
+      var c_names: [0..#ncols] c_string_ptr;
 
       var segment_ct: [0..#ncols] int;
       var seg_sizes_str: [0..#ncols] int; // Track the sizes of string columns and # of segments in segarray str column
@@ -1422,7 +1423,7 @@ module ParquetMsg {
               var valIdxRange = startValIdx..endValIdx;
               ref olda = ss.values.a;
               str_vals[si..#valIdxRange.size] = olda[valIdxRange];
-              ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
+              ptrList[i] = c_ptrTo(str_vals[si]): c_ptr_void;
               sizeList[i] = locDom.size;
             }
           }
@@ -1459,7 +1460,7 @@ module ParquetMsg {
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   int_vals[ui..#valIdxRange.size] = olda[valIdxRange];
-                  ptrList[i] = c_ptrTo(int_vals[ui]): c_void_ptr;
+                  ptrList[i] = c_ptrTo(int_vals[ui]): c_ptr_void;
                 }
                 when DType.UInt64 {
                   segarray_sizes[i] = seg_sizes_int[i];
@@ -1472,7 +1473,7 @@ module ParquetMsg {
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   int_vals[ui..#valIdxRange.size] = olda[valIdxRange]: int;
-                  ptrList[i] = c_ptrTo(int_vals[ui]): c_void_ptr;
+                  ptrList[i] = c_ptrTo(int_vals[ui]): c_ptr_void;
                 }
                 when DType.Float64 {
                   segarray_sizes[i] = seg_sizes_real[i];
@@ -1485,7 +1486,7 @@ module ParquetMsg {
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   real_vals[ri..#valIdxRange.size] = olda[valIdxRange];
-                  ptrList[i] = c_ptrTo(real_vals[ri]): c_void_ptr;
+                  ptrList[i] = c_ptrTo(real_vals[ri]): c_ptr_void;
                 }
                 when DType.Bool {
                   segarray_sizes[i] = seg_sizes_bool[i];
@@ -1498,7 +1499,7 @@ module ParquetMsg {
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
                   bool_vals[bi..#valIdxRange.size] = olda[valIdxRange];
-                  ptrList[i] = c_ptrTo(bool_vals[bi]): c_void_ptr;
+                  ptrList[i] = c_ptrTo(bool_vals[bi]): c_ptr_void;
                 }
                 when DType.Strings {
                   segarray_sizes[i] = val_sizes_str[i];
@@ -1525,7 +1526,7 @@ module ParquetMsg {
                     var endValIdx = if (lastOffsetIdx == offIdxRange.high) then lastValIdx else oldOff[offIdxRange.high + 1] - 1;
                     var valIdxRange = startValIdx..endValIdx;
                     str_vals[si..#valIdxRange.size] = oldVal[valIdxRange];
-                    ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
+                    ptrList[i] = c_ptrTo(str_vals[si]): c_ptr_void;
                   }
                 }
                 otherwise {
@@ -1580,7 +1581,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWINT64;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr_void;
                   sizeList[i] = locDom.size;
                 }
               }
@@ -1591,7 +1592,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWUINT64;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr_void;
                   sizeList[i] = locDom.size;
                 }
               }
@@ -1602,7 +1603,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWDOUBLE;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr_void;
                   sizeList[i] = locDom.size;
                 }
               }
@@ -1613,7 +1614,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWBOOLEAN;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr_void;
                   sizeList[i] = locDom.size;
                 }
               }

@@ -48,24 +48,25 @@ module HistogramMsg
               hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                            "%? <= %?".doFormat(bins,sBound));
               var hist = histogramReduceIntent(e.a, aMin, aMax, bins, binWidth);
-              st.addEntry(rname, new shared SymEntry(hist));
+              st.addEntry(rname, createSymEntry(hist));
           }
           else if (bins <= mBound) {
               hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                            "%? <= %?".doFormat(bins,mBound));
               var hist = histogramLocalAtomic(e.a, aMin, aMax, bins, binWidth);
-              st.addEntry(rname, new shared SymEntry(hist));
+              st.addEntry(rname, createSymEntry(hist));
           }
           else {
               hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "%? > %?".doFormat(bins,mBound));
               var hist = histogramGlobalAtomic(e.a, aMin, aMax, bins, binWidth);
-              st.addEntry(rname, new shared SymEntry(hist));
+              st.addEntry(rname, createSymEntry(hist));
           }
         }
 
         select (gEnt.dtype) {
             when (DType.Int64)   {histogramHelper(int);}
+            when (DType.UInt64)   {histogramHelper(uint);}
             when (DType.Float64) {histogramHelper(real);}
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);

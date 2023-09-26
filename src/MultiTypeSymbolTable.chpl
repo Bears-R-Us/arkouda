@@ -62,7 +62,7 @@ module MultiTypeSymbolTable
         proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws {
             var A = makeDistArray(len, t);
 
-            var entry = new shared SymEntry(A);
+            var entry = createSymEntry(A);
             if (tab.contains(name)) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                         "redefined symbol: %s ".doFormat(name));
@@ -312,7 +312,7 @@ module MultiTypeSymbolTable
 
         :returns: array of JSON formatted strings
         */
-        proc getEntries(infoList:map): [] string throws {
+        proc getEntries(infoList:map(string, shared AbstractSymEntry)): [] string throws {
             var entries: [1..infoList.size] string;
             var i = 0;
             for name in infoList.keys() {

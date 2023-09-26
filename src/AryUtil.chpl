@@ -12,6 +12,7 @@ module AryUtil
 
     use ArkoudaPOSIXCompat;
     use ArkoudaCTypesCompat;
+    use ArkoudaBlockCompat;
 
     param bitsPerDigit = RSLSD_bitsPerDigit;
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
@@ -129,7 +130,7 @@ module AryUtil
     */
     proc contiguousIndices(A: []) param {
         use BlockDist;
-        return A.isDefaultRectangular() || isSubtype(A.domain.dist.type, Block);
+        return A.isDefaultRectangular() || isSubtype(A.domain.distribution.type, blockDist);
     }
 
     /*
@@ -248,8 +249,12 @@ module AryUtil
 
     inline proc getBitWidth(a: [?aD] real): (int, bool) {
       const bitWidth = numBits(real);
-      const negs = signbit(min reduce a);
+      const negs = | reduce signbit(a);
       return (bitWidth, negs);
+    }
+
+    inline proc getBitWidth(a: [?aD] bool): (int, bool) {
+      return (1, false);
     }
 
     inline proc getBitWidth(a: [?aD] (uint, uint)): (int, bool) {
@@ -334,6 +339,7 @@ module AryUtil
           when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
           when DType.UInt64  { (bitWidth, neg) = getBitWidth(toSymEntry(g, uint).a); }
           when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
+          when DType.Bool { (bitWidth, neg) = getBitWidth(toSymEntry(g, bool).a); }
           otherwise {
             throw getErrorWithContext(
                                       msg=dtype2str(g.dtype),
@@ -377,6 +383,7 @@ module AryUtil
           when DType.Int64   { mergeArray(int); }
           when DType.UInt64  { mergeArray(uint); }
           when DType.Float64 { mergeArray(real); }
+          when DType.Bool { mergeArray(bool); }
           otherwise {
             throw getErrorWithContext(
                                       msg=dtype2str(g.dtype),
@@ -406,7 +413,7 @@ module AryUtil
         /* Do we own the memory? */
         var isOwned: bool = false;
 
-        proc init(A: [] ?t, region: range()) {
+        proc init(ref A: [] ?t, region: range()) {
             use CommPrimitives;
             use CTypes;
 

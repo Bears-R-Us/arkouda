@@ -40,7 +40,7 @@ module SequenceMsg {
             forall (ei, i) in zip(ea, ead) {
                 ei = start + (i * stride);
             }
-            var e = st.addEntry(rname, new shared SymEntry(ea));
+            var e = st.addEntry(rname, createSymEntry(ea));
             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                         "compute time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
         }

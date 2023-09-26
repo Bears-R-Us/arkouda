@@ -1,8 +1,8 @@
-import arkouda as ak
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 import pytest
+
+import arkouda as ak
 
 
 def build_op_table():
@@ -116,12 +116,11 @@ class TestDatetime:
             r_is_supported,
             return_type,
         ) in build_op_table().items():
-            fcvec = vectors[firstclass]
-            pdfcvec = pdvectors[firstclass]
-            fcsca = scalars[firstclass]
-            scvec = vectors[secondclass]
-            pdscvec = pdvectors[secondclass]
-            scsca = scalars[secondclass]
+            fcvec = vectors[firstclass]  # noqa: F841
+            pdfcvec = pdvectors[firstclass]  # noqa: F841
+            scvec = vectors[secondclass]  # noqa: F841
+            pdscvec = pdvectors[secondclass]  # noqa: F841
+            scsca = scalars[secondclass]  # noqa: F841
             if not is_supported:
                 with pytest.raises(TypeError):
                     eval(f"fcvec {op} scvec")
@@ -153,7 +152,8 @@ class TestDatetime:
                     except AssertionError as e:
                         if verbose:
                             print(
-                                f"arkouda vs pandas discrepancy in {firstclass.__name__} {op} {secondclass.__name__}:\n {ret} {pdret}"
+                                f"arkouda vs pandas discrepancy in {firstclass.__name__}"
+                                f" {op} {secondclass.__name__}:\n {ret} {pdret}"
                             )
                         raise e
 
@@ -188,7 +188,8 @@ class TestDatetime:
                 except TypeError:
                     if verbose:
                         print(
-                            f"Pandas does not support {secondclass.__name__}(scalar) {op} {firstclass.__name__}"
+                            f"Pandas does not support {secondclass.__name__}(scalar) "
+                            f"{op} {firstclass.__name__}"
                         )
                     metrics["ak_yes_pd_no"] += 1
                     compare_flag = False
@@ -198,7 +199,8 @@ class TestDatetime:
                     except AttributeError:
                         if verbose:
                             print(
-                                f"Unexpected pandas return: {secondclass}(scalar) {op} {firstclass} -> {type(pdret)}: {pdret}"
+                                f"Unexpected pandas return: {secondclass}(scalar) "
+                                f"{op} {firstclass} -> {type(pdret)}: {pdret}"
                             )
         if verbose:
             print(f"{metrics.items()}")
@@ -327,10 +329,14 @@ class TestDatetime:
         # https://github.com/pandas-dev/pandas/blob/main/pandas/tests/scalar/timestamp/test_timestamp.py
         for date in "2013-12-31", "2008-12-28", "2009-12-31", "2010-01-01", "2010-01-03":
             ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="w")).week.to_list()
-            pd_week = pd.Series(pd.date_range(date, periods=10, freq="w")).dt.isocalendar().week.to_list()
+            pd_week = (
+                pd.Series(pd.date_range(date, periods=10, freq="w")).dt.isocalendar().week.to_list()
+            )
             assert ak_week == pd_week
 
         for date in "2000-01-01", "2005-01-01":
             ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="d")).week.to_list()
-            pd_week = pd.Series(pd.date_range(date, periods=10, freq="d")).dt.isocalendar().week.to_list()
+            pd_week = (
+                pd.Series(pd.date_range(date, periods=10, freq="d")).dt.isocalendar().week.to_list()
+            )
             assert ak_week == pd_week

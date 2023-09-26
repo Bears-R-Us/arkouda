@@ -19,6 +19,8 @@ module ReductionMsg
     use AryUtil;
     use PrivateDist;
     use RadixSortLSD;
+    use ArkoudaMathCompat;
+    use ArkoudaBlockCompat;
 
     private config const lBins = 2**25 * numLocales;
 
@@ -95,7 +97,7 @@ module ReductionMsg
                     }
                     when "is_locally_sorted" {
                       var locSorted: [LocaleSpace] bool;
-                      coforall loc in Locales {
+                      coforall loc in Locales with (ref locSorted) {
                         on loc {
                           ref myA = e.a[e.a.localSubdomain()];
                           locSorted[here.id] = isSorted(myA);
@@ -255,6 +257,12 @@ module ReductionMsg
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
                         repMsg = "int64 %i".doFormat(minLoc);
                     }
+                    when "is_sorted" {
+                        var sorted = isSorted(e.a);
+                        var val:string;
+                        if sorted {val = "True";} else {val = "False";}
+                        repMsg = "bool %s".doFormat(val);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -290,7 +298,7 @@ module ReductionMsg
           return new MsgTuple(errorMsg, MsgType.ERROR); 
       }
       var counts = segCount(segments.a, size);
-      st.addEntry(rname, new shared SymEntry(counts));
+      st.addEntry(rname, createSymEntry(counts));
 
       var repMsg = "created " + st.attrib(rname);
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       
@@ -314,7 +322,7 @@ module ReductionMsg
 
     proc nanCounts(values:[] ?t, segments:[?D] int) throws {
       // count cumulative nans over all values
-      var cumnans = isnan(values):int;
+      var cumnans = isNan(values):int;
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
       overMemLimit(numBytes(int) * values.size);
       cumnans = + scan cumnans;
@@ -366,59 +374,59 @@ module ReductionMsg
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "prod" {
                         var res = segProduct(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "var" {
                         var res = segVar(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "std" {
                         var res = segStd(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "mean" {
                         var res = segMean(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "median" {
                         var res = segMedian(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "min" {
                         var res = segMin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "max" {
                         var res = segMax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "argmin" {
                         var (vals, locs) = segArgmin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "argmax" {
                         var (vals, locs) = segArgmax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "or" {
                         var res = segOr(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "and" {
                         var res = segAnd(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "xor" {
                         var res = segXor(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "nunique" {
                         var res = segNumUnique(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
@@ -432,59 +440,59 @@ module ReductionMsg
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "prod" {
                         var res = segProduct(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "var" {
                         var res = segVar(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "std" {
                         var res = segStd(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "mean" {
                         var res = segMean(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "median" {
                         var res = segMedian(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "min" {
                         var res = segMin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "max" {
                         var res = segMax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "argmin" {
                         var (vals, locs) = segArgmin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "argmax" {
                         var (vals, locs) = segArgmax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "or" {
                         var res = segOr(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "and" {
                         var res = segAnd(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "xor" {
                         var res = segXor(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "nunique" {
                         var res = segNumUnique(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
@@ -498,43 +506,43 @@ module ReductionMsg
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "prod" {
                         var res = segProduct(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     } 
                     when "var" {
                         var res = segVar(values.a, segments.a, ddof, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "std" {
                         var res = segStd(values.a, segments.a, ddof, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "mean" {
                         var res = segMean(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "median" {
                         var res = segMedian(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "min" {
                         var res = segMin(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "max" {
                         var res = segMax(values.a, segments.a, skipNan);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "argmin" {
                         var (vals, locs) = segArgmin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "argmax" {
                         var (vals, locs) = segArgmax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
@@ -548,39 +556,39 @@ module ReductionMsg
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "any" {
                         var res = segAny(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "all" {
                         var res = segAll(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "var" {
                         var res = segVar(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "std" {
                         var res = segStd(values.a, segments.a, ddof);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "mean" {
                         var res = segMean(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "median" {
                         var res = segMedian(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "argmin" {
                         var (vals, locs) = segArgmin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     when "argmax" {
                         var (vals, locs) = segArgmax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(locs));
+                        st.addEntry(rname, createSymEntry(locs));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
@@ -599,32 +607,32 @@ module ReductionMsg
                 select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "min" {
                         if !has_max_bits {
                           throw new Error("Must set max_bits to MIN");
                         }
                         var res = segMin(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "max" {
                         if !has_max_bits {
                           throw new Error("Must set max_bits to MAX");
                         }
                         var res = segMax(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "or" {
                         var res = segOr(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     when "and" {
                         if !has_max_bits {
                           throw new Error("Must set max_bits to AND");
                         }
                         var res = segAnd(values.a, segments.a);
-                        st.addEntry(rname, new shared SymEntry(res));
+                        st.addEntry(rname, createSymEntry(res));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
@@ -658,7 +666,7 @@ module ReductionMsg
       var flagvalues: [vD] (bool, t); // = [v in values] (false, v);
       if isRealType(t) && skipNan {
         forall (fv, val) in zip(flagvalues, values) {
-          fv = if isnan(val) then (false, 0.0) else (false, val);
+          fv = if isNan(val) then (false, 0.0) else (false, val);
         }
       } else {
         forall (fv, val) in zip(flagvalues, values) {
@@ -771,7 +779,7 @@ module ReductionMsg
       var magnitudes: [values.domain] real;
       if (isRealType(t) && skipNan) {
         forall (m, v, z) in zip(magnitudes, values, isZero) {
-          if isnan(v) {
+          if isNan(v) {
             m = 1.0;
           } else {
             m = abs(v) + z:real;
@@ -798,7 +806,7 @@ module ReductionMsg
       return res;
     }
 
-    proc segVar(values:[?vD] ?t, segments:[?D] int, ddof:int, skipNan=false): [D] real throws {
+    proc segVar(ref values:[?vD] ?t, segments:[?D] int, ddof:int, skipNan=false): [D] real throws {
       var res: [D] real;
       if D.size == 0 { return res; }
 
@@ -807,27 +815,27 @@ module ReductionMsg
       // expand mean per segment to be size of values
       const expandedMeans = [k in expandKeys(vD, segments)] means[k];
       var squaredDiffs: [vD] real;
-      // First deal with any NANs and calculate squaredDiffs
+      // First deal with any nans and calculate squaredDiffs
       if isRealType(t) && skipNan {
-        // calculate counts with nan values excluded and 0 out the NANs
-        squaredDiffs = [(v,m) in zip(values, expandedMeans)] if isnan(v) then 0:real else (v - m)**2;
+        // calculate counts with nan values excluded and 0 out the nans
+        squaredDiffs = [(v,m) in zip(values, expandedMeans)] if isNan(v) then 0:real else (v - m)**2;
         counts -= nanCounts(values, segments);
       }
       else {
         squaredDiffs = [(v,m) in zip(values, expandedMeans)] (v:real - m)**2;
       }
       forall (r, s, c) in zip(res, segSum(squaredDiffs, segments), counts) {
-        r = if c-ddof > 0 then s / (c-ddof):real else NAN;
+        r = if c-ddof > 0 then s / (c-ddof):real else nan;
       }
       return res;
     }
 
-    proc segStd(values:[] ?t, segments:[?D] int, ddof:int, skipNan=false): [D] real throws {
+    proc segStd(ref values:[] ?t, segments:[?D] int, ddof:int, skipNan=false): [D] real throws {
       if D.size == 0 { return [D] 0.0; }
       return sqrt(segVar(values, segments, ddof, skipNan));
     }
 
-    proc segMean(values:[] ?t, segments:[?D] int, skipNan=false): [D] real throws {
+    proc segMean(ref values:[] ?t, segments:[?D] int, skipNan=false): [D] real throws {
       var res: [D] real;
       if (D.size == 0) { return res; }
       // convert to real early to avoid int overflow
@@ -839,7 +847,7 @@ module ReductionMsg
         // first verify that we can make a copy of real_values
         overMemLimit(numBytes(real) * real_values.size);
         // calculate sum and counts with nan real_values replaced with 0.0
-        var arrCopy = [elem in real_values] if isnan(elem) then 0.0 else elem;
+        var arrCopy = [elem in real_values] if isNan(elem) then 0.0 else elem;
         sums = segSum(arrCopy, segments);
         counts = segCount(segments, real_values.size) - nanCounts(real_values, segments);
       } else {
@@ -854,19 +862,19 @@ module ReductionMsg
       return res;
     }
 
-    proc segMedian(values:[?vD] ?intype, segments:[?D] int, skipNan=false): [D] real throws {
+    proc segMedian(ref values:[?vD] ?intype, segments:[?D] int, skipNan=false): [D] real throws {
       type t = if intype == bool then int else intype;
       var res: [D] real;
       if (D.size == 0) { return res; }
 
       var counts = segCount(segments, values.size);
       var noNanVals = values: t;
-      // First deal with any NANs
+      // First deal with any nans
       if isRealType(t) && skipNan {
         // calculate counts with nan values excluded and replace nan with max(real)
         // this will force them at the very end of the sorted segment and since
         // counts has been corrected, they won't affect the result
-        noNanVals = [elem in values] if isnan(elem) then max(real) else elem;
+        noNanVals = [elem in values] if isNan(elem) then max(real) else elem;
         counts -= nanCounts(values, segments);
       }
 
@@ -919,7 +927,7 @@ module ReductionMsg
       var keys = expandKeys(vD, segments);
       var kv: [keys.domain] (int, t);
       if (isRealType(t) && skipNan) {
-        var arrCopy = [elem in values] if isnan(elem) then max(real) else elem;
+        var arrCopy = [elem in values] if isNan(elem) then max(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (-k, v);
       } else {
         kv = [(k, v) in zip(keys, values)] (-k, v);
@@ -980,7 +988,7 @@ module ReductionMsg
       var keys = expandKeys(vD, segments);
       var kv: [keys.domain] (int, t);
       if (isRealType(t) && skipNan) {
-        var arrCopy = [elem in values] if isnan(elem) then min(real) else elem;
+        var arrCopy = [elem in values] if isNan(elem) then min(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (k, v);
       } else {
         kv = [(k, v) in zip(keys, values)] (k, v);
@@ -1365,7 +1373,7 @@ module ReductionMsg
       var count: [kD] int = (+ scan truth);
       var pop = count[kD.high];
       // find steps to get unique (key, val) pairs
-      var hD: domain(1) dmapped Block(boundingBox={0..#pop}) = {0..#pop};
+      var hD: domain(1) dmapped blockDist(boundingBox={0..#pop}) = {0..#pop};
       // save off only the key from each pair (now there will be nunique of each key)
       var keyhits: [hD] int;
       forall i in truth.domain with (var agg = newDstAggregator(int)) {
@@ -1386,7 +1394,7 @@ module ReductionMsg
       overMemLimit(numBytes(int) * truth2.size);
       var kiv: [hD] int = (+ scan truth2);
       var nKeysPresent = kiv[hD.high];
-      var nD: domain(1) dmapped Block(boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)};
+      var nD: domain(1) dmapped blockDist(boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)};
       // get step indices and take diff to get number of times each key appears
       var stepInds: [nD] int;
       stepInds[nKeysPresent] = keyhits.size;

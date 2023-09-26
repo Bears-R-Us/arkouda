@@ -1,6 +1,6 @@
-import arkouda as ak
 import pytest
 
+import arkouda as ak
 from server_util.test.server_test_util import start_arkouda_server
 
 
@@ -76,7 +76,7 @@ class TestClient:
         """
         try:
             config = ak.client.get_config()
-            a = ak.ones(1024 * 1024 * config["numLocales"])
+            a = ak.ones(1024 * 1024 * config["numLocales"])  # noqa: F841
             mem_used = ak.client.get_mem_used()
         except Exception as e:
             raise AssertionError(e)

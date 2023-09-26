@@ -86,17 +86,17 @@ module SortMsg
           when (DType.Int64) {
               var e = toSymEntry(gEnt, int);
               var sorted = doSort(e.a);
-              st.addEntry(sortedName, new shared SymEntry(sorted));
+              st.addEntry(sortedName, createSymEntry(sorted));
           }// end when(DType.Int64)
           when (DType.UInt64) {
               var e = toSymEntry(gEnt, uint);
               var sorted = doSort(e.a);
-              st.addEntry(sortedName, new shared SymEntry(sorted));
+              st.addEntry(sortedName, createSymEntry(sorted));
           }// end when(DType.UInt64)
           when (DType.Float64) {
               var e = toSymEntry(gEnt, real);
               var sorted = doSort(e.a);
-              st.addEntry(sortedName, new shared SymEntry(sorted));
+              st.addEntry(sortedName, createSymEntry(sorted));
           }// end when(DType.Float64)
           otherwise {
               var errorMsg = notImplementedError(pn,gEnt.dtype);

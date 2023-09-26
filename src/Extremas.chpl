@@ -45,7 +45,7 @@ to increase the efficiency of the merge step.
     // Push a value into the KExtreme
     // instance, only pushes a value if
     // it is an encountered extreme
-    proc push(val: (eltType, int)) {
+    proc ref push(val: (eltType, int)) {
 
       // Accumulate/push can be called after combine/merge. This routine
       // expects the data to be a heap and not sorted, so it would fail if we
@@ -72,7 +72,7 @@ to increase the efficiency of the merge step.
 
     // Restore heap property from the
     // top element down
-    proc heapifyDown() {
+    proc ref heapifyDown() {
       var i = 0;
       while(i < size) {
         const initial = i;
@@ -94,7 +94,7 @@ to increase the efficiency of the merge step.
 
     // Sort the KExtreme values if needed,
     // moving from a heap to a sorted array
-    proc doSort() {
+    proc ref doSort() {
       sort(_data);
       isSorted = true;
     }

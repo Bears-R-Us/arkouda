@@ -1,8 +1,10 @@
-from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
-import pytest
 import json
-from arkouda.client import _json_args_to_str
+
+import pytest
+
 import arkouda as ak
+from arkouda.client import _json_args_to_str
+from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
 
 
 class TestMessage:
@@ -38,6 +40,7 @@ class TestMessage:
         msgNonDupe = RequestMessage(
             user="user1", token="token", cmd="connect", format=MessageFormat.BINARY
         )
+        min_msg = RequestMessage(user="user1", cmd="connect")
 
         assert "user1" == msg.user
         assert "token" == msg.token
@@ -47,39 +50,21 @@ class TestMessage:
         assert msg == msgDupe
         assert msg != msgNonDupe
 
-        assert (
-            "RequestMessage(user='user1', token='token', cmd='connect', format=STRING, args=None, size=-1)"
-            == str(msg)
+        rep_msg = (
+            "RequestMessage(user='user1', token={}, cmd='connect', format=STRING, args=None, size=-1)"
         )
+        assert rep_msg.format("'token'") == str(msg)
+        assert rep_msg.format("'token'") == repr(msg)
+        assert rep_msg.format("None") == str(min_msg)
+        assert rep_msg.format("None") == repr(min_msg)
 
-        assert (
-            "RequestMessage(user='user1', token='token', cmd='connect', format=STRING, args=None, size=-1)"
-            == repr(msg)
+        dict_msg = (
+            '{{"user": "user1", "token": {}, "cmd": "connect", "format": "STRING", "args": "",'
+            ' "size": -1}}'
         )
-
-        assert (
-            '{"user": "user1", "token": "token", "cmd": "connect", "format": "STRING", "args": "", "size": -1}'
-            == json.dumps(msg.asdict())
-        )
-
+        assert dict_msg.format('"token"') == json.dumps(msg.asdict())
+        assert dict_msg.format('""') == json.dumps(min_msg.asdict())
         assert json.loads(json.dumps(msg.asdict())) == msg.asdict()
-
-        min_msg = RequestMessage(user="user1", cmd="connect")
-
-        assert (
-            "RequestMessage(user='user1', token=None, cmd='connect', format=STRING, args=None, size=-1)"
-            == str(min_msg)
-        )
-
-        assert (
-            "RequestMessage(user='user1', token=None, cmd='connect', format=STRING, args=None, size=-1)"
-            == repr(min_msg)
-        )
-
-        assert (
-            '{"user": "user1", "token": "", "cmd": "connect", "format": "STRING", "args": "", "size": -1}'
-            == json.dumps(min_msg.asdict())
-        )
 
     def test_reply_msg(self):
         msg = ReplyMessage(msg="normal result", msgType=MessageType.NORMAL, user="user")
@@ -175,8 +160,8 @@ class TestJSONArgs:
         assert args == expected
 
     def test_list_addl_str(self):
-        l = ["abc", "def", "l", "mn", "op"]
-        size, args = _json_args_to_str({"str_list": l})
+        string_list = ["abc", "def", "l", "mn", "op"]
+        size, args = _json_args_to_str({"str_list": string_list})
 
         expected = json.dumps(
             [
@@ -184,8 +169,8 @@ class TestJSONArgs:
                     {
                         "key": "str_list",
                         "objType": "LIST",
-                        "dtype": ak.resolve_scalar_dtype(l[0]),
-                        "val": json.dumps(l),
+                        "dtype": ak.resolve_scalar_dtype(string_list[0]),
+                        "val": json.dumps(string_list),
                     }
                 ),
             ]

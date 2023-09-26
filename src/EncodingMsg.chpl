@@ -55,7 +55,7 @@ module EncodingMsg {
       return (encodeOffsets, encodedValues);
     }
 
-    proc getBufLengths(segments: [?D] int, values: [?vD] ?t, toEncoding: string, fromEncoding: string) throws {
+    proc getBufLengths(segments: [?D] int, ref values: [?vD] ?t, toEncoding: string, fromEncoding: string) throws {
       var res: [D] int;
       if (D.size == 0) {
         return res;
@@ -64,7 +64,7 @@ module EncodingMsg {
       const (startSegInds, numSegs, lengths) = computeSegmentOwnership(segments, vD);
     
       // Start task parallelism
-      coforall loc in Locales {
+      coforall loc in Locales with (ref values, ref res) {
         on loc {
           const locTo = toEncoding;
           const locFrom = fromEncoding;
@@ -96,7 +96,7 @@ module EncodingMsg {
       return res;
     }
 
-    proc encodeSegments(segments: [?D] int, values: [?vD] uint(8), encodeOffsets: [D] int, encodeLengths: [D] int, toEncoding: string, fromEncoding: string) throws {
+    proc encodeSegments(segments: [?D] int, ref values: [?vD] uint(8), encodeOffsets: [D] int, encodeLengths: [D] int, toEncoding: string, fromEncoding: string) throws {
       var res = makeDistArray(+ reduce encodeLengths, uint(8));
       if (D.size == 0) {
         return res;
@@ -106,7 +106,7 @@ module EncodingMsg {
       const (eStartSegInds, eNumSegs, eLengths) = computeSegmentOwnership(encodeOffsets, res.domain);
     
       // Start task parallelism
-      coforall loc in Locales {
+      coforall loc in Locales with (ref values, ref res) {
         on loc {
           const locTo = toEncoding;
           const locFrom = fromEncoding;

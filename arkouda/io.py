@@ -43,6 +43,8 @@ __all__ = [
     "update_hdf",
     "snapshot",
     "restore",
+    "receive",
+    "receive_dataframe",
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -1047,7 +1049,7 @@ def import_data(read_path: str, write_file: str = None, return_obj: bool = True,
     from arkouda.dataframe import DataFrame
 
     # verify file path
-    is_glob = False if os.path.isfile(read_path) else True
+    is_glob = not os.path.isfile(read_path)
     file_list = glob.glob(read_path)
     if len(file_list) == 0:
         raise FileNotFoundError(f"Invalid read_path, {read_path}. No files found.")
@@ -1162,6 +1164,7 @@ def _bulk_write_prep(
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
     names: List[str] = None,
+    convert_categoricals: bool = False,
 ):
     datasetNames = []
     if names is not None:
@@ -1183,6 +1186,11 @@ def _bulk_write_prep(
     if len(data) == 0:
         raise RuntimeError("No data was found.")
 
+    if convert_categoricals:
+        for i, val in enumerate(data):
+            if isinstance(val, Categorical):
+                data[i] = val.categories[val.codes]
+
     col_objtypes = [c.objType for c in data]
 
     return datasetNames, data, col_objtypes
@@ -1197,6 +1205,7 @@ def to_parquet(
     names: List[str] = None,
     mode: str = "truncate",
     compression: Optional[str] = None,
+    convert_categoricals: bool = False,
 ) -> None:
     """
     Save multiple named pdarrays to Parquet files.
@@ -1217,7 +1226,11 @@ def to_parquet(
             Default None
             Provide the compression type to use when writing the file.
             Supported values: snappy, gzip, brotli, zstd, lz4
-
+        convert_categoricals: bool
+            Defaults to False
+            Parquet requires all columns to be the same size and Categoricals
+            don't satisfy that requirement.
+            if set, write the equivalent Strings in place of any Categorical columns.
 
     Returns
     -------
@@ -1258,7 +1271,6 @@ def to_parquet(
     """
     if mode.lower() not in ["append", "truncate"]:
         raise ValueError("Allowed modes are 'truncate' and 'append'")
-
     if mode.lower() == "append":
         warn(
             "Append has been deprecated when writing Parquet files. "
@@ -1266,7 +1278,7 @@ def to_parquet(
             DeprecationWarning,
         )
 
-    datasetNames, data, col_objtypes = _bulk_write_prep(columns, names)
+    datasetNames, data, col_objtypes = _bulk_write_prep(columns, names, convert_categoricals)
     # append or single column use the old logic
     if mode.lower() == "append" or len(data) == 1:
         for arr, name in zip(data, cast(List[str], datasetNames)):
@@ -2126,3 +2138,81 @@ def restore(filename):
     """
     restore_files = glob.glob(f"{filename}_SNAPSHOT_LOCALE*")
     return read_hdf(sorted(restore_files))
+
+
+def receive(hostname: str, port):
+    """
+    Receive a pdarray sent by `pdarray.transfer()`.
+
+    Parameters
+    ----------
+    hostname : str
+        The hostname of the pdarray that sent the array
+    port : int_scalars
+        The port to send the array over. This needs to be an
+        open port (i.e., not one that the Arkouda server is
+        running on). This will open up `numLocales` ports,
+        each of which in succession, so will use ports of the
+        range {port..(port+numLocales)} (e.g., running an
+        Arkouda server of 4 nodes, port 1234 is passed as
+        `port`, Arkouda will use ports 1234, 1235, 1236,
+        and 1237 to send the array data).
+        This port much match the port passed to the call to
+        `pdarray.transfer()`.
+
+    Returns
+    -------
+    pdarray
+        The pdarray sent from the sending server to the current
+        receiving server.
+
+    Raises
+    ------
+    ValueError
+        Raised if the op is not within the pdarray.BinOps set
+    TypeError
+        Raised if other is not a pdarray or the pdarray.dtype is not
+        a supported dtype
+    """
+    rep_msg = generic_msg(cmd="receiveArray", args={"hostname": hostname, "port": port})
+    rep = json.loads(rep_msg)
+    return _build_objects(rep)
+
+
+def receive_dataframe(hostname: str, port):
+    """
+    Receive a pdarray sent by `dataframe.transfer()`.
+
+    Parameters
+    ----------
+    hostname : str
+        The hostname of the dataframe that sent the array
+    port : int_scalars
+        The port to send the dataframe over. This needs to be an
+        open port (i.e., not one that the Arkouda server is
+        running on). This will open up `numLocales` ports,
+        each of which in succession, so will use ports of the
+        range {port..(port+numLocales)} (e.g., running an
+        Arkouda server of 4 nodes, port 1234 is passed as
+        `port`, Arkouda will use ports 1234, 1235, 1236,
+        and 1237 to send the array data).
+        This port much match the port passed to the call to
+        `pdarray.send_array()`.
+
+    Returns
+    -------
+    pdarray
+        The dataframe sent from the sending server to the
+        current receiving server.
+
+    Raises
+    ------
+    ValueError
+        Raised if the op is not within the pdarray.BinOps set
+    TypeError
+        Raised if other is not a pdarray or the pdarray.dtype is not
+        a supported dtype
+    """
+    rep_msg = generic_msg(cmd="receiveDataframe", args={"hostname": hostname, "port": port})
+    rep = json.loads(rep_msg)
+    return DataFrame(_build_objects(rep))

@@ -105,7 +105,7 @@ module JoinEqWithDTMsg
         // actual number of results per locale
         var locNumResults: [PrivateSpace] int;
         
-        coforall loc in Locales {
+        coforall loc in Locales with (ref locResI, ref locResJ, ref locNumResults, ref resCounters) {
             on loc {
                 forall i in a1.localSubdomain() {
                     // more space in result list???
@@ -368,8 +368,8 @@ module JoinEqWithDTMsg
                                         t1.a, t2.a, dt, pred, resLimitPerLocale);
         
         // puth results in the symbol table
-        st.addEntry(resI_name, new shared SymEntry(resI));
-        st.addEntry(resJ_name, new shared SymEntry(resJ));
+        st.addEntry(resI_name, createSymEntry(resI));
+        st.addEntry(resJ_name, createSymEntry(resJ));
         
         repMsg = "created " + st.attrib(resI_name) + " +created " + st.attrib(resJ_name);
         jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);

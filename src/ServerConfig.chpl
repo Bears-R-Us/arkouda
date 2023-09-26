@@ -13,9 +13,11 @@ module ServerConfig
     use ServerErrors;
     use Logging;
     use MemoryMgmt;
+    use CTypes;
 
     use ArkoudaFileCompat;
     private use ArkoudaCTypesCompat;
+    use ArkoudaStringBytesCompat;
     
     enum Deployment {STANDARD,KUBERNETES}
 
@@ -231,7 +233,7 @@ module ServerConfig
     }
 
     proc getEnv(name: string, default=""): string {
-        extern proc getenv(name : c_string) : c_string;
+        extern proc getenv(name : c_string_ptr) : c_string_ptr;
         var val = getenv(name.localize().c_str()): string;
         if val.isEmpty() { val = default; }
         return val;
@@ -243,8 +245,8 @@ module ServerConfig
     */ 
     proc getPhysicalMemHere() {
         use ArkoudaMemDiagnosticsCompat, ArkoudaCTypesCompat;
-        extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_void_ptr), size: c_ptr(c_size_t)): void;
-        var unused: c_void_ptr;
+        extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_ptr_void), size: c_ptr(c_size_t)): void;
+        var unused: c_ptr_void;
         var heap_size: c_size_t;
         chpl_comm_regMemHeapInfo(c_ptrTo(unused), c_ptrTo(heap_size));
         if heap_size != 0 then
@@ -256,12 +258,8 @@ module ServerConfig
     Get the byteorder (endianness) of this locale
     */
     proc getByteorder() throws {
-        use IO;
-        var writeVal = 1, readVal = 0;
-        var tmpf = openMemFile();
-        tmpf.writer(kind=iobig).write(writeVal);
-        tmpf.reader(kind=ionative).read(readVal);
-        return if writeVal == readVal then "big" else "little";
+      use ArkoudaIOCompat;
+      return getByteOrderCompat();
     }
 
     /*
@@ -297,7 +295,7 @@ module ServerConfig
             if total > getMemLimit() {
                 var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
                 var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
-                                   total, getMemLimit(), pct);
+                                   total * numLocales, getMemLimit() * numLocales, pct);
                 scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                 throw getErrorWithContext(
                           msg=msg,
@@ -338,7 +336,7 @@ module ServerConfig
                 if total > getMemLimit() {
                     var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
                     var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
-                                   total, getMemLimit(), pct);
+                                   total * numLocales, getMemLimit() * numLocales, pct);
                     scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                     throw getErrorWithContext(
                               msg=msg,
@@ -436,8 +434,9 @@ module ServerConfig
     }
 
     proc getEnvInt(name: string, default: int): int {
-      extern proc getenv(name : c_string) : c_string;
-      var strval = getenv(name.localize().c_str()): string;
+      extern proc getenv(name) : c_string_ptr;
+      var strval:string;
+      try! strval = string.createCopyingBuffer(getenv(name.localize().c_str()));
       if strval.isEmpty() { return default; }
       return try! strval: int;
     }

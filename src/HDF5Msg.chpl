@@ -40,7 +40,7 @@ module HDF5Msg {
 
     const ARKOUDA_HDF5_FILE_METADATA_GROUP = "/_arkouda_metadata";
     const ARKOUDA_HDF5_ARKOUDA_VERSION_KEY = "arkouda_version"; // see ServerConfig.arkoudaVersion
-    type ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE = c_string;
+    type ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE = c_string_ptr;
     const ARKOUDA_HDF5_FILE_VERSION_KEY = "file_version";
     const ARKOUDA_HDF5_FILE_VERSION_VAL = 2.0:real(32);
     type ARKOUDA_HDF5_FILE_VERSION_TYPE = real(32);
@@ -62,10 +62,10 @@ module HDF5Msg {
     config const MULTI_FILE: int = 1;
 
     require "c_helpers/help_h5ls.h", "c_helpers/help_h5ls.c";
-    private extern proc c_get_HDF5_obj_type(loc_id:C_HDF5.hid_t, name:c_string, obj_type:c_ptr(C_HDF5.H5O_type_t)):C_HDF5.herr_t;
+    private extern proc c_get_HDF5_obj_type(loc_id:C_HDF5.hid_t, name:c_string_ptr, obj_type:c_ptr(C_HDF5.H5O_type_t)):C_HDF5.herr_t;
     private extern proc c_strlen(s:c_ptr(c_char)):c_size_t;
-    private extern proc c_incrementCounter(data:c_void_ptr);
-    private extern proc c_append_HDF5_fieldname(data:c_void_ptr, name:c_string);
+    private extern proc c_incrementCounter(data:c_ptr_void);
+    private extern proc c_append_HDF5_fieldname(data:c_ptr_void, name:c_string_ptr);
 
     /*
      * Returns the HDF5 data type corresponding to the dataset, which delegates
@@ -521,7 +521,7 @@ module HDF5Msg {
                             C_HDF5.H5P_DEFAULT,
                             C_HDF5.H5P_DEFAULT);
 
-        // For the value, we need to build a ptr to a char[]; c_string doesn't work because it is a const char*        
+        // For the value, we need to build a ptr to a char[]; c_string_ptr doesn't work because it is a const char*        
         var akVersion = allocate(c_char, arkoudaVersion.size+1, clear=true);
         for (c, i) in zip(arkoudaVersion.codepoints(), 0..<arkoudaVersion.size) {
             akVersion[i] = c:c_char;
@@ -581,7 +581,7 @@ module HDF5Msg {
                             C_HDF5.H5P_DEFAULT,
                             C_HDF5.H5P_DEFAULT);
 
-        // For the value, we need to build a ptr to a char[]; c_string doesn't work because it is a const char*        
+        // For the value, we need to build a ptr to a char[]; c_string_ptr doesn't work because it is a const char*        
         var akVersion = allocate(c_char, arkoudaVersion.size+1, clear=true);
         for (c, i) in zip(arkoudaVersion.codepoints(), 0..<arkoudaVersion.size) {
             akVersion[i] = c:c_char;
@@ -665,7 +665,7 @@ module HDF5Msg {
             - Shape: [] int - stores the shape of object.
         Calls to writeArkoudaMetaData to write the arkouda metadata
     */
-    proc writeArrayViewAttrs(file_id: C_HDF5.hid_t, dset_name: string, objType: string, shape: SymEntry, dtype:C_HDF5.hid_t) throws {
+    proc writeArrayViewAttrs(file_id: C_HDF5.hid_t, dset_name: string, objType: string, shape, dtype:C_HDF5.hid_t) throws {
         h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         "Writing ArrayView Attrs");
         //open the created dset so we can add attributes.
@@ -950,7 +950,7 @@ module HDF5Msg {
                 const ushift = 64:uint;
                 while !all_zero {
                     low = tmp:uint;
-                    limbs.pushBack(new shared SymEntry(low));
+                    limbs.pushBack(createSymEntry(low));
 
                     all_zero = true;
                     forall t in tmp with (&& reduce all_zero) {
@@ -1227,7 +1227,7 @@ module HDF5Msg {
      * :arg items: the array containing the data to be written for te specified Strings array component
      * :type items: [] ?etype
      */
-    private proc writeSegmentedComponentToHdf(fileId: int, group: string, component: string, items: [] ?etype) throws {
+    private proc writeSegmentedComponentToHdf(fileId: int, group: string, component: string, ref items: [] ?etype) throws {
         var numItems = items.size: uint(64);
         C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/%s".doFormat(group, component).c_str(), 1,
                 c_ptrTo(numItems), getDataType(etype), c_ptrTo(items));
@@ -2942,8 +2942,8 @@ module HDF5Msg {
          * This is an H5Literate call-back function, c_helper funcs are used to process data in void*
          * this proc counts the number of of HDF5 groups/datasets under the root, non-recursive
          */
-        proc _get_item_count(loc_id:C_HDF5.hid_t, name:c_void_ptr, info:c_void_ptr, data:c_void_ptr) {
-            var obj_name = name:c_string;
+        proc _get_item_count(loc_id:C_HDF5.hid_t, name:c_ptr_void, info:c_ptr_void, data:c_ptr_void) {
+            var obj_name = name:c_string_ptr;
             var obj_type:C_HDF5.H5O_type_t;
             var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));
             if (obj_type == C_HDF5.H5O_TYPE_GROUP || obj_type == C_HDF5.H5O_TYPE_DATASET) {
@@ -2956,8 +2956,8 @@ module HDF5Msg {
          * This is an H5Literate call-back function, c_helper funcs are used to process data in void*
          * this proc builds string of HDF5 group/dataset objects names under the root, non-recursive
          */
-        proc _simulate_h5ls(loc_id:C_HDF5.hid_t, name:c_void_ptr, info:c_void_ptr, data:c_void_ptr) {
-            var obj_name = name:c_string;
+        proc _simulate_h5ls(loc_id:C_HDF5.hid_t, name:c_ptr_void, info:c_ptr_void, data:c_ptr_void) {
+            var obj_name = name:c_string_ptr;
             var obj_type:C_HDF5.H5O_type_t;
             var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));
             if (obj_type == C_HDF5.H5O_TYPE_GROUP || obj_type == C_HDF5.H5O_TYPE_DATASET) {
@@ -3297,7 +3297,7 @@ module HDF5Msg {
     /*
         Read an ArrayView object from the files provided into a distributed array
     */
-    proc arrayView_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc arrayView_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, ref validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);
         var dset_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, dset.c_str(), C_HDF5.H5P_DEFAULT);
@@ -3344,7 +3344,7 @@ module HDF5Msg {
         C_HDF5.H5Fclose(file_id);
         
         var sname = st.nextName();
-        st.addEntry(sname, new shared SymEntry(shape));
+        st.addEntry(sname, createSymEntry(shape));
         var rname = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
         return (dset, ObjType.ARRAYVIEW, "%s+%s".doFormat(rname, sname));
     }
@@ -3419,14 +3419,14 @@ module HDF5Msg {
         }
 
         var rname = st.nextName();
-        st.addEntry(rname, new shared SymEntry(bigIntArray, max_bits));
+        st.addEntry(rname, createSymEntry(bigIntArray, max_bits));
         return rname;
     }
 
     /*
         Read an pdarray object from the files provided into a distributed array
     */
-    proc readPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): string throws {
+    proc readPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, ref validFiles: [] bool, st: borrowed SymTab): string throws {
         // identify the index of the first valid file
         var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
 
@@ -3493,7 +3493,7 @@ module HDF5Msg {
         return rname;
     }
 
-    proc pdarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc pdarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, ref validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var pda_name = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
         var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
         var file_id = C_HDF5.H5Fopen(filenames[idx].c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
@@ -3532,9 +3532,9 @@ module HDF5Msg {
         var entryVal = createSymEntry(len, uint(8));
         read_files_into_distributed_array(entryVal.a, subdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
 
-        proc _buildEntryCalcOffsets(): shared SymEntry throws {
+        proc _buildEntryCalcOffsets() throws {
             var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.a.domain);
-            return new shared SymEntry(offsetsArray);
+            return createSymEntry(offsetsArray);
         }
 
         proc _buildEntryLoadOffsets() throws {
@@ -3554,7 +3554,7 @@ module HDF5Msg {
         return (dset, ObjType.STRINGS, "%s+%?".doFormat(stringsEntry.name, stringsEntry.nBytes));
     }
 
-    proc readSegArrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab) throws {        
+    proc readSegArrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, ref validFiles: [] bool, st: borrowed SymTab) throws {        
         var segSubdoms: [fD] domain(1);
         var skips = new set(string);
         var nSeg: int;
@@ -3588,13 +3588,13 @@ module HDF5Msg {
         read_files_into_distributed_array(segDist, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
         fixupSegBoundaries(segDist, segSubdoms, valSubdoms);
         var sname = st.nextName();
-        st.addEntry(sname, new shared SymEntry(segDist));
+        st.addEntry(sname, createSymEntry(segDist));
         rtnMap.add("segments", "created " + st.attrib(sname));
         
         return rtnMap;
     }
 
-    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, calcStringOffsets: bool, ref validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var rtnMap = readSegArrayFromFile(filenames, dset, dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st);
         return (dset, ObjType.SEGARRAY, formatJson(rtnMap));
     }
@@ -3611,7 +3611,7 @@ module HDF5Msg {
         read_files_into_distributed_array(codes, subdoms, filenames, "%s/%s".doFormat(dset, CODES_NAME), skips);
         // create symEntry
         var codesName = st.nextName();
-        var codesEntry = new shared SymEntry(codes);
+        var codesEntry = createSymEntry(codes);
         st.addEntry(codesName, codesEntry);
 
         // read the categories
@@ -3628,7 +3628,7 @@ module HDF5Msg {
         read_files_into_distributed_array(naCodes, nacodes_subdoms, filenames, "%s/%s".doFormat(dset, NACODES_NAME), nacodes_skips);
         // create symEntry
         var naCodesName = st.nextName();
-        var naCodesEntry = new shared SymEntry(naCodes);
+        var naCodesEntry = createSymEntry(naCodes);
         st.addEntry(naCodesName, naCodesEntry);
 
         rtnMap.add("codes", "created " + st.attrib(codesEntry.name));
@@ -3651,7 +3651,7 @@ module HDF5Msg {
             var segments = makeDistArray(segs_len, int);
             read_files_into_distributed_array(segments, segs_subdoms, filenames, "%s/%s".doFormat(dset, SEGMENTS_NAME), segs_skips);
             var segName = st.nextName();
-            var segEntry = new shared SymEntry(segments);
+            var segEntry = createSymEntry(segments);
             st.addEntry(segName, segEntry);
 
             // get domain and size info for permutation
@@ -3663,7 +3663,7 @@ module HDF5Msg {
             var perm = makeDistArray(perm_len, int);
             read_files_into_distributed_array(perm, perm_subdoms, filenames, "%s/%s".doFormat(dset, PERMUTATION_NAME), perm_skips);
             var permName = st.nextName();
-            var permEntry = new shared SymEntry(perm);
+            var permEntry = createSymEntry(perm);
             st.addEntry(permName, permEntry);
 
             rtnMap.add("segments", "created " + st.attrib(segEntry.name));
@@ -3672,7 +3672,7 @@ module HDF5Msg {
         return (dset, ObjType.CATEGORICAL, formatJson(rtnMap));
     }
 
-    proc groupby_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc groupby_readhdfMsg(filenames: [?fD] string, dset: string, ref validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var rtnMap: map(string, string);
         // domain and size info for codes
         var perm_subdoms: [fD] domain(1);
@@ -3683,7 +3683,7 @@ module HDF5Msg {
         read_files_into_distributed_array(perm, perm_subdoms, filenames, "%s/%s".doFormat(dset, PERMUTATION_NAME), perm_skips);
         // create symEntry
         var permName = st.nextName();
-        var permEntry = new shared SymEntry(perm);
+        var permEntry = createSymEntry(perm);
         st.addEntry(permName, permEntry);
 
         var seg_subdoms: [fD] domain(1);
@@ -3694,7 +3694,7 @@ module HDF5Msg {
         read_files_into_distributed_array(segs, seg_subdoms, filenames, "%s/%s".doFormat(dset, SEGMENTS_NAME), seg_skips);
         // create symEntry
         var segName = st.nextName();
-        var segEntry = new shared SymEntry(segs);
+        var segEntry = createSymEntry(segs);
         st.addEntry(segName, segEntry);
 
         var uki_subdoms: [fD] domain(1);
@@ -3705,7 +3705,7 @@ module HDF5Msg {
         read_files_into_distributed_array(uki, uki_subdoms, filenames, "%s/%s".doFormat(dset, UKI_NAME), uki_skips);
         // create symEntry
         var ukiName = st.nextName();
-        var ukiEntry = new shared SymEntry(uki);
+        var ukiEntry = createSymEntry(uki);
         st.addEntry(ukiName, ukiEntry);
 
         rtnMap.add("permutation", "created " + st.attrib(permEntry.name));
@@ -3777,7 +3777,7 @@ module HDF5Msg {
         return (dset, ObjType.GROUPBY, formatJson(rtnMap));
     }
 
-    proc dataframe_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc dataframe_readhdfMsg(filenames: [?fD] string, dset: string, ref validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var rtnMap: map(string, string);
         var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);
