@@ -369,7 +369,6 @@ module EfuncMsg
             }
         }
         // Append instead of assign here, to allow for 2 return arrays from hash128
-
         repMsg += "created " + st.attrib(rname);
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
         return new MsgTuple(repMsg, MsgType.NORMAL);         
