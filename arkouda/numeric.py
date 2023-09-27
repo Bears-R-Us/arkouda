@@ -770,19 +770,50 @@ def arctan2(
         )
         return create_pdarray(repMsg)
     elif where is False:
-        return num / denom
+        if isinstance(num, pdarray) and isinstance(denom, pdarray):
+            ret = num / denom
+        if isinstance(num, pdarray) and not isinstance(denom, pdarray):
+            ret = num / denom
+        if isinstance(denom, pdarray) and not isinstance(num, pdarray):
+            ret = num / denom
+        return ret
     else:
-        repMsg = type_cast(
-            str,
-            generic_msg(
-                cmd="efunc2",
-                args={
-                    "func": "arctan2",
-                    "A": num[where],
-                    "B": denom[where],
-                },
-            ),
-        )
+        if isinstance(num, pdarray) and isinstance(denom, pdarray):
+            repMsg = type_cast(
+                str,
+                generic_msg(
+                    cmd="efunc2",
+                    args={
+                        "func": "arctan2",
+                        "A": num[where],
+                        "B": denom[where],
+                    },
+                ),
+            )
+        elif isinstance(num, pdarray) and isSupportedNumber(denom):
+            repMsg = type_cast(
+                str,
+                generic_msg(
+                    cmd="efunc2",
+                    args={
+                        "func": "arctan2",
+                        "A": num[where],
+                        "B": denom,
+                    },
+                ),
+            )
+        elif isinstance(denom, pdarray) and isSupportedNumber(num):
+            repMsg = type_cast(
+                str,
+                generic_msg(
+                    cmd="efunc2",
+                    args={
+                        "func": "arctan2",
+                        "A": num,
+                        "B": denom[where],
+                    },
+                ),
+            )
         new_pda = num / denom
         ret = create_pdarray(repMsg)
         new_pda = cast(new_pda, ret.dtype)
