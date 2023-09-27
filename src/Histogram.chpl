@@ -41,7 +41,7 @@ module Histogram
     proc histogramGlobalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) throws {
 
         var hD = makeDistDom(bins);
-        var atomicHist = makeDistArray(hD, atomic int);
+        var atomicHist: [hD] atomic int;
         
         // count into atomic histogram
         forall v in a {
