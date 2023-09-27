@@ -387,7 +387,7 @@ module ArgSortMsg
                 }
                 when (DType.Bool) {
                     var e = toSymEntry(gEnt,bool);
-                    var int_ea = e.a:int;
+                    var int_ea = makeDistArray(e.a:int);
                     var iv = argsortDefault(int_ea, algorithm=algorithm);
                     st.addEntry(ivname, createSymEntry(iv));
                 }

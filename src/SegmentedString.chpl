@@ -437,7 +437,7 @@ module SegmentedString {
     proc upper() throws {
       ref origVals = this.values.a;
       ref offs = this.offsets.a;
-      var upperVals: [this.values.a.domain] uint(8);
+      var upperVals = makeDistArray(this.values.a.domain, uint(8));
       const lengths = this.getLengths();
       forall (off, len) in zip(offs, lengths) with (var valAgg = newDstAggregator(uint(8))) {
         var i = 0;
@@ -523,12 +523,12 @@ module SegmentedString {
       }
     }
 
-    proc findSubstringInBytes(const substr: string) {
+    proc findSubstringInBytes(const substr: string) throws {
       // Find the start position of every occurence of substr in the flat bytes array
       // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
       var D: subdomain(values.a.domain) = values.a.domain[values.a.domain.low..#(values.size - substr.numBytes + 1)];
       // Every start position is valid until proven otherwise
-      var truth: [D] bool = true;
+      var truth = makeDistArray(D, true);
       // Shift the flat values one byte at a time and check against corresponding byte of substr
       for (b, i) in zip(substr.chpl_bytes(), 0..) {
         truth &= (values.a[D.translate(i)] == b);
@@ -1194,7 +1194,8 @@ module SegmentedString {
       if checkSorted && isSorted() {
           ssLogger.warn(getModuleName(),getRoutineName(),getLineNumber(),
                                                    "argsort called on already sorted array");
-          var ranks: [D] int = [i in D] i;
+          var ranks = makeDistArray(D, int);
+          ranks = [i in D] i;
           return ranks;
       }
       var ranks = twoPhaseStringSort(this);
@@ -1215,8 +1216,8 @@ module SegmentedString {
         o = i * (n + 1);
       }
       const retDom = makeDistDom(nFound * (n + 1));
-      var retBytes: [retDom] uint(8);
-      var srcInds: [retDom] int;
+      var retBytes = makeDistArray(retDom, uint(8));
+      var srcInds = makeDistArray(retDom, int);
       var dstInds = (+ scan longEnough) - longEnough;
       ref oa = offsets.a;
       if kind == Fixes.prefixes {

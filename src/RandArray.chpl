@@ -149,7 +149,8 @@ module RandArray {
     var ltemp = makeDistArray(n, real);
     fillNormal(ltemp, seedStr=seedStr);
     ltemp = exp(logMean + logStd*ltemp);
-    var lengths:[ltemp.domain] int = [l in ltemp] ceil(l):int;
+    var lengths = makeDistArray(ltemp.domain, int);
+    lengths = [l in ltemp] ceil(l):int;
     const nBytes = + reduce lengths;
     // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
     overMemLimit(numBytes(int) * lengths.size);

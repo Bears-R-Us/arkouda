@@ -322,7 +322,8 @@ module ReductionMsg
 
     proc nanCounts(values:[] ?t, segments:[?D] int) throws {
       // count cumulative nans over all values
-      var cumnans = isNan(values):int;
+      var cumnans = makeDistArray(values.domain, int);
+      cumnans = isNan(values):int;
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
       overMemLimit(numBytes(int) * values.size);
       cumnans = + scan cumnans;
@@ -788,8 +789,10 @@ module ReductionMsg
       } else {
         magnitudes = abs(values) + isZero:real;
       }
-      var logs = log(magnitudes);
-      var negatives = (sgn(values) == -1);
+      var logs = makeDistArray(values.domain, real);
+      logs = log(magnitudes);
+      var negatives = makeDistArray(values.domain, bool);
+      negatives = (sgn(values) == -1);
       forall (r, v, n, z) in zip(res,
                                  segSum(logs, segments),
                                  segSum(negatives, segments),
@@ -840,14 +843,16 @@ module ReductionMsg
       if (D.size == 0) { return res; }
       // convert to real early to avoid int overflow
       overMemLimit(numBytes(real) * values.size);
-      var real_values = values: real;
+      var real_values = makeDistArray(values.domain, real);
+      real_values = values: real;
       var sums;
       var counts;
       if skipNan {
         // first verify that we can make a copy of real_values
         overMemLimit(numBytes(real) * real_values.size);
         // calculate sum and counts with nan real_values replaced with 0.0
-        var arrCopy = [elem in real_values] if isNan(elem) then 0.0 else elem;
+        var arrCopy = makeDistArray(values.domain, real);
+        arrCopy = [elem in real_values] if isNan(elem) then 0.0 else elem;
         sums = segSum(arrCopy, segments);
         counts = segCount(segments, real_values.size) - nanCounts(real_values, segments);
       } else {
@@ -868,7 +873,8 @@ module ReductionMsg
       if (D.size == 0) { return res; }
 
       var counts = segCount(segments, values.size);
-      var noNanVals = values: t;
+      var noNanVals = makeDistArray(values.domain, t);
+      noNanVals = values: t;
       // First deal with any nans
       if isRealType(t) && skipNan {
         // calculate counts with nan values excluded and replace nan with max(real)

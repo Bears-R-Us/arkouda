@@ -67,7 +67,7 @@ module RadixSortLSD
     private proc radixSortLSDCore(ref a:[?aD] ?t, nBits, negs, comparator) throws {
         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "type = %s nBits = %?".doFormat(t:string,nBits));
-        var temp = a;
+        var temp = makeDistArray(a);
         
         // create a global count array to scan
         var globalCounts = makeDistArray((numLocales*numTasks*numBuckets), int);
@@ -166,7 +166,8 @@ module RadixSortLSD
     }//proc radixSortLSDCore
 
     proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true): [aD] (t, int) throws {
-        var kr: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
+        var kr: [aD] (t,int) = makeDistArray(aD, (t, int));
+        kr = [(key,rank) in zip(a,aD)] (key,rank);
         if (checkSorted && isSorted(a)) {
             return kr;
         }
@@ -184,10 +185,12 @@ module RadixSortLSD
             return ranks;
         }
 
-        var kr: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
+        var kr = makeDistArray(aD, (t, int));
+        kr = [(key,rank) in zip(a,aD)] (key,rank);
         var (nBits, negs) = getBitWidth(a);
         radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator());
-        var ranks: [aD] int = [(_, rank) in kr] rank;
+        var ranks = makeDistArray(aD, int);
+        ranks = [(_, rank) in kr] rank;
         return ranks;
     }
 
