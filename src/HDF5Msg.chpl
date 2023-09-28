@@ -3835,7 +3835,7 @@ module HDF5Msg {
         return (dset, ObjType.DATAFRAME, formatJson(rtnMap));
     }
 
-    proc index_readhdfMsg(filenames: [?fD] string, dset: string, validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
+    proc index_readhdfMsg(filenames: [?fD] string, dset: string, ref validFiles: [] bool, calcStringOffsets: bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var rtnList: list(string);
         // identify the index of the first valid file
         var (v, fIdx) = maxloc reduce zip(validFiles, validFiles.domain);

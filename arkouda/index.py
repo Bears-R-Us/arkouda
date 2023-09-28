@@ -437,7 +437,7 @@ class Index:
     def update_hdf(
         self,
         prefix_path: str,
-        dataset: str = "array",
+        dataset: str = "index",
         repack: bool = True,
     ):
         """
