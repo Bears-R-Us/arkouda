@@ -19143,7 +19143,7 @@ Attributes
       determine the file format.
 
 
-   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'index', repack: bool = True)
 
       Overwrite the dataset with the name provided with this Index object. If
       the dataset does not exist it is added.
