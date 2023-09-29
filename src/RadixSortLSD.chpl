@@ -64,14 +64,13 @@ module RadixSortLSD
        In-place radix sort a block distributed array
        comparator is used to extract the key from array elements
      */
-    private proc radixSortLSDCore(ref a:[?aD] ?t, nBits, negs, comparator) {
+    private proc radixSortLSDCore(ref a:[?aD] ?t, nBits, negs, comparator) throws {
         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "type = %s nBits = %?".doFormat(t:string,nBits));
-        var temp = a;
+        var temp = makeDistArray(a);
         
         // create a global count array to scan
-        var gD = blockDist.createDomain({0..#(numLocales * numTasks * numBuckets)});
-        var globalCounts: [gD] int;
+        var globalCounts = makeDistArray((numLocales*numTasks*numBuckets), int);
         
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
@@ -166,8 +165,9 @@ module RadixSortLSD
         } // for rshift
     }//proc radixSortLSDCore
 
-    proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true): [aD] (t, int) {
-        var kr: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
+    proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true): [aD] (t, int) throws {
+        var kr: [aD] (t,int) = makeDistArray(aD, (t, int));
+        kr = [(key,rank) in zip(a,aD)] (key,rank);
         if (checkSorted && isSorted(a)) {
             return kr;
         }
@@ -179,23 +179,25 @@ module RadixSortLSD
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning a permutation vector as a block distributed array */
-    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int {
+    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int throws {
         if (checkSorted && isSorted(a)) {
             var ranks: [aD] int = [i in aD] i;
             return ranks;
         }
 
-        var kr: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
+        var kr = makeDistArray(aD, (t, int));
+        kr = [(key,rank) in zip(a,aD)] (key,rank);
         var (nBits, negs) = getBitWidth(a);
         radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator());
-        var ranks: [aD] int = [(_, rank) in kr] rank;
+        var ranks = makeDistArray(aD, int);
+        ranks = [(_, rank) in kr] rank;
         return ranks;
     }
 
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning sorted keys as a block distributed array */
-    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t {
+    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t throws {
         var copy = a;
         if (checkSorted && isSorted(a)) {
             return copy;

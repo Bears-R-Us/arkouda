@@ -68,7 +68,7 @@ module BigIntMsg {
                 var retList: list(string);
                 // default to false because we want to do first loop whether or not tmp is all_zero
                 var all_zero = false;
-                var low: [tmp.domain] uint;
+                var low = makeDistArray(tmp.domain, uint);
                 const ushift = 64:uint;
                 while !all_zero {
                   low = tmp:uint;

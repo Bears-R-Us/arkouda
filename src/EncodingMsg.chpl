@@ -56,7 +56,7 @@ module EncodingMsg {
     }
 
     proc getBufLengths(segments: [?D] int, ref values: [?vD] ?t, toEncoding: string, fromEncoding: string) throws {
-      var res: [D] int;
+      var res = makeDistArray(D, int);
       if (D.size == 0) {
         return res;
       }

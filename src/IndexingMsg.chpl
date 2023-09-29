@@ -49,7 +49,7 @@ module IndexingMsg
         // String array containing the type of the following value at even indicies then the value ex. ["int", "7", "slice", "(0,5,-1)", "pdarray", "id_4"]
         var typeCoords: [0..#(ndim*2)] string = msgArgs.get("coords").getList(ndim*2);
 
-        var scaledCoords: [makeDistDom(+ reduce dims)] int;
+        var scaledCoords = makeDistArray(+ reduce dims, int);
         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
         overMemLimit(numBytes(int) * dims.size);
         var offsets = (+ scan dims) - dims;

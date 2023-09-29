@@ -61,7 +61,7 @@ module Cast {
     const before = toSymEntry(gse, fromType);
     const oname = st.nextName();
     var segments = st.addEntry(oname, before.size, int);
-    var strings: [before.a.domain] string;
+    var strings = makeDistArray(before.a.domain, string);
     if fromType == real {
       try {
           forall (s, v) in zip(strings, before.a) {

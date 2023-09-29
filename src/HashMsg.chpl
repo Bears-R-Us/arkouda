@@ -27,7 +27,7 @@ module HashMsg {
     var hashes = categories.siphash();
     // then do expansion indexing at codes
     ref ca = codes.a;
-    var expandedHashes: [ca.domain] (uint, uint);
+    var expandedHashes = makeDistArray(ca.domain, (uint, uint));
     forall (eh, c) in zip(expandedHashes, ca) with (var agg = newSrcAggregator((uint, uint))) {
       agg.copy(eh, hashes[c]);
     }

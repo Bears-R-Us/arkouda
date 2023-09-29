@@ -143,7 +143,7 @@ module UniqueMsg
       }
       proc helper(itemsize, type t, keys: [?D] t) throws {
         var permutation = createSymEntry(keys.size, int);
-        var sortedKeys: [D] t = keys;
+        var sortedKeys = makeDistArray(keys);
 
         if assumeSorted {
           // set permutation to 0..#size and go directly to finding segment boundaries.
@@ -224,7 +224,7 @@ module UniqueMsg
     proc hashArrays(size, names, types, st): [] 2*uint throws {
       overMemLimit(numBytes(uint) * size * 2);
       var dom = makeDistDom(size);
-      var hashes: [dom] 2*uint(64);
+      var hashes = makeDistArray(dom, 2*uint);
       /* Hashes of subsequent arrays cannot be simply XORed
        * because equivalent values will cancel each other out.
        * Thus, a non-linear function must be applied to each array,

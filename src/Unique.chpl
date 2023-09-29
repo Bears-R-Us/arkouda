@@ -67,8 +67,8 @@ module Unique
             var inv = makeDistArray(0, int);
             return (u, c, inv);
         }
-        var sorted: [aD] eltType;
-        var perm: [aD] int;
+        var sorted = makeDistArray(aD, eltType);
+        var perm = makeDistArray(aD, int);
         forall (s, p, sp) in zip(sorted, perm, radixSortLSD(a)) {
           (s, p) = sp;
         }
@@ -76,7 +76,7 @@ module Unique
         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
         overMemLimit(numBytes(int) * c.size);
         var segs = (+ scan c) - c;
-        var bcast: [aD] int;
+        var bcast = makeDistArray(aD, int);
         forall s in segs with (var agg = newDstAggregator(int)) {
             agg.copy(bcast[s], 1);
         }
@@ -84,7 +84,7 @@ module Unique
         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
         overMemLimit(numBytes(int) * bcast.size);
         bcast = (+ scan bcast);
-        var inv: [aD] int;
+        var inv = makeDistArray(aD, int);
         forall (p, b) in zip(perm, bcast) with (var agg = newDstAggregator(int)) {
             agg.copy(inv[p], b);
         }
@@ -92,7 +92,7 @@ module Unique
     }
     
     proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true) throws {
-        var truth: [aD] bool;
+        var truth = makeDistArray(aD, bool);
         truth[0] = true;
         [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
         var allUnique: int = + reduce truth;
@@ -169,20 +169,20 @@ module Unique
         } else {
           invD = {0..-1};
         }
-        var inv: [invD] int;
-        var truth: [aD] bool;
-        var perm: [aD] int;
+        var inv = makeDistArray(invD, int);
+        var truth = makeDistArray(aD, bool);
+        var perm = makeDistArray(aD, int);
         if SegmentedStringUseHash {
           var hashes = str.siphash();
-          var sorted: [aD] 2*uint;
+          var sorted = makeDistArray(aD, 2*uint);
           forall (s, p, sp) in zip(sorted, perm, radixSortLSD(hashes)) {
             (s, p) = sp;
           }
           truth[0] = true;
           [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
         } else {
-          var soff: [aD] int;
-          var sval: [str.values.a.domain] uint(8);
+          var soff = makeDistArray(aD, int);
+          var sval = makeDistArray(str.values.a.domain, uint(8));
           perm = str.argsort();
           (soff, sval) = str[perm];
           truth[0] = true;
@@ -215,7 +215,7 @@ module Unique
             // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
             overMemLimit(numBytes(int) * c.size);
             var segs = (+ scan c) - c;
-            var bcast: [invD] int;
+            var bcast = makeDistArray(invD, int);
             forall s in segs with (var agg = newDstAggregator(int)) {
                 agg.copy(bcast[s], 1);
             }
