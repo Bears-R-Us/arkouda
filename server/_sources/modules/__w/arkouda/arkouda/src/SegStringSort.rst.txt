@@ -27,7 +27,7 @@ or
 
 .. function:: proc getPivot(lengths: [?D] int): 2*(int) throws
 
-.. function:: proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int)
+.. function:: proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int) throws
 
 .. function:: proc calcBlock(task: int, low: int, high: int)
 

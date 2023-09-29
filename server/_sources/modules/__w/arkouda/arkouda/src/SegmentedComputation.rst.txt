@@ -17,7 +17,7 @@ or
 
    import SegmentedComputation;
 
-.. function:: proc computeSegmentOwnership(segments: [?D] int, vD)
+.. function:: proc computeSegmentOwnership(segments: [?D] int, vD) throws
 
 .. enum:: enum SegFunction { SipHash128, StringToNumericStrict, StringToNumericIgnore, StringToNumericReturnValidity, StringCompareLiteralEq, StringCompareLiteralNeq, StringSearch, StringIsLower, StringIsUpper, StringIsTitle, StringBytesToUintArr }
 

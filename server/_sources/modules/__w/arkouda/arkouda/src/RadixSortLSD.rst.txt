@@ -44,15 +44,15 @@ Radix Sort Least Significant Digit
 
 .. function:: proc calcGlobalIndex(bucket: int, loc: int, task: int): int
 
-.. function:: proc radixSortLSD(a: [?aD] ?t, checkSorted: bool = true): [aD] (t, int)
+.. function:: proc radixSortLSD(a: [?aD] ?t, checkSorted: bool = true): [aD] (t, int) throws
 
-.. function:: proc radixSortLSD_ranks(a: [?aD] ?t, checkSorted: bool = true): [aD] int
+.. function:: proc radixSortLSD_ranks(a: [?aD] ?t, checkSorted: bool = true): [aD] int throws
 
    Radix Sort Least Significant Digit
    radix sort a block distributed array
    returning a permutation vector as a block distributed array 
 
-.. function:: proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t
+.. function:: proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t throws
 
    Radix Sort Least Significant Digit
    radix sort a block distributed array

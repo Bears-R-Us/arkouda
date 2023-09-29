@@ -34,7 +34,7 @@ or
    :type truth: [] bool
    
 
-.. function:: proc in1dAr2PerLocAssoc(ar1: [?aD1] ?t, ref ar2: [?aD2] t)
+.. function:: proc in1dAr2PerLocAssoc(ar1: [?aD1] ?t, ref ar2: [?aD2] t) throws
 
    in1d that uses a per-locale set/associative-domain. Each locale will
    * localize ar2 and put it in the set, so only appropriate in terms of

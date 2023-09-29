@@ -58,6 +58,10 @@ or
 
 .. function:: proc makeDistArray(in a: [?D] ?etype)
 
+.. function:: proc makeDistArray(D: domain(1), type etype)
+
+.. function:: proc makeDistArray(D: domain, initExpr: ?t) throws
+
 .. function:: proc makeDistDomType(size: int) type
 
     

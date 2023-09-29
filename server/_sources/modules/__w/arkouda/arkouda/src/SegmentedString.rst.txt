@@ -124,7 +124,7 @@ or
       this permutation will not sort the strings, but all equivalent strings
       will fall in one contiguous block. 
 
-   .. method:: proc getLengths()
+   .. method:: proc getLengths() throws
 
       Return lengths of all strings, including null terminator. 
 
@@ -174,7 +174,7 @@ or
 
    .. method:: proc bytesToUintArr(const max_bytes: int, st) throws
 
-   .. method:: proc findSubstringInBytes(const substr: string)
+   .. method:: proc findSubstringInBytes(const substr: string) throws
 
    .. method:: proc findMatchLocations(const pattern: string, groupNum: int) throws
 
@@ -287,9 +287,9 @@ or
 
    .. method:: proc stick(other: SegString, delim: string, param right: bool) throws
 
-   .. method:: proc ediff(): [offsets.a.domain] int
+   .. method:: proc ediff(): [offsets.a.domain] int throws
 
-   .. method:: proc isSorted(): bool
+   .. method:: proc isSorted(): bool throws
 
    .. method:: proc argsort(checkSorted: bool = false): [offsets.a.domain] int throws
 
