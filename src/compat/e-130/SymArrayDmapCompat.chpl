@@ -70,7 +70,7 @@ module SymArrayDmapCompat
         return a;
     }
 
-    proc makeDistArray(D: domain(1), type etype) {
+    proc makeDistArray(D: domain, type etype) {
       var res: [D] etype;
       return res;
     }
