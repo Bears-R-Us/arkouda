@@ -43,6 +43,11 @@ module ArkoudaIOCompat {
     return array;
   }
 
+  proc writefCompat(fmt: ?t, const args ...?k) where isStringType(t) || isBytesType(t) {
+    var newFmt = fmt.replace('%?', '%t');
+    writef(newFmt, (...args));
+  }
+
   proc readfCompat(f: file, str: string, ref obj) throws {
     var nreader = f.reader();
     nreader.readf("%jt", obj);
