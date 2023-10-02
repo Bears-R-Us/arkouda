@@ -31,6 +31,8 @@ or
 
 .. function:: proc readfCompat(f: file, str: string, ref obj) throws
 
+.. function:: proc writefCompat(fmt: ?t, const args ...?k)
+
 .. function:: proc getByteOrderCompat() throws
 
 .. function:: proc fileIOReaderCompat(infile) throws
