@@ -6,7 +6,7 @@ require "../src/ArrowFunctions.h";
 require "../src/ArrowFunctions.o";
 
 proc getVersionInfo() {
-  extern proc c_getVersionInfo(): c_string;
+  extern proc c_getVersionInfo(): c_string_ptr;
   extern proc strlen(str): c_int;
   extern proc c_free_string(ptr);
   var cVersionString = c_getVersionInfo();

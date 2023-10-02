@@ -48,6 +48,11 @@ module ArkoudaIOCompat {
     nreader.readf("%jt", obj);
   }
 
+  proc writefCompat(fmt: ?t, const args ...?k) where isStringType(t) || isBytesType(t) {
+    var newFmt = fmt.replace('%?', '%t');
+    writef(newFmt, (...args));
+  }
+
   proc getByteOrderCompat() throws {
     use IO;
     var writeVal = 1, readVal = 0;
