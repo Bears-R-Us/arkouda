@@ -354,8 +354,8 @@ module ConcatenateMsg
                             } else {
                               ref ea = tmp;
                               // copy array into concatenation array
-                              forall (i, v) in zip(o.a.domain, o.a) {
-                                ea[start+i] = v;
+                              forall (i, v) in zip(o.a.domain, o.a) with (var agg = newDstAggregator(bigint)) {
+                                agg.copy(ea[start+i], v);
                               }
                               // update new start for next array copy
                               start += o.size;
