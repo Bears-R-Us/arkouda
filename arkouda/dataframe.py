@@ -2713,7 +2713,9 @@ def invert_permutation(perm):
 @typechecked
 def inner_join_merge(left: DataFrame,
                      right: DataFrame,
-                     on: str
+                     on: str,
+                     left_suffix: str = "_x",
+                     right_suffix: str = "_y",
                      ) -> DataFrame:
     """
     Utilizes the ak.join.inner_join function to return an ak
@@ -2747,9 +2749,17 @@ def inner_join_merge(left: DataFrame,
     new_dict = {on: left[on][left_inds]}
 
     for col in left_cols:
-        new_dict[col] = left[col][left_inds]
+        if col in right_cols:
+            new_col = col + left_suffix
+        else:
+            new_col = col
+        new_dict[new_col] = left[col][left_inds]
     for col in right_cols:
-        new_dict[col] = right[col][right_inds]
+        if col in left_cols:
+            new_col = col + right_suffix
+        else:
+            new_col = col
+        new_dict[new_col] = right[col][right_inds]
 
     return DataFrame(new_dict)
 
