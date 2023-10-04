@@ -2733,7 +2733,7 @@ def inner_join_merge(left: DataFrame,
 
     Returns
     -------
-    ij_ak_df : DataFrame
+    DataFrame
         Inner-Joined Arkouda DataFrame
     """
 
