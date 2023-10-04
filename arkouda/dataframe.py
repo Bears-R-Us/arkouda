@@ -2799,7 +2799,7 @@ def right_join_merge(left: DataFrame,
         nan_arr.fill(np.nan)
         left_col_type = type(in_left[col])
         if in_left[col].dtype == int:
-            in_left[col] = akcast(in_left[col], np.float64)
+            in_left[col] = akcast(in_left[col], akfloat64)
         else:
             nan_arr = akcast(nan_arr, in_left[col].dtype)
 
