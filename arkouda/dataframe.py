@@ -2799,11 +2799,15 @@ def right_join_merge(left: DataFrame,
     # Add a try/except statement in case there are no values in right that aren't in left
     not_in_left = right[find(setdiff1d(right[on], left[on]), right[on])]
     for col in left_cols:
+        print(col)
         # Create a nan array for all values not in the left df
         nan_arr = zeros(len(not_in_left))
         nan_arr.fill(np.nan)
-        nan_arr = cast(nan_arr, in_left[col].dtype)
         left_col_type = type(in_left[col])
+        if in_left[col].dtype == int:
+            in_left[col] = cast(in_left[col], np.float64)
+        else:
+            nan_arr = cast(nan_arr, in_left[col].dtype)
 
         try:
             not_in_left[col] = left_col_type(nan_arr)
