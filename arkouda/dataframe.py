@@ -2737,19 +2737,19 @@ def inner_join_merge(left: DataFrame,
         Inner-Joined Arkouda DataFrame
     """
 
-    ij = inner_join(left[on], right[on])
+    left_inds, right_inds = inner_join(left[on], right[on])
 
     left_cols = left.columns.copy()
     left_cols.remove(on)
     right_cols = right.columns.copy()
     right_cols.remove(on)
 
-    new_dict = {on: left[on][ij[0]]}
+    new_dict = {on: left[on][left_inds]}
 
     for col in left_cols:
-        new_dict[col] = left[col][ij[0]]
+        new_dict[col] = left[col][left_inds]
     for col in right_cols:
-        new_dict[col] = right[col][ij[1]]
+        new_dict[col] = right[col][right_inds]
 
     return DataFrame(new_dict)
 
@@ -2845,12 +2845,10 @@ def merge(
     """
 
     if how == 'inner':
-        merged_ak_df = inner_join_merge(left, right, on)
-
-    if how == 'right':
-        merged_ak_df = right_join_merge(left, right, on)
-
-    if how == 'left':
-        merged_ak_df = right_join_merge(right, left, on)
-
-    return merged_ak_df
+        return inner_join_merge(left, right, on)
+    elif how == 'right':
+        return right_join_merge(left, right, on)
+    elif how == 'left':
+        return right_join_merge(right, left, on)
+    else:
+        raise ValueError(f"Unexpected value of {how} for how. Must choose: 'inner', 'left', or 'right'")
