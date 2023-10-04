@@ -78,7 +78,7 @@
             }
         }
 
-        var rvals: [0..#(+ reduce lens)] t;
+        var rvals = makeDistArray(+ reduce lens, t);
         var rsegs = (+ scan lens) - lens;
 
         forall(i, rs, os, l) in zip(orig_segs.domain, rsegs, orig_segs, lens){

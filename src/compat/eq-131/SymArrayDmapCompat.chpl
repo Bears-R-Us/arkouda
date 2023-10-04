@@ -70,6 +70,16 @@ module SymArrayDmapCompat
         return a;
     }
 
+    proc makeDistArray(D: domain, type etype) {
+      var res: [D] etype;
+      return res;
+    }
+
+    proc makeDistArray(D: domain, initExpr: ?t) throws {
+      var res: [D] t = initExpr;
+      return res;
+    }
+
     /* 
     Returns the type of the distributed domain
 

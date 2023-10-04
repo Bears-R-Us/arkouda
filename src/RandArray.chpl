@@ -16,7 +16,7 @@ module RandArray {
   private config const logChannel = ServerConfig.logChannel;
   const raLogger = new Logger(logLevel, logChannel);
 
-  proc fillInt(a:[] ?t, const aMin: t, const aMax: t, const seedStr:string="None") throws where isIntType(t) {
+  proc fillInt(ref a:[] ?t, const aMin: t, const aMax: t, const seedStr:string="None") throws where isIntType(t) {
       if (seedStr.toLower() == "none") {
         //Subtracting 1 from aMax to make the value exclusive to follow numpy standard.
         fillRandom(a, aMin, aMax-1);
@@ -27,7 +27,7 @@ module RandArray {
       }
   }
 
-  proc fillUInt(a:[] ?t, const aMin: t, const aMax: t, const seedStr:string="None") throws where isUintType(t) {
+  proc fillUInt(ref a:[] ?t, const aMin: t, const aMax: t, const seedStr:string="None") throws where isUintType(t) {
       if (seedStr.toLower() == "none") {
         //Subtracting 1 from aMax to make the value exclusive to follow numpy standard.
         fillRandom(a, aMin, aMax-1);
@@ -38,7 +38,7 @@ module RandArray {
       }
   }
 
-  proc fillReal(a:[] real, const aMin:numeric=0.0, const aMax:numeric=1.0, const seedStr:string="None") throws {
+  proc fillReal(ref a:[] real, const aMin:numeric=0.0, const aMax:numeric=1.0, const seedStr:string="None") throws {
     if (seedStr.toLower() == "none") {
       fillRandom(a, aMin, aMax);
     } else {
@@ -47,7 +47,7 @@ module RandArray {
     }
   }
 
-  proc fillBool(a:[] bool, const seedStr:string="None") throws {
+  proc fillBool(ref a:[] bool, const seedStr:string="None") throws {
     if (seedStr.toLower() == "none") {
       fillRandom(a);
     } else {
@@ -56,9 +56,9 @@ module RandArray {
     }
   }
 
-  proc fillNormal(a:[?D] real, const seedStr:string="None") throws {
-    var u1:[D] real;
-    var u2:[D] real;
+  proc fillNormal(ref a:[?D] real, const seedStr:string="None") throws {
+    var u1 = makeDistArray(D, real);
+    var u2 = makeDistArray(D, real);
     if (seedStr.toLower() == "none") {
       fillRandom(u1);
       fillRandom(u2);
@@ -149,7 +149,8 @@ module RandArray {
     var ltemp = makeDistArray(n, real);
     fillNormal(ltemp, seedStr=seedStr);
     ltemp = exp(logMean + logStd*ltemp);
-    var lengths:[ltemp.domain] int = [l in ltemp] ceil(l):int;
+    var lengths = makeDistArray(ltemp.domain, int);
+    lengths = [l in ltemp] ceil(l):int;
     const nBytes = + reduce lengths;
     // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
     overMemLimit(numBytes(int) * lengths.size);

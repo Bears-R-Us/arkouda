@@ -17,6 +17,7 @@ module GenSymIO {
     use ServerConfig;
     use SegmentedString;
     use Map;
+    use CTypes;
     use ArkoudaMapCompat;
 
     use ArkoudaListCompat;
@@ -59,7 +60,7 @@ module GenSymIO {
 
         proc bytesToSymEntry(size:int, type t, st: borrowed SymTab, ref data:bytes): string throws {
             var entry = createSymEntry(size, t);
-            var localA = makeArrayFromPtr(data.c_str():c_void_ptr:c_ptr(t), size:uint);
+            var localA = makeArrayFromPtr(data.c_str():c_ptr_void:c_ptr(t), size:uint);
             entry.a = localA;
             var name = st.nextName();
             st.addEntry(name, entry);
@@ -120,12 +121,12 @@ module GenSymIO {
      * by finding the null terminators given the values/bytes array which should have already been
      * converted to uint8
      */
-    proc segmentedCalcOffsets(values:[] uint(8), valuesDom:domain): [] int throws {
+    proc segmentedCalcOffsets(values:[] uint(8), valuesDom): [] int throws {
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Calculating offsets for SegString");
         var nb_locs = forall (i,v) in zip(valuesDom, values) do if v == NULL_STRINGS_VALUE then i+1;
         // We need to adjust nb_locs b/c offsets is really the starting position of each string
         // So allocated a new array of zeros and assign nb_locs offset by one
-        var offsets: [nb_locs.domain] int;
+        var offsets = makeDistArray(nb_locs.domain, int);
         offsets[1..offsets.domain.high] = nb_locs[0..#nb_locs.domain.high];
         return offsets;
     }
@@ -214,7 +215,7 @@ module GenSymIO {
                     var (segName, nBytes) = id.splitMsgToTuple("+", 2);
                     create_str = "created " + st.attrib(segName) + "+created bytes.size " + nBytes;
                 }
-                when ObjType.SEGARRAY, ObjType.CATEGORICAL, ObjType.GROUPBY, ObjType.DATAFRAME {
+                when ObjType.SEGARRAY, ObjType.CATEGORICAL, ObjType.GROUPBY, ObjType.DATAFRAME, ObjType.INDEX, ObjType.MULTIINDEX {
                     create_str = id;
                 }
                 otherwise {

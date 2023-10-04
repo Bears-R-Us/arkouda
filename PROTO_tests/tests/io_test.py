@@ -1267,29 +1267,91 @@ class TestHDF5:
                 else:
                     assert (ref_data[key] == data[key]).all()
 
-    def test_index_save_and_load(self):
+    @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_index_save_and_load(self, dtype, size):
+        idx = ak.Index(make_ak_arrays(size, dtype))
         with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
-            file_name = f"{tmp_dirname}/idx_file"
-            idx = ak.Index(ak.arange(5))
-            idx.to_hdf(f"{file_name}.h5")
-            assert len(glob.glob(f"{file_name}*.h5")) == pytest.nl
-            ret_idx = ak.read_hdf(f"{file_name}*")
-            assert (idx == ret_idx).all()
+            idx.to_hdf(f"{tmp_dirname}/idx_test")
+            rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*")
+
+            assert isinstance(rd_idx, ak.Index)
+            assert type(rd_idx.values) == type(idx.values)
+            assert idx.to_list() == rd_idx.to_list()
+
+        if dtype == ak.str_:
+            # if strings we need to also test Categorical
+            idx = ak.Index(ak.Categorical(make_ak_arrays(size, dtype)))
+            with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+                idx.to_hdf(f"{tmp_dirname}/idx_test")
+                rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*")
+
+                assert isinstance(rd_idx, ak.Index)
+                assert type(rd_idx.values) == type(idx.values)
+                assert idx.to_list() == rd_idx.to_list()
+
+    @pytest.mark.parametrize("dtype1", NUMERIC_AND_STR_TYPES)
+    @pytest.mark.parametrize("dtype2", NUMERIC_AND_STR_TYPES)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_multi_index(self, dtype1, dtype2, size):
+        t1 = make_ak_arrays(size, dtype1)
+        t2 = make_ak_arrays(size, dtype2)
+        idx = ak.Index.factory([t1, t2])
+        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            idx.to_hdf(f"{tmp_dirname}/idx_test")
+            rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*")
+
+            assert isinstance(rd_idx, ak.MultiIndex)
+            assert idx.to_list() == rd_idx.to_list()
+
+        # handle categorical cases as well
+        if ak.str_ in [dtype1, dtype2]:
+            if dtype1 == ak.str_:
+                t1 = ak.Categorical(t1)
+            if dtype2 == ak.str_:
+                t2 = ak.Categorical(t2)
+            idx = ak.Index.factory([t1, t2])
+            with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+                idx.to_hdf(f"{tmp_dirname}/idx_test")
+                rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*")
+
+                assert isinstance(rd_idx, ak.MultiIndex)
+                assert idx.to_list() == rd_idx.to_list()
+
+    def test_hdf_overwrite_index(self):
+        # test repack with a single object
+        a = ak.Index(ak.arange(1000))
+        b = ak.Index(ak.randint(0, 100, 1000))
+        c = ak.Index(ak.arange(15))
+        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/idx_test"
+            for repack in [True, False]:
+                a.to_hdf(file_name, dataset="index")
+                b.to_hdf(file_name, dataset="index_2", mode="append")
+                f_list = glob.glob(f"{file_name}*")
+                orig_size = sum(os.path.getsize(f) for f in f_list)
+                # hdf5 only releases memory if overwriting last dset so overwrite first
+                c.update_hdf(file_name, dataset="index", repack=repack)
+
+                new_size = sum(os.path.getsize(f) for f in f_list)
+
+                # ensure that the column was actually overwritten
+                # test that repack on/off the file gets smaller/larger respectively
+                assert new_size < orig_size if repack else new_size >= orig_size
+                data = ak.read_hdf(f"{file_name}*")
+                assert isinstance(data["index"], ak.Index)
+                assert data["index"].to_list() == c.to_list()
 
     def test_special_objtype(self):
         """
-                This test is simply to ensure that the dtype is persisted through the io
-                operation. It ultimately uses the process of pdarray, but need to ensure
-                correct Arkouda Object Type is returned
-                """
+        This test is simply to ensure that the dtype is persisted through the io
+        operation. It ultimately uses the process of pdarray, but need to ensure
+        correct Arkouda Object Type is returned
+        """
         ip = ak.IPv4(ak.arange(10))
         dt = ak.Datetime(ak.arange(10))
         td = ak.Timedelta(ak.arange(10))
-        df = ak.DataFrame({
-            "ip": ip,
-            "datetime": dt,
-            "timedelta": td
-        })
+        df = ak.DataFrame({"ip": ip, "datetime": dt, "timedelta": td})
 
         with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
             ip.to_hdf(f"{tmp_dirname}/ip_test")

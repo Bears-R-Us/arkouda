@@ -12,6 +12,7 @@ module AryUtil
 
     use ArkoudaPOSIXCompat;
     use ArkoudaCTypesCompat;
+    use ArkoudaBlockCompat;
 
     param bitsPerDigit = RSLSD_bitsPerDigit;
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
@@ -129,7 +130,7 @@ module AryUtil
     */
     proc contiguousIndices(A: []) param {
         use BlockDist;
-        return A.isDefaultRectangular() || isSubtype(A.domain.dist.type, Block);
+        return A.isDefaultRectangular() || isSubtype(A.domain.distribution.type, blockDist);
     }
 
     /*
@@ -412,7 +413,7 @@ module AryUtil
         /* Do we own the memory? */
         var isOwned: bool = false;
 
-        proc init(A: [] ?t, region: range()) {
+        proc init(ref A: [] ?t, region: range()) {
             use CommPrimitives;
             use CTypes;
 

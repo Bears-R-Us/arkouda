@@ -13,7 +13,7 @@ module SegmentedArray {
     // we can't just call hashArrays because the compiler complains about recursion
     overMemLimit(numBytes(uint) * size * 2);
     var dom = makeDistDom(size);
-    var hashes: [dom] 2*uint(64);
+    var hashes = makeDistArray(dom, 2*uint);
     /* Hashes of subsequent arrays cannot be simply XORed
      * because equivalent values will cancel each other out.
      * Thus, a non-linear function must be applied to each array,

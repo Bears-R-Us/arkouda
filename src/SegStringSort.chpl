@@ -12,6 +12,7 @@ module SegStringSort {
   use BlockDist;
 
   use ArkoudaStringBytesCompat;
+  use ArkoudaBlockCompat;
 
   private config const SSS_v = false;
   private const vv = SSS_v;
@@ -55,7 +56,7 @@ module SegStringSort {
     overMemLimit(numBytes(int) * isLong.size);
     var longLocs = + scan isLong;
     locs -= longLocs;
-    var gatherInds: [ss.offsets.a.domain] int;
+    var gatherInds = makeDistArray(ss.offsets.a.domain, int);
     forall (i, l, ll, t) in zip(ss.offsets.a.domain, locs, longLocs, isLong) 
       with (var agg = newDstAggregator(int)) {
       if !t {
@@ -108,12 +109,12 @@ module SegStringSort {
       const NBINS = 2**16;
       const BINDOM = {0..#NBINS};
       var pBins: [PrivateSpace][BINDOM] int;
-      coforall loc in Locales {
+      coforall loc in Locales with (ref pBins) {
         on loc {
           const lD = D.localSubdomain();
           ref locLengths = lengths.localSlice[lD];
           var locBins: [0..#numTasks][BINDOM] int;
-          coforall task in 0..#numTasks {
+          coforall task in 0..#numTasks with (ref locBins) {
             const tD = calcBlock(task, lD.low, lD.high);
             for i in tD {
               var bin = min(locLengths[i], NBINS-1);
@@ -140,12 +141,12 @@ module SegStringSort {
     }
   }
   
-  proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int) {
+  proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int) throws {
     ref oa = ss.offsets.a;
     ref va = ss.values.a;
     const myD: domain(1) = D;
-    const myInds: [myD] int = longInds;
-    var stringsWithInds: [myD] (string, int);
+    const myInds = makeDistArray(longInds);
+    var stringsWithInds = makeDistArray(myD, (string, int));
     forall (i, si) in zip(myInds, stringsWithInds) {
       const l = lengths[i];
       var buf: [0..#(l+1)] uint(8);
@@ -218,28 +219,27 @@ module SegStringSort {
       }
     }
     
-    var kr0: [aD] state;
+    var kr0 = makeDistArray(aD, state);
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = 0");
     forall (k, rank) in zip(kr0, inds) with (var agg = newSrcAggregator(uint(8))) {
       copyDigit(k, offsets[rank], lengths[rank], rank, pivot, agg);
     }
-    var kr1: [aD] state;
+    var kr1 = makeDistArray(aD, state);
     // create a global count array to scan
-    var gD = Block.createDomain({0..#(numLocales * numTasks * numBuckets)});
-    var globalCounts: [gD] int;
-    var globalStarts: [gD] int;
+    var globalCounts = makeDistArray(numLocales * numTasks * numBuckets, int);
+    var globalStarts = makeDistArray(numLocales * numTasks * numBuckets, int);
         
     // loop over digits
     for rshift in {2..#pivot by 2} {
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = %?".doFormat(rshift));
       // count digits
-      coforall loc in Locales {
+      coforall loc in Locales with (ref globalCounts) {
         on loc {
-          coforall task in 0..#numTasks {
+          coforall task in 0..#numTasks with (ref globalCounts) {
             // bucket domain
             var bD = {0..#numBuckets};
             // allocate counts
-            var taskBucketCounts: [bD] int;
+            var taskBucketCounts = makeDistArray(bD, int);
             // get local domain's indices
             var lD = kr0.localSubdomain();
             // calc task's indices from local domain's indices
@@ -268,13 +268,13 @@ module SegStringSort {
       globalStarts = globalStarts - globalCounts;
             
       // calc new positions and permute
-      coforall loc in Locales {
+      coforall loc in Locales with (ref kr0, ref kr1) {
         on loc {
-          coforall task in 0..#numTasks {
+          coforall task in 0..#numTasks with (ref kr0, ref kr1) {
             // bucket domain
             var bD = {0..#numBuckets};
             // allocate counts
-            var taskBucketPos: [bD] int;
+            var taskBucketPos = makeDistArray(bD, int);
             // get local domain's indices
             var lD = kr0.localSubdomain();
             // calc task's indices from local domain's indices

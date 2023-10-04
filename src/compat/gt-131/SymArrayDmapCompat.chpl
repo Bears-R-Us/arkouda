@@ -32,10 +32,10 @@ module SymArrayDmapCompat
             }
             when Dmap.blockDist {
                 if size > 0 {
-                    return {0..#size} dmapped Block(boundingBox={0..#size});
+                    return {0..#size} dmapped blockDist(boundingBox={0..#size});
                 }
                 // fix the annoyance about boundingBox being enpty
-                else {return {0..#0} dmapped Block(boundingBox={0..0});}
+                else {return {0..#0} dmapped blockDist(boundingBox={0..0});}
             }
             otherwise {
                 halt("Unsupported distribution " + MyDmap:string);
@@ -70,6 +70,15 @@ module SymArrayDmapCompat
       var res = D.tryCreateArray(etype);
       res = a;
       return res;
+    }
+
+    proc makeDistArray(D: domain(?), type etype) throws {
+      var res = D.tryCreateArray(etype);
+      return res;
+    }
+
+    proc makeDistArray(D: domain(?), initExpr: ?t) throws {
+      return D.tryCreateArray(t, initExpr);
     }
 
     /* 

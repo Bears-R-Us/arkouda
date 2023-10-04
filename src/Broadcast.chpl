@@ -27,7 +27,7 @@ module Broadcast {
     // domain by forming the full derivative and integrating it
 
     // Compute the sparse derivative (in segment domain) of values
-    var diffs: [sD] t;
+    var diffs = makeDistArray(sD, t);
     forall (i, d, v) in zip(sD, diffs, vals) {
       if i == sD.low {
         d = v;
@@ -36,7 +36,7 @@ module Broadcast {
       }
     }
     // Convert to the dense derivative (in full domain) of values
-    var expandedVals: [D] t;
+    var expandedVals = makeDistArray(D, t);
     forall (s, d) in zip(segs, diffs) with (var agg = newDstAggregator(t)) {
       agg.copy(expandedVals[s], d);
     }
@@ -48,7 +48,7 @@ module Broadcast {
     // Integrate to recover full values
     expandedVals = (+ scan expandedVals);
     // Permute to the original array order
-    var permutedVals: [D] t;
+    var permutedVals = makeDistArray(D, t);
     forall (i, v) in zip(perm, expandedVals) with (var agg = newDstAggregator(t)) {
       agg.copy(permutedVals[i], v);
     }
@@ -69,7 +69,7 @@ module Broadcast {
     
     // Compute the sparse derivative (in segment domain) of values
     // Treat booleans as integers
-    var diffs: [sD] int(8);
+    var diffs = makeDistArray(sD, int(8));
     forall (i, d, v) in zip(sD, diffs, vals) {
       if i == sD.low {
         d = v:int(8);
@@ -78,7 +78,7 @@ module Broadcast {
       }
     }
     // Convert to the dense derivative (in full domain) of values
-    var expandedVals: [D] int(8);
+    var expandedVals = makeDistArray(D, int(8));
     forall (s, d) in zip(segs, diffs) with (var agg = newDstAggregator(int(8))) {
       agg.copy(expandedVals[s], d);
     }
@@ -87,7 +87,7 @@ module Broadcast {
     // Integrate to recover full values
     expandedVals = (+ scan expandedVals);
     // Permute to the original array order and convert back to bool
-    var permutedVals: [D] bool;
+    var permutedVals = makeDistArray(D, bool);
     forall (i, v) in zip(perm, expandedVals) with (var agg = newDstAggregator(bool)) {
       agg.copy(permutedVals[i], v == 1);
     }
@@ -99,8 +99,8 @@ module Broadcast {
     ref vals = segString.values.a;
     const size = perm.size;
     const high = sD.high;
-    var strLens: [sD] int;
-    var segLens: [sD] int;
+    var strLens = makeDistArray(sD, int);
+    var segLens = makeDistArray(sD, int);
     var expandedLen: int;
 
     forall (i, off, str_len, seg, seg_len) in zip (sD, offs, strLens, segs, segLens) with (+ reduce expandedLen) {
@@ -138,7 +138,7 @@ module Broadcast {
     // domain by forming the full derivative and integrating it
     
     // Compute the sparse derivative (in segment domain) of values
-    var diffs: [sD] t;
+    var diffs = makeDistArray(sD, t);
     forall (i, d, v) in zip(sD, diffs, vals) {
       if i == sD.low {
         d = v;
@@ -167,7 +167,7 @@ module Broadcast {
     
     // Compute the sparse derivative (in segment domain) of values
     // Treat booleans as integers
-    var diffs: [sD] int(8);
+    var diffs = makeDistArray(sD, int(8));
     forall (i, d, v) in zip(sD, diffs, vals) {
       if i == sD.low {
         d = v:int(8);
@@ -191,8 +191,8 @@ module Broadcast {
     ref offs = segString.offsets.a;
     ref vals = segString.values.a;
     const high = sD.high;
-    var strLens: [sD] int;
-    var segLens: [sD] int;
+    var strLens = makeDistArray(sD, int);
+    var segLens = makeDistArray(sD, int);
     var expandedLen: int;
 
     forall (i, off, str_len, seg, seg_len) in zip (sD, offs, strLens, segs, segLens) with (+ reduce expandedLen) {

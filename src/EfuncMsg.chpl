@@ -19,6 +19,7 @@ module EfuncMsg
     use AryUtil;
 
     use ArkoudaBitOpsCompat;
+    use ArkoudaMathCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -215,7 +216,7 @@ module EfuncMsg
                         st.addEntry(rname, new shared SymEntry(atanh(ea)));
                     }
                     when "isnan" {
-                        st.addEntry(rname, new shared SymEntry(isnan(ea)));
+                        st.addEntry(rname, new shared SymEntry(isNan(ea)));
                     }
                     when "hash64" {
                         overMemLimit(numBytes(real) * e.size);
@@ -248,13 +249,15 @@ module EfuncMsg
                 select efunc
                 {
                     when "cumsum" {
-                        var ia: [e.a.domain] int = (e.a:int); // make a copy of bools as ints blah!
+                        var ia = makeDistArray(e.a.domain, int); // make a copy of bools as ints blah!
+                        ia = e.a:int;
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
                         overMemLimit(numBytes(int) * ia.size);
                         st.addEntry(rname, new shared SymEntry(+ scan ia));
                     }
                     when "cumprod" {
-                        var ia: [e.a.domain] int = (e.a:int); // make a copy of bools as ints blah!
+                        var ia = makeDistArray(e.a.domain, int); // make a copy of bools as ints blah!
+                        ia = e.a:int;
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
                         overMemLimit(numBytes(int) * ia.size);
                         st.addEntry(rname, new shared SymEntry(* scan ia));
@@ -1180,8 +1183,8 @@ module EfuncMsg
        :arg kind:
        :type kind: param
        */
-    proc where_helper(cond:[?D] bool, A:[D] ?t, B:[D] t, param kind):[D] t where (kind == 0) {
-      var C:[D] t;
+    proc where_helper(cond:[?D] bool, A:[D] ?t, B:[D] t, param kind):[D] t throws where (kind == 0) {
+      var C = makeDistArray(D, t);
       forall (ch, a, b, c) in zip(cond, A, B, C) {
         c = if ch then a else b;
       }
@@ -1202,8 +1205,8 @@ module EfuncMsg
     :arg kind:
     :type kind: param
     */
-    proc where_helper(cond:[?D] bool, A:[D] ?t, b:t, param kind):[D] t where (kind == 1) {
-      var C:[D] t;
+    proc where_helper(cond:[?D] bool, A:[D] ?t, b:t, param kind):[D] t throws where (kind == 1) {
+      var C = makeDistArray(D, t);
       forall (ch, a, c) in zip(cond, A, C) {
         c = if ch then a else b;
       }
@@ -1224,8 +1227,8 @@ module EfuncMsg
     :arg kind:
     :type kind: param
     */
-    proc where_helper(cond:[?D] bool, a:?t, B:[D] t, param kind):[D] t where (kind == 2) {
-      var C:[D] t;
+    proc where_helper(cond:[?D] bool, a:?t, B:[D] t, param kind):[D] t throws where (kind == 2) {
+      var C = makeDistArray(D, t);
       forall (ch, b, c) in zip(cond, B, C) {
         c = if ch then a else b;
       }
@@ -1246,8 +1249,8 @@ module EfuncMsg
     :arg kind:
     :type kind: param
     */
-    proc where_helper(cond:[?D] bool, a:?t, b:t, param kind):[D] t where (kind == 3) {
-      var C:[D] t;
+    proc where_helper(cond:[?D] bool, a:?t, b:t, param kind):[D] t throws where (kind == 3) {
+      var C = makeDistArray(D, t);
       forall (ch, c) in zip(cond, C) {
         c = if ch then a else b;
       }

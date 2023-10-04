@@ -62,7 +62,7 @@ module SortMsg
       proc doSort(a: [?D] ?t) throws {
         select algorithm {
           when SortingAlgorithm.TwoArrayRadixSort {
-            var b: [D] t = a;
+            var b = makeDistArray(a);
             Sort.TwoArrayRadixSort.twoArrayRadixSort(b, comparator=myDefaultComparator);
             return b;
           }

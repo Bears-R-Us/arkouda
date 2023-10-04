@@ -10,6 +10,7 @@ module BinOp
   use BitOps;
 
   use ArkoudaBigIntCompat;
+  use ArkoudaMathCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -19,10 +20,10 @@ module BinOp
     Helper function to ensure that floor division cases are handled in accordance with numpy
   */
   inline proc floorDivisionHelper(numerator: ?t, denom: ?t2): real {
-    if (numerator == 0 && denom == 0) || (isinf(numerator) && (denom != 0 || isinf(denom))){
-      return NAN;
+    if (numerator == 0 && denom == 0) || (isInf(numerator) && (denom != 0 || isInf(denom))){
+      return nan;
     }
-    else if (numerator > 0 && denom == -INFINITY) || (numerator < 0 && denom == INFINITY){
+    else if (numerator > 0 && denom == -inf) || (numerator < 0 && denom == inf){
       return -1:real;
     }
     else {
