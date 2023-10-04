@@ -2751,9 +2751,7 @@ def inner_join_merge(left: DataFrame,
     for col in right_cols:
         new_dict[col] = right[col][ij[1]]
 
-    ij_ak_df = DataFrame(new_dict)
-
-    return ij_ak_df
+    return DataFrame(new_dict)
 
 
 def right_join_merge(left: DataFrame,
