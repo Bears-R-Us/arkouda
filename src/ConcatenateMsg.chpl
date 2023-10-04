@@ -361,6 +361,14 @@ module ConcatenateMsg
                               start += o.size;
                             }
                         }
+                        if max_bits != -1 {
+                          var max_size = 1:bigint;
+                          max_size <<= max_bits;
+                          max_size -= 1;
+                          forall t in tmp with (var local_max_size = max_size) {
+                            t &= local_max_size;
+                          }
+                        }
                         st.addEntry(rname, createSymEntry(tmp, max_bits));
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                          "created concatenated pdarray: %s".doFormat(st.attrib(rname)));

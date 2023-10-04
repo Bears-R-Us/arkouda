@@ -214,6 +214,12 @@ class TestOperator:
         assert dtype == ak_concat.dtype.name
         assert np.allclose(ak_concat.to_ndarray(), np_concat)
 
+    def test_max_bits_concatenation(self):
+        # reproducer for issue #2802
+        concatenated = ak.concatenate([ak.arange(5, max_bits=3), ak.arange(2**200 - 1, 2**200 + 4)])
+        assert concatenated.max_bits == 3
+        assert [0, 1, 2, 3, 4, 7, 0, 1, 2, 3] == concatenated.to_list()
+
     def test_fixed_concatenate(self):
         for pda1, pda2 in zip(
             (ak.arange(4), ak.linspace(0, 3, 4)), (ak.arange(4, 7), ak.linspace(4, 6, 3))
