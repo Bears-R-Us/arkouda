@@ -11,7 +11,7 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
-from arkouda.alignment import find, right_align
+from arkouda.alignment import find
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
@@ -2756,7 +2756,6 @@ def inner_join_merge(left: DataFrame,
     return ij_ak_df
 
 
-@typechecked
 def right_join_merge(left: DataFrame,
                      right: DataFrame,
                      on: str
@@ -2784,11 +2783,6 @@ def right_join_merge(left: DataFrame,
         Right-Joined Arkouda DataFrame
     """
 
-    keep, (denseLeft, denseRight) = right_align(left[on], right[on])
-    if keep.sum() == 0:
-        # Intersection is empty
-        return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
-
     left_cols = left.columns.copy()
     left_cols.remove(on)
     right_cols = right.columns.copy()
@@ -2805,9 +2799,9 @@ def right_join_merge(left: DataFrame,
         nan_arr.fill(np.nan)
         left_col_type = type(in_left[col])
         if in_left[col].dtype == int:
-            in_left[col] = cast(in_left[col], np.float64)
+            in_left[col] = akcast(in_left[col], np.float64)
         else:
-            nan_arr = cast(nan_arr, in_left[col].dtype)
+            nan_arr = akcast(nan_arr, in_left[col].dtype)
 
         try:
             not_in_left[col] = left_col_type(nan_arr)
