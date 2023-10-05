@@ -45,6 +45,9 @@ __all__ = [
     "intersect",
     "invert_permutation",
     "intx",
+    "inner_join_merge",
+    "right_join_merge",
+    "merge",
 ]
 
 
@@ -2241,6 +2244,118 @@ class DataFrame(UserDict):
         return DataFrame({c: create_pdarray(ret_dict[c]) for c in self.columns})
 
     @typechecked
+    def inner_join_merge(
+        self,
+        right: DataFrame,
+        on: str,
+        left_suffix: str = "_x",
+        right_suffix: str = "_y",
+    ) -> DataFrame:
+        """
+        Utilizes the ak.join.inner_join function to return an ak
+        DataFrame object containing only rows that are in both
+        self and right Dataframes, (based on the "on" param),
+        as well as their associated values. For this function self
+        is considered the left dataframe.
+
+        Parameters
+        ----------
+        right : DataFrame
+            The Right DataFrame to be joined
+        on : str
+            The name of the DataFrame column the join is being
+            performed on
+        left_suffix: str = "_x"
+            A string indicating the suffix to add to columns from self for overlapping
+            column names in both left and right. Defaults to "_x"
+        right_suffix: str = "_y"
+            A string indicating the suffix to add to columns from the other dataframe for overlapping
+            column names in both left and right. Defaults to "_y"
+
+        Returns
+        -------
+        DataFrame
+            Inner-Joined Arkouda DataFrame
+        """
+        return inner_join_merge(self, right, on, left_suffix, right_suffix)
+
+    def right_join_merge(self, right: DataFrame, on: str) -> DataFrame:
+        """
+        Utilizes the ak.join.inner_join_merge function to return an
+        ak DataFrame object containing all the rows in the right Dataframe,
+        as well as corresponding rows in self (based on the "on" param),
+        and all of their associated values. For this function self
+        is considered the left dataframe.
+        Based on pandas merge functionality.
+
+        Parameters
+        ----------
+        right : DataFrame
+            The Right DataFrame to be joined
+        on : str
+            The name of the DataFrame column the join is being
+            performed on
+
+        Returns
+        -------
+        DataFrame
+            Right-Joined Arkouda DataFrame
+        """
+        return right_join_merge(self, right, on)
+
+    @typechecked
+    def merge(
+        self,
+        right: DataFrame,
+        on: str,
+        how: str,
+        left_suffix: str = "_x",
+        right_suffix: str = "_y",
+    ) -> DataFrame:
+        """
+        Utilizes the ak.join.inner_join_merge and the ak.join.right_join_merge
+        functions to return a merged Arkouda DataFrame object
+        containing rows from both DataFrames as specified by the merge
+        condition (based on the "how" and "on" parameters). For this function self
+        is considered the left dataframe.
+        Based on pandas merge functionality.
+        https://github.com/pandas-dev/pandas/blob/main/pandas/core/reshape/merge.py#L137
+
+        Parameters
+        ----------
+        right: DataFrame
+            The Right DataFrame to be joined
+        on: str
+            The name of the DataFrame column the join is being
+            performed on
+        how: str
+            The merge condition.
+            Must be "inner", "left", or "right"
+        left_suffix: str = "_x"
+            A string indicating the suffix to add to columns from the left dataframe for overlapping
+            column names in both left and right. Defaults to "_x". Only used when how is "inner"
+        right_suffix: str = "_y"
+            A string indicating the suffix to add to columns from the right dataframe for overlapping
+            column names in both left and right. Defaults to "_y". Only used when how is "inner"
+
+        Returns
+        -------
+        DataFrame
+            Joined Arkouda DataFrame
+        """
+
+        if how == "inner":
+            return inner_join_merge(self, right, on, left_suffix, right_suffix)
+        elif how == "right":
+            return right_join_merge(self, right, on)
+        elif how == "left":
+            return right_join_merge(right, self, on)
+        else:
+            raise ValueError(
+                f"Unexpected value of {how} for how. Must choose: 'inner', 'left', or 'right'"
+            )
+
+    @typechecked
     def register(self, user_defined_name: str) -> DataFrame:
         """
         Register this DataFrame object and underlying components with the Arkouda server
@@ -2711,12 +2826,13 @@ def invert_permutation(perm):
 
 
 @typechecked
-def inner_join_merge(left: DataFrame,
-                     right: DataFrame,
-                     on: str,
-                     left_suffix: str = "_x",
-                     right_suffix: str = "_y",
-                     ) -> DataFrame:
+def inner_join_merge(
+    left: DataFrame,
+    right: DataFrame,
+    on: str,
+    left_suffix: str = "_x",
+    right_suffix: str = "_y",
+) -> DataFrame:
     """
     Utilizes the ak.join.inner_join function to return an ak
     DataFrame object containing only rows that are in both
@@ -2725,13 +2841,19 @@ def inner_join_merge(left: DataFrame,
 
     Parameters
     ----------
-    left : DataFrame
+    left: DataFrame
         The Left DataFrame to be joined
-    right : DataFrame
+    right: DataFrame
         The Right DataFrame to be joined
-    on : str
+    on: str
         The name of the DataFrame column the join is being
         performed on
+    left_suffix: str = "_x"
+        A string indicating the suffix to add to columns from the left dataframe for overlapping
+        column names in both left and right. Defaults to "_x"
+    right_suffix: str = "_y"
+        A string indicating the suffix to add to columns from the right dataframe for overlapping
+        column names in both left and right. Defaults to "_y"
 
     Returns
     -------
@@ -2764,10 +2886,7 @@ def inner_join_merge(left: DataFrame,
     return DataFrame(new_dict)
 
 
-def right_join_merge(left: DataFrame,
-                     right: DataFrame,
-                     on: str
-                     ) -> DataFrame:
+def right_join_merge(left: DataFrame, right: DataFrame, on: str) -> DataFrame:
     """
     Utilizes the ak.join.inner_join_merge function to return an
     ak DataFrame object containing all the rows in the right Dataframe,
@@ -2777,17 +2896,17 @@ def right_join_merge(left: DataFrame,
 
     Parameters
     ----------
-    left : DataFrame
+    left: DataFrame
         The Left DataFrame to be joined
-    right : DataFrame
+    right: DataFrame
         The Right DataFrame to be joined
-    on : str
+    on: str
         The name of the DataFrame column the join is being
         performed on
 
     Returns
     -------
-    right_ak_df : DataFrame
+    DataFrame
         Right-Joined Arkouda DataFrame
     """
 
@@ -2825,7 +2944,9 @@ def merge(
     left: DataFrame,
     right: DataFrame,
     on: str,
-    how: str
+    how: str,
+    left_suffix: str = "_x",
+    right_suffix: str = "_y",
 ) -> DataFrame:
     """
     Utilizes the ak.join.inner_join_merge and the ak.join.right_join_merge
@@ -2837,28 +2958,34 @@ def merge(
 
     Parameters
     ----------
-    left : DataFrame
+    left: DataFrame
         The Left DataFrame to be joined
-    right : DataFrame
+    right: DataFrame
         The Right DataFrame to be joined
-    on : str
+    on: str
         The name of the DataFrame column the join is being
         performed on
-    how : str
+    how: str
         The merge condition.
         Must be "inner", "left", or "right"
+    left_suffix: str = "_x"
+        A string indicating the suffix to add to columns from the left dataframe for overlapping
+        column names in both left and right. Defaults to "_x". Only used when how is "inner"
+    right_suffix: str = "_y"
+        A string indicating the suffix to add to columns from the right dataframe for overlapping
+        column names in both left and right. Defaults to "_y". Only used when how is "inner"
 
     Returns
     -------
-    merged_ak_df : DataFrame
+    DataFrame
         Joined Arkouda DataFrame
     """
 
-    if how == 'inner':
-        return inner_join_merge(left, right, on)
-    elif how == 'right':
+    if how == "inner":
+        return inner_join_merge(left, right, on, left_suffix, right_suffix)
+    elif how == "right":
         return right_join_merge(left, right, on)
-    elif how == 'left':
+    elif how == "left":
         return right_join_merge(right, left, on)
     else:
         raise ValueError(f"Unexpected value of {how} for how. Must choose: 'inner', 'left', or 'right'")
