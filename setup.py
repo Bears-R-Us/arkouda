@@ -143,7 +143,7 @@ setup(
         'pip',
         'types-tabulate',
         'tables>=3.7.0',
-        'cython<3.0.2', # remove once python 3.9 becomes min supported version
+        'cython=3.0.2', # remove once python 3.9 becomes min supported version
         'pyarrow==9.0.0',
     ],
 
