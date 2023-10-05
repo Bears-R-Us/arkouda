@@ -31,6 +31,7 @@ The following python packages are required by the Arkouda client package.
 - `pip`
 - `types-tabulate`
 - `tables>=3.7.0`
+- `cython<3.0.2`
 - `pyarrow>=1.0.1`
 
 ### Developer Specific
