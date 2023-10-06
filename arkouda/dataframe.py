@@ -2838,7 +2838,6 @@ def inner_join_merge(
     DataFrame object containing only rows that are in both
     the left and right Dataframes, (based on the "on" param),
     as well as their associated values.
-
     Parameters
     ----------
     left: DataFrame
@@ -2854,7 +2853,6 @@ def inner_join_merge(
     right_suffix: str = "_y"
         A string indicating the suffix to add to columns from the right dataframe for overlapping
         column names in both left and right. Defaults to "_y"
-
     Returns
     -------
     DataFrame
@@ -2886,14 +2884,19 @@ def inner_join_merge(
     return DataFrame(new_dict)
 
 
-def right_join_merge(left: DataFrame, right: DataFrame, on: str) -> DataFrame:
+def right_join_merge(
+    left: DataFrame,
+    right: DataFrame,
+    on: str,
+    left_suffix: str = "_x",
+    right_suffix: str = "_y",
+) -> DataFrame:
     """
     Utilizes the ak.join.inner_join_merge function to return an
     ak DataFrame object containing all the rows in the right Dataframe,
     as well as corresponding rows in the left (based on the "on" param),
     and all of their associated values.
     Based on pandas merge functionality.
-
     Parameters
     ----------
     left: DataFrame
@@ -2903,7 +2906,12 @@ def right_join_merge(left: DataFrame, right: DataFrame, on: str) -> DataFrame:
     on: str
         The name of the DataFrame column the join is being
         performed on
-
+    left_suffix: str = "_x"
+        A string indicating the suffix to add to columns from the left dataframe for overlapping
+        column names in both left and right. Defaults to "_x"
+    right_suffix: str = "_y"
+        A string indicating the suffix to add to columns from the right dataframe for overlapping
+        column names in both left and right. Defaults to "_y"
     Returns
     -------
     DataFrame
@@ -2912,14 +2920,21 @@ def right_join_merge(left: DataFrame, right: DataFrame, on: str) -> DataFrame:
 
     left_cols = left.columns.copy()
     left_cols.remove(on)
-    right_cols = right.columns.copy()
-    right_cols.remove(on)
 
-    in_left = inner_join_merge(left, right, on)
+    in_left = inner_join_merge(left, right, on, left_suffix, right_suffix)
+    in_left_cols = in_left.columns.copy()
+    in_left_cols.remove(on)
 
-    # Add a try/except statement in case there are no values in right that aren't in left
     not_in_left = right[find(setdiff1d(right[on], left[on]), right[on])]
-    for col in left_cols:
+    for col in not_in_left.columns:
+        if col in left_cols:
+            new_col = col + right_suffix
+            not_in_left[new_col] = not_in_left[col]
+            not_in_left = not_in_left.drop(col, axis=1)
+
+    nan_cols = list(set(in_left) - set(in_left).intersection(set(not_in_left)))
+
+    for col in nan_cols:
         # Create a nan array for all values not in the left df
         nan_arr = zeros(len(not_in_left))
         nan_arr.fill(np.nan)
@@ -2955,7 +2970,6 @@ def merge(
     condition (based on the "how" and "on" parameters).
     Based on pandas merge functionality.
     https://github.com/pandas-dev/pandas/blob/main/pandas/core/reshape/merge.py#L137
-
     Parameters
     ----------
     left: DataFrame
@@ -2974,18 +2988,17 @@ def merge(
     right_suffix: str = "_y"
         A string indicating the suffix to add to columns from the right dataframe for overlapping
         column names in both left and right. Defaults to "_y". Only used when how is "inner"
-
     Returns
     -------
     DataFrame
         Joined Arkouda DataFrame
     """
 
-    if how == "inner":
-        return inner_join_merge(left, right, on, left_suffix, right_suffix)
-    elif how == "right":
+    if how == 'inner':
+        return inner_join_merge(left, right, on)
+    elif how == 'right':
         return right_join_merge(left, right, on)
-    elif how == "left":
-        return right_join_merge(right, left, on)
+    elif how == 'left':
+        return right_join_merge(right, left, on, left_suffix='_y', right_suffix='_x')
     else:
         raise ValueError(f"Unexpected value of {how} for how. Must choose: 'inner', 'left', or 'right'")
