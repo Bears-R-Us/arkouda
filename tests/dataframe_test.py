@@ -746,3 +746,70 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(df.index.to_list(), df2.index.to_list())
         self.assertListEqual(df["a"].to_list(), df2["a"].to_list())
         self.assertListEqual(df["b"].to_list(), df2["b"].to_list())
+
+    def test_merge(self):
+        df1 = ak.DataFrame(
+            {
+                "key": ak.arange(4),
+                "value1": ak.array(["A", "B", "C", "D"]),
+            }
+        )
+
+        df2 = ak.DataFrame(
+            {
+                "key": ak.arange(2, 6, 1),
+                "value1": ak.array(["A", "B", "D", "F"]),
+                "value2": ak.array(["apple", "banana", "cherry", "date"]),
+            }
+        )
+
+        ij_expected_df = ak.DataFrame(
+            {
+                "key": ak.array([2, 3]),
+                "value1_x": ak.array(["C", "D"]),
+                "value1_y": ak.array(["A", "B"]),
+                "value2": ak.array(["apple", "banana"])
+            }
+        )
+
+        ij_merged_df = ak.merge(df1, df2, how="inner", on="key")
+
+        self.assertListEqual(ij_expected_df.columns, ij_merged_df.columns)
+        self.assertListEqual(ij_expected_df["key"].to_list(), ij_merged_df["key"].to_list())
+        self.assertListEqual(ij_expected_df["value1_x"].to_list(), ij_merged_df["value1_x"].to_list())
+        self.assertListEqual(ij_expected_df["value1_y"].to_list(), ij_merged_df["value1_y"].to_list())
+        self.assertListEqual(ij_expected_df["value2"].to_list(), ij_merged_df["value2"].to_list())
+
+        rj_expected_df = ak.DataFrame(
+            {
+                "key": ak.array([2, 3, 4, 5]),
+                "value1_x": ak.array(["C", "D", "nan", "nan"]),
+                "value1_y": ak.array(["A", "B", "D", "F"]),
+                "value2": ak.array(["apple", "banana", "cherry", "date"])
+            }
+        )
+
+        rj_merged_df = ak.merge(df1, df2, how="right", on="key")
+
+        self.assertListEqual(rj_expected_df.columns, rj_merged_df.columns)
+        self.assertListEqual(rj_expected_df["key"].to_list(), rj_merged_df["key"].to_list())
+        self.assertListEqual(rj_expected_df["value1_x"].to_list(), rj_merged_df["value1_x"].to_list())
+        self.assertListEqual(rj_expected_df["value1_y"].to_list(), rj_merged_df["value1_y"].to_list())
+        self.assertListEqual(rj_expected_df["value2"].to_list(), rj_merged_df["value2"].to_list())
+
+        lj_expected_df = ak.DataFrame(
+            {
+                "key": ak.array([2, 3, 0, 1]),
+                "value1_x": ak.array(["C", "D", "A", "B"]),
+                "value1_y": ak.array(["A", "B", "nan", "nan"]),
+                "value2": ak.array(["apple", "banana", "nan", "nan"])
+            }
+        )
+
+        lj_merged_df = ak.merge(df1, df2, how="left", on="key")
+
+        self.assertListEqual(lj_expected_df.columns, lj_merged_df.columns)
+        self.assertListEqual(lj_expected_df["key"].to_list(), lj_merged_df["key"].to_list())
+        self.assertListEqual(lj_expected_df["value1_x"].to_list(), lj_merged_df["value1_x"].to_list())
+        self.assertListEqual(lj_expected_df["value1_y"].to_list(), lj_merged_df["value1_y"].to_list())
+        self.assertListEqual(lj_expected_df["value2"].to_list(), lj_merged_df["value2"].to_list())
