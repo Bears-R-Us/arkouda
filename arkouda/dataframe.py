@@ -2995,10 +2995,10 @@ def merge(
     """
 
     if how == 'inner':
-        return inner_join_merge(left, right, on)
+        return inner_join_merge(left, right, on, left_suffix, right_suffix)
     elif how == 'right':
-        return right_join_merge(left, right, on)
+        return right_join_merge(left, right, on, left_suffix, right_suffix)
     elif how == 'left':
-        return right_join_merge(right, left, on, left_suffix='_y', right_suffix='_x')
+        return right_join_merge(right, left, on, right_suffix, left_suffix)
     else:
         raise ValueError(f"Unexpected value of {how} for how. Must choose: 'inner', 'left', or 'right'")
