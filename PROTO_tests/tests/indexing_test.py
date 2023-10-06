@@ -103,3 +103,8 @@ class TestIndexing:
         a = ak.arange(2**200 - 1, 2**200 + 11, max_bits=max_bits)
         assert max_bits == a[ak.arange(10)].max_bits
         assert max_bits == a[:].max_bits
+
+    def test_handling_bigint_max_bits(self):
+        a = ak.arange(2**200 - 1, 2**200 + 11, max_bits=3)
+        a[:] = ak.arange(2**200 - 1, 2**200 + 11)
+        assert [7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2] == a.to_list()
