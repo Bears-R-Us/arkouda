@@ -293,6 +293,12 @@ class OperatorsTest(ArkoudaTest):
             ak.concatenate([pdaOne, pdaTwo]).to_list(),
         )
 
+        pdaOne = ak.arange(5, max_bits=3)
+        pdaTwo = ak.arange(2**200 - 1, 2**200 + 4)
+        concatenated = ak.concatenate([pdaOne, pdaTwo])
+        self.assertEqual(concatenated.max_bits, 3)
+        self.assertListEqual([0, 1, 2, 3, 4, 7, 0, 1, 2, 3], concatenated.to_list())
+
     def test_invert(self):
         ak_uint = ak.arange(10, dtype=ak.uint64)
         inverted = ~ak_uint
@@ -733,8 +739,10 @@ class OperatorsTest(ArkoudaTest):
         # Printing floating point values changed precision in Chapel 1.32
         answers = ["[1.100000e+00 2.300000e+00 5.000000e+00]", "[1.1 2.3 5.0]"]
         self.assertTrue(ak.array([1.1, 2.3, 5]).__str__() in answers)
-        answers = ["[0.000000e+00 5.263158e-01 1.052632e+00 ... 8.947368e+00 9.473684e+00 1.000000e+01]",
-                   "[0.0 0.526316 1.05263 ... 8.94737 9.47368 10.0]"]
+        answers = [
+            "[0.000000e+00 5.263158e-01 1.052632e+00 ... 8.947368e+00 9.473684e+00 1.000000e+01]",
+            "[0.0 0.526316 1.05263 ... 8.94737 9.47368 10.0]",
+        ]
         self.assertTrue(ak.linspace(0, 10, 20).__str__() in answers)
         self.assertEqual("[False False False]", ak.isnan(ak.array([1.1, 2.3, 5])).__str__())
         self.assertEqual(
@@ -744,14 +752,18 @@ class OperatorsTest(ArkoudaTest):
         # Test __repr__()
         self.assertEqual("array([1 2 3])", ak.array([1, 2, 3]).__repr__())
         self.assertEqual("array([1 2 3 ... 17 18 19])", ak.arange(1, 20).__repr__())
-        answers = ["array([1.1000000000000001 2.2999999999999998 5])",
-                   "array([1.1 2.3 5])",
-                   "array([1.1000000000000001 2.2999999999999998 5.00000000000000000])"]
+        answers = [
+            "array([1.1000000000000001 2.2999999999999998 5])",
+            "array([1.1 2.3 5])",
+            "array([1.1000000000000001 2.2999999999999998 5.00000000000000000])",
+        ]
         self.assertTrue(ak.array([1.1, 2.3, 5]).__repr__() in answers)
 
-        answers = ["array([0 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10])",
-                   "array([0 0.5 1.1 ... 8.9 9.5 10])",
-                   "array([0.00000000000000000 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10.00000000000000000])"]
+        answers = [
+            "array([0 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10])",
+            "array([0 0.5 1.1 ... 8.9 9.5 10])",
+            "array([0.00000000000000000 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10.00000000000000000])",
+        ]
         self.assertTrue(ak.linspace(0, 10, 20).__repr__() in answers)
         self.assertEqual("array([False False False])", ak.isnan(ak.array([1.1, 2.3, 5])).__repr__())
         self.assertEqual(
