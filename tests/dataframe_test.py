@@ -800,9 +800,9 @@ class DataFrameTest(ArkoudaTest):
         lj_expected_df = ak.DataFrame(
             {
                 "key": ak.array([2, 3, 0, 1]),
-                "value1_x": ak.array(["C", "D", "A", "B"]),
                 "value1_y": ak.array(["A", "B", "nan", "nan"]),
-                "value2": ak.array(["apple", "banana", "nan", "nan"])
+                "value2": ak.array(["apple", "banana", "nan", "nan"]),
+                "value1_x": ak.array(["C", "D", "A", "B"]),
             }
         )
 
