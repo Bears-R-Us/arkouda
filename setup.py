@@ -143,7 +143,7 @@ setup(
         'pip',
         'types-tabulate',
         'tables>=3.7.0,<3.9.0',
-        'pyarrow==9.0.0',
+        'pyarrow==11.0.0',
     ],
 
     # List additional groups of dependencies here (e.g. development

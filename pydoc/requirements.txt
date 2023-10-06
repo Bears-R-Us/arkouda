@@ -13,7 +13,7 @@ hdf5==1.12.2
 pip
 types-tabulate
 tables>=3.7.0,<3.9.0
-pyarrow==9.0.0
+pyarrow==11.0.0
 libiconv
 libidn2
 
