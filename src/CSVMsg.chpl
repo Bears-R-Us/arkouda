@@ -248,7 +248,7 @@ module CSVMsg {
                                     lineNumber=getLineNumber(), 
                                     routineName=getRoutineName(), 
                                     moduleName=getModuleName(), 
-                                    errorClass='IOError'
+                                    errorClass="IOError"
                             );
                         }
                     }
@@ -323,9 +323,9 @@ module CSVMsg {
         return (row_ct, hasHeader, new list(dtypes));
     }
 
-    proc read_files_into_dist_array(ref A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int) throws {
-
-        coforall loc in A.targetLocales() with (ref A) do on loc {
+    proc read_files_into_dist_array(ref A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int, allowErrors: bool) throws {
+        var hadError = false;
+        coforall loc in A.targetLocales() with (ref A, | reduce hadError) do on loc {
             // Create local copies of args
             var locFiles = filenames;
             var locFiledoms = filedomains;
@@ -359,9 +359,18 @@ module CSVMsg {
                     for locdom in A.localSubdomains() {
                         const intersection = domain_intersection(locdom, filedom);
                         if intersection.size > 0 {
-                            forall x in intersection {
+                            forall x in intersection with (| reduce hadError) {
                                 var row = lines[x-offsets[file_idx]+data_offset].split(col_delim);
-                                A[x] = row[colidx]: t;
+                                if t == string || row[colidx] != "" {
+                                    // only write into A[x] if the value is non-empty and the col dtype is not a string
+                                    A[x] = row[colidx]: t;
+                                }
+                                else if allowErrors {
+                                    A[x] = min(t);
+                                }
+                                else {
+                                    hadError |= true;
+                                }
                             }
                         }
                     }
@@ -369,6 +378,14 @@ module CSVMsg {
                     csvFile.close();
                 }
             }
+        }
+        if hadError {
+            throw getErrorWithContext(
+                msg="This CSV is missing values. To read anyway and replace these with min(col_dtype), set allow_errors to True",
+                lineNumber=getLineNumber(),
+                routineName=getRoutineName(),
+                moduleName=getModuleName(),
+                errorClass="IOError");
         }
     }
 
@@ -388,7 +405,7 @@ module CSVMsg {
         return (subdoms, offsets, skips);
     }
 
-    proc readTypedCSV(filenames: [] string, datasets: [?D] string, dtypes: list(string), row_counts: [] int, validFiles: [] bool, col_delim: string, st: borrowed SymTab): list((string, ObjType, string)) throws {
+    proc readTypedCSV(filenames: [] string, datasets: [?D] string, dtypes: list(string), row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file has header since we were able to access type info
         var rtnData: list((string, ObjType, string));
         var record_count = + reduce row_counts;
@@ -399,7 +416,7 @@ module CSVMsg {
             select dtype {
                 when DType.Int64 {
                     var a = makeDistArray(record_count, int);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -407,7 +424,7 @@ module CSVMsg {
                 }
                 when DType.UInt64 {
                     var a = makeDistArray(record_count, uint);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -415,7 +432,7 @@ module CSVMsg {
                 }
                 when DType.Float64 {
                     var a = makeDistArray(record_count, real);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -423,7 +440,7 @@ module CSVMsg {
                 }
                 when DType.Bool {
                     var a = makeDistArray(record_count, bool);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -431,7 +448,7 @@ module CSVMsg {
                 }
                 when DType.Strings {
                     var a = makeDistArray(record_count, string);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
                     var col_lens = makeDistArray(record_count, int);
                     forall (i, v) in zip(0..#a.size, a) {
                         var tmp_str = v + "\x00";
@@ -457,7 +474,7 @@ module CSVMsg {
                                     lineNumber=getLineNumber(), 
                                     routineName=getRoutineName(), 
                                     moduleName=getModuleName(), 
-                                    errorClass='IOError'
+                                    errorClass="IOError"
                             );
                 }
             }
@@ -465,7 +482,7 @@ module CSVMsg {
         return rtnData;
     }
 
-    proc readGenericCSV(filenames: [] string, datasets: [?D] string, row_counts: [] int, validFiles: [] bool, col_delim: string, st: borrowed SymTab): list((string, ObjType, string)) throws {
+    proc readGenericCSV(filenames: [] string, datasets: [?D] string, row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file does not have a header since we were not able to access type info
         var rtnData: list((string, ObjType, string));
         var record_count = + reduce row_counts;
@@ -473,7 +490,7 @@ module CSVMsg {
 
         for (i, dset) in zip(D, datasets) {
             var a = makeDistArray(record_count, string);
-            read_files_into_dist_array(a, dset, filenames, subdoms, skips, false, col_delim, offsets);
+            read_files_into_dist_array(a, dset, filenames, subdoms, skips, false, col_delim, offsets, allowErrors);
             var col_lens = makeDistArray(record_count, int);
             forall (i, v) in zip(0..#a.size, a) {
                 var tmp_str = v + "\x00";
@@ -585,7 +602,7 @@ module CSVMsg {
                 fileErrorMsg = "1 or more Datasets not found in file %s".doFormat(fname);
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
-                if !allowErrors { return new MsgTuple(e.message(), MsgType.ERROR); }
+                if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
             } catch e: SegStringError {
                 fileErrorMsg = "SegmentedString error: %s".doFormat(e.message());
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
@@ -629,15 +646,21 @@ module CSVMsg {
         }
 
         var rtnMsg: string;
-        if headers[0] {
-            rtnData = readTypedCSV(filenames, dsetlist, data_types[0], row_cts, validFiles, col_delim, st);
-            rtnMsg = _buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
+        try {
+            if headers[0] {
+                rtnData = readTypedCSV(filenames, dsetlist, data_types[0], row_cts, validFiles, col_delim, allowErrors, st);
+                rtnMsg = _buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
+            }
+            else {
+                rtnData = readGenericCSV(filenames, dsetlist, row_cts, validFiles, col_delim, allowErrors, st);
+                rtnMsg = _buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
+            }
         }
-        else {
-            rtnData = readGenericCSV(filenames, dsetlist, row_cts, validFiles, col_delim, st);
-            rtnMsg = _buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
+        catch e: Error {
+            var errMsg = e.message();
+            csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+            return new MsgTuple(errMsg, MsgType.ERROR);
         }
-        
         return new MsgTuple(rtnMsg, MsgType.NORMAL);
     } 
 
