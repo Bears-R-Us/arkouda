@@ -233,9 +233,10 @@ module ServerConfig
     }
 
     proc getEnv(name: string, default=""): string {
-        extern proc getenv(name : c_string_ptr) : c_string_ptr;
-        var val = getenv(name.localize().c_str()): string;
-        if val.isEmpty() { val = default; }
+        use OS.POSIX;
+        var envBytes = getenv(name.localize().c_str());
+        var val = envBytes:string;
+        if envBytes == nil || val.isEmpty() { val = default; }
         return val;
     }
 
