@@ -383,6 +383,24 @@
 
 </dd></dl>
 
+<dl class="chpl class">
+<dt class="sig sig-object chpl" id="ServerErrors.IOError">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">IOError</span></span><span class="pre">:</span> <span class="pre">ErrorWithContext</span><a class="headerlink" href="#ServerErrors.IOError" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>The IOError is thrown if there is an error in IO code.</p></li>
+</ul>
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerErrors.IOError.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.IOError.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerErrors.generateErrorContext">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateErrorContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">errorClass:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;ErrorWithContext&quot;</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerErrors.generateErrorContext" title="Permalink to this definition">¶</a></dt>

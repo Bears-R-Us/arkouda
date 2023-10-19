@@ -173,6 +173,17 @@ or
 
    .. method:: proc init()
 
+.. class:: IOError : ErrorWithContext
+
+   
+   * The IOError is thrown if there is an error in IO code.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
 .. function:: proc generateErrorContext(msg: string, lineNumber: int, moduleName: string, routineName: string, errorClass: string = "ErrorWithContext"): string
 
    
