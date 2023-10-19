@@ -186,6 +186,18 @@ module ServerErrors {
         proc init(){ super.init(); }
     }
 
+    /*
+     * The IOError is thrown if there is an error in IO code.
+     */
+    class IOError: ErrorWithContext {
+
+        proc init(msg : string, lineNumber: int, routineName: string,
+                                                           moduleName: string) {
+           super.init(msg,lineNumber,routineName,moduleName,errorClass='IOError');
+        }
+
+        proc init(){ super.init(); }
+    }
 
     /*
      * Generatea a detailed, context-rich error message for errors such as instances of 
@@ -265,7 +277,12 @@ module ServerErrors {
                                                           UnknownSymbolError(msg=msg,
                                                           lineNumber=lineNumber,
                                                           routineName=routineName,
-                                                          moduleName=moduleName); }                                                                                                                 
+                                                          moduleName=moduleName); }
+            when "IOError"                       { return new owned
+                                                          IOError(msg=msg,
+                                                          lineNumber=lineNumber,
+                                                          routineName=routineName,
+                                                          moduleName=moduleName); }
             otherwise                            { return new owned 
                                                           Error(generateErrorContext(
                                                           msg=msg,
