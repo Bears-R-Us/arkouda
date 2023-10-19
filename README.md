@@ -83,7 +83,7 @@ interactive session.
 Arkouda is not trying to replace Pandas but to allow for some Pandas-style 
 operation at a much larger scale. In our experience Pandas can handle dataframes 
 up to about 500 million rows before performance becomes a real issue, this is 
-provided that you run on a sufficently capable compute server. Arkouda breaks 
+provided that you run on a sufficiently capable compute server. Arkouda breaks 
 the shared memory paradigm and scales its operations to dataframes with over
 200 billion rows, maybe even a trillion. In practice we have run Arkouda server
 operations on columns of one trillion elements running on 512 compute nodes.
