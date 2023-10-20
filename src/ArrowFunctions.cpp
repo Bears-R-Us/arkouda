@@ -1912,6 +1912,12 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, bool readNested
         else
           fields += (sc->field(i)->name());
         first = false;
+      } else {
+        std::string fname(filename);
+        std::string dname(sc->field(i)->ToString());
+        std::string msg = "Unsupported type on column: " + dname + " in " + filename; 
+        *errMsg = strdup(msg.c_str());
+        return ARROWERROR;
       }
     }
     *dsetResult = strdup(fields.c_str());
