@@ -112,6 +112,8 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
       return ARROWDOUBLE;
     else if(myType->id() == arrow::Type::LIST)
       return ARROWLIST;
+    else if(myType->id() == arrow::Type::DECIMAL)
+      return ARROWDECIMAL;
     else {
       std::string fname(filename);
       std::string dname(colname);
@@ -848,6 +850,24 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           delete[] tmpArr;
           delete[] def_lvl;
           delete[] rep_lvl;
+        }
+      } else if(ty == ARROWDECIMAL) {
+        auto chpl_ptr = (double*)chpl_arr;
+        parquet::FixedLenByteArray value;
+        parquet::FixedLenByteArrayReader* reader =
+          static_cast<parquet::FixedLenByteArrayReader*>(column_reader.get());
+        startIdx -= reader->Skip(startIdx);
+
+        while (reader->HasNext() && i < numElems) {
+          if((numElems - i) < batchSize)
+            batchSize = numElems - i;
+          (void)reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
+          arrow::Decimal128 v;
+          PARQUET_ASSIGN_OR_THROW(v,
+                                  ::arrow::Decimal128::FromBigEndian(value.ptr, 9));
+
+          chpl_ptr[i] = v.ToDouble(0);
+          i+=values_read;
         }
       }
     }
@@ -1905,7 +1925,8 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, bool readNested
          sc->field(i)->type()->id() == arrow::Type::BINARY ||
          sc->field(i)->type()->id() == arrow::Type::FLOAT ||
          sc->field(i)->type()->id() == arrow::Type::DOUBLE ||
-         (sc->field(i)->type()->id() == arrow::Type::LIST && readNested)
+         (sc->field(i)->type()->id() == arrow::Type::LIST && readNested) ||
+         sc->field(i)->type()->id() == arrow::Type::DECIMAL
          ) {
         if(!first)
           fields += ("," + sc->field(i)->name());

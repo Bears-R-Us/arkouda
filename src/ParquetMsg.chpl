@@ -58,10 +58,12 @@ module ParquetMsg {
   extern var ARROWLIST: c_int;
   extern var ARROWDOUBLE: c_int;
   extern var ARROWERROR: c_int;
+  extern var ARROWDECIMAL: c_int;
 
   enum ArrowTypes { int64, int32, uint64, uint32,
                     stringArr, timestamp, boolean,
-                    double, float, list, notimplemented };
+                    double, float, list, decimal,
+                    notimplemented };
 
   record parquetErrorMsg {
     var errMsg: c_ptr(uint(8));
@@ -356,6 +358,7 @@ module ParquetMsg {
     else if arrType == ARROWDOUBLE then return ArrowTypes.double;
     else if arrType == ARROWFLOAT then return ArrowTypes.float;
     else if arrType == ARROWLIST then return ArrowTypes.list;
+    else if arrType == ARROWDECIMAL then return ArrowTypes.decimal;
     throw getErrorWithContext(
                   msg="Unrecognized Parquet data type",
                   getLineNumber(),
@@ -870,6 +873,12 @@ module ParquetMsg {
             var create_str: string = parseListDataset(filenames, dsetname, list_ty, len, sizes, st);
             rnames.pushBack((dsetname, ObjType.SEGARRAY, create_str));
           }
+        } else if ty == ArrowTypes.decimal {
+          var entryVal = createSymEntry(len, real);
+          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          var valName = st.nextName();
+          st.addEntry(valName, entryVal);
+          rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else {
           var errorMsg = "DType %s not supported for Parquet reading".doFormat(ty);
           pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
