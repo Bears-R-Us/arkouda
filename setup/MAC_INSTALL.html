@@ -277,98 +277,32 @@
         <article role="main">
           <section id="macos">
 <h1>MacOS<a class="headerlink" href="#macos" title="Link to this heading">#</a></h1>
-<p>Prerequisites for Arkouda can be installed using <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code> or manually. Both installation methods have variances to account for the chipset being run.</p>
-<section id="install-chapel">
-<h2>Install Chapel<a class="headerlink" href="#install-chapel" title="Link to this heading">#</a></h2>
-<p>It is recommended to compile Chapel from source. Alternatively, it can be installed via <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code>.</p>
-<section id="build-from-source-recommended">
-<h3>Build from Source (Recommended)<a class="headerlink" href="#build-from-source-recommended" title="Link to this heading">#</a></h3>
-<p>For convenience, the steps to install Chapel from source are detailed here. If you need more information, please visit the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a>.</p>
-<p><strong>Step 1</strong></p>
-<blockquote>
-<div><p>Download the current version of Chapel from <a class="reference external" href="https://chapel-lang.org/download.html">here</a>.</p>
-</div></blockquote>
-<p><strong>Step 2</strong></p>
-<blockquote>
-<div><p>Unpack the release</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>chapel-1.31.0.tar.gz
+<p>Prerequisites for Arkouda can be installed using <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code> or manually.</p>
+<section id="clone-arkouda-repository">
+<h2>Clone Arkouda Repository<a class="headerlink" href="#clone-arkouda-repository" title="Link to this heading">#</a></h2>
+<p>Download, clone, or fork the <a class="reference external" href="https://github.com/Bears-R-Us/arkouda">arkouda repo</a>.</p>
+<p>We encourage developers to fork the repo if they expect to make any changes to arkouda.
+They can then their fork and add the Bears-R-Us repo as a remote:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/YOUR_FORK/arkouda.git
+git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>https://github.com/Bears-R-Us/arkouda.git
 </pre></div>
 </div>
-</div></blockquote>
-<p><strong>Step 3</strong></p>
-<blockquote>
-<div><p>Access the directory created when the release was unpacked</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>chapel-1.31.0
+<p>For users who aren’t intending to make any changes, cloning the arkouda repo should be enough</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Bears-R-Us/arkouda.git
 </pre></div>
 </div>
-</div></blockquote>
-<p><strong>Step 4</strong></p>
-<blockquote>
-<div><p>Configure environment variables. <em>Please Note: This command assumes the use of <code class="docutils literal notranslate"><span class="pre">bash</span></code> or <code class="docutils literal notranslate"><span class="pre">zsh</span></code>. Please refer to the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells">Chapel Documentation</a> if you are using another shell.</em></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>util/quickstart/setchplenv.bash
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 5</strong></p>
-<blockquote>
-<div><p>Update environment variables to the recommended settings.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>llvm@14
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system
-
-brew<span class="w"> </span>install<span class="w"> </span>gmp
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system
-
-<span class="nb">unset</span><span class="w"> </span>CHPL_DEVELOPER
-</pre></div>
-</div>
-</div></blockquote>
-<blockquote>
-<div><p>If you choose to use the packages bundled with Chapel, use the following settings.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>bundled
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 6</strong></p>
-<blockquote>
-<div><p>Add the following to your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as in Step 5</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as CHPL_LLVM</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 7</strong></p>
-<blockquote>
-<div><p>Use GNU make to build Chapel</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="m">16</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 8</strong></p>
-<blockquote>
-<div><p>Ensure that Chapel was built successfully</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chpl<span class="w"> </span>examples/hello3-datapar.chpl
-./hello3-datapar
-</pre></div>
-</div>
-</div></blockquote>
-</section>
-<section id="homebrew">
-<h3>Homebrew<a class="headerlink" href="#homebrew" title="Link to this heading">#</a></h3>
-<p>Chapel and all supporting dependencies will be installed.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>chapel
-</pre></div>
-</div>
-</section>
+<p>Further instructions assume that the current directory is the top-level directory of the arkouda repo.</p>
 </section>
 <section id="python-environment-anaconda">
 <h2>Python Environment - Anaconda<a class="headerlink" href="#python-environment-anaconda" title="Link to this heading">#</a></h2>
-<p>Arkouda provides 2 <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files for configuration, one for users and one for developers. The <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files are configured with a default name for the environment, which is used for example interactions with conda. *Please note that you are able to provide a different name by using the <code class="docutils literal notranslate"><span class="pre">-n</span></code> or <code class="docutils literal notranslate"><span class="pre">--name</span></code> parameters when calling <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span></code></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># we recommend running the full Anaconda </span>
+<p>Arkouda provides 2 <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files for configuration, one for users and one for developers.
+The <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files are configured with a default name for the environment, which is used in the example interactions with conda below.
+To provide a different name for the environment, use the <code class="docutils literal notranslate"><span class="pre">-n</span></code> or <code class="docutils literal notranslate"><span class="pre">--name</span></code> parameters when calling <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># We recommend running the full Anaconda </span>
 brew<span class="w"> </span>install<span class="w"> </span>anaconda3
 
-<span class="c1"># Note - the exact path may vary based on the release of Anaconda that is current. Run the script to install Anaconda.</span>
+<span class="c1"># Note - the exact path may vary based on the most current release of Anaconda and your mac&#39;s chipset</span>
+<span class="c1"># Run the script to install Anaconda.</span>
 /opt/homebrew/Caskroom/anaconda/2022.10/Anaconda3-2022.10-MacOSX-arm64.sh
 
 <span class="c1"># initialize conda</span>
@@ -382,17 +316,18 @@ conda<span class="w"> </span>activate<span class="w"> </span>arkouda
 conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
 conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev
 
-<span class="c1">#These packages are not required, but nice to have (these are included with Anaconda3)</span>
-conda<span class="w"> </span>install<span class="w"> </span>jupyter
-
-<span class="c1"># Install the Arkouda Client Package</span>
+<span class="c1"># Install the Arkouda Client Package and add it to your PYTHONPATH.</span>
+<span class="c1"># For this to work properly you need to change directories to where arkouda lives</span>
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-deps
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </section>
 <section id="updating-environment">
 <h2>Updating Environment<a class="headerlink" href="#updating-environment" title="Link to this heading">#</a></h2>
-<p>As Arkouda progresses through its life-cycle, dependencies may change. As a result, it is recommended that you keep your development environment in sync with the latest dependencies. The instructions vary depending upon you preferred environment management tool.</p>
+<p>As Arkouda progresses through its life-cycle, dependencies may change.
+As a result, it is recommended that you keep your development environment in sync with the latest dependencies.
+The instructions vary depending upon you preferred environment management tool.</p>
 <section id="anaconda">
 <h3>Anaconda<a class="headerlink" href="#anaconda" title="Link to this heading">#</a></h3>
 <p><em>If you provided a different name when creating the environment, replace <code class="docutils literal notranslate"><span class="pre">arkouda-dev</span></code> or <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> with the name of your Conda environment.</em></p>
@@ -405,10 +340,123 @@ conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> <
 </div>
 </section>
 </section>
+<section id="install-chapel">
+<h2>Install Chapel<a class="headerlink" href="#install-chapel" title="Link to this heading">#</a></h2>
+<p>It is recommended to compile Chapel from source. Alternatively, it can be installed via <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code>.</p>
+<section id="build-from-source-recommended">
+<h3>Build from Source (Recommended)<a class="headerlink" href="#build-from-source-recommended" title="Link to this heading">#</a></h3>
+<p>For convenience, the steps to install Chapel from source are detailed here.
+If you need more information, please visit the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a>.</p>
+<p><strong>Step 1</strong></p>
+<blockquote>
+<div><p>Navigate to the directory where you want Chapel to be installed.
+You should not install Chapel in the arkouda directory</p>
+</div></blockquote>
+<p><strong>Step 2</strong></p>
+<blockquote>
+<div><p>Download the current version of Chapel from <a class="reference external" href="https://chapel-lang.org/download.html">here</a>.</p>
+</div></blockquote>
+<p><strong>Step 3</strong></p>
+<blockquote>
+<div><p>Unpack the release</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>chapel-1.32.0.tar.gz
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Step 4</strong></p>
+<blockquote>
+<div><p>Access the directory created when the release was unpacked</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>chapel-1.32.0
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Step 5</strong></p>
+<blockquote>
+<div><p>Configure environment variables. <em>Please Note: This command assumes the use of <code class="docutils literal notranslate"><span class="pre">bash</span></code> or <code class="docutils literal notranslate"><span class="pre">zsh</span></code>. Please refer to the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells">Chapel Documentation</a> if you are using another shell.</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>util/quickstart/setchplenv.bash
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Step 6</strong></p>
+<blockquote>
+<div><p>Update environment variables to the recommended settings.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>llvm@15
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system
+
+brew<span class="w"> </span>install<span class="w"> </span>gmp
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
+
+<span class="nb">unset</span><span class="w"> </span>CHPL_DEVELOPER
+</pre></div>
+</div>
+</div></blockquote>
+<blockquote>
+<div><p>If you choose to use the packages bundled with Chapel, use the following settings.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>bundled
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>bundled
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Step 7</strong></p>
+<blockquote>
+<div><p>Add the following to your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># update paths to reflect where chapel and arkouda live on your machine</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_HOME</span><span class="o">=</span>/Users/USER/PATH_TO_CHPL/chapel-1.32.0
+<span class="c1"># your binary might differ especially if you have a different chipset</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$CHPL_HOME</span>/bin/darwin-arm64
+<span class="nb">source</span><span class="w"> </span><span class="si">${</span><span class="nv">CHPL_HOME</span><span class="si">}</span>/util/setchplenv.bash
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as in the previous step</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as in the previous step</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_COMM</span><span class="o">=</span>none
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_TARGET_CPU</span><span class="o">=</span>native
+<span class="nb">export</span><span class="w"> </span><span class="nv">ARKOUDA_QUICK_COMPILE</span><span class="o">=</span><span class="nb">true</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="si">}</span><span class="s2">:/Users/USER/PATH_TO_ARK/arkouda&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Step 8</strong></p>
+<blockquote>
+<div><p>Source your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file to set any environment variables, you might need to reactivate your conda environment</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>~/.zshrc<span class="w"> </span><span class="c1"># or ~/.bashrc depending on your shell</span>
+conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev<span class="w"> </span><span class="c1"># or the name of your conda environment</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Step 9</strong></p>
+<blockquote>
+<div><p>Use <code class="docutils literal notranslate"><span class="pre">make</span></code> to build Chapel</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="m">16</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Step 10</strong></p>
+<blockquote>
+<div><p>Ensure that Chapel was built successfully</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chpl<span class="w"> </span>examples/hello3-datapar.chpl
+./hello3-datapar
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="homebrew">
+<h3>Homebrew<a class="headerlink" href="#homebrew" title="Link to this heading">#</a></h3>
+<p>Alternatively, you can use homebrew to install Chapel and all it’s supporting dependencies.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>chapel
+</pre></div>
+</div>
+</section>
+</section>
 <section id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
-<p>Now that you have Arkouda and its dependencies installed on your machine, you will need to be sure to have the appropriate environment variables configured. A complete list can be found at <a class="reference internal" href="#ENVIRONMENT.md"><span class="xref myst">ENVIRONMENT.md</span></a>.</p>
-<p>Once your environment variables are configured, you are ready to build the server. More information on the build process can be found at <a class="reference internal" href="BUILD.html"><span class="std std-doc">BUILD.md</span></a></p>
+<p>We’ve installed Arkouda and its dependencies and built chapel with reasonable defautl environment variables.
+For more information on the options, a complete list of environment variables can be found at <a class="reference internal" href="#ENVIRONMENT.md"><span class="xref myst">ENVIRONMENT.md</span></a>.</p>
+<p>Now you are ready to build the server! Follow the build instructions at <a class="reference internal" href="BUILD.html"><span class="std std-doc">BUILD.md</span></a>.</p>
+<p>We’ve set up chapel and arkouda to run locally with no communication! If you want to simulate running on a distributed machine follow
+the instructions at <a class="reference external" href="https://bears-r-us.github.io/arkouda/developer/GASNET.html">GASNet Development</a>.</p>
 </section>
 </section>
 
@@ -468,14 +516,15 @@ conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> <
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">MacOS</a><ul>
-<li><a class="reference internal" href="#install-chapel">Install Chapel</a><ul>
-<li><a class="reference internal" href="#build-from-source-recommended">Build from Source (Recommended)</a></li>
-<li><a class="reference internal" href="#homebrew">Homebrew</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#clone-arkouda-repository">Clone Arkouda Repository</a></li>
 <li><a class="reference internal" href="#python-environment-anaconda">Python Environment - Anaconda</a></li>
 <li><a class="reference internal" href="#updating-environment">Updating Environment</a><ul>
 <li><a class="reference internal" href="#anaconda">Anaconda</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#install-chapel">Install Chapel</a><ul>
+<li><a class="reference internal" href="#build-from-source-recommended">Build from Source (Recommended)</a></li>
+<li><a class="reference internal" href="#homebrew">Homebrew</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#next-steps">Next Steps</a></li>

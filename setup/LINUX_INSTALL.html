@@ -277,71 +277,37 @@
         <article role="main">
           <section id="linux">
 <h1>Linux<a class="headerlink" href="#linux" title="Link to this heading">#</a></h1>
-<p>There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are to install the Chapel dependencies followed by downloading and building Chapel. The Ubuntu and RHEL Chapel installations are different for installing Chapel dependencies, particularly regarding older RHEL distro versions such as CentOS 7. Specifically, the gcc compiler on RHEL distros such as CentOS 7 do not support building Chapel. Consequently, a newer version of the gcc compiler must be installed via the <a class="reference external" href="https://centos.pkgs.org/7/centos-sclo-rh-x86_64/devtoolset-9-gcc-c++-9.1.1-2.6.el7.x86_64.rpm.html">devtoolset-9-gcc-c++</a> package. In addition, the CentOS <a class="reference external" href="https://wiki.centos.org/AdditionalResources/Repositories/SCL">Software Collections packager</a> must be installed to enable the newer version of gcc to be leveraged for building Chapel.</p>
-<section id="install-chapel-ubuntu">
-<h2>Install Chapel (Ubuntu)<a class="headerlink" href="#install-chapel-ubuntu" title="Link to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update Linux kernel and install Chapel dependencies</span>
+<section id="update-kernel">
+<h2>Update Kernel<a class="headerlink" href="#update-kernel" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update Linux kernel and install some Chapel dependencies</span>
 sudo<span class="w"> </span>apt-get<span class="w"> </span>update
-sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>g++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span>python3-venv<span class="w"> </span>python3-dev<span class="w"> </span>bash<span class="w"> </span>make<span class="w"> </span>mawk<span class="w"> </span>git<span class="w"> </span>pkg-config<span class="w"> </span>cmake<span class="w"> </span>llvm-12-dev<span class="w"> </span>llvm-12<span class="w"> </span>llvm-12-tools<span class="w"> </span>clang-12<span class="w"> </span>libclang-12-dev<span class="w"> </span>libclang-cpp12-dev<span class="w"> </span>libedit-dev
-
-<span class="c1"># Download latest Chapel release, explode archive, and navigate to source root directory</span>
-wget<span class="w"> </span>https://github.com/chapel-lang/chapel/releases/download/1.31.0/chapel-1.31.0.tar.gz
-tar<span class="w"> </span>xvf<span class="w"> </span>chapel-1.31.0.tar.gz
-<span class="nb">cd</span><span class="w"> </span>chapel-1.31.0/
-
-<span class="c1"># Set CHPL_HOME</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_HOME</span><span class="o">=</span><span class="nv">$PWD</span>
-
-<span class="c1"># Add chpl to PATH</span>
-<span class="nb">source</span><span class="w"> </span><span class="nv">$CHPL_HOME</span>/util/setchplenv.bash
-
-<span class="c1"># Set remaining env variables and execute make</span>
-<span class="c1"># It is recommended to add these variables to a ~/.chplconfig file to prevent having </span>
-<span class="c1"># to export them again</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_COMM</span><span class="o">=</span>gasnet
-<span class="c1"># If you&#39;re going to be running locally only, use CHPL_COMM=none instead to improve build time</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_COMM_SUBSTRATE</span><span class="o">=</span>smp
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_TARGET_CPU</span><span class="o">=</span>native
-<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_QUIET</span><span class="o">=</span>Y
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RT_OVERSUBSCRIBED</span><span class="o">=</span>yes
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>bundled<span class="w"> </span><span class="c1"># needs to be set to what CHPL_LLVM is</span>
-
-<span class="c1"># Build Chapel</span>
-<span class="nb">cd</span><span class="w"> </span><span class="nv">$CHPL_HOME</span>
-make
-
-<span class="c1"># Build chpldoc to enable generation of Arkouda docs</span>
-make<span class="w"> </span>chpldoc
-
-<span class="c1"># Optionally add the Chapel executable (chpl) to the PATH for all users: /etc/environment</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$CHPL_HOME</span>/bin/linux64-x86_64/:<span class="nv">$PATH</span>
+sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>g++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span>python3-venv<span class="w"> </span>python3-dev<span class="w"> </span>bash<span class="w"> </span>make<span class="w"> </span>mawk<span class="w"> </span>git<span class="w"> </span>pkg-config<span class="w"> </span>cmake<span class="w"> </span>llvm-14-dev<span class="w"> </span>llvm-14<span class="w"> </span>llvm-14-tools<span class="w"> </span>clang-14<span class="w"> </span>libclang-14-dev<span class="w"> </span>libclang-cpp14-dev<span class="w"> </span>libedit-dev
 </pre></div>
 </div>
 </section>
-<section id="install-chapel-rhel">
-<h2>Install Chapel (RHEL)<a class="headerlink" href="#install-chapel-rhel" title="Link to this heading">#</a></h2>
-<p>For all RHEL distros, Chapel dependencies are installed as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum<span class="w"> </span>update<span class="w"> </span>-y<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>gcc-c++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-devel<span class="w"> </span><span class="se">\</span>
-make<span class="w"> </span>gawk<span class="w"> </span>git<span class="w"> </span>cmake<span class="w"> </span>llvm-devel<span class="w"> </span>clang<span class="w"> </span>clang-devel<span class="w"> </span>curl-devel<span class="w"> </span>-y
+<section id="clone-arkouda-repository">
+<h2>Clone Arkouda Repository<a class="headerlink" href="#clone-arkouda-repository" title="Link to this heading">#</a></h2>
+<p>Download, clone, or fork the <a class="reference external" href="https://github.com/Bears-R-Us/arkouda">arkouda repo</a>.</p>
+<p>We encourage developers to fork the repo if they expect to make any changes to arkouda.
+They can then their fork and add the Bears-R-Us repo as a remote:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/YOUR_FORK/arkouda.git
+git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>https://github.com/Bears-R-Us/arkouda.git
 </pre></div>
 </div>
-<p>For older RHEL distros with incompatible gcc compiler versions, the following dependencies must be installed:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum<span class="w"> </span>install<span class="w"> </span>devtoolset-9-gcc-c++-9.1.1-2.6.el7.x86_64<span class="w"> </span>centos-release-scl<span class="w"> </span>-y
+<p>For users who aren’t intending to make any changes, cloning the arkouda repo should be enough</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Bears-R-Us/arkouda.git
 </pre></div>
 </div>
-<p>The RHEL Chapel build instructions are the same for all distros with the exception of older distros such as CentOS 7; for these, the newer gcc compiler must first be enabled:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>/opt/rh/devtoolset-9/enable
-</pre></div>
-</div>
-<p>The remaining RHEL Chapel download and build instructions follow those detailed above for Ubuntu Linux.</p>
+<p>Further instructions assume that the current directory is the top-level directory of the arkouda repo.</p>
 </section>
 <section id="python-environment-anaconda-linux">
 <h2>Python Environment - Anaconda (Linux)<a class="headerlink" href="#python-environment-anaconda-linux" title="Link to this heading">#</a></h2>
-<p>As is the case with the MacOS install, it is highly recommended to <a class="reference external" href="https://docs.anaconda.com/anaconda/install/linux/">install Anaconda</a> to provide a Python environment and manage Python dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>wget<span class="w"> </span>https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
-<span class="w"> </span>sh<span class="w"> </span>Anaconda3-2020.07-Linux-x86_64.sh
+<p>As is the case with the MacOS install, it is highly recommended to <a class="reference external" href="https://docs.anaconda.com/anaconda/install/linux/">install Anaconda</a>
+to provide a Python environment and manage Python dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Go to https://repo.anaconda.com/archive/ to find the link for the latest version that&#39;s correct for your machine.</span>
+<span class="c1"># The one below is for version 2023.09 and for an x86 linux</span>
+<span class="w"> </span>wget<span class="w"> </span>https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
+<span class="w"> </span>sh<span class="w"> </span>Anaconda3-2023.09-0-Linux-x86_64.sh
 <span class="w"> </span><span class="nb">source</span><span class="w"> </span>~/.bashrc
 <span class="w"> </span>
 <span class="c1"># User conda env</span>
@@ -352,13 +318,102 @@ conda<span class="w"> </span>activate<span class="w"> </span>arkouda
 conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
 conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev
 
-<span class="c1">#These packages are not required, but nice to have (these are included with Anaconda3)</span>
-conda<span class="w"> </span>install<span class="w"> </span>jupyter
-
-<span class="c1"># Install the Arkouda Client Package</span>
+<span class="c1"># Install the Arkouda Client Package and add it to your PYTHONPATH.</span>
+<span class="c1"># For this to work properly you need to change directories to where arkouda lives</span>
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-deps
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
+</section>
+<section id="chapel-installation">
+<h2>Chapel Installation<a class="headerlink" href="#chapel-installation" title="Link to this heading">#</a></h2>
+<p>For convenience, the steps to install Chapel from source are detailed below. If you need more information, please visit the
+<a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a> and <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/prereqs.html">Chapel Prerequisites</a>.</p>
+<p>The first two steps in the Linux Arkouda install are to install the Chapel dependencies followed by downloading and building Chapel.
+The Ubuntu and RHEL Chapel installations are different for installing Chapel dependencies, particularly regarding older RHEL distro versions.
+Specifically, the gcc compiler on RHEL distros such as CentOS 7 do not support building Chapel.
+Consequently, a newer version of the gcc compiler must be installed via the
+<a class="reference external" href="https://centos.pkgs.org/7/centos-sclo-rh-x86_64/devtoolset-9-gcc-c++-9.1.1-2.6.el7.x86_64.rpm.html">devtoolset-9-gcc-c++</a> package.
+In addition, the CentOS <a class="reference external" href="https://wiki.centos.org/AdditionalResources/Repositories/SCL">Software Collections packager</a> must
+be installed to enable the newer version of gcc to be leveraged for building Chapel.</p>
+<section id="install-chapel-ubuntu">
+<h3>Install Chapel (Ubuntu)<a class="headerlink" href="#install-chapel-ubuntu" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download latest Chapel release, explode archive, and navigate to source root directory</span>
+wget<span class="w"> </span>https://github.com/chapel-lang/chapel/releases/download/1.32.0/chapel-1.32.0.tar.gz
+tar<span class="w"> </span>xvf<span class="w"> </span>chapel-1.32.0.tar.gz
+<span class="nb">cd</span><span class="w"> </span>chapel-1.32.0/
+
+<span class="c1"># Set CHPL_HOME</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_HOME</span><span class="o">=</span><span class="nv">$PWD</span>
+
+<span class="c1"># Add chpl to PATH</span>
+<span class="nb">source</span><span class="w"> </span><span class="nv">$CHPL_HOME</span>/util/setchplenv.bash
+
+<span class="c1"># Set remaining env variables and execute make</span>
+<span class="c1"># It is recommended to add these variables to a ~/.chplconfig or your ~/.bashrc file to prevent having</span>
+<span class="c1"># to export them again</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>bundled
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>bundled
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_COMM</span><span class="o">=</span>none
+
+<span class="c1"># Build Chapel</span>
+<span class="nb">cd</span><span class="w"> </span><span class="nv">$CHPL_HOME</span>
+make<span class="w"> </span>-j<span class="w"> </span><span class="m">16</span>
+
+<span class="c1"># Build chpldoc to enable generation of Arkouda docs</span>
+make<span class="w"> </span>chpldoc
+
+<span class="c1"># Optionally add the Chapel executable (chpl) to the PATH for all users: /etc/environment</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$CHPL_HOME</span>/bin/linux64-x86_64/:<span class="nv">$PATH</span>
+</pre></div>
+</div>
+</section>
+<section id="install-chapel-rhel">
+<h3>Install Chapel (RHEL)<a class="headerlink" href="#install-chapel-rhel" title="Link to this heading">#</a></h3>
+<p>For all RHEL distros, Chapel dependencies are installed as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum<span class="w"> </span>update<span class="w"> </span>-y<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>gcc-c++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-devel<span class="w"> </span><span class="se">\</span>
+make<span class="w"> </span>gawk<span class="w"> </span>git<span class="w"> </span>cmake<span class="w"> </span>llvm-devel<span class="w"> </span>clang<span class="w"> </span>clang-devel<span class="w"> </span>curl-devel<span class="w"> </span>-y
+</pre></div>
+</div>
+<p>For older RHEL distros with incompatible gcc compiler versions, the following dependencies must be installed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum<span class="w"> </span>install<span class="w"> </span>devtoolset-9-gcc-c++-9.1.1-2.6.el7.x86_64<span class="w"> </span>centos-release-scl<span class="w"> </span>-y
+</pre></div>
+</div>
+<p>The RHEL Chapel build instructions are the same for all distros with the exception of older distros such as CentOS 7;
+for these, the newer gcc compiler must first be enabled:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>/opt/rh/devtoolset-9/enable
+</pre></div>
+</div>
+<p>The minimum cmake version is 3.13.4, which is not supported in older RHEL versions; in these cases, cmake must be downloaded, installed, and linked as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Export version number of cmake binary to be installed</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CM_VERSION</span><span class="o">=</span><span class="m">3</span>.13.4
+
+<span class="c1"># Download cmake</span>
+wget<span class="w"> </span>https://github.com/Kitware/CMake/releases/download/v<span class="nv">$CM_VERSION</span>/cmake-<span class="nv">$CM_VERSION</span>-Linux-x86_64.sh
+
+<span class="c1"># Install cmake</span>
+sh<span class="w"> </span>/opt/cmake-<span class="nv">$CM_VERSION</span>-Linux-x86_64.sh<span class="w"> </span>--skip-license<span class="w"> </span>--include-subdir
+
+<span class="c1"># Link cmake version</span>
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>./cmake-<span class="nv">$CM_VERSION</span>-Linux-x86_64/bin:<span class="nv">$PATH</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">cmake</span></code> can also be installed using conda or pip</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>cmake&gt;<span class="o">=</span><span class="m">3</span>.13.4
+
+pip<span class="w"> </span>install<span class="w"> </span>cmake&gt;<span class="o">=</span><span class="m">3</span>.13.4
+</pre></div>
+</div>
+<p>The remaining RHEL Chapel download and build instructions follow those detailed above for Ubuntu Linux.</p>
+</section>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<p>Now you are ready to build the server! Follow the build instructions at <a class="reference internal" href="BUILD.html"><span class="std std-doc">BUILD.md</span></a>.</p>
+<p>We’ve set up chapel to run locally, to simulate running on a distributed machine follow
+the instructions at <a class="reference external" href="https://bears-r-us.github.io/arkouda/developer/GASNET.html">GASNet Development</a>.</p>
 </section>
 </section>
 
@@ -418,9 +473,15 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Linux</a><ul>
+<li><a class="reference internal" href="#update-kernel">Update Kernel</a></li>
+<li><a class="reference internal" href="#clone-arkouda-repository">Clone Arkouda Repository</a></li>
+<li><a class="reference internal" href="#python-environment-anaconda-linux">Python Environment - Anaconda (Linux)</a></li>
+<li><a class="reference internal" href="#chapel-installation">Chapel Installation</a><ul>
 <li><a class="reference internal" href="#install-chapel-ubuntu">Install Chapel (Ubuntu)</a></li>
 <li><a class="reference internal" href="#install-chapel-rhel">Install Chapel (RHEL)</a></li>
-<li><a class="reference internal" href="#python-environment-anaconda-linux">Python Environment - Anaconda (Linux)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
 </ul>
 </li>
 </ul>
