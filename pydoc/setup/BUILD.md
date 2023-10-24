@@ -4,17 +4,22 @@
 
 If you have not yet installed the Arkouda client and prerequisites, please follow the directions in the [Installation Section](install_menu.rst) before proceeding with this build.
 
-Download, clone, or fork the [arkouda repo](https://github.com/Bears-R-Us/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
-
 ## Environment Variables
 
-In order to build the server executable, some environment variables need to be configured. For a full list, please refer to [Environment Section](../ENVIRONMENT.md).
+In order to build the server executable, some environment variables need to be configured.
+For a full list, please refer to [Environment Section](../ENVIRONMENT.md).
 
 ## Dependency Configuration
 
 ### Using Environment Installed Dependencies *(Recommended)*
 
-When utilizing a package manager, such as `Anaconda`, to install dependencies (see [INSTALL.md](INSTALL.md)), you will need to provide the path to the location of your installed packages. This is achieved by adding this path to your `Makefile.paths` (Example Below). It is important to note that in most cases you will only provide a single path for your environment. However, if you have manually installed dependencies (such as ZeroMQ or HDF5), you will need to provide each install location.
+When utilizing a package manager, like `Anaconda`, to install dependencies (see [INSTALL.md](INSTALL.md)), you will need to provide
+the path to the location of your installed packages. This is achieved by adding this path to your `Makefile.paths` (Example Below).
+
+You might need create a `Makefile.paths` file in the top level of the arkouda directly if it doesn't already exist.
+
+It is important to note that in most cases you will only provide a single path for your environment.
+However, if you have manually installed dependencies (such as ZeroMQ or HDF5), you will need to provide each install location.
 
 ```make
 # Makefile.paths
@@ -31,44 +36,19 @@ The path may vary based on the installation location of Anaconda or pip and your
 % pip show hdf5 | grep Location
 Location: /opt/homebrew/Caskroom/miniforge/base/envs/ak-base/lib/python3.10/site-packages
 
-# when using conda - the first line of return gives the location
-% conda list hdf5
-# packages in environment at /opt/homebrew/Caskroom/miniforge/base/envs/ak-base:
+# when using conda
+% conda env list
+# conda environments:
 #
-# Name                    Version                   Build  Channel
-hdf5                      1.12.1          nompi_hf9525e8_104    conda-forge
+base                /opt/homebrew/Caskroom/miniforge/base
+ak-base          *  /opt/homebrew/Caskroom/miniforge/base/envs/ak-base
 ```
 
 The `chpl` compiler will be executed with `-I`, `-L` and `-rpath` for each path in your `Makefile.paths`
 
-The minimum cmake version is 3.13.4, which is not supported in older RHEL versions; in these cases, cmake must be downloaded, installed, and linked as follows:
-
-```bash
-# Export version number of cmake binary to be installed
-export CM_VERSION=3.13.4
-
-# Download cmake
-wget https://github.com/Kitware/CMake/releases/download/v$CM_VERSION/cmake-$CM_VERSION-Linux-x86_64.sh
-
-# Install cmake
-sh /opt/cmake-$CM_VERSION-Linux-x86_64.sh --skip-license --include-subdir
-
-# Link cmake version
-
-export PATH=./cmake-$CM_VERSION-Linux-x86_64/bin:$PATH
-```
-
-`cmake` can also be installed using conda or pip
-
-```bash
-conda install cmake>=3.13.4
-
-pip install cmake>=3.13.4
-```
-
 ### Installing Dependencies
 
-*Please Note: This step is to only be performed if you are NOT using dependencies from your env. If you attempt to use both, it is possible that version mismatches will cause build failures*. 
+*Please Note: This step is to only be performed if you are NOT using dependencies from a conda/pip env. If you attempt to use both, it is possible that version mismatches will cause build failures*.
 
 This step only needs to be done once. Once dependencies are installed, you will not need to run again. You can install all dependencies with a single command or install individually for a customized build.
 
@@ -119,7 +99,7 @@ pip install boost snappy thrift re2 utf8proc
 
 #### Distributable Package
 
-Alternatively you can build a distributable package via
+Alternatively you can build a distributable package:
 
 ```bash
 # We'll use a virtual environment to build
