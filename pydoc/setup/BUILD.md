@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-If you have not installed the Arkouda Client and prerequisites, please follow the directions in the [Installation Section](install_menu.rst) before proceeding with this build.
+If you have not yet installed the Arkouda client and prerequisites, please follow the directions in the [Installation Section](install_menu.rst) before proceeding with this build.
 
 Download, clone, or fork the [arkouda repo](https://github.com/Bears-R-Us/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
 
@@ -14,7 +14,7 @@ In order to build the server executable, some environment variables need to be c
 
 ### Using Environment Installed Dependencies *(Recommended)*
 
-When utilizing a package manager, such as `Anaconda`, to install dependencies (see [INSTALL.md](INSTALL.md)) you will need to provide the path to the location of your installed packages. This is achieved by adding the path to your package install location to `Makefile.paths` (Example Below). It is important to note that in most cases you will only provide a single path for your environment. However, if you have manually installed dependencies (such as ZeroMQ or HDF5), you will need to provide each install location.
+When utilizing a package manager, such as `Anaconda`, to install dependencies (see [INSTALL.md](INSTALL.md)), you will need to provide the path to the location of your installed packages. This is achieved by adding this path to your `Makefile.paths` (Example Below). It is important to note that in most cases you will only provide a single path for your environment. However, if you have manually installed dependencies (such as ZeroMQ or HDF5), you will need to provide each install location.
 
 ```make
 # Makefile.paths
@@ -24,28 +24,28 @@ $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                      ^ Note: No space after comma.
 ```
 
-It is important to note that the path may vary based on the installation location of Anaconda (or pip if not using Anaconda) and your environment name. Here are some tips to locate the path.
+The path may vary based on the installation location of Anaconda or pip and your environment name. Here are some tips to locate the path.
 
 ```commandline
 # when installing via pip
-%pip show hdf5 | grep Location
+% pip show hdf5 | grep Location
 Location: /opt/homebrew/Caskroom/miniforge/base/envs/ak-base/lib/python3.10/site-packages
 
 # when using conda - the first line of return gives the location
-%conda list hdf5
+% conda list hdf5
 # packages in environment at /opt/homebrew/Caskroom/miniforge/base/envs/ak-base:
 #
 # Name                    Version                   Build  Channel
 hdf5                      1.12.1          nompi_hf9525e8_104    conda-forge
 ```
 
-The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each path.
+The `chpl` compiler will be executed with `-I`, `-L` and `-rpath` for each path in your `Makefile.paths`
 
-The minimum cmake version is 3.11.0, which is not supported in older RHEL versions such as CentOS 7; in these cases, cmake must be downloaded, installed, and linked as follows. Note: while any version of cmake >= 3.11.0 should work, we tested exclusively with 3.11.0:
+The minimum cmake version is 3.13.4, which is not supported in older RHEL versions; in these cases, cmake must be downloaded, installed, and linked as follows:
 
 ```bash
 # Export version number of cmake binary to be installed
-export CM_VERSION=3.11.0
+export CM_VERSION=3.13.4
 
 # Download cmake
 wget https://github.com/Kitware/CMake/releases/download/v$CM_VERSION/cmake-$CM_VERSION-Linux-x86_64.sh
@@ -61,9 +61,9 @@ export PATH=./cmake-$CM_VERSION-Linux-x86_64/bin:$PATH
 `cmake` can also be installed using conda or pip
 
 ```bash
-conda install cmake>=3.11.0
+conda install cmake>=3.13.4
 
-pip install cmake>=3.11.0
+pip install cmake>=3.13.4
 ```
 
 ### Installing Dependencies
@@ -107,13 +107,13 @@ make install-idn2
 
 #### Arrow Install Troubleshooting
 
-Arrow should be installed without issue, but in some instances it is possible that the install will not always complete using the Chapel dependencies. If that occurs, install the following packages.
+You should be able to install arrow without issue, but in some instances the install will not complete using the Chapel dependencies. If that occurs, install the following packages.
 
 ```bash
-#using conda to install
+# using conda to install
 conda install boost-cpp snappy thrift-cpp re2 utf8proc
 
-#using pip
+# using pip
 pip install boost snappy thrift re2 utf8proc
 ```
 
@@ -148,13 +148,16 @@ make
 ```
 
 ### Building the Arkouda Documentation
-The Arkouda documentation is [here](https://bears-r-us.github.io/arkouda/).
+The Arkouda documentation is [here](https://bears-r-us.github.io/arkouda/). This section is only necessary
+if you're updating the documentation.
 
 <details>
 <summary><b>(click to see more)</b></summary>
 
 First ensure that all Python doc dependencies including sphinx and sphinx extensions have been installed as detailed 
-above. _Important: if Chapel was built locally, ```make chpldoc``` must be executed as detailed above to enable 
+above. 
+
+_Important: if Chapel was built locally, ```make chpldoc``` must be executed as detailed above to enable 
 generation of the Chapel docs via the chpldoc executable._
 
 Now that all doc generation dependencies for both Python and Chapel have been installed, there are three make targets for 
