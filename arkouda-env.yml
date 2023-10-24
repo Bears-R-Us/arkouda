@@ -19,6 +19,7 @@ dependencies:
   - pyarrow==11.0.0
   - libiconv
   - libidn2
+  - jupyter
 
   - pip:
       - typeguard==2.10.0

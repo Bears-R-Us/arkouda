@@ -1,12 +1,14 @@
 # Windows (WSL2)
 
-It is possible to set up a basic arkouda installation on MS Windows using the Windows Subsystem for Linux (WSL2).
-The general strategy here is to use Linux terminals on WSL to launch the server. If you are going to try this route we suggest using WSL-2 with Ubuntu 20.04 LTS.  There are a number of tutorials available online such has [MicroSoft's](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+It's possible to install arkouda on Windows using Windows Subsystem for Linux (WSL2).
+The general strategy here is to use a Linux terminal on WSL to launch the server.
+If you are going to try this route, we suggest using WSL-2 with the latest Ubuntu.
+There are a number of tutorials available online such as [MicroSoft's](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 
 Key installation points:
 
 - Make sure to use WSL2
-- Ubuntu 20.04 LTS from the MS app store
+- The latest Ubuntu from the MS app store
 - Don't forget to create a user account and password as part of the Linux install
 
 Once configured you can follow the basic [Linux Install](LINUX_INSTALL.md)
