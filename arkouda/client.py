@@ -475,7 +475,7 @@ class ZmqChannel(Channel):
     __slots__ = ('socket')
 
     def send_string_message(self, cmd: str, recv_binary: bool = False, args: str = None,
-                            size: int = -1, request_id: str = None) -> Union[str, memoryview]:
+                            size: Union[int, Tuple[int, ...]] = -1, request_id: str = None) -> Union[str, memoryview]:
 
         message = RequestMessage(
             user=username, token=self.token, cmd=cmd, format=MessageFormat.STRING, args=args, size=size

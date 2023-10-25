@@ -146,8 +146,11 @@ module MultiTypeSymEntry
             this.itemsize = dtypeSize(this.dtype);
             this.size = len;
             this.ndim = ndim;
-            // TODO: Update based on variable number of dims
-            this.shape = "[1,]";
+
+            var s = "[";
+            for 0..#ndim do s += "1,";
+            s += "]";
+            this.shape = s;
         }
 
         override proc getSizeEstimate(): int {
@@ -244,7 +247,7 @@ module MultiTypeSymEntry
             this.etype = etype;
             this.dimensions = N;
             this.tupShape = args;
-            this.a = makeDistArray((...args), etype);
+            this.a = try! makeDistArray((...args), etype);
             this.complete();
             this.shape = "[";
             for s in tupShape do
@@ -341,16 +344,6 @@ module MultiTypeSymEntry
             return this.a:string;
           }
         }
-    }
-    
-    inline proc createSymEntry(len: int, type etype) throws {
-      var a = makeDistArray(len, etype);
-      return new shared SymEntry(a);
-    }
-
-    inline proc createSymEntry(in a: [?D] ?etype, max_bits=-1) throws {
-      var A = makeDistArray(a);
-      return new shared SymEntry(A, max_bits=max_bits);
     }
     
     inline proc createSymEntry(len: int, type etype) throws {

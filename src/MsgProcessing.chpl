@@ -34,9 +34,10 @@ module MsgProcessing
     :returns: (MsgTuple) response message
     */
     proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        var repMsg: string; // response message
-        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
-        var size = msgArgs.get("size").getIntValue();
+        var repMsg: string, // response message
+            dtype = str2dtype(msgArgs.getValueOf("dtype")),
+            shape = msgArgs.get("shape").get();
+
         if (dtype == DType.UInt8) || (dtype == DType.Bool) {
           overMemLimit(size);
         } else {
@@ -44,19 +45,19 @@ module MsgProcessing
         }
         // get next symbol name
         var rname = st.nextName();
-        
+
         // if verbose print action
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
             "cmd: %s dtype: %s size: %i new pdarray name: %s".doFormat(
                                                      cmd,dtype2str(dtype),size,rname));
         // create and add entry to symbol table
-        st.addEntry(rname, size, dtype);
+        st.addEntry(rname, (...shape), dtype);
         // if verbose print result
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                     "created the pdarray %s".doFormat(st.attrib(rname)));
 
         repMsg = "created " + st.attrib(rname);
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);                                 
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 

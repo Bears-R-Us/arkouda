@@ -44,7 +44,7 @@ module AryUtil
                                       A[A.domain.high-2..A.domain.high]);
         }
       } else {
-        return "%t".format(A);
+        return "%?".doFormat(A);
       }
     }
 

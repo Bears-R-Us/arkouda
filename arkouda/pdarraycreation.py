@@ -441,7 +441,7 @@ def zeros(
 
 @typechecked
 def ones(
-    size: Union[int_scalars, str],
+    shape: Union[int, Tuple[int, ...]],
     dtype: Union[np.dtype, type, str, BigInt] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
@@ -483,14 +483,14 @@ def ones(
     >>> ak.ones(5, dtype=ak.bool)
     array([True, True, True, True, True])
     """
-    if not np.isscalar(size):
-        raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
+    if not (np.isscalar(size) or (type(size) is tuple and np.isscalar(size[0]))):
+        raise TypeError(f"size must be a scalar or tuple of scalars, not {size.__class__.__name__}")
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create", args={"dtype": dtype_name, "size": size})
+    repMsg = generic_msg(cmd="create", args={"dtype": dtype_name, "shape": shape})
     a = create_pdarray(repMsg)
     a.fill(1)
     if max_bits:

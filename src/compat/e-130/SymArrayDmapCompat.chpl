@@ -21,26 +21,24 @@ module SymArrayDmapCompat
     /* 
     Makes a domain distributed according to :param:`MyDmap`.
 
-    :arg size: size of domain
-    :type size: int
+    :arg shape: size of domain in each dimension
+    :type shape: int
     */
-    proc makeDistDom(args: int ...?N) {
+    proc makeDistDom(shape: int ...?N) {
+        var rngs: N*range;
+        for i in 0..#N do rngs[i] = 0..#shape[i];
+        const dom = {(...rngs)};
+
         select MyDmap
           {
             when Dmap.defaultRectangular {
-              var rngs: N*range;
-              for i in 0..#N do
-                rngs[i] = 0..#args[i];
-              return {(...rngs)};
+              return dom;
             }
             when Dmap.blockDist {
-                if args[0] > 0 {
-                  var rngs: N*range;
-                  for i in 0..#N do
-                    rngs[i] = 0..#args[i];
-                  return {(...rngs)} dmapped Block(boundingBox={(...rngs)});
+                if dom.size > 0 {
+                  return dom dmapped Block(boundingBox=dom);
                 }
-                // fix the annoyance about boundingBox being enpty
+                // fix the annoyance about boundingBox being empty
                 else {return {0..#0} dmapped Block(boundingBox={0..0});}
             }
             otherwise {
