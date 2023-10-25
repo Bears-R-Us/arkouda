@@ -24,15 +24,21 @@ module SymArrayDmapCompat
     :arg size: size of domain
     :type size: int
     */
-    proc makeDistDom(size:int) {
+    proc makeDistDom(args: int ...?N) {
         select MyDmap
-        {
+          {
             when Dmap.defaultRectangular {
-                return {0..#size};
+              var rngs: N*range;
+              for i in 0..#N do
+                rngs[i] = 0..#args[i];
+              return {(...rngs)};
             }
             when Dmap.blockDist {
-                if size > 0 {
-                    return {0..#size} dmapped Block(boundingBox={0..#size});
+                if args[0] > 0 {
+                  var rngs: N*range;
+                  for i in 0..#N do
+                    rngs[i] = 0..#args[i];
+                  return {(...rngs)} dmapped Block(boundingBox={(...rngs)});
                 }
                 // fix the annoyance about boundingBox being enpty
                 else {return {0..#0} dmapped Block(boundingBox={0..0});}
@@ -54,8 +60,8 @@ module SymArrayDmapCompat
 
     :returns: [] ?etype
     */
-    proc makeDistArray(size:int, type etype) {
-        var a: [makeDistDom(size)] etype;
+    proc makeDistArray(args: int ...?N, type etype) {
+        var a: [makeDistDom((...args))] etype;
         return a;
     }
 

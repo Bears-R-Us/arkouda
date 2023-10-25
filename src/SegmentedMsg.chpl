@@ -436,10 +436,10 @@ module SegmentedMsg {
       when "Matcher" {
         const optName: string = if returnMatchOrig then st.nextName() else "";
         var strings = getSegString(name, st);
-        var numMatches = getGenericTypedArrayEntry(numMatchesName, st): borrowed SymEntry(int);
-        var starts = getGenericTypedArrayEntry(startsName, st): borrowed SymEntry(int);
-        var lens = getGenericTypedArrayEntry(lensName, st): borrowed SymEntry(int);
-        var indices = getGenericTypedArrayEntry(indicesName,st): borrowed SymEntry(int);
+        var numMatches = getGenericTypedArrayEntry(numMatchesName, st): borrowed SymEntry(int, 1);
+        var starts = getGenericTypedArrayEntry(startsName, st): borrowed SymEntry(int, 1);
+        var lens = getGenericTypedArrayEntry(lensName, st): borrowed SymEntry(int, 1);
+        var indices = getGenericTypedArrayEntry(indicesName,st): borrowed SymEntry(int, 1);
 
         var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, indices, returnMatchOrig);
         var retString = getSegString(off, val, st);
@@ -454,10 +454,10 @@ module SegmentedMsg {
         const optName: string = if returnMatchOrig then st.nextName() else "";
         var strings = getSegString(name, st);
         // numMatches is the matched boolean array for Match objects
-        var numMatches = st.lookup(numMatchesName): borrowed SymEntry(bool);
-        var starts = st.lookup(startsName): borrowed SymEntry(int);
-        var lens = st.lookup(lensName): borrowed SymEntry(int);
-        var indices = st.lookup(indicesName): borrowed SymEntry(int);
+        var numMatches = st.lookup(numMatchesName): borrowed SymEntry(bool, 1);
+        var starts = st.lookup(startsName): borrowed SymEntry(int, 1);
+        var lens = st.lookup(lensName): borrowed SymEntry(int, 1);
+        var indices = st.lookup(indicesName): borrowed SymEntry(int, 1);
 
         var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, indices, returnMatchOrig);
         var retString = getSegString(off, val, st);

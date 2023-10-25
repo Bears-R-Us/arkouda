@@ -35,12 +35,17 @@ module AryUtil
       :arg A: array to be printed
     */
     proc formatAry(A):string throws {
+      // TODO: Update to print pretty with greater than 1 dimension
+      if A.domain.rank == 1 {
         if A.size <= printThresh {
             return "%?".doFormat(A);
         } else {
             return "%? ... %?".doFormat(A[A.domain.low..A.domain.low+2],
                                       A[A.domain.high-2..A.domain.high]);
         }
+      } else {
+        return "%t".format(A);
+      }
     }
 
     proc printAry(name:string, A) {

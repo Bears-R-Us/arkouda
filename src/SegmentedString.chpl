@@ -98,14 +98,14 @@ module SegmentedString {
      * The pdarray containing the offsets, which are the start indices of
      * the bytearrays, each of which corresponds to an individual string.
      */ 
-    var offsets: shared SymEntry(int);
+    var offsets: shared SymEntry(int, 1);
 
     /**
      * The pdarray containing the complete byte array composed of bytes
      * corresponding to each string, joined by nulls. Note: the null byte
      * is uint(8) value of zero.
      */ 
-    var values: shared SymEntry(uint(8));
+    var values: shared SymEntry(uint(8), 1);
     
     /**
      * The number of strings in the segmented array
@@ -126,8 +126,8 @@ module SegmentedString {
     proc init(entryName:string, entry:borrowed SegStringSymEntry) {
         name = entryName;
         composite = entry;
-        offsets = composite.offsetsEntry: shared SymEntry(int);
-        values = composite.bytesEntry: shared SymEntry(uint(8));
+        offsets = composite.offsetsEntry: shared SymEntry(int, 1);
+        values = composite.bytesEntry: shared SymEntry(uint(8), 1);
         size = offsets.size;
         nBytes = values.size;
     }
@@ -619,7 +619,7 @@ module SegmentedString {
       :type returnMatchOrig: bool
       :returns: Strings – Only the portions of Strings which match pattern and (optional) int64 pdarray – For each pattern match, the index of the original string it was in
     */
-    proc findAllMatches(const numMatchesEntry: ?t, const startsEntry: borrowed SymEntry(int), const lensEntry: borrowed SymEntry(int), const indicesEntry: borrowed SymEntry(int), const returnMatchOrig: bool) throws where t == borrowed SymEntry(int) || t == borrowed SymEntry(bool) {
+    proc findAllMatches(const numMatchesEntry: ?t, const startsEntry: borrowed SymEntry(int,1), const lensEntry: borrowed SymEntry(int,1), const indicesEntry: borrowed SymEntry(int,1), const returnMatchOrig: bool) throws where t == borrowed SymEntry(int,1) || t == borrowed SymEntry(bool,1) {
       ref origVals = this.values.a;
       ref origOffsets = this.offsets.a;
       ref numMatches = numMatchesEntry.a;
