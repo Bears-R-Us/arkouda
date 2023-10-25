@@ -1717,7 +1717,7 @@ Attributes
    array([2 2 1 1 1 0 0])
 
 
-.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -7194,7 +7194,7 @@ Attributes
    True
 
 
-.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -11023,7 +11023,7 @@ Attributes
    array([5, 4, 3, 2, 1])
 
 
-.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
