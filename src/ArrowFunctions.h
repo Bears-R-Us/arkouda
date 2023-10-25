@@ -10,6 +10,7 @@
 #include <parquet/arrow/writer.h>
 #include <parquet/column_reader.h>
 #include <parquet/api/writer.h>
+#include <parquet/schema.h>
 #include <cmath>
 #include <queue>
 extern "C" {
@@ -49,10 +50,10 @@ extern "C" {
 
   int c_readColumnByName(const char* filename, void* chpl_arr,
                          const char* colname, int64_t numElems, int64_t startIdx,
-                         int64_t batchSize, char** errMsg);
+                         int64_t batchSize, int64_t byteLength, char** errMsg);
   int cpp_readColumnByName(const char* filename, void* chpl_arr,
                            const char* colname, int64_t numElems, int64_t startIdx,
-                           int64_t batchSize, char** errMsg);
+                           int64_t batchSize, int64_t byteLength, char** errMsg);
 
   int c_readListColumnByName(const char* filename, void* chpl_arr, 
                             const char* colname, int64_t numElems, 
@@ -143,6 +144,9 @@ extern "C" {
                                   void** ptr_arr, void** offset_arr, void* objTypes, void* datatypes,
                                   void* segArr_sizes, int64_t colnum, int64_t numelems, int64_t rowGroupSize,
                                   int64_t compression, char** errMsg);
+
+  int c_getPrecision(const char* filename, const char* colname, char** errMsg);
+  int cpp_getPrecision(const char* filename, const char* colname, char** errMsg);
     
   const char* c_getVersionInfo(void);
   const char* cpp_getVersionInfo(void);

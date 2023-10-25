@@ -65,6 +65,31 @@ int64_t cpp_getNumRows(const char* filename, char** errMsg) {
   }
 }
 
+int cpp_getPrecision(const char* filename, const char* colname, char** errMsg) {
+  try {
+    std::shared_ptr<arrow::io::ReadableFile> infile;
+    ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename, arrow::default_memory_pool()),
+                   infile);
+
+    std::unique_ptr<parquet::arrow::FileReader> reader;
+    ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+
+    std::shared_ptr<arrow::Schema> sc;
+    std::shared_ptr<arrow::Schema>* out = &sc;
+    ARROWSTATUS_OK(reader->GetSchema(out));
+
+    int idx = sc -> GetFieldIndex(colname);
+
+    const auto& decimal_type = static_cast<const ::arrow::DecimalType&>(*sc->field(idx)->type());
+    const int64_t precision = decimal_type.precision();
+
+    return precision;
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+
 int cpp_getType(const char* filename, const char* colname, char** errMsg) {
   try {
     std::shared_ptr<arrow::io::ReadableFile> infile;
@@ -694,7 +719,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
   }
 }
 
-int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
+int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, int64_t byteLength, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
   
@@ -864,7 +889,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           (void)reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
           arrow::Decimal128 v;
           PARQUET_ASSIGN_OR_THROW(v,
-                                  ::arrow::Decimal128::FromBigEndian(value.ptr, 9));
+                                  ::arrow::Decimal128::FromBigEndian(value.ptr, byteLength));
 
           chpl_ptr[i] = v.ToDouble(0);
           i+=values_read;
@@ -1975,8 +2000,8 @@ extern "C" {
     return cpp_readListColumnByName(filename, chpl_arr, colname, numElems, startIdx, batchSize, errMsg);
   }
 
-  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
-    return cpp_readColumnByName(filename, chpl_arr, colname, numElems, startIdx, batchSize, errMsg);
+  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, int64_t byteLength, char** errMsg) {
+    return cpp_readColumnByName(filename, chpl_arr, colname, numElems, startIdx, batchSize, byteLength, errMsg);
   }
 
   int c_getType(const char* filename, const char* colname, char** errMsg) {
@@ -2069,5 +2094,9 @@ extern "C" {
                                 void* segArr_sizes, int64_t colnum, int64_t numelems, int64_t rowGroupSize,
                                 int64_t compression, char** errMsg){
     return cpp_writeMultiColToParquet(filename, column_names, ptr_arr, offset_arr, objTypes, datatypes, segArr_sizes, colnum, numelems, rowGroupSize, compression, errMsg);
+  }
+
+  int c_getPrecision(const char* filename, const char* colname, char** errMsg) {
+    return cpp_getPrecision(filename, colname, errMsg);
   }
 }
