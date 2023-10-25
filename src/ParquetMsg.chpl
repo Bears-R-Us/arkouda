@@ -910,6 +910,10 @@ module ParquetMsg {
     return new list(datasets.split(","));
   }
 
+  // Decimal columns in Parquet have a fixed number of bytes based on the precision,
+  // but there isn't a way in Parquet to get the precision. Since the byte length
+  // will always remain the same for each precision value, here we just created a
+  // lookup table that maps from the precision to the byte value.
   proc getByteLength(filename, colname) throws {
     extern proc c_getPrecision(filename, colname, errMsg): int(32);
     var pqErr = new parquetErrorMsg();
