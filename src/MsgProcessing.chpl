@@ -33,10 +33,17 @@ module MsgProcessing
 
     :returns: (MsgTuple) response message
     */
-    proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd = 1): MsgTuple throws {
         var repMsg: string, // response message
             dtype = str2dtype(msgArgs.getValueOf("dtype")),
-            shape = msgArgs.get("shape").get();
+            shapeArg = msgArgs.get("shape");
+
+        writeln(shapeArg);
+
+        var shape = shapeArg.getTuple(nd);
+
+        var size = 1;
+        for s in shape do size *= s;
 
         if (dtype == DType.UInt8) || (dtype == DType.Bool) {
           overMemLimit(size);
@@ -60,6 +67,15 @@ module MsgProcessing
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+
+    proc createMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+        return createMsg(cmd, msgArgs, st, 1);
+
+    proc createMsg2D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+        return createMsg(cmd, msgArgs, st, 2);
+
+    proc createMsg3D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+        return createMsg(cmd, msgArgs, st, 3);
 
     /* 
     Parse, execute, and respond to a delete message 
@@ -290,7 +306,7 @@ module MsgProcessing
     :returns: MsgTuple
     :throws: `UndefinedSymbolError(name)`
     */
-    proc setMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc setMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd = 1): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         const name = msgArgs.getValueOf("array");
@@ -304,13 +320,13 @@ module MsgProcessing
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
-                var e = toSymEntry(gEnt,int);
+                var e = toSymEntry(gEnt,int, nd);
                 var val: int = value.getIntValue();
                 e.a = val;
                 repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.Int64, DType.Float64) {
-                var e = toSymEntry(gEnt,int);
+                var e = toSymEntry(gEnt,int, nd);
                 var val: real = value.getRealValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                         "cmd: %s name: %s to val: %?".doFormat(cmd,name,val:int));
@@ -318,7 +334,7 @@ module MsgProcessing
                 repMsg = "set %s to %?".doFormat(name, val:int);
             }
             when (DType.Int64, DType.Bool) {
-                var e = toSymEntry(gEnt,int);
+                var e = toSymEntry(gEnt,int, nd);
                 var val: bool = value.getBoolValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                         "cmd: %s name: %s to val: %?".doFormat(cmd,name,val:int));
@@ -326,7 +342,7 @@ module MsgProcessing
                 repMsg = "set %s to %?".doFormat(name, val:int);
             }
             when (DType.Float64, DType.Int64) {
-                var e = toSymEntry(gEnt,real);
+                var e = toSymEntry(gEnt,real, nd);
                 var val: int = value.getIntValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                       "cmd: %s name: %s to value: %?".doFormat(cmd,name,val:real));
@@ -334,7 +350,7 @@ module MsgProcessing
                 repMsg = "set %s to %?".doFormat(name, val:real);
             }
             when (DType.Float64, DType.Float64) {
-                var e = toSymEntry(gEnt,real);
+                var e = toSymEntry(gEnt,real, nd);
                 var val: real = value.getRealValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "cmd: %s name; %s to value: %?".doFormat(cmd,name,val));
@@ -342,7 +358,7 @@ module MsgProcessing
                 repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.Float64, DType.Bool) {
-                var e = toSymEntry(gEnt,real);           
+                var e = toSymEntry(gEnt,real, nd);           
                 var val: bool = value.getBoolValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "cmd: %s name: %s to value: %?".doFormat(cmd,name,val:real));
@@ -350,7 +366,7 @@ module MsgProcessing
                 repMsg = "set %s to %?".doFormat(name, val:real);
             }
             when (DType.Bool, DType.Int64) {
-                var e = toSymEntry(gEnt,bool);
+                var e = toSymEntry(gEnt,bool, nd);
                 var val: int = value.getIntValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "cmd: %s name: %s to value: %?".doFormat(cmd,name,val:bool));
@@ -358,7 +374,7 @@ module MsgProcessing
                 repMsg = "set %s to %?".doFormat(name, val:bool);
             }
             when (DType.Bool, DType.Float64) {
-                var e = toSymEntry(gEnt,int);
+                var e = toSymEntry(gEnt,int, nd);
                 var val: real = value.getRealValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                       "cmd: %s name: %s to  value: %?".doFormat(cmd,name,val:bool));
@@ -366,7 +382,7 @@ module MsgProcessing
                 repMsg = "set %s to %?".doFormat(name, val:bool);
             }
             when (DType.Bool, DType.Bool) {
-                var e = toSymEntry(gEnt,bool);
+                var e = toSymEntry(gEnt,bool, nd);
                 var val: bool = value.getBoolValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                             "cmd: %s name: %s to value: %?".doFormat(cmd,name,val));
@@ -374,31 +390,31 @@ module MsgProcessing
                 repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.UInt64, DType.UInt64) {
-                var e = toSymEntry(gEnt,uint);
+                var e = toSymEntry(gEnt,uint, nd);
                 var val: uint = value.getUIntValue();
                 e.a = val;
                 repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.BigInt, DType.BigInt) {
-                var e = toSymEntry(gEnt,bigint);
+                var e = toSymEntry(gEnt,bigint, nd);
                 var val: bigint = value.getBigIntValue();
                 e.a = val;
                 repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.BigInt, DType.UInt64) {
-                var e = toSymEntry(gEnt,bigint);
+                var e = toSymEntry(gEnt,bigint, nd);
                 var val: uint = value.getUIntValue();
                 e.a = val:bigint;
                 repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.BigInt, DType.Int64) {
-                var e = toSymEntry(gEnt,bigint);
+                var e = toSymEntry(gEnt,bigint, nd);
                 var val: int = value.getIntValue();
                 e.a = val:bigint;
                 repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.BigInt, DType.Bool) {
-                var e = toSymEntry(gEnt,bigint);
+                var e = toSymEntry(gEnt,bigint, nd);
                 var val: bool = value.getBoolValue();
                 e.a = val:bigint;
                 repMsg = "set %s to %?".doFormat(name, val);
@@ -413,4 +429,14 @@ module MsgProcessing
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+
+    proc setMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+        do return setMsg(cmd, msgArgs, st, 1);
+
+    proc setMsg2D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+        do return setMsg(cmd, msgArgs, st, 2);
+
+    proc setMsg3D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+        do return setMsg(cmd, msgArgs, st, 3);
+
 }

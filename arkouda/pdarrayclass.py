@@ -736,8 +736,14 @@ class pdarray:
         TypeError
             Raised if value is not an int, int64, float, or float64
         """
+        cmd = "set"
+        match len(self.shape):
+            case 1: cmd="set1D"
+            case 2: cmd="set2D"
+            case 3: cmd="set3D"
+
         generic_msg(
-            cmd="set", args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
+            cmd=cmd, args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
         )
 
     def any(self) -> np.bool_:

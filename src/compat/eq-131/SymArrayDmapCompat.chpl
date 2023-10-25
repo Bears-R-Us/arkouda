@@ -50,16 +50,16 @@ module SymArrayDmapCompat
     /* 
     Makes an array of specified type over a distributed domain
 
-    :arg size: size of the domain
-    :type size: int 
+    :arg shape: size of the domain in each dimension
+    :type shape: int
 
     :arg etype: desired type of array
     :type etype: type
 
     :returns: [] ?etype
     */
-    proc makeDistArray(size:int, type etype) {
-        var a: [makeDistDom(size)] etype;
+    proc makeDistArray(shape: int ...?N, type etype) {
+        var a: [makeDistDom((...shape))] etype;
         return a;
     }
 

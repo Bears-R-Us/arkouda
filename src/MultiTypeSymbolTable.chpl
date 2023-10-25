@@ -131,11 +131,11 @@ module MultiTypeSymbolTable
         */
         proc addEntry(name: string, shape: int ...?ND, dtype: DType): borrowed AbstractSymEntry throws {
             select dtype {
-                when DType.Int64 { return addEntry(name, shape, int); }
-                when DType.UInt64 { return addEntry(name, shape, uint); }
-                when DType.Float64 { return addEntry(name, shape, real); }
-                when DType.Bool { return addEntry(name, shape, bool); }
-                when DType.BigInt { return addEntry(name, shape, bigint); }
+                when DType.Int64 { return addEntry(name, (...shape), int); }
+                when DType.UInt64 { return addEntry(name, (...shape), uint); }
+                when DType.Float64 { return addEntry(name, (...shape), real); }
+                when DType.Bool { return addEntry(name, (...shape), bool); }
+                when DType.BigInt { return addEntry(name, (...shape), bigint); }
                 otherwise {
                     var errorMsg = "addEntry not implemented for %?".doFormat(dtype); 
                     throw getErrorWithContext(

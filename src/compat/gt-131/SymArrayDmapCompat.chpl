@@ -39,7 +39,7 @@ module SymArrayDmapCompat
                     return blockDist.createDomain(dom);
                 }
                 // fix the annoyance about boundingBox being empty
-                else {return blockDist.createDomain({0..0})}
+                else {return blockDist.createDomain({0..0}); }
             }
             otherwise {
                 halt("Unsupported distribution " + MyDmap:string);
@@ -50,17 +50,19 @@ module SymArrayDmapCompat
     /* 
     Makes an array of specified type over a distributed domain
 
-    :arg size: size of the domain
-    :type size: int 
+    :arg shape: size of the domain in each dimension
+    :type shape: int
 
     :arg etype: desired type of array
     :type etype: type
 
     :returns: [] ?etype
     */
-    proc makeDistArray(size:int, type etype) throws {
-      var dom = makeDistDom(size);
-      return dom.tryCreateArray(etype);
+    proc makeDistArray(shape: int ...?N, type etype) throws {
+      // var dom = makeDistDom((...shape));
+      // return dom.tryCreateArray(etype);
+      var a: [makeDistDom((...shape))] etype;
+      return a;
     }
 
     proc makeDistArray(in a: [?D] ?etype) throws
