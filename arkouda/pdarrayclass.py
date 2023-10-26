@@ -737,11 +737,11 @@ class pdarray:
             Raised if value is not an int, int64, float, or float64
         """
         cmd = "set"
-        if len(shape) == 1:
+        if len(self.shape) == 1:
             cmd = "set1D"
-        elif len(shape) == 2:
+        elif len(self.shape) == 2:
             cmd = "set2D"
-        elif len(shape) == 3:
+        elif len(self.shape) == 3:
             cmd = "set3D"
 
         generic_msg(
