@@ -436,10 +436,12 @@ def zeros(
         raise TypeError(f"unsupported dtype {dtype}")
 
     cmd = "create"
-    match len(shape):
-        case 1: cmd = "create1D"
-        case 2: cmd = "create2D"
-        case 3: cmd = "create3D"
+    if len(shape) == 1:
+        cmd = "create1D"
+    elif len(shape) == 2:
+        cmd = "create2D"
+    elif len(shape) == 3:
+        cmd = "create3D"
 
     repMsg = generic_msg(cmd=cmd, args={"dtype": dtype_name, "shape": shape})
 
@@ -499,10 +501,12 @@ def ones(
         raise TypeError(f"unsupported dtype {dtype}")
 
     cmd = "create"
-    match len(shape):
-        case 1: cmd = "create1D"
-        case 2: cmd = "create2D"
-        case 3: cmd = "create3D"
+    if len(shape) == 1:
+        cmd = "create1D"
+    elif len(shape) == 2:
+        cmd = "create2D"
+    elif len(shape) == 3:
+        cmd = "create3D"
 
     repMsg = generic_msg(cmd=cmd, args={"dtype": dtype_name, "shape": shape})
 

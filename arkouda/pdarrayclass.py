@@ -737,10 +737,12 @@ class pdarray:
             Raised if value is not an int, int64, float, or float64
         """
         cmd = "set"
-        match len(self.shape):
-            case 1: cmd="set1D"
-            case 2: cmd="set2D"
-            case 3: cmd="set3D"
+        if len(shape) == 1:
+            cmd = "set1D"
+        elif len(shape) == 2:
+            cmd = "set2D"
+        elif len(shape) == 3:
+            cmd = "set3D"
 
         generic_msg(
             cmd=cmd, args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
