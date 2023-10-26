@@ -58,10 +58,12 @@ module ParquetMsg {
   extern var ARROWLIST: c_int;
   extern var ARROWDOUBLE: c_int;
   extern var ARROWERROR: c_int;
+  extern var ARROWDECIMAL: c_int;
 
   enum ArrowTypes { int64, int32, uint64, uint32,
                     stringArr, timestamp, boolean,
-                    double, float, list, notimplemented };
+                    double, float, list, decimal,
+                    notimplemented };
 
   record parquetErrorMsg {
     var errMsg: c_ptr(uint(8));
@@ -119,8 +121,8 @@ module ParquetMsg {
     return (subdoms, (+ reduce lengths));
   }
 
-  proc readFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
+  proc readFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty, byteLength=-1) throws {
+    extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, byteLength, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     var fileOffsets = (+ scan sizes) - sizes;
     
@@ -137,7 +139,7 @@ module ParquetMsg {
             var pqErr = new parquetErrorMsg();
             if c_readColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
                                   dsetname.localize().c_str(), intersection.size, intersection.low - off,
-                                  batchSize,
+                                  batchSize, byteLength,
                                   c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
@@ -149,7 +151,7 @@ module ParquetMsg {
   }
 
   proc readStrFilesByName(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
+    extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, byteLength, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     
     coforall loc in A.targetLocales() do on loc {
@@ -166,7 +168,7 @@ module ParquetMsg {
 
             if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
                                   dsetname.localize().c_str(), intersection.size, 0,
-                                  batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+                                  batchSize, -1, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
             A[filedom] = col;
@@ -356,6 +358,7 @@ module ParquetMsg {
     else if arrType == ARROWDOUBLE then return ArrowTypes.double;
     else if arrType == ARROWFLOAT then return ArrowTypes.float;
     else if arrType == ARROWLIST then return ArrowTypes.list;
+    else if arrType == ARROWDECIMAL then return ArrowTypes.decimal;
     throw getErrorWithContext(
                   msg="Unrecognized Parquet data type",
                   getLineNumber(),
@@ -870,6 +873,13 @@ module ParquetMsg {
             var create_str: string = parseListDataset(filenames, dsetname, list_ty, len, sizes, st);
             rnames.pushBack((dsetname, ObjType.SEGARRAY, create_str));
           }
+        } else if ty == ArrowTypes.decimal {
+          var byteLength = getByteLength(filenames[0], dsetname);
+          var entryVal = createSymEntry(len, real);
+          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty, byteLength);
+          var valName = st.nextName();
+          st.addEntry(valName, entryVal);
+          rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else {
           var errorMsg = "DType %s not supported for Parquet reading".doFormat(ty);
           pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -898,6 +908,38 @@ module ParquetMsg {
     var datasets: string;
     try! datasets = string.createCopyingBuffer(res, strlen(res));
     return new list(datasets.split(","));
+  }
+
+  // Decimal columns in Parquet have a fixed number of bytes based on the precision,
+  // but there isn't a way in Parquet to get the precision. Since the byte length
+  // will always remain the same for each precision value, here we just created a
+  // lookup table that maps from the precision to the byte value.
+  proc getByteLength(filename, colname) throws {
+    extern proc c_getPrecision(filename, colname, errMsg): int(32);
+    var pqErr = new parquetErrorMsg();
+    var res: c_ptr(uint(8));
+    defer {
+      extern proc c_free_string(ptr);
+      c_free_string(res);
+    }
+
+    var precision = c_getPrecision(filename.c_str(), colname.c_str(), c_ptrTo(pqErr.errMsg));
+    if precision < 3 then return 1;
+    else if precision < 5 then return 2;
+    else if precision < 7 then return 3;
+    else if precision < 10 then return 4;
+    else if precision < 12 then return 5;
+    else if precision < 15 then return 6;
+    else if precision < 17 then return 7;
+    else if precision < 19 then return 8;
+    else if precision < 22 then return 9;
+    else if precision < 24 then return 10;
+    else if precision < 27 then return 11;
+    else if precision < 29 then return 12;
+    else if precision < 32 then return 13;
+    else if precision < 34 then return 14;
+    else if precision < 36 then return 15;
+    return 16;
   }
 
   proc pdarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
