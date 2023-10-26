@@ -884,8 +884,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         startIdx -= reader->Skip(startIdx);
 
         while (reader->HasNext() && i < numElems) {
-          if((numElems - i) < batchSize)
-            batchSize = numElems - i;
           (void)reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
           arrow::Decimal128 v;
           PARQUET_ASSIGN_OR_THROW(v,
