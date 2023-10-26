@@ -38,8 +38,6 @@ module MsgProcessing
             dtype = str2dtype(msgArgs.getValueOf("dtype")),
             shapeArg = msgArgs.get("shape");
 
-        writeln(shapeArg);
-
         var shape = shapeArg.getTuple(nd);
 
         var size = 1;

@@ -459,7 +459,7 @@ module Message {
             if first then first = false; else r.readLiteral(",");
             t[i] = r.read(int);
         }
-        r.readLiteral(")");
+        // r.readLiteral(")");
         return t;
     }
 
