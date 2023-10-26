@@ -352,15 +352,7 @@ module ServerDaemon {
          */
         proc registerServerCommands() {
             registerBinaryFunction("tondarray", tondarrayMsg);
-            registerFunction("create", createMsg1D);
-            registerFunction("create1D", createMsg1D);
-            registerFunction("create2D", createMsg2D);
-            registerFunction("create3D", createMsg3D);
             registerFunction("delete", deleteMsg);
-            registerFunction("set", setMsg1D);
-            registerFunction("set1D", setMsg1D);
-            registerFunction("set2D", setMsg2D);
-            registerFunction("set3D", setMsg3D);
             registerFunction("info", infoMsg);
             registerFunction("str", strMsg);
             registerFunction("repr", reprMsg);

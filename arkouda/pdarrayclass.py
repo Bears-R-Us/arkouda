@@ -736,14 +736,7 @@ class pdarray:
         TypeError
             Raised if value is not an int, int64, float, or float64
         """
-        cmd = "set"
-        if len(self.shape) == 1:
-            cmd = "set1D"
-        elif len(self.shape) == 2:
-            cmd = "set2D"
-        elif len(self.shape) == 3:
-            cmd = "set3D"
-
+        cmd = "set{}D".format(len(self.shape))
         generic_msg(
             cmd=cmd, args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
         )

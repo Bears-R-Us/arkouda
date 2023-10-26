@@ -33,12 +33,11 @@ module MsgProcessing
 
     :returns: (MsgTuple) response message
     */
-    proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd = 1): MsgTuple throws {
+    @arkouda.registerND
+    proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int = 1): MsgTuple throws {
         var repMsg: string, // response message
             dtype = str2dtype(msgArgs.getValueOf("dtype")),
-            shapeArg = msgArgs.get("shape");
-
-        var shape = shapeArg.getTuple(nd);
+            shape = msgArgs.get("shape").getTuple(nd);
 
         var size = 1;
         for s in shape do size *= s;
@@ -66,14 +65,16 @@ module MsgProcessing
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc createMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-        return createMsg(cmd, msgArgs, st, 1);
+    // proc createMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+    //     return createMsg(cmd, msgArgs, st, 1);
 
-    proc createMsg2D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-        return createMsg(cmd, msgArgs, st, 2);
+    // registerFunction("create1D", createMsg1D);
 
-    proc createMsg3D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-        return createMsg(cmd, msgArgs, st, 3);
+    // proc createMsg2D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+    //     return createMsg(cmd, msgArgs, st, 2);
+
+    // proc createMsg3D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+    //     return createMsg(cmd, msgArgs, st, 3);
 
     /* 
     Parse, execute, and respond to a delete message 
@@ -304,6 +305,7 @@ module MsgProcessing
     :returns: MsgTuple
     :throws: `UndefinedSymbolError(name)`
     */
+    @arkouda.registerND
     proc setMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd = 1): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message

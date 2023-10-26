@@ -256,7 +256,12 @@ module Message {
         }
 
         proc getTuple(param size: int): size*int throws {
-            return parseJsonTuple(this.val, size);
+            try {
+                return parseJsonTuple(this.val, size);
+            } catch {
+                var x: size*int; x[0] = this.getIntValue();
+                return x;
+            }
         }
 
         proc getJSON(size: int) throws {

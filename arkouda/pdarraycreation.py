@@ -435,19 +435,8 @@ def zeros(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
-    shapeT = shape
-    if not type(shape) is tuple:
-        shapeT = (shape,)
-
-    cmd = "create"
-    if len(shapeT) == 1:
-        cmd = "create1D"
-    elif len(shapeT) == 2:
-        cmd = "create2D"
-    elif len(shapeT) == 3:
-        cmd = "create3D"
-
-    repMsg = generic_msg(cmd=cmd, args={"dtype": dtype_name, "shape": shapeT})
+    cmd = "create{}D".format(len(shape) if type(shape) is tuple else 1)
+    repMsg = generic_msg(cmd=cmd, args={"dtype": dtype_name, "shape": shape})
 
     return create_pdarray(repMsg, max_bits=max_bits)
 
@@ -504,19 +493,8 @@ def ones(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
-    shapeT = shape
-    if not type(shape) is tuple:
-        shapeT = (shape,)
-
-    cmd = "create"
-    if len(shapeT) == 1:
-        cmd = "create1D"
-    elif len(shapeT) == 2:
-        cmd = "create2D"
-    elif len(shapeT) == 3:
-        cmd = "create3D"
-
-    repMsg = generic_msg(cmd=cmd, args={"dtype": dtype_name, "shape": shapeT})
+    cmd = "create{}D".format(len(shape) if type(shape) is tuple else 1)
+    repMsg = generic_msg(cmd=cmd, args={"dtype": dtype_name, "shape": shape})
 
     a = create_pdarray(repMsg)
     a.fill(1)
