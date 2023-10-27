@@ -15,6 +15,7 @@ This file is using Arrow's documented standrd Arrow API, which is not as optimiz
 This program requires 2 command line arguments: filename, and number of columns. (it is harder to specify column name with the standard API, it reads by column index... let me know if that is a problem, it's not too hard to fix). So, you'd run this one like:
 ```
 ./a.out test-file_LOCALE0000 2
+```
 
 ### `build-df-write.py`
 This file is building a dataframe with 2 columns, named `col1` and `col2` with integer columns of size 10**8. If you use this file, the programs will "just work" as I've given them to you.
