@@ -1,6 +1,6 @@
-#include "asd.h"
+#include "read-parquet.h"
 
-int readColumnByName(const char* filename, const char* colname, int64_t* arr, int64_t numElems, int64_t batchSize) {
+int readColumnByName(std::string filename, std::string colname, int64_t* arr, int64_t numElems, int64_t batchSize) {
   try {
     std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
       parquet::ParquetFileReader::OpenFile(filename, false);
@@ -38,42 +38,28 @@ int readColumnByName(const char* filename, const char* colname, int64_t* arr, in
   }
 }
 
-int readColumnByName2(const char* filename, const char* colname, int64_t* arr, int64_t numElems, int64_t batchSize) {
-  std::shared_ptr<arrow::io::ReadableFile> infile;
-  PARQUET_ASSIGN_OR_THROW(infile,
-                          arrow::io::ReadableFile::Open(filename,
-                                                        arrow::default_memory_pool()));
-
-  std::unique_ptr<parquet::arrow::FileReader> reader;
-  PARQUET_THROW_NOT_OK(
-      parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
-  std::shared_ptr<arrow::ChunkedArray> array;
-  PARQUET_THROW_NOT_OK(reader->ReadColumn(0, &array));
-  return 0;
+void readColumns(std::string filename, std::string colname, int num_cols, int64_t* arr, int64_t numElems, int64_t batchSize) {
+  for(int i = 1; i <= num_cols; i++) {
+    std::string col = colname;
+    col.append(std::to_string(i));
+    readColumnByName(filename, col, arr, numElems, batchSize);
+  }
 }
 
 int main(int argc, char** argv) {
-  const char* filename = argv[1];
-  const char* colname = argv[2];
+  std::string filename = argv[1];
+  std::string colname = argv[2];
   int batchSize = atoi(argv[3]);
+  int num_cols = atoi(argv[4]);
 
   int64_t numElems = 1000000000;
   int64_t* arr = (int64_t*)malloc(numElems*sizeof(int64_t));
 
-  std::cout << "Reading using low-level API: ";
+  std::cout << "Reading " << num_cols << " columns using low-level API: ";
   auto start = std::chrono::high_resolution_clock::now();
-  readColumnByName(filename, colname, arr, numElems, batchSize);
+  readColumns(filename, "col", num_cols, arr, numElems, batchSize);
   auto finish = std::chrono::high_resolution_clock::now();
-
   auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(finish-start);
-  std::cout << milliseconds.count()/1000.0 << "s\n";
-
-  std::cout << "Reading using standard interface: ";
-  start = std::chrono::high_resolution_clock::now();
-  readColumnByName2(filename, colname, arr, numElems, batchSize);
-  finish = std::chrono::high_resolution_clock::now();
-
-  milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(finish-start);
   std::cout << milliseconds.count()/1000.0 << "s\n";
   
   return 0;
