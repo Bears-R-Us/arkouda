@@ -1,6 +1,6 @@
 #include "read-parquet.h"
 
-int readColumnByName(std::string filename, int col_num, int64_t* arr, int64_t numElems) {
+int readColumnByName(std::string filename, int col_num) {
   std::shared_ptr<arrow::io::ReadableFile> infile;
   PARQUET_ASSIGN_OR_THROW(infile,
                           arrow::io::ReadableFile::Open(filename,
@@ -14,9 +14,9 @@ int readColumnByName(std::string filename, int col_num, int64_t* arr, int64_t nu
   return 0;
 }
 
-void readColumns(std::string filename, int num_cols, int64_t* arr, int64_t numElems) {
+void readColumns(std::string filename, int num_cols) {
   for(int i = 0; i < num_cols; i++) {
-    readColumnByName(filename, i, arr, numElems);
+    readColumnByName(filename, i);
   }
 }
 
@@ -24,12 +24,9 @@ int main(int argc, char** argv) {
   std::string filename = argv[1];
   int num_cols = atoi(argv[2]);
 
-  int64_t numElems = 1000000000;
-  int64_t* arr = (int64_t*)malloc(numElems*sizeof(int64_t));
-
   std::cout << "Reading " << num_cols << " columns using standard API: ";
   auto start = std::chrono::high_resolution_clock::now();
-  readColumns(filename, num_cols, arr, numElems);
+  readColumns(filename, num_cols);
   auto finish = std::chrono::high_resolution_clock::now();
   auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(finish-start);
   std::cout << milliseconds.count()/1000.0 << "s\n";

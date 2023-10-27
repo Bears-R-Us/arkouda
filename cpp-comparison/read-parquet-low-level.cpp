@@ -1,12 +1,21 @@
 #include "read-parquet.h"
 
-int readColumnByName(std::string filename, std::string colname, int64_t* arr, int64_t numElems, int64_t batchSize) {
+int getNumRows(std::string filename) {
+  std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
+    parquet::ParquetFileReader::OpenFile(filename, false);
+
+  std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
+  const int numElems = file_metadata -> num_rows();
+  return numElems;
+}
+
+int readColumnByName(std::string filename, std::string colname, int64_t* arr, const int numElems, int64_t batchSize) {
   try {
     std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
       parquet::ParquetFileReader::OpenFile(filename, false);
 
     std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
-    int num_row_groups = file_metadata->num_row_groups();
+    const int num_row_groups = file_metadata->num_row_groups();
 
     int64_t i = 0;
     for (int r = 0; r < num_row_groups; r++) {
@@ -38,7 +47,7 @@ int readColumnByName(std::string filename, std::string colname, int64_t* arr, in
   }
 }
 
-void readColumns(std::string filename, std::string colname, int num_cols, int64_t* arr, int64_t numElems, int64_t batchSize) {
+void readColumns(std::string filename, std::string colname, int num_cols, int64_t* arr, const int numElems, int64_t batchSize) {
   for(int i = 1; i <= num_cols; i++) {
     std::string col = colname;
     col.append(std::to_string(i));
@@ -52,7 +61,7 @@ int main(int argc, char** argv) {
   int batchSize = atoi(argv[3]);
   int num_cols = atoi(argv[4]);
 
-  int64_t numElems = 1000000000;
+  const int numElems = getNumRows(filename);
   int64_t* arr = (int64_t*)malloc(numElems*sizeof(int64_t));
 
   std::cout << "Reading " << num_cols << " columns using low-level API: ";
