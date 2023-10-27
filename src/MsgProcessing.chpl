@@ -429,14 +429,4 @@ module MsgProcessing
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-
-    proc setMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
-        do return setMsg(cmd, msgArgs, st, 1);
-
-    proc setMsg2D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
-        do return setMsg(cmd, msgArgs, st, 2);
-
-    proc setMsg3D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
-        do return setMsg(cmd, msgArgs, st, 3);
-
 }

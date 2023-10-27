@@ -14,12 +14,11 @@ VERBOSE ?= 0
 
 CHPL := chpl
 
-# Message handlers annotated with '@arkouda.registerND' will support multi-dimensional
-#  arrays with dimensions from 1 up to 'MAX_ARRAY_DIMS'
-MAX_ARRAY_DIMS=1
-
 # We need to make the HDF5 API use the 1.10.x version for compatibility between 1.10 and 1.12
 CHPL_FLAGS += --ccflags="-DH5_USE_110_API"
+
+# silence warnings about '@arkouda' annotations being unrecognized
+CHPL_FLAGS += --using-attribute-toolname arkouda
 
 CHPL_DEBUG_FLAGS += --print-passes
 
@@ -340,7 +339,7 @@ endif
 MODULE_GENERATION_SCRIPT=$(ARKOUDA_SOURCE_DIR)/serverModuleGen.py
 # This is the main compilation statement section
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(eval MOD_GEN_OUT=$(shell python3 $(MODULE_GENERATION_SCRIPT) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_SOURCE_DIR) $(MAX_ARRAY_DIMS)))
+	$(eval MOD_GEN_OUT=$(shell python3 $(MODULE_GENERATION_SCRIPT) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_SOURCE_DIR)))
 
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(CHPL_COMPAT_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) $(ARKOUDA_SERVER_USER_MODULES) $(MOD_GEN_OUT) -o $@
 
