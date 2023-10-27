@@ -36,6 +36,16 @@ g++ read-parquet-low-level.cpp -O3 -std=c++17 -larrow -lparquet
 ```
 And hopefully it will be able to find Arrow and Parquet for you. If none of those work, let me know and we can figure it out!
 
+## Debugging failed compiles
+
+Compiling C/C++ programs on big machines can be... not the most fun. Here are some potential issues:
+
+1. `error while loading shared libraries: libarrow.so.900: cannot open shared object file: No such file or directory`
+- oh no! You likely have to append the path to the shared object file to the `LD_LIBRARY_PATH`
+- so, if your `so` file is located at `/path/to/arrow/libarrow.so.900`, you'd need to do something like `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/arrow/`
+
+...
+
 ## Launching your jobs
 When you launch Arkouda (or any Chapel program build where `CHPL_LAUNCHER!=none`), Chapel is building up the command for the workload manager on your machine (likely Slurm), which is launching the server onto compute nodes. When you run `./arkouda_server -nl<node-count>`, try running with the `--verbose` flag to see what command it is using to launch onto the compute nodes! (and then you can copy the important things there to launch whatever job you want, i.e., the C++ programs)
 
