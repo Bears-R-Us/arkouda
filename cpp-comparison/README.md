@@ -22,6 +22,9 @@ This program requires 3 command line arguments: filename, base column name, and 
 ### `build-df-write.py`
 This file is building a dataframe with 2 columns, named `col1` and `col2` with integer columns of size 10**8. If you use this file, the programs will "just work" as I've given them to you (you might need to update the path to where you'd like it to go though).
 
+### `time-ak-read.py`
+I spent almost no time on this, since I assume you already know how to read and time for Arkouda reads, but this is what I used...
+
 ## Compiling
 Compilation command: `g++ read-parquet.cpp -O3 -std=c++17 <include/link flags>`
 
