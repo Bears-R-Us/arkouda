@@ -7,18 +7,20 @@ This program requires 4 command line arguments, filename, base column name, batc
 ./a.out test-file_LOCALE0000 col 8192 2
 ```
 
+For both this program and the next, by "base column name" I am assuming that the columns you'd like to read will all be the same name with a number on the end. In other words, I am assuming you have something like "col1", "col2", "col3"..., where "col" is the base column name, and the program is automatically appending the column number on the end. Not the best way to do this, but it was the best I could come up with! 
+
 The batch size determines how many values that Parquet should be trying to read in at once and is also controllable in Arkouda with the `ARKOUDA_SERVER_PARQUET_BATCH_SIZE` env variable. 8192 is recommended by Arrow and is what we are using in Arkouda by default, but you can play around with it to see if the impacts. Generally, lower values perform worse, while higher values are just truncated to 8192.
 
 ### `read-parquet-standard.cpp`
 This file is using Arrow's documented standrd Arrow API, which is not as optimized as the low-level API. The performance here should be a little worse than Arkouda and the low-level API version.
 
-This program requires 2 command line arguments: filename, and number of columns. (it is harder to specify column name with the standard API, it reads by column index... let me know if that is a problem, it's not too hard to fix). So, you'd run this one like:
+This program requires 3 command line arguments: filename, base column name, and number of columns (so, same as the last, but without the batch size).
 ```
-./a.out test-file_LOCALE0000 2
+./a.out test-file_LOCALE0000 col 2
 ```
 
 ### `build-df-write.py`
-This file is building a dataframe with 2 columns, named `col1` and `col2` with integer columns of size 10**8. If you use this file, the programs will "just work" as I've given them to you.
+This file is building a dataframe with 2 columns, named `col1` and `col2` with integer columns of size 10**8. If you use this file, the programs will "just work" as I've given them to you (you might need to update the path to where you'd like it to go though).
 
 ## Compiling
 Compilation command: `g++ read-parquet.cpp -O3 -std=c++17 <include/link flags>`
