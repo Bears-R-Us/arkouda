@@ -76,3 +76,13 @@ When you are using a distributed build of Chapel, there is going to be some over
 If you have the ability to build Arkouda and use ones other the default system install, using the regular environment, but with `export CHPL_COMM=none`, this will give you a non-distributed build that won't have the extra distributed overhead.
 
 If you can't do that, that's OK too...
+
+### Results I collected
+Reading 1 columns using low-level API: 1.112s
+Reading 2 columns using low-level API: 1.897s
+
+Reading 1 columns using standard API: 1.39s
+Reading 2 columns using standard API: 2.251s
+
+Reading 1 columns using Arkouda: 0.6521358489990234
+Reading 2 columns using Arkouda: 1.4953250885009766
