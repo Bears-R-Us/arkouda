@@ -36,11 +36,11 @@ g++ read-parquet-low-level.cpp -O3 -std=c++17 -larrow -lparquet
 ```
 And hopefully it will be able to find Arrow and Parquet for you. If none of those work, let me know and we can figure it out!
 
-## Debugging failed compiles
+## Debugging failed compiles/runs
 
-Compiling C/C++ programs on big machines can be... not the most fun. Here are some potential issues:
+Compiling and running C/C++ programs on big machines can be... not as fun as Chapel. Here are some potential issues:
 
-1. `error while loading shared libraries: libarrow.so.900: cannot open shared object file: No such file or directory`
+1. at runtime: `error while loading shared libraries: libarrow.so.900: cannot open shared object file: No such file or directory`
 - oh no! You likely have to append the path to the shared object file to the `LD_LIBRARY_PATH`
 - so, if your `so` file is located at `/path/to/arrow/libarrow.so.900`, you'd need to do something like `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/arrow/`
 
