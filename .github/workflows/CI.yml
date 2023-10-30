@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.x']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
     container:
       image: chapel/chapel:1.31.0
     steps:
