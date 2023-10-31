@@ -737,7 +737,7 @@ class pdarray:
             Raised if value is not an int, int64, float, or float64
         """
         generic_msg(
-            cmd="set1D", args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
+            cmd=f"set{self.ndim}D", args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
         )
 
     def any(self) -> np.bool_:
