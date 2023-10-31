@@ -23,17 +23,28 @@ def stampOutNDArrayHandlers(mod, src_dir, stamp_file, max_dims):
         found_annotation = False
 
         # find each procedure annotated with '@arkouda.registerND'
-        for m in re.finditer(r'\@arkouda\.registerND\s*proc\s*([a-zA-Z0-9]*)\(', src_file.read()):
+        #  (with an optional 'cmd_prefix' argument)
+        #            group 0  \/                  1 \/            2 \/                          3 \/
+        for m in re.finditer(r'\@arkouda\.registerND(\(cmd_prefix=\"([a-zA-Z0-9]*)\"\))?\s*proc\s*([a-zA-Z0-9]*)\(', src_file.read()):
             found_annotation = True
-            msg_proc_name = m.group(1)
-            command_name = msg_proc_name.replace('Msg', '')
+            g = m.groups()
+
+            base_proc_name = g[2]
+            msg_proc_name = "_nd_gen_" + base_proc_name
+
+            if g[0] == None:
+                # no 'cmd_prefix' argument
+                command_name = base_proc_name.replace('Msg', '')
+            else:
+                # group 2 contains the 'cmd_prefix' argument
+                command_name = g[1]
 
             # instantiate the message handler for each rank from 1..max_dims
             # and register the instantiated proc with a unique command name
             for d in range(1, max_dims+1):
                 stamp_file.write(f"""
                 proc {msg_proc_name}{d}D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-                    return {msg_proc_name}(cmd, msgArgs, st, {d});
+                    return {base_proc_name}(cmd, msgArgs, st, {d});
 
                 registerFunction("{command_name}{d}D", {msg_proc_name}{d}D);
                 """)

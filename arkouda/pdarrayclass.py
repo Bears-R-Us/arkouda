@@ -736,9 +736,8 @@ class pdarray:
         TypeError
             Raised if value is not an int, int64, float, or float64
         """
-        cmd = "set{}D".format(len(self.shape))
         generic_msg(
-            cmd=cmd, args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
+            cmd="set1D", args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
         )
 
     def any(self) -> np.bool_:
@@ -2028,10 +2027,9 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         size = int(fields[3])
         ndim = int(fields[4])
 
-        if fields[5][len(fields[5]) - 2] == ",":
-            shape = [int(el) for el in fields[5][1:-2].split(",")]
-        else:
-            shape = [int(el) for el in fields[5][1:-1].split(",")]
+        trailing_comma_offset = -2 if fields[5][len(fields[5]) - 2] == "," else -1
+        shape = [int(el) for el in fields[5][1:trailing_comma_offset].split(",")]
+
         itemsize = int(fields[6])
     except Exception as e:
         raise ValueError(e)

@@ -350,7 +350,7 @@ module MultiTypeSymbolTable
                               
             } else {
               return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%s, "itemsize":%?, "registered":%?}',
-                                name, dtype2str(DType.UNDEF), 0, 0, (0,), 0, registry.contains(name));
+                                name, dtype2str(DType.UNDEF), 0, 0, "[0]", 0, registry.contains(name));
             }
         }
 

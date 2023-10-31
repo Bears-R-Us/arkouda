@@ -135,8 +135,8 @@ module MultiTypeSymEntry
         var itemsize: int; // answer to numpy itemsize = num bytes per elt
         var size: int = 0; // answer to numpy size == num elts
         var ndim: int = 1; // answer to numpy ndim == 1-axis for now
-        var shape: string = "[1,]"; // answer to numpy shape == 1*int tuple
-        
+        var shape: string = "[1]"; // answer to numpy shape == 1*int tuple
+
         // not sure yet how to implement numpy data() function
 
         proc init(type etype, len: int = 0, ndim: int = 1) {
@@ -146,11 +146,8 @@ module MultiTypeSymEntry
             this.itemsize = dtypeSize(this.dtype);
             this.size = len;
             this.ndim = ndim;
-
-            var s = "[";
-            for 0..#ndim do s += "1,";
-            s += "]";
-            this.shape = s;
+            this.complete();
+            this.shape = tupShapeString(1, ndim);
         }
 
         override proc getSizeEstimate(): int {
@@ -249,10 +246,7 @@ module MultiTypeSymEntry
             this.tupShape = args;
             this.a = try! makeDistArray((...args), etype);
             this.complete();
-            this.shape = "[";
-            for s in tupShape do
-              this.shape += s:string + ",";
-            this.shape += "]";
+            this.shape = tupShapeString(this.tupShape);
         }
 
         /*
@@ -272,8 +266,7 @@ module MultiTypeSymEntry
             this.a = a;
             this.max_bits=max_bits;
             this.complete();
-            // TODO: Fix for multi dim
-            this.shape = "[" + tupShape[0]:string + "]";
+            this.shape = tupShapeString(this.tupShape);
         }
 
         /*
@@ -287,8 +280,7 @@ module MultiTypeSymEntry
             this.init(D.size, etype, D.rank);
             this.tupShape = D.shape;
             this.a = a;
-            // TODO: Fix for multi dim
-            this.shape = "[" + tupShape[0]:string + "]";
+            this.shape = tupShapeString(this.tupShape);
         }
 
         /*
@@ -353,6 +345,11 @@ module MultiTypeSymEntry
 
                     s = fstring.doFormat(this.a[indices[0]], this.a[indices[1]], this.a[indices[2]],
                                             this.a[indices[3]], this.a[indices[4]], this.a[indices[5]]);
+                }
+
+                if this.etype == bool {
+                    s = s.replace("true","True");
+                    s = s.replace("false","False");
                 }
                 return s;
             }
@@ -503,5 +500,23 @@ module MultiTypeSymEntry
         } else {
             return (DType.UNDEF, -1, -1);
         }
+    }
+
+    /*
+        Create a string to represent a JSON tuple of an array's shape
+    */
+    proc tupShapeString(val: int, ndim: int): string {
+        return tupShapeString([i in 1..ndim] val);
+    }
+
+    proc tupShapeString(shape): string {
+        var s = "[",
+            first = true;
+        for x in shape {
+            if first then first = false; else s += ",";
+            s += x:string;
+        }
+        s += "]";
+        return s;
     }
 }

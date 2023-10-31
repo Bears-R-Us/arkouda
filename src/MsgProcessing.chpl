@@ -21,7 +21,7 @@ module MsgProcessing
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const mpLogger = new Logger(logLevel, logChannel);
-    
+
     /* 
     Parse, execute, and respond to a create message 
 
@@ -33,8 +33,8 @@ module MsgProcessing
 
     :returns: (MsgTuple) response message
     */
-    @arkouda.registerND
-    proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int = 1): MsgTuple throws {
+    @arkouda.registerND(cmd_prefix="create")
+    proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         var repMsg: string, // response message
             dtype = str2dtype(msgArgs.getValueOf("dtype")),
             shape = msgArgs.get("shape").getTuple(nd);
@@ -65,16 +65,11 @@ module MsgProcessing
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    // proc createMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-    //     return createMsg(cmd, msgArgs, st, 1);
-
-    // registerFunction("create1D", createMsg1D);
-
-    // proc createMsg2D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-    //     return createMsg(cmd, msgArgs, st, 2);
-
-    // proc createMsg3D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-    //     return createMsg(cmd, msgArgs, st, 3);
+    // this proc is not technically needed with the 'arkouda.registerND' annotation above
+    //  (keeping it for now as a stopgap until the ND array work is further along)
+    proc createMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        return createMsg(cmd, msgArgs, st, 1);
+    }
 
     /* 
     Parse, execute, and respond to a delete message 
@@ -305,7 +300,7 @@ module MsgProcessing
     :returns: MsgTuple
     :throws: `UndefinedSymbolError(name)`
     */
-    @arkouda.registerND
+    @arkouda.registerND(cmd_prefix="set")
     proc setMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd = 1): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
@@ -358,7 +353,7 @@ module MsgProcessing
                 repMsg = "set %s to %?".doFormat(name, val);
             }
             when (DType.Float64, DType.Bool) {
-                var e = toSymEntry(gEnt,real, nd);           
+                var e = toSymEntry(gEnt,real, nd);
                 var val: bool = value.getBoolValue();
                 mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "cmd: %s name: %s to value: %?".doFormat(cmd,name,val:real));
@@ -425,8 +420,13 @@ module MsgProcessing
                 return new MsgTuple(unrecognizedTypeError(pn,msgArgs.getValueOf("dtype")), MsgType.ERROR);
             }
         }
-
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    // this proc is not technically needed with the 'arkouda.registerND' annotation above
+    //   (keeping it for now as a stopgap until the ND array work is further along)
+    proc setMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        return setMsg(cmd, msgArgs, st, 1);
     }
 }
