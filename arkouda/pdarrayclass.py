@@ -736,8 +736,9 @@ class pdarray:
         TypeError
             Raised if value is not an int, int64, float, or float64
         """
+        cmd = f"set{self.ndim}D"
         generic_msg(
-            cmd=f"set{self.ndim}D", args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
+            cmd=cmd, args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
         )
 
     def any(self) -> np.bool_:
