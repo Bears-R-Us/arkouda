@@ -334,9 +334,10 @@ module MultiTypeSymEntry
                     indices[2][dim] = 2;
 
                     for d in 0..<this.dimensions {
-                        indices[3][d] = this.tupShape[d]-1;
-                        indices[4][d] = this.tupShape[d]-1;
-                        indices[5][d] = this.tupShape[d]-1;
+                        const dMax = this.tupShape[d]-1;
+                        indices[3][d] = dMax;
+                        indices[4][d] = dMax;
+                        indices[5][d] = dMax;
                     }
 
                     indices[3][dim] = dimSize-3;
@@ -503,12 +504,8 @@ module MultiTypeSymEntry
     }
 
     /*
-        Create a string to represent a JSON tuple of an array's shape
+      Create a string to represent a JSON tuple of an array's shape
     */
-    proc tupShapeString(val: int, ndim: int): string {
-        return tupShapeString([i in 1..ndim] val);
-    }
-
     proc tupShapeString(shape): string {
         var s = "[",
             first = true;
@@ -519,4 +516,9 @@ module MultiTypeSymEntry
         s += "]";
         return s;
     }
+
+    proc tupShapeString(val: int, ndim: int): string {
+        return tupShapeString([i in 1..ndim] val);
+    }
+
 }

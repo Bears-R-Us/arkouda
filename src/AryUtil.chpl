@@ -34,18 +34,52 @@ module AryUtil
       :arg name: name of the array
       :arg A: array to be printed
     */
-    proc formatAry(A):string throws {
-      // TODO: Update to print pretty with greater than 1 dimension
-      if A.domain.rank == 1 {
-        if A.size <= printThresh {
-            return "%?".doFormat(A);
-        } else {
-            return "%? ... %?".doFormat(A[A.domain.low..A.domain.low+2],
-                                      A[A.domain.high-2..A.domain.high]);
+    proc formatAry(A: [?d]):string throws {
+        proc dimSummary(dimIdx: int): string throws {
+            const dimSize = d.dim(dimIdx).size;
+            var s: string;
+            if dimSize == 0 {
+                s = "";
+            } else if dimSize < printThresh {
+                var first = true,
+                    idx: d.rank*int;
+
+                for i in 0..<dimSize {
+                    if first then first = false; else s += " ";
+                    idx[dimIdx] = i;
+                    s += "?".doFormat(A[idx]);
+                }
+            } else {
+                var indices: 6*(d.rank*int);
+                indices[0][dimIdx] = 0;
+                indices[1][dimIdx] = 1;
+                indices[2][dimIdx] = 2;
+
+                for dd in 0..<d.rank {
+                    const dMax = d.dim(dd).high;
+                    indices[3][dd] = dMax;
+                    indices[4][dd] = dMax;
+                    indices[5][dd] = dMax;
+                }
+
+                indices[3][dimIdx] = dimSize-3;
+                indices[4][dimIdx] = dimSize-2;
+                indices[5][dimIdx] = dimSize-1;
+
+                s = "%? %? %? ... %? %? %?".doFormat(A[indices[0]], A[indices[1]], A[indices[2]],
+                                                    A[indices[3]], A[indices[4]], A[indices[5]]);
+            }
+            return s;
         }
-      } else {
-        return "%?".doFormat(A);
-      }
+
+        var s = "",
+            first = true;
+        for dimIdx in 0..<d.rank {
+            if first then first = false; else s += "\n";
+            s += dimSummary(dimIdx);
+        }
+
+        return s;
     }
 
     proc printAry(name:string, A) {

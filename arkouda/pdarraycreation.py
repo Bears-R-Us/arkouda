@@ -434,7 +434,6 @@ def zeros(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-
     repMsg = generic_msg(cmd="create1D", args={"dtype": dtype_name, "shape": size})
 
     return create_pdarray(repMsg, max_bits=max_bits)
@@ -491,9 +490,7 @@ def ones(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-
     repMsg = generic_msg(cmd="create1D", args={"dtype": dtype_name, "shape": size})
-
     a = create_pdarray(repMsg)
     a.fill(1)
     if max_bits:

@@ -255,6 +255,9 @@ module Message {
             return jsonToPdArray(this.val, size);
         }
 
+        /*
+        Parse value as a tuple of integers with the given size
+        */
         proc getTuple(param size: int): size*int throws {
             try {
                 return parseJsonTuple(this.val, size);
@@ -450,6 +453,9 @@ module Message {
       return jsonToPdArrayCompat(json, size);
     }
 
+    /*
+      Helper function to parse a JSON string as a tuple of integers
+    */
     proc parseJsonTuple(json: string, param size: int): size*int throws {
         var f = openMemFile();
         var w = f.writer();

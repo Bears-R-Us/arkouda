@@ -143,9 +143,7 @@ def _parse_json(names: Union[List[str], str]) -> List[InfoEntry]:
     RuntimeError
         Raised if a server-side error is thrown
     """
-    i = information(names)
-    print(i)
-    return json.loads(i, object_hook=lambda d: InfoEntry(**d))
+    return json.loads(information(names), object_hook=lambda d: InfoEntry(**d))
 
 
 def pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None:
