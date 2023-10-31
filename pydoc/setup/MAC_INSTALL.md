@@ -28,7 +28,7 @@ To provide a different name for the environment, use the `-n` or `--name` parame
 
 ```bash
 # We recommend running the full Anaconda 
-brew install anaconda3
+brew install --cask anaconda
 
 # Note - the exact path may vary based on the most current release of Anaconda and your mac's chipset
 # Run the script to install Anaconda.
