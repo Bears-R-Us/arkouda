@@ -348,7 +348,7 @@
 <dd><p>Map multiple arrays of sparse identifiers to a common 0-up index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>*args</strong> (<em>pdarrays</em>) – Arrays to map to dense index</p>
+<dd class="field-odd"><p><strong>*args</strong> (<em>pdarrays</em><em> or </em><em>sequences</em><em> of </em><em>pdarrays</em>) – Arrays to map to dense index</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>aligned</strong> – Arrays with values replaced by 0-up indices</p>
@@ -367,8 +367,8 @@ discarding values from left that do not appear in right.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Left-hand identifiers</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Right-hand identifiers that define the index</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>a sequence</em><em> of </em><em>pdarrays</em>) – Left-hand identifiers</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>a sequence</em><em> of </em><em>pdarrays</em>) – Right-hand identifiers that define the index</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

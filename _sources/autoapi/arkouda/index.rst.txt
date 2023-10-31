@@ -24704,7 +24704,7 @@ Attributes
    Map multiple arrays of sparse identifiers to a common 0-up index.
 
    :param \*args: Arrays to map to dense index
-   :type \*args: pdarrays
+   :type \*args: pdarrays or sequences of pdarrays
 
    :returns: **aligned** -- Arrays with values replaced by 0-up indices
    :rtype: list of pdarrays
@@ -24716,9 +24716,9 @@ Attributes
    discarding values from left that do not appear in right.
 
    :param left: Left-hand identifiers
-   :type left: pdarray
+   :type left: pdarray or a sequence of pdarrays
    :param right: Right-hand identifiers that define the index
-   :type right: pdarray
+   :type right: pdarray or a sequence of pdarrays
 
    :returns: * **keep** (*pdarray, bool*) -- Logical index of left-hand values that survived
              * **aligned** (*(pdarray, pdarray)*) -- Left and right arrays with values replaced by 0-up indices
