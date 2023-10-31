@@ -60,23 +60,15 @@ def align(*args):
     aligned : list of pdarrays
         Arrays with values replaced by 0-up indices
     """
-    if not isinstance(args[0], Sequence):
-        inds = zero_up(concatenate(args))
-        pos = 0
-        ret = []
-        for arg in args:
-            ret.append(inds[pos : pos + arg.size])
-            pos += arg.size
+    if not any(isinstance(arg, Sequence) for arg in args):
+        key = concatenate([full(arg.size, i, akint64) for i, arg in enumerate(args)], ordered=False)
+        inds = zero_up(concatenate(args, ordered=False))
     else:
         if not all(isinstance(arg, Sequence) for arg in args):
             raise TypeError("If any of the arguments are a sequence of pdarray, they all have to be")
+        key = concatenate([full(arg[0].size, i, akint64) for i, arg in enumerate(args)], ordered=False)
         inds = zero_up([concatenate(x, ordered=False) for x in zip(*args)])
-        pos = 0
-        ret = []
-        for arg in args:
-            ret.append(inds[pos : pos + arg[0].size])
-            pos += arg[0].size
-    return ret
+    return [inds[key == i] for i in range(len(args))]
 
 
 def right_align(left, right):
