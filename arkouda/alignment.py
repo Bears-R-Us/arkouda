@@ -40,7 +40,8 @@ def zero_up(vals):
         Array with values replaced by 0-up indices
     """
     g = GroupBy(vals)
-    uniqueInds = arange(g.unique_keys.size)
+    unique_size = g.unique_keys.size if not isinstance(vals, Sequence) else g.unique_keys[0].size
+    uniqueInds = arange(unique_size)
     idinds = g.broadcast(uniqueInds, permute=True)
     return idinds
 
@@ -51,7 +52,7 @@ def align(*args):
 
     Parameters
     ----------
-    *args : pdarrays
+    *args : pdarrays or sequences of pdarrays
         Arrays to map to dense index
 
     Returns
@@ -59,14 +60,15 @@ def align(*args):
     aligned : list of pdarrays
         Arrays with values replaced by 0-up indices
     """
-    c = concatenate(args)
-    inds = zero_up(c)
-    pos = 0
-    ret = []
-    for arg in args:
-        ret.append(inds[pos : pos + arg.size])
-        pos += arg.size
-    return ret
+    if not any(isinstance(arg, Sequence) for arg in args):
+        key = concatenate([full(arg.size, i, akint64) for i, arg in enumerate(args)], ordered=False)
+        inds = zero_up(concatenate(args, ordered=False))
+    else:
+        if not all(isinstance(arg, Sequence) for arg in args):
+            raise TypeError("If any of the arguments are a sequence of pdarray, they all have to be")
+        key = concatenate([full(arg[0].size, i, akint64) for i, arg in enumerate(args)], ordered=False)
+        inds = zero_up([concatenate(x, ordered=False) for x in zip(*args)])
+    return [inds[key == i] for i in range(len(args))]
 
 
 def right_align(left, right):
@@ -76,9 +78,9 @@ def right_align(left, right):
 
     Parameters
     ----------
-    left : pdarray
+    left : pdarray or a sequence of pdarrays
         Left-hand identifiers
-    right : pdarray
+    right : pdarray or a sequence of pdarrays
         Right-hand identifiers that define the index
 
     Returns
@@ -88,9 +90,10 @@ def right_align(left, right):
     aligned : (pdarray, pdarray)
         Left and right arrays with values replaced by 0-up indices
     """
+    is_sequence = isinstance(left, Sequence) and isinstance(right, Sequence)
     uright = unique(right)
     keep = in1d(left, uright)
-    fleft = left[keep]
+    fleft = left[keep] if not is_sequence else [lf[keep] for lf in left]
     return keep, align(fleft, right)
 
 
