@@ -19,8 +19,6 @@ module ParquetMsg {
 
   use Map;
   use ArkoudaCTypesCompat;
-  use ArkoudaListCompat;
-  use ArkoudaStringBytesCompat;
   use ArkoudaIOCompat;
 
   enum CompressionType {

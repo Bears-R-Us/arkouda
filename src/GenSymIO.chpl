@@ -20,8 +20,6 @@ module GenSymIO {
     use CTypes;
     use ArkoudaMapCompat;
 
-    use ArkoudaListCompat;
-    use ArkoudaStringBytesCompat;
     use ArkoudaCTypesCompat;
     use ArkoudaIOCompat;
 
