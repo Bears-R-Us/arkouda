@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SymArrayDmapCompat &mdash; chpldoc 0.0.1 documentation</title>
+  <title>ArkoudaMapCompat &mdash; chpldoc 0.0.1 documentation</title>
       <link rel="stylesheet" href="../../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,7 +17,8 @@
     <script src="../../../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="prev" title="ArkoudaTimeCompat" href="ArkoudaTimeCompat.html" /> 
+    <link rel="next" title="ArkoudaMathCompat" href="ArkoudaMathCompat.html" />
+    <link rel="prev" title="ArkoudaIOCompat" href="ArkoudaIOCompat.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -78,22 +79,19 @@
 <li class="toctree-l1"><a class="reference internal" href="../../arkouda_server.html">arkouda_server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaAggCompat.html">ArkoudaAggCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaBitOpsCompat.html">ArkoudaBitOpsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaListCompat.html">ArkoudaListCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaMapCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMathCompat.html">ArkoudaMathCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaSymEntryCompat.html">ArkoudaSymEntryCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">SymArrayDmapCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SymArrayDmapCompat.html">SymArrayDmapCompat</a></li>
 </ul>
 
         </div>
@@ -110,9 +108,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>SymArrayDmapCompat</li>
+      <li>ArkoudaMapCompat</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/e-130/SymArrayDmapCompat.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/eq-131/ArkoudaMapCompat.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -120,90 +118,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-SymArrayDmapCompat"></span><div class="section" id="symarraydmapcompat">
-<h1>SymArrayDmapCompat<a class="headerlink" href="#symarraydmapcompat" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-ArkoudaMapCompat"></span><div class="section" id="arkoudamapcompat">
+<h1>ArkoudaMapCompat<a class="headerlink" href="#arkoudamapcompat" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">SymArrayDmapCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaMapCompat</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">SymArrayDmapCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaMapCompat</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="chpl enum">
-<dt class="sig sig-object chpl" id="SymArrayDmapCompat.Dmap">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">Dmap</span></span> <span class="pre">{</span> <span class="pre">defaultRectangular,</span> <span class="pre">blockDist</span> <span class="pre">}</span><a class="headerlink" href="#SymArrayDmapCompat.Dmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Available domain maps.</p>
-</dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="SymArrayDmapCompat.MyDmap">
-<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">MyDmap</span></span><span class="pre">:</span> <span class="pre">Dmap</span> <span class="pre">=</span> <span class="pre">defaultDmap</span><a class="headerlink" href="#SymArrayDmapCompat.MyDmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>How domains/arrays are distributed. Defaults to <code class="xref chpl chpl-enum docutils literal notranslate"><span class="pre">Dmap.defaultRectangular</span></code> if
-<code class="xref chpl chpl-param docutils literal notranslate"><span class="pre">CHPL_COMM=none</span></code>, otherwise defaults to <code class="xref chpl chpl-enum docutils literal notranslate"><span class="pre">Dmap.blockDist</span></code>.</p>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="SymArrayDmapCompat.makeDistDom">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistDom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmapCompat.makeDistDom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes a domain distributed according to <a class="reference internal" href="#SymArrayDmapCompat.MyDmap" title="SymArrayDmapCompat.MyDmap"><code class="xref chpl chpl-param docutils literal notranslate"><span class="pre">MyDmap</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><p><strong>size</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – size of domain</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="SymArrayDmapCompat.makeDistArray">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmapCompat.makeDistArray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes an array of specified type over a distributed domain</p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – size of the domain</p></li>
-<li><p><strong>etype</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">type</span></code></span> – desired type of array</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[] ?etype</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?etype</span></em><span class="sig-paren">)</span></dt>
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ArkoudaMapCompat.map.addOrReplace">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">map.</span></span><span class="sig-name descname"><span class="pre">addOrReplace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">k:</span> <span class="pre">keyType</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">v:</span> <span class="pre">valType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaMapCompat.map.addOrReplace" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?etype</span></em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain</span></em>, <em class="sig-param"><span class="pre">initExpr:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span> <span class="pre">throws</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="SymArrayDmapCompat.makeDistDomType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistDomType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">type</span><a class="headerlink" href="#SymArrayDmapCompat.makeDistDomType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the type of the distributed domain</p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><p><strong>size</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – size of domain</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>type</p>
-</dd>
-</dl>
-</dd></dl>
 
 </div>
 
@@ -211,7 +139,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ArkoudaTimeCompat.html" class="btn btn-neutral float-left" title="ArkoudaTimeCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ArkoudaIOCompat.html" class="btn btn-neutral float-left" title="ArkoudaIOCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ArkoudaMathCompat.html" class="btn btn-neutral float-right" title="ArkoudaMathCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

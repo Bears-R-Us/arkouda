@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ArkoudaListCompat &mdash; chpldoc 0.0.1 documentation</title>
+  <title>ArkoudaCTypesCompat &mdash; chpldoc 0.0.1 documentation</title>
       <link rel="stylesheet" href="../../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     <script src="../../../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="ArkoudaMapCompat" href="ArkoudaMapCompat.html" />
-    <link rel="prev" title="ArkoudaIOCompat" href="ArkoudaIOCompat.html" /> 
+    <link rel="next" title="ArkoudaFileCompat" href="ArkoudaFileCompat.html" />
+    <link rel="prev" title="ArkoudaBlockCompat" href="ArkoudaBlockCompat.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -79,19 +79,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../../arkouda_server.html">arkouda_server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaAggCompat.html">ArkoudaAggCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaBitOpsCompat.html">ArkoudaBitOpsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaCTypesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaListCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMathCompat.html">ArkoudaMathCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaSymEntryCompat.html">ArkoudaSymEntryCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmapCompat.html">SymArrayDmapCompat</a></li>
@@ -111,9 +108,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ArkoudaListCompat</li>
+      <li>ArkoudaCTypesCompat</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaListCompat.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/eq-131/ArkoudaCTypesCompat.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -121,44 +118,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-ArkoudaListCompat"></span><div class="section" id="arkoudalistcompat">
-<h1>ArkoudaListCompat<a class="headerlink" href="#arkoudalistcompat" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-ArkoudaCTypesCompat"></span><div class="section" id="arkoudactypescompat">
+<h1>ArkoudaCTypesCompat<a class="headerlink" href="#arkoudactypescompat" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaListCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaCTypesCompat</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaListCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaCTypesCompat</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaListCompat.list.pushBack">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">pushBack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">x:</span> <span class="pre">this.eltType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#ArkoudaListCompat.list.pushBack" title="Permalink to this definition">¶</a></dt>
+<dl class="chpl type">
+<dt class="sig sig-object chpl" id="ArkoudaCTypesCompat.c_string_ptr">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">c_string_ptr</span></span> <span class="pre">=</span> <span class="pre">c_string</span><a class="headerlink" href="#ArkoudaCTypesCompat.c_string_ptr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="chpl method">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">pushBack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">other:</span> <span class="pre">list(this.eltType)</span></em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">pushBack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">other:</span> <span class="pre">[]</span> <span class="pre">this.eltType</span></em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">pushBack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">other:</span> <span class="pre">range(this.eltType</span></em>, <em class="sig-param"><span class="pre">?)</span></em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaListCompat.list.popBack">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">popBack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">this.eltType</span><a class="headerlink" href="#ArkoudaListCompat.list.popBack" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="ArkoudaListCompat.list.replace">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">list.</span></span><span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">i:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">x:</span> <span class="pre">this.eltType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span><a class="headerlink" href="#ArkoudaListCompat.list.replace" title="Permalink to this definition">¶</a></dt>
+<dl class="chpl type">
+<dt class="sig sig-object chpl" id="ArkoudaCTypesCompat.c_ptr_void">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">c_ptr_void</span></span> <span class="pre">=</span> <span class="pre">c_void_ptr</span><a class="headerlink" href="#ArkoudaCTypesCompat.c_ptr_void" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -167,8 +144,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ArkoudaIOCompat.html" class="btn btn-neutral float-left" title="ArkoudaIOCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ArkoudaMapCompat.html" class="btn btn-neutral float-right" title="ArkoudaMapCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ArkoudaBlockCompat.html" class="btn btn-neutral float-left" title="ArkoudaBlockCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ArkoudaFileCompat.html" class="btn btn-neutral float-right" title="ArkoudaFileCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

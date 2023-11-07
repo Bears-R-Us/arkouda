@@ -17,7 +17,7 @@ or
 
    import ArkoudaRangeCompat;
 
-.. type:: type stridableRange = range(stridable = true)
+.. type:: type stridableRange = range(strides = strideKind.any)
 
 .. function:: proc stridable(a) param
 

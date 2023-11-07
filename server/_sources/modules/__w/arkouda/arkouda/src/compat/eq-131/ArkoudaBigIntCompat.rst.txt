@@ -19,16 +19,6 @@ or
 
 .. method:: operator bigint.:(src: bool, type toType: bigint): bigint throws
 
-.. function:: proc mod(ref result: bigint, const ref a: bigint, const ref b: bigint)
-
-.. function:: proc mod(ref result: bigint, const ref a: bigint, b: integral): int
-
-.. function:: proc powMod(ref result: bigint, const ref base: bigint, const ref exp: bigint, const ref mod: bigint)
-
-.. function:: proc powMod(ref result: bigint, const ref base: bigint, exp: int, const ref mod: bigint)
-
-.. function:: proc powMod(ref result: bigint, const ref base: bigint, exp: uint, const ref mod: bigint)
-
 .. function:: proc rightShift(const ref a: bigint, b: int): bigint
 
 .. function:: proc rightShift(const ref a: bigint, b: uint): bigint

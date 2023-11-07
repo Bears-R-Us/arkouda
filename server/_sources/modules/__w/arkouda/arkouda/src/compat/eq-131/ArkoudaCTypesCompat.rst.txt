@@ -17,10 +17,6 @@ or
 
    import ArkoudaCTypesCompat;
 
-.. function:: proc allocate(type eltType, size: c_size_t, clear: bool = false, alignment: c_size_t = 0): c_ptr(eltType)
-
-.. function:: proc deallocate(data: c_void_ptr)
-
 .. type:: type c_string_ptr = c_string
 
 .. type:: type c_ptr_void = c_void_ptr

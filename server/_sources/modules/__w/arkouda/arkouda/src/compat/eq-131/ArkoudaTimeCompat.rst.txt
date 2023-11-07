@@ -1,0 +1,23 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaTimeCompat
+
+ArkoudaTimeCompat
+=================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaTimeCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaTimeCompat;
+
+.. function:: proc createFromTimestampCompat(d)
+
+.. method:: proc date.isoWeekDate()
+

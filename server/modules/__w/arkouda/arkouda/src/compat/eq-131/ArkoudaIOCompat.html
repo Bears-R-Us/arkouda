@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ArkoudaPOSIXCompat &mdash; chpldoc 0.0.1 documentation</title>
+  <title>ArkoudaIOCompat &mdash; chpldoc 0.0.1 documentation</title>
       <link rel="stylesheet" href="../../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     <script src="../../../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="ArkoudaRangeCompat" href="ArkoudaRangeCompat.html" />
-    <link rel="prev" title="ArkoudaMemDiagnosticsCompat" href="ArkoudaMemDiagnosticsCompat.html" /> 
+    <link rel="next" title="ArkoudaMapCompat" href="ArkoudaMapCompat.html" />
+    <link rel="prev" title="ArkoudaFileCompat" href="ArkoudaFileCompat.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -79,19 +79,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../../arkouda_server.html">arkouda_server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaAggCompat.html">ArkoudaAggCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaBitOpsCompat.html">ArkoudaBitOpsCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaListCompat.html">ArkoudaListCompat</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaIOCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMathCompat.html">ArkoudaMathCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaPOSIXCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaStringBytesCompat.html">ArkoudaStringBytesCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaSymEntryCompat.html">ArkoudaSymEntryCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmapCompat.html">SymArrayDmapCompat</a></li>
@@ -111,9 +108,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ArkoudaPOSIXCompat</li>
+      <li>ArkoudaIOCompat</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/e-130/ArkoudaPOSIXCompat.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/eq-131/ArkoudaIOCompat.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -121,19 +118,69 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-ArkoudaPOSIXCompat"></span><div class="section" id="arkoudaposixcompat">
-<h1>ArkoudaPOSIXCompat<a class="headerlink" href="#arkoudaposixcompat" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-ArkoudaIOCompat"></span><div class="section" id="arkoudaiocompat">
+<h1>ArkoudaIOCompat<a class="headerlink" href="#arkoudaiocompat" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaPOSIXCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaIOCompat</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaPOSIXCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaIOCompat</span><span class="p">;</span>
 </pre></div>
 </div>
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaPOSIXCompat.memcpy">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">memcpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dest:</span> <span class="pre">c_void_ptr</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">src:</span> <span class="pre">c_void_ptr</span></em>, <em class="sig-param"><span class="pre">n:</span> <span class="pre">c_size_t</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaPOSIXCompat.memcpy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ArkoudaIOCompat.formatString">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.formatString" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaIOCompat.formatJson">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.formatJson" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">vals</span> <span class="pre">...?</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ArkoudaIOCompat.string.doFormat">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">string.</span></span><span class="sig-name descname"><span class="pre">doFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vals</span> <span class="pre">...?</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.string.doFormat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaIOCompat.jsonToTupleCompat">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">jsonToTupleCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.jsonToTupleCompat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaIOCompat.jsonToPdArrayCompat">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">jsonToPdArrayCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.jsonToPdArrayCompat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaIOCompat.writefCompat">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writefCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fmt:</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">args</span> <span class="pre">...?k</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaIOCompat.writefCompat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaIOCompat.readfCompat">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">readfCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">f:</span> <span class="pre">file</span></em>, <em class="sig-param"><span class="pre">str:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">obj</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.readfCompat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaIOCompat.getByteOrderCompat">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getByteOrderCompat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.getByteOrderCompat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaIOCompat.fileIOReaderCompat">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fileIOReaderCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">infile</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.fileIOReaderCompat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaIOCompat.binaryCheckCompat">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">binaryCheckCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">reader</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.binaryCheckCompat" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -142,8 +189,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ArkoudaMemDiagnosticsCompat.html" class="btn btn-neutral float-left" title="ArkoudaMemDiagnosticsCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ArkoudaRangeCompat.html" class="btn btn-neutral float-right" title="ArkoudaRangeCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ArkoudaFileCompat.html" class="btn btn-neutral float-left" title="ArkoudaFileCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ArkoudaMapCompat.html" class="btn btn-neutral float-right" title="ArkoudaMapCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
