@@ -11,7 +11,6 @@ module BigIntMsg {
     use BigInteger;
     use List;
 
-    use ArkoudaListCompat;
     use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;

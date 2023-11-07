@@ -13,7 +13,6 @@ module MetricsMsg {
     use Map;
     use ArkoudaTimeCompat as Time;
 
-    use ArkoudaListCompat;
     use ArkoudaMapCompat;
     use ArkoudaIOCompat;
 
