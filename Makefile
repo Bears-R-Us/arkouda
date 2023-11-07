@@ -194,7 +194,7 @@ ARROW_SANITIZE=-fsanitize=$(SANITIZER)
 endif
 
 CHPL_CXX = $(shell $(CHPL_HOME)/util/config/compileline --compile-c++ 2>/dev/null)
-ifeq ($(CHPL_CXX),none)
+ifeq ($(CHPL_CXX),)
 CHPL_CXX=$(CXX)
 endif
 
