@@ -142,8 +142,8 @@ setup(
         'h5py>=3.7.0',
         'pip',
         'types-tabulate',
-        'tables>=3.7.0,<3.9.0',
-        'pyarrow==11.0.0',
+        'tables>=3.7.0',
+        'pyarrow',
     ],
 
     # List additional groups of dependencies here (e.g. development
