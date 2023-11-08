@@ -9,7 +9,7 @@ To demonstrate this process, this guide walks through the process of implementin
 ## Adding Python Functionality (Client Interface)
 
 
-Python functions should follow the API of NumPy or Pandas, were possible. In general, functions should conform to the following:
+Python functions should follow the API of NumPy or Pandas, where possible. In general, functions should conform to the following:
 
 1. Be defined somewhere in the `arkouda` subdirectory, such as in ``arkouda/pdarraysetops.py``
 2. Have a complete docstring in (`NumPy` format)[https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard]
