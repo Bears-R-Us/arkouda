@@ -84,6 +84,8 @@ from ._dtypes import (
     uint64,
     float32,
     float64,
+    complex64,
+    complex128,
     bool,
 )
 
@@ -98,6 +100,8 @@ __all__ += [
     "uint64",
     "float32",
     "float64",
+    "complex64",
+    "complex128",
     "bool",
 ]
 

@@ -71,6 +71,28 @@ module MsgProcessing
         return createMsg(cmd, msgArgs, st, 1);
     }
 
+    // used for "zero-dimensional" array api scalars
+    proc createMsg0D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const dtype = str2dtype(msgArgs.getValueOf("dtype")),
+              rname = st.nextName();
+
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "cmd: %s dtype: %s size: 1 new pdarray name: %s".doFormat(
+                       cmd,dtype2str(dtype),rname));
+
+        var e = toGenSymEntry(st.addEntry(rname, 1, dtype));
+        e.size = 1;
+        e.ndim = 0;
+        e.shape = "[]";
+
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "created the pdarray %s".doFormat(st.attrib(rname)));
+
+        var repMsg = "created " + st.attrib(rname);
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     /* 
     Parse, execute, and respond to a delete message 
 

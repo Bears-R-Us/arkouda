@@ -89,7 +89,7 @@ class Array:
         """
         Performs the operation __str__.
         """
-        return _array.__str__
+        return self._array.__str__()
 
     def __repr__(self: Array, /) -> str:
         """
@@ -462,15 +462,15 @@ class Array:
 
     @property
     def ndim(self) -> int:
-        return 0
+        return self._array.ndim
 
     @property
     def shape(self) -> Tuple[int, ...]:
-        raise ValueError(f"Not implemented")
+        return self._array.shape
 
     @property
     def size(self) -> int:
-        return 0
+        return self._array.size
 
     @property
     def T(self) -> Array:
