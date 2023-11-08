@@ -17,7 +17,6 @@ module ServerConfig
 
     use ArkoudaFileCompat;
     private use ArkoudaCTypesCompat;
-    use ArkoudaStringBytesCompat;
     
     enum Deployment {STANDARD,KUBERNETES}
 

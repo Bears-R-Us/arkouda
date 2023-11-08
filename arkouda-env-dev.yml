@@ -15,8 +15,8 @@ dependencies:
   - hdf5==1.12.2
   - pip
   - types-tabulate
-  - pytables>=3.7.0,<3.9.0
-  - pyarrow==11.0.0
+  - pytables>=3.7.0
+  - pyarrow
   - libiconv
   - libidn2
   - jupyter

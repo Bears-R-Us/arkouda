@@ -1,7 +1,6 @@
 use ParquetMsg, CTypes, FileSystem;
 use UnitTest;
 use TestBase;
-use ArkoudaStringBytesCompat;
 
 proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
   extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;

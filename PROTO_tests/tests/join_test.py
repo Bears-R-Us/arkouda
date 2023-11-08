@@ -82,6 +82,26 @@ class TestJoin:
             with pytest.raises(ValueError):
                 l, r = ak.join.inner_join(left, right, wherefunc=ak.intersect1d, whereargs=where_args)
 
+    def test_multi_array_inner_join(self):
+        size = 1000
+        seed = 1
+        a = ak.randint(-size // 10, size // 10, size, seed=seed)
+        b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
+        left = [a, ak.ones(size, int)]
+        right = [b, ak.cast(ak.arange(size) % 2 == 0, int)]
+
+        # test with no where args
+        l_ind, r_ind = ak.join.inner_join(left, right)
+        for lf, rt in zip(left, right):
+            assert (lf[l_ind] == rt[r_ind]).all()
+
+        # test with where args
+        def where_func(x, y):
+            return (x[0] % 2 == 0) | (y[0] % 2 == 0)
+
+        l_ind, r_ind = ak.join.inner_join(left, right, where_func, (left, right))
+        assert where_func([lf[l_ind] for lf in left], [rt[r_ind] for rt in right]).all()
+
     def test_str_inner_join(self):
         int_left = ak.arange(50)
         int_right = ak.randint(0, 50, 50)
