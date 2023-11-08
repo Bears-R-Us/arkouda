@@ -11,9 +11,11 @@ For a full list, please refer to [Environment Section](../ENVIRONMENT.md).
 
 ## Dependency Configuration
 
+Dependencies can be configured with a package manager like `Anaconda` or manually.
+
 ### Using Environment Installed Dependencies *(Recommended)*
 
-When utilizing a package manager, like `Anaconda`, to install dependencies (see [INSTALL.md](INSTALL.md)), you will need to provide
+When utilizing a package manager, like `Anaconda`, to install dependencies (see guides for [Linux](LINUX_INSTALL.md) or [Mac](MAC_INSTALL.md)), you will need to provide
 the path to the location of your installed packages. This is achieved by adding this path to your `Makefile.paths` (Example Below).
 
 You might need create a `Makefile.paths` file in the top level of the arkouda directly if it doesn't already exist.
@@ -46,7 +48,7 @@ ak-base          *  /opt/homebrew/Caskroom/miniforge/base/envs/ak-base
 
 The `chpl` compiler will be executed with `-I`, `-L` and `-rpath` for each path in your `Makefile.paths`
 
-### Installing Dependencies
+### Installing Dependencies Manually
 
 *Please Note: This step is to only be performed if you are NOT using dependencies from a conda/pip env. If you attempt to use both, it is possible that version mismatches will cause build failures*.
 
@@ -119,7 +121,7 @@ pip install dist/arkouda*.whl
 pip install dist/arkouda*.tar.gz
 ```
 
-### Build the Server
+## Build the Server
 
 Run the `make` command to build the `arkouda_server` executable.
 
@@ -127,7 +129,7 @@ Run the `make` command to build the `arkouda_server` executable.
 make
 ```
 
-### Building the Arkouda Documentation
+## Building the Arkouda Documentation
 The Arkouda documentation is [here](https://bears-r-us.github.io/arkouda/). This section is only necessary
 if you're updating the documentation.
 
@@ -174,6 +176,6 @@ Arkouda documentation homepage will be displayed.
 
 </details>
 
-### Modular Building
+## Modular Building
 
 For information on Arkouda's modular building feature, see [MODULAR.md](MODULAR.md).
