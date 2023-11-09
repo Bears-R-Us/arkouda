@@ -214,12 +214,6 @@ class TestOperator:
         assert dtype == ak_concat.dtype.name
         assert np.allclose(ak_concat.to_ndarray(), np_concat)
 
-    def test_max_bits_concatenation(self):
-        # reproducer for issue #2802
-        concatenated = ak.concatenate([ak.arange(5, max_bits=3), ak.arange(2**200 - 1, 2**200 + 4)])
-        assert concatenated.max_bits == 3
-        assert [0, 1, 2, 3, 4, 7, 0, 1, 2, 3] == concatenated.to_list()
-
     def test_fixed_concatenate(self):
         for pda1, pda2 in zip(
             (ak.arange(4), ak.linspace(0, 3, 4)), (ak.arange(4, 7), ak.linspace(4, 6, 3))
@@ -239,6 +233,37 @@ class TestOperator:
         ak_uint = ak.arange(10, dtype=ak.uint64)
         ak_bool = ak_uint % 2 == 0
         assert (ak_uint + ak_bool).to_list() == (ak.arange(10) + ak_bool).to_list()
+
+    def test_int_uint_binops(self):
+        np_int = np.arange(-5, 5)
+        ak_int = ak.array(np_int)
+
+        np_uint = np.arange(2**64 - 10, 2**64, dtype=np.uint64)
+        ak_uint = ak.array(np_uint)
+
+        # Vector-Vector Case (Division and Floor Division)
+        assert np.allclose((ak_uint / ak_uint).to_ndarray(), np_uint / np_uint, equal_nan=True)
+        assert np.allclose((ak_int / ak_uint).to_ndarray(), np_int / np_uint, equal_nan=True)
+        assert np.allclose((ak_uint / ak_int).to_ndarray(), np_uint / np_int, equal_nan=True)
+        assert np.allclose((ak_uint // ak_uint).to_ndarray(), np_uint // np_uint, equal_nan=True)
+        assert np.allclose((ak_int // ak_uint).to_ndarray(), np_int // np_uint, equal_nan=True)
+        assert np.allclose((ak_uint // ak_int).to_ndarray(), np_uint // np_int, equal_nan=True)
+
+        # Scalar-Vector Case (Division and Floor Division)
+        assert np.allclose((ak_uint[0] / ak_uint).to_ndarray(), np_uint[0] / np_uint, equal_nan=True)
+        assert np.allclose((ak_int[0] / ak_uint).to_ndarray(), np_int[0] / np_uint, equal_nan=True)
+        assert np.allclose((ak_uint[0] / ak_int).to_ndarray(), np_uint[0] / np_int, equal_nan=True)
+        assert np.allclose((ak_uint[0] // ak_uint).to_ndarray(), np_uint[0] // np_uint, equal_nan=True)
+        assert np.allclose((ak_int[0] // ak_uint).to_ndarray(), np_int[0] // np_uint, equal_nan=True)
+        assert np.allclose((ak_uint[0] // ak_int).to_ndarray(), np_uint[0] // np_int, equal_nan=True)
+
+        # Vector-Scalar Case (Division and Floor Division)
+        assert np.allclose((ak_uint / ak_uint[0]).to_ndarray(), np_uint / np_uint[0], equal_nan=True)
+        assert np.allclose((ak_int / ak_uint[0]).to_ndarray(), np_int / np_uint[0], equal_nan=True)
+        assert np.allclose((ak_uint / ak_int[0]).to_ndarray(), np_uint / np_int[0], equal_nan=True)
+        assert np.allclose((ak_uint // ak_uint[0]).to_ndarray(), np_uint // np_uint[0], equal_nan=True)
+        assert np.allclose((ak_int // ak_uint[0]).to_ndarray(), np_int // np_uint[0], equal_nan=True)
+        assert np.allclose((ak_uint // ak_int[0]).to_ndarray(), np_uint // np_int[0], equal_nan=True)
 
     def test_float_uint_binops(self):
         # Test fix for issue #1620

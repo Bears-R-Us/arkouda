@@ -65,6 +65,12 @@ module OperatorMsg
         boolOps.add("==");
         boolOps.add("!=");
 
+        var realOps: set(string);
+        realOps.add("+");
+        realOps.add("-");
+        realOps.add("/");
+        realOps.add("//");
+
         select (left.dtype, right.dtype) {
           when (DType.Int64, DType.Int64) {
             var l = toSymEntry(left,int);
@@ -211,22 +217,27 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             }
-            var e = st.addEntry(rname, l.size, uint);
-            return doBinOpvv(l, r, e, op, rname, pn, st);
+            if realOps.contains(op) && op != "//"{
+              var e = st.addEntry(rname, l.size, real);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            } else {
+              var e = st.addEntry(rname, l.size, uint);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
           }
           when (DType.UInt64, DType.Int64) {
             var l = toSymEntry(left,uint);
             var r = toSymEntry(right,int);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
-              return doBinOpvv(l, r, e, op, rname, pn, st);
+              return doBinOpvv(l, r , e, op, rname, pn, st);
             }
-            // + and - both result in real outputs to match NumPy
-            if op == "+" || op == "-" {
+            // +, -, /, // both result in real outputs to match NumPy
+            if realOps.contains(op) {
               var e = st.addEntry(rname, l.size, real);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             } else {
-              // isn't + or -, so we can use LHS to determine type
+              // isn't +, -, /, // so we can use LHS to determine type
               var e = st.addEntry(rname, l.size, uint);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             }
@@ -238,11 +249,12 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             }
-            if op == "+" || op == "-" {
+            // +, -, /, // both result in real outputs to match NumPy
+            if realOps.contains(op) {
               var e = st.addEntry(rname, l.size, real);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             } else {
-              // isn't + or -, so we can use LHS to determine type
+              // isn't +, -, /, // so we can use LHS to determine type
               var e = st.addEntry(rname, l.size, int);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             }
@@ -399,6 +411,12 @@ module OperatorMsg
         boolOps.add("==");
         boolOps.add("!=");
 
+        var realOps: set(string);
+        realOps.add("+");
+        realOps.add("-");
+        realOps.add("/");
+        realOps.add("//");
+
         select (left.dtype, dtype) {
           when (DType.Int64, DType.Int64) {
             var l = toSymEntry(left,int);
@@ -545,8 +563,13 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
-            var e = st.addEntry(rname, l.size, uint);
-            return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            if realOps.contains(op) && op != "//"{
+              var e = st.addEntry(rname, l.size, real);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            } else {
+              var e = st.addEntry(rname, l.size, uint);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
           }
           when (DType.UInt64, DType.Int64) {
             var l = toSymEntry(left,uint);
@@ -555,12 +578,12 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
-            // + and - both result in real outputs to match NumPy
-            if op == "+" || op == "-" {
+            // +, -, /, // both result in real outputs to match NumPy
+            if realOps.contains(op) {
               var e = st.addEntry(rname, l.size, real);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             } else {
-              // isn't + or -, so we can use LHS to determine type
+              // isn't +, -, /, // so we can use LHS to determine type
               var e = st.addEntry(rname, l.size, uint);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
@@ -572,12 +595,12 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
-            // + and - both result in real outputs to match NumPy
-            if op == "+" || op == "-" {
+            // +, -, /, // both result in real outputs to match NumPy
+            if realOps.contains(op) {
               var e = st.addEntry(rname, l.size, real);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             } else {
-              // isn't + or -, so we can use LHS to determine type
+              // isn't +, -, /, // so we can use LHS to determine type
               var e = st.addEntry(rname, l.size, int);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
@@ -734,6 +757,12 @@ module OperatorMsg
         boolOps.add("==");
         boolOps.add("!=");
         
+        var realOps: set(string);
+        realOps.add("+");
+        realOps.add("-");
+        realOps.add("/");
+        realOps.add("//");
+
         select (dtype, right.dtype) {
           when (DType.Int64, DType.Int64) {
             var val = value.getIntValue();
@@ -880,8 +909,13 @@ module OperatorMsg
               var e = st.addEntry(rname, r.size, bool);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             }
-            var e = st.addEntry(rname, r.size, uint);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            if realOps.contains(op) && op != "//"{
+              var e = st.addEntry(rname, r.size, real);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            } else {
+              var e = st.addEntry(rname, r.size, uint);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
           }
           when (DType.UInt64, DType.Int64) {
             var val = value.getUIntValue();
@@ -890,12 +924,12 @@ module OperatorMsg
               var e = st.addEntry(rname, r.size, bool);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             }
-            // + and - both result in real outputs to match NumPy
-            if op == "+" || op == "-" {
+            // +, -, /, // both result in real outputs to match NumPy
+            if realOps.contains(op) {
               var e = st.addEntry(rname, r.size, real);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             } else {
-              // isn't + or -, so we can use LHS to determine type
+              // isn't +, -, /, // so we can use LHS to determine type
               var e = st.addEntry(rname, r.size, uint);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             }
@@ -907,12 +941,12 @@ module OperatorMsg
               var e = st.addEntry(rname, r.size, bool);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             }
-            // + and - both result in real outputs to match NumPy
-            if op == "+" || op == "-" {
+            // +, -, /, // both result in real outputs to match NumPy
+            if realOps.contains(op) {
               var e = st.addEntry(rname, r.size, real);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             } else {
-              // isn't + or -, so we can use LHS to determine type
+              // isn't +, -, /, // so we can use LHS to determine type
               var e = st.addEntry(rname, r.size, int);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             }
