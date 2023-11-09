@@ -308,8 +308,10 @@ module ArgSortMsg
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-    
-    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm):[D] int throws {
+
+    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm, _: int):[D] int throws
+      where D.rank == 1
+    {
       var t1 = Time.timeSinceEpoch().totalSeconds();
       var iv = makeDistArray(D, int);
       select algorithm {
@@ -336,14 +338,76 @@ module ArgSortMsg
                              "argsort time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
       return iv;
     }
-    
+
+    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm, axis: int):[D] int throws
+      where D.rank > 1
+    {
+      var t1 = Time.timeSinceEpoch().totalSeconds();
+      var iv = makeDistArray(D, int);
+
+      // create a domain identical to 'D', except degenerate along 'axis'
+      var degenAxis = D.rank*range;
+      for param a in 0..<D.rank {
+        if a == axis
+          then degenAxis[a] = 1..0;
+          else degenAxis[a] = D.dim(a);
+      }
+      const DD = D[degenAxis];
+
+      select algorithm {
+        when SortingAlgorithm.TwoArrayRadixSort {
+          for idx in DD { // for each index perpendicular to 'axis'
+            // create a tuple of ranges that selects the i'th 1D array along axis
+            var slicer: D.rank*range;
+            for param a in 0..<D.rank {
+              if a == axis
+                then slicer[a] = D.dim(a);
+                else slicer[a] = idx[a]..idx[a];
+            }
+
+            var AI = makeDistArray(slicer[axis], (t,int));
+            AI = [i in slicer[axis]] (A[i], i);
+            Sort.TwoArrayRadixSort.twoArrayRadixSort(AI, comparator=myDefaultComparator);
+            iv[slicer] = AI;
+          }
+        }
+        when SortingAlgorithm.RadixSortLSD {
+          for idx in DD { // for each index perpendicular to 'axis'
+            // create a tuple of ranges that selects the i'th 1D array along axis
+            var slicer: D.rank*range;
+            for param a in 0..<D.rank {
+              if a == axis
+                then slicer[a] = D.dim(a);
+                else slicer[a] = idx[a]..idx[a];
+            }
+            iv[slicer] = radixSortLSD_ranks(A[slicer]);
+          }
+        }
+        otherwise {
+          throw getErrorWithContext(
+                                    msg="Unrecognized sorting algorithm: %s".doFormat(algorithm:string),
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
+                                    errorClass="NotImplementedError"
+                  );
+        }
+      }
+      try! asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                             "argsort time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+      return iv;
+    }
+
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
-    proc argsortMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND
+    proc argsortMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var name = msgArgs.getValueOf("name");
-        var algoName = msgArgs.getValueOf("algoName");
+        const name = msgArgs.getValueOf("name");
+        const algoName = msgArgs.getValueOf("algoName");
+        const axis = msgArgs.get("axis").getIntValue();
         var algorithm: SortingAlgorithm = defaultSortAlgorithm;
+
         if algoName != "" {
           try {
             algorithm = algoName: SortingAlgorithm;
@@ -358,7 +422,8 @@ module ArgSortMsg
           }
         }
         // get next symbol name
-        var ivname = st.nextName();
+        const ivname = st.nextName();
+
         asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               "cmd: %s name: %s ivname: %s".doFormat(cmd, name, ivname));
 
@@ -368,37 +433,42 @@ module ArgSortMsg
             var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
             // check and throw if over memory limit
             overMemLimit(radixSortLSD_memEst(gEnt.size, gEnt.itemsize));
-        
+
             select (gEnt.dtype) {
                 when (DType.Int64) {
-                    var e = toSymEntry(gEnt,int);
-                    var iv = argsortDefault(e.a, algorithm=algorithm);
+                    var e = toSymEntry(gEnt,int, nd);
+                    var iv = argsortDefault(e.a, algorithm=algorithm, axis);
                     st.addEntry(ivname, createSymEntry(iv));
                 }
                 when (DType.UInt64) {
-                    var e = toSymEntry(gEnt,uint);
-                    var iv = argsortDefault(e.a, algorithm=algorithm);
+                    var e = toSymEntry(gEnt,uint, nd);
+                    var iv = argsortDefault(e.a, algorithm=algorithm, axis);
                     st.addEntry(ivname, createSymEntry(iv));
                 }
                 when (DType.Float64) {
-                    var e = toSymEntry(gEnt, real);
-                    var iv = argsortDefault(e.a);
+                    var e = toSymEntry(gEnt, real, nd);
+                    var iv = argsortDefault(e.a, axis);
                     st.addEntry(ivname, createSymEntry(iv));
                 }
                 when (DType.Bool) {
-                    var e = toSymEntry(gEnt,bool);
+                    var e = toSymEntry(gEnt,bool, nd);
                     var int_ea = makeDistArray(e.a:int);
-                    var iv = argsortDefault(int_ea, algorithm=algorithm);
+                    var iv = argsortDefault(int_ea, algorithm=algorithm, axis);
                     st.addEntry(ivname, createSymEntry(iv));
                 }
                 otherwise {
                     var errorMsg = notImplementedError(pn,gEnt.dtype);
-                    asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);               
+                    asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
             }
           }
           when ObjType.STRINGS {
+            if nd != 1 {
+              const errorMsg = "argsort only supports 1D strings";
+              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
             var strings = getSegString(name, st);
             // check and throw if over memory limit
             overMemLimit((8 * strings.size * 8)
@@ -408,7 +478,7 @@ module ArgSortMsg
           }
           otherwise {
               var errorMsg = notImplementedError(pn, objtype: string);
-              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                    
+              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
@@ -419,6 +489,5 @@ module ArgSortMsg
     }
 
     use CommandMap;
-    registerFunction("argsort", argsortMsg, getModuleName());
     registerFunction("coargsort", coargsortMsg, getModuleName());
 }

@@ -66,11 +66,12 @@ def argsort(
     if isinstance(pda, pdarray) and pda.dtype == bigint:
         return coargsort(pda.bigint_to_uint_arrays(), algorithm)
     repMsg = generic_msg(
-        cmd="argsort",
+        cmd="argsort1D",
         args={
             "name": pda.entry.name if isinstance(pda, Strings) else pda.name,
             "algoName": algorithm.name,
             "objType": pda.objType,
+            "axis": 0,
         },
     )
     return create_pdarray(cast(str, repMsg))

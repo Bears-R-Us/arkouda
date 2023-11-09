@@ -15,8 +15,26 @@ def argsort(
 
     See its docstring for more information.
     """
-    res = ak.argsort(x._array)
-    return Array._new(res)
+
+    if axis == -1:
+        axis = x.ndim - 1
+
+    repMsg = generic_msg(
+        cmd=f"argsort{x._array.dim}D",
+        args={
+            "name": pda.entry.name if isinstance(pda, Strings) else pda.name,
+            "algoName": algorithm.name,
+            "objType": pda.objType,
+            "axis": axis,
+        },
+    )
+
+    a = Array._new(create_pdarray(repMsg))
+
+    if descending:
+        Array.flip(a, axis=axis)
+
+    return a
 
 # Note: the descending keyword argument is new in this function
 def sort(

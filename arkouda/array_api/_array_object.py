@@ -58,11 +58,12 @@ class Array:
 
     """
     _array: ak.array[Any, Any]
+    _empty: bool
 
     # Use a custom constructor instead of __init__, as manually initializing
     # this class is not supported API.
     @classmethod
-    def _new(cls, x, /):
+    def _new(cls, x, empty: bool = False, /):
         """
         This is a private method for initializing the array API Array
         object.
@@ -74,6 +75,7 @@ class Array:
         """
         obj = super().__new__(cls)
         obj._array = x
+        obj._empty = empty
         return obj
 
     # Prevent Array() from working
@@ -95,7 +97,7 @@ class Array:
         """
         Performs the operation __repr__.
         """
-        return _array.__repr__
+        return _array.__repr__()
 
     # This function is not required by the spec, but we implement it here for
     # convenience so that np.asarray(np.array_api.Array) will work.

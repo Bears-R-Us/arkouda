@@ -96,9 +96,9 @@ def empty(
         size = 1
         for s in shape:
             size *= s
-        return Array._new(pdarray("_empty_", dtype, size, len(shape), shape, 0, None))
+        return Array._new(pdarray("_empty_", dtype, size, len(shape), shape, 0, None), empty=True)
     else:
-        return Array._new(pdarray("_empty_", dtype, shape, 1, shape, 0, None))
+        return Array._new(pdarray("_empty_", dtype, shape, 1, shape, 0, None), empty=True)
 
 
 def empty_like(
@@ -109,8 +109,9 @@ def empty_like(
         raise ValueError(f"Unsupported device {device!r}")
 
     return Array._new(
-        pdarray("_empty", dtype, x._array.dtype, x._array.size, len(x._array.shape), \
-            x._array.shape, x._array.itemsize, x._array.max_bits)
+        pdarray("_empty", dtype, x._array.dtype, x._array.size, x._array.ndim, \
+            x._array.shape, x._array.itemsize, x._array.max_bits),
+        empty=True,
     )
 
 
