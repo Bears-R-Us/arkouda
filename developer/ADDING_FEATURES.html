@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Release Process" href="RELEASE_PROCESS.html" /><link rel="prev" title="Reducing Memory Usage of Arkouda Builds" href="MEMORY.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="PyTest Benchmarks" href="BENCHMARK.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>GASNet Development - arkouda documentation</title>
+        <title>Adding Your First Feature - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
@@ -236,10 +236,10 @@
 <li class="toctree-l2"><a class="reference internal" href="TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GASNET.html">GASNet Development</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RELEASE_PROCESS.html">Release Process</a></li>
 <li class="toctree-l2"><a class="reference internal" href="BENCHMARK.html">PyTest Benchmarks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ADDING_FEATURES.html">Adding Your First Feature</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Adding Your First Feature</a></li>
 </ul>
 </li>
 </ul>
@@ -276,50 +276,164 @@
           </label>
         </div>
         <article role="main">
-          <section id="gasnet-development">
-<h1>GASNet Development<a class="headerlink" href="#gasnet-development" title="Link to this heading">#</a></h1>
-<p>Certain features of Arkouda require it to be built with GASNet in order to test or debug. Building Arkouda with GASNet requires some additional configuration. Here we walk through the configuration and steps to take for building Arkouda with GASNet.</p>
-<section id="environment-configuration">
-<h2>Environment Configuration<a class="headerlink" href="#environment-configuration" title="Link to this heading">#</a></h2>
-<p>In order to build Arkouda with GASNet, you must first configure some environment variables. The individual commands are listed below:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_COMM</span><span class="o">=</span>gasnet
-<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_SPAWNFN</span><span class="o">=</span>L
-<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_ROUTE_OUTPUT</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GASNET_CFG_OPTIONS</span><span class="o">=</span>--disable-ibv
-<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_QUIET</span><span class="o">=</span>Y
-<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_MASTERIP</span><span class="o">=</span><span class="m">127</span>.0.0.1
-<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_WORKERIP</span><span class="o">=</span><span class="m">127</span>.0.0.0
+          <section id="adding-your-first-feature">
+<h1>Adding Your First Feature<a class="headerlink" href="#adding-your-first-feature" title="Link to this heading">#</a></h1>
+<p>This guide describes how to add new functionality to arkouda.
+For each new feature, you need to add the client-side interface in Python and the server-side implementation in Chapel.
+To demonstrate this process, this guide walks through the process of implementing a custom function <code class="docutils literal notranslate"><span class="pre">times2</span></code> that will multiply all elements of an array by 2.</p>
+<section id="adding-python-functionality-client-interface">
+<h2>Adding Python Functionality (Client Interface)<a class="headerlink" href="#adding-python-functionality-client-interface" title="Link to this heading">#</a></h2>
+<p>Python functions should follow the API of NumPy or Pandas, where possible. In general, functions should conform to the following:</p>
+<ol class="arabic simple">
+<li><p>Be defined somewhere in the <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> subdirectory, such as in <code class="docutils literal notranslate"><span class="pre">arkouda/pdarraysetops.py</span></code></p></li>
+<li><p>Have a complete docstring in (<code class="docutils literal notranslate"><span class="pre">NumPy</span></code> format)[<a class="reference external" href="https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard">https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard</a>]</p></li>
+<li><p>Check argument types and properties, raising exceptions if necessary</p></li>
+<li><p>Send a request message using <code class="docutils literal notranslate"><span class="pre">generic_msg(request)</span></code></p></li>
+<li><p>Process the reply message</p></li>
+<li><p>Possibly create one or more <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects</p></li>
+<li><p>Return any results</p></li>
+</ol>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h3>
+<p>First, add the client-side implementation to construct the message to the server:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">times2</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a pdarray with each entry double that of the input.</span>
 
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_TEST_TIMEOUT</span><span class="o">=</span><span class="m">500</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda : pdarray</span>
+<span class="sd">        The array to double.</span>
 
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RT_OVERSUBSCRIBED</span><span class="o">=</span>yes
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        The doubled array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;times2&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span> <span class="p">:</span> <span class="n">pda</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;times2 only supports pdarrays.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>It is recommended that you place these into an executable file named <code class="docutils literal notranslate"><span class="pre">gasnetSetup</span></code>. This will allow you to quickly set the required environment variables by executing <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">gasnetSetup</span></code> from the directory where they file is saved.</p>
-</section>
-<section id="build-chapel-with-gasnet">
-<h2>Build Chapel with GASNet<a class="headerlink" href="#build-chapel-with-gasnet" title="Link to this heading">#</a></h2>
-<p>Once your environment is configured, you are ready to build Chapel using GASNet. Run the following:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="nv">$CHPL_HOME</span>
-make<span class="w"> </span>-j<span class="w"> </span><span class="m">16</span>
-</pre></div>
-</div>
-<p>Once complete, Chapel has been built with GASNet.</p>
-</section>
-<section id="build-arkouda">
-<h2>Build Arkouda<a class="headerlink" href="#build-arkouda" title="Link to this heading">#</a></h2>
-<p>From your <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> directory run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
+<p>Note that the function signature makes use of Python’s optional type checking features.
+You can learn more about Python type checking in (this documentation)[<a class="reference external" href="https://docs.python.org/3/library/typing.html">https://docs.python.org/3/library/typing.html</a>].</p>
+<p>Second, add your function to the <code class="docutils literal notranslate"><span class="pre">__all__</span></code> list near the top of the file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;in1d&quot;</span><span class="p">,</span> <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span> <span class="s2">&quot;union1d&quot;</span><span class="p">,</span> <span class="s2">&quot;intersect1d&quot;</span><span class="p">,</span> <span class="s2">&quot;setdiff1d&quot;</span><span class="p">,</span> <span class="s2">&quot;setxor1d&quot;</span><span class="p">,</span> <span class="s2">&quot;times2&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
-<section id="run-arkouda">
-<h2>Run Arkouda<a class="headerlink" href="#run-arkouda" title="Link to this heading">#</a></h2>
-<p>To run arkouda with multiple locales:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./arkouda_server<span class="w"> </span>-nl<span class="w"> </span><span class="m">2</span>
+</section>
+<section id="adding-functionality-to-the-arkouda-server">
+<h2>Adding Functionality to the Arkouda Server<a class="headerlink" href="#adding-functionality-to-the-arkouda-server" title="Link to this heading">#</a></h2>
+<p>Your contribution must include all the machinery to process a command from the client, in addition to the logic of the computation.
+This is broken into function(s) that implement the actual operation, a function that processes the command message and calls the appropriate implementation, and code to register the message processing function with the message dispatch system.
+For the <code class="docutils literal notranslate"><span class="pre">times2</span></code> example, we will add our functions to the <code class="docutils literal notranslate"><span class="pre">ArraySetOps</span></code> and <code class="docutils literal notranslate"><span class="pre">ArraySetOpsMsg</span></code> modules for the sake of simplicity.</p>
+<p>When the client issues a command <code class="docutils literal notranslate"><span class="pre">times2</span> <span class="pre">arg1</span></code> to the arkouda server, this is what typically happens:</p>
+<ol class="arabic simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">select</span></code> block in <code class="docutils literal notranslate"><span class="pre">ServerDaemon.chpl</span></code> sees “times2”, looks it up in the <code class="docutils literal notranslate"><span class="pre">commandMap</span></code>, and calls the function responsible for processing the message: <code class="docutils literal notranslate"><span class="pre">times2Msg</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">times2Msg</span></code> function is found via the <code class="docutils literal notranslate"><span class="pre">ArraySetopsMsg</span></code> module, which contains <code class="docutils literal notranslate"><span class="pre">use</span> <span class="pre">ArraySetops</span></code> and thus gets all symbols from the <code class="docutils literal notranslate"><span class="pre">ArraySetops</span></code> module where the implementation function <code class="docutils literal notranslate"><span class="pre">times2()</span></code> is defined.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">times2Msg()</span></code> function (in the <code class="docutils literal notranslate"><span class="pre">ArraySetopsMsg</span></code> module) parses and executes the command by</p>
+<ol class="arabic simple">
+<li><p>Casting any scalar args</p></li>
+<li><p>Looking up <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> (<code class="docutils literal notranslate"><span class="pre">GenSymEntry</span></code>) args in the symbol table with <code class="docutils literal notranslate"><span class="pre">getGenericTypeArrayEntry</span></code></p></li>
+<li><p>Checking dtypes of arrays and branching to corresponding code</p></li>
+<li><p>Casting <code class="docutils literal notranslate"><span class="pre">GenSymEntry</span></code> objects to correct types with <code class="docutils literal notranslate"><span class="pre">toSymEntry()</span></code></p></li>
+<li><p>Executing the operation, usually on the array data <code class="docutils literal notranslate"><span class="pre">entry.a</span></code></p></li>
+<li><p>If necessary, creating new <code class="docutils literal notranslate"><span class="pre">SymEntry</span></code> and adding it to the symbol table with <code class="docutils literal notranslate"><span class="pre">st.addEntry()</span></code></p></li>
+<li><p>Returning an appropriate message string</p>
+<ol class="arabic simple">
+<li><p>If the return is an array, “created <attributes>”</p></li>
+<li><p>If the return is multiple arrays, one creation string per array, joined by “+”</p></li>
+<li><p>If the return is a scalar, “<dtype> <value>”</p></li>
+<li><p>If any error occurred, then “Error: <message>” (see <code class="docutils literal notranslate"><span class="pre">ServerErrorStrings.chpl</span></code> for functions to generate common error strings)</p></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</section>
+<section id="id1">
+<h2>Example<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>First, define your message processing logic in <code class="docutils literal notranslate"><span class="pre">src/ArraySetopsMsg.chpl</span></code> in the following manner:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">ArraySetopsMsg</span> <span class="p">{</span>
+
+    <span class="o">...</span>
+    <span class="o">/*</span> 
+    <span class="n">Parse</span><span class="p">,</span> <span class="n">execute</span><span class="p">,</span> <span class="ow">and</span> <span class="n">respond</span> <span class="n">to</span> <span class="n">a</span> <span class="n">times2</span> <span class="n">message</span> 
+    <span class="p">:</span><span class="n">arg</span> <span class="n">cmd</span><span class="p">:</span> <span class="n">request</span> <span class="n">command</span>
+    <span class="p">:</span><span class="nb">type</span> <span class="n">reqMsg</span><span class="p">:</span> <span class="n">string</span> 
+    <span class="p">:</span><span class="n">arg</span> <span class="n">msgArgs</span><span class="p">:</span> <span class="n">request</span> <span class="n">arguments</span>
+    <span class="p">:</span><span class="nb">type</span> <span class="n">msgArgs</span><span class="p">:</span> <span class="n">borrowed</span> <span class="n">MessageArgs</span>
+    <span class="p">:</span><span class="n">arg</span> <span class="n">st</span><span class="p">:</span> <span class="n">SymTab</span> <span class="n">to</span> <span class="n">act</span> <span class="n">on</span>
+    <span class="p">:</span><span class="nb">type</span> <span class="n">st</span><span class="p">:</span> <span class="n">borrowed</span> <span class="n">SymTab</span> 
+    <span class="p">:</span><span class="n">returns</span><span class="p">:</span> <span class="p">(</span><span class="n">MsgTuple</span><span class="p">)</span> <span class="n">response</span> <span class="n">message</span>
+    <span class="o">*/</span>
+    <span class="n">proc</span> <span class="n">times2Msg</span><span class="p">(</span><span class="n">cmd</span><span class="p">:</span> <span class="n">string</span><span class="p">,</span> <span class="n">msgArgs</span><span class="p">:</span> <span class="n">borrowed</span> <span class="n">MessageArgs</span><span class="p">,</span> <span class="n">st</span><span class="p">:</span> <span class="n">borrowed</span> <span class="n">SymTab</span><span class="p">):</span> <span class="n">MsgTuple</span> <span class="n">throws</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">repMsg</span><span class="p">:</span> <span class="n">string</span><span class="p">;</span> <span class="o">//</span> <span class="n">response</span> <span class="n">message</span>
+        
+        <span class="n">var</span> <span class="n">vName</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">nextName</span><span class="p">();</span> <span class="o">//</span> <span class="n">symbol</span> <span class="n">table</span> <span class="n">key</span> <span class="k">for</span> <span class="n">resulting</span> <span class="n">array</span>
+
+        <span class="n">var</span> <span class="n">gEnt</span><span class="p">:</span> <span class="n">borrowed</span> <span class="n">GenSymEntry</span> <span class="o">=</span> <span class="n">getGenericTypedArrayEntry</span><span class="p">(</span><span class="n">msgArgs</span><span class="o">.</span><span class="n">getValueOf</span><span class="p">(</span><span class="s2">&quot;arg1&quot;</span><span class="p">),</span> <span class="n">st</span><span class="p">);</span>
+
+        <span class="n">select</span> <span class="n">gEnt</span><span class="o">.</span><span class="n">dtype</span> <span class="p">{</span>
+            <span class="n">when</span> <span class="n">DType</span><span class="o">.</span><span class="n">Int64</span> <span class="p">{</span>
+                <span class="n">var</span> <span class="n">e</span> <span class="o">=</span> <span class="n">toSymEntry</span><span class="p">(</span><span class="n">gEnt</span><span class="p">,</span><span class="nb">int</span><span class="p">);</span>
+
+                <span class="n">var</span> <span class="n">aV</span> <span class="o">=</span> <span class="n">times2</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">a</span><span class="p">);</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">addEntry</span><span class="p">(</span><span class="n">vName</span><span class="p">,</span> <span class="n">createSymEntry</span><span class="p">(</span><span class="n">aV</span><span class="p">));</span>
+
+                <span class="n">repMsg</span> <span class="o">=</span> <span class="s2">&quot;created &quot;</span> <span class="o">+</span> <span class="n">st</span><span class="o">.</span><span class="n">attrib</span><span class="p">(</span><span class="n">vName</span><span class="p">);</span>
+                <span class="n">asLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">getModuleName</span><span class="p">(),</span><span class="n">getRoutineName</span><span class="p">(),</span><span class="n">getLineNumber</span><span class="p">(),</span><span class="n">repMsg</span><span class="p">);</span>
+                <span class="k">return</span> <span class="n">new</span> <span class="n">MsgTuple</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">MsgType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="o">//</span> <span class="n">add</span> <span class="n">additional</span> <span class="n">when</span> <span class="n">blocks</span> <span class="k">for</span> <span class="n">different</span> <span class="n">data</span> <span class="n">types</span><span class="o">...</span>
+            <span class="n">otherwise</span> <span class="p">{</span>
+                <span class="n">var</span> <span class="n">errorMsg</span> <span class="o">=</span> <span class="n">notImplementedError</span><span class="p">(</span><span class="s2">&quot;times2&quot;</span><span class="p">,</span><span class="n">gEnt</span><span class="o">.</span><span class="n">dtype</span><span class="p">);</span>
+                <span class="n">asLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">getModuleName</span><span class="p">(),</span><span class="n">getRoutineName</span><span class="p">(),</span><span class="n">getLineNumber</span><span class="p">(),</span><span class="n">errorMsg</span><span class="p">);</span>           
+                <span class="k">return</span> <span class="n">new</span> <span class="n">MsgTuple</span><span class="p">(</span><span class="n">errorMsg</span><span class="p">,</span> <span class="n">MsgType</span><span class="o">.</span><span class="n">ERROR</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="o">...</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<p>If you would like to run with more locales, replace <code class="docutils literal notranslate"><span class="pre">2</span></code> with the number of desired locales. <em>Please Note that is is not recommended to run on a standard machine with more than 2 locales.</em></p>
+<p>Second, define your operation implementation in <code class="docutils literal notranslate"><span class="pre">src/ArraySetops.chpl</span></code> in the following manner:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>module ArraySetops {
+    
+    ...
+
+    // returns input array, doubled.
+    proc times2(a: [] ?t) throws {
+        var ret = a * 2; //scalar promotion
+        return ret;
+    }
+
+    ...
+}
+</pre></div>
+</div>
+<p>Finally, register your new function within the commandMap back in <code class="docutils literal notranslate"><span class="pre">src/ArraySetopsMsg.chpl</span></code> in the following manner:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">ArraySetopsMsg</span> <span class="p">{</span>
+    <span class="o">...</span>
+
+    <span class="n">use</span> <span class="n">CommandMap</span><span class="p">;</span>
+    <span class="o">...</span>
+    <span class="n">resisterFunction</span><span class="p">(</span><span class="s2">&quot;times2&quot;</span><span class="p">,</span> <span class="n">times2Msg</span><span class="p">,</span> <span class="n">getModuleName</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now, you should be able to rebuild and launch the server and use your new feature. We close with a client-side python script that uses the new feature.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="n">undoubled</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">doubled</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">times2</span><span class="p">(</span><span class="n">undoubled</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -328,23 +442,15 @@ make<span class="w"> </span>-j<span class="w"> </span><span class="m">16</span>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="RELEASE_PROCESS.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Release Process</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="MEMORY.html">
+          
+          <a class="prev-page" href="BENCHMARK.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Reducing Memory Usage of Arkouda Builds</div>
+                <div class="title">PyTest Benchmarks</div>
                 
               </div>
             </a>
@@ -378,11 +484,13 @@ make<span class="w"> </span>-j<span class="w"> </span><span class="m">16</span>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">GASNet Development</a><ul>
-<li><a class="reference internal" href="#environment-configuration">Environment Configuration</a></li>
-<li><a class="reference internal" href="#build-chapel-with-gasnet">Build Chapel with GASNet</a></li>
-<li><a class="reference internal" href="#build-arkouda">Build Arkouda</a></li>
-<li><a class="reference internal" href="#run-arkouda">Run Arkouda</a></li>
+<li><a class="reference internal" href="#">Adding Your First Feature</a><ul>
+<li><a class="reference internal" href="#adding-python-functionality-client-interface">Adding Python Functionality (Client Interface)</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#adding-functionality-to-the-arkouda-server">Adding Functionality to the Arkouda Server</a></li>
+<li><a class="reference internal" href="#id1">Example</a></li>
 </ul>
 </li>
 </ul>

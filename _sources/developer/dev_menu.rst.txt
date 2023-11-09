@@ -15,3 +15,4 @@ Here you will find documentation useful for development in Arkouda.
     GASNET
     RELEASE_PROCESS
     BENCHMARK
+    ADDING_FEATURES

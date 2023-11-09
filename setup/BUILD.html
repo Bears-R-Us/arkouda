@@ -239,6 +239,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../developer/GASNET.html">GASNet Development</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developer/RELEASE_PROCESS.html">Release Process</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
 </ul>
 </li>
 </ul>
@@ -288,9 +289,10 @@ For a full list, please refer to <a class="reference internal" href="../ENVIRONM
 </section>
 <section id="dependency-configuration">
 <h2>Dependency Configuration<a class="headerlink" href="#dependency-configuration" title="Link to this heading">#</a></h2>
+<p>Dependencies can be configured with a package manager like <code class="docutils literal notranslate"><span class="pre">Anaconda</span></code> or manually.</p>
 <section id="using-environment-installed-dependencies-recommended">
 <h3>Using Environment Installed Dependencies <em>(Recommended)</em><a class="headerlink" href="#using-environment-installed-dependencies-recommended" title="Link to this heading">#</a></h3>
-<p>When utilizing a package manager, like <code class="docutils literal notranslate"><span class="pre">Anaconda</span></code>, to install dependencies (see <a class="reference internal" href="#INSTALL.md"><span class="xref myst">INSTALL.md</span></a>), you will need to provide
+<p>When utilizing a package manager, like <code class="docutils literal notranslate"><span class="pre">Anaconda</span></code>, to install dependencies (see guides for <a class="reference internal" href="LINUX_INSTALL.html"><span class="std std-doc">Linux</span></a> or <a class="reference internal" href="MAC_INSTALL.html"><span class="std std-doc">Mac</span></a>), you will need to provide
 the path to the location of your installed packages. This is achieved by adding this path to your <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code> (Example Below).</p>
 <p>You might need create a <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code> file in the top level of the arkouda directly if it doesn’t already exist.</p>
 <p>It is important to note that in most cases you will only provide a single path for your environment.
@@ -317,8 +319,8 @@ ak-base          *  /opt/homebrew/Caskroom/miniforge/base/envs/ak-base
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">chpl</span></code> compiler will be executed with <code class="docutils literal notranslate"><span class="pre">-I</span></code>, <code class="docutils literal notranslate"><span class="pre">-L</span></code> and <code class="docutils literal notranslate"><span class="pre">-rpath</span></code> for each path in your <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code></p>
 </section>
-<section id="installing-dependencies">
-<h3>Installing Dependencies<a class="headerlink" href="#installing-dependencies" title="Link to this heading">#</a></h3>
+<section id="installing-dependencies-manually">
+<h3>Installing Dependencies Manually<a class="headerlink" href="#installing-dependencies-manually" title="Link to this heading">#</a></h3>
 <p><em>Please Note: This step is to only be performed if you are NOT using dependencies from a conda/pip env. If you attempt to use both, it is possible that version mismatches will cause build failures</em>.</p>
 <p>This step only needs to be done once. Once dependencies are installed, you will not need to run again. You can install all dependencies with a single command or install individually for a customized build.</p>
 <p>Before installing, ensure the <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code> is empty.</p>
@@ -388,15 +390,16 @@ pip<span class="w"> </span>install<span class="w"> </span>dist/arkouda*.tar.gz
 </div>
 </section>
 </section>
+</section>
 <section id="build-the-server">
-<h3>Build the Server<a class="headerlink" href="#build-the-server" title="Link to this heading">#</a></h3>
+<h2>Build the Server<a class="headerlink" href="#build-the-server" title="Link to this heading">#</a></h2>
 <p>Run the <code class="docutils literal notranslate"><span class="pre">make</span></code> command to build the <code class="docutils literal notranslate"><span class="pre">arkouda_server</span></code> executable.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
 </pre></div>
 </div>
 </section>
 <section id="building-the-arkouda-documentation">
-<h3>Building the Arkouda Documentation<a class="headerlink" href="#building-the-arkouda-documentation" title="Link to this heading">#</a></h3>
+<h2>Building the Arkouda Documentation<a class="headerlink" href="#building-the-arkouda-documentation" title="Link to this heading">#</a></h2>
 <p>The Arkouda documentation is <a class="reference external" href="https://bears-r-us.github.io/arkouda/">here</a>. This section is only necessary
 if you’re updating the documentation.</p>
 <details>
@@ -433,9 +436,8 @@ Arkouda documentation homepage will be displayed.</p>
 </details>
 </section>
 <section id="modular-building">
-<h3>Modular Building<a class="headerlink" href="#modular-building" title="Link to this heading">#</a></h3>
+<h2>Modular Building<a class="headerlink" href="#modular-building" title="Link to this heading">#</a></h2>
 <p>For information on Arkouda’s modular building feature, see <a class="reference internal" href="MODULAR.html"><span class="std std-doc">MODULAR.md</span></a>.</p>
-</section>
 </section>
 </section>
 
@@ -499,7 +501,7 @@ Arkouda documentation homepage will be displayed.</p>
 <li><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
 <li><a class="reference internal" href="#dependency-configuration">Dependency Configuration</a><ul>
 <li><a class="reference internal" href="#using-environment-installed-dependencies-recommended">Using Environment Installed Dependencies <em>(Recommended)</em></a></li>
-<li><a class="reference internal" href="#installing-dependencies">Installing Dependencies</a><ul>
+<li><a class="reference internal" href="#installing-dependencies-manually">Installing Dependencies Manually</a><ul>
 <li><a class="reference internal" href="#dependencies">Dependencies</a><ul>
 <li><a class="reference internal" href="#all-dependencies">All Dependencies</a></li>
 </ul>
@@ -509,11 +511,11 @@ Arkouda documentation homepage will be displayed.</p>
 <li><a class="reference internal" href="#distributable-package">Distributable Package</a></li>
 </ul>
 </li>
+</ul>
+</li>
 <li><a class="reference internal" href="#build-the-server">Build the Server</a></li>
 <li><a class="reference internal" href="#building-the-arkouda-documentation">Building the Arkouda Documentation</a></li>
 <li><a class="reference internal" href="#modular-building">Modular Building</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>

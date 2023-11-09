@@ -239,6 +239,7 @@
 <li class="toctree-l2"><a class="reference internal" href="developer/GASNET.html">GASNet Development</a></li>
 <li class="toctree-l2"><a class="reference internal" href="developer/RELEASE_PROCESS.html">Release Process</a></li>
 <li class="toctree-l2"><a class="reference internal" href="developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
 </ul>
 </li>
 </ul>
@@ -282,7 +283,7 @@
 <h2>Install Dependencies<a class="headerlink" href="#install-dependencies" title="Link to this heading">#</a></h2>
 <ol class="arabic">
 <li><p>Follow the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a></p></li>
-<li><p>Follow the <a class="reference external" href="https://docs.anaconda.com/anaconda/install/index.html">Anaconda Installtion Guide</a></p></li>
+<li><p>Follow the <a class="reference external" href="https://docs.anaconda.com/anaconda/install/index.html">Anaconda Installation Guide</a></p></li>
 <li><p>Configure your conda environment</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
 </pre></div>
@@ -350,6 +351,8 @@ bytes<span class="w"> </span>of<span class="w"> </span>memory<span class="w"> </
 </pre></div>
 </div>
 <p>Substituting the hostname and port appropriately (defaults are ‘localhost’ and 5555).</p>
+<p>When working on machines running macOS, the code block above may cause the program to hang.
+This problem is resolved by running the command without the optional argument: <code class="docutils literal notranslate"><span class="pre">ak.connect()</span></code>.</p>
 </section>
 <section id="shutdown-disconnect">
 <h2>Shutdown/Disconnect<a class="headerlink" href="#shutdown-disconnect" title="Link to this heading">#</a></h2>
