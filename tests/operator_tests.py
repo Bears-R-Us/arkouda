@@ -292,6 +292,13 @@ class OperatorsTest(ArkoudaTest):
             [True, False, True, False, True, True],
             ak.concatenate([pdaOne, pdaTwo]).to_list(),
         )
+        
+        pdaOne = ak.arange(5, max_bits=3)
+        pdaTwo = ak.arange(2 ** 200 - 1, 2 ** 200 + 4)
+        concatenated = ak.concatenate([pdaOne, pdaTwo])
+        self.assertEqual(concatenated.max_bits, 3)
+        self.assertListEqual([0, 1, 2, 3, 4, 7, 0, 1, 2, 3], concatenated.to_list())
+
 
     def test_invert(self):
         ak_uint = ak.arange(10, dtype=ak.uint64)

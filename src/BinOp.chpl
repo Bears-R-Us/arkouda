@@ -20,7 +20,6 @@ module BinOp
     Helper function to ensure that floor division cases are handled in accordance with numpy
   */
   inline proc floorDivisionHelper(numerator: ?t, denom: ?t2): real {
-    use Math;
     if (numerator == 0 && denom == 0) || (isInf(numerator) && (denom != 0 || isInf(denom))){
       return nan;
     }
@@ -28,7 +27,7 @@ module BinOp
       return -1:real;
     }
     else {
-    return AutoMath.floor(numerator/denom);
+      return floor(numerator/denom);
     }
   }
 
