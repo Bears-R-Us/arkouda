@@ -292,7 +292,7 @@ class OperatorsTest(ArkoudaTest):
             [True, False, True, False, True, True],
             ak.concatenate([pdaOne, pdaTwo]).to_list(),
         )
-        
+
         pdaOne = ak.arange(5, max_bits=3)
         pdaTwo = ak.arange(2 ** 200 - 1, 2 ** 200 + 4)
         concatenated = ak.concatenate([pdaOne, pdaTwo])

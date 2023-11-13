@@ -217,7 +217,7 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             }
-            if realOps.contains(op) && op != "//"{
+            if op == "/"{
               var e = st.addEntry(rname, l.size, real);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             } else {
@@ -563,7 +563,7 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
-            if realOps.contains(op) && op != "//"{
+            if op == "/"{
               var e = st.addEntry(rname, l.size, real);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             } else {
@@ -909,7 +909,7 @@ module OperatorMsg
               var e = st.addEntry(rname, r.size, bool);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             }
-            if realOps.contains(op) && op != "//"{
+            if op == "/"{
               var e = st.addEntry(rname, r.size, real);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             } else {
