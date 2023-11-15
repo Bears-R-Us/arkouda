@@ -28,7 +28,6 @@ module ServerDaemon {
     use StatusMsg;
 
     use ArkoudaFileCompat;
-    use ArkoudaListCompat;
     use ArkoudaIOCompat;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS,STATUS}

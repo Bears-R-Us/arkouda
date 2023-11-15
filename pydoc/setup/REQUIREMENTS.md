@@ -2,10 +2,10 @@
 
 ## Dependency List
 
-The dependencies listed here have varying installation instructions depending upon your preferred operating system. Please use in the installation instructions provided in the [Installation Section](install_menu.rst).
+The installation instructions for the dependencies listed here may vary depending on your preferred operating system. Refer to the [Installation Section](install_menu.rst) for more information.
 
 - ``Chapel 1.30.0 or later``
-- `cmake>=3.11.0`
+- `cmake>=3.13.4`
 - `zeromq>=4.2.5`
 - `hdf5`
 - `python>=3.8`
@@ -30,8 +30,8 @@ The following python packages are required by the Arkouda client package.
 - `hdf5==1.12.2`
 - `pip`
 - `types-tabulate`
-- `tables>=3.7.0,<3.9.0`
-- `pyarrow==11.0.0`
+- `tables>=3.7.0`
+- `pyarrow`
 
 ### Developer Specific
 
@@ -69,7 +69,7 @@ conda env create -n <env_name> -f <yaml_file>
 
 # Updating env using the yaml 
 conda env update -n <env_name> -f <yaml_file> --prune 
-#Only use the --prune option if you want to remove packages that are no longer requirements for arkouda.
+# Only use the --prune option if you want to remove packages that are no longer requirements for arkouda.
 ```
 
 #### Using Pip

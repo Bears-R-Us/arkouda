@@ -11,7 +11,7 @@ Install Dependencies
 **********************
 
 1. Follow the `Chapel Quickstart Guide <https://chapel-lang.org/docs/usingchapel/QUICKSTART.html>`_
-2. Follow the `Anaconda Installtion Guide <https://docs.anaconda.com/anaconda/install/index.html>`_
+2. Follow the `Anaconda Installation Guide <https://docs.anaconda.com/anaconda/install/index.html>`_
 3. Configure your conda environment
 
    .. substitution-code-block:: bash
@@ -93,6 +93,9 @@ In another terminal window, launch an interactive Python 3 session, such as ``ip
    connected to tcp://node01:5555
    
 Substituting the hostname and port appropriately (defaults are 'localhost' and 5555).
+
+When working on machines running macOS, the code block above may cause the program to hang. 
+This problem is resolved by running the command without the optional argument: ``ak.connect()``.
 
 ******************************
 Shutdown/Disconnect

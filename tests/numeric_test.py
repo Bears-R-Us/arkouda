@@ -728,6 +728,20 @@ class NumericTest(ArkoudaTest):
         with self.assertRaises(RuntimeError, msg="Currently isnan on int64 is not supported"):
             ak.isnan(ark_s_int64)
 
+    def test_str_cat_cast(self):
+        test_strs = [
+            ak.array([f"str {i}" for i in range(101)]),
+            ak.array([f"str {i%3}" for i in range(101)]),
+        ]
+        for test_str, test_cat in zip(test_strs, [ak.Categorical(s) for s in test_strs]):
+            cast_str = ak.cast(test_cat, ak.Strings)
+            self.assertTrue((cast_str == test_str).all())
+            cast_cat = ak.cast(test_str, ak.Categorical)
+            self.assertTrue((cast_cat == test_cat).all())
+
+            self.assertIsInstance(cast_str, ak.Strings)
+            self.assertIsInstance(cast_cat, ak.Categorical)
+
     def testPrecision(self):
         # See https://github.com/Bears-R-Us/arkouda/issues/964
         # Grouped sum was exacerbating floating point errors

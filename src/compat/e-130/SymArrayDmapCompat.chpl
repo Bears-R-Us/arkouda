@@ -18,7 +18,7 @@ module SymArrayDmapCompat
 
     public use BlockDist;
 
-    /* 
+    /*
     Makes a domain distributed according to :param:`MyDmap`.
 
     :arg shape: size of domain in each dimension
@@ -46,8 +46,8 @@ module SymArrayDmapCompat
             }
         }
     }
-    
-    /* 
+
+    /*
     Makes an array of specified type over a distributed domain
 
     :arg size: size of the domain in each dimension

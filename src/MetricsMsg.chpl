@@ -13,7 +13,6 @@ module MetricsMsg {
     use Map;
     use ArkoudaTimeCompat as Time;
 
-    use ArkoudaListCompat;
     use ArkoudaMapCompat;
     use ArkoudaIOCompat;
 
@@ -26,7 +25,7 @@ module MetricsMsg {
     private config const logChannel = ServerConfig.logChannel;
     const mLogger = new Logger(logLevel, logChannel);
 
-    var metricScope = ServerConfig.getEnv(name='METRIC_SCOPE',default='MetricScope.REQUEST');
+    var metricScope = try! ServerConfig.getEnv(name='METRIC_SCOPE',default='MetricScope.REQUEST');
     
     var serverMetrics = new CounterTable();
     

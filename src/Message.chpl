@@ -9,7 +9,6 @@ module Message {
 
     use ArkoudaFileCompat;
     use Map;
-    use ArkoudaListCompat;
     use ArkoudaIOCompat;
 
     enum MsgType {NORMAL,WARNING,ERROR}

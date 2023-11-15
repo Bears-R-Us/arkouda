@@ -558,6 +558,22 @@ class ParquetTest(ArkoudaTest):
             for i in range(len(pd_l)):
                 self.assertTrue(np.allclose(pd_l[i], ak_l[i], equal_nan=True))
 
+    def test_decimal_reads(self):
+        cols = []
+        data = []
+        for i in range(1,39):
+            cols.append(("decCol" + str(i), pa.decimal128(i, 0)))
+            data.append([i])
+            
+        schema = pa.schema(cols)
+
+        table = pa.Table.from_arrays(data, schema=schema)
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            pq.write_table(table, f"{tmp_dirname}/decimal")
+            ak_data = ak.read(f"{tmp_dirname}/decimal")
+            for i in range(1,39):
+                self.assertTrue(np.allclose(ak_data['decCol'+str(i)].to_ndarray(), data[i-1]))
+
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
         datadir = "resources/parquet-testing"

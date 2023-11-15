@@ -1,4 +1,4 @@
-from typing import Callable, Tuple, Union, cast
+from typing import Callable, Sequence, Tuple, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -180,10 +180,13 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
 
 @typechecked
 def inner_join(
-    left: Union[pdarray, Strings, Categorical],
-    right: Union[pdarray, Strings, Categorical],
+    left: Union[pdarray, Strings, Categorical, Sequence[pdarray]],
+    right: Union[pdarray, Strings, Categorical, Sequence[pdarray]],
     wherefunc: Callable = None,
-    whereargs: Tuple[Union[pdarray, Strings, Categorical], Union[pdarray, Strings, Categorical]] = None,
+    whereargs: Tuple[
+        Union[pdarray, Strings, Categorical, Sequence[pdarray]],
+        Union[pdarray, Strings, Categorical, Sequence[pdarray]],
+    ] = None,
 ) -> Tuple[pdarray, pdarray]:
     """Perform inner join on values in <left> and <right>,
     using conditions defined by <wherefunc> evaluated on
@@ -191,16 +194,16 @@ def inner_join(
 
     Parameters
     ----------
-    left : pdarray(int64)
+    left : pdarray(int64), Strings, Categorical, or Sequence of pdarray
         The left values to join
-    right : pdarray(int64)
+    right : pdarray(int64), Strings, Categorical, or Sequence of pdarray
         The right values to join
     wherefunc : function, optional
         Function that takes two pdarray arguments and returns
         a pdarray(bool) used to filter the join. Results for
         which wherefunc is False will be dropped.
-    whereargs : 2-tuple of pdarray
-        The two pdarray arguments to wherefunc
+    whereargs : 2-tuple of pdarray, Strings, Categorical, or Sequence of pdarray
+        The two arguments for wherefunc
 
     Returns
     -------
@@ -219,20 +222,51 @@ def inner_join(
     """
     from inspect import signature
 
-    # Reduce processing to codes to prevent groupbys being ran on entire Categorical
+    is_sequence = isinstance(left, Sequence) and isinstance(right, Sequence)
+
+    # Reduce processing to codes to prevent groupby on entire Categorical
     if isinstance(left, Categorical) and isinstance(right, Categorical):
         l, r = Categorical.standardize_categories([left, right])
         left, right = l.codes, r.codes
 
-    sample = np.min((left.size, right.size, 5))  # type: ignore
+    if is_sequence:
+        if any(not isinstance(lf, pdarray) for lf in left) or any(
+            not isinstance(rt, pdarray) for rt in right
+        ):
+            raise TypeError("All elements of Multi-array arguments must be pdarrays")
+        if len(left) != len(right):
+            raise ValueError("Left must have same num arrays as right")
+        left_size, right_size = left[0].size, right[0].size
+        if not all(lf.size == left_size for lf in left) or not all(
+            rt.size == right_size for rt in right
+        ):
+            raise ValueError("Multi-array arguments must have equal-length arrays")
+    else:
+        left_size, right_size = left.size, right.size  # type: ignore
+
+    sample = np.min((left_size, right_size, 5))  # type: ignore
     if wherefunc is not None:
         if len(signature(wherefunc).parameters) != 2:
             raise ValueError("wherefunc must be a function that accepts exactly two arguments")
         if whereargs is None or len(whereargs) != 2:
             raise ValueError("whereargs must be a 2-tuple with left and right arg arrays")
-        if whereargs[0].size != left.size:
+        if is_sequence:
+            if any(not isinstance(wa, pdarray) for wa in whereargs[0]) or any(
+                not isinstance(wa, pdarray) for wa in whereargs[1]
+            ):
+                raise TypeError("All elements of Multi-array arguments must be pdarrays")
+            if len(whereargs[0]) != len(whereargs[1]):
+                raise ValueError("Left must have same num arrays as right")
+            first_wa_size, second_wa_size = whereargs[0][0].size, whereargs[1][0].size
+            if not all(wa.size == first_wa_size for wa in whereargs[0]) or not all(
+                wa.size == second_wa_size for wa in whereargs[1]
+            ):
+                raise ValueError("Multi-array arguments must have equal-length arrays")
+        else:
+            first_wa_size, second_wa_size = whereargs[0].size, whereargs[1].size  # type: ignore
+        if first_wa_size != left_size:
             raise ValueError("Left whereargs must be same size as left join values")
-        if whereargs[1].size != right.size:
+        if second_wa_size != right_size:
             raise ValueError("Right whereargs must be same size as right join values")
         try:
             _ = wherefunc(whereargs[0][:sample], whereargs[1][:sample])
@@ -260,12 +294,19 @@ def inner_join(
         keep12 = keep
     else:
         if whereargs is not None:
-            # Gather right whereargs
-            rightWhere = whereargs[1][byRight.permutation][ranges]
-            # Expand left whereargs
-            keep_where = whereargs[0][keep]
-            keep_where = keep_where.codes if isinstance(keep_where, Categorical) else keep_where
-            leftWhere = broadcast(fullSegs, keep_where, ranges.size)
+            if not is_sequence:
+                # Gather right whereargs
+                rightWhere = whereargs[1][byRight.permutation][ranges]
+                # Expand left whereargs
+                keep_where = whereargs[0][keep]
+                keep_where = keep_where.codes if isinstance(keep_where, Categorical) else keep_where
+                leftWhere = broadcast(fullSegs, keep_where, ranges.size)
+            else:
+                # Gather right whereargs
+                rightWhere = [wa[byRight.permutation][ranges] for wa in whereargs[1]]
+                # Expand left whereargs
+                keep_where = [wa[keep] for wa in whereargs[0]]
+                leftWhere = [broadcast(fullSegs, kw, ranges.size) for kw in keep_where]
             # Evaluate wherefunc and filter ranges, recompute segments
             whereSatisfied = wherefunc(leftWhere, rightWhere)
             filtRanges = ranges[whereSatisfied]
@@ -282,5 +323,5 @@ def inner_join(
             keep12 = keep[keep2]
     # Gather right inds and expand left inds
     rightInds = byRight.permutation[filtRanges]
-    leftInds = broadcast(filtSegs, arange(left.size)[keep12], filtRanges.size)
+    leftInds = broadcast(filtSegs, arange(left_size)[keep12], filtRanges.size)
     return leftInds, rightInds
