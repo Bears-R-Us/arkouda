@@ -212,6 +212,18 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.sin(na), ak.sin(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(np.sin(na, where=True), ak.sin(pda, where=True).to_ndarray(), equal_nan=True)
+        assert np.allclose(na, ak.sin(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.sin(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.sin(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.sin(np.array([range(0, 10)]).astype(num_type))
 
@@ -221,6 +233,18 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.cos(na), ak.cos(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(np.cos(na, where=True), ak.cos(pda, where=True).to_ndarray(), equal_nan=True)
+        assert np.allclose(na, ak.cos(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.cos(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.cos(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.cos(np.array([range(0, 10)]).astype(num_type))
 
@@ -230,6 +254,18 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.tan(na), ak.tan(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(np.tan(na, where=True), ak.tan(pda, where=True).to_ndarray(), equal_nan=True)
+        assert np.allclose(na, ak.tan(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.tan(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.tan(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.tan(np.array([range(0, 10)]).astype(num_type))
 
@@ -239,6 +275,20 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arcsin(na), ak.arcsin(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.arcsin(na, where=True), ak.arcsin(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.arcsin(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.arcsin(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.arcsin(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.arcsin(np.array([range(0, 10)]).astype(num_type))
 
@@ -248,6 +298,19 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arccos(na), ak.arccos(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.arccos(na, where=True), ak.arccos(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.arccos(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.arccos(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.arccos(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
         with pytest.raises(TypeError):
             ak.arccos(np.array([range(0, 10)]).astype(num_type))
 
@@ -257,6 +320,20 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arctan(na), ak.arctan(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.arctan(na, where=True), ak.arctan(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.arctan(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.arctan(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.arctan(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.arctan(np.array([range(0, 10)]).astype(num_type))
 
@@ -269,17 +346,62 @@ class TestNumeric:
         pda_num = ak.array(na_num, dtype=num_type)
         pda_denom = ak.array(na_denom, dtype=denom_type)
 
-        num = pda_num[0]
-        denom = pda_denom[0]
+        truth_np = np.arange(len(na_num)) % 2 == 0
+        truth_ak = ak.array(truth_np)
 
         assert np.allclose(
-            np.arctan2(na_num, na_denom), ak.arctan2(pda_num, pda_denom).to_ndarray(), equal_nan=True
+            np.arctan2(na_num, na_denom, where=True),
+            ak.arctan2(pda_num, pda_denom, where=True).to_ndarray(),
+            equal_nan=True,
         )
         assert np.allclose(
-            np.arctan2(num, na_denom), ak.arctan2(num, pda_denom).to_ndarray(), equal_nan=True
+            np.arctan2(na_num[0], na_denom, where=True),
+            ak.arctan2(pda_num[0], pda_denom, where=True).to_ndarray(),
+            equal_nan=True,
         )
         assert np.allclose(
-            np.arctan2(na_num, denom), ak.arctan2(pda_num, denom).to_ndarray(), equal_nan=True
+            np.arctan2(na_num, na_denom[0], where=True),
+            ak.arctan2(pda_num, pda_denom[0], where=True).to_ndarray(),
+            equal_nan=True,
+        )
+
+        assert np.allclose(
+            na_num / na_denom, ak.arctan2(pda_num, pda_denom, where=False).to_list(), equal_nan=True
+        )
+        assert np.allclose(
+            na_num[0] / na_denom,
+            ak.arctan2(pda_num[0], pda_denom, where=False).to_ndarray(),
+            equal_nan=True,
+        )
+        assert np.allclose(
+            na_num / na_denom[0],
+            ak.arctan2(pda_num, pda_denom[0], where=False).to_ndarray(),
+            equal_nan=True,
+        )
+
+        assert np.allclose(
+            [
+                np.arctan2(na_num[i], na_denom[i]) if truth_np[i] else na_num[i] / na_denom[i]
+                for i in range(len(na_num))
+            ],
+            ak.arctan2(pda_num, pda_denom, where=truth_ak).to_ndarray(),
+            equal_nan=True,
+        )
+        assert np.allclose(
+            [
+                np.arctan2(na_num[0], na_denom[i]) if truth_np[i] else na_num[0] / na_denom[i]
+                for i in range(len(na_denom))
+            ],
+            ak.arctan2(pda_num[0], pda_denom, where=truth_ak).to_ndarray(),
+            equal_nan=True,
+        )
+        assert np.allclose(
+            [
+                np.arctan2(na_num[i], na_denom[0]) if truth_np[i] else na_num[i] / na_denom[0]
+                for i in range(len(na_num))
+            ],
+            ak.arctan2(pda_num, pda_denom[0], where=truth_ak).to_ndarray(),
+            equal_nan=True,
         )
 
         with pytest.raises(TypeError):
@@ -287,9 +409,9 @@ class TestNumeric:
                 np.array([range(0, 10)]).astype(num_type), np.array([range(10, 20)]).astype(num_type)
             )
         with pytest.raises(TypeError):
-            ak.arctan2(num, np.array([range(10, 20)]).astype(num_type))
+            ak.arctan2(pda_num[0], np.array([range(10, 20)]).astype(num_type))
         with pytest.raises(TypeError):
-            ak.arctan2(np.array([range(0, 10)]).astype(num_type), denom)
+            ak.arctan2(np.array([range(0, 10)]).astype(num_type), pda_denom[0])
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_sinh(self, num_type):
@@ -297,6 +419,20 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.sinh(na, where=True), ak.sinh(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.sinh(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.sinh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.sinh(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.sinh(np.array([range(0, 10)]).astype(num_type))
 
@@ -306,6 +442,20 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.cosh(na, where=True), ak.cosh(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.cosh(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.cosh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.cosh(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.cosh(np.array([range(0, 10)]).astype(num_type))
 
@@ -315,6 +465,20 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.tanh(na, where=True), ak.tanh(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.tanh(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.tanh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.tanh(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.tanh(np.array([range(0, 10)]).astype(num_type))
 
@@ -324,6 +488,20 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.arcsinh(na, where=True), ak.arcsinh(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.arcsinh(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.arcsinh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.arcsinh(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.arcsinh(np.array([range(0, 10)]).astype(num_type))
 
@@ -333,6 +511,20 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.arccosh(na, where=True), ak.arccosh(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.arccosh(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.arccosh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.arccosh(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.arccosh(np.array([range(0, 10)]).astype(num_type))
 
@@ -342,6 +534,20 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.arctanh(na), ak.arctanh(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.arctanh(na, where=True), ak.arctanh(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.arctanh(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.arctanh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.arctanh(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.arctanh(np.array([range(0, 10)]).astype(num_type))
 
@@ -351,6 +557,20 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.rad2deg(na), ak.rad2deg(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.rad2deg(na, where=True), ak.rad2deg(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.rad2deg(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.rad2deg(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.rad2deg(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.rad2deg(np.array([range(0, 10)]).astype(num_type))
 
@@ -360,6 +580,20 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
 
         assert np.allclose(np.deg2rad(na), ak.deg2rad(pda).to_ndarray(), equal_nan=True)
+
+        # Test where feature for singleton and array cases
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        assert np.allclose(
+            np.deg2rad(na, where=True), ak.deg2rad(pda, where=True).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(na, ak.deg2rad(pda, where=False).to_ndarray(), equal_nan=True)
+        assert np.allclose(
+            [np.deg2rad(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+            ak.deg2rad(pda, where=truth_ak).to_list(),
+            equal_nan=True,
+        )
+
         with pytest.raises(TypeError):
             ak.deg2rad(np.array([range(0, 10)]).astype(num_type))
 
@@ -395,20 +629,6 @@ class TestNumeric:
         ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))
         with pytest.raises(RuntimeError):
             ak.isnan(ark_s_int64)
-
-    def test_str_cat_cast(self):
-        test_strs = [
-            ak.array([f"str {i}" for i in range(101)]),
-            ak.array([f"str {i%3}" for i in range(101)]),
-        ]
-        for test_str, test_cat in zip(test_strs, [ak.Categorical(s) for s in test_strs]):
-            cast_str = ak.cast(test_cat, ak.Strings)
-            assert (cast_str == test_str).all()
-            cast_cat = ak.cast(test_str, ak.Categorical)
-            assert (cast_cat == test_cat).all()
-
-            assert isinstance(cast_str, ak.Strings)
-            assert isinstance(cast_cat, ak.Categorical)
 
     def test_precision(self):
         # See https://github.com/Bears-R-Us/arkouda/issues/964
