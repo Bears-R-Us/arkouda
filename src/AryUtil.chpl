@@ -41,6 +41,7 @@ module AryUtil
             if dimSize == 0 {
                 s = "";
             } else if dimSize < printThresh {
+                // create a string representation of all elements along this dimension
                 var first = true,
                     idx: d.rank*int;
 
@@ -50,6 +51,8 @@ module AryUtil
                     s += "?".doFormat(A[idx]);
                 }
             } else {
+                // create a string representation of the first three and last three elements
+                // along this dimension
                 var indices: 6*(d.rank*int);
                 indices[0][dimIdx] = 0;
                 indices[1][dimIdx] = 1;
@@ -72,6 +75,27 @@ module AryUtil
             return s;
         }
 
+        // create a string with a summary of each dimension individually
+        // For a 2D array, the first dimension;s summary would include:
+        /*
+          | X X X                |
+          |                      |
+          |                      |
+          |                      |
+          |                      |
+          |                      |
+          |                X X X |
+        */
+        // And the second dimension's summary would include:
+        /*
+          | X                    |
+          | X                    |
+          | X                    |
+          |                      |
+          |                    X |
+          |                    X |
+          |                    X |
+        */
         var s = "",
             first = true;
         for dimIdx in 0..<d.rank {
