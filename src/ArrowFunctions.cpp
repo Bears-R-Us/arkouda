@@ -275,25 +275,31 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
         }
         column_reader = row_group_reader->Column(idx);
 
-        int16_t definition_level;
         parquet::ByteArrayReader* ba_reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
         int64_t numRead = 0;
+        int64_t batchSize = 256;
         while (ba_reader->HasNext() && numRead < numElems) {
-          parquet::ByteArray value;
-          (void)ba_reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-          if ((ty == ARROWLIST && definition_level == 3) || ty == ARROWSTRING) {
-            if(values_read > 0) {
-              offsets[i] = value.len + 1;
-              byteSize += value.len + 1;
-              numRead += values_read;
-            } else {
-              offsets[i] = 1;
-              byteSize+=1;
-              numRead+=1;
+          if((numElems - numRead) < batchSize)
+            batchSize = numElems-numRead;
+          std::vector<parquet::ByteArray> string_values(batchSize);
+          std::vector<int16_t> definition_level(batchSize);
+          (void)ba_reader->ReadBatch(256, definition_level.data(), nullptr, string_values.data(), &values_read);
+          for(int j = 0; j < values_read; j++) {
+            if ((ty == ARROWLIST && definition_level[j] == 3) || ty == ARROWSTRING) {
+              auto value = string_values[j];
+              if(value.len != 0) {
+                offsets[i] = value.len + 1;
+                byteSize += value.len + 1;
+                numRead += values_read;
+              } else {
+                offsets[i] = 1;
+                byteSize+=1;
+                numRead+=1;
+              }
+              i++;
             }
-            i++;
           }
         }
       }
