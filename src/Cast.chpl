@@ -186,15 +186,15 @@ module Cast {
       // do something like segmented computation w/o the aggregation
       select errors {
         when ErrorMode.strict {
-          var entry = st.addEntry(name, createSymEntry(computeOnSegmentsWithoutAggregation(oa, va, SegFunction.StringToNumericStrict, bigint)));
+          var entry = st.addEntry(name, createSymEntry(computeOnSegments(oa, va, SegFunction.StringToNumericStrict, bigint)));
           returnMsg = "created " + st.attrib(name);
         }
         when ErrorMode.ignore {
-          var entry = st.addEntry(name, createSymEntry(computeOnSegmentsWithoutAggregation(oa, va, SegFunction.StringToNumericIgnore, bigint)));
+          var entry = st.addEntry(name, createSymEntry(computeOnSegments(oa, va, SegFunction.StringToNumericIgnore, bigint)));
           returnMsg = "created " + st.attrib(name);
         }
         when ErrorMode.return_validity {
-          var valWithFlag = computeOnSegmentsWithoutAggregation(oa, va, SegFunction.StringToNumericReturnValidity, (bigint, bool));
+          var valWithFlag = computeOnSegments(oa, va, SegFunction.StringToNumericReturnValidity, (bigint, bool));
           const vname = st.nextName();
           var valid = st.addEntry(vname, s.size, bool);
           var tmp = makeDistArray(s.size, bigint);
