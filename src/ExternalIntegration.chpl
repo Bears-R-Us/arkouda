@@ -501,7 +501,7 @@ module ExternalIntegration {
         return (serviceName,servicePort,targetServicePort);
     } 
 
-    proc getKubernetesDeregisterParameters(serviceEndpoint: ServiceEndpoint) {
+    proc getKubernetesDeregisterParameters(serviceEndpoint: ServiceEndpoint) throws {
         if serviceEndpoint == ServiceEndpoint.METRICS {
             return ServerConfig.getEnv('METRICS_SERVICE_NAME');
         } else {
