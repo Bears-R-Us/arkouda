@@ -652,7 +652,7 @@ def arctan2(
                     },
                 ),
             )
-        new_pda = (num / denom)[:]
+        new_pda = num / denom
         ret = create_pdarray(repMsg)
         new_pda = cast(new_pda, ret.dtype)
         new_pda[where] = ret
