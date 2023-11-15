@@ -69,10 +69,10 @@ class ErrorMode(Enum):
 
 @typechecked
 def cast(
-    pda: Union[pdarray, Strings, Categorical], # type: ignore
+    pda: Union[pdarray, Strings, Categorical],  # type: ignore
     dt: Union[np.dtype, type, str, BigInt],
     errors: ErrorMode = ErrorMode.strict,
-) -> Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]: # type: ignore
+) -> Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]:  # type: ignore
     """
     Cast an array to another dtype.
 
@@ -652,7 +652,7 @@ def arctan2(
                     },
                 ),
             )
-        new_pda = (num/denom)[:]
+        new_pda = (num / denom)[:]
         ret = create_pdarray(repMsg)
         new_pda = cast(new_pda, ret.dtype)
         new_pda[where] = ret
