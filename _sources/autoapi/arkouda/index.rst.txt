@@ -234,8 +234,6 @@ Functions
    arkouda.intersect
    arkouda.invert_permutation
    arkouda.intx
-   arkouda.inner_join_merge
-   arkouda.right_join_merge
    arkouda.merge
    arkouda.unique
    arkouda.akcast
@@ -13330,50 +13328,7 @@ Attributes
       Attempts to convert to numeric values where possible for inclusion in the matrix.
 
 
-   .. py:method:: inner_join_merge(right: DataFrame, on: str, left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
-
-      Utilizes the ak.join.inner_join function to return an ak
-      DataFrame object containing only rows that are in both
-      self and right Dataframes, (based on the "on" param),
-      as well as their associated values. For this function self
-      is considered the left dataframe.
-
-      :param right: The Right DataFrame to be joined
-      :type right: DataFrame
-      :param on: The name of the DataFrame column the join is being
-                 performed on
-      :type on: str
-      :param left_suffix: A string indicating the suffix to add to columns from self for overlapping
-                          column names in both left and right. Defaults to "_x"
-      :type left_suffix: str = "_x"
-      :param right_suffix: A string indicating the suffix to add to columns from the other dataframe for overlapping
-                           column names in both left and right. Defaults to "_y"
-      :type right_suffix: str = "_y"
-
-      :returns: Inner-Joined Arkouda DataFrame
-      :rtype: DataFrame
-
-
-   .. py:method:: right_join_merge(right: DataFrame, on: str) -> DataFrame
-
-      Utilizes the ak.join.inner_join_merge function to return an
-      ak DataFrame object containing all the rows in the right Dataframe,
-      as well as corresponding rows in self (based on the "on" param),
-      and all of their associated values. For this function self
-      is considered the left dataframe.
-      Based on pandas merge functionality.
-
-      :param right: The Right DataFrame to be joined
-      :type right: DataFrame
-      :param on: The name of the DataFrame column the join is being
-                 performed on
-      :type on: str
-
-      :returns: Right-Joined Arkouda DataFrame
-      :rtype: DataFrame
-
-
-   .. py:method:: merge(right: DataFrame, on: str, how: str, left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
+   .. py:method:: merge(right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
 
       Utilizes the ak.join.inner_join_merge and the ak.join.right_join_merge
       functions to return a merged Arkouda DataFrame object
@@ -13385,12 +13340,12 @@ Attributes
 
       :param right: The Right DataFrame to be joined
       :type right: DataFrame
-      :param on: The name of the DataFrame column the join is being
-                 performed on
-      :type on: str
+      :param on: The name or list of names of the DataFrame column(s) to join on.
+                 If on is None, this defaults to the intersection of the columns in both DataFrames.
+      :type on: Optional[Union[str, List[str]]] = None
       :param how: The merge condition.
                   Must be "inner", "left", or "right"
-      :type how: str
+      :type how: str = "inner",
       :param left_suffix: A string indicating the suffix to add to columns from the left dataframe for overlapping
                           column names in both left and right. Defaults to "_x". Only used when how is "inner"
       :type left_suffix: str = "_x"
@@ -13398,8 +13353,8 @@ Attributes
                            column names in both left and right. Defaults to "_y". Only used when how is "inner"
       :type right_suffix: str = "_y"
 
-      :returns: Joined Arkouda DataFrame
-      :rtype: DataFrame
+      :returns: * *DataFrame* -- Joined Arkouda DataFrame
+                * **Note** (*Multiple column joins are only supported for integer columns*)
 
 
    .. py:method:: register(user_defined_name: str) -> DataFrame
@@ -13561,56 +13516,7 @@ Attributes
    Strings, pdarrays of int64 type, and Categorical *should* work.
 
 
-.. py:function:: inner_join_merge(left: DataFrame, right: DataFrame, on: str, left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
-
-   Utilizes the ak.join.inner_join function to return an ak
-   DataFrame object containing only rows that are in both
-   the left and right Dataframes, (based on the "on" param),
-   as well as their associated values.
-   :param left: The Left DataFrame to be joined
-   :type left: DataFrame
-   :param right: The Right DataFrame to be joined
-   :type right: DataFrame
-   :param on: The name of the DataFrame column the join is being
-              performed on
-   :type on: str
-   :param left_suffix: A string indicating the suffix to add to columns from the left dataframe for overlapping
-                       column names in both left and right. Defaults to "_x"
-   :type left_suffix: str = "_x"
-   :param right_suffix: A string indicating the suffix to add to columns from the right dataframe for overlapping
-                        column names in both left and right. Defaults to "_y"
-   :type right_suffix: str = "_y"
-
-   :returns: Inner-Joined Arkouda DataFrame
-   :rtype: DataFrame
-
-
-.. py:function:: right_join_merge(left: DataFrame, right: DataFrame, on: str, left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
-
-   Utilizes the ak.join.inner_join_merge function to return an
-   ak DataFrame object containing all the rows in the right Dataframe,
-   as well as corresponding rows in the left (based on the "on" param),
-   and all of their associated values.
-   Based on pandas merge functionality.
-   :param left: The Left DataFrame to be joined
-   :type left: DataFrame
-   :param right: The Right DataFrame to be joined
-   :type right: DataFrame
-   :param on: The name of the DataFrame column the join is being
-              performed on
-   :type on: str
-   :param left_suffix: A string indicating the suffix to add to columns from the left dataframe for overlapping
-                       column names in both left and right. Defaults to "_x"
-   :type left_suffix: str = "_x"
-   :param right_suffix: A string indicating the suffix to add to columns from the right dataframe for overlapping
-                        column names in both left and right. Defaults to "_y"
-   :type right_suffix: str = "_y"
-
-   :returns: Right-Joined Arkouda DataFrame
-   :rtype: DataFrame
-
-
-.. py:function:: merge(left: DataFrame, right: DataFrame, on: str, how: str, left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
+.. py:function:: merge(left: DataFrame, right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
 
    Utilizes the ak.join.inner_join_merge and the ak.join.right_join_merge
    functions to return a merged Arkouda DataFrame object
@@ -13622,12 +13528,12 @@ Attributes
    :type left: DataFrame
    :param right: The Right DataFrame to be joined
    :type right: DataFrame
-   :param on: The name of the DataFrame column the join is being
-              performed on
-   :type on: str
+   :param on: The name or list of names of the DataFrame column(s) to join on.
+              If on is None, this defaults to the intersection of the columns in both DataFrames.
+   :type on: Optional[Union[str, List[str]]] = None
    :param how: The merge condition.
-               Must be "inner", "left", or "right"
-   :type how: str
+               Must be one of "inner", "left", or "right"
+   :type how: str = "inner"
    :param left_suffix: A string indicating the suffix to add to columns from the left dataframe for overlapping
                        column names in both left and right. Defaults to "_x". Only used when how is "inner"
    :type left_suffix: str = "_x"
@@ -13635,8 +13541,8 @@ Attributes
                         column names in both left and right. Defaults to "_y". Only used when how is "inner"
    :type right_suffix: str = "_y"
 
-   :returns: Joined Arkouda DataFrame
-   :rtype: DataFrame
+   :returns: * *DataFrame* -- Joined Arkouda DataFrame
+             * **Note** (*Multiple column joins are only supported for integer columns*)
 
 
 .. py:class:: Row(dict=None, /, **kwargs)
@@ -20548,50 +20454,7 @@ Attributes
       Attempts to convert to numeric values where possible for inclusion in the matrix.
 
 
-   .. py:method:: inner_join_merge(right: DataFrame, on: str, left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
-
-      Utilizes the ak.join.inner_join function to return an ak
-      DataFrame object containing only rows that are in both
-      self and right Dataframes, (based on the "on" param),
-      as well as their associated values. For this function self
-      is considered the left dataframe.
-
-      :param right: The Right DataFrame to be joined
-      :type right: DataFrame
-      :param on: The name of the DataFrame column the join is being
-                 performed on
-      :type on: str
-      :param left_suffix: A string indicating the suffix to add to columns from self for overlapping
-                          column names in both left and right. Defaults to "_x"
-      :type left_suffix: str = "_x"
-      :param right_suffix: A string indicating the suffix to add to columns from the other dataframe for overlapping
-                           column names in both left and right. Defaults to "_y"
-      :type right_suffix: str = "_y"
-
-      :returns: Inner-Joined Arkouda DataFrame
-      :rtype: DataFrame
-
-
-   .. py:method:: right_join_merge(right: DataFrame, on: str) -> DataFrame
-
-      Utilizes the ak.join.inner_join_merge function to return an
-      ak DataFrame object containing all the rows in the right Dataframe,
-      as well as corresponding rows in self (based on the "on" param),
-      and all of their associated values. For this function self
-      is considered the left dataframe.
-      Based on pandas merge functionality.
-
-      :param right: The Right DataFrame to be joined
-      :type right: DataFrame
-      :param on: The name of the DataFrame column the join is being
-                 performed on
-      :type on: str
-
-      :returns: Right-Joined Arkouda DataFrame
-      :rtype: DataFrame
-
-
-   .. py:method:: merge(right: DataFrame, on: str, how: str, left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
+   .. py:method:: merge(right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
 
       Utilizes the ak.join.inner_join_merge and the ak.join.right_join_merge
       functions to return a merged Arkouda DataFrame object
@@ -20603,12 +20466,12 @@ Attributes
 
       :param right: The Right DataFrame to be joined
       :type right: DataFrame
-      :param on: The name of the DataFrame column the join is being
-                 performed on
-      :type on: str
+      :param on: The name or list of names of the DataFrame column(s) to join on.
+                 If on is None, this defaults to the intersection of the columns in both DataFrames.
+      :type on: Optional[Union[str, List[str]]] = None
       :param how: The merge condition.
                   Must be "inner", "left", or "right"
-      :type how: str
+      :type how: str = "inner",
       :param left_suffix: A string indicating the suffix to add to columns from the left dataframe for overlapping
                           column names in both left and right. Defaults to "_x". Only used when how is "inner"
       :type left_suffix: str = "_x"
@@ -20616,8 +20479,8 @@ Attributes
                            column names in both left and right. Defaults to "_y". Only used when how is "inner"
       :type right_suffix: str = "_y"
 
-      :returns: Joined Arkouda DataFrame
-      :rtype: DataFrame
+      :returns: * *DataFrame* -- Joined Arkouda DataFrame
+                * **Note** (*Multiple column joins are only supported for integer columns*)
 
 
    .. py:method:: register(user_defined_name: str) -> DataFrame
