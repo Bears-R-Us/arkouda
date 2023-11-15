@@ -768,7 +768,7 @@ class DataFrameTest(ArkoudaTest):
                 "key": ak.array([2, 3]),
                 "value1_x": ak.array(["C", "D"]),
                 "value1_y": ak.array(["A", "B"]),
-                "value2": ak.array(["apple", "banana"])
+                "value2": ak.array(["apple", "banana"]),
             }
         )
 
@@ -785,7 +785,7 @@ class DataFrameTest(ArkoudaTest):
                 "key": ak.array([2, 3, 4, 5]),
                 "value1_x": ak.array(["C", "D", "nan", "nan"]),
                 "value1_y": ak.array(["A", "B", "D", "F"]),
-                "value2": ak.array(["apple", "banana", "cherry", "date"])
+                "value2": ak.array(["apple", "banana", "cherry", "date"]),
             }
         )
 
@@ -813,3 +813,37 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(lj_expected_df["value1_x"].to_list(), lj_merged_df["value1_x"].to_list())
         self.assertListEqual(lj_expected_df["value1_y"].to_list(), lj_merged_df["value1_y"].to_list())
         self.assertListEqual(lj_expected_df["value2"].to_list(), lj_merged_df["value2"].to_list())
+
+    def test_multi_col_merge(self):
+        size = 1000
+        seed = 1
+        a = ak.randint(-size // 10, size // 10, size, seed=seed)
+        b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
+        c = ak.randint(-size // 10, size // 10, size, seed=seed + 2)
+        d = ak.randint(-size // 10, size // 10, size, seed=seed + 3)
+        left_df = ak.DataFrame({"first": a, "second": b, "third": ak.ones(size, int)})
+        right_df = ak.DataFrame(
+            {"first": c, "second": d, "third": ak.cast(ak.arange(size) % 2 == 0, int)}
+        )
+        l_pd, r_pd = left_df.to_pandas(), right_df.to_pandas()
+
+        for how in "inner", "left", "right":
+            for on in "first", "second", "third", ["first", "third"], ["second", "third"], None:
+                ak_merge = ak.merge(left_df, right_df, on=on, how=how)
+                pd_merge = pd.merge(l_pd, r_pd, on=on, how=how)
+
+                sorted_columns = sorted(ak_merge.columns)
+                self.assertListEqual(sorted_columns, sorted(pd_merge.columns.to_list()))
+                sorted_ak = ak_merge.sort_values(sorted_columns).reset_index()
+                sorted_pd = pd_merge.sort_values(sorted_columns).reset_index(drop=True)
+                for col in sorted_columns:
+                    self.assertTrue(
+                        np.allclose(
+                            sorted_ak[col].to_ndarray(), sorted_pd[col].to_numpy(), equal_nan=True
+                        )
+                    )
+
+                # TODO arkouda seems to be sometimes convert columns to floats on a right merge
+                #  when pandas doesnt. Eventually we want to test frame_equal, not just value equality
+                # from pandas.testing import assert_frame_equal
+                # assert_frame_equal(sorted_ak.to_pandas()[sorted_columns], sorted_pd[sorted_columns])
