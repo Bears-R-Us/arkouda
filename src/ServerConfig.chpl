@@ -88,7 +88,7 @@ module ServerConfig
     /*
     Write the server `hostname:port` to this file.
     */
-    config const serverConnectionInfo: string = getEnv("ARKOUDA_SERVER_CONNECTION_INFO", "");
+    config const serverConnectionInfo: string = try! getEnv("ARKOUDA_SERVER_CONNECTION_INFO", "");
 
     /*
     Flag to shut down the arkouda server automatically when the client disconnects
@@ -231,10 +231,10 @@ module ServerConfig
         return cfgStr;
     }
 
-    proc getEnv(name: string, default=""): string {
+    proc getEnv(name: string, default=""): string throws {
         use OS.POSIX;
         var envBytes = getenv(name.localize().c_str());
-        var val = envBytes:string;
+        var val = string.createCopyingBuffer(envBytes:c_string_ptr);
         if envBytes == nil || val.isEmpty() { val = default; }
         return val;
     }
