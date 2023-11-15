@@ -69,10 +69,10 @@ class ErrorMode(Enum):
 
 @typechecked
 def cast(
-    pda: Union[pdarray, Strings],
+    pda: Union[pdarray, Strings, Categorical], # type: ignore
     dt: Union[np.dtype, type, str, BigInt],
     errors: ErrorMode = ErrorMode.strict,
-) -> Union[Union[pdarray, Strings], Tuple[pdarray, pdarray]]:
+) -> Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]: # type: ignore
     """
     Cast an array to another dtype.
 
@@ -121,11 +121,19 @@ def cast(
     >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
     array([False, True, True, True, True])
     """
+    from arkouda.categorical import Categorical  # type: ignore
 
     if isinstance(pda, pdarray):
         name = pda.name
     elif isinstance(pda, Strings):
         name = pda.entry.name
+        if dt is Categorical or dt == "Categorical":
+            return Categorical(pda)  # type: ignore
+    elif isinstance(pda, Categorical):  # type: ignore
+        if dt is Strings or dt in ["Strings", "str"]:
+            return pda.categories[pda.codes]
+        else:
+            raise ValueError("Categoricals can only be casted to Strings")
     # typechecked decorator guarantees no other case
 
     dt = _as_dtype(dt)
