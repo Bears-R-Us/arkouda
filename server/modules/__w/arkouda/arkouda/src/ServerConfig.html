@@ -197,7 +197,7 @@ or on Kubernetes, defaults to Deployment.STANDARD</p>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.serverConnectionInfo">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">serverConnectionInfo</span></span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">getEnv(&quot;ARKOUDA_SERVER_CONNECTION_INFO&quot;,</span> <span class="pre">&quot;&quot;)</span><a class="headerlink" href="#ServerConfig.serverConnectionInfo" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">serverConnectionInfo</span></span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">try!</span> <span class="pre">getEnv(&quot;ARKOUDA_SERVER_CONNECTION_INFO&quot;,</span> <span class="pre">&quot;&quot;)</span><a class="headerlink" href="#ServerConfig.serverConnectionInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the server <cite>hostname:port</cite> to this file.</p>
 </dd></dl>
 
@@ -281,7 +281,7 @@ or on Kubernetes, defaults to Deployment.STANDARD</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getEnv">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">default</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerConfig.getEnv" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">default</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#ServerConfig.getEnv" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

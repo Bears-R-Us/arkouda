@@ -25,7 +25,7 @@ or
 
 .. data:: const mLogger = new Logger(logLevel, logChannel)
 
-.. data:: var metricScope = ServerConfig.getEnv(name = "METRIC_SCOPE", default = "MetricScope.REQUEST")
+.. data:: var metricScope = try! ServerConfig.getEnv(name = "METRIC_SCOPE", default = "MetricScope.REQUEST")
 
 .. data:: var serverMetrics = new CounterTable()
 

@@ -246,7 +246,7 @@ or
 
 .. function:: proc getKubernetesRegistrationParameters(serviceEndpoint: ServiceEndpoint) throws
 
-.. function:: proc getKubernetesDeregisterParameters(serviceEndpoint: ServiceEndpoint)
+.. function:: proc getKubernetesDeregisterParameters(serviceEndpoint: ServiceEndpoint) throws
 
 .. function:: proc registerWithExternalSystem(appName: string, endpoint: ServiceEndpoint) throws
 
