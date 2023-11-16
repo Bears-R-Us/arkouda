@@ -850,9 +850,6 @@ module ParquetMsg {
         } else if ty == ArrowTypes.stringArr {
           var entrySeg = createSymEntry(len, int);
           byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
-          writeln();
-          writeln("Got this many bytes yo ", byteSizes);
-          writeln();
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
           
           var entryVal = createSymEntry((+ reduce byteSizes), uint(8));

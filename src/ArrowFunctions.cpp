@@ -232,7 +232,6 @@ int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
 
 int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
   try {
-    std::cout << "Using batch size: " << batchSize << std::endl;
     int64_t ty = cpp_getType(filename, colname, errMsg);
     int64_t dty; // used to store the type of data so we can handle lists
     if (ty == ARROWLIST) { // get the type of the list so we can verify it is ARROWSTRING
@@ -804,7 +803,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         parquet::ByteArrayReader* reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
-        std::cout << "Reading into Chapel arr with: " << batchSize << std::endl;
         while (reader->HasNext()) {
           std::vector<parquet::ByteArray> string_values(batchSize);
           std::vector<int16_t> definition_level(batchSize);
