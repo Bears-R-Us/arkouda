@@ -41,6 +41,7 @@ module ParquetMsg {
   const pqLogger = new Logger(logLevel, logChannel);
   config const TRUNCATE: int = 0;
   config const APPEND: int = 1;
+  config const STRING_BATCH_SIZE=1;
   
   private config const ROWGROUPS = 512*1024*1024 / numBytes(int); // 512 mb of int64
   // Undocumented for now, just for internal experiments
@@ -166,7 +167,7 @@ module ParquetMsg {
 
             if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
                                   dsetname.localize().c_str(), intersection.size, 0,
-                                  batchSize, -1, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+                                  STRING_BATCH_SIZE, -1, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
             A[filedom] = col;
@@ -296,13 +297,13 @@ module ParquetMsg {
   }
 
   proc getStrColSize(filename: string, dsetname: string, ref offsets: [] int) throws {
-    extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, errMsg): int;
+    extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, batchSize, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
     var byteSize = c_getStringColumnNumBytes(filename.localize().c_str(),
                                              dsetname.localize().c_str(),
                                              c_ptrTo(offsets),
-                                             offsets.size, 0,
+                                             offsets.size, 0, STRING_BATCH_SIZE,
                                              c_ptrTo(pqErr.errMsg));
     
     if byteSize == ARROWERROR then
@@ -849,6 +850,9 @@ module ParquetMsg {
         } else if ty == ArrowTypes.stringArr {
           var entrySeg = createSymEntry(len, int);
           byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
+          writeln();
+          writeln("Got this many bytes yo ", byteSizes);
+          writeln();
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
           
           var entryVal = createSymEntry((+ reduce byteSizes), uint(8));

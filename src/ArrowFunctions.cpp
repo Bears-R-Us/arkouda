@@ -230,8 +230,9 @@ int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
   }
 }
 
-int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
+int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
   try {
+    std::cout << "Using batch size: " << batchSize << std::endl;
     int64_t ty = cpp_getType(filename, colname, errMsg);
     int64_t dty; // used to store the type of data so we can handle lists
     if (ty == ARROWLIST) { // get the type of the list so we can verify it is ARROWSTRING
@@ -279,28 +280,25 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
         int64_t numRead = 0;
-        int64_t batchSize = 256;
         while (ba_reader->HasNext() && numRead < numElems) {
           if((numElems - numRead) < batchSize)
             batchSize = numElems-numRead;
           std::vector<parquet::ByteArray> string_values(batchSize);
           std::vector<int16_t> definition_level(batchSize);
-          (void)ba_reader->ReadBatch(256, definition_level.data(), nullptr, string_values.data(), &values_read);
-          for(int j = 0; j < values_read; j++) {
-            if ((ty == ARROWLIST && definition_level[j] == 3) || ty == ARROWSTRING) {
-              auto value = string_values[j];
-              if(value.len != 0) {
-                offsets[i] = value.len + 1;
-                byteSize += value.len + 1;
-                numRead += values_read;
-              } else {
-                offsets[i] = 1;
-                byteSize+=1;
-                numRead+=1;
-              }
-              i++;
+          (void)ba_reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values.data(), &values_read);
+          numRead += values_read;
+          for(int asd = 0; asd < values_read; asd++) {
+            auto value = string_values[asd];
+            if(value.len != 0) {
+              offsets[i] = value.len + 1;
+              byteSize += value.len + 1;
+            } else {
+              offsets[i] = 1;
+              byteSize+=1;
             }
+            i++;
           }
+          
         }
       }
       return byteSize;
@@ -806,17 +804,20 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         parquet::ByteArrayReader* reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
+        std::cout << "Reading into Chapel arr with: " << batchSize << std::endl;
         while (reader->HasNext()) {
-          parquet::ByteArray value;
-          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          std::vector<parquet::ByteArray> string_values(batchSize);
+          std::vector<int16_t> definition_level(batchSize);
+          (void)reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values.data(), &values_read);
           // if values_read is 0, that means that it was a null value
-          if(values_read > 0) {
+          for (int asd = 0; asd < values_read; asd++) {
+            auto value = string_values[asd];
             for(int j = 0; j < value.len; j++) {
               chpl_ptr[i] = value.ptr[j];
               i++;
             }
+            i++; // skip one space so the strings are null terminated with a 0
           }
-          i++; // skip one space so the strings are null terminated with a 0
         }
       } else if(ty == ARROWFLOAT) {
         auto chpl_ptr = (double*)chpl_arr;
@@ -2069,8 +2070,8 @@ extern "C" {
                                      errMsg);
   }
 
-  int64_t c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
-    return cpp_getStringColumnNumBytes(filename, colname, chpl_offsets, numElems, startIdx, errMsg);
+  int64_t c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
+    return cpp_getStringColumnNumBytes(filename, colname, chpl_offsets, numElems, startIdx, batchSize, errMsg);
   }
 
   int64_t c_getListColumnSize(const char* filename, const char* colname, void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg) {
