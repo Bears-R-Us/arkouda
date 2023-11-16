@@ -41,7 +41,6 @@ module ParquetMsg {
   const pqLogger = new Logger(logLevel, logChannel);
   config const TRUNCATE: int = 0;
   config const APPEND: int = 1;
-  config const STRING_BATCH_SIZE=1;
   
   private config const ROWGROUPS = 512*1024*1024 / numBytes(int); // 512 mb of int64
   // Undocumented for now, just for internal experiments
@@ -167,7 +166,7 @@ module ParquetMsg {
 
             if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
                                   dsetname.localize().c_str(), intersection.size, 0,
-                                  STRING_BATCH_SIZE, -1, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+                                  batchSize, -1, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
             A[filedom] = col;
@@ -303,7 +302,7 @@ module ParquetMsg {
     var byteSize = c_getStringColumnNumBytes(filename.localize().c_str(),
                                              dsetname.localize().c_str(),
                                              c_ptrTo(offsets),
-                                             offsets.size, 0, STRING_BATCH_SIZE,
+                                             offsets.size, 0, 256,
                                              c_ptrTo(pqErr.errMsg));
     
     if byteSize == ARROWERROR then
