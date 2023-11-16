@@ -287,11 +287,14 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
           (void)ba_reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values.data(), &values_read);
           numRead += values_read;
           if (ty == ARROWSTRING) {
-            for(int string_index = 0; string_index < values_read; string_index++) {
-              auto value = string_values[string_index];
-              if(value.len != 0) {
+            int string_index = 0;
+            for(int idx = 0; idx < definition_level.size(); idx++) {
+              auto lvl = definition_level[idx];
+              if(lvl != 0) {
+                auto value = string_values[string_index];
                 offsets[i] = value.len + 1;
                 byteSize += value.len + 1;
+                string_index++;
               } else {
                 offsets[i] = 1;
                 byteSize+=1;
@@ -821,14 +824,18 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           std::vector<parquet::ByteArray> string_values(batchSize);
           std::vector<int16_t> definition_level(batchSize);
           (void)reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values.data(), &values_read);
-          // if values_read is 0, that means that it was a null value
-          for (int string_index = 0; string_index < values_read; string_index++) {
-            auto value = string_values[string_index];
-            if (value.len > 0) {
+          std::cout << "\nRead in read: " << values_read << "\n\n";
+
+          int string_index = 0;
+          for (int idx = 0; idx < definition_level.size(); idx++) {
+            auto lvl = definition_level[idx];
+            if(lvl > 0) {
+              auto value = string_values[string_index];
               for(int j = 0; j < value.len; j++) {
                 chpl_ptr[i] = value.ptr[j];
                 i++;
               }
+              string_index++;
             }
             i++; // skip one space so the strings are null terminated with a 0
           }
