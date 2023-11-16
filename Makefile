@@ -17,6 +17,9 @@ CHPL := chpl
 # We need to make the HDF5 API use the 1.10.x version for compatibility between 1.10 and 1.12
 CHPL_FLAGS += --ccflags="-DH5_USE_110_API"
 
+# silence warnings about '@arkouda' annotations being unrecognized
+CHPL_FLAGS += --using-attribute-toolname arkouda
+
 CHPL_DEBUG_FLAGS += --print-passes
 
 ifdef ARKOUDA_DEVELOPER

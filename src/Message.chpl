@@ -254,6 +254,18 @@ module Message {
             return jsonToPdArray(this.val, size);
         }
 
+        /*
+        Parse value as a tuple of integers with the given size
+        */
+        proc getTuple(param size: int): size*int throws {
+            try {
+                return parseJsonTuple(this.val, size);
+            } catch {
+                var x: size*int; x[0] = this.getIntValue();
+                return x;
+            }
+        }
+
         proc getJSON(size: int) throws {
             if this.objType != ObjectType.DICT {
                 throw new owned ErrorWithContext("Parameter with key, %s, is not a JSON obj.".doFormat(this.key),
@@ -438,6 +450,27 @@ module Message {
      */
     proc jsonToPdArray(json: string, size: int) throws {
       return jsonToPdArrayCompat(json, size);
+    }
+
+    /*
+      Helper function to parse a JSON string as a tuple of integers
+    */
+    proc parseJsonTuple(json: string, param size: int): size*int throws {
+        var f = openMemFile();
+        var w = f.writer();
+        w.write(json);
+        w.close();
+        var r = f.reader(),
+            t: size*int,
+            first = true;
+
+        r.readLiteral("(");
+        for i in 0..<size {
+            if first then first = false; else r.readLiteral(",");
+            t[i] = r.read(int);
+        }
+        // r.readLiteral(")");
+        return t;
     }
 
 }

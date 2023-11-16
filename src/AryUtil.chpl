@@ -34,13 +34,76 @@ module AryUtil
       :arg name: name of the array
       :arg A: array to be printed
     */
-    proc formatAry(A):string throws {
-        if A.size <= printThresh {
-            return "%?".doFormat(A);
-        } else {
-            return "%? ... %?".doFormat(A[A.domain.low..A.domain.low+2],
-                                      A[A.domain.high-2..A.domain.high]);
+    proc formatAry(A: [?d]):string throws {
+        proc dimSummary(dimIdx: int): string throws {
+            const dimSize = d.dim(dimIdx).size;
+            var s: string;
+            if dimSize == 0 {
+                s = "";
+            } else if dimSize < printThresh {
+                // create a string representation of all elements along this dimension
+                var first = true,
+                    idx: d.rank*int;
+
+                for i in 0..<dimSize {
+                    if first then first = false; else s += " ";
+                    idx[dimIdx] = i;
+                    s += "?".doFormat(A[idx]);
+                }
+            } else {
+                // create a string representation of the first three and last three elements
+                // along this dimension
+                var indices: 6*(d.rank*int);
+                indices[0][dimIdx] = 0;
+                indices[1][dimIdx] = 1;
+                indices[2][dimIdx] = 2;
+
+                for dd in 0..<d.rank {
+                    const dMax = d.dim(dd).high;
+                    indices[3][dd] = dMax;
+                    indices[4][dd] = dMax;
+                    indices[5][dd] = dMax;
+                }
+
+                indices[3][dimIdx] = dimSize-3;
+                indices[4][dimIdx] = dimSize-2;
+                indices[5][dimIdx] = dimSize-1;
+
+                s = "%? %? %? ... %? %? %?".doFormat(A[indices[0]], A[indices[1]], A[indices[2]],
+                                                    A[indices[3]], A[indices[4]], A[indices[5]]);
+            }
+            return s;
         }
+
+        // create a string with a summary of each dimension individually
+        // For a 2D array, the first dimension;s summary would include:
+        /*
+          | X X X                |
+          |                      |
+          |                      |
+          |                      |
+          |                      |
+          |                      |
+          |                X X X |
+        */
+        // And the second dimension's summary would include:
+        /*
+          | X                    |
+          | X                    |
+          | X                    |
+          |                      |
+          |                    X |
+          |                    X |
+          |                    X |
+        */
+        var s = "",
+            first = true;
+        for dimIdx in 0..<d.rank {
+            if first then first = false; else s += "\n";
+            s += dimSummary(dimIdx);
+        }
+
+        return s;
     }
 
     proc printAry(name:string, A) {

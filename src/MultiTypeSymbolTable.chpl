@@ -52,17 +52,21 @@ module MultiTypeSymbolTable
             :arg name: name of the array
             :type name: string
 
-            :arg len: length of array
-            :type len: int
+            :arg shape: length of array in each dimension
+            :type shape: int
 
             :arg t: type of array
 
             :returns: borrow of newly created `SymEntry(t)`
         */
-        proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws {
-            var A = makeDistArray(len, t);
-
-            var entry = createSymEntry(A);
+      proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws {
+            // check and throw if memory limit would be exceeded
+            // TODO figure out a way to do memory checking for bigint
+            if t != bigint {
+                const len = * reduce shape;
+                if t == bool {overMemLimit(len);} else {overMemLimit(len*numBytes(t));}
+            }
+            var entry = new shared SymEntry((...shape), t);
             if (tab.contains(name)) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                         "redefined symbol: %s ".doFormat(name));
@@ -75,7 +79,7 @@ module MultiTypeSymbolTable
             entry.setName(name);
             // When we retrieve from table, it comes back as AbstractSymEntry so we need to cast it
             // back to the original type. Since we know it already we can skip isAssignableTo check
-            return (tab[name]:borrowed GenSymEntry).toSymEntry(t);
+            return (tab[name]:borrowed GenSymEntry).toSymEntry(t, N);
         }
 
         /*
@@ -118,21 +122,21 @@ module MultiTypeSymbolTable
         :arg name: name of the array
         :type name: string
 
-        :arg len: length of array
-        :type len: int
+        :arg shape: length of array in each dimension
+        :type shape: int
 
         :arg dtype: type of array
 
         :returns: borrow of newly created GenSymEntry
         */
-        proc addEntry(name: string, len: int, dtype: DType): borrowed AbstractSymEntry throws {
+        proc addEntry(name: string, shape: int ...?ND, dtype: DType): borrowed AbstractSymEntry throws {
             select dtype {
-                when DType.Int64 { return addEntry(name, len, int); }
-                when DType.UInt64 { return addEntry(name, len, uint); }
-                when DType.Float64 { return addEntry(name, len, real); }
-                when DType.Bool { return addEntry(name, len, bool); }
-                when DType.BigInt { return addEntry(name, len, bigint); }
-                otherwise { 
+                when DType.Int64 { return addEntry(name, (...shape), int); }
+                when DType.UInt64 { return addEntry(name, (...shape), uint); }
+                when DType.Float64 { return addEntry(name, (...shape), real); }
+                when DType.Bool { return addEntry(name, (...shape), bool); }
+                when DType.BigInt { return addEntry(name, (...shape), bigint); }
+                otherwise {
                     var errorMsg = "addEntry not implemented for %?".doFormat(dtype); 
                     throw getErrorWithContext(
                         msg=errorMsg,
@@ -337,16 +341,16 @@ module MultiTypeSymbolTable
         proc formatEntry(name:string, abstractEntry:borrowed AbstractSymEntry): string throws {
             if abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
                 var item:borrowed GenSymEntry = toGenSymEntry(abstractEntry);
-                return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%?, "itemsize":%?, "registered":%?}',
+                return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%s, "itemsize":%?, "registered":%?}',
                                   name, dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
             } else if abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
                 var item:borrowed SegStringSymEntry = toSegStringSymEntry(abstractEntry);
-                return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%?, "itemsize":%?, "registered":%?}',
+                return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%s, "itemsize":%?, "registered":%?}',
                                   name, dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
                               
             } else {
-              return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%?, "itemsize":%?, "registered":%?}',
-                                name, dtype2str(DType.UNDEF), 0, 0, (0,), 0, registry.contains(name));
+              return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%s, "itemsize":%?, "registered":%?}',
+                                name, dtype2str(DType.UNDEF), 0, 0, "[0]", 0, registry.contains(name));
             }
         }
 
@@ -365,7 +369,7 @@ module MultiTypeSymbolTable
             var entry = tab[name];
             if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry){ //Anything considered a GenSymEntry
                 var g:GenSymEntry = toGenSymEntry(entry);
-                return "%s %s %? %? %? %?".doFormat(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
+                return "%s %s %? %? %s %?".doFormat(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
             }
             else if entry.isAssignableTo(SymbolEntryType.CompositeSymEntry) { //CompositeSymEntry
                 var c: CompositeSymEntry = toCompositeSymEntry(entry);

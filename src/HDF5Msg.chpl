@@ -938,11 +938,11 @@ module HDF5Msg {
         }
     }
 
-    proc bigintToUint(entry): list(shared SymEntry(uint)) throws {
+    proc bigintToUint(entry): list(shared SymEntry(uint,1)) throws {
         select entry.dtype {
             when DType.BigInt {
                 var tmp = entry.a;
-                var limbs: list(shared SymEntry(uint)) = new list(shared SymEntry(uint));
+                var limbs: list(shared SymEntry(uint,1)) = new list(shared SymEntry(uint,1));
                 var all_zero = false;
                 var low: [tmp.domain] uint;
                 const ushift = 64:uint;
@@ -3385,7 +3385,7 @@ module HDF5Msg {
         }
         C_HDF5.H5Fclose(file_id);
 
-        var limbs: list(shared SymEntry(uint)) = new list(shared SymEntry(uint));
+        var limbs: list(shared SymEntry(uint,1)) = new list(shared SymEntry(uint,1));
         for l in 0..#numlimbs {
             var subdoms: [fD] domain(1);
             var skips = new set(string);

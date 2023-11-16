@@ -21,21 +21,25 @@ module SymArrayDmapCompat
     /* 
     Makes a domain distributed according to :param:`MyDmap`.
 
-    :arg size: size of domain
-    :type size: int
+    :arg shape: size of domain in each dimension
+    :type shape: int
     */
-    proc makeDistDom(size:int) {
+    proc makeDistDom(shape: int ...?N) {
+        var rngs: N*range;
+        for i in 0..#N do rngs[i] = 0..#shape[i];
+        const dom = {(...rngs)};
+
         select MyDmap
         {
             when Dmap.defaultRectangular {
-                return {0..#size};
+                return dom;
             }
             when Dmap.blockDist {
-                if size > 0 {
-                    return {0..#size} dmapped blockDist(boundingBox={0..#size});
+                if dom.size > 0 {
+                    return blockDist.createDomain(dom);
                 }
-                // fix the annoyance about boundingBox being enpty
-                else {return {0..#0} dmapped blockDist(boundingBox={0..0});}
+                // fix the annoyance about boundingBox being empty
+                else {return blockDist.createDomain({0..0}); }
             }
             otherwise {
                 halt("Unsupported distribution " + MyDmap:string);
@@ -46,17 +50,19 @@ module SymArrayDmapCompat
     /* 
     Makes an array of specified type over a distributed domain
 
-    :arg size: size of the domain
-    :type size: int 
+    :arg shape: size of the domain in each dimension
+    :type shape: int
 
     :arg etype: desired type of array
     :type etype: type
 
     :returns: [] ?etype
     */
-    proc makeDistArray(size:int, type etype) throws {
-      var dom = makeDistDom(size);
-      return dom.tryCreateArray(etype);
+    proc makeDistArray(shape: int ...?N, type etype) throws {
+      // var dom = makeDistDom((...shape));
+      // return dom.tryCreateArray(etype);
+      var a: [makeDistDom((...shape))] etype;
+      return a;
     }
 
     proc makeDistArray(in a: [?D] ?etype) throws
