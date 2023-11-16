@@ -142,23 +142,23 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SymArrayDmapCompat.makeDistDom">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistDom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmapCompat.makeDistDom" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistDom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?N</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmapCompat.makeDistDom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a domain distributed according to <a class="reference internal" href="#SymArrayDmapCompat.MyDmap" title="SymArrayDmapCompat.MyDmap"><code class="xref chpl chpl-param docutils literal notranslate"><span class="pre">MyDmap</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><p><strong>size</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – size of domain</p>
+<dd class="field-odd"><p><strong>shape</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – size of domain in each dimension</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SymArrayDmapCompat.makeDistArray">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmapCompat.makeDistArray" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?N</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmapCompat.makeDistArray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes an array of specified type over a distributed domain</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – size of the domain</p></li>
+<li><p><strong>shape</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – size of the domain in each dimension</p></li>
 <li><p><strong>etype</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">type</span></code></span> – desired type of array</p></li>
 </ul>
 </dd>

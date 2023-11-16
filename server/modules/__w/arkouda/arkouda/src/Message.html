@@ -387,6 +387,12 @@ Note - not yet able to handle list of pdarray or SegString names</p>
 </dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getTuple">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">size*int</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getTuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse value as a tuple of integers with the given size</p>
+</dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getJSON</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span></dt>
 <dd></dd></dl>
@@ -503,6 +509,12 @@ Note - not yet able to handle list of pdarray or SegString names</p>
 <dd><ul class="simple">
 <li><p>Converts the JSON array to a pdarray</p></li>
 </ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Message.parseJsonTuple">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseJsonTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">size*int</span> <span class="pre">throws</span><a class="headerlink" href="#Message.parseJsonTuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to parse a JSON string as a tuple of integers</p>
 </dd></dl>
 
 </div>

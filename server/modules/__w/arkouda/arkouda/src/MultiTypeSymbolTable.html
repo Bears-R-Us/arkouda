@@ -167,13 +167,13 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.addEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(t)</span> <span class="pre">throws</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.addEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?N</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(t,</span> <span class="pre">N)</span> <span class="pre">throws</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.addEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes args and creates a new SymEntry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – name of the array</p></li>
-<li><p><strong>len</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – length of array</p></li>
+<li><p><strong>shape</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – length of array in each dimension</p></li>
 <li><p><strong>t</strong> – type of array</p></li>
 </ul>
 </dd>
@@ -202,13 +202,13 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span> <span class="pre">throws</span></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?ND</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span> <span class="pre">throws</span></dt>
 <dd><p>Creates a symEntry from array name, length, and DType</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – name of the array</p></li>
-<li><p><strong>len</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – length of array</p></li>
+<li><p><strong>shape</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – length of array in each dimension</p></li>
 <li><p><strong>dtype</strong> – type of array</p></li>
 </ul>
 </dd>

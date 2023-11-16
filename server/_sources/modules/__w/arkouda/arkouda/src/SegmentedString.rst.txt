@@ -54,14 +54,14 @@ or
 
    .. attribute:: var composite: borrowed SegStringSymEntry
 
-   .. attribute:: var offsets: shared SymEntry(int)
+   .. attribute:: var offsets: shared SymEntry(int, 1)
 
       *
       * The pdarray containing the offsets, which are the start indices of
       * the bytearrays, each of which corresponds to an individual string.
       
 
-   .. attribute:: var values: shared SymEntry(uint(8))
+   .. attribute:: var values: shared SymEntry(uint(8), 1)
 
       *
       * The pdarray containing the complete byte array composed of bytes
@@ -187,7 +187,7 @@ or
       :returns: int64 pdarray – For each original string, the number of pattern matches and int64 pdarray – The start positons of pattern matches and int64 pdarray – The lengths of pattern matches
       
 
-   .. method:: proc findAllMatches(const numMatchesEntry: ?t, const startsEntry: borrowed SymEntry(int), const lensEntry: borrowed SymEntry(int), const indicesEntry: borrowed SymEntry(int), const returnMatchOrig: bool) throws
+   .. method:: proc findAllMatches(const numMatchesEntry: ?t, const startsEntry: borrowed SymEntry(int, 1), const lensEntry: borrowed SymEntry(int, 1), const indicesEntry: borrowed SymEntry(int, 1), const returnMatchOrig: bool) throws
 
       
       Given a SegString, return a new SegString only containing matches of the regex pattern,

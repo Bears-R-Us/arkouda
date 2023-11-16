@@ -31,22 +31,22 @@ or
    :param:`CHPL_COMM=none`, otherwise defaults to :enum:`Dmap.blockDist`.
    
 
-.. function:: proc makeDistDom(size: int)
+.. function:: proc makeDistDom(shape: int ...?N)
 
     
    Makes a domain distributed according to :param:`MyDmap`.
    
-   :arg size: size of domain
-   :type size: int
+   :arg shape: size of domain in each dimension
+   :type shape: int
    
 
-.. function:: proc makeDistArray(size: int, type etype)
+.. function:: proc makeDistArray(shape: int ...?N, type etype)
 
     
    Makes an array of specified type over a distributed domain
    
-   :arg size: size of the domain
-   :type size: int 
+   :arg shape: size of the domain in each dimension
+   :type shape: int
    
    :arg etype: desired type of array
    :type etype: type

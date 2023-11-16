@@ -92,7 +92,7 @@ or
       * :returns: s (string) containing the array data
       
 
-.. function:: proc toSymEntry(gse: borrowed GenSymEntry, type etype)
+.. function:: proc toSymEntry(gse: borrowed GenSymEntry, type etype, param dimensions = 1)
 
    Casts a GenSymEntry to the specified type and returns it.
    
@@ -122,13 +122,13 @@ or
 
    .. attribute:: var ndim: int = 1
 
-   .. attribute:: var shape: 1*(int) = (0,)
+   .. attribute:: var shape: string = "[1]"
 
-   .. method:: proc init(type etype, len: int = 0)
+   .. method:: proc init(type etype, len: int = 0, ndim: int = 1)
 
    .. method:: override proc getSizeEstimate(): int
 
-   .. method:: proc toSymEntry(type etype)
+   .. method:: proc toSymEntry(type etype, param dimensions = 1)
 
       Cast this `GenSymEntry` to `borrowed SymEntry(etype)`
       
@@ -173,7 +173,21 @@ or
       etype is different from dtype (chapel vs numpy)
       
 
-   .. attribute:: var a = makeDistArray(size, etype)
+   .. attribute:: param dimensions: int
+
+      
+      number of dimensions, to be passed back to the `GenSymEntry` so that
+      we are able to make it visible to the Python client
+      
+
+   .. attribute:: var tupShape: dimensions*int
+
+      
+      the actual shape of the array, this has to live here, since GenSymEntry
+      has to stay generic
+      
+
+   .. attribute:: var a: [makeDistDom(...tupShape)] etype
 
       
       'a' is the distributed array whose value and type are defined by
@@ -184,14 +198,36 @@ or
 
       Removed domain accessor, use `a.domain` instead 
 
-   .. attribute:: var max_bits = -1
+   .. attribute:: var max_bits: int = -1
 
       only used with bigint pdarrays 
+
+   .. method:: proc init(args: int ...?N, type etype)
+
+      
+      This init takes length and element type
+      
+      :arg len: length of array to be allocated
+      :type len: int
+      
+      :arg etype: type to be instantiated
+      :type etype: type
+      
 
    .. method:: proc init(in a: [?D] ?etype, max_bits = -1)
 
       
       This init takes an array whose type matches `makeDistArray()`
+      
+      :arg a: array
+      :type a: [] ?etype
+      
+
+   .. method:: proc init(a: [?D] ?etype)
+
+      
+      This init takes an array whose type is defaultRectangular (convenience
+      function for creating a distributed array from a non-distributed one)
       
       :arg a: array
       :type a: [] ?etype
@@ -259,9 +295,9 @@ or
 
    .. attribute:: type etype = string
 
-   .. attribute:: var offsetsEntry: shared SymEntry(int)
+   .. attribute:: var offsetsEntry: shared SymEntry(int, 1)
 
-   .. attribute:: var bytesEntry: shared SymEntry(uint(8))
+   .. attribute:: var bytesEntry: shared SymEntry(uint(8), 1)
 
    .. method:: proc init(offsetsSymEntry: shared SymEntry(int), bytesSymEntry: shared SymEntry(uint(8)), type etype)
 
@@ -321,4 +357,12 @@ or
    * Note: entry.size is generally the number of elements in the array
    *       and is more synonymous with length
    
+
+.. function:: proc tupShapeString(shape): string
+
+   
+   Create a string to represent a JSON tuple of an array's shape
+   
+
+.. function:: proc tupShapeString(val: int, ndim: int): string
 

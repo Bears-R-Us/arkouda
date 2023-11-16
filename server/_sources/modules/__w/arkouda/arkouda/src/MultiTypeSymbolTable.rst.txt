@@ -46,7 +46,7 @@ or
       Gives out symbol names.
       
 
-   .. method:: proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws
+   .. method:: proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws
 
       
       Takes args and creates a new SymEntry.
@@ -54,8 +54,8 @@ or
       :arg name: name of the array
       :type name: string
       
-      :arg len: length of array
-      :type len: int
+      :arg shape: length of array in each dimension
+      :type shape: int
       
       :arg t: type of array
       
@@ -76,7 +76,7 @@ or
       :returns: borrow of newly created AbstractSymEntry
       
 
-   .. method:: proc addEntry(name: string, len: int, dtype: DType): borrowed AbstractSymEntry throws
+   .. method:: proc addEntry(name: string, shape: int ...?ND, dtype: DType): borrowed AbstractSymEntry throws
 
       
       Creates a symEntry from array name, length, and DType
@@ -84,8 +84,8 @@ or
       :arg name: name of the array
       :type name: string
       
-      :arg len: length of array
-      :type len: int
+      :arg shape: length of array in each dimension
+      :type shape: int
       
       :arg dtype: type of array
       

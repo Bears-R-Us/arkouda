@@ -281,7 +281,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.toSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">gse:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">gse:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">dimensions</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Casts a GenSymEntry to the specified type and returns it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -320,12 +320,12 @@ considered data.</p>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.shape">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">shape</span></span><span class="pre">:</span> <span class="pre">1*(int)</span> <span class="pre">=</span> <span class="pre">(0,)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.shape" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">shape</span></span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;[1]&quot;</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.shape" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.init" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -335,7 +335,7 @@ considered data.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.toSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">dimensions</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cast this <cite>GenSymEntry</cite> to <cite>borrowed SymEntry(etype)</cite></p>
 <p>This function will halt if the cast fails.</p>
 <dl class="field-list simple">
@@ -399,8 +399,22 @@ etype is different from dtype (chapel vs numpy)</p>
 </dd></dl>
 
 <dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.dimensions">
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">dimensions</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.dimensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of dimensions, to be passed back to the <cite>GenSymEntry</cite> so that
+we are able to make it visible to the Python client</p>
+</dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.tupShape">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">tupShape</span></span><span class="pre">:</span> <span class="pre">dimensions*int</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.tupShape" title="Permalink to this definition">¶</a></dt>
+<dd><p>the actual shape of the array, this has to live here, since GenSymEntry
+has to stay generic</p>
+</dd></dl>
+
+<dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.a">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">a</span></span> <span class="pre">=</span> <span class="pre">makeDistArray(size,</span> <span class="pre">etype)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.a" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">a</span></span><span class="pre">:</span> <span class="pre">[makeDistDom(...tupShape)]</span> <span class="pre">etype</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.a" title="Permalink to this definition">¶</a></dt>
 <dd><p>‘a’ is the distributed array whose value and type are defined by
 makeDist{Dom,Array}() to support varying distributions</p>
 </dd></dl>
@@ -413,14 +427,40 @@ makeDist{Dom,Array}() to support varying distributions</p>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.max_bits">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">max_bits</span></span> <span class="pre">=</span> <span class="pre">-1</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.max_bits" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">max_bits</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.max_bits" title="Permalink to this definition">¶</a></dt>
 <dd><p>only used with bigint pdarrays</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?etype</span></em>, <em class="sig-param"><span class="pre">max_bits</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.init" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">args:</span> <span class="pre">int</span> <span class="pre">...?N</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>This init takes length and element type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>len</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – length of array to be allocated</p></li>
+<li><p><strong>etype</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">type</span></code></span> – type to be instantiated</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?etype</span></em>, <em class="sig-param"><span class="pre">max_bits</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span></dt>
 <dd><p>This init takes an array whose type matches <cite>makeDistArray()</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>a</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">[]</span> <span class="pre">?etype</span></code></span> – array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?etype</span></em><span class="sig-paren">)</span></dt>
+<dd><p>This init takes an array whose type is defaultRectangular (convenience
+function for creating a distributed array from a non-distributed one)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><p><strong>a</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">[]</span> <span class="pre">?etype</span></code></span> – array</p>
@@ -552,12 +592,12 @@ For Example, group by contains multiple SymEntries that are all considered part 
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.offsetsEntry">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">offsetsEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int)</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.offsetsEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">offsetsEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int,</span> <span class="pre">1)</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.offsetsEntry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.bytesEntry">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bytesEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(uint(8))</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.bytesEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bytesEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(uint(8),</span> <span class="pre">1)</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.bytesEntry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -701,6 +741,17 @@ For Example, group by contains multiple SymEntries that are all considered part 
 <li><p>and is more synonymous with length</p></li>
 </ul>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.tupShapeString">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tupShapeString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#MultiTypeSymEntry.tupShapeString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a string to represent a JSON tuple of an array’s shape</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tupShapeString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">val:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span></dt>
+<dd></dd></dl>
 
 </div>
 

@@ -28,7 +28,7 @@ or
    Arrays larger than printThresh will print less data.
    
 
-.. function:: proc formatAry(A): string throws
+.. function:: proc formatAry(A: [?d]): string throws
 
    
    Prints the passed array.

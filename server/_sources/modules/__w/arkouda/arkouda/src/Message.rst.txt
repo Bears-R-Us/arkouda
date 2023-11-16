@@ -170,6 +170,12 @@ or
       Note - not yet able to handle list of pdarray or SegString names
       
 
+   .. method:: proc getTuple(param size: int): size*int throws
+
+      
+      Parse value as a tuple of integers with the given size
+      
+
    .. method:: proc getJSON(size: int) throws
 
 .. class:: MessageArgs
@@ -257,5 +263,11 @@ or
 
    
    * Converts the JSON array to a pdarray
+   
+
+.. function:: proc parseJsonTuple(json: string, param size: int): size*int throws
+
+   
+   Helper function to parse a JSON string as a tuple of integers
    
 
