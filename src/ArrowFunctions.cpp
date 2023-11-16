@@ -296,8 +296,7 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
               byteSize+=1;
             }
             i++;
-          }
-          
+          }          
         }
       }
       return byteSize;
