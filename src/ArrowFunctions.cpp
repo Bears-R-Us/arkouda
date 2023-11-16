@@ -286,17 +286,32 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
           std::vector<int16_t> definition_level(batchSize);
           (void)ba_reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values.data(), &values_read);
           numRead += values_read;
-          for(int string_index = 0; string_index < values_read; string_index++) {
-            auto value = string_values[string_index];
-            if(value.len != 0) {
-              offsets[i] = value.len + 1;
-              byteSize += value.len + 1;
-            } else {
-              offsets[i] = 1;
-              byteSize+=1;
+          if (ty == ARROWSTRING) {
+            for(int string_index = 0; string_index < values_read; string_index++) {
+              auto value = string_values[string_index];
+              if(value.len != 0) {
+                offsets[i] = value.len + 1;
+                byteSize += value.len + 1;
+              } else {
+                offsets[i] = 1;
+                byteSize+=1;
+              }
+              i++;
             }
-            i++;
-          }          
+          } else if (ty == ARROWLIST) {
+            for(int string_index = 0; string_index < values_read; string_index++) {
+              auto level = definition_level[string_index];
+              auto value = string_values[string_index];
+              if(value.len != 0) {
+                offsets[i] = value.len + 1;
+                byteSize += value.len + 1;
+              } else {
+                offsets[i] = 1;
+                byteSize+=1;
+              }
+              i++;
+            }
+          }
         }
       }
       return byteSize;
@@ -807,27 +822,15 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           std::vector<int16_t> definition_level(batchSize);
           (void)reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values.data(), &values_read);
           // if values_read is 0, that means that it was a null value
-          //if ((ty == ARROWLIST && definition_level == 3) || ty == ARROWSTRING) {
-          if(ty == ARROWSTRING) {
-            for (int string_index = 0; string_index < values_read; string_index++) {
-              auto value = string_values[string_index];
+          for (int string_index = 0; string_index < values_read; string_index++) {
+            auto value = string_values[string_index];
+            if (value.len > 0) {
               for(int j = 0; j < value.len; j++) {
                 chpl_ptr[i] = value.ptr[j];
                 i++;
               }
-              i++; // skip one space so the strings are null terminated with a 0
             }
-          } else if(ty == ARROWLIST) {
-            for (int string_index = 0; string_index < values_read; string_index++) {
-              if(definition_level[string_index] == 3) {
-                auto value = string_values[string_index];
-                for(int j = 0; j < value.len; j++) {
-                  chpl_ptr[i] = value.ptr[j];
-                  i++;
-                }
-                i++; // skip one space so the strings are null terminated with a 0
-              }
-            }
+            i++; // skip one space so the strings are null terminated with a 0
           }
         }
       } else if(ty == ARROWFLOAT) {
