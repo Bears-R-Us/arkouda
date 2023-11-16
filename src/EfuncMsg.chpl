@@ -18,7 +18,6 @@ module EfuncMsg
     
     use AryUtil;
 
-    use ArkoudaBitOpsCompat;
     use ArkoudaMathCompat;
 
     private config const logLevel = ServerConfig.logLevel;

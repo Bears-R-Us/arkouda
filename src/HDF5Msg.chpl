@@ -28,8 +28,6 @@ module HDF5Msg {
 
     use BigInteger;
 
-    use ArkoudaListCompat;
-    use ArkoudaStringBytesCompat;
     use ArkoudaCTypesCompat;
     use ArkoudaIOCompat;
 

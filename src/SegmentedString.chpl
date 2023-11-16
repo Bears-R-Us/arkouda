@@ -22,7 +22,6 @@ module SegmentedString {
   use FileSystem;
 
   use ArkoudaRegexCompat;
-  use ArkoudaStringBytesCompat;
   use ArkoudaRangeCompat;
 
   private config const logLevel = ServerConfig.logLevel;

@@ -15,7 +15,6 @@ module MultiTypeRegEntry {
     use NumPyDType;
 
     use ArkoudaIOCompat;
-    use ArkoudaListCompat;
     use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;

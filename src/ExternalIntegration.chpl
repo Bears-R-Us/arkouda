@@ -7,8 +7,6 @@ module ExternalIntegration {
     use ServerConfig;
     use ServerErrors;
 
-    use ArkoudaListCompat;
-
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const eiLogger = new Logger(logLevel, logChannel);
@@ -503,7 +501,7 @@ module ExternalIntegration {
         return (serviceName,servicePort,targetServicePort);
     } 
 
-    proc getKubernetesDeregisterParameters(serviceEndpoint: ServiceEndpoint) {
+    proc getKubernetesDeregisterParameters(serviceEndpoint: ServiceEndpoint) throws {
         if serviceEndpoint == ServiceEndpoint.METRICS {
             return ServerConfig.getEnv('METRICS_SERVICE_NAME');
         } else {

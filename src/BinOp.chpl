@@ -303,6 +303,15 @@ module BinOp
         when "-" {
           e.a = l.a:real - r.a:real;
         }
+        when "/" { // truediv
+            e.a = l.a:real / r.a:real;
+        }
+        when "//" { // floordiv
+          ref ea = e.a;
+          var la = l.a:real;
+          var ra = r.a:real;
+          [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
+        }
         otherwise {
           var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
@@ -717,6 +726,14 @@ module BinOp
           when "-" {
             e.a = l.a: real - val: real;
           }
+          when "/" { // truediv
+            e.a = l.a: real / val: real;
+          }
+          when "//" { // floordiv
+            ref ea = e.a;
+            var la = l.a;
+            [(ei,li) in zip(ea,la)] ei = floorDivisionHelper(li, val:real);
+          }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1074,6 +1091,14 @@ module BinOp
           }
           when "-" {
             e.a = val:real - r.a:real;
+          }
+          when "/" { // truediv
+            e.a = val:real / r.a:real;
+          }
+          when "//" { // floordiv
+            ref ea = e.a;
+            var ra = r.a;
+            [(ei,ri) in zip(ea,ra)] ei = floorDivisionHelper(val:real, ri);
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
