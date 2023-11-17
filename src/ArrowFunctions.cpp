@@ -287,10 +287,12 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
           (void)ba_reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values.data(), &values_read);
           numRead += values_read;
           if (ty == ARROWSTRING) {
+            auto numCols = file_metadata -> num_columns();
             int string_index = 0;
             for(int idx = 0; idx < definition_level.size(); idx++) {
               auto lvl = definition_level[idx];
-              if(lvl != 0) {
+              auto value = string_values[string_index];
+              if(lvl != 0 || numCols > 1) {
                 auto value = string_values[string_index];
                 offsets[i] = value.len + 1;
                 byteSize += value.len + 1;
@@ -815,6 +817,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           i+=values_read;
         }
       } else if(ty == ARROWSTRING) {
+        auto numCols = file_metadata -> num_columns();
         int16_t definition_level; // nullable type and only reading single records in batch
         auto chpl_ptr = (unsigned char*)chpl_arr;
         parquet::ByteArrayReader* reader =
@@ -824,12 +827,11 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           std::vector<parquet::ByteArray> string_values(batchSize);
           std::vector<int16_t> definition_level(batchSize);
           (void)reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values.data(), &values_read);
-          std::cout << "\nRead in read: " << values_read << "\n\n";
 
           int string_index = 0;
           for (int idx = 0; idx < definition_level.size(); idx++) {
             auto lvl = definition_level[idx];
-            if(lvl > 0) {
+            if(lvl > 0 || numCols > 1) {
               auto value = string_values[string_index];
               for(int j = 0; j < value.len; j++) {
                 chpl_ptr[i] = value.ptr[j];
