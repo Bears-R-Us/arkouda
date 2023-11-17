@@ -139,17 +139,6 @@ module MultiTypeSymEntry
 
         // not sure yet how to implement numpy data() function
 
-        proc init(type etype, len: int = 0, ndim: int = 1) {
-            this.entryType = SymbolEntryType.TypedArraySymEntry;
-            assignableTypes.add(this.entryType);
-            this.dtype = whichDtype(etype);
-            this.itemsize = dtypeSize(this.dtype);
-            this.size = len;
-            this.ndim = ndim;
-            this.complete();
-            this.shape = tupShapeString(1, ndim);
-        }
-
         override proc getSizeEstimate(): int {
             return this.size * this.itemsize;
         }
@@ -222,52 +211,6 @@ module MultiTypeSymEntry
         proc aD { compilerError("SymEntry.aD has been removed, use SymEntry.a.domain instead"); }
         /* only used with bigint pdarrays */
         var max_bits:int = -1;
-
-        /*
-        This init takes length and element type
-
-        :arg len: length of array to be allocated
-        :type len: int
-
-        :arg etype: type to be instantiated
-        :type etype: type
-        */
-        proc init(args: int ...?N, type etype) {
-            var len = 1;
-            for i in 0..#N {
-              len *= args[i];
-            }
-            super.init(etype, len, N);
-            this.entryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
-            assignableTypes.add(this.entryType);
-
-            this.etype = etype;
-            this.dimensions = N;
-            this.tupShape = args;
-            this.a = try! makeDistArray((...args), etype);
-            this.complete();
-            this.shape = tupShapeString(this.tupShape);
-        }
-
-        /*
-        This init takes an array whose type matches `makeDistArray()`
-
-        :arg a: array
-        :type a: [] ?etype
-        */
-        proc init(in a: [?D] ?etype, max_bits=-1) {
-            super.init(etype, D.size);
-            this.entryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
-            assignableTypes.add(this.entryType);
-
-            this.etype = etype;
-            this.dimensions = D.rank;
-            this.tupShape = D.shape;
-            this.a = a;
-            this.max_bits=max_bits;
-            this.complete();
-            this.shape = tupShapeString(this.tupShape);
-        }
 
         /*
         This init takes an array whose type is defaultRectangular (convenience
