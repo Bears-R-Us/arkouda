@@ -36,7 +36,7 @@ module ArkoudaSymEntryCompat {
     this.itemsize = dtypeSize(this.dtype);
     this.size = len;
     this.ndim = ndim;
-    init this;//this.complete();
+    init this;
     this.shape = tupShapeString(1, ndim);
   }
 
