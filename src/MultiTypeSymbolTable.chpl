@@ -16,6 +16,7 @@ module MultiTypeSymbolTable
     use ArkoudaFileCompat;
     use ArkoudaMapCompat;
     use ArkoudaIOCompat;
+    use ArkoudaSymEntryCompat;
     use Registry;
     
     private config const logLevel = ServerConfig.logLevel;

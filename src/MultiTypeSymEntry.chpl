@@ -213,26 +213,6 @@ module MultiTypeSymEntry
         var max_bits:int = -1;
 
         /*
-        This init takes an array whose type matches `makeDistArray()`
-
-        :arg a: array
-        :type a: [] ?etype
-        */
-        proc init(in a: [?D] ?etype, max_bits=-1) {
-            super.init(etype, D.size);
-            this.entryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
-            assignableTypes.add(this.entryType);
-
-            this.etype = etype;
-            this.dimensions = D.rank;
-            this.tupShape = D.shape;
-            this.a = a;
-            this.max_bits=max_bits;
-            this.complete();
-            this.shape = tupShapeString(this.tupShape);
-        }
-
-        /*
         This init takes an array whose type is defaultRectangular (convenience
         function for creating a distributed array from a non-distributed one)
 

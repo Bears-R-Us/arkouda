@@ -65,4 +65,24 @@ module ArkoudaSymEntryCompat {
     init this;
     this.shape = tupShapeString(this.tupShape);
   }
+
+  /*
+    This init takes an array whose type matches `makeDistArray()`
+
+    :arg a: array
+    :type a: [] ?etype
+  */
+  proc SymEntry.init(in a: [?D] ?etype, max_bits=-1) {
+    super.init(etype, D.size);
+    this.entryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
+    assignableTypes.add(this.entryType);
+
+    this.etype = etype;
+    this.dimensions = D.rank;
+    this.tupShape = D.shape;
+    this.a = a;
+    this.max_bits=max_bits;
+    init this;
+    this.shape = tupShapeString(this.tupShape);
+  }
 }
