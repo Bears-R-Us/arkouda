@@ -324,11 +324,6 @@ considered data.</p>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.getSizeEstimate">
 <em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSizeEstimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.getSizeEstimate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -433,32 +428,7 @@ makeDist{Dom,Array}() to support varying distributions</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">args:</span> <span class="pre">int</span> <span class="pre">...?N</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>This init takes length and element type</p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>len</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">int</span></code></span> – length of array to be allocated</p></li>
-<li><p><strong>etype</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">type</span></code></span> – type to be instantiated</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?etype</span></em>, <em class="sig-param"><span class="pre">max_bits</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span></dt>
-<dd><p>This init takes an array whose type matches <cite>makeDistArray()</cite></p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><p><strong>a</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">[]</span> <span class="pre">?etype</span></code></span> – array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?etype</span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>This init takes an array whose type is defaultRectangular (convenience
 function for creating a distributed array from a non-distributed one)</p>
 <dl class="field-list simple">

@@ -23,3 +23,26 @@ or
 
 .. method:: override proc SymEntry.writeThis(f) throws
 
+.. method:: proc GenSymEntry.init(type etype, len: int = 0, ndim: int = 1)
+
+.. method:: proc SymEntry.init(args: int ...?N, type etype)
+
+   
+   This init takes length and element type
+   
+   :arg len: length of array to be allocated
+   :type len: int
+   
+   :arg etype: type to be instantiated
+   :type etype: type
+   
+
+.. method:: proc SymEntry.init(in a: [?D] ?etype, max_bits = -1)
+
+   
+   This init takes an array whose type matches `makeDistArray()`
+   
+   :arg a: array
+   :type a: [] ?etype
+   
+

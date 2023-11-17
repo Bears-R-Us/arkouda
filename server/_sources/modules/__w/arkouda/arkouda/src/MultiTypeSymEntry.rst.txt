@@ -124,8 +124,6 @@ or
 
    .. attribute:: var shape: string = "[1]"
 
-   .. method:: proc init(type etype, len: int = 0, ndim: int = 1)
-
    .. method:: override proc getSizeEstimate(): int
 
    .. method:: proc toSymEntry(type etype, param dimensions = 1)
@@ -201,27 +199,6 @@ or
    .. attribute:: var max_bits: int = -1
 
       only used with bigint pdarrays 
-
-   .. method:: proc init(args: int ...?N, type etype)
-
-      
-      This init takes length and element type
-      
-      :arg len: length of array to be allocated
-      :type len: int
-      
-      :arg etype: type to be instantiated
-      :type etype: type
-      
-
-   .. method:: proc init(in a: [?D] ?etype, max_bits = -1)
-
-      
-      This init takes an array whose type matches `makeDistArray()`
-      
-      :arg a: array
-      :type a: [] ?etype
-      
 
    .. method:: proc init(a: [?D] ?etype)
 
