@@ -318,7 +318,11 @@ module LinalgMsg {
 
         const rname = st.nextName();
 
-        proc doMatMult(type x1Type, type x2Type, type resultType) {
+        linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s dtype1: %s dtype2: %s rname: %s".doFormat(
+            cmd,dtype2str(x1G.dtype),dtype2str(x2G.dtype),rname));
+
+        proc doMatMult(type x1Type, type x2Type, type resultType): MsgTuple {
             var x1E = toSymEntry(x1G, x1Type, nd),
                 x2E = toSymEntry(x2G, x2Type, nd);
 
@@ -450,5 +454,60 @@ module LinalgMsg {
             for j in 0..<n do
                 for l in 0..<k do
                     C[i, j] += A[i, l] * B[l, j];
+    }
+
+    @arkouda.registerND
+    proc transposeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        if nd < 2 {
+            const errorMsg = "Matrix transpose with arrays of dimension < 2 is not supported";
+            linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        const name = msgArgs.getValueOf("array"),
+              rname = st.nextName();
+
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+        linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s dtype: %s rname: %s".doFormat(
+            cmd,dtype2str(gEnt.dtype),rname));
+
+        proc doTranspose(type t) {
+            var eIn = toSymEntry(gEnt, t, nd),
+                outShape: eIn.tupShape.type;
+
+            outShape[outShape.size-2] <=> outShape.tupShape[outShape.size-1];
+
+            var eOut = st.addEntry(rname, (...outShape), t);
+            transpose(eIn.a, eOut.a);
+
+            const repMsg = "created " + st.attrib(rname);
+            linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select gEnt.dtype {
+            when DType.Int64 do return doTranspose(int);
+            when DType.UInt8 do return doTranspose(uint(8));
+            when DType.UInt64 do return doTranspose(uint);
+            when DType.Float64 do return doTranspose(real);
+            when DType.Bool do return doTranspose(bool);
+            otherwise {
+                const errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
+                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
+    // TODO: performance improvements. Should use tiling to keep data local
+    proc transpose(A: [?D], B) {
+        forall idx in D {
+            var bIdx = idx;
+            bIdx[D.rank-2] <=> idx[D.rank-1];
+            bIdx[D.rank-1] <=> idx[D.rank-2];
+            B[bIdx] = A[idx];
+        }
     }
 }
