@@ -253,7 +253,7 @@ module LinalgMsg {
                     "compute time = %i sec".doFormat(t.elapsed()));
             }
             otherwise {
-                var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
+                const errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
                 linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
@@ -292,5 +292,163 @@ module LinalgMsg {
         }
     }
 
+    /*
+        Multiply two matrices of compatible dimensions, or two stacks of matrices
+        of compatible dimensions (the final two dimensions are the matrix dimensions,
+        the preceding dimensions are the batch dimensions and must also be compatible)
 
+        Note: the array api specifies that one dimensional arrays can be supported
+        in matrix multiplication by adding a degenerate dimension to the array, multiplying,
+        and then removing the degenerate method. This procedure expects that such a
+        transformation is handled on the server side.
+    */
+    @arkouda.registerND
+    proc matMulMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        if nd < 2 {
+            const errorMsg = "Matrix multiplication with arrays of dimension < 2 is not supported";
+            linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        const x1Name = msgArgs.getValueOf("x1"),
+              x2Name = msgArgs.getValueOf("x2");
+
+        var x1G: borrowed GenSymEntry = getGenericTypedArrayEntry(x1Name, st),
+            x2G: borrowed GenSymEntry = getGenericTypedArrayEntry(x2Name, st);
+
+        const rname = st.nextName();
+
+        proc doMatMult(type x1Type, type x2Type, type resultType) {
+            var x1E = toSymEntry(x1G, x1Type, nd),
+                x2E = toSymEntry(x2G, x2Type, nd);
+
+            const (valid, outDims, err) = assertValidDims(x1E, x2E);
+            if !valid then return err;
+
+            var eOut = st.addEntry(rname, (...outDims), resultType);
+            if nd == 2
+                then matMult(x1E.a, x2E.a, eOut.a);
+                else batchedMatMult(x1E.a, x2E.a, eOut.a);
+
+            const repMsg = "created " + st.attrib(rname);
+            linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select (x1G.dtype, x2G.dtype) {
+            when (DType.Int64, DType.Int64) do
+                return doMatMult(int, int, int);
+            when (DType.Int64, DType.Float64) do
+                return doMatMult(int, real, real);
+            when (DType.Int64, DType.UInt64) do
+                return doMatMult(int, uint, uint);
+            when (DType.Float64, DType.Int64) do
+                return doMatMult(real, int, real);
+            when (DType.Uint64, DType.Int64) do
+                return doMatMult(uint, int, uint);
+            when (DType.UInt64, DType.UInt64) do
+                return doMatMult(uint, uint, uint);
+            when (DType.Uint64, DType.Float64) do
+                return doMatMult(uint, real, real);
+            when (DType.Float64, DType.UInt64) do
+                return doMatMult(real, uint, real);
+            when (DType.Bool, DType.Int64) do
+                return doMatMult(bool, int, int);
+            when (DType.Bool, DType.UInt64) do
+                return doMatMult(bool, uint, uint);
+            when (DType.Bool, DType.Float64) do
+                return doMatMult(bool, real, real);
+            when (DType.Int64, DType.Bool) do
+                return doMatMult(int, bool, int);
+            when (DType.UInt64, DType.Bool) do
+                return doMatMult(uint, bool, uint);
+            when (DType.Float64, DType.Bool) do
+                return doMatMult(real, bool, real);
+            when (DType.Bool, DType.Bool) do
+                return doMatMult(bool, bool, bool);
+            when (DType.Float64, DType.Float64) do
+                return doMatMult(real, real, real);
+            otherwise {
+                const errorMsg = notImplementedError(getRoutineName(),x1G.dtype, x2G.dtype);
+                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
+    proc assertValidDims(ref x1, ref x2) {
+        const (validInputDims, outDims) = matMultDims((...x1.tupShape), (...x2.tupShape));
+        if !validInputDims {
+            const errorMsg = "Invalid dimensions for matrix multiplication";
+            linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return (false, outDims, new MsgTuple(errorMsg, MsgType.ERROR));
+        } else {
+            return (true, outDims, new MsgTuple("", MsgType.NORMAL));
+        }
+    }
+
+    proc matMultDims(a: int ...?Na, b: int ...?Nb): (bool, Na*int) {
+        var outDims: Na*int;
+
+        // the (batched) matrices must have the same rank
+        if Na != Nb then return (false, outDims);
+
+        // the batch dimensions must have the same size
+        for param i in 0..<(Na-2) {
+            if a[i] != b[i] then return (false, outDims);
+            outDims[i] = a[i];
+        }
+
+        // the matrix dimensions must have compatible size
+        if a[Na-1] != b[Na-2] then return (false, outDims);
+        outDims[Na-2] = a[Na-2];
+        outDims[Na-1] = b[Na-1];
+
+        return (true, outDims);
+    }
+
+    proc batchedMatMult(A: [?D], B, C) {
+        // create a domain identical to D, except degenerate along the last two axes
+        var degenAxes = D.rank*range;
+        for param i in 0..<D.rank {
+            if i == D.rank-2 || i == D.rank-1
+                then degenAxes[i] = 1..0;
+                else degenAxes[i] = D.dim(i);
+        }
+        // slice the domain along the tuple of ranges (maintains distribution information)
+        const DD = D[degenAxes];
+
+        // for each matrix in the batch, perform matrix multiplication
+        forall idx in DD {
+            var slicer: D.rank*range;
+            for param i in 0..<D.rank {
+                if i == D.rank-2 then slicer[i] = D.dim(i);
+                if i == D.rank-1 then slicer[i] = D.dim(i);
+                else slicer[i] = idx[i]..idx[i];
+            }
+
+            var a = A[slicer];
+            var b = B[slicer];
+            var c = C[slicer];
+
+            // TODO: pass 'slicer' and the full matrices to a parallel matMult
+            //  instead of creating new slices for each call
+            matMult(a, b, c);
+        }
+    }
+
+    // TODO: not performant at all -- use tiled and parallel matrix multiplication
+    //  or maybe use the linear algebra module? (do we want to compile Arkouda with that?)
+    proc matMult(A: [?D1] ?t1, B: [?D2] ?t2, C: [?D3] ?T3)
+        where D1.rank == 2 && D2.rank == 2 && D3.rank == 2
+    {
+        const (m      , k      ) = D1.shape,
+              (_ /*k*/, n      ) = D2.shape,
+              (_ /*m*/, _ /*n*/) = D2.shape;
+
+        for i in 0..<m do
+            for j in 0..<n do
+                for l in 0..<k do
+                    C[i, j] += A[i, l] * B[l, j];
+    }
 }

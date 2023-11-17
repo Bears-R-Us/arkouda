@@ -11,4 +11,7 @@ def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
 
     See its docstring for more information.
     """
+
+    
+
     raise ValueError("take not implemented")
