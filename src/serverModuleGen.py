@@ -17,6 +17,22 @@ def getMaxDims(filename):
     with open(filename, 'r') as configfile:
         return int(re.search(r'max_array_dims: (\d*)', configfile.read()).group(1))
 
+def ndStamp(msg_proc_name, base_proc_name, command_name, d):
+    return f"""
+    proc {msg_proc_name}{d}D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+        return {base_proc_name}(cmd, msgArgs, st, {d});
+
+    registerFunction("{command_name}{d}D", {msg_proc_name}{d}D);
+    """
+
+def ndMultiStamp(msg_proc_name, base_proc_name, command_name, d1, d2):
+    return f"""
+    proc {msg_proc_name}{d1}Dx{d2}D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+        return {base_proc_name}(cmd, msgArgs, st, {d1}, {d2});
+
+    registerFunction("{command_name}{d1}Dx{d2}D", {msg_proc_name}{d1}Dx{d2}D);
+    """
+
 # TODO: use Chapel's compiler bindings to do this more robustly
 def stampOutNDArrayHandlers(mod, src_dir, stamp_file, max_dims):
     with open(f"{src_dir}/{mod}.chpl", 'r') as src_file:
@@ -42,16 +58,20 @@ def stampOutNDArrayHandlers(mod, src_dir, stamp_file, max_dims):
             # instantiate the message handler for each rank from 1..max_dims
             # and register the instantiated proc with a unique command name
             for d in range(1, max_dims+1):
-                stamp_file.write(f"""
-                proc {msg_proc_name}{d}D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-                    return {base_proc_name}(cmd, msgArgs, st, {d});
-
-                registerFunction("{command_name}{d}D", {msg_proc_name}{d}D);
-                """)
+                stamp_file.write(ndStamp(msg_proc_name, base_proc_name, command_name, d))
 
         # include the source module in the stamp file if any procs were stamped out
         if found_annotation:
             stamp_file.write(f"use {mod};\n")
+
+def specialBroadcastStamp(src_dir, stamp_file, max_dims):
+    # broadcast is a special case because it has a different signature
+    # including two param fields for the source and destination ranks
+    # so we need to stamp out a separate handler for each rank pair
+    # (e.g., broadcast1Dx1D, broadcast1Dx2D, broadcast1Dx3D, broadcast2Dx2D, broadcast2Dx3D etc.)
+    for d1 in range(1, max_dims+1):
+        for d2 in range(d1, max_dims+1):
+            stamp_file.write(ndMultiStamp("_nd_gen_broadcast", "broadcast", "broadcast", d1, d2))
 
 def generateServerIncludes(config_filename, src_dir):
     res = ""
@@ -71,6 +91,9 @@ def generateServerIncludes(config_filename, src_dir):
 
         # explicitly stamp out basic message handlers
         stampOutNDArrayHandlers("MsgProcessing", src_dir, stamp_file, max_dims)
+
+        # handle broadcast specially
+        specialBroadcastStamp(src_dir, stamp_file, max_dims)
 
     res += " " + stamp_file_path
     print(res)

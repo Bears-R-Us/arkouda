@@ -286,3 +286,36 @@ def attach_all(names: list):
     dict
     """
     return {n: attach(n) for n in names}
+
+def broadcast_dims(sa: Tuple[int, ...], sb: Tuple[int, ...]) -> Tuple[int, ...]:
+    """
+    Algorithm to determine shape of broadcasted PD array given two array shapes
+
+    see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
+    """
+
+    Na = len(sa)
+    Nb = len(sb)
+    N = max(Na, Nb)
+    shapeOut = [0 for i in range(N)]
+
+    i = N-1
+    while i >= 0:
+        n1 = Na - N + i
+        n2 = Nb - N + i
+
+        d1 = 1 if n1 < 0 else sa[n1]
+        d2 = 1 if n2 < 0 else sb[n2]
+
+        if d1 == 1:
+            shapeOut[i] = d2
+        elif d2 == 1:
+            shapeOut[i] = d1
+        elif d1 == d2:
+            shapeOut[i] = d1
+        else:
+            raise ValueError("Incompatible dimensions for broadcasting")
+
+        i -= 1
+
+    return tuple(shapeOut)

@@ -3269,6 +3269,25 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         )
     )
 
+@typechecked
+def broadcast_to_shape(shape: Tuple[int, ...]) -> pdarray:
+    """
+    expand an array's rank to the specified shape using broadcasting
+    """
+
+    return create_pdarray(
+        cast(
+            str,
+            generic_msg(
+                cmd=f"broadcast{self.ndims}Dx{len(shape)}D",
+                args={
+                    "shape": shape,
+                },
+            ),
+        )
+    )
+
+
 
 @typechecked
 def attach_pdarray(user_defined_name: str) -> pdarray:

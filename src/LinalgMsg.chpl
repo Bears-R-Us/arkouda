@@ -1,8 +1,6 @@
 module LinalgMsg {
 
     use Reflection;
-    use ArkoudaTimeCompat;
-
     use Logging;
     use Message;
     use ServerConfig;
@@ -48,84 +46,27 @@ module LinalgMsg {
             }
         }
 
-        var t = new stopwatch();
+        proc makeEye(type dtype, param one: dtype): MsgTuple throws {
+            var e = st.addEntry(rname, rows, cols, dtype);
+            setDiag(e.a, diag, one);
+
+            const repMsg = "created " + st.attrib(rname);
+            linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
 
         select dtype {
-            when DType.Int64 {
-                t.start();
-                var e = st.addEntry(rname, rows, cols, int);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "alloc time = %i sec".doFormat(t.elapsed()));
-
-                t.restart();
-                setDiag(e.a, diag, 1);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "compute time = %i sec".doFormat(t.elapsed()));
-            }
-            when DType.UInt8 {
-                t.start();
-                var e = st.addEntry(rname, rows, cols, uint(8));
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "alloc time = %i sec".doFormat(t.elapsed()));
-
-                t.restart();
-                setDiag(e.a, diag, 1:uint(8));
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "compute time = %i sec".doFormat(t.elapsed()));
-            }
-            when DType.UInt64 {
-                t.start();
-                var e = st.addEntry(rname, rows, cols, uint);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "alloc time = %i sec".doFormat(t.elapsed()));
-
-                t.restart();
-                setDiag(e.a, diag, 1:uint);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "compute time = %i sec".doFormat(t.elapsed()));
-            }
-            when DType.Float64 {
-                t.start();
-                var e = st.addEntry(rname, rows, cols, real);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "alloc time = %i sec".doFormat(t.elapsed()));
-
-                t.restart();
-                setDiag(e.a, diag, 1.0);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "compute time = %i sec".doFormat(t.elapsed()));
-            }
-            when DType.Bool {
-                t.start();
-                var e = st.addEntry(rname, rows, cols, bool);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "alloc time = %i sec".doFormat(t.elapsed()));
-
-                t.restart();
-                setDiag(e.a, diag, true);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "compute time = %i sec".doFormat(t.elapsed()));
-            }
+            when DType.Int64 do return makeEye(int, 1);
+            when DType.UInt8 do return makeEye(uint(8), 1:uint(8));
+            when DType.UInt64 do return makeEye(uint, 1:uint(8));
+            when DType.Float64 do return makeEye(real, 1.0);
+            when DType.Bool do return makeEye(bool, true);
             otherwise {
                 var errorMsg = notImplementedError(getRoutineName(),dtype);
                 linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-
-        const repMsg = "created " + st.attrib(rname);
-        linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     registerFunction("eye", eyeMsg, getModuleName());
@@ -173,95 +114,32 @@ module LinalgMsg {
             "cmd: %s rname: %s aName: %s aDiag: %i".doFormat(
             cmd,rname,name,diag));
 
-        var t = new stopwatch();
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
+        proc doTrilu(type dtype, param zero: dtype): MsgTuple throws {
+            var eIn = toSymEntry(gEnt, dtype, nd),
+                eOut = st.addEntry(rname, (...eIn.tupShape), dtype);
+
+            eOut.a = eIn.a;
+            zeroTri(eOut.a, diag, zero, upper);
+
+            const errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
+            linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
         select gEnt.dtype {
-            when DType.Int64 {
-                var eIn = toSymEntry(gEnt, int, nd);
-                t.start();
-                var eOut = st.addEntry(rname, (...eIn.tupShape), int);
-                eOut.a = eIn.a;
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "alloc time = %i sec".doFormat(t.elapsed()));
-
-                t.restart();
-                zeroTri(eOut.a, diag, 0, upper);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "compute time = %i sec".doFormat(t.elapsed()));
-            }
-            when DType.UInt8 {
-                var eIn = toSymEntry(gEnt, uint(8), nd);
-                t.start();
-                var eOut = st.addEntry(rname, (...eIn.tupShape), uint(8));
-                eOut.a = eIn.a;
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "alloc time = %i sec".doFormat(t.elapsed()));
-
-                t.restart();
-                zeroTri(eOut.a, diag, 0:uint(8), upper);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "compute time = %i sec".doFormat(t.elapsed()));
-            }
-            when DType.UInt64 {
-                var eIn = toSymEntry(gEnt, uint, nd);
-                t.start();
-                var eOut = st.addEntry(rname, (...eIn.tupShape), uint);
-                eOut.a = eIn.a;
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "alloc time = %i sec".doFormat(t.elapsed()));
-
-                t.restart();
-                zeroTri(eOut.a, diag, 0:uint, upper);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "compute time = %i sec".doFormat(t.elapsed()));
-            }
-            when DType.Float64 {
-                var eIn = toSymEntry(gEnt, real, nd);
-                t.start();
-                var eOut = st.addEntry(rname, (...eIn.tupShape), real);
-                eOut.a = eIn.a;
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "alloc time = %i sec".doFormat(t.elapsed()));
-
-                t.restart();
-                zeroTri(eOut.a, diag, 0.0, upper);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "compute time = %i sec".doFormat(t.elapsed()));
-            }
-            when DType.Bool {
-                var eIn = toSymEntry(gEnt, bool, nd);
-                t.start();
-                var eOut = st.addEntry(rname, (...eIn.tupShape), bool);
-                eOut.a = eIn.a;
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "alloc time = %i sec".doFormat(t.elapsed()));
-
-                t.restart();
-                zeroTri(eOut.a, diag, false, upper);
-                t.stop();
-                linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "compute time = %i sec".doFormat(t.elapsed()));
-            }
+            when DType.Int64 do return doTrilu(int, 0);
+            when DType.UInt8 do return doTrilu(uint(8), 0:uint(8));
+            when DType.UInt64 do return doTrilu(uint, 0:uint);
+            when DType.Float64 do return doTrilu(real, 0.0);
+            when DType.Bool do return doTrilu(bool, false);
             otherwise {
                 const errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
                 linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-
-        const repMsg = "created " + st.attrib(rname);
-        linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     private proc zeroTri(ref a: [?d] ?t, diag: int, param zero: t, param upper: bool)
@@ -322,7 +200,7 @@ module LinalgMsg {
             "cmd: %s dtype1: %s dtype2: %s rname: %s".doFormat(
             cmd,dtype2str(x1G.dtype),dtype2str(x2G.dtype),rname));
 
-        proc doMatMult(type x1Type, type x2Type, type resultType): MsgTuple {
+        proc doMatMult(type x1Type, type x2Type, type resultType): MsgTuple throws {
             var x1E = toSymEntry(x1G, x1Type, nd),
                 x2E = toSymEntry(x2G, x2Type, nd);
 
@@ -340,38 +218,16 @@ module LinalgMsg {
         }
 
         select (x1G.dtype, x2G.dtype) {
-            when (DType.Int64, DType.Int64) do
-                return doMatMult(int, int, int);
-            when (DType.Int64, DType.Float64) do
-                return doMatMult(int, real, real);
-            when (DType.Int64, DType.UInt64) do
-                return doMatMult(int, uint, uint);
-            when (DType.Float64, DType.Int64) do
-                return doMatMult(real, int, real);
-            when (DType.Uint64, DType.Int64) do
-                return doMatMult(uint, int, uint);
-            when (DType.UInt64, DType.UInt64) do
-                return doMatMult(uint, uint, uint);
-            when (DType.Uint64, DType.Float64) do
-                return doMatMult(uint, real, real);
-            when (DType.Float64, DType.UInt64) do
-                return doMatMult(real, uint, real);
-            when (DType.Bool, DType.Int64) do
-                return doMatMult(bool, int, int);
-            when (DType.Bool, DType.UInt64) do
-                return doMatMult(bool, uint, uint);
-            when (DType.Bool, DType.Float64) do
-                return doMatMult(bool, real, real);
-            when (DType.Int64, DType.Bool) do
-                return doMatMult(int, bool, int);
-            when (DType.UInt64, DType.Bool) do
-                return doMatMult(uint, bool, uint);
-            when (DType.Float64, DType.Bool) do
-                return doMatMult(real, bool, real);
-            when (DType.Bool, DType.Bool) do
-                return doMatMult(bool, bool, bool);
-            when (DType.Float64, DType.Float64) do
-                return doMatMult(real, real, real);
+            when (DType.Int64, DType.Int64)     do return doMatMult(int,     int,     int);
+            when (DType.Int64, DType.UInt8)     do return doMatMult(int,     uint(8), int);
+            when (DType.Int64, DType.Float64)   do return doMatMult(int,     real,    real);
+            when (DType.Int64, DType.Bool)      do return doMatMult(int,     bool,    int);
+            when (DType.Uint8, DType.Uint8)     do return doMatMult(uint(8), uint(8), uint(8));
+            when (DType.Uint8, DType.Float64)   do return doMatMult(uint(8), real,    real);
+            when (DType.Uint8, DType.Bool)      do return doMatMult(uint(8), bool,    uint(8));
+            when (DType.Float64, DType.Float64) do return doMatMult(real,    real,    real);
+            when (DType.Float64, DType.Bool)    do return doMatMult(real,    bool,    real);
+            when (DType.Bool, DType.Bool)       do return doMatMult(bool,    bool,    bool);
             otherwise {
                 const errorMsg = notImplementedError(getRoutineName(),x1G.dtype, x2G.dtype);
                 linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -473,7 +329,7 @@ module LinalgMsg {
             "cmd: %s dtype: %s rname: %s".doFormat(
             cmd,dtype2str(gEnt.dtype),rname));
 
-        proc doTranspose(type t) {
+        proc doTranspose(type t): MsgTuple throws {
             var eIn = toSymEntry(gEnt, t, nd),
                 outShape: eIn.tupShape.type;
 
@@ -509,5 +365,91 @@ module LinalgMsg {
             bIdx[D.rank-1] <=> idx[D.rank-2];
             B[bIdx] = A[idx];
         }
+    }
+
+    @arkouda.registerND
+    proc vecdotMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        const x1Name = msgArgs.getValueOf("x1"),
+              x2Name = msgArgs.getValueOf("x2"),
+              outShape = msgArgs.get("outShape").getTuple(nd), // computed via broadcasting algorithm
+              axis = msgArgs.get("axis").getIntValue(),
+              rname = st.nextName();
+
+        var x1G: borrowed GenSymEntry = getGenericTypedArrayEntry(x1Name, st),
+            x2G: borrowed GenSymEntry = getGenericTypedArrayEntry(x2Name, st);
+
+        linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s dtype1: %s dtype2: %s rname: %s".doFormat(
+            cmd,dtype2str(x1G.dtype),dtype2str(x2G.dtype),rname));
+
+        // assumes both arrays have been broadcasted to ND+1 dimensions
+        proc doVecdot(type x1Type, type x2Type, type resultType): MsgTuple throws {
+            var ex1 = toSymEntry(x1G, x1Type, nd+1),
+                ex2 = toSymEntry(x2G, x2Type, nd+1),
+                eOut = st.addEntry(rname, (...outShape), resultType);
+
+            const _axis = if axis < 0 then axis + nd else axis;
+
+            var perpIndices: (nd+1)*range,
+                i = 0;
+            for param ii in 0..nd {
+                if ii == _axis {
+                    perpIndices[ii] = 1..0;
+                } else {
+                    perpIndices[ii] = 0..outShape[i];
+                    i += 1;
+                }
+            }
+
+            for idx in ex1.a.domain[(...perpIndices)] {
+                var outSlicer: nd*range,
+                    opSlicer: (nd+1)*range,
+                    i = 0;
+
+                for param ii in 0..nd {
+                    if ii == _axis {
+                        outSlicer[i] = idx[i]..idx[i];
+                        opSlicer[ii] = ex1.a.domain.dim(i);
+                        // don't increment 'i' (this dimension is being reduced)
+                    } else {
+                        outSlicer[i] = idx[ii]..idx[ii];
+                        opSlicer[ii] = idx[ii]..idx[ii];
+                        i += 1;
+                    }
+                }
+                eOut.a[outSlicer] = dotProduct(ex1.a[opSlicer], ex2.a[opSlicer], resultType);
+            }
+        }
+
+        select (x1G.dtype, x2G.dtype) {
+            when (DType.Int64, DType.Int64)     do return doVecdot(int,     int,     int);
+            when (DType.Int64, DType.UInt8)     do return doVecdot(int,     uint(8), int);
+            when (DType.Int64, DType.Float64)   do return doVecdot(int,     real,    real);
+            when (DType.Int64, DType.Bool)      do return doVecdot(int,     bool,    int);
+            when (DType.Uint8, DType.Uint8)     do return doVecdot(uint(8), uint(8), uint(8));
+            when (DType.Uint8, DType.Float64)   do return doVecdot(uint(8), real,    real);
+            when (DType.Uint8, DType.Bool)      do return doVecdot(uint(8), bool,    uint(8));
+            when (DType.Float64, DType.Float64) do return doVecdot(real,    real,    real);
+            when (DType.Float64, DType.Bool)    do return doVecdot(real,    bool,    real);
+            when (DType.Bool, DType.Bool)       do return doVecdot(bool,    bool,    bool);
+            otherwise {
+                const errorMsg = notImplementedError(getRoutineName(),x1G.dtype, x2G.dtype);
+                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
+    // dot product of two 1D arrays
+    proc dotProduct(a: [?d1], b: [?d2], type outType): outType
+        where d1.rank == 1 && d2.rank == 1
+    {
+        return (+ reduce a*b): outType;
+    }
+
+    proc dotProduct(a, b: [?d2], type outType): outType
+        where d2.rank == 1
+    {
+        return (+ reduce a*b): outType;
     }
 }

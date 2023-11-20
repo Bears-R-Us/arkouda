@@ -451,4 +451,131 @@ module MsgProcessing
     proc setMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         return setMsg(cmd, msgArgs, st, 1);
     }
+
+
+    /*
+        Create a "broadcasted" array (of rank 'nd') by copying an array into an
+        array of the given shape.
+
+        E.g., given the following broadcast:
+        A      (4d array):  8 x 1 x 6 x 1
+        B      (3d array):      7 x 1 x 5
+        ---------------------------------
+        Result (4d array):  8 x 7 x 6 x 5
+
+        Two separate calls would be made to store 'A' and 'B' in arrays with
+        result's shape.
+
+        When copying from a singleton dimension, the value is repeated along
+        that dimension (e.g., A's 1st and 3rd, or B's 2nd dimension above).
+        For non singleton dimensions, the size of the two arrays must match,
+        and the values are copied into the result array.
+
+        When prepending a new dimension to increase an array's rank, the
+        values along that dimension are initialized to zero (e.g., B's 4th
+        dimension above).
+
+        !!! TODO: Avoid the promoted copies here by leaving the singleton
+        dimensions in the result array, and making operations on arrays
+        aware that promotion of singleton dimensions may be necessary. E.g.,
+        make matrix multiplication aware that it can treat a singleton
+        value as a vector of the appropriate length during multiplication.
+
+        (this may require a modification of SymEntry to keep track of
+        which dimensions are explicitly singletons)
+
+        NOTE: registration of this procedure is handled specially in
+        'serverModuleGen.py' because it has two param fields. The purpose of
+        designing "broadcast" this way is to avoid the the need for multiple
+        dimensionality param fields in **all** other message handlers (e.g.,
+        matrix multiply can be designed to expect matrices of equal rank,
+        requiring only one dimensionality param field. As such, the client
+        implementation of matrix-multiply may be required to broadcast the array
+        arguments up to some common rank (N) before issuing a 'matMult{N}D'
+        command to the server)
+    */
+    proc broadcastNDArray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+        param ndIn: int, // rank of the array to be broadcast
+        param ndOut: int // rank of the result array
+    ): MsgTuple throws {
+        const name = msgArgs.getValueOf("name"),
+              shapeOut = msgArgs.get("shape").getTuple(ndOut),
+              rname = st.nextName();
+
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+        proc doAssignment(type dtype): MsgTuple {
+            var eIn = toSymEntry(gEnt, int, ndIn),
+                eOut = st.addEntry(rname, (...shapeOut), int);
+
+            if eIn.tupShape == shapeOut {
+                // no broadcast necessary, copy the array
+                eOut.a = eIn.a;
+            } else {
+                // ensure that 'shapeOut' is a valid broadcast of 'eIn.tupShape'
+                // and determine which dimensions will require broadcasting
+                var (valid, bcDims) = checkValidBroadcast(eIn.tupShape, shapeOut);
+
+                if !valid {
+                    const errorMsg = "Invalid broadcast: " + eIn.tupShape:string + " -> " + shapeOut:string;
+                    mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                } else {
+                    var slicerOut: ndOut*range, slicerIn: ndIn*range;
+                    for param i in 0..<bcDims.size {
+                        slicerOut = 1..0;
+                        slicerIn = 1..0;
+
+                        for param ii in 0..<ndIn {
+                            if ii == i {
+                                // assign into the i'th dimension
+                                slicerOut[ii] = eOut.a.dim(ii);
+
+                                // either promote from a singleton value (EX: `eIn.a[.., 0, ..]`)
+                                //  or assign from a whole dimension of equal size (EX: `eIn.a[.., eOut.a.dim(ii), ..]`)
+                                slicerIn[ii] = if bcDims[i] then 0..0 else eOut.a.dim(ii);
+                            }
+                        }
+
+                        // copy values for the i'th dimension
+                        eOut.a[slicerOut] = eIn.a[slicerIn];
+                    }
+                }
+            }
+
+            const repMsg = "created " + st.attrib(rname);
+            mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select gEnt.dtype {
+            when DType.Int64 do return doAssignment(int);
+            when DType.UInt8 do return doAssignment(uint(8));
+            when DType.UInt64 do return doAssignment(uint);
+            when DType.Float64 do return doAssignment(real);
+            when DType.Bool do return doAssignment(bool);
+            otherwise {
+                var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
+                mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
+    proc checkValidBroadcast(from: ?Nf*int, to: ?Nt*int): (bool, Nf*bool) {
+        var dimsToBroadcast: Nf*bool = false;
+
+        // ensure that Nt >= Nf
+        if Nt < Nf then return (false, dimsToBroadcast);
+
+        for param i in 0..<Nf {
+        if from[i] == 1 && to[i] != 1 {
+            dimsToBroadcast[i] = true;
+        } else if from[i] != to[i] {
+            return (false, dimsToBroadcast);
+        }
+        }
+
+        return (true, dimsToBroadcast);
+    }
 }
