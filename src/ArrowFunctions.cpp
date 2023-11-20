@@ -291,7 +291,6 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
             int string_index = 0;
             for(int idx = 0; idx < definition_level.size(); idx++) {
               auto lvl = definition_level[idx];
-              auto value = string_values[string_index];
               if(lvl != 0 || numCols > 1) {
                 auto value = string_values[string_index];
                 offsets[i] = value.len + 1;
