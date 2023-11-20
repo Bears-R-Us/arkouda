@@ -296,13 +296,13 @@ module ParquetMsg {
   }
 
   proc getStrColSize(filename: string, dsetname: string, ref offsets: [] int) throws {
-    extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, errMsg): int;
+    extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, batchSize, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
     var byteSize = c_getStringColumnNumBytes(filename.localize().c_str(),
                                              dsetname.localize().c_str(),
                                              c_ptrTo(offsets),
-                                             offsets.size, 0,
+                                             offsets.size, 0, 256,
                                              c_ptrTo(pqErr.errMsg));
     
     if byteSize == ARROWERROR then
