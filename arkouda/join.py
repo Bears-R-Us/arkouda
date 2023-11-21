@@ -180,12 +180,12 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
 
 @typechecked
 def inner_join(
-    left: Union[pdarray, Strings, Categorical, Sequence[pdarray]],
-    right: Union[pdarray, Strings, Categorical, Sequence[pdarray]],
+    left: Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
+    right: Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
     wherefunc: Callable = None,
     whereargs: Tuple[
-        Union[pdarray, Strings, Categorical, Sequence[pdarray]],
-        Union[pdarray, Strings, Categorical, Sequence[pdarray]],
+        Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
+        Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
     ] = None,
 ) -> Tuple[pdarray, pdarray]:
     """Perform inner join on values in <left> and <right>,
@@ -230,10 +230,6 @@ def inner_join(
         left, right = l.codes, r.codes
 
     if is_sequence:
-        if any(not isinstance(lf, pdarray) for lf in left) or any(
-            not isinstance(rt, pdarray) for rt in right
-        ):
-            raise TypeError("All elements of Multi-array arguments must be pdarrays")
         if len(left) != len(right):
             raise ValueError("Left must have same num arrays as right")
         left_size, right_size = left[0].size, right[0].size
@@ -251,10 +247,6 @@ def inner_join(
         if whereargs is None or len(whereargs) != 2:
             raise ValueError("whereargs must be a 2-tuple with left and right arg arrays")
         if is_sequence:
-            if any(not isinstance(wa, pdarray) for wa in whereargs[0]) or any(
-                not isinstance(wa, pdarray) for wa in whereargs[1]
-            ):
-                raise TypeError("All elements of Multi-array arguments must be pdarrays")
             if len(whereargs[0]) != len(whereargs[1]):
                 raise ValueError("Left must have same num arrays as right")
             first_wa_size, second_wa_size = whereargs[0][0].size, whereargs[1][0].size

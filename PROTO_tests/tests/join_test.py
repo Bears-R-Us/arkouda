@@ -87,20 +87,38 @@ class TestJoin:
         seed = 1
         a = ak.randint(-size // 10, size // 10, size, seed=seed)
         b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
-        left = [a, ak.ones(size, int)]
-        right = [b, ak.cast(ak.arange(size) % 2 == 0, int)]
+        ones = ak.ones(size, int)
+        altr = ak.cast(ak.arange(size) % 2 == 0, int)
+        left_lists = [
+            [a, ones],
+            [pda_to_str_helper(a), ones],
+            [a, pda_to_str_helper(ones)],
+            [pda_to_str_helper(a), pda_to_str_helper(ones)],
+        ]
+        right_list = [
+            [b, altr],
+            [pda_to_str_helper(b), altr],
+            [b, pda_to_str_helper(altr)],
+            [pda_to_str_helper(b), pda_to_str_helper(altr)],
+        ]
+        for left, right in zip(left_lists, right_list):
+            # test with no where args
+            l_ind, r_ind = ak.join.inner_join(left, right)
+            for lf, rt in zip(left, right):
+                assert (lf[l_ind] == rt[r_ind]).all()
 
-        # test with no where args
-        l_ind, r_ind = ak.join.inner_join(left, right)
-        for lf, rt in zip(left, right):
-            assert (lf[l_ind] == rt[r_ind]).all()
+            # test with where args
+            def where_func(x, y):
+                x_bool = (
+                    (x[0] % 2 == 0) if isinstance(x[0], ak.pdarray) else (x[0].get_lengths() % 2 == 0)
+                )
+                y_bool = (
+                    (x[0] % 2 == 0) if isinstance(y[0], ak.pdarray) else (y[0].get_lengths() % 2 == 0)
+                )
+                return x_bool | y_bool
 
-        # test with where args
-        def where_func(x, y):
-            return (x[0] % 2 == 0) | (y[0] % 2 == 0)
-
-        l_ind, r_ind = ak.join.inner_join(left, right, where_func, (left, right))
-        assert where_func([lf[l_ind] for lf in left], [rt[r_ind] for rt in right]).all()
+            l_ind, r_ind = ak.join.inner_join(left, right, where_func, (left, right))
+            assert where_func([lf[l_ind] for lf in left], [rt[r_ind] for rt in right]).all()
 
     def test_str_inner_join(self):
         int_left = ak.arange(50)
@@ -222,3 +240,7 @@ class TestJoin:
 
 def join_where(left, right):
     return ak.arange(left.size) % 2 == 0
+
+
+def pda_to_str_helper(pda):
+    return ak.array([f"str {i}" for i in pda.to_list()])

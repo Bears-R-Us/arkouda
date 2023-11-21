@@ -2921,7 +2921,10 @@ def merge(
     on = on if on is not None else col_intersect
 
     if not isinstance(on, str):
-        if not all(isinstance(left[col], pdarray) and isinstance(right[col], pdarray) for col in on):
+        if not all(
+            isinstance(left[col], (pdarray, Strings)) and isinstance(right[col], (pdarray, Strings))
+            for col in on
+        ):
             raise ValueError("All columns of a multi-column merge must be pdarrays")
 
     if how == "inner":
