@@ -685,6 +685,23 @@ class SegArrayTest(ArkoudaTest):
             else:
                 offset += 1
 
+        # reproducer for issue #2666 verify correct results with empty segs
+        a = [1, 2, 1, 1, 3, 3, 5, 4, 6, 2]
+        a_ans = [1, 2, 1, 1, 5, 4, 6, 2]
+        b = [10, 11, 11, 12, 13, 10, 4, 6, 1, 12]
+        segments = ak.array([0, len(a), len(a), len(a), len(a) + len(b)])
+        flat = ak.array(a + b)
+        sa = ak.SegArray(segments, flat)
+        filtered = sa.filter(3)
+        self.assertListEqual(filtered.non_empty.to_list(), [True, False, False, True, False])
+        self.assertListEqual(filtered[0].to_list(), a_ans)
+        self.assertListEqual(filtered[3].to_list(), b)
+
+        no_empty_filtered = sa.filter(3, discard_empty=True)
+        self.assertListEqual(no_empty_filtered.non_empty.to_list(), [True, True])
+        self.assertListEqual(no_empty_filtered[0].to_list(), a_ans)
+        self.assertListEqual(no_empty_filtered[1].to_list(), b)
+
     def test_equality(self):
         # reproducer for issue #2617
         # verify equality no matter position of empty seg
