@@ -522,4 +522,121 @@ module AryUtil
             }
         }
     }
+
+
+    /*
+      Create a rank 'N' array by removing the degenerate ranks from
+      'A' and copying it's contents into the new array
+
+      'N' must be equal to 'A's rank minus the number of degenerate ranks;
+      halts if this condition isn't met.
+
+      Analogous to matlab's 'squeeze': https://www.mathworks.com/help/matlab/ref/squeeze.html
+
+      Assumes that the degenerate ranks have an index of 0 (i.e., they have a range of 0..0)
+    */
+    proc removeDegenRanks(A: [?D] ?t, param N: int) throws
+      where N <= D.rank
+    {
+      var degenRanks: D.rank*bool,
+          numDegenRanks: int;
+
+      // determine which, and how many, ranks are degenerate
+      for param i in 0..<D.rank {
+        if D.shape[i] == 1 {
+          degenRanks[i] = true;
+          numDegenRanks += 1;
+        }
+      }
+
+      if N != D.rank - numDegenRanks then
+        halt("removeDegenRanks: N must be equal A's rank minus the number of degenerate ranks");
+
+      // compute the shape of the new array and create a mapping from the
+      // new array's ranks to the old array's ranks
+      var shape: N*range,
+          mapping: N*int,
+          i = 0;
+
+      for param ii in 0..<D.rank {
+        mapping(i) = ii;
+        if !degenRanks[ii] {
+          shape[i] = D.dim(ii);
+          i += 1;
+        }
+      }
+
+      // used to map indices from the new array to the old array
+      // (assumes that the degenerate ranks have an index of 0, s.t.
+      //  the default initialization of 'ret' will index into 'A')
+      inline proc map(idx: int ...N): D.rank*int {
+        var ret: D.rank*int;
+        for param i in 0..<N do
+          ret[mapping[i]] = idx[i];
+        return ret;
+      }
+
+      // create the new array
+      var AReduced = makeDistArray({(...shape)}, t);
+
+      // copy values from the old array to the new one
+      // TODO: Is this being auto-aggregated? If not, add explicit aggregation
+      forall idx in AReduced.domain do
+        if N == 1
+          then AReduced[idx] = A[map(idx)];
+          else AReduced[idx] = A[map((...idx))];
+
+      return AReduced;
+    }
+
+    /*
+      Get a domain that selects out the idx'th set of indices along the specified axes
+
+      :arg D: the domain to slice
+      :arg idx: the index to select along the specified axes (must have the same rank as D)
+      :arg axes: the axes to slice along (must be a subset of the axes of D)
+
+      For example, if D represents a stack of 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+      Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25..25}
+    */
+    proc domOnAxis(D: domain(?), idx: D.rank*int, axes: int ...?NA): domain(D.rank)
+      where NA < D.rank
+    {
+      var outDims: D.rank*range;
+      label ranks for i in 0..<D.rank {
+        for param j in 0..<NA {
+          if i == axes[j] {
+            outDims[i] = D.dim(i);
+            continue ranks;
+          }
+        }
+        outDims[i] = idx[i]..idx[i];
+      }
+      return D[{(...outDims)}];
+    }
+
+    /*
+      Get a domain over the set of indices orthogonal to the specified axes
+
+      :arg D: the domain to slice
+      :arg axes: the axes to slice along (must be a subset of the axes of D)
+
+      For example, if D represents a stack of 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+      Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
+    */
+    proc domOffAxis(D: domain(?), axes: int ...?NA): domain(D.rank)
+      where NA < D.rank
+    {
+      var outDims: D.rank*range;
+      label ranks for i in 0..<D.rank {
+        for param j in 0..<NA {
+          if i == axes[j] {
+            outDims[i] = 0..0;
+            continue ranks;
+          }
+        }
+        outDims[i] = D.dim(i);
+      }
+      return D[{(...outDims)}];
+    }
 }

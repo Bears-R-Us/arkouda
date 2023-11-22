@@ -71,23 +71,52 @@ module SymArrayDmapCompat
         res = a;
         return res;
     }
-    
-    proc makeDistArray(in a: [?D] ?etype) throws {
+
+    proc makeDistArray(in a: [?D] ?etype) throws
+      where D.rank == 1 // tryCreateArray is only supported for 1D arrays
+    {
       var res = D.tryCreateArray(etype);
       res = a;
       return res;
     }
 
-    proc makeDistArray(D: domain(?), type etype) throws {
+    proc makeDistArray(in a: [?D] ?etype) throws
+      where D.rank > 1
+    {
+      var res: [makeDistDom((...D.shape))] etype;
+      res = a;
+      return res;
+    }
+
+    proc makeDistArray(D: domain(?), type etype) throws
+      where D.rank == 1 // tryCreateArray is only supported for 1D arrays
+    {
       var res = D.tryCreateArray(etype);
       return res;
     }
 
-    proc makeDistArray(D: domain(?), initExpr: ?t) throws {
+    proc makeDistArray(D: domain(?), type etype) throws
+      where D.rank > 1
+    {
+      var res: [makeDistDom((...D.shape))] etype;
+      return res;
+    }
+
+    proc makeDistArray(D: domain(?), initExpr: ?t) throws
+      where D.rank == 1 // tryCreateArray is only supported for 1D arrays
+    {
       return D.tryCreateArray(t, initExpr);
     }
 
-    /* 
+    proc makeDistArray(D: domain(?), initExpr: ?t) throws
+      where D.rank > 1
+    {
+      var res: [makeDistDom((...D.shape))] t;
+      res = initExpr;
+      return res;
+    }
+
+    /*
     Returns the type of the distributed domain
 
     :arg size: size of domain

@@ -309,7 +309,7 @@ module ArgSortMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm, _: int):[D] int throws
+    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm, axis: int = 0):[D] int throws
       where D.rank == 1
     {
       var t1 = Time.timeSinceEpoch().totalSeconds();
@@ -339,48 +339,41 @@ module ArgSortMsg
       return iv;
     }
 
-    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm, axis: int):[D] int throws
+    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm, axis: int = 0):[D] int throws
       where D.rank > 1
     {
       var t1 = Time.timeSinceEpoch().totalSeconds();
       var iv = makeDistArray(D, int);
 
-      // create a domain identical to 'D', except degenerate along 'axis'
-      var degenAxis = D.rank*range;
-      for param a in 0..<D.rank {
-        if a == axis
-          then degenAxis[a] = 1..0;
-          else degenAxis[a] = D.dim(a);
-      }
-      const DD = D[degenAxis];
+      const DD = domOffAxis(D, axis);
 
       select algorithm {
         when SortingAlgorithm.TwoArrayRadixSort {
-          for idx in DD { // for each index perpendicular to 'axis'
-            // create a tuple of ranges that selects the i'th 1D array along axis
-            var slicer: D.rank*range;
-            for param a in 0..<D.rank {
-              if a == axis
-                then slicer[a] = D.dim(a);
-                else slicer[a] = idx[a]..idx[a];
+          for idx in DD {
+            // create an array that is "orthogonal" to idx
+            //  (i.e., a 1D array along 'axis', intersecting 'idx')
+            var AI = makeDistArray({D.dim(axis)}, (t,int));
+            forall i in D.dim(axis) with (var perpIdx = idx) {
+              perpIdx[axis] = i;
+              AI[i] = (A[perpIdx], i);
             }
 
-            var AI = makeDistArray(slicer[axis], (t,int));
-            AI = [i in slicer[axis]] (A[i], i);
+            // sort the array
             Sort.TwoArrayRadixSort.twoArrayRadixSort(AI, comparator=myDefaultComparator);
-            iv[slicer] = AI;
+
+            // store result in 'iv'
+            forall i in D.dim(axis) with (var perpIdx = idx) {
+              perpIdx[axis] = i;
+              iv[perpIdx] = AI[i][1];
+            }
           }
         }
         when SortingAlgorithm.RadixSortLSD {
-          for idx in DD { // for each index perpendicular to 'axis'
-            // create a tuple of ranges that selects the i'th 1D array along axis
-            var slicer: D.rank*range;
-            for param a in 0..<D.rank {
-              if a == axis
-                then slicer[a] = D.dim(a);
-                else slicer[a] = idx[a]..idx[a];
-            }
-            iv[slicer] = radixSortLSD_ranks(A[slicer]);
+          for idx in DD {
+            const idxDom = domOnAxis(D, idx, axis);
+            const aSorted = radixSortLSD_ranks(removeDegenRanks(A[idxDom], 1));
+
+            forall i in idxDom do iv[i] = aSorted[i[axis]];
           }
         }
         otherwise {
@@ -447,7 +440,7 @@ module ArgSortMsg
                 }
                 when (DType.Float64) {
                     var e = toSymEntry(gEnt, real, nd);
-                    var iv = argsortDefault(e.a, axis);
+                    var iv = argsortDefault(e.a, axis=axis);
                     st.addEntry(ivname, createSymEntry(iv));
                 }
                 when (DType.Bool) {

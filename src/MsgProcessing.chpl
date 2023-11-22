@@ -504,16 +504,16 @@ module MsgProcessing
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
-        proc doAssignment(type dtype): MsgTuple {
+        proc doAssignment(type dtype): MsgTuple throws {
             var eIn = toSymEntry(gEnt, int, ndIn),
                 eOut = st.addEntry(rname, (...shapeOut), int);
 
-            if eIn.tupShape == shapeOut {
+            if ndIn == ndOut && eIn.tupShape == shapeOut {
                 // no broadcast necessary, copy the array
                 eOut.a = eIn.a;
             } else {
                 // ensure that 'shapeOut' is a valid broadcast of 'eIn.tupShape'
-                // and determine which dimensions will require broadcasting
+                //   and determine which dimensions will require promoted assignment
                 var (valid, bcDims) = checkValidBroadcast(eIn.tupShape, shapeOut);
 
                 if !valid {
@@ -521,25 +521,19 @@ module MsgProcessing
                     mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 } else {
-                    var slicerOut: ndOut*range, slicerIn: ndIn*range;
-                    for param i in 0..<bcDims.size {
-                        slicerOut = 1..0;
-                        slicerIn = 1..0;
-
-                        for param ii in 0..<ndIn {
-                            if ii == i {
-                                // assign into the i'th dimension
-                                slicerOut[ii] = eOut.a.dim(ii);
-
-                                // either promote from a singleton value (EX: `eIn.a[.., 0, ..]`)
-                                //  or assign from a whole dimension of equal size (EX: `eIn.a[.., eOut.a.dim(ii), ..]`)
-                                slicerIn[ii] = if bcDims[i] then 0..0 else eOut.a.dim(ii);
-                            }
-                        }
-
-                        // copy values for the i'th dimension
-                        eOut.a[slicerOut] = eIn.a[slicerIn];
+                    // define a mapping from the output array's indices to the input array's indices
+                    inline proc map(idx: int ...ndOut): ndIn*int {
+                        var ret: ndIn*int; // 'ret' is initialized to zero (assumes zero-based arrays)
+                        for param i in 0..<ndIn do
+                            ret[i] = if bcDims[i] then 0 else idx[i];
+                        return ret;
                     }
+
+                    // TODO: Is this being auto-aggregated? If not, add explicit aggregation
+                    forall idx in eOut.a.domain do
+                        if ndOut == 1
+                            then eOut.a[idx] = eIn.a[map(idx)];
+                            else eOut.a[idx] = eIn.a[map((...idx))];
                 }
             }
 
@@ -563,17 +557,17 @@ module MsgProcessing
     }
 
     proc checkValidBroadcast(from: ?Nf*int, to: ?Nt*int): (bool, Nf*bool) {
-        var dimsToBroadcast: Nf*bool = false;
+        var dimsToBroadcast: Nf*bool;
 
         // ensure that Nt >= Nf
         if Nt < Nf then return (false, dimsToBroadcast);
 
         for param i in 0..<Nf {
-        if from[i] == 1 && to[i] != 1 {
-            dimsToBroadcast[i] = true;
-        } else if from[i] != to[i] {
-            return (false, dimsToBroadcast);
-        }
+            if from[i] == 1 && to[i] != 1 {
+                dimsToBroadcast[i] = true;
+            } else if from[i] != to[i] {
+                return (false, dimsToBroadcast);
+            }
         }
 
         return (true, dimsToBroadcast);
