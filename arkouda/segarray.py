@@ -661,18 +661,10 @@ class SegArray:
         isrepeat[self.segments[self.non_empty]] = False
         truepaths = self.values[~isrepeat]
         nhops = self.grouping.sum(~isrepeat)[1]
-        truesegs = cumsum(nhops) - nhops
         # Correct segments to properly assign empty lists - prevents dropping empty segments
-        if not self.non_empty.all():
-            truelens = concatenate((truesegs[1:], array([truepaths.size]))) - truesegs
-            len_diff = self.lengths[self.non_empty] - truelens
-
-            x = 0  # tracking which non-empty segment length we need
-            truesegs = zeros(self.size, dtype=akint64)
-            for i in range(1, self.size):
-                truesegs[i] = self.segments[i] - len_diff[: x + 1].sum()
-                if self.non_empty[i]:
-                    x += 1
+        lens = self.lengths[:]
+        lens[self.non_empty] = nhops
+        truesegs = cumsum(lens) - lens
 
         norepeats = SegArray(truesegs, truepaths)
         if return_multiplicity:
@@ -1594,9 +1586,14 @@ class SegArray:
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
-        return generic_msg(cmd="sendArray", args={"segments": self.segments,
-                                                  "values": self.values,
-                                                  "hostname": hostname,
-                                                  "port": port,
-                                                  "dtype": self.dtype,
-                                                  "objType": "segarray"})
+        return generic_msg(
+            cmd="sendArray",
+            args={
+                "segments": self.segments,
+                "values": self.values,
+                "hostname": hostname,
+                "port": port,
+                "dtype": self.dtype,
+                "objType": "segarray",
+            },
+        )
