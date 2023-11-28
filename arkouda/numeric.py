@@ -1,6 +1,6 @@
 import json
 from enum import Enum
-from typing import ForwardRef, List, Optional, Tuple, Union
+from typing import ForwardRef, List, Optional, Sequence, Tuple, Union
 from typing import cast as type_cast
 from typing import no_type_check
 
@@ -22,7 +22,7 @@ from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import all as ak_all
 from arkouda.pdarrayclass import any as ak_any
 from arkouda.pdarrayclass import argmax, create_pdarray, pdarray
-from arkouda.pdarraycreation import array
+from arkouda.pdarraycreation import array, linspace
 from arkouda.strings import Strings
 
 Categorical = ForwardRef("Categorical")
@@ -53,6 +53,7 @@ __all__ = [
     "hash",
     "where",
     "histogram",
+    "histogram2d",
     "value_counts",
     "isnan",
     "ErrorMode",
@@ -1210,7 +1211,7 @@ def where(
 
 
 @typechecked
-def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[np.ndarray, pdarray]:
+def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[pdarray, pdarray]:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
 
@@ -1224,7 +1225,7 @@ def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[np.ndarray, pdarray
 
     Returns
     -------
-    (np.ndarray, Union[pdarray, int64 or float64])
+    (pdarray, Union[pdarray, int64 or float64])
         Bin edges and The number of values present in each bin
 
     Raises
@@ -1239,7 +1240,7 @@ def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[np.ndarray, pdarray
 
     See Also
     --------
-    value_counts
+    value_counts, histogram2d
 
     Notes
     -----
@@ -1250,20 +1251,107 @@ def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[np.ndarray, pdarray
     >>> import matplotlib.pyplot as plt
     >>> A = ak.arange(0, 10, 1)
     >>> nbins = 3
-    >>> b, h = ak.histogram(A, bins=nbins)
+    >>> h, b = ak.histogram(A, bins=nbins)
     >>> h
     array([3, 3, 4])
     >>> b
-    array([0., 3., 6.])
+    array([0., 3., 6., 9.])
 
-    # To plot, use only the left edges (now returned), and export the histogram to NumPy
-    >>> plt.plot(b, h.to_ndarray())
+    # To plot, export the left edges and the histogram to NumPy
+    >>> plt.plot(b.to_ndarray()[::-1], h.to_ndarray())
     """
     if bins < 1:
         raise ValueError("bins must be 1 or greater")
-    b = np.linspace(pda.min(), pda.max(), bins + 1)[:-1]  # type: ignore
+    b = linspace(pda.min(), pda.max(), bins + 1)
     repMsg = generic_msg(cmd="histogram", args={"array": pda, "bins": bins})
-    return b, create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(type_cast(str, repMsg)), b
+
+
+# Typechecking removed due to circular dependencies with arrayview
+# @typechecked
+def histogram2d(
+    x: pdarray, y: pdarray, bins: Union[int_scalars, Sequence[int_scalars]] = 10
+) -> Tuple[pdarray, pdarray, pdarray]:
+    """
+    Compute the bi-dimensional histogram of two data samples with evenly spaced bins
+
+    Parameters
+    ----------
+    x : pdarray
+        A pdarray containing the x coordinates of the points to be histogrammed.
+
+    y : pdarray
+        A pdarray containing the y coordinates of the points to be histogrammed.
+
+    bins : int_scalars or [int, int] = 10
+        The number of equal-size bins to use.
+        If int, the number of bins for the two dimensions (nx=ny=bins).
+        If [int, int], the number of bins in each dimension (nx, ny = bins).
+        Defaults to 10
+
+    Returns
+    -------
+    hist : ArrayView, shape(nx, ny)
+        The bi-dimensional histogram of samples x and y.
+        Values in x are histogrammed along the first dimension and
+        values in y are histogrammed along the second dimension.
+
+    x_edges : pdarray
+        The bin edges along the first dimension.
+
+    y_edges : pdarray
+        The bin edges along the second dimension.
+
+    Raises
+    ------
+    TypeError
+        Raised if x or y parameters are not pdarrays or if bins is
+        not an int or (int, int).
+    ValueError
+        Raised if bins < 1
+    NotImplementedError
+        Raised if pdarray dtype is bool or uint8
+
+    See Also
+    --------
+    histogram
+
+    Notes
+    -----
+    The x bins are evenly spaced in the interval [x.min(), x.max()]
+    and y bins are evenly spaced in the interval [y.min(), y.max()].
+
+    Examples
+    --------
+    >>> x = ak.arange(0, 10, 1)
+    >>> y = ak.arange(9, 0, -1)
+    >>> nbins = 3
+    >>> h, x_edges, y_edges = ak.histogram2d(x, y, bins=nbins)
+    >>> h
+    array([[0, 0, 3],
+           [0, 2, 1],
+           [3, 1, 0]])
+    >>> x_edges
+    array([0.0 3.0 6.0 9.0])
+    >>> x_edges
+    array([0.0 3.0 6.0 9.0])
+    """
+    if not isinstance(bins, Sequence):
+        x_bins, y_bins = bins, bins
+    else:
+        if len(bins) != 2:
+            raise ValueError("Sequences of bins must contain two elements (num_x_bins, num_y_bins)")
+        x_bins, y_bins = bins
+    if x_bins < 1 or y_bins < 1:
+        raise ValueError("bins must be 1 or greater")
+    x_bin_boundaries = linspace(x.min(), x.max(), x_bins + 1)
+    y_bin_boundaries = linspace(y.min(), y.max(), y_bins + 1)
+    repMsg = generic_msg(cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins})
+    return (
+        create_pdarray(type_cast(str, repMsg)).reshape(x_bins, y_bins),
+        x_bin_boundaries,
+        y_bin_boundaries,
+    )
 
 
 @typechecked
