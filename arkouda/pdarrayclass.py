@@ -310,9 +310,9 @@ class pdarray:
             raise ValueError(f"bad operator {op}")
         # pdarray binop pdarray
         if isinstance(other, pdarray):
-            if self.size != other.size:
-                raise ValueError(f"size mismatch {self.size} {other.size}")
-            repMsg = generic_msg(cmd="binopvv", args={"op": op, "a": self, "b": other})
+            if self.shape != other.shape:
+                raise ValueError(f"shape mismatch {self.shape} {other.shape}")
+            repMsg = generic_msg(cmd=f"binopvv{self.ndim}D", args={"op": op, "a": self, "b": other})
             return create_pdarray(repMsg)
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
@@ -325,7 +325,7 @@ class pdarray:
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
-            cmd="binopvs",
+            cmd=f"binopvs{self.ndim}D",
             args={"op": op, "a": self, "dtype": dt, "value": other},
         )
         return create_pdarray(repMsg)
@@ -370,7 +370,7 @@ class pdarray:
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
-            cmd="binopsv",
+            cmd=f"binopsv{self.ndim}D",
             args={"op": op, "dtype": dt, "value": other, "a": self},
         )
         return create_pdarray(repMsg)
@@ -542,9 +542,9 @@ class pdarray:
             raise ValueError(f"bad operator {op}")
         # pdarray op= pdarray
         if isinstance(other, pdarray):
-            if self.size != other.size:
-                raise ValueError(f"size mismatch {self.size} {other.size}")
-            generic_msg(cmd="opeqvv", args={"op": op, "a": self, "b": other})
+            if self.shape != other.shape:
+                raise ValueError(f"shape mismatch {self.shape} {other.shape}")
+            generic_msg(cmd=f"opeqvv{self.ndim}D", args={"op": op, "a": self, "b": other})
             return self
         # pdarray binop scalar
         # opeq requires scalar to be cast as pdarray dtype
@@ -555,7 +555,7 @@ class pdarray:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
 
         generic_msg(
-            cmd="opeqvs",
+            cmd=f"opeqvs{self.ndim}D",
             args={"op": op, "a": self, "dtype": self.dtype.name, "value": self.format_other(other)},
         )
         return self
