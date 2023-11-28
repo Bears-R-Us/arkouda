@@ -28,6 +28,12 @@ module ServerErrorStrings
                                                               efunc,
                                                               dtype2str(ldtype));
     }
+    proc notImplementedError(pname: string, efunc: string, ldtype: DType, param nd: int):string {
+        return try! "Error: %s: %s %s not implemented for nd = %i".doFormat(pname,
+                                                                            efunc,
+                                                                            dtype2str(ldtype),
+                                                                            nd);
+    }
     /* efunc is not implemented for DTypes */
     proc notImplementedError(pname: string, efunc: string, dt1: DType, dt2: DType): string {
       return try! "Error: %s: %s %s %s not implemented".doFormat(pname,
@@ -76,4 +82,3 @@ module ServerErrorStrings
 
     
 }
-

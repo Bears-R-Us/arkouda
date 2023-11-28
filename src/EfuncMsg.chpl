@@ -28,11 +28,11 @@ module EfuncMsg
 
 
     /* These ops are functions which take an array and produce an array.
-       
+
        **Dev Note:** Do scans fit here also? I think so... vector = scanop(vector)
        parse and respond to efunc "elemental function" message
        vector = efunc(vector) 
-       
+
       :arg reqMsg: request containing (cmd,efunc,name)
       :type reqMsg: string 
 
@@ -43,21 +43,22 @@ module EfuncMsg
       :throws: `UndefinedSymbolError(name)`
       */
 
-    proc efuncMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND
+    proc efuncMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message; attributes of returned array(s) will be appended to this string
         var name = msgArgs.getValueOf("array");
         var efunc = msgArgs.getValueOf("func");
         var rname = st.nextName();
-        
+
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-        
+
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                            "cmd: %s efunc: %s pdarray: %s".doFormat(cmd,efunc,st.attrib(name)));
-       
+
         select (gEnt.dtype) {
             when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
+                var e = toSymEntry(gEnt,int, nd);
                 ref ea = e.a;
                 select efunc
                 {
@@ -67,18 +68,39 @@ module EfuncMsg
                     when "log" {
                         st.addEntry(rname, new shared SymEntry(log(ea)));
                     }
+                    when "round" {
+                        st.addEntry(rname, new shared SymEntry(ea));
+                    }
+                    when "sgn" {
+                        st.addEntry(rname, new shared SymEntry(sgn(ea)));
+                    }
                     when "exp" {
                         st.addEntry(rname, new shared SymEntry(exp(ea)));
                     }
+                    when "square" {
+                        st.addEntry(rname, new shared SymEntry(square(ea)));
+                    }
                     when "cumsum" {
-                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                        overMemLimit(numBytes(int) * e.size);
-                        st.addEntry(rname, new shared SymEntry(+ scan e.a));
+                        if nd == 1 {
+                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                            overMemLimit(numBytes(int) * e.size);
+                            st.addEntry(rname, new shared SymEntry(+ scan e.a));
+                        } else {
+                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
+                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
+                        }
                     }
                     when "cumprod" {
-                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                        overMemLimit(numBytes(int) * e.size);
-                        st.addEntry(rname, new shared SymEntry(* scan e.a));
+                        if nd == 1 {
+                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                            overMemLimit(numBytes(int) * e.size);
+                            st.addEntry(rname, new shared SymEntry(* scan e.a));
+                        } else {
+                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
+                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
+                        }
                     }
                     when "sin" {
                         st.addEntry(rname, new shared SymEntry(sin(ea)));
@@ -118,7 +140,7 @@ module EfuncMsg
                     }
                     when "hash64" {
                         overMemLimit(numBytes(int) * e.size);
-                        var a = st.addEntry(rname, e.size, uint);
+                        var a = st.addEntry(rname, e.tupShape, uint);
                         forall (ai, x) in zip(a.a, e.a) {
                             ai = sipHash64(x): uint;
                         }
@@ -126,8 +148,8 @@ module EfuncMsg
                     when "hash128" {
                         overMemLimit(numBytes(int) * e.size * 2);
                         var rname2 = st.nextName();
-                        var a1 = st.addEntry(rname2, e.size, uint);
-                        var a2 = st.addEntry(rname, e.size, uint);
+                        var a1 = st.addEntry(rname2, e.tupShape, uint);
+                        var a2 = st.addEntry(rname, e.tupShape, uint);
                         forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
                             (a1i, a2i) = sipHash128(x): (uint, uint);
                         }
@@ -147,36 +169,90 @@ module EfuncMsg
                     when "ctz" {
                         st.addEntry(rname, new shared SymEntry(ctz(ea)));
                     }
+                    when "not" {
+                        st.addEntry(rname, new shared SymEntry(!e.a));
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                               
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                         return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
             when (DType.Float64) {
-                var e = toSymEntry(gEnt,real);
+                var e = toSymEntry(gEnt,real, nd);
                 ref ea = e.a;
                 select efunc
                 {
                     when "abs" {
                         st.addEntry(rname, new shared SymEntry(abs(ea)));
                     }
+                    when "ceil" {
+                        st.addEntry(rname, new shared SymEntry(ceil(ea)));
+                    }
+                    when "floor" {
+                        st.addEntry(rname, new shared SymEntry(floor(ea)));
+                    }
+                    when "round" {
+                        st.addEntry(rname, new shared SymEntry(round(ea)));
+                    }
+                    when "trunc" {
+                        st.addEntry(rname, new shared SymEntry(trunc(ea)));
+                    }
+                    when "sgn" {
+                        st.addEntry(rname, new shared SymEntry(sgn(ea)));
+                    }
+                    when "isfinite" {
+                        st.addEntry(rname, new shared SymEntry(isFinite(ea)));
+                    }
+                    when "isinf" {
+                        st.addEntry(rname, new shared SymEntry(isInf(ea)));
+                    }
+                    when "isnan" {
+                        st.addEntry(rname, new shared SymEntry(isNan(ea)));
+                    }
                     when "log" {
                         st.addEntry(rname, new shared SymEntry(log(ea)));
+                    }
+                    when "log1p" {
+                        st.addEntry(rname, new shared SymEntry(log1p(ea)));
+                    }
+                    when "log2" {
+                        st.addEntry(rname, new shared SymEntry(log2(ea)));
+                    }
+                    when "log10" {
+                        st.addEntry(rname, new shared SymEntry(log10(ea)));
                     }
                     when "exp" {
                         st.addEntry(rname, new shared SymEntry(exp(ea)));
                     }
+                    when "square" {
+                        st.addEntry(rname, new shared SymEntry(square(ea)));
+                    }
+                    when "sqrt" {
+                        st.addEntry(rname, new shared SymEntry(sqrt(ea)));
+                    }
                     when "cumsum" {
-                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                        overMemLimit(numBytes(real) * e.size);
-                        st.addEntry(rname, new shared SymEntry(+ scan e.a));
+                        if nd == 1 {
+                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                            overMemLimit(numBytes(real) * e.size);
+                            st.addEntry(rname, new shared SymEntry(+ scan e.a));
+                        } else {
+                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
+                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
+                        }
                     }
                     when "cumprod" {
-                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                        overMemLimit(numBytes(real) * e.size);
-                        st.addEntry(rname, new shared SymEntry(* scan e.a));
+                        if nd == 1 {
+                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                            overMemLimit(numBytes(real) * e.size);
+                            st.addEntry(rname, new shared SymEntry(* scan e.a));
+                        } else {
+                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
+                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
+                        }
                     }
                     when "sin" {
                         st.addEntry(rname, new shared SymEntry(sin(ea)));
@@ -219,7 +295,7 @@ module EfuncMsg
                     }
                     when "hash64" {
                         overMemLimit(numBytes(real) * e.size);
-                        var a = st.addEntry(rname, e.size, uint);
+                        var a = st.addEntry(rname, e.tupShape, uint);
                         forall (ai, x) in zip(a.a, e.a) {
                             ai = sipHash64(x): uint;
                         }
@@ -227,8 +303,8 @@ module EfuncMsg
                     when "hash128" {
                         overMemLimit(numBytes(real) * e.size * 2);
                         var rname2 = st.nextName();
-                        var a1 = st.addEntry(rname2, e.size, uint);
-                        var a2 = st.addEntry(rname, e.size, uint);
+                        var a1 = st.addEntry(rname2, e.tupShape, uint);
+                        var a2 = st.addEntry(rname, e.tupShape, uint);
                         forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
                             (a1i, a2i) = sipHash128(x): (uint, uint);
                         }
@@ -238,38 +314,53 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                     
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
             when (DType.Bool) {
-                var e = toSymEntry(gEnt,bool);
+                var e = toSymEntry(gEnt,bool, nd);
                 select efunc
                 {
                     when "cumsum" {
-                        var ia = makeDistArray(e.a.domain, int); // make a copy of bools as ints blah!
-                        ia = e.a:int;
-                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                        overMemLimit(numBytes(int) * ia.size);
-                        st.addEntry(rname, new shared SymEntry(+ scan ia));
+                        if nd == 1 {
+                            var ia = makeDistArray(e.a.domain, int); // make a copy of bools as ints blah!
+                            ia = e.a:int;
+                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                            overMemLimit(numBytes(int) * ia.size);
+                            st.addEntry(rname, new shared SymEntry(+ scan ia));
+                        } else {
+                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
+                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
+                        }
                     }
                     when "cumprod" {
-                        var ia = makeDistArray(e.a.domain, int); // make a copy of bools as ints blah!
-                        ia = e.a:int;
-                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                        overMemLimit(numBytes(int) * ia.size);
-                        st.addEntry(rname, new shared SymEntry(* scan ia));
+                        if nd == 1 {
+                            var ia = makeDistArray(e.a.domain, int); // make a copy of bools as ints blah!
+                            ia = e.a:int;
+                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                            overMemLimit(numBytes(int) * ia.size);
+                            st.addEntry(rname, new shared SymEntry(* scan ia));
+                        } else {
+                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
+                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
+                        }
+                    }
+                    when "not" {
+                        st.addEntry(rname, new shared SymEntry(!e.a));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                        
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                         return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
             when (DType.UInt64) {
-                var e = toSymEntry(gEnt,uint);
+                var e = toSymEntry(gEnt,uint, nd);
                 ref ea = e.a;
                 select efunc
                 {
@@ -282,15 +373,33 @@ module EfuncMsg
                     when "ctz" {
                         st.addEntry(rname, new shared SymEntry(ctz(ea)));
                     }
+                    when "round" {
+                        st.addEntry(rname, new shared SymEntry(ea));
+                    }
+                    when "sgn" {
+                        st.addEntry(rname, new shared SymEntry(sgn(ea)));
+                    }
                     when "cumsum" {
-                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                        overMemLimit(numBytes(uint) * e.size);
-                        st.addEntry(rname, new shared SymEntry(+ scan e.a));
+                        if nd == 1 {
+                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                            overMemLimit(numBytes(uint) * e.size);
+                            st.addEntry(rname, new shared SymEntry(+ scan e.a));
+                        } else {
+                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
+                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
+                        }
                     }
                     when "cumprod" {
-                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                        overMemLimit(numBytes(uint) * e.size);
-                        st.addEntry(rname, new shared SymEntry(* scan e.a));
+                        if nd == 1 {
+                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                            overMemLimit(numBytes(uint) * e.size);
+                            st.addEntry(rname, new shared SymEntry(* scan e.a));
+                        } else {
+                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
+                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
+                        }
                     }
                     when "sin" {
                         st.addEntry(rname, new shared SymEntry(sin(ea)));
@@ -333,7 +442,7 @@ module EfuncMsg
                     }
                     when "hash64" {
                         overMemLimit(numBytes(uint) * e.size);
-                        var a = st.addEntry(rname, e.size, uint);
+                        var a = st.addEntry(rname, e.tupShape, uint);
                         forall (ai, x) in zip(a.a, e.a) {
                             ai = sipHash64(x): uint;
                         }
@@ -341,8 +450,8 @@ module EfuncMsg
                     when "hash128" {
                         overMemLimit(numBytes(uint) * e.size * 2);
                         var rname2 = st.nextName();
-                        var a1 = st.addEntry(rname2, e.size, uint);
-                        var a2 = st.addEntry(rname, e.size, uint);
+                        var a1 = st.addEntry(rname2, e.tupShape, uint);
+                        var a2 = st.addEntry(rname, e.tupShape, uint);
                         forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
                             (a1i, a2i) = sipHash128(x): (uint, uint);
                         }
@@ -356,24 +465,33 @@ module EfuncMsg
                     when "exp" {
                         st.addEntry(rname, new shared SymEntry(exp(ea)));
                     }
+                    when "square" {
+                        st.addEntry(rname, new shared SymEntry(square(ea)));
+                    }
+                    when "not" {
+                        st.addEntry(rname, new shared SymEntry(!e.a));
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                     
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
-                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                  
-                return new MsgTuple(errorMsg, MsgType.ERROR);    
+                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
         // Append instead of assign here, to allow for 2 return arrays from hash128
         repMsg += "created " + st.attrib(rname);
-        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
-        return new MsgTuple(repMsg, MsgType.NORMAL);         
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+
+    private proc square(x) do return x * x;
+    private proc log1p(x: real):real do return log(1.0 + x);
 
     /*
         These are functions which take two arrays and produce an array.
@@ -1257,7 +1375,6 @@ module EfuncMsg
     }    
 
     use CommandMap;
-    registerFunction("efunc", efuncMsg, getModuleName());
     registerFunction("efunc2", efunc2Msg, getModuleName());
     registerFunction("efunc3vv", efunc3vvMsg, getModuleName());
     registerFunction("efunc3vs", efunc3vsMsg, getModuleName());

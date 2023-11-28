@@ -59,7 +59,7 @@ module MultiTypeSymbolTable
 
             :returns: borrow of newly created `SymEntry(t)`
         */
-      proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws {
+        proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws {
             // check and throw if memory limit would be exceeded
             // TODO figure out a way to do memory checking for bigint
             if t != bigint {
@@ -72,7 +72,7 @@ module MultiTypeSymbolTable
                                                         "redefined symbol: %s ".doFormat(name));
             } else {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "adding symbol: %s ".doFormat(name));            
+                                                        "adding symbol: %s ".doFormat(name));
             }
 
             tab.addOrReplace(name, entry);
@@ -81,6 +81,9 @@ module MultiTypeSymbolTable
             // back to the original type. Since we know it already we can skip isAssignableTo check
             return (tab[name]:borrowed GenSymEntry).toSymEntry(t, N);
         }
+
+        proc addEntry(name: string, shape: ?ND*int, type t): borrowed SymEntry(t, ND) throws
+            do return addEntry(name, (...shape), t);
 
         /*
         Takes an already created AbstractSymEntry and creates a new AbstractSymEntry.
@@ -137,7 +140,7 @@ module MultiTypeSymbolTable
                 when DType.Bool { return addEntry(name, (...shape), bool); }
                 when DType.BigInt { return addEntry(name, (...shape), bigint); }
                 otherwise {
-                    var errorMsg = "addEntry not implemented for %?".doFormat(dtype); 
+                    var errorMsg = "addEntry not implemented for %?".doFormat(dtype);
                     throw getErrorWithContext(
                         msg=errorMsg,
                         lineNumber=getLineNumber(),
@@ -147,6 +150,9 @@ module MultiTypeSymbolTable
                 }
             }
         }
+
+        proc addEntry(name: string, shape: ?ND*int, dtype: DType): borrowed AbstractSymEntry throws
+            do return addEntry(name, (...shape), dtype);
 
         /*
         Removes an unregistered entry from the symTable

@@ -223,7 +223,9 @@ def ceil(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("Ceil ot implemented")
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in ceil")
+    return Array._new(ak.ceil(x._array))
 
 
 def conj(x: Array, /) -> Array:
@@ -307,7 +309,9 @@ def floor(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("exp not implemented")
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in floor")
+    return Array._new(ak.floor(x._array))
 
 
 def floor_divide(x1: Array, x2: Array, /) -> Array:
@@ -360,7 +364,9 @@ def isfinite(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("isfinite not implemented")
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in isfinite")
+    return Array._new(ak.isfinite(x._array))
 
 
 def isinf(x: Array, /) -> Array:
@@ -369,7 +375,9 @@ def isinf(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("isinf not implemented")
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in isinf")
+    return Array._new(ak.isinf(x._array))
 
 
 def isnan(x: Array, /) -> Array:
@@ -378,7 +386,9 @@ def isnan(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("isnan not implemented")
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in isnan")
+    return Array._new(ak.isnan(x._array))
 
 
 def less(x1: Array, x2: Array, /) -> Array:
@@ -413,7 +423,9 @@ def log(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("log not implemented")
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in log")
+    return Array._new(ak.log(x._array))
 
 
 def log1p(x: Array, /) -> Array:
@@ -422,7 +434,9 @@ def log1p(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("log1p not implemented")
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in log")
+    return Array._new(ak.log1p(x._array))
 
 
 def log2(x: Array, /) -> Array:
@@ -431,7 +445,9 @@ def log2(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("log2 not implemented")
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in log")
+    return Array._new(ak.log2(x._array))
 
 
 def log10(x: Array, /) -> Array:
@@ -440,7 +456,9 @@ def log10(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("log10 not implemented")
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in log")
+    return Array._new(ak.log10(x._array))
 
 
 def logaddexp(x1: Array, x2: Array) -> Array:
@@ -471,7 +489,14 @@ def logical_not(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("not not implemented")
+    repMsg = ak.generic_msg(
+        cmd=f"efunc{x._array.ndim}D",
+        args={
+            "func": "not",
+            "array": x._array.pda,
+        },
+    )
+    return ak.create_pdarray(type_cast(str, repMsg))
 
 
 def logical_or(x1: Array, x2: Array, /) -> Array:
@@ -584,7 +609,9 @@ def round(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("round not implemented")
+    if x.dtype not in _numeric_dtypes:
+        raise TypeError("Only numeric dtypes are allowed in round")
+    return Array._new(ak.round(x._array))
 
 
 def sign(x: Array, /) -> Array:
@@ -593,7 +620,9 @@ def sign(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("sign not implemented")
+    if x.dtype not in _numeric_dtypes:
+        raise TypeError("Only numeric dtypes are allowed in sign")
+    return Array._new(ak.sign(x._array))
 
 
 def sin(x: Array, /) -> Array:
@@ -624,7 +653,9 @@ def square(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("square not implemented")
+    if x.dtype not in _numeric_dtypes:
+        raise TypeError("Only numeric dtypes are allowed in sign")
+    return Array._new(ak.sqrt(x._array))
 
 
 def sqrt(x: Array, /) -> Array:
@@ -679,5 +710,6 @@ def trunc(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("trunc not implemented")
-
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in trunc")
+    return Array._new(ak.trunc(x._array))
