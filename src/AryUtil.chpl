@@ -550,7 +550,7 @@ module AryUtil
       }
 
       if N != D.rank - numDegenRanks then
-        halt("removeDegenRanks: N must be equal A's rank minus the number of degenerate ranks");
+        halt("removeDegenRanks: N must be equal to A's rank minus the number of degenerate ranks");
 
       // compute the shape of the new array and create a mapping from the
       // new array's ranks to the old array's ranks
@@ -638,5 +638,72 @@ module AryUtil
         outDims[i] = D.dim(i);
       }
       return D[{(...outDims)}];
+    }
+
+    /*
+    Algorithm to determine shape of broadcasted PD array given two array shapes
+
+    see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
+    */
+    proc broadcastShape(sa: ?Na*int, sb: ?Nb*int, param N: int): N*int throws {
+      var s: N*int;
+      for param i in 0..<N by -1 do {
+        const n1 = Na - N + i,
+              n2 = Nb - N + i,
+              d1 = if n1 < 0 then 1 else sa[n1],
+              d2 = if n2 < 0 then 1 else sb[n2];
+
+        if      d1 == 1  then s[i] = d2;
+        else if d2 == 1  then s[i] = d1;
+        else if d1 == d2 then s[i] = d1;
+        else throw new Error("Incompatible shapes for broadcast");
+      }
+      return s;
+    }
+
+    proc broadcastShape(sa: ?N1*int, sb: ?N2*int): N1*int throws
+      where N1 >= N2
+        do return broadcastShape(sa, sb, N1);
+
+    proc broadcastShape(sa: ?N1*int, sb: ?N2*int): N2*int throws
+      where N1 < N2
+        do return broadcastShape(sa, sb, N2);
+
+    proc removeAxis(shape: ?N*int, axis: int): (N-1)*int {
+      var s: (N-1)*int,
+          i = 0;
+      for param ii in 0..<N {
+        if ii != axis {
+          s[i] = shape[ii];
+          i += 1;
+        }
+      }
+      return s;
+    }
+
+    proc appendAxis(shape: ?N*int, axis: int, param value: int): (N+1)*int {
+      var s: (N+1)*int,
+          i = 0;
+      for param ii in 0..<N+1 {
+        if ii == axis {
+          s[ii] = value;
+        } else {
+          s[ii] = shape[i];
+          i += 1;
+        }
+      }
+      return s;
+    }
+
+    proc appendAxis(shape: int, axis: int, param value: int): 2*int {
+      var s: 2*int;
+      if axis == 0 {
+        s[0] = value;
+        s[1] = shape;
+      } else {
+        s[0] = shape;
+        s[1] = value;
+      }
+      return s;
     }
 }

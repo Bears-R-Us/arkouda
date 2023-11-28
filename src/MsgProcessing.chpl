@@ -472,8 +472,7 @@ module MsgProcessing
         and the values are copied into the result array.
 
         When prepending a new dimension to increase an array's rank, the
-        values along that dimension are initialized to zero (e.g., B's 4th
-        dimension above).
+        values from the other dimensions are repeated along the new dimension.
 
         !!! TODO: Avoid the promoted copies here by leaving the singleton
         dimensions in the result array, and making operations on arrays
@@ -558,8 +557,6 @@ module MsgProcessing
 
     proc checkValidBroadcast(from: ?Nf*int, to: ?Nt*int): (bool, Nf*bool) {
         var dimsToBroadcast: Nf*bool;
-
-        // ensure that Nt >= Nf
         if Nt < Nf then return (false, dimsToBroadcast);
 
         for param i in 0..<Nf {

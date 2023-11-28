@@ -364,83 +364,163 @@ module LinalgMsg {
         }
     }
 
-    // @arkouda.registerND
-    // proc vecdotMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    /*
+        Compute the generalized dot product of two tensors along the specified axis.
+
+        Assumes that both tensors have already been broadcasted to have the same shape
+        with 'nd' dimensions.
+    */
+    @arkouda.registerND
+    proc vecdotMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        if nd < 2 {
+            const errorMsg = "VecDot with arrays of dimension < 2 is not supported";
+            linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        const x1Name = msgArgs.getValueOf("x1"),
+              x2Name = msgArgs.getValueOf("x2"),
+              bcShape = msgArgs.get("bcShape").getTuple(nd),
+              axis = msgArgs.get("axis").getIntValue(),
+              rname = st.nextName();
+
+        var x1G: borrowed GenSymEntry = getGenericTypedArrayEntry(x1Name, st),
+            x2G: borrowed GenSymEntry = getGenericTypedArrayEntry(x2Name, st);
+
+        linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s dtype1: %s dtype2: %s rname: %s".doFormat(
+            cmd,dtype2str(x1G.dtype),dtype2str(x2G.dtype),rname));
+
+        // assumes both arrays have been broadcasted to ND dimensions
+        proc doVecdot(type x1Type, type x2Type, type resultType): MsgTuple throws {
+            var ex1 = toSymEntry(x1G, x1Type, nd),
+                ex2 = toSymEntry(x2G, x2Type, nd);
+
+            if ex1.tupShape != bcShape || ex2.tupShape != bcShape {
+                const errorMsg = "Incompatible array shapes for VecDot: " + ex1.tupShape:string + ", " + ex2.tupShape:string +
+                    ". VecDot assumes both arrays have been broadcasted to have the same shape, matching the bcShape argument.";
+                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+
+            const _axis = if axis < 0 then nd + axis else axis,
+                  outShape = removeAxis(bcShape, _axis);
+
+            var eOut = st.addEntry(rname, (...outShape), resultType);
+
+            forall idx in eOut.a.domain {
+                const opDom = domOnAxis(ex1.a.domain, appendAxis(idx, _axis, 0), _axis);
+
+                var sum = 0: resultType;
+                for i in opDom do
+                    sum += ex1.a[i]:resultType * ex2.a[i]:resultType;
+
+                eOut.a[idx] = sum;
+            }
+
+            const repMsg = "created " + st.attrib(rname);
+            linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select (x1G.dtype, x2G.dtype) {
+            when (DType.Int64, DType.Int64)     do return doVecdot(int,     int,     int);
+            when (DType.Int64, DType.UInt8)     do return doVecdot(int,     uint(8), int);
+            when (DType.Int64, DType.Float64)   do return doVecdot(int,     real,    real);
+            when (DType.Int64, DType.Bool)      do return doVecdot(int,     bool,    int);
+            when (DType.UInt8, DType.Int64)     do return doVecdot(uint(8), int,     int);
+            when (DType.UInt8, DType.UInt8)     do return doVecdot(uint(8), uint(8), uint(8));
+            when (DType.UInt8, DType.Float64)   do return doVecdot(uint(8), real,    real);
+            when (DType.UInt8, DType.Bool)      do return doVecdot(uint(8), bool,    uint(8));
+            when (DType.Float64, DType.Int64)   do return doVecdot(real,    int,     real);
+            when (DType.Float64, DType.UInt8)   do return doVecdot(real,    uint(8), real);
+            when (DType.Float64, DType.Float64) do return doVecdot(real,    real,    real);
+            when (DType.Float64, DType.Bool)    do return doVecdot(real,    bool,    real);
+            when (DType.Bool, DType.Int64)      do return doVecdot(bool,    int,     int);
+            when (DType.Bool, DType.UInt8)      do return doVecdot(bool,    uint(8), uint(8));
+            when (DType.Bool, DType.Float64)    do return doVecdot(bool,    real,    real);
+            otherwise {
+                const errorMsg = notImplementedError(getRoutineName(), "vecdot", x1G.dtype, x2G.dtype);
+                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
+    // @arkouda.registerND(???)
+    // proc tensorDotMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd1: int, param nd2: int): MsgTuple throws {
+    //     if nd < 3 {
+    //         const errorMsg = "TensorDot with arrays of dimension < 3 is not supported";
+    //         linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+    //         return new MsgTuple(errorMsg, MsgType.ERROR);
+    //     }
+
     //     const x1Name = msgArgs.getValueOf("x1"),
     //           x2Name = msgArgs.getValueOf("x2"),
-    //           outShape = msgArgs.get("outShape").getTuple(nd), // computed via broadcasting algorithm
-    //           axis = msgArgs.get("axis").getIntValue(),
     //           rname = st.nextName();
 
-    //     var x1G: borrowed GenSymEntry = getGenericTypedArrayEntry(x1Name, st),
-    //         x2G: borrowed GenSymEntry = getGenericTypedArrayEntry(x2Name, st);
+    //     proc doTensorDot(type x1Type, type x2Type, type resultType): MsgTuple throws {
+    //         var ex1 = toSymEntry(x1G, x1Type, nd1),
+    //             ex2 = toSymEntry(x2G, x2Type, nd2);
 
-    //     linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-    //         "cmd: %s dtype1: %s dtype2: %s rname: %s".doFormat(
-    //         cmd,dtype2str(x1G.dtype),dtype2str(x2G.dtype),rname));
+    //         var tdDims;
+    //         try {
+    //             const n = msgArgs.get("n").getIntValue();
+    //             tdDims = tensorDotDims(ex1.tupShape, ex2.tupShape, n);
+    //         } catch {
+    //             const a1 = msgArgs.get("axis1").getTuple(nd1),
+    //                   a2 = msgArgs.get("axis2").getTuple(nd2);
 
-    //     // assumes both arrays have been broadcasted to ND+1 dimensions
-    //     proc doVecdot(type x1Type, type x2Type, type resultType): MsgTuple throws {
-    //         var ex1 = toSymEntry(x1G, x1Type, nd+1),
-    //             ex2 = toSymEntry(x2G, x2Type, nd+1),
-    //             eOut = st.addEntry(rname, (...outShape), resultType);
-
-    //         const _axis = if axis < 0 then axis + nd else axis;
-
-    //         var perpIndices: (nd+1)*range,
-    //             i = 0;
-    //         for param ii in 0..nd {
-    //             if ii == _axis {
-    //                 perpIndices[ii] = 1..0;
-    //             } else {
-    //                 perpIndices[ii] = 0..outShape[i];
-    //                 i += 1;
-    //             }
-    //         }
-
-    //         for idx in ex1.a.domain[(...perpIndices)] {
-    //             var outSlicer: nd*range,
-    //                 opSlicer: (nd+1)*range,
-    //                 i = 0;
-
-    //             for param ii in 0..nd {
-    //                 if ii == _axis {
-    //                     outSlicer[i] = idx[i]..idx[i];
-    //                     opSlicer[ii] = ex1.a.domain.dim(i);
-    //                     // don't increment 'i' (this dimension is being reduced)
-    //                 } else {
-    //                     outSlicer[i] = idx[ii]..idx[ii];
-    //                     opSlicer[ii] = idx[ii]..idx[ii];
-    //                     i += 1;
-    //                 }
-    //             }
-    //             const outDom = {(...outSlicer)},
-    //                   opDom = {(...opSlicer)};
-    //             eOut.a[outDom] = dotProduct(ex1.a[opDom], ex2.a[opDom], resultType);
+    //             tdDims = tensorDotDims(ex1.tupShape, ex2.tupShape, a1, a2);
     //         }
     //     }
 
-    //     select (x1G.dtype, x2G.dtype) {
-    //         when (DType.Int64, DType.Int64)     do return doVecdot(int,     int,     int);
-    //         when (DType.Int64, DType.UInt8)     do return doVecdot(int,     uint(8), int);
-    //         when (DType.Int64, DType.Float64)   do return doVecdot(int,     real,    real);
-    //         when (DType.Int64, DType.Bool)      do return doVecdot(int,     bool,    int);
-    //         when (DType.UInt8, DType.UInt8)     do return doVecdot(uint(8), uint(8), uint(8));
-    //         when (DType.UInt8, DType.Float64)   do return doVecdot(uint(8), real,    real);
-    //         when (DType.UInt8, DType.Bool)      do return doVecdot(uint(8), bool,    uint(8));
-    //         when (DType.Float64, DType.Float64) do return doVecdot(real,    real,    real);
-    //         when (DType.Float64, DType.Bool)    do return doVecdot(real,    bool,    real);
-    //         when (DType.Bool, DType.Bool)       do return doVecdot(bool,    bool,    bool);
-    //         otherwise {
-    //             const errorMsg = notImplementedError(getRoutineName(), "vecdot", x1G.dtype, x2G.dtype);
-    //             linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-    //             return new MsgTuple(errorMsg, MsgType.ERROR);
-    //         }
-    //     }
+
     // }
 
-    // // dot product of two 1D arrays
-    // proc dotProduct(a, b, type outType): outType {
-    //     return (+ reduce a*b): outType;
+    // proc tensorDotDims(sa: ?Na*int, sb: ?Nb*int, param nCont): (bool, Na+Nb-2*nCont) {
+    //     if Na+Nb-2*nCont < 0 then compilerError("Invalid number of contraction dimensions for tensor dot");
+
+    //     var aCont: nCont*int,
+    //         bCont: nCont*int;
+
+    //     for param i in 0..<nCont {
+    //         aCont[i] = Na-nCont+i;
+    //         bCont[i] = i;
+    //     }
+
+    //     return tensorDotDims(sa, sb, aCont, bCont);
+    // }
+
+    // proc tensorDotDims(sa: ?Na*int, sb: ?Nb*int, aCont: ?nCont*int, bCont: nCont*int): (bool, (Na+Nb-2*nCont)*int) {
+    //     if Na+Nb-2*nCont < 0 then compilerError("Invalid contraction dimensions for tensor dot");
+    //     var s: (Na + Nb - 2*nCont)*int;
+
+    //     for param i in 0..<nCont {
+    //         if sa[aCont[i]] != sb[bCont[i]] then return (false, s);
+    //     }
+
+    //     var i = 0;
+    //     for param ii in 0..<Na {
+    //         if !contains(aCont, ii) {
+    //             s[i] = sa[ii];
+    //             i += 1;
+    //         }
+    //     }
+    //     for param ii in 0..<Nb {
+    //         if !contains(bCont, ii) {
+    //             s[i] = sb[ii];
+    //             i += 1;
+    //         }
+    //     }
+
+    //     return (true, s);
+    // }
+
+    // proc contains(a: ?Na*int, param x: int): bool {
+    //     for param i in 0..<Na {
+    //         if a[i] == x then return true;
+    //     }
+    //     return false;
     // }
 }

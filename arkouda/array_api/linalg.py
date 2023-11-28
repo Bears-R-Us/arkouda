@@ -27,7 +27,7 @@ def matmul(x1: Array, x2: Array, /) -> Array:
     return Array._new(create_pdarray(repMsg))
 
 def tensordot():
-    return 0
+    raise ValueError("tensordot not implemented")
 
 def matrix_transpose(x: Array) -> Array:
     """
