@@ -122,7 +122,7 @@ or
 
    .. attribute:: var ndim: int = 1
 
-   .. attribute:: var shape: string = "[1]"
+   .. attribute:: var shape: string = "[0]"
 
    .. method:: override proc getSizeEstimate(): int
 
