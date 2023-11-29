@@ -226,6 +226,9 @@ module EfuncMsg
                     when "exp" {
                         st.addEntry(rname, new shared SymEntry(exp(ea)));
                     }
+                    when "expm1" {
+                        st.addEntry(rname, new shared SymEntry(expm1(a)));
+                    }
                     when "square" {
                         st.addEntry(rname, new shared SymEntry(square(ea)));
                     }
@@ -289,9 +292,6 @@ module EfuncMsg
                     }
                     when "arctanh" {
                         st.addEntry(rname, new shared SymEntry(atanh(ea)));
-                    }
-                    when "isnan" {
-                        st.addEntry(rname, new shared SymEntry(isNan(ea)));
                     }
                     when "hash64" {
                         overMemLimit(numBytes(real) * e.size);
@@ -492,6 +492,7 @@ module EfuncMsg
 
     private proc square(x) do return x * x;
     private proc log1p(x: real):real do return log(1.0 + x);
+    private proc expm1(x: real):real do return exp(x) - 1.0;
 
     /*
         These are functions which take two arrays and produce an array.

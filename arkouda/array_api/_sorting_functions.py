@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from ._array_object import Array
 from ._dtypes import _real_numeric_dtypes
+from ._manipulation_functions import flip
 
-import arkouda as np
+import arkouda as ak
 
 
 # Note: the descending keyword argument is new in this function
@@ -19,22 +20,13 @@ def argsort(
     if axis == -1:
         axis = x.ndim - 1
 
-    repMsg = generic_msg(
-        cmd=f"argsort{x._array.dim}D",
-        args={
-            "name": pda.entry.name if isinstance(pda, Strings) else pda.name,
-            "algoName": algorithm.name,
-            "objType": pda.objType,
-            "axis": axis,
-        },
-    )
-
-    a = Array._new(create_pdarray(repMsg))
+    a = Array._new(ak.argsort(x._array, axis=axis))
 
     if descending:
-        Array.flip(a, axis=axis)
+        flip(a, axis=axis)
 
     return a
+
 
 # Note: the descending keyword argument is new in this function
 def sort(

@@ -18,9 +18,9 @@ from typing import TYPE_CHECKING, List, Tuple, Union
 
 if TYPE_CHECKING:
     from ._typing import Dtype
-    from collections.abc import Sequence
 
 import arkouda as ak
+import numpy as np
 
 
 # Note: astype is a function, not an array method as in NumPy.
@@ -28,6 +28,7 @@ def astype(x: Array, dtype: Dtype, /, *, copy: bool = True) -> Array:
     if not copy and dtype == x.dtype:
         return x
     return Array._new(ak.akcast(x._array, dtype))
+
 
 def broadcast_arrays(*arrays: Array) -> List[Array]:
     """
@@ -159,7 +160,9 @@ def isdtype(
     elif kind in _all_dtypes:
         return dtype == kind
     else:
-        raise TypeError(f"'kind' must be a dtype, str, or tuple of dtypes and strs, not {type(kind).__name__}")
+        raise TypeError(f"'kind' must be a dtype, str, \
+            or tuple of dtypes and strs, not {type(kind).__name__}")
+
 
 def result_type(*arrays_and_dtypes: Union[Array, Dtype]) -> Dtype:
     """
@@ -188,4 +191,3 @@ def result_type(*arrays_and_dtypes: Union[Array, Dtype]) -> Dtype:
         for t2 in A[1:]:
             t = _result_type(t, t2)
         return t
-

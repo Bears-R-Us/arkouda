@@ -4,7 +4,7 @@ from ._dtypes import (
     _boolean_dtypes,
     _floating_dtypes,
     _real_floating_dtypes,
-    _complex_floating_dtypes,
+    # _complex_floating_dtypes,
     _integer_dtypes,
     _integer_or_boolean_dtypes,
     _real_numeric_dtypes,
@@ -12,8 +12,8 @@ from ._dtypes import (
     _result_type,
 )
 from ._array_object import Array
-
 import arkouda as ak
+
 
 def abs(x: Array, /) -> Array:
     """
@@ -153,7 +153,7 @@ def bitwise_left_shift(x1: Array, x2: Array, /) -> Array:
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
     # Note: bitwise_left_shift is only defined for x2 nonnegative.
-    if np.any(x2._array < 0):
+    if ak.any(x2._array < 0):
         raise ValueError("bitwise_left_shift(x1, x2) is only defined for x2 >= 0")
     return Array._new(x1._array << x2._array)
 
@@ -234,7 +234,7 @@ def conj(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("conj not implemented")
+    raise ValueError("conj not implemented - Arkouda does not support complex types")
 
 
 def cos(x: Array, /) -> Array:
@@ -300,7 +300,9 @@ def expm1(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    raise ValueError("exp not implemented")
+    if x.dtype not in _floating_dtypes:
+        raise TypeError("Only floating-point dtypes are allowed in exp")
+    return Array._new(ak.expm1(x._array))
 
 
 def floor(x: Array, /) -> Array:
@@ -493,10 +495,10 @@ def logical_not(x: Array, /) -> Array:
         cmd=f"efunc{x._array.ndim}D",
         args={
             "func": "not",
-            "array": x._array.pda,
+            "array": x._array,
         },
     )
-    return ak.create_pdarray(type_cast(str, repMsg))
+    return ak.create_pdarray(repMsg)
 
 
 def logical_or(x1: Array, x2: Array, /) -> Array:
@@ -557,7 +559,7 @@ def not_equal(x1: Array, x2: Array, /) -> Array:
     """
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
-    return Array._new(np.not_equal(x1._array != x2._array))
+    return Array._new(x1._array != x2._array)
 
 
 def positive(x: Array, /) -> Array:

@@ -4,7 +4,7 @@ import builtins
 import json
 from functools import reduce
 from math import ceil
-from typing import List, Optional, Sequence, Tuple, Union, cast
+from typing import List, Optional, Tuple, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -65,6 +65,7 @@ __all__ = [
     "attach_pdarray",
     "unregister_pdarray_by_name",
     "RegistrationError",
+    "broadcast_to_shape",
 ]
 
 logger = getArkoudaLogger(name="pdarrayclass")
@@ -184,7 +185,7 @@ class pdarray:
         mydtype: Union[np.dtype, str],
         size: int_scalars,
         ndim: int_scalars,
-        shape: Sequence[int],
+        shape: Tuple[int, ...],
         itemsize: int_scalars,
         max_bits: Optional[int] = None,
     ) -> None:
@@ -2038,7 +2039,7 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         f"created Chapel array with name: {name} dtype: {mydtype} size: {size} ndim: {ndim} "
         + f"shape: {shape} itemsize: {itemsize}"
     )
-    return pdarray(name, dtype(mydtype), size, ndim, shape, itemsize, max_bits)
+    return pdarray(name, dtype(mydtype), size, ndim, tuple(shape), itemsize, max_bits)
 
 
 def clear() -> None:
@@ -3269,8 +3270,9 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         )
     )
 
+
 @typechecked
-def broadcast_to_shape(shape: Tuple[int, ...]) -> pdarray:
+def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
     """
     expand an array's rank to the specified shape using broadcasting
     """
@@ -3279,14 +3281,13 @@ def broadcast_to_shape(shape: Tuple[int, ...]) -> pdarray:
         cast(
             str,
             generic_msg(
-                cmd=f"broadcast{self.ndims}Dx{len(shape)}D",
+                cmd=f"broadcast{pda.ndim}Dx{len(shape)}D",
                 args={
                     "shape": shape,
                 },
             ),
         )
     )
-
 
 
 @typechecked

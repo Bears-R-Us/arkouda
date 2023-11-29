@@ -20,8 +20,6 @@ __all__ = [
 from typing import (
     Any,
     Literal,
-    Sequence,
-    Type,
     Union,
     TypeVar,
     Protocol,
@@ -44,11 +42,14 @@ from numpy import (
 
 _T_co = TypeVar("_T_co", covariant=True)
 
+
 class NestedSequence(Protocol[_T_co]):
     def __getitem__(self, key: int, /) -> _T_co | NestedSequence[_T_co]: ...
     def __len__(self, /) -> int: ...
 
+
 Device = Literal["cpu"]
+
 
 Dtype = dtype[Union[
     int8,
@@ -66,6 +67,7 @@ Dtype = dtype[Union[
 
 SupportsBufferProtocol = Any
 PyCapsule = Any
+
 
 class SupportsDLPack(Protocol):
     def __dlpack__(self, /, *, stream: None = ...) -> PyCapsule: ...

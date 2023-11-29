@@ -3,10 +3,8 @@ from __future__ import annotations
 from ._dtypes import (
     _real_floating_dtypes,
     _real_numeric_dtypes,
-    _numeric_dtypes,
 )
 from ._array_object import Array
-from ._dtypes import float32, float64, complex64, complex128
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union
 
@@ -49,7 +47,7 @@ def min(
 ) -> Array:
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in min")
-    return Array._new(np.min(x._array))
+    return Array._new(ak.min(x._array))
 
 
 def prod(
@@ -60,17 +58,18 @@ def prod(
     dtype: Optional[Dtype] = None,
     keepdims: bool = False,
 ) -> Array:
-    if x.dtype not in _numeric_dtypes:
-        raise TypeError("Only numeric dtypes are allowed in prod")
-    # Note: sum() and prod() always upcast for dtype=None. `np.prod` does that
-    # for integers, but not for float32 or complex64, so we need to
-    # special-case it here
-    if dtype is None:
-        if x.dtype == float32:
-            dtype = float64
-        elif x.dtype == complex64:
-            dtype = complex128
-    return Array._new(ak.prod(x._array))
+    # if x.dtype not in _numeric_dtypes:
+    #     raise TypeError("Only numeric dtypes are allowed in prod")
+    # # Note: sum() and prod() always upcast for dtype=None. `np.prod` does that
+    # # for integers, but not for float32 or complex64, so we need to
+    # # special-case it here
+    # if dtype is None:
+    #     if x.dtype == float32:
+    #         dtype = float64
+    #     elif x.dtype == complex64:
+    #         dtype = complex128
+    # return Array._new(ak.prod(x._array))
+    raise NotImplementedError("prod not implemented")
 
 
 def std(
@@ -95,17 +94,18 @@ def sum(
     dtype: Optional[Dtype] = None,
     keepdims: bool = False,
 ) -> Array:
-    if x.dtype not in _numeric_dtypes:
-        raise TypeError("Only numeric dtypes are allowed in sum")
-    # Note: sum() and prod() always upcast for dtype=None. `np.sum` does that
-    # for integers, but not for float32 or complex64, so we need to
-    # special-case it here
-    if dtype is None:
-        if x.dtype == float32:
-            dtype = float64
-        elif x.dtype == complex64:
-            dtype = complex128
-    return Array._new(ak.sum(x._array))
+    # if x.dtype not in _numeric_dtypes:
+    #     raise TypeError("Only numeric dtypes are allowed in sum")
+    # # Note: sum() and prod() always upcast for dtype=None. `np.sum` does that
+    # # for integers, but not for float32 or complex64, so we need to
+    # # special-case it here
+    # if dtype is None:
+    #     if x.dtype == float32:
+    #         dtype = float64
+    #     elif x.dtype == complex64:
+    #         dtype = complex128
+    # return Array._new(ak.sum(x._array))
+    raise NotImplementedError("sum not implemented")
 
 
 def var(

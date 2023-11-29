@@ -6,6 +6,7 @@ from typing import NamedTuple
 
 import arkouda as ak
 
+
 class UniqueAllResult(NamedTuple):
     values: Array
     indices: Array

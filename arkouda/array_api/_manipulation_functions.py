@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from ._array_object import Array
-from ._data_type_functions import result_type
 
 from typing import List, Optional, Tuple, Union
 
 import arkouda as ak
+
 
 # Note: the function name is different here
 def concat(
@@ -18,7 +18,6 @@ def concat(
     """
     # Note: Casting rules here are different from the np.concatenate default
     # (no for scalars with axis=None, no cross-kind casting)
-    dtype = result_type(*arrays)
     return Array._new(ak.concatenate(arrays))
 
 
@@ -28,7 +27,8 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
 
     See its docstring for more information.
     """
-    return Array._new(np.expand_dims(x._array, axis))
+    # return Array._new(np.expand_dims(x._array, axis))
+    raise ValueError("expand_dims not implemented")
 
 
 def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Array:
@@ -37,7 +37,8 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
 
     See its docstring for more information.
     """
-    return Array._new(np.flip(x._array, axis=axis))
+    # return Array._new(np.flip(x._array, axis=axis))
+    raise ValueError("flip not implemented")
 
 
 # Note: The function name is different here (see also matrix_transpose).
@@ -48,31 +49,33 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
 
     See its docstring for more information.
     """
-    return Array._new(np.transpose(x._array, axes))
+    # return Array._new(ak.transpose(x._array, axes))
+    raise ValueError("permute_dims not implemented")
 
 
 # Note: the optional argument is called 'shape', not 'newshape'
-def reshape(x: Array, 
-            /, 
+def reshape(x: Array,
+            /,
             shape: Tuple[int, ...],
             *,
-            copy: Optional[Bool] = None) -> Array:
+            copy: Optional[bool] = None) -> Array:
     """
     Array API compatible wrapper for :py:func:`np.reshape <numpy.reshape>`.
 
     See its docstring for more information.
     """
 
-    data = x._array
-    if copy:
-        data = np.copy(data)
+    # data = x._array
+    # if copy:
+    #     data = ak.copy(data)
 
-    reshaped = np.reshape(data, shape)
+    # reshaped = ak.reshape(data, shape)
 
-    if copy is False and not np.shares_memory(data, reshaped):
-        raise AttributeError("Incompatible shape for in-place modification.")
+    # if copy is False and not ak.shares_memory(data, reshaped):
+    #     raise AttributeError("Incompatible shape for in-place modification.")
 
-    return Array._new(reshaped)
+    # return Array._new(reshaped)
+    raise ValueError("reshape not implemented")
 
 
 def roll(
@@ -87,7 +90,8 @@ def roll(
 
     See its docstring for more information.
     """
-    return Array._new(np.roll(x._array, shift, axis=axis))
+    # return Array._new(np.roll(x._array, shift, axis=axis))
+    raise ValueError("roll not implemented")
 
 
 def squeeze(x: Array, /, axis: Union[int, Tuple[int, ...]]) -> Array:
@@ -96,7 +100,8 @@ def squeeze(x: Array, /, axis: Union[int, Tuple[int, ...]]) -> Array:
 
     See its docstring for more information.
     """
-    return Array._new(np.squeeze(x._array, axis=axis))
+    # return Array._new(np.squeeze(x._array, axis=axis))
+    raise ValueError("squeeze not implemented")
 
 
 def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) -> Array:
@@ -105,7 +110,8 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
 
     See its docstring for more information.
     """
-    # Call result type here just to raise on disallowed type combinations
-    result_type(*arrays)
-    arrays = tuple(a._array for a in arrays)
-    return Array._new(np.stack(arrays, axis=axis))
+    # # Call result type here just to raise on disallowed type combinations
+    # result_type(*arrays)
+    # arrays = tuple(a._array for a in arrays)
+    # return Array._new(np.stack(arrays, axis=axis))
+    raise ValueError("stack not implemented")

@@ -19,7 +19,7 @@ def all(
 
     See its docstring for more information.
     """
-    return Array._new(ak.asarray(ak.all(x._array)))
+    return Array._new(ak.all(x._array))
 
 
 def any(
@@ -34,4 +34,4 @@ def any(
 
     See its docstring for more information.
     """
-    return Array._new(ak.asarray(ak.any(x._array)))
+    return Array._new(ak.any(x._array))

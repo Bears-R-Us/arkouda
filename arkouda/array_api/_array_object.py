@@ -15,29 +15,27 @@ of ndarray.
 
 from __future__ import annotations
 
-import operator
 from enum import IntEnum
-from ._creation_functions import asarray
 from ._dtypes import (
-    _all_dtypes,
+    # _all_dtypes,
     _boolean_dtypes,
     _integer_dtypes,
-    _integer_or_boolean_dtypes,
+    # _integer_or_boolean_dtypes,
     _floating_dtypes,
     _complex_floating_dtypes,
-    _numeric_dtypes,
+    # _numeric_dtypes,
     _result_type,
     _dtype_categories,
 )
 
-from typing import TYPE_CHECKING, Optional, Tuple, Union, Any, SupportsIndex
+from typing import TYPE_CHECKING, Optional, Tuple, Union
 import types
 
 if TYPE_CHECKING:
-    from ._typing import Any, PyCapsule, Device, Dtype
-    import numpy.typing as npt
+    from ._typing import Device, Dtype
 
 import arkouda as ak
+import numpy as np
 
 from arkouda import array_api
 
@@ -57,13 +55,13 @@ class Array:
     functions, such as asarray().
 
     """
-    _array: ak.array[Any, Any]
+    _array: ak.pdarray
     _empty: bool
 
     # Use a custom constructor instead of __init__, as manually initializing
     # this class is not supported API.
     @classmethod
-    def _new(cls, x, empty: bool = False, /):
+    def _new(cls, x, /, empty: bool = False):
         """
         This is a private method for initializing the array API Array
         object.
@@ -81,7 +79,8 @@ class Array:
     # Prevent Array() from working
     def __new__(cls, *args, **kwargs):
         raise TypeError(
-            "The array_api Array object should not be instantiated directly. Use an array creation function, such as asarray(), instead."
+            "The array_api Array object should not be instantiated directly. \
+            Use an array creation function, such as asarray(), instead."
         )
 
     # These functions are not required by the spec, but are implemented for
@@ -97,24 +96,27 @@ class Array:
         """
         Performs the operation __repr__.
         """
-        return _array.__repr__()
+        return self._array.__repr__()
 
-    # This function is not required by the spec, but we implement it here for
-    # convenience so that np.asarray(np.array_api.Array) will work.
-    def __array__(self, dtype: None | np.dtype[Any] = None) -> npt.NDArray[Any]:
-        """
-        Warning: this method is NOT part of the array API spec. Implementers
-        of other libraries need not include it, and users should not assume it
-        will be present in other implementations.
+    # # This function is not required by the spec, but we implement it here for
+    # # convenience so that np.asarray(np.array_api.Array) will work.
+    # def __array__(self, dtype: None | np.dtype[Any] = None) -> npt.NDArray[Any]:
+    #     """
+    #     Warning: this method is NOT part of the array API spec. Implementers
+    #     of other libraries need not include it, and users should not assume it
+    #     will be present in other implementations.
 
-        """
-        return ak.asarray(self._array, dtype=dtype)
+    #     """
+    #     return ak.asarray(self._array, dtype=dtype)
 
     # These are various helper functions to make the array behavior match the
     # spec in places where it either deviates from or is more strict than
     # NumPy behavior
 
-    def _check_allowed_dtypes(self, other: bool | int | float | Array, dtype_category: str, op: str) -> Array:
+    def _check_allowed_dtypes(
+        self, other: bool | int | float | Array,
+        dtype_category: str, op: str
+    ) -> Array:
         """
         Helper function for operators to only allow specific input dtypes
 
@@ -134,6 +136,8 @@ class Array:
                 raise TypeError(f"Only {dtype_category} dtypes are allowed in {op}")
         else:
             return NotImplemented
+
+        assert isinstance(other, Array)
 
         # This will raise TypeError for type combinations that are not allowed
         # to promote in the spec (even if the NumPy array operator would
@@ -156,7 +160,7 @@ class Array:
         return other
 
     # Helper function to match the type promotion rules in the spec
-    def _promote_scalar(self, scalar):
+    def _promote_scalar(self, scalar) -> Array:
         """
         Returns a promoted version of a Python scalar appropriate for use with
         operations on self.
@@ -178,7 +182,7 @@ class Array:
                     "Python int scalars cannot be promoted with bool arrays"
                 )
             if self.dtype in _integer_dtypes:
-                info = np.iinfo(self.dtype)
+                info = np.iinfo(int)
                 if not (info.min <= scalar <= info.max):
                     raise OverflowError(
                         "Python int scalars must be within the bounds of the dtype for integer arrays"
@@ -276,13 +280,13 @@ class Array:
         return complex(1)
 
     def __dlpack_device__(self: Array, /) -> Tuple[IntEnum, int]:
-        raise ValueError(f"Not implemented")
+        raise ValueError("Not implemented")
 
-    def __eq__(self: Array, other: Union[int, float, bool, Array], /) -> Array:
-        return self
+    def __eq__(self: object, other: object, /) -> bool:
+        raise ValueError("Not implemented")
 
     def __float__(self: Array, /) -> float:
-        raise ValueError(f"Not implemented")
+        raise ValueError("Not implemented")
 
     def __floordiv__(self: Array, other: Union[int, float, Array], /) -> Array:
         return self
@@ -293,7 +297,7 @@ class Array:
     def __getitem__(
         self: Array,
         key: Union[
-            int, slice, ellipsis, Tuple[Union[int, slice, ellipsis], ...], Array
+            int, slice, Tuple[Union[int, slice], ...], Array
         ],
         /,
     ) -> Array:
@@ -329,8 +333,8 @@ class Array:
     def __mul__(self: Array, other: Union[int, float, Array], /) -> Array:
         return self
 
-    def __ne__(self: Array, other: Union[int, float, bool, Array], /) -> Array:
-        return self
+    def __ne__(self: object, other: object, /) -> bool:
+        raise ValueError("Not implemented")
 
     def __neg__(self: Array, /) -> Array:
         return self
@@ -350,12 +354,12 @@ class Array:
     def __setitem__(
         self,
         key: Union[
-            int, slice, ellipsis, Tuple[Union[int, slice, ellipsis], ...], Array
+            int, slice, Tuple[Union[int, slice], ...], Array
         ],
         value: Union[int, float, bool, Array],
         /,
     ) -> None:
-        raise ValueError(f"Not implemented")
+        raise ValueError("Not implemented")
 
     def __sub__(self: Array, other: Union[int, float, Array], /) -> Array:
         return self
@@ -447,7 +451,7 @@ class Array:
         return self
 
     def to_device(self: Array, device: Device, /, stream: None = None) -> Array:
-        raise ValueError(f"Not implemented")
+        raise ValueError("Not implemented")
 
     @property
     def dtype(self) -> Dtype:
@@ -464,16 +468,16 @@ class Array:
 
     @property
     def ndim(self) -> int:
-        return self._array.ndim
+        return int(self._array.ndim)
 
     @property
     def shape(self) -> Tuple[int, ...]:
-        return self._array.shape
+        return tuple(self._array.shape)
 
     @property
     def size(self) -> int:
-        return self._array.size
+        return int(self._array.size)
 
     @property
     def T(self) -> Array:
-        raise ValueError(f"Not implemented")
+        raise ValueError("Not implemented")

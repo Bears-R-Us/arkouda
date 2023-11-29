@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
 
 from arkouda.client import generic_msg
 import numpy as np
-from arkouda.pdarrayclass import create_pdarray
+from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.dtypes import dtype as akdtype
 
 if TYPE_CHECKING:
     from ._typing import (
@@ -15,7 +16,6 @@ if TYPE_CHECKING:
         NestedSequence,
         SupportsBufferProtocol,
     )
-    from collections.abc import Sequence
 from ._dtypes import _all_dtypes
 
 import arkouda as ak
@@ -62,7 +62,6 @@ def asarray(
         return Array._new(res)
 
 
-
 def arange(
     start: Union[int, float],
     /,
@@ -92,13 +91,19 @@ def empty(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    if isinstance(shape, Tuple):
+    if shape is Tuple:
         size = 1
-        for s in shape:
+        tshape = cast(Tuple, shape)
+        for s in tshape:
             size *= s
-        return Array._new(pdarray("_empty_", dtype, size, len(shape), shape, 0, None), empty=True)
+        return Array._new(
+            pdarray("__empty__", akdtype(dtype), size, len(tshape), tshape, 0, None),
+            empty=True)
     else:
-        return Array._new(pdarray("_empty_", dtype, shape, 1, shape, 0, None), empty=True)
+        vshape = cast(int, shape)
+        return Array._new(
+            pdarray("__empty__", akdtype(dtype), vshape, 1, (vshape,), 0, None),
+            empty=True)
 
 
 def empty_like(
@@ -108,9 +113,11 @@ def empty_like(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
+    t = x.dtype if dtype is None else akdtype(dtype)
+
     return Array._new(
-        pdarray("_empty", dtype, x._array.dtype, x._array.size, x._array.ndim, \
-            x._array.shape, x._array.itemsize, x._array.max_bits),
+        pdarray("__empty__", t, x._array.size, x._array.ndim,
+                x._array.shape, x._array.itemsize, x._array.max_bits),
         empty=True,
     )
 
@@ -146,8 +153,7 @@ def eye(
 
 
 def from_dlpack(x: object, /) -> Array:
-    #TODO: What is this?
-    raise ValueError(f"Not implemented")
+    raise ValueError("Not implemented")
 
 
 def full(
@@ -157,9 +163,7 @@ def full(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
-    from ._array_object import Array
-
-    a = Array.zeros(shape, dtype=dtype, device=device)
+    a = zeros(shape, dtype=dtype, device=device)
     a._array.fill(fill_value)
     return a
 
@@ -172,8 +176,7 @@ def full_like(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
-    from ._array_object import Array
-    return Array.full(x.shape, fill_value, dtype=dtype, device=device)
+    return full(x.shape, fill_value, dtype=dtype, device=device)
 
 
 def linspace(
@@ -186,7 +189,6 @@ def linspace(
     device: Optional[Device] = None,
     endpoint: bool = True,
 ) -> Array:
-    from ._array_object import Array
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
@@ -223,7 +225,7 @@ def meshgrid(*arrays: Array, indexing: str = "xy") -> List[Array]:
 
     # arrayMsgs = repMsg.split(",")
     # return [Array._new(create_pdarray(msg)) for msg in arrayMsgs]
-    raise ValueError(f"Not implemented")
+    raise ValueError("Not implemented")
 
 
 def ones(
@@ -232,25 +234,19 @@ def ones(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
-    from ._array_object import Array
-
-    a = Array.zeros(shape, dtype=dtype, device=device)
+    a = zeros(shape, dtype=dtype, device=device)
     a._array.fill(1)
     return a
-
 
 
 def ones_like(
     x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
 ) -> Array:
-    from ._array_object import Array
-    return Array.ones(x.shape, dtype=dtype, device=device)
+    return ones(x.shape, dtype=dtype, device=device)
 
 
 def tril(x: Array, /, *, k: int = 0) -> Array:
     from ._array_object import Array
-    if device not in ["cpu", None]:
-        raise ValueError(f"Unsupported device {device!r}")
 
     repMsg = generic_msg(
         cmd=f"tril{x._array.ndim}D",
@@ -265,8 +261,6 @@ def tril(x: Array, /, *, k: int = 0) -> Array:
 
 def triu(x: Array, /, *, k: int = 0) -> Array:
     from ._array_object import Array
-    if device not in ["cpu", None]:
-        raise ValueError(f"Unsupported device {device!r}")
 
     repMsg = generic_msg(
         cmd=f"triu{x._array.ndim}D",
@@ -278,9 +272,9 @@ def triu(x: Array, /, *, k: int = 0) -> Array:
 
     return Array._new(create_pdarray(repMsg))
 
+
 def zeros(
-    shape: Union[int, Tuple[int, ...]],
-    *,
+    shape: Union[int, Tuple[int, ...]], /, *,
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
@@ -289,13 +283,13 @@ def zeros(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    if isinstance(shape, Tuple):
+    if shape is Tuple:
         size = 1
-        for s in shape:
+        for s in cast(Tuple, shape):
             size *= s
-        ndim = len(shape)
+        ndim = len(cast(Tuple, shape))
     else:
-        size = shape
+        size = cast(int, shape)
         ndim = 1
 
     repMsg = generic_msg(
@@ -312,5 +306,4 @@ def zeros(
 def zeros_like(
     x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
 ) -> Array:
-    from ._array_object import Array
-    return Array.zeros(x.shape, dtype=dtype, device=device)
+    return zeros(x.shape, dtype=dtype, device=device)

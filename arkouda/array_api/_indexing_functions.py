@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from ._array_object import Array
-from ._dtypes import _integer_dtypes
+from typing import Optional
 
-import arkouda as ak
+# import arkouda as ak
+
 
 def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
     """
@@ -11,7 +12,5 @@ def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
 
     See its docstring for more information.
     """
-
-    
 
     raise ValueError("take not implemented")

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from ._array_object import Array
-from ._dtypes import _result_type, _real_numeric_dtypes
+from ._dtypes import _real_numeric_dtypes
 
 from typing import Optional, Tuple
-
 import arkouda as ak
 
 
@@ -16,7 +15,7 @@ def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
     """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in argmax")
-    return Array._new(ak.asarray(ak.argmax(x._array)))
+    return Array._new(ak.argmax(x._array))
 
 
 def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
@@ -27,7 +26,7 @@ def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
     """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in argmin")
-    return Array._new(ak.asarray(np.argmin(x._array)))
+    return Array._new(ak.argmin(x._array))
 
 
 def nonzero(x: Array, /) -> Tuple[Array, ...]:
