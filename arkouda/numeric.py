@@ -54,6 +54,7 @@ __all__ = [
     "where",
     "histogram",
     "histogram2d",
+    "histogramdd",
     "value_counts",
     "isnan",
     "ErrorMode",
@@ -1352,6 +1353,41 @@ def histogram2d(
         x_bin_boundaries,
         y_bin_boundaries,
     )
+
+
+def histogramdd(
+    sample: Sequence[pdarray], bins: Union[int_scalars, Sequence[int_scalars]] = 10
+) -> Tuple[pdarray, Sequence[pdarray]]:
+    if not isinstance(sample, Sequence):
+        raise ValueError("Sample must be a sequence of pdarrays")
+    if len(set(pda.dtype for pda in sample)) != 1:
+        raise ValueError("All pdarrays in sample must have same dtype")
+
+    num_dims = len(sample)
+    if not isinstance(bins, Sequence):
+        bins = [bins] * num_dims
+    else:
+        if len(bins) != num_dims:
+            raise ValueError("Sequences of bins must contain same number of elements as the sample")
+    if any(b < 1 for b in bins):
+        raise ValueError("bins must be 1 or greater")
+
+    bins = list(bins) if isinstance(bins, tuple) else bins
+    sample = list(sample) if isinstance(sample, tuple) else sample
+    bin_boundaries = [linspace(a.min(), a.max(), b + 1) for a, b in zip(sample, bins)]
+    bins_pda = array(bins)[::-1]
+    dim_prod = (cumprod(bins_pda) // bins_pda)[::-1]
+    repMsg = generic_msg(
+        cmd="histogramdD",
+        args={
+            "sample": sample,
+            "num_dims": num_dims,
+            "bins": bins,
+            "dim_prod": dim_prod,
+            "num_samples": sample[0].size,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg)).reshape(bins), bin_boundaries
 
 
 @typechecked
