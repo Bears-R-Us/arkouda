@@ -45,6 +45,7 @@ Functions
    arkouda.numeric.hash
    arkouda.numeric.where
    arkouda.numeric.histogram
+   arkouda.numeric.histogram2d
    arkouda.numeric.value_counts
    arkouda.numeric.isnan
 
@@ -572,7 +573,7 @@ Functions
    is not currently supported in Arkouda
 
 
-.. py:function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: arkouda.dtypes.int_scalars = 10) -> Tuple[numpy.ndarray, arkouda.pdarrayclass.pdarray]
+.. py:function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: arkouda.dtypes.int_scalars = 10) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
    Compute a histogram of evenly spaced bins over the range of an array.
 
@@ -582,14 +583,14 @@ Functions
    :type bins: int_scalars
 
    :returns: Bin edges and The number of values present in each bin
-   :rtype: (np.ndarray, Union[pdarray, int64 or float64])
+   :rtype: (pdarray, Union[pdarray, int64 or float64])
 
    :raises TypeError: Raised if the parameter is not a pdarray or if bins is
        not an int.
    :raises ValueError: Raised if bins < 1
    :raises NotImplementedError: Raised if pdarray dtype is bool or uint8
 
-   .. seealso:: :obj:`value_counts`
+   .. seealso:: :obj:`value_counts`, :obj:`histogram2d`
 
    .. rubric:: Notes
 
@@ -600,14 +601,62 @@ Functions
    >>> import matplotlib.pyplot as plt
    >>> A = ak.arange(0, 10, 1)
    >>> nbins = 3
-   >>> b, h = ak.histogram(A, bins=nbins)
+   >>> h, b = ak.histogram(A, bins=nbins)
    >>> h
    array([3, 3, 4])
    >>> b
-   array([0., 3., 6.])
+   array([0., 3., 6., 9.])
 
-   # To plot, use only the left edges (now returned), and export the histogram to NumPy
-   >>> plt.plot(b, h.to_ndarray())
+   # To plot, export the left edges and the histogram to NumPy
+   >>> plt.plot(b.to_ndarray()[::-1], h.to_ndarray())
+
+
+.. py:function:: histogram2d(x: arkouda.pdarrayclass.pdarray, y: arkouda.pdarrayclass.pdarray, bins: Union[arkouda.dtypes.int_scalars, Sequence[arkouda.dtypes.int_scalars]] = 10) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+
+   Compute the bi-dimensional histogram of two data samples with evenly spaced bins
+
+   :param x: A pdarray containing the x coordinates of the points to be histogrammed.
+   :type x: pdarray
+   :param y: A pdarray containing the y coordinates of the points to be histogrammed.
+   :type y: pdarray
+   :param bins: The number of equal-size bins to use.
+                If int, the number of bins for the two dimensions (nx=ny=bins).
+                If [int, int], the number of bins in each dimension (nx, ny = bins).
+                Defaults to 10
+   :type bins: int_scalars or [int, int] = 10
+
+   :returns: * **hist** (*ArrayView, shape(nx, ny)*) -- The bi-dimensional histogram of samples x and y.
+               Values in x are histogrammed along the first dimension and
+               values in y are histogrammed along the second dimension.
+             * **x_edges** (*pdarray*) -- The bin edges along the first dimension.
+             * **y_edges** (*pdarray*) -- The bin edges along the second dimension.
+
+   :raises TypeError: Raised if x or y parameters are not pdarrays or if bins is
+       not an int or (int, int).
+   :raises ValueError: Raised if bins < 1
+   :raises NotImplementedError: Raised if pdarray dtype is bool or uint8
+
+   .. seealso:: :obj:`histogram`
+
+   .. rubric:: Notes
+
+   The x bins are evenly spaced in the interval [x.min(), x.max()]
+   and y bins are evenly spaced in the interval [y.min(), y.max()].
+
+   .. rubric:: Examples
+
+   >>> x = ak.arange(0, 10, 1)
+   >>> y = ak.arange(9, 0, -1)
+   >>> nbins = 3
+   >>> h, x_edges, y_edges = ak.histogram2d(x, y, bins=nbins)
+   >>> h
+   array([[0, 0, 3],
+          [0, 2, 1],
+          [3, 1, 0]])
+   >>> x_edges
+   array([0.0 3.0 6.0 9.0])
+   >>> x_edges
+   array([0.0 3.0 6.0 9.0])
 
 
 .. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[Categorical, Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Optional[arkouda.pdarrayclass.pdarray]]]
