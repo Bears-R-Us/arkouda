@@ -227,7 +227,7 @@ module EfuncMsg
                         st.addEntry(rname, new shared SymEntry(exp(ea)));
                     }
                     when "expm1" {
-                        st.addEntry(rname, new shared SymEntry(expm1(a)));
+                        st.addEntry(rname, new shared SymEntry(expm1(ea)));
                     }
                     when "square" {
                         st.addEntry(rname, new shared SymEntry(square(ea)));
