@@ -37,7 +37,10 @@ module ArkoudaSymEntryCompat {
     this.size = len;
     this.ndim = ndim;
     init this;
-    this.shape = tupShapeString(1, ndim);
+    if len == 0 then
+      this.shape = "[0]";
+    else
+      this.shape = tupShapeString(1, ndim);
   }
 
   /*
