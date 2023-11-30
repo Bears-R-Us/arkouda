@@ -1325,7 +1325,7 @@ def histogram2d(
     Examples
     --------
     >>> x = ak.arange(0, 10, 1)
-    >>> y = ak.arange(9, 0, -1)
+    >>> y = ak.arange(9, -1, -1)
     >>> nbins = 3
     >>> h, x_edges, y_edges = ak.histogram2d(x, y, bins=nbins)
     >>> h
@@ -1358,6 +1358,63 @@ def histogram2d(
 def histogramdd(
     sample: Sequence[pdarray], bins: Union[int_scalars, Sequence[int_scalars]] = 10
 ) -> Tuple[pdarray, Sequence[pdarray]]:
+    """
+    Compute the multidimensional histogram of data in sample with evenly spaced bins.
+
+    Parameters
+    ----------
+    sample : Sequence[pdarray]
+        A sequence of pdarrays containing the coordinates of the points to be histogrammed.
+
+    bins : int_scalars or Sequence[int_scalars] = 10
+        The number of equal-size bins to use.
+        If int, the number of bins for all dimensions (nx=ny=...=bins).
+        If [int, int, ...], the number of bins in each dimension (nx, ny, ... = bins).
+        Defaults to 10
+
+    Returns
+    -------
+    hist : ArrayView, shape(nx, ny, ..., nd)
+        The multidimensional histogram of pdarrays in sample.
+        Values in first pdarray are histogrammed along the first dimension.
+        Values in second pdarray are histogrammed along the second dimension and so on.
+
+    edges : List[pdarray]
+        A list of pdarrays containing the bin edges for each dimension.
+
+
+    Raises
+    ------
+    ValueError
+        Raised if bins < 1
+    NotImplementedError
+        Raised if pdarray dtype is bool or uint8
+
+    See Also
+    --------
+    histogram
+
+    Notes
+    -----
+    The bins for each dimension, m, are evenly spaced in the interval [m.min(), m.max()]
+
+    Examples
+    --------
+    >>> x = ak.arange(0, 10, 1)
+    >>> y = ak.arange(9, -1, -1)
+    >>> z = ak.where(x % 2 == 0, x, y)
+    >>> h, edges = ak.histogramdd((x, y,z), bins=(2,2,5))
+    >>> h
+    array([[[0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1]],
+
+           [[1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0]]])
+    >>> edges
+    [array([0.0 4.5 9.0]),
+     array([0.0 4.5 9.0]),
+     array([0.0 1.6 3.2 4.8 6.4 8.0])]
+    """
     if not isinstance(sample, Sequence):
         raise ValueError("Sample must be a sequence of pdarrays")
     if len(set(pda.dtype for pda in sample)) != 1:
