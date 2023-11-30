@@ -39,7 +39,9 @@ module SymArrayDmapCompat
                     return blockDist.createDomain(dom);
                 }
                 // fix the annoyance about boundingBox being empty
-                else {return blockDist.createDomain({0..0}); }
+                else {
+                  return {0..#0} dmapped blockDist(boundingBox={0..0});
+                }
             }
             otherwise {
                 halt("Unsupported distribution " + MyDmap:string);

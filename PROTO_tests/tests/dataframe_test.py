@@ -1,3 +1,5 @@
+import itertools
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -674,26 +676,36 @@ class TestDataFrame:
         b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
         c = ak.randint(-size // 10, size // 10, size, seed=seed + 2)
         d = ak.randint(-size // 10, size // 10, size, seed=seed + 3)
-        left_df = ak.DataFrame({"first": a, "second": b, "third": ak.ones(size, int)})
-        right_df = ak.DataFrame(
-            {"first": c, "second": d, "third": ak.cast(ak.arange(size) % 2 == 0, int)}
-        )
-        l_pd, r_pd = left_df.to_pandas(), right_df.to_pandas()
+        ones = ak.ones(size, int)
+        altr = ak.cast(ak.arange(size) % 2 == 0, int)
+        for truth in itertools.product([True, False], repeat=3):
+            left_arrs = [pda if t else pda_to_str_helper(pda) for pda, t in zip([a, b, ones], truth)]
+            right_arrs = [pda if t else pda_to_str_helper(pda) for pda, t in zip([c, d, altr], truth)]
+            left_df = ak.DataFrame({k: v for k, v in zip(["first", "second", "third"], left_arrs)})
+            right_df = ak.DataFrame({k: v for k, v in zip(["first", "second", "third"], right_arrs)})
+            l_pd, r_pd = left_df.to_pandas(), right_df.to_pandas()
 
-        for how in "inner", "left", "right":
-            for on in "first", "second", "third", ["first", "third"], ["second", "third"], None:
-                ak_merge = ak.merge(left_df, right_df, on=on, how=how)
-                pd_merge = pd.merge(l_pd, r_pd, on=on, how=how)
+            for how in "inner", "left", "right":
+                for on in "first", "second", "third", ["first", "third"], ["second", "third"], None:
+                    ak_merge = ak.merge(left_df, right_df, on=on, how=how)
+                    pd_merge = pd.merge(l_pd, r_pd, on=on, how=how)
 
-                sorted_columns = sorted(ak_merge.columns)
-                assert sorted_columns == sorted(pd_merge.columns.to_list())
-                sorted_ak = ak_merge.sort_values(sorted_columns).reset_index()
-                sorted_pd = pd_merge.sort_values(sorted_columns).reset_index(drop=True)
-                for col in sorted_columns:
-                    assert np.allclose(
-                        sorted_ak[col].to_ndarray(), sorted_pd[col].to_numpy(), equal_nan=True
-                    )
-                # TODO arkouda seems to be sometimes convert columns to floats on a right merge
-                #  when pandas doesnt. Eventually we want to test frame_equal, not just value equality
-                # from pandas.testing import assert_frame_equal
-                # assert_frame_equal(sorted_ak.to_pandas()[sorted_columns], sorted_pd[sorted_columns])
+                    sorted_columns = sorted(ak_merge.columns)
+                    assert sorted_columns == sorted(pd_merge.columns.to_list())
+                    for col in sorted_columns:
+                        from_ak = ak_merge[col].to_ndarray()
+                        from_pd = pd_merge[col].to_numpy()
+                        if isinstance(ak_merge[col], ak.pdarray):
+                            assert np.allclose(np.sort(from_ak), np.sort(from_pd), equal_nan=True)
+                        else:
+                            # we have to cast to str because pandas arrays converted to numpy
+                            # have dtype object and have float NANs in line with the str values
+                            assert (np.sort(from_ak) == np.sort(from_pd.astype(str))).all()
+                    # TODO arkouda seems to be sometimes convert columns to floats on a right merge
+                    #  when pandas doesnt. Eventually we want to test frame_equal, not just value equality
+                    # from pandas.testing import assert_frame_equal
+                    # assert_frame_equal(sorted_ak.to_pandas()[sorted_columns], sorted_pd[sorted_columns])
+
+
+def pda_to_str_helper(pda):
+    return ak.array([f"str {i}" for i in pda.to_list()])
