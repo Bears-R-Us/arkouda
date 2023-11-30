@@ -45,7 +45,6 @@ __all__ = [
     "log1p",
     "exp",
     "expm1",
-    "sqrt",
     "square",
     "cumsum",
     "cumprod",
@@ -712,41 +711,6 @@ def square(pda: pdarray) -> pdarray:
         cmd=f"efunc{pda.ndim}D",
         args={
             "func": "square",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
-
-
-@typechecked
-def sqrt(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise square root of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing square root values of the input
-        array elements
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> ak.square(ak.array([1.0, 4.0, 9.0, 16.0]))
-    array([1.0, 2.0, 3.0, 4.0])
-    """
-    repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
-        args={
-            "func": "sqrt",
             "array": pda,
         },
     )

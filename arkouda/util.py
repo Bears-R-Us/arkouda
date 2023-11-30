@@ -1,4 +1,4 @@
-from typing import cast, Tuple
+from typing import cast, Tuple, Sequence
 from warnings import warn
 import json
 
@@ -288,7 +288,7 @@ def attach_all(names: list):
     return {n: attach(n) for n in names}
 
 
-def broadcast_dims(sa: Tuple[int, ...], sb: Tuple[int, ...]) -> Tuple[int, ...]:
+def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
     """
     Algorithm to determine shape of broadcasted PD array given two array shapes
 

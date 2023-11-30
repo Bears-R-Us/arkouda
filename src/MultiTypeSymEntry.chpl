@@ -135,7 +135,7 @@ module MultiTypeSymEntry
         var itemsize: int; // answer to numpy itemsize = num bytes per elt
         var size: int = 0; // answer to numpy size == num elts
         var ndim: int = 1; // answer to numpy ndim == 1-axis for now
-        var shape: string = "[1]"; // answer to numpy shape == 1*int tuple
+        var shape: string = "[1]"; // answer to numpy shape
 
         // not sure yet how to implement numpy data() function
 

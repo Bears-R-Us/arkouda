@@ -4,7 +4,7 @@ import builtins
 import json
 from functools import reduce
 from math import ceil
-from typing import List, Optional, Tuple, Union, cast
+from typing import List, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -185,7 +185,7 @@ class pdarray:
         mydtype: Union[np.dtype, str],
         size: int_scalars,
         ndim: int_scalars,
-        shape: Tuple[int, ...],
+        shape: Sequence[int],
         itemsize: int_scalars,
         max_bits: Optional[int] = None,
     ) -> None:
@@ -216,7 +216,7 @@ class pdarray:
         return builtins.bool(self[0])
 
     def __len__(self):
-        return self.shape[0]
+        return self.size
 
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
@@ -2039,7 +2039,7 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         f"created Chapel array with name: {name} dtype: {mydtype} size: {size} ndim: {ndim} "
         + f"shape: {shape} itemsize: {itemsize}"
     )
-    return pdarray(name, dtype(mydtype), size, ndim, tuple(shape), itemsize, max_bits)
+    return pdarray(name, dtype(mydtype), size, ndim, shape, itemsize, max_bits)
 
 
 def clear() -> None:
@@ -2815,7 +2815,7 @@ def popcount(pda: pdarray) -> pdarray:
         return sum(popcount(a) for a in pda.bigint_to_uint_arrays())
     else:
         repMsg = generic_msg(
-            cmd="efunc",
+            cmd=f"efunc{pda.ndim}D",
             args={
                 "func": "popcount",
                 "array": pda,
@@ -2856,7 +2856,7 @@ def parity(pda: pdarray) -> pdarray:
         return reduce(lambda x, y: x ^ y, [parity(a) for a in pda.bigint_to_uint_arrays()])
     else:
         repMsg = generic_msg(
-            cmd="efunc",
+            cmd=f"efunc{pda.ndim}D",
             args={
                 "func": "parity",
                 "array": pda,
@@ -2924,7 +2924,7 @@ def clz(pda: pdarray) -> pdarray:
         return lz
     else:
         repMsg = generic_msg(
-            cmd="efunc",
+            cmd=f"efunc{pda.ndim}D",
             args={
                 "func": "clz",
                 "array": pda,
@@ -2994,7 +2994,7 @@ def ctz(pda: pdarray) -> pdarray:
         return tz
     else:
         repMsg = generic_msg(
-            cmd="efunc",
+            cmd=f"efunc{pda.ndim}D",
             args={
                 "func": "ctz",
                 "array": pda,

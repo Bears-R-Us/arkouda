@@ -232,9 +232,6 @@ module EfuncMsg
                     when "square" {
                         st.addEntry(rname, new shared SymEntry(square(ea)));
                     }
-                    when "sqrt" {
-                        st.addEntry(rname, new shared SymEntry(sqrt(ea)));
-                    }
                     when "cumsum" {
                         if nd == 1 {
                             // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
