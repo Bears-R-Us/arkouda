@@ -403,13 +403,18 @@ module LinalgMsg {
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
 
-            const _axis = if axis < 0 then nd + axis else axis,
-                  outShape = removeAxis(bcShape, _axis);
+            const _axis = if axis < 0 then nd + axis else axis;
+            if _axis < 0 || _axis >= nd {
+                const errorMsg = "Invalid axis for VecDot: " + axis:string;
+                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
 
+            const outShape = try! removeAxis(bcShape, _axis);
             var eOut = st.addEntry(rname, (...outShape), resultType);
 
             forall idx in eOut.a.domain {
-                const opDom = domOnAxis(ex1.a.domain, appendAxis(idx, _axis, 0), _axis);
+                const opDom = try! domOnAxis(ex1.a.domain, appendAxis(idx, _axis, 0), _axis);
 
                 var sum = 0: resultType;
                 for i in opDom do

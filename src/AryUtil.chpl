@@ -599,7 +599,7 @@ module AryUtil
       For example, if D represents a stack of 10x10 matrices (ex: {1..10, 1..10, 1..1000})
       Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25..25}
     */
-    proc domOnAxis(D: domain(?), idx: D.rank*int, axes: int ...?NA): domain(D.rank)
+    proc domOnAxis(D: domain(?), idx: D.rank*int, axes: int ...?NA): domain()
       where NA < D.rank
     {
       var outDims: D.rank*range;
@@ -624,7 +624,7 @@ module AryUtil
       For example, if D represents a stack of 10x10 matrices (ex: {1..10, 1..10, 1..1000})
       Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
     */
-    proc domOffAxis(D: domain(?), axes: int ...?NA): domain(D.rank)
+    proc domOffAxis(D: domain(?), axes: int ...?NA): domain()
       where NA < D.rank
     {
       var outDims: D.rank*range;
@@ -681,9 +681,10 @@ module AryUtil
       return s;
     }
 
-    proc appendAxis(shape: ?N*int, axis: int, param value: int): (N+1)*int {
+    proc appendAxis(shape: ?N*int, axis: int, param value: int): (N+1)*int throws {
       var s: (N+1)*int,
           i = 0;
+      if axis > N then throw new Error("Axis out of bounds");
       for param ii in 0..<N+1 {
         if ii == axis {
           s[ii] = value;
@@ -695,14 +696,16 @@ module AryUtil
       return s;
     }
 
-    proc appendAxis(shape: int, axis: int, param value: int): 2*int {
+    proc appendAxis(shape: int, axis: int, param value: int): 2*int throws {
       var s: 2*int;
       if axis == 0 {
         s[0] = value;
         s[1] = shape;
-      } else {
+      } else if axis == 1 {
         s[0] = shape;
         s[1] = value;
+      } else {
+        throw new Error("Axis out of bounds");
       }
       return s;
     }
