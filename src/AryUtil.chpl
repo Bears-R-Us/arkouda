@@ -599,7 +599,7 @@ module AryUtil
       For example, if D represents a stack of 10x10 matrices (ex: {1..10, 1..10, 1..1000})
       Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25..25}
     */
-    proc domOnAxis(D: domain(?), idx: D.rank*int, axes: int ...?NA): domain()
+    proc domOnAxis(D: domain, idx: D.rank*int, axes: int ...?NA): domain
       where NA < D.rank
     {
       var outDims: D.rank*range;
@@ -624,7 +624,7 @@ module AryUtil
       For example, if D represents a stack of 10x10 matrices (ex: {1..10, 1..10, 1..1000})
       Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
     */
-    proc domOffAxis(D: domain(?), axes: int ...?NA): domain()
+    proc domOffAxis(D: domain, axes: int ...?NA): domain
       where NA < D.rank
     {
       var outDims: D.rank*range;
