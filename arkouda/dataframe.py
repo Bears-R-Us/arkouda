@@ -263,7 +263,6 @@ class DataFrame(UserDict):
         self._bytes = 0
         self._empty = True
 
-        
         # Initial attempts to keep an order on the columns
         self._columns = []
         self._set_index(index)
