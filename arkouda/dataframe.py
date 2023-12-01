@@ -160,14 +160,14 @@ class DataFrame(UserDict):
     ----------
     initialdata : List or dictionary of lists, tuples, or pdarrays
         Each list/dictionary entry corresponds to one column of the data and
-        should be a homogenous type. Different columns may have different 
+        should be a homogenous type. Different columns may have different
         types. If using a dictionary, keys should be strings.
 
     index : Index, pdarray, or Strings
         Index for the resulting frame. Defaults to an integer range.
-    
+
     columns : List, tuple, pdarray, or Strings
-        Column labels to use if the data does not include them. Elements must 
+        Column labels to use if the data does not include them. Elements must
         be strings. Defaults to an stringified integer range.
 
     Examples
@@ -290,7 +290,6 @@ class DataFrame(UserDict):
                     UserDict.__setitem__(self, key, val)
                     # Update the column index
                     self._columns.append(key)
-                
 
             # Initial data is a list of arkouda arrays
             elif isinstance(initialdata, list):
@@ -304,7 +303,7 @@ class DataFrame(UserDict):
                     keys = columns
                 else:
                     keys = [str(x) for x in range(len(initialdata))]
-                
+
                 for key, col in zip(keys, initialdata):
                     if isinstance(col, (list, tuple)):
                         col = array(col)
