@@ -261,6 +261,8 @@ class DataFrame(UserDict):
             # Initial data is a dictionary of arkouda arrays
             if isinstance(initialdata, dict):
                 for key, val in initialdata.items():
+                    if isinstance(val, (list, tuple)):
+                        val = array(val)
                     if not isinstance(val, self.COLUMN_CLASSES):
                         raise ValueError(f"Values must be one of {self.COLUMN_CLASSES}.")
                     if key.lower() == "index":
@@ -280,6 +282,8 @@ class DataFrame(UserDict):
                 # Create string IDs for the columns
                 keys = [str(x) for x in range(len(initialdata))]
                 for key, col in zip(keys, initialdata):
+                    if isinstance(col, (list, tuple)):
+                        col = array(col)
                     if not isinstance(col, self.COLUMN_CLASSES):
                         raise ValueError(f"Values must be one of {self.COLUMN_CLASSES}.")
                     sizes.add(col.size)
