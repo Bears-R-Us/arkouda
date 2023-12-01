@@ -95,33 +95,34 @@ class iinfo_object:
     dtype: Dtype
 
 
-def finfo(type: Union[Dtype, Array], /) -> finfo_object:
-    """
-    Array API compatible wrapper for :py:func:`np.finfo <numpy.finfo>`.
+# Not sure how to get finfo typing to work with mypy
+# def finfo(type: Union[Dtype, Array], /) -> finfo_object:
+#     """
+#     Array API compatible wrapper for :py:func:`np.finfo <numpy.finfo>`.
 
-    See its docstring for more information.
-    """
-    fi = np.finfo(type)
-    # Note: The types of the float data here are float, whereas in NumPy they
-    # are scalars of the corresponding float dtype.
-    return finfo_object(
-        fi.bits,
-        float(fi.eps),
-        float(fi.max),
-        float(fi.min),
-        float(fi.smallest_normal),
-        fi.dtype,
-    )
+#     See its docstring for more information.
+#     """
+#     fi = np.finfo(type)
+#     # Note: The types of the float data here are float, whereas in NumPy they
+#     # are scalars of the corresponding float dtype.
+#     return finfo_object(
+#         fi.bits,
+#         float(fi.eps),
+#         float(fi.max),
+#         float(fi.min),
+#         float(fi.smallest_normal),
+#         fi.dtype,
+#     )
 
+# Not sure how to get iinfo typing to work with mypy
+# def iinfo(type: Union[Dtype, Array], /) -> iinfo_object:
+#     """
+#     Array API compatible wrapper for :py:func:`np.iinfo <numpy.iinfo>`.
 
-def iinfo(type: Union[Dtype, Array], /) -> iinfo_object:
-    """
-    Array API compatible wrapper for :py:func:`np.iinfo <numpy.iinfo>`.
-
-    See its docstring for more information.
-    """
-    ii = np.iinfo(type)
-    return iinfo_object(ii.bits, ii.max, ii.min, ii.dtype)
+#     See its docstring for more information.
+#     """
+#     ii = np.iinfo(type)
+#     return iinfo_object(ii.bits, ii.max, ii.min, ii.dtype)
 
 
 # Note: isdtype is a new function from the 2022.12 array API specification.

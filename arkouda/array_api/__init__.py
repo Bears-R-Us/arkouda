@@ -26,8 +26,8 @@ from ._data_type_functions import (
     broadcast_arrays,
     broadcast_to,
     can_cast,
-    finfo,
-    iinfo,
+    # finfo,
+    # iinfo,
     result_type,
 )
 
