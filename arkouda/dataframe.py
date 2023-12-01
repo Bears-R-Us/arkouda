@@ -205,7 +205,7 @@ class DataFrame(UserDict):
 
     objType = "DataFrame"
 
-    def __init__(self, initialdata=None, index=None):
+    def __init__(self, initialdata=None, index=None, columns=None):
         super().__init__()
         self.registered_name = None
 
@@ -249,6 +249,7 @@ class DataFrame(UserDict):
         self._bytes = 0
         self._empty = True
 
+        
         # Initial attempts to keep an order on the columns
         self._columns = []
         self._set_index(index)
@@ -276,11 +277,20 @@ class DataFrame(UserDict):
                     UserDict.__setitem__(self, key, val)
                     # Update the column index
                     self._columns.append(key)
+                
 
             # Initial data is a list of arkouda arrays
             elif isinstance(initialdata, list):
                 # Create string IDs for the columns
-                keys = [str(x) for x in range(len(initialdata))]
+                keys = []
+                if columns is not None:
+                    if any([not isinstance(label, str) for label in columns]):
+                        raise TypeError("Column labels must be strings.")
+                    if len(columns) != len(initialdata):
+                        raise ValueError("Must have as many labels as columns")
+                else:
+                    keys = [str(x) for x in range(len(initialdata))]
+                
                 for key, col in zip(keys, initialdata):
                     if isinstance(col, (list, tuple)):
                         col = array(col)

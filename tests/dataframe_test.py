@@ -174,6 +174,24 @@ class DataFrameTest(ArkoudaTest):
             self.assertEqual(df['2'].dtype, str)
             self.assertTrue(isinstance(df['3'], ak.pdarray))
             self.assertEqual(df['3'].dtype, float)
+    
+    def test_column_init(self):
+        unlabeled_data = [[1,2],[True,False],['foo','bar'],[2.3,-1.8]]
+        good_labels = ['one', 'two', 'three', 'four']
+        bad_labels1 = ['one', 'two']
+        bad_labels2 = good_labels + ['five']
+
+        df = ak.DataFrame(unlabeled_data,columns=good_labels)
+        self.assertEqual(df['one'][0], 1)
+        self.assertEqual(df['three'][0], 'foo')
+        self.assertEqual(df['four'][1], -1.8)
+        
+        with self.assertRaises(ValueError):
+            df = ak.DataFrame(unlabeled_data,columns=bad_labels1)
+        with self.assertRaises(ValueError):
+            df = ak.DataFrame(unlabeled_data,columns=bad_labels2)
+        with self.assertRaises(TypeError):
+            df = ak.DataFrame(unlabeled_data,columns=['one', 'two', 3, 'four'])
 
     def test_boolean_indexing(self):
         df = build_ak_df()
