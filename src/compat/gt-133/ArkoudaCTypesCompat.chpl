@@ -3,7 +3,7 @@ module ArkoudaCTypesCompat {
   // so we can define it as an alias for its replacement c_ptr(void).
   // Using an except clause would not work here as the reference to the
   // deprecated name c_void_ptr would warn.
-  public use CTypes only c_float, c_double c_FILE, c_ptr,
+  public use CTypes only c_float, c_double, c_FILE, c_ptr,
          c_ptrConst, c_array, c_ptrTo, c_ptrToConst,
          c_addrOf, c_addrOfConst, c_sizeof, c_offsetof, allocate, deallocate;
   // Need to manually use ChapelSysCTypes here, as it is `public use`d in CTypes
