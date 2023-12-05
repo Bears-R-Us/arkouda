@@ -274,7 +274,7 @@ class Array:
         return array_api
 
     def __bool__(self: Array, /) -> bool:
-        #TODO: retrieve the value from a 0D array as a boolean
+        # TODO: retrieve the value from a 0D array as a boolean
         return True
 
     def __complex__(self: Array, /) -> complex:

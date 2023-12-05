@@ -1,8 +1,7 @@
 from ._array_object import Array
 
 from arkouda.client import generic_msg
-from arkouda.util import broadcast_dims
-from arkouda.pdarrayclass import create_pdarray, broadcast_to_shape
+from arkouda.pdarrayclass import create_pdarray, broadcast_if_needed
 
 
 def matmul(x1: Array, x2: Array, /) -> Array:

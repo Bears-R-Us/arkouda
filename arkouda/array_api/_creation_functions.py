@@ -53,17 +53,18 @@ def asarray(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    if isinstance(obj, bool) or isinstance(obj, int) or isinstance(obj, float) or isinstance(obj, complex):
+    if isinstance(obj, bool) or isinstance(obj, int) or \
+       isinstance(obj, float) or isinstance(obj, complex):
         if dtype is None:
             xdtype = resolve_scalar_dtype(obj)
         else:
-            xdtype = dtype
+            xdtype = akdtype(dtype)
         res = ak.full(1, obj, xdtype)
         return Array._new(res)
+    elif isinstance(obj, Array):
+        return Array._new(ak.array(obj._array))
     else:
-        return Array._new(ak.array(obj))
-
-
+        raise ValueError("asarray not implemented for 'NestedSequence'")
 
 
 def arange(

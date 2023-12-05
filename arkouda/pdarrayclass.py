@@ -3298,6 +3298,7 @@ def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray]:
                 f"Incompatible array shapes for broadcasted operation: {x1.shape} and {x2.shape}"
             )
 
+
 @typechecked
 def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
     """

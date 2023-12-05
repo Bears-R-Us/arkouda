@@ -271,7 +271,7 @@ def resolve_scalar_dtype(val: object) -> str:  # type: ignore
     elif isinstance(val, float) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"):
         return "float64"
     elif isinstance(val, complex) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "c"):
-        return "float64" # TODO: actually support complex values in the backend
+        return "float64"  # TODO: actually support complex values in the backend
     elif isinstance(val, builtins.str) or isinstance(val, np.str_):
         return "str"
     # Other numpy dtype
