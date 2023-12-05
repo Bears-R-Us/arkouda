@@ -296,7 +296,7 @@ class DataFrame(UserDict):
                 # Create string IDs for the columns
                 keys = []
                 if columns is not None:
-                    if any([not isinstance(label, str) for label in columns]):
+                    if any(not isinstance(label, str) for label in columns):
                         raise TypeError("Column labels must be strings.")
                     if len(columns) != len(initialdata):
                         raise ValueError("Must have as many labels as columns")
