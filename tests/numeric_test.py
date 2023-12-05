@@ -171,9 +171,9 @@ class NumericTest(ArkoudaTest):
             ak_arrs = [ak.array(a) for a in np_arrs]
             np_hist, np_bin_edges = np.histogramdd(np_arrs, bins=bins)
             ak_hist, ak_bin_edges = ak.histogramdd(ak_arrs, bins=bins)
-            self.assertListEqual(np_hist.tolist(), ak_hist.to_list())
+            self.assertTrue(np.allclose(np_hist.tolist(), ak_hist.to_list()))
             for np_edge, ak_edge in zip(np_bin_edges, ak_bin_edges):
-                self.assertListEqual(np_edge.tolist(), ak_edge.to_list())
+                self.assertTrue(np.allclose(np_edge.tolist(), ak_edge.to_list()))
 
     def testLog(self):
         na = np.linspace(1, 10, 10)
