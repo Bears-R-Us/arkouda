@@ -35,40 +35,30 @@ module MsgProcessing
     */
     @arkouda.registerND(cmd_prefix="create")
     proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        var repMsg: string, // response message
-            dtype = str2dtype(msgArgs.getValueOf("dtype")),
-            shape = msgArgs.get("shape").getTuple(nd);
+        const dtype = str2dtype(msgArgs.getValueOf("dtype")),
+              shape = msgArgs.get("shape").getTuple(nd),
+              rname = st.nextName();
 
         var size = 1;
         for s in shape do size *= s;
 
-        if (dtype == DType.UInt8) || (dtype == DType.Bool) {
-          overMemLimit(size);
-        } else {
-          overMemLimit(8*size);
-        }
-        // get next symbol name
-        var rname = st.nextName();
+        if (dtype == DType.UInt8) || (dtype == DType.Bool)
+            then overMemLimit(size);
+            else overMemLimit(8*size);
 
         // if verbose print action
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s dtype: %s size: %i new pdarray name: %s".doFormat(
                                                      cmd,dtype2str(dtype),size,rname));
         // create and add entry to symbol table
         st.addEntry(rname, (...shape), dtype);
         // if verbose print result
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                     "created the pdarray %s".doFormat(st.attrib(rname)));
 
-        repMsg = "created " + st.attrib(rname);
+        const repMsg = "created " + st.attrib(rname);
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
-
-    // this proc is not technically needed with the 'arkouda.registerND' annotation above
-    //  (keeping it for now as a stopgap until the ND array work is further along)
-    proc createMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        return createMsg(cmd, msgArgs, st, 1);
     }
 
     // used for "zero-dimensional" array api scalars
@@ -80,9 +70,11 @@ module MsgProcessing
                        "cmd: %s dtype: %s size: 1 new pdarray name: %s".doFormat(
                        cmd,dtype2str(dtype),rname));
 
+        // on the client side, scalar (0D) arrays have a shape of "()" and a size of 1
+        // here, we represent that using a 1D array with a shape of (1,) and a size of 1
         var e = toGenSymEntry(st.addEntry(rname, 1, dtype));
+        e.ndim = 1;
         e.size = 1;
-        e.ndim = 0;
         e.shape = "[]";
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -446,12 +438,6 @@ module MsgProcessing
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    // this proc is not technically needed with the 'arkouda.registerND' annotation above
-    //   (keeping it for now as a stopgap until the ND array work is further along)
-    proc setMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        return setMsg(cmd, msgArgs, st, 1);
-    }
-
 
     /*
         Create a "broadcasted" array (of rank 'nd') by copying an array into an
@@ -504,8 +490,8 @@ module MsgProcessing
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         proc doAssignment(type dtype): MsgTuple throws {
-            var eIn = toSymEntry(gEnt, int, ndIn),
-                eOut = st.addEntry(rname, (...shapeOut), int);
+            var eIn = toSymEntry(gEnt, dtype, ndIn),
+                eOut = st.addEntry(rname, (...shapeOut), dtype);
 
             if ndIn == ndOut && eIn.tupShape == shapeOut {
                 // no broadcast necessary, copy the array

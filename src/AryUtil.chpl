@@ -35,75 +35,37 @@ module AryUtil
       :arg A: array to be printed
     */
     proc formatAry(A: [?d]):string throws {
-        proc dimSummary(dimIdx: int): string throws {
-            const dimSize = d.dim(dimIdx).size;
-            var s: string;
-            if dimSize == 0 {
-                s = "";
-            } else if dimSize < printThresh {
-                // create a string representation of all elements along this dimension
-                var first = true,
-                    idx: d.rank*int;
-
-                for i in 0..<dimSize {
-                    if first then first = false; else s += " ";
-                    idx[dimIdx] = i;
-                    s += "?".doFormat(A[idx]);
-                }
+        if d.rank == 1 {
+            var s:string = "";
+            if (d.size == 0) {
+                s =  ""; // Unnecessary, but left for clarity
+            } else if (d.size < printThresh || d.size <= 6) {
+                for i in 0..(d.size-2) {s += try! "%?".doFormat(A[i]) + " ";}
+                s += try! "%?".doFormat(A[d.size-1]);
             } else {
-                // create a string representation of the first three and last three elements
-                // along this dimension
-                var indices: 6*(d.rank*int);
-                indices[0][dimIdx] = 0;
-                indices[1][dimIdx] = 1;
-                indices[2][dimIdx] = 2;
-
-                for dd in 0..<d.rank {
-                    const dMax = d.dim(dd).high;
-                    indices[3][dd] = dMax;
-                    indices[4][dd] = dMax;
-                    indices[5][dd] = dMax;
-                }
-
-                indices[3][dimIdx] = dimSize-3;
-                indices[4][dimIdx] = dimSize-2;
-                indices[5][dimIdx] = dimSize-1;
-
-                s = "%? %? %? ... %? %? %?".doFormat(A[indices[0]], A[indices[1]], A[indices[2]],
-                                                    A[indices[3]], A[indices[4]], A[indices[5]]);
+                s = try! "%? %? %? ... %? %? %?".doFormat(A[0], A[1], A[2], A[d.size-3], A[d.size-2], A[d.size-1]);
             }
             return s;
-        }
+        } else {
+            const shape = d.shape;
+            var s = "%?\n".doFormat(shape),
+                front_indices: d.rank*range,
+                back_indices: d.rank*range;
 
-        // create a string with a summary of each dimension individually
-        // For a 2D array, the first dimension;s summary would include:
-        /*
-          | X X X                |
-          |                      |
-          |                      |
-          |                      |
-          |                      |
-          |                      |
-          |                X X X |
-        */
-        // And the second dimension's summary would include:
-        /*
-          | X                    |
-          | X                    |
-          | X                    |
-          |                      |
-          |                    X |
-          |                    X |
-          |                    X |
-        */
-        var s = "",
-            first = true;
-        for dimIdx in 0..<d.rank {
-            if first then first = false; else s += "\n";
-            s += dimSummary(dimIdx);
-        }
+            for param i in 0..<d.rank {
+                front_indices[i] = if shape[i] < 3
+                    then 0..<shape[i]
+                    else 0..2;
+                back_indices[i] = if shape[i] < 3
+                    then 0..<shape[i]
+                    else (shape[i]-3)..<shape[i];
+            }
 
-        return s;
+            const frontDom = {(...front_indices)},
+                  backDom = {(...back_indices)};
+
+            s += "%? ... %?".doFormat(A[frontDom], A[backDom]);
+        }
     }
 
     proc printAry(name:string, A) {

@@ -54,7 +54,7 @@ module ArkoudaSymEntryCompat {
   */
   proc SymEntry.init(args: int ...?N, type etype) {
     var len = 1;
-    for i in 0..#N {
+    for param i in 0..#N {
       len *= args[i];
     }
     super.init(etype, len, N);

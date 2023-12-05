@@ -7,6 +7,7 @@ from arkouda.client import generic_msg
 import numpy as np
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.dtypes import dtype as akdtype
+from arkouda.dtypes import resolve_scalar_dtype
 
 if TYPE_CHECKING:
     from ._typing import (
@@ -52,14 +53,17 @@ def asarray(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    if isinstance(obj, Array):
-        return Array._new(obj._array)
-    elif dtype is not None:
-        res = ak.full(1, obj, dtype)
+    if isinstance(obj, bool) or isinstance(obj, int) or isinstance(obj, float) or isinstance(obj, complex):
+        if dtype is None:
+            xdtype = resolve_scalar_dtype(obj)
+        else:
+            xdtype = dtype
+        res = ak.full(1, obj, xdtype)
         return Array._new(res)
     else:
-        res = ak.full(1, obj)
-        return Array._new(res)
+        return Array._new(ak.array(obj))
+
+
 
 
 def arange(
@@ -91,7 +95,7 @@ def empty(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    if shape is Tuple:
+    if isinstance(shape, tuple):
         size = 1
         tshape = cast(Tuple, shape)
         for s in tshape:
@@ -283,19 +287,21 @@ def zeros(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    if shape is Tuple:
-        size = 1
-        for s in cast(Tuple, shape):
-            size *= s
-        ndim = len(cast(Tuple, shape))
+    if isinstance(shape, tuple):
+        ndim = len(shape)
     else:
-        size = cast(int, shape)
-        ndim = 1
+        if shape == 0:
+            ndim = 0
+        else:
+            ndim = 1
+
+    dtype = akdtype(dtype)  # normalize dtype
+    dtype_name = cast(np.dtype, dtype).name
 
     repMsg = generic_msg(
         cmd=f"create{ndim}D",
         args={
-            "dtype": np.dtype(dtype).name,
+            "dtype": dtype_name,
             "shape": shape,
         },
     )

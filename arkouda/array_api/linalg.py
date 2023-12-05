@@ -14,13 +14,10 @@ def matmul(x1: Array, x2: Array, /) -> Array:
     if x1._array.ndim < 2 and x2._array.ndim < 2:
         raise ValueError("matmul requires at least one array argument to have more than two dimensions")
 
-    outShape = broadcast_dims(x1._array.shape, x2._array.shape)
-
-    x1b = broadcast_to_shape(x1._array, outShape)
-    x2b = broadcast_to_shape(x2._array, outShape)
+    x1b, x2b = broadcast_if_needed(x1._array, x2._array)
 
     repMsg = generic_msg(
-        cmd=f"matMul{len(outShape)}D",
+        cmd=f"matMul{len(x1b.shape)}D",
         args={
             "x1": x1b.name,
             "x2": x2b.name,
@@ -56,17 +53,14 @@ def matrix_transpose(x: Array) -> Array:
 def vecdot(x1: Array, x2: Array, /, *, axis: int = -1) -> Array:
     from ._array_object import Array
 
-    outShape = broadcast_dims(x1._array.shape, x2._array.shape)
-
-    x1b = broadcast_to_shape(x1._array, outShape)
-    x2b = broadcast_to_shape(x2._array, outShape)
+    x1b, x2b = broadcast_if_needed(x1._array, x2._array)
 
     repMsg = generic_msg(
-        cmd=f"vecdot{len(outShape)}D",
+        cmd=f"vecdot{len(x1b.shape)}D",
         args={
             "x1": x1b.name,
             "x2": x2b.name,
-            "bcShape": outShape,
+            "bcShape": x1b.shape,
             "axis": axis,
         },
     )

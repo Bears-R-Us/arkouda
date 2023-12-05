@@ -311,9 +311,11 @@ class pdarray:
             raise ValueError(f"bad operator {op}")
         # pdarray binop pdarray
         if isinstance(other, pdarray):
-            if self.shape != other.shape:
+            try:
+                (x1, x2) = broadcast_if_needed(self, other)
+            except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
-            repMsg = generic_msg(cmd=f"binopvv{self.ndim}D", args={"op": op, "a": self, "b": other})
+            repMsg = generic_msg(cmd=f"binopvv{x1.ndim}D", args={"op": op, "a": x1, "b": x2})
             return create_pdarray(repMsg)
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
@@ -2029,8 +2031,11 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         size = int(fields[3])
         ndim = int(fields[4])
 
-        trailing_comma_offset = -2 if fields[5][len(fields[5]) - 2] == "," else -1
-        shape = [int(el) for el in fields[5][1:trailing_comma_offset].split(",")]
+        if fields[5] == "[]":
+            shape = []
+        else:
+            trailing_comma_offset = -2 if fields[5][len(fields[5]) - 2] == "," else -1
+            shape = [int(el) for el in fields[5][1:trailing_comma_offset].split(",")]
 
         itemsize = int(fields[6])
     except Exception as e:
@@ -2080,7 +2085,7 @@ def any(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "any", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "any", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2106,7 +2111,7 @@ def all(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "all", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "all", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2132,7 +2137,7 @@ def is_sorted(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "is_sorted", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "is_sorted", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2158,7 +2163,7 @@ def sum(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "sum", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "sum", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2185,7 +2190,7 @@ def prod(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "prod", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "prod", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2210,7 +2215,7 @@ def min(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "min", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "min", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2236,7 +2241,7 @@ def max(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "max", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "max", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2262,7 +2267,7 @@ def argmin(pda: pdarray) -> Union[np.int64, np.uint64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "argmin", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "argmin", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2288,7 +2293,7 @@ def argmax(pda: pdarray) -> Union[np.int64, np.uint64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "argmax", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "argmax", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -3272,6 +3277,28 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
 
 
 @typechecked
+def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray]:
+    from arkouda.util import broadcast_dims
+    if x1.shape == x2.shape:
+        return (x1, x2)
+    else:
+        try:
+            bc_shape = broadcast_dims(x1.shape, x2.shape)
+            if bc_shape != x1.shape:
+                x1b = broadcast_to_shape(x1, bc_shape)
+            else:
+                x1b = x1
+            if bc_shape != x2.shape:
+                x2b = broadcast_to_shape(x2, bc_shape)
+            else:
+                x2b = x2
+            return (x1b, x2b)
+        except ValueError:
+            raise ValueError(
+                f"Incompatible array shapes for broadcasted operation: {x1.shape} and {x2.shape}"
+            )
+
+@typechecked
 def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
     """
     expand an array's rank to the specified shape using broadcasting
@@ -3283,6 +3310,7 @@ def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
             generic_msg(
                 cmd=f"broadcast{pda.ndim}Dx{len(shape)}D",
                 args={
+                    "name": pda,
                     "shape": shape,
                 },
             ),

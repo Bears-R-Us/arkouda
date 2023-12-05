@@ -274,6 +274,7 @@ class Array:
         return array_api
 
     def __bool__(self: Array, /) -> bool:
+        #TODO: retrieve the value from a 0D array as a boolean
         return True
 
     def __complex__(self: Array, /) -> complex:
@@ -286,7 +287,8 @@ class Array:
         raise ValueError("Not implemented")
 
     def __float__(self: Array, /) -> float:
-        raise ValueError("Not implemented")
+        # TODO: retrieve the value from a 0D array as a float
+        return 1.0
 
     def __floordiv__(self: Array, other: Union[int, float, Array], /) -> Array:
         return self

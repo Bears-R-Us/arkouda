@@ -351,10 +351,8 @@ module ServerDaemon {
          */
         proc registerServerCommands() {
             registerBinaryFunction("tondarray", tondarrayMsg);
-            registerFunction("create", createMsg1D);
             registerFunction("create0D", createMsg0D);
             registerFunction("delete", deleteMsg);
-            registerFunction("set", setMsg1D);
             registerFunction("info", infoMsg);
             registerFunction("str", strMsg);
             registerFunction("repr", reprMsg);
@@ -661,7 +659,14 @@ module ServerDaemon {
                             var binaryRepMsg = commandMapBinary[cmd](cmd, msgArgs, st);
                             sendRepMsg(binaryRepMsg);
                         } else {
-                          
+                            // var commandRank: int;
+                            // const ndFunc = new regex("[a-zA-Z]+(\d+)D"),
+                            //       m = ndFunc.search(cmd, commandRank);
+
+                            // if m.matched {
+
+                            // }
+
                           repTuple = new MsgTuple("Unrecognized command: %s".doFormat(cmd), MsgType.ERROR);
                           sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repTuple.msg);
                         }
