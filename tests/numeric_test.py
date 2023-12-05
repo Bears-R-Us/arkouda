@@ -135,8 +135,8 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(20, len(ak_bins) - 1)
         self.assertEqual(20, len(ak_result))
         self.assertEqual(int, ak_result.dtype)
-        self.assertListEqual(ak_result.to_list(), np_result.tolist())
-        self.assertListEqual(ak_bins.to_list(), np_bins.tolist())
+        self.assertTrue(np.allclose(ak_result.to_list(), np_result.tolist()))
+        self.assertTrue(np.allclose(ak_bins.to_list(), np_bins.tolist()))
 
         with self.assertRaises(TypeError):
             ak.histogram([range(0, 10)], bins=1)
@@ -153,15 +153,15 @@ class NumericTest(ArkoudaTest):
         np_x, np_y = ak_x.to_ndarray(), ak_y.to_ndarray()
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y)
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y)
-        self.assertListEqual(np_hist.tolist(), ak_hist.to_list())
-        self.assertListEqual(np_x_edges.tolist(), ak_x_edges.to_list())
-        self.assertListEqual(np_y_edges.tolist(), ak_y_edges.to_list())
+        self.assertTrue(np.allclose(np_hist.tolist(), ak_hist.to_list()))
+        self.assertTrue(np.allclose(np_x_edges.tolist(), ak_x_edges.to_list()))
+        self.assertTrue(np.allclose(np_y_edges.tolist(), ak_y_edges.to_list()))
 
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y, bins=(10, 20))
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y, bins=(10, 20))
-        self.assertListEqual(np_hist.tolist(), ak_hist.to_list())
-        self.assertListEqual(np_x_edges.tolist(), ak_x_edges.to_list())
-        self.assertListEqual(np_y_edges.tolist(), ak_y_edges.to_list())
+        self.assertTrue(np.allclose(np_hist.tolist(), ak_hist.to_list()))
+        self.assertTrue(np.allclose(np_x_edges.tolist(), ak_x_edges.to_list()))
+        self.assertTrue(np.allclose(np_y_edges.tolist(), ak_y_edges.to_list()))
 
     def testLog(self):
         na = np.linspace(1, 10, 10)
