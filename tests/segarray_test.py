@@ -477,7 +477,6 @@ class SegArrayTest(ArkoudaTest):
         segments = ak.array([0, len(a), len(a), len(a) + len(b)])
         segarr = ak.SegArray(segments, flat)
         dedup = segarr.remove_repeats()
-        print(dedup.lengths)
         self.assertListEqual(dedup.lengths.to_list(), [3, 0, 3, 0])
         self.assertListEqual(dedup[0].to_list(), list(set(a)))
         self.assertListEqual(dedup[1].to_list(), [])
@@ -493,6 +492,24 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(dedup[2].to_list(), [])
         self.assertListEqual(dedup[3].to_list(), list(set(b)))
         self.assertListEqual(dedup[4].to_list(), [])
+
+        # reproducer for #2661
+        a = [1, 2, 1, 1, 3, 3, 5, 4, 6, 2]
+        a_ans = [1, 2, 1, 3, 5, 4, 6, 2]
+        a_mult = [1, 1, 2, 2, 1, 1, 1, 1]
+        b = [10, 11, 11, 12, 13, 10, 4, 6, 1, 12]
+        b_ans = [10, 11, 12, 13, 10, 4, 6, 1, 12]
+        b_mult = [1, 2, 1, 1, 1, 1, 1, 1, 1]
+        segments = ak.array([0, 0, len(a), len(a), len(a), len(a) + len(b)])
+        flat = ak.array(a + b)
+        sa = ak.SegArray(segments, flat)
+        no_repeats, multiplicity = sa.remove_repeats(return_multiplicity=True)
+        self.assertListEqual(no_repeats.non_empty.to_list(), [False, True, False, False, True, False])
+        self.assertListEqual(multiplicity.non_empty.to_list(), [False, True, False, False, True, False])
+        self.assertListEqual(no_repeats[1].to_list(), a_ans)
+        self.assertListEqual(multiplicity[1].to_list(), a_mult)
+        self.assertListEqual(no_repeats[4].to_list(), b_ans)
+        self.assertListEqual(multiplicity[4].to_list(), b_mult)
 
     def test_intersection(self):
         a = [1, 2, 3, 4, 5]
