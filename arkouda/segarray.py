@@ -11,7 +11,7 @@ import numpy as np  # type: ignore
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import isSupportedInt, str_, int_scalars
+from arkouda.dtypes import int_scalars, isSupportedInt, str_
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.join import gen_ranges
@@ -1386,10 +1386,11 @@ class SegArray:
         )
 
         new_vals = self.values[keep]
-
+        lens = self.lengths[:]
         # recreate the segment boundaries
         seg_cts = self.grouping.sum(keep)[1]
-        new_segs = cumsum(seg_cts) - seg_cts
+        lens[self.non_empty] = seg_cts
+        new_segs = cumsum(lens) - lens
 
         new_segarray = SegArray(new_segs, new_vals)
         return new_segarray[new_segarray.non_empty] if discard_empty else new_segarray
@@ -1594,9 +1595,14 @@ class SegArray:
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
-        return generic_msg(cmd="sendArray", args={"segments": self.segments,
-                                                  "values": self.values,
-                                                  "hostname": hostname,
-                                                  "port": port,
-                                                  "dtype": self.dtype,
-                                                  "objType": "segarray"})
+        return generic_msg(
+            cmd="sendArray",
+            args={
+                "segments": self.segments,
+                "values": self.values,
+                "hostname": hostname,
+                "port": port,
+                "dtype": self.dtype,
+                "objType": "segarray",
+            },
+        )
