@@ -156,6 +156,20 @@ class DataFrame(UserDict):
     """
     A DataFrame structure based on arkouda arrays.
 
+    Parameters
+    ----------
+    initialdata : List or dictionary of lists, tuples, or pdarrays
+        Each list/dictionary entry corresponds to one column of the data and
+        should be a homogenous type. Different columns may have different
+        types. If using a dictionary, keys should be strings.
+
+    index : Index, pdarray, or Strings
+        Index for the resulting frame. Defaults to an integer range.
+
+    columns : List, tuple, pdarray, or Strings
+        Column labels to use if the data does not include them. Elements must
+        be strings. Defaults to an stringified integer range.
+
     Examples
     --------
 
@@ -205,7 +219,7 @@ class DataFrame(UserDict):
 
     objType = "DataFrame"
 
-    def __init__(self, initialdata=None, index=None):
+    def __init__(self, initialdata=None, index=None, columns=None):
         super().__init__()
         self.registered_name = None
 
@@ -261,6 +275,8 @@ class DataFrame(UserDict):
             # Initial data is a dictionary of arkouda arrays
             if isinstance(initialdata, dict):
                 for key, val in initialdata.items():
+                    if isinstance(val, (list, tuple)):
+                        val = array(val)
                     if not isinstance(val, self.COLUMN_CLASSES):
                         raise ValueError(f"Values must be one of {self.COLUMN_CLASSES}.")
                     if key.lower() == "index":
@@ -278,8 +294,19 @@ class DataFrame(UserDict):
             # Initial data is a list of arkouda arrays
             elif isinstance(initialdata, list):
                 # Create string IDs for the columns
-                keys = [str(x) for x in range(len(initialdata))]
+                keys = []
+                if columns is not None:
+                    if any(not isinstance(label, str) for label in columns):
+                        raise TypeError("Column labels must be strings.")
+                    if len(columns) != len(initialdata):
+                        raise ValueError("Must have as many labels as columns")
+                    keys = columns
+                else:
+                    keys = [str(x) for x in range(len(initialdata))]
+
                 for key, col in zip(keys, initialdata):
+                    if isinstance(col, (list, tuple)):
+                        col = array(col)
                     if not isinstance(col, self.COLUMN_CLASSES):
                         raise ValueError(f"Values must be one of {self.COLUMN_CLASSES}.")
                     sizes.add(col.size)
