@@ -13,6 +13,7 @@ module AryUtil
     use ArkoudaPOSIXCompat;
     use ArkoudaCTypesCompat;
     use ArkoudaBlockCompat;
+    use ArkoudaRandomCompat;
 
     param bitsPerDigit = RSLSD_bitsPerDigit;
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
