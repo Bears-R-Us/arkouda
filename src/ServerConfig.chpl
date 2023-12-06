@@ -37,7 +37,31 @@ module ServerConfig
       INDEX=12,
       MULTIINDEX=13,
     };
-    
+
+    /*
+      maximum array dimensionality supported by the server
+      set by 'serverModuleGen.py' based on 'serverConfig.json'
+    */
+    config param MaxArrayDims: int = 1;
+
+    /*
+      Scalar (numpy) data types supported by the server
+      set by 'serverModuleGen.py' based on 'serverConfig.json'
+    */
+    config param  SupportsUint8 = false,
+                  SupportsUint16 = false,
+                  SupportsUint32 = false,
+                  SupportsUint64 = true,
+                  SupportsInt8 = false,
+                  SupportsInt16 = false,
+                  SupportsInt32 = false,
+                  SupportsInt64 = true,
+                  SupportsReal32 = false,
+                  SupportsReal64 = true,
+                  SupportsComplex64 = false,
+                  SupportsComplex128 = false,
+                  SupportsBool = true;
+
     /*
     Type of deployment, which currently is either STANDARD, meaning
     that Arkouda is deployed bare-metal or within an HPC environment, 

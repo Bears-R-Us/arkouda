@@ -81,7 +81,7 @@ $(eval $(call add-path,$(ARKOUDA_IDN2_PATH)))
 endif
 
 ifndef ARKOUDA_CONFIG_FILE
-ARKOUDA_CONFIG_FILE := $(ARKOUDA_PROJECT_DIR)/ServerModules.cfg
+ARKOUDA_CONFIG_FILE := $(ARKOUDA_PROJECT_DIR)/serverConfig.json
 endif
 
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -liconv -lidn2 -lparquet -larrow
