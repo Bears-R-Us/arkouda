@@ -29,12 +29,22 @@ Functions
 
 
 
-.. py:class:: DataFrame(initialdata=None, index=None)
+.. py:class:: DataFrame(initialdata=None, index=None, columns=None)
 
 
    Bases: :py:obj:`collections.UserDict`
 
    A DataFrame structure based on arkouda arrays.
+
+   :param initialdata: Each list/dictionary entry corresponds to one column of the data and
+                       should be a homogenous type. Different columns may have different
+                       types. If using a dictionary, keys should be strings.
+   :type initialdata: List or dictionary of lists, tuples, or pdarrays
+   :param index: Index for the resulting frame. Defaults to an integer range.
+   :type index: Index, pdarray, or Strings
+   :param columns: Column labels to use if the data does not include them. Elements must
+                   be strings. Defaults to an stringified integer range.
+   :type columns: List, tuple, pdarray, or Strings
 
    .. rubric:: Examples
 
