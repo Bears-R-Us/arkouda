@@ -185,7 +185,7 @@ or
       has to stay generic
       
 
-   .. attribute:: var a: [makeDistDom(...tupShape)] etype
+   .. attribute:: var a = makeDistArray(...tupShape, etype)
 
       
       'a' is the distributed array whose value and type are defined by
