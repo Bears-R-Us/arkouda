@@ -41,7 +41,6 @@ __all__ = [
     "get_byteorder",
     "get_server_byteorder",
     "isSupportedNumber",
-    "FloatDTypes",
 ]
 
 NUMBER_FORMAT_STRINGS = {
@@ -209,7 +208,6 @@ ARKOUDA_SUPPORTED_DTYPES = frozenset(["bool", "float", "float64", "int", "int64"
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
 DTypeObjects = frozenset([bool, float, float64, int, int64, str, str_, uint8, uint64])
 NumericDTypes = frozenset(["bool", "float", "float64", "int", "int64", "uint64", "bigint"])
-FloatDTypes = frozenset(["float", "float64", "float32"])
 SeriesDTypes = {
     "string": np.str_,
     "<class 'str'>": np.str_,
