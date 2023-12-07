@@ -180,7 +180,7 @@ module ServerConfig
     /*
     Indicates the version of Chapel Arkouda was built with
     */
-    const chplVersion = try! getChplVersion();
+    const chplVersionArkouda = try! getChplVersion();
 
     /*
     Indicates whether token authentication is being used for Akrouda server requests
@@ -250,7 +250,7 @@ module ServerConfig
         
         const cfg = new owned Config(
             arkoudaVersion = (ServerConfig.arkoudaVersion:string),
-            chplVersion = chplVersion,
+            chplVersion = chplVersionArkouda,
             ZMQVersion = try! "%i.%i.%i".doFormat(Zmajor, Zminor, Zmicro),
             HDF5Version = try! "%i.%i.%i".doFormat(H5major, H5minor, H5micro),
             serverHostname = serverHostname,

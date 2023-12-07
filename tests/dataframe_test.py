@@ -150,6 +150,50 @@ class DataFrameTest(ArkoudaTest):
         s = df.__repr__().replace(f" ({df._shape_str()})", f"\n\n{shape}")
         self.assertEqual(s, pdf.__repr__())
 
+    def test_convenience_init(self):
+        dict1 = {'0': [1,2], '1': [True, False], 
+                        '2': ['foo', 'bar'], '3': [2.3, -1.8]}
+        dict2 = {'0': (1,2), '1': (True, False), '2': 
+                        ('foo', 'bar'), '3': (2.3, -1.8)}
+        dict3 = {'0': (1,2), '1': [True, False], '2': 
+                        ['foo', 'bar'], '3': (2.3, -1.8)}
+        dict_dfs = [ak.DataFrame(d) for d in [dict1, dict2, dict3]]
+
+        lists1 = [[1,2],[True,False],['foo','bar'],[2.3,-1.8]]
+        lists2 = [(1,2),(True,False),('foo','bar'),(2.3,-1.8)]
+        lists3 = [(1,2),[True,False],['foo','bar'],(2.3,-1.8)]
+        lists_dfs = [ak.DataFrame(l) for l in [lists1, lists2, lists3]]
+
+        for df in dict_dfs + lists_dfs:
+            self.assertTrue(isinstance(df, ak.DataFrame))
+            self.assertTrue(isinstance(df['0'], ak.pdarray))
+            self.assertEqual(df['0'].dtype, int)
+            self.assertTrue(isinstance(df['1'], ak.pdarray))
+            self.assertEqual(df['1'].dtype, bool)
+            self.assertTrue(isinstance(df['2'], ak.Strings))
+            self.assertEqual(df['2'].dtype, str)
+            self.assertTrue(isinstance(df['3'], ak.pdarray))
+            self.assertEqual(df['3'].dtype, float)
+    
+    def test_column_init(self):
+        unlabeled_data = [[1,2],[True,False],['foo','bar'],[2.3,-1.8]]
+        good_labels = ['one1', 'two2', 'three3', 'four4']
+        bad_labels1 = ['one', 'two']
+        bad_labels2 = good_labels + ['five']
+
+        df = ak.DataFrame(unlabeled_data,columns=good_labels)
+        self.assertListEqual(df.columns, good_labels)
+        self.assertEqual(df['one1'][0], 1)
+        self.assertEqual(df['three3'][0], 'foo')
+        self.assertEqual(df['four4'][1], -1.8)
+
+        with self.assertRaises(ValueError):
+            df = ak.DataFrame(unlabeled_data,columns=bad_labels1)
+        with self.assertRaises(ValueError):
+            df = ak.DataFrame(unlabeled_data,columns=bad_labels2)
+        with self.assertRaises(TypeError):
+            df = ak.DataFrame(unlabeled_data,columns=['one', 'two', 3, 'four'])
+
     def test_boolean_indexing(self):
         df = build_ak_df()
         ref_df = build_pd_df()

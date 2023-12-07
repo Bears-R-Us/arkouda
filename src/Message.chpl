@@ -276,11 +276,10 @@ module Message {
         Parse value as a tuple of integers with the given size
         */
         proc getTuple(param size: int): size*int throws {
-            try {
+            if size == 1 {
+                return (this.getIntValue(),);
+            } else {
                 return parseJsonTuple(this.val, size);
-            } catch {
-                var x: size*int; x[0] = this.getIntValue();
-                return x;
             }
         }
 

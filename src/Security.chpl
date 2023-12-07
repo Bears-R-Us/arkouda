@@ -1,7 +1,7 @@
 
 module Security {
     use Random;
-    use Random.PCGRandom only PCGRandomStream;
+    use ArkoudaRandomCompat;
     use FileIO;
     use FileSystem;
     use Path;
@@ -22,7 +22,7 @@ module Security {
             indices[i] = i;
 
         var ret : [0..len-1] string;
-        var r = new owned PCGRandomStream(int);
+        var r = new randomStream(int);
         var rindices = try! r.choice(indices, len);
 
         for i in 1..len-1 do
