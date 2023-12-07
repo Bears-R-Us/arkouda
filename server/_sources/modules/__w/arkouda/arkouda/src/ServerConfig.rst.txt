@@ -119,7 +119,7 @@ arkouda server config param and config const
    * Returns the version of Chapel arkouda was built with
    
 
-.. data:: const chplVersion = try! getChplVersion()
+.. data:: const chplVersionArkouda = try! getChplVersion()
 
    
    Indicates the version of Chapel Arkouda was built with
