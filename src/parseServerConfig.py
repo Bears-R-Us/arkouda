@@ -72,8 +72,16 @@ def getSupportedTypes(config):
 def parseServerConfig(config_filename, src_dir):
     config = json.load(open(config_filename))
 
+    # Create a list of module source files to include in the server build commands
     module_source_files = getModuleFiles(config, src_dir)
+
+    # Populate 'nd_array_stamps.chpl' with message handler instantiations
+    # and produce relevant flags for building the server
+    # All procedures in included modules annotated with '@arkouda.registerND'
+    # will be instantiated for each rank from 1..max_array_dims
     nd_stamp_flags = createNDHandlerInstantiations(config, src_dir)
+
+    # Create build flags to designate which types the server should support
     type_flags = getSupportedTypes(config)
 
     print(f"{module_source_files} {nd_stamp_flags} {type_flags}")
