@@ -657,12 +657,30 @@ module ServerDaemon {
                         } else if commandMapBinary.contains(cmd) { // Binary response commands require different handling
                             if moduleMap.contains(cmd) then
                                 usedModules.add(moduleMap[cmd]);
-                            var binaryRepMsg = commandMapBinary[cmd](cmd, msgArgs, st);
+                            const binaryRepMsg = commandMapBinary[cmd](cmd, msgArgs, st);
                             sendRepMsg(binaryRepMsg);
                         } else {
-                          
-                          repTuple = new MsgTuple("Unrecognized command: %s".doFormat(cmd), MsgType.ERROR);
-                          sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repTuple.msg);
+                            const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd);
+                            if multiDimCommand && nd > ServerConfig.MaxArrayDims &&
+                                (commandMap.contains(rawCmd + "1D") || commandMapBinary.contains(rawCmd + "1D"))
+                            {
+                                const errMsg = "Error: Command '%s' is not supported with the current server configuration "
+                                                .doFormat(cmd) +
+                                                "as the maximum array dimensionality is %i. Please recompile with support for at least %iD arrays"
+                                                .doFormat(ServerConfig.MaxArrayDims, nd);
+                                repTuple = new MsgTuple(errMsg, MsgType.ERROR);
+                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                            } else if multiDimCommand &&
+                                (commandMap.contains(rawCmd) || commandMapBinary.contains(rawCmd))
+                            {
+                                const errMsg = "Error: Command '%s' is not supported for multidimensional arrays".doFormat(rawCmd);
+                                repTuple = new MsgTuple(errMsg, MsgType.ERROR);
+                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                            } else {
+                                repTuple = new MsgTuple("Unrecognized command: %s".doFormat(cmd), MsgType.ERROR);
+                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repTuple.msg);
+                            }
+
                         }
                     }
                 }
@@ -734,6 +752,23 @@ module ServerDaemon {
                                                                        elapsed));
         this.shutdown(); 
         }
+    }
+
+    /*
+      Determines whether a command contains an ND specification, e.g. 1D, 2D, 3D, etc.
+
+      If it does, returns a tuple containing (true, <array-dimension>, "<raw_cmd>")
+      Otherwise, returns (false, 0, "")
+    */
+    private proc getNDSpec(cmd: string): (bool, int, string) {
+        import Regex.regex;
+
+        const ndCmd = try! new regex("([a-zA-Z_]+)(\\d+)?D");
+        var cmdString: string, nd: int;
+        if ndCmd.match(cmd, cmdString, nd) {
+            if nd != 0 then return (true, nd, cmdString);
+        }
+        return (false, 0, "");
     }
 
     /**
