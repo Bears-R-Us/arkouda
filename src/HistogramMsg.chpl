@@ -147,7 +147,163 @@ module HistogramMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+
+    proc histogramdDMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        var repMsg: string; // response message
+        const numDims = msgArgs.get("num_dims").getIntValue();
+        const numSamples = msgArgs.get("num_samples").getIntValue();
+        const binsStrs = msgArgs.get("bins").getList(numDims);
+        const bins = try! [b in binsStrs] b:int;
+        const names = msgArgs.get("sample").getList(numDims);
+        const dimProdName = msgArgs.getValueOf("dim_prod");
+        const totNumBins = * reduce bins;
+        
+        // get next symbol name
+        var rname = st.nextName();
+        hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                      "cmd: %s name: %? bins: %? rname: %s".doFormat(cmd, names, bins, rname));
+
+        var gEnts = try! [name in names] getGenericTypedArrayEntry(name, st);
+        var dimProdGenEnt = getGenericTypedArrayEntry(dimProdName, st);
+        var dimProd = toSymEntry(dimProdGenEnt,int);
+
+        // helper nested procedure
+        proc histogramHelper(type t) throws {
+            var indices = makeDistArray(numSamples, int);
+            // 3 different implementations depending on size of histogram
+            // this is due to the time memory tradeoff between creating one/few atomic arrays
+            // or many non-atomic arrays and reducing them
+
+            // compute index into flattened array:
+            // for each dimension calculate which bin that value falls into in parallel
+            // we can then scale by the product of the previous dimensions to get that dimensions impact on the flattened index
+            // summing all these together gives the index into the flattened array
+            if (totNumBins <= sBound) {
+                // small number of buckets (so histogram is relatively small):
+                // each task gets it's own copy of the histogram and they're reduced
+                hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                            "%? <= %?".doFormat(bins,sBound));
+                forall (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) with (+ reduce indices) {
+                    var e = toSymEntry(gEnt,t);
+                    var aMin = min reduce e.a;
+                    var aMax = max reduce e.a;
+                    var binWidth:real = (aMax - aMin):real / bin:real;
+                    forall (v, idx) in zip(e.a, indices) {
+                        var vBin = ((v - aMin) / binWidth):int;
+                        if v == aMax {vBin = bin-1;}
+                        idx += (vBin * stride):int;
+                    }
+                }
+                var gHist: [0..#totNumBins] int;
+                
+                // count into per-task/per-locale histogram and then reduce as tasks complete
+                forall idx in indices with (+ reduce gHist) {
+                    gHist[idx] += 1;
+                }
+
+                var hist = makeDistArray(totNumBins,int);        
+                hist = gHist;
+                st.addEntry(rname, createSymEntry(hist));
+            }
+            else if (totNumBins <= mBound) {
+                // medium number of buckets:
+                // each locale gets it's own atomic copy of the histogram and these are reduced together
+                hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                            "%? <= %?".doFormat(bins,mBound));
+                use PrivateDist;
+                var atomicIdx: [PrivateSpace] [0..#numSamples] atomic int;
+
+                forall (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) {
+                    var e = toSymEntry(gEnt,t);
+                    var aMin = min reduce e.a;
+                    var aMax = max reduce e.a;
+                    var binWidth:real = (aMax - aMin):real / bin:real;
+                    forall (v, i) in zip(e.a, 0..) {
+                        var vBin = ((v - aMin) / binWidth):int;
+                        if v == aMax {vBin = bin-1;}
+                        atomicIdx[here.id][i].add((vBin * stride):int);
+                    }
+                }
+
+                var lIdx: [0..#numSamples] int;
+                forall i in PrivateSpace with (+ reduce lIdx) {
+                    lIdx reduce= atomicIdx[i].read();
+                }
+
+                indices = lIdx;
+                // allocate per-locale atomic histogram
+                var atomicHist: [PrivateSpace] [0..#totNumBins] atomic int;
+
+                // count into per-locale private atomic histogram
+                forall idx in indices {
+                    atomicHist[here.id][idx].add(1);
+                }
+
+                // +reduce across per-locale histograms to get counts
+                var lHist: [0..#totNumBins] int;
+                forall i in PrivateSpace with (+ reduce lHist) {
+                    lHist reduce= atomicHist[i].read();
+                }
+
+                var hist = makeDistArray(totNumBins,int);        
+                hist = lHist;
+                st.addEntry(rname, createSymEntry(hist));
+            }
+            else {
+                // large number of buckets:
+                // one global atomic histogram
+                hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                                "%? > %?".doFormat(bins,mBound));
+                use PrivateDist;
+                var atomicIdx: [makeDistDom(numSamples)] atomic int;
+
+                forall (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) {
+                    var e = toSymEntry(gEnt,t);
+                    var aMin = min reduce e.a;
+                    var aMax = max reduce e.a;
+                    var binWidth:real = (aMax - aMin):real / bin:real;
+                    forall (v, i) in zip(e.a, 0..) {
+                        var vBin = ((v - aMin) / binWidth):int;
+                        if v == aMax {vBin = bin-1;}
+                        atomicIdx[i].add((vBin * stride):int);
+                    }
+                }
+
+                [(i,ai) in zip(indices, atomicIdx)] i = ai.read();
+                // allocate single global atomic histogram
+                var atomicHist: [makeDistDom(totNumBins)] atomic int;
+
+                // count into atomic histogram
+                forall idx in indices {
+                    atomicHist[idx].add(1);
+                }
+
+                var hist = makeDistArray(totNumBins,int);
+                // copy from atomic histogram to normal histogram
+                [(e,ae) in zip(hist, atomicHist)] e = ae.read();
+                st.addEntry(rname, createSymEntry(hist));
+            }
+        }
+
+        select (gEnts[0].dtype) {
+            when (DType.Int64)   {histogramHelper(int);}
+            when (DType.UInt64)  {histogramHelper(uint);}
+            when (DType.Float64) {histogramHelper(real);}
+            otherwise {
+                var errorMsg = notImplementedError(pn,gEnts[0].dtype);
+                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                return new MsgTuple(errorMsg, MsgType.ERROR);             
+            }
+        }
+        
+        repMsg = "created " + st.attrib(rname);
+        hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     use CommandMap;
     registerFunction("histogram", histogramMsg, getModuleName());
     registerFunction("histogram2D", histogram2DMsg, getModuleName());
+    registerFunction("histogramdD", histogramdDMsg, getModuleName());
 }
