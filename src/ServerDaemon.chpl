@@ -335,7 +335,7 @@ module ServerDaemon {
         */
         override proc requestShutdown(user: string) throws {
             if saveUsedModules then
-                writeUsedModules();
+                writeUsedModules(usedModulesFmt);
             super.requestShutdown(user);
             this.repCount += 1;
             this.socket.send(serialize(msg="shutdown server (%i req)".doFormat(repCount), 

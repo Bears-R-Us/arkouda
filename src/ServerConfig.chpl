@@ -192,7 +192,8 @@ module ServerConfig
     */
     config param regexMaxCaptures = 20;
 
-    config const saveUsedModules : bool = false;
+    config const saveUsedModules : bool = false,
+                 usedModulesFmt : string = "cfg";
 
     private config const lLevel = ServerConfig.logLevel;
     

@@ -49,7 +49,20 @@ module CommandMap {
     moduleMap.add(cmd, modName);
   }
 
-  proc writeUsedModules() {
+  proc writeUsedModules(fmt: string = "cfg") {
+    select fmt {
+      when "json" do writeUsedModulesJson(usedModules);
+      when "cfg" do writeUsedModulesCfg();
+      otherwise {
+        writeln("Unrecognized format for used-modules file: '%s'");
+        writeln("Use '--usedModulesFmt=\"json\"' or '--usedModulesFmt=\"cfg\"'");
+        writeln("Defaulting to json...");
+        writeUsedModulesJson(usedModules);
+      }
+    }
+  }
+
+  private proc writeUsedModulesCfg() {
     use IO;
     var newCfgFile = try! open("UsedModules.cfg", ioMode.cw);
     var chnl = try! newCfgFile.writer();

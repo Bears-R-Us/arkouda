@@ -1,5 +1,5 @@
 module ArkoudaIOCompat {
-  use IO;
+  use IO, Set;
 
   proc formatString(input) throws {
     return input:string;
@@ -68,5 +68,15 @@ module ArkoudaIOCompat {
 
   proc binaryCheckCompat(reader) throws {
     return reader.binary();
+  }
+
+  proc writeUsedModulesJson(ref mods: set(string)) {
+    const cfgFile = try! open("UsedModules.json", ioMode.cw),
+          w = try! cfgFile.writer(locking=false);
+
+    try! w.writeln("{");
+    for mod in mods do
+      try! w.writeln("\t", mod, ",");
+    try! w.writeln("}");
   }
 }
