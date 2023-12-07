@@ -121,6 +121,24 @@ module Message {
         }
 
         /*
+         * Attempt to cast the value to the provided type
+         * Throw and error if the cast isn't possible
+        */
+        proc getScalarValue(type t): t throws {
+            try {
+                return this.val:t;
+            } catch {
+                throw new ErrorWithContext(
+                    "Parameter cannot be cast as %s. Attempting to cast %s as type %s failed".doFormat(t:string, this.val, t:string),
+                    getLineNumber(),
+                    getRoutineName(),
+                    getModuleName(),
+                    "TypeError"
+                );
+            }
+        }
+
+        /*
         * Return the value as int64
         * Returns int
         */

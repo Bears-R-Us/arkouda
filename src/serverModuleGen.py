@@ -64,7 +64,7 @@ def getSupportedTypes(config):
     supportedFlags = []
     for t in ["uint8", "uint16", "uint32", "uint64", \
               "int8", "int16", "int32", "int64", \
-              "real32", "real64", "complex64", "complex128", "bool"]:
+              "float32", "float64", "complex64", "complex128", "bool"]:
         if config["supported_scalar_types"][t]:
             supportedFlags.append(f"-sSupports{t.capitalize()}=true")
     return " ".join(supportedFlags)

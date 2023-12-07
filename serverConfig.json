@@ -41,8 +41,8 @@
         "int16": false,
         "int32": false,
         "int64": true,
-        "real32": false,
-        "real64": true,
+        "float32": false,
+        "float64": true,
         "complex64": false,
         "complex128": false,
         "bool": true

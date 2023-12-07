@@ -17,6 +17,8 @@ module ServerConfig
 
     use ArkoudaFileCompat;
     private use ArkoudaCTypesCompat;
+
+    import BigInteger.bigint;
     
     enum Deployment {STANDARD,KUBERNETES}
 
@@ -56,11 +58,31 @@ module ServerConfig
                   SupportsInt16 = false,
                   SupportsInt32 = false,
                   SupportsInt64 = true,
-                  SupportsReal32 = false,
-                  SupportsReal64 = true,
+                  SupportsFloat32 = false,
+                  SupportsFloat64 = true,
                   SupportsComplex64 = false,
                   SupportsComplex128 = false,
                   SupportsBool = true;
+
+    proc isSupportedType(type t) param: bool {
+      if t == uint(8) then return SupportsUint8;
+      if t == uint(16) then return SupportsUint16;
+      if t == uint(32) then return SupportsUint32;
+      if t == uint then return SupportsUint64;
+      if t == int(8) then return SupportsInt8;
+      if t == int(16) then return SupportsInt16;
+      if t == int(32) then return SupportsInt32;
+      if t == int(64) then return SupportsInt64;
+      if t == real(32) then return SupportsFloat32;
+      if t == real then return SupportsFloat64;
+      if t == complex(64) then return SupportsComplex64;
+      if t == complex(128) then return SupportsComplex128;
+      if t == bool then return SupportsBool;
+      if t == string then return true;
+      if t == bytes then return true;
+      if t == bigint then return true;
+      return false;
+    }
 
     /*
     Type of deployment, which currently is either STANDARD, meaning

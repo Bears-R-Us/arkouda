@@ -2,7 +2,7 @@ import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-from arkouda.dtypes import npstr
+from arkouda.dtypes import npstr, FloatDTypes
 
 """
 Encapsulates unit tests for the numeric module with the exception
@@ -76,7 +76,7 @@ class NumericTest(ArkoudaTest):
         for t1, orig in arrays.items():
             for t2 in ak.DTypes:
                 t2 = ak.dtype(t2)
-                if t1 == ak.float64 and t2 == ak.bigint:
+                if t1 in FloatDTypes and t2 == ak.bigint:
                     # we don't support casting a float to a bigint
                     continue
                 other = ak.cast(orig, t2)

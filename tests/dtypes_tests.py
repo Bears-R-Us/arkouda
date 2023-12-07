@@ -18,17 +18,23 @@ class DtypesTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if 1.. test cases fail
         """
+        dtypes.check_np_dtype(np.dtype(np.uint8))
+        dtypes.check_np_dtype(np.dtype(np.uint16))
+        dtypes.check_np_dtype(np.dtype(np.uint32))
+        dtypes.check_np_dtype(np.dtype(np.uint64))
+        dtypes.check_np_dtype(np.dtype(np.int8))
+        dtypes.check_np_dtype(np.dtype(np.int16))
+        dtypes.check_np_dtype(np.dtype(np.int32))
+        dtypes.check_np_dtype(np.dtype(np.int64))
+        dtypes.check_np_dtype(np.dtype(np.float32))
+        dtypes.check_np_dtype(np.dtype(np.float64))
+        dtypes.check_np_dtype(np.dtype(np.complex64))
+        dtypes.check_np_dtype(np.dtype(np.complex128))
         dtypes.check_np_dtype(np.dtype(np.bool_))
         dtypes.check_np_dtype(np.dtype(bool))
-        dtypes.check_np_dtype(np.dtype(np.int64))
-        dtypes.check_np_dtype(np.dtype(np.float64))
-        dtypes.check_np_dtype(np.dtype(np.uint8))
-        dtypes.check_np_dtype(np.dtype(np.uint64))
         dtypes.check_np_dtype(np.dtype(np.str_))
         dtypes.check_np_dtype(np.dtype(str))
 
-        with self.assertRaises(TypeError):
-            dtypes.check_np_dtype(np.dtype(np.int16))
         with self.assertRaises(TypeError):
             dtypes.check_np_dtype("np.str")
 
@@ -39,21 +45,52 @@ class DtypesTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if 1.. test cases fail
         """
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.uint8))
+        self.assertEqual(1, d_tuple[1])
+        self.assertEqual("uint", d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.uint16))
+        self.assertEqual(2, d_tuple[1])
+        self.assertEqual("uint", d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.uint32))
+        self.assertEqual(4, d_tuple[1])
+        self.assertEqual("uint", d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.uint64))
+        self.assertEqual(8, d_tuple[1])
+        self.assertEqual("uint", d_tuple[0])
+
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.int8))
+        self.assertEqual(1, d_tuple[1])
+        self.assertEqual("int", d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.int16))
+        self.assertEqual(2, d_tuple[1])
+        self.assertEqual("int", d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.int32))
+        self.assertEqual(4, d_tuple[1])
+        self.assertEqual("int", d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.int64))
+        self.assertEqual(8, d_tuple[1])
+        self.assertEqual("int", d_tuple[0])
+
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.float32))
+        self.assertEqual(4, d_tuple[1])
+        self.assertEqual("float", d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.float64))
+        self.assertEqual(8, d_tuple[1])
+        self.assertEqual("float", d_tuple[0])
+
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.complex64))
+        self.assertEqual(8, d_tuple[1])
+        self.assertEqual("complex", d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.complex128))
+        self.assertEqual(16, d_tuple[1])
+        self.assertEqual("complex", d_tuple[0])
+
         d_tuple = dtypes.translate_np_dtype(np.dtype(np.bool_))
         self.assertEqual(1, d_tuple[1])
         self.assertEqual("bool", d_tuple[0])
         d_tuple = dtypes.translate_np_dtype(np.dtype(bool))
         self.assertEqual(1, d_tuple[1])
         self.assertEqual("bool", d_tuple[0])
-        d_tuple = dtypes.translate_np_dtype(np.dtype(np.int64))
-        self.assertEqual(8, d_tuple[1])
-        self.assertEqual("int", d_tuple[0])
-        d_tuple = dtypes.translate_np_dtype(np.dtype(np.float64))
-        self.assertEqual(8, d_tuple[1])
-        self.assertEqual("float", d_tuple[0])
-        d_tuple = dtypes.translate_np_dtype(np.dtype(np.uint8))
-        self.assertEqual(1, d_tuple[1])
-        self.assertEqual("uint", d_tuple[0])
         d_tuple = dtypes.translate_np_dtype(np.dtype(np.str_))
         self.assertEqual(0, d_tuple[1])
         self.assertEqual("str", d_tuple[0])
@@ -61,8 +98,6 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual(0, d_tuple[1])
         self.assertEqual("str", d_tuple[0])
 
-        with self.assertRaises(TypeError):
-            dtypes.check_np_dtype(np.dtype(np.int16))
         with self.assertRaises(TypeError):
             dtypes.translate_np_dtype("np.str")
 
@@ -115,18 +150,32 @@ class DtypesTest(ArkoudaTest):
         Tests for DTypeEnum, ak.DTypes, and ak.ARKOUDA_SUPPORTED_DTYPES
         """
         self.assertEqual("bool", str(dtypes.DType.BOOL))
-        self.assertEqual("float", str(dtypes.DType.FLOAT))
+        self.assertEqual("float32", str(dtypes.DType.FLOAT32))
         self.assertEqual("float64", str(dtypes.DType.FLOAT64))
-        self.assertEqual("int", str(dtypes.DType.INT))
+        self.assertEqual("float", str(dtypes.DType.FLOAT))
+        self.assertEqual("complex64", str(dtypes.DType.COMPLEX64))
+        self.assertEqual("complex128", str(dtypes.DType.COMPLEX128))
+        self.assertEqual("int8", str(dtypes.DType.INT8))
+        self.assertEqual("int16", str(dtypes.DType.INT16))
+        self.assertEqual("int32", str(dtypes.DType.INT32))
         self.assertEqual("int64", str(dtypes.DType.INT64))
-        self.assertEqual("str", str(dtypes.DType.STR))
+        self.assertEqual("int", str(dtypes.DType.INT))
         self.assertEqual("uint8", str(dtypes.DType.UINT8))
+        self.assertEqual("uint16", str(dtypes.DType.UINT16))
+        self.assertEqual("uint32", str(dtypes.DType.UINT32))
+        self.assertEqual("uint64", str(dtypes.DType.UINT64))
+        self.assertEqual("uint", str(dtypes.DType.UINT))
+        self.assertEqual("str", str(dtypes.DType.STR))
         self.assertEqual("bigint", str(dtypes.DType.BIGINT))
         self.assertEqual(
-            frozenset({"float", "float64", "bool", "uint8", "int", "int64", "str", "uint64", "bigint"}), ak.DTypes
+            frozenset({"float32", "float64", "float", "complex64", "complex128", \
+                       "int8", "int16", "int32", "int64", "int", \
+                       "uint8", "uint16", "uint32", "uint64", "uint", \
+                        "bool", "str", "bigint"}),
+            ak.DTypes
         )
         self.assertEqual(
-            frozenset({"float", "float64", "bool", "uint8", "int", "int64", "str", "uint64", "bigint"}),
+            frozenset({"bool", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"}),
             ak.ARKOUDA_SUPPORTED_DTYPES,
         )
 
@@ -151,7 +200,7 @@ class DtypesTest(ArkoudaTest):
 
     def test_scalars(self):
         self.assertEqual("typing.Union[bool, numpy.bool_]", str(ak.bool_scalars))
-        self.assertEqual("typing.Union[float, numpy.float64]", str(ak.float_scalars))
+        self.assertEqual("typing.Union[float, numpy.float64, numpy.float32]", str(ak.float_scalars))
         self.assertEqual(
             (
                 "typing.Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, "
@@ -161,7 +210,7 @@ class DtypesTest(ArkoudaTest):
         )
         self.assertEqual(
             (
-                "typing.Union[float, numpy.float64, int, numpy.int8, numpy.int16, numpy.int32, "
+                "typing.Union[float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, "
                 + "numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]"
             ),
             str(ak.numeric_scalars),
@@ -169,7 +218,7 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual("typing.Union[str, numpy.str_]", str(ak.str_scalars))
         self.assertEqual(
             (
-                "typing.Union[numpy.float64, numpy.int8, numpy.int16, numpy.int32, "
+                "typing.Union[numpy.float64, numpy.float32, numpy.int8, numpy.int16, numpy.int32, "
                 + "numpy.int64, numpy.bool_, numpy.str_, numpy.uint8, numpy.uint16, numpy.uint32, "
                 + "numpy.uint64]"
             ),
@@ -177,7 +226,7 @@ class DtypesTest(ArkoudaTest):
         )
         self.assertEqual(
             (
-                "typing.Union[bool, numpy.bool_, float, numpy.float64, int, numpy.int8, "
+                "typing.Union[bool, numpy.bool_, float, numpy.float64, numpy.float32, int, numpy.int8, "
                 + "numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32,"
                 + " numpy.uint64, numpy.str_, str]"
             ),

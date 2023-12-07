@@ -7,33 +7,55 @@ module Cast {
   use Logging;
   use CommAggregation;
   use ServerConfig;
+  use ServerErrorStrings;
+  use Message;
 
   use ArkoudaBigIntCompat;
   use ArkoudaMathCompat;
-  
+
   private config const logLevel = ServerConfig.logLevel;
   const castLogger = new Logger(logLevel);
-  
-  proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType, 
-                                             type toType): string throws {
+
+  proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType,
+                                             type toType): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    if !isSupportedType(fromType) {
+      const errorMsg = unsupportedTypeError(fromType, pn);
+      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+
+    if !isSupportedType(toType) {
+      const errorMsg = unsupportedTypeError(toType, pn);
+      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+
     const before = toSymEntry(gse, fromType);
     const name = st.nextName();
     var after = st.addEntry(name, before.size, toType);
     try {
       after.a = before.a : toType;
     } catch e: IllegalArgumentError {
-      var errorMsg = "bad value in cast from %s to %s".doFormat(fromType:string, 
+      const errorMsg = "Error: bad value in cast from %s to %s".doFormat(fromType:string,
                                                        toType:string);
-      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
-      return "Error: %s".doFormat(errorMsg);
+      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
     }
 
-    var returnMsg = "created " + st.attrib(name);
+    const returnMsg = "created " + st.attrib(name);
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
-    return returnMsg;
+    return new MsgTuple(returnMsg, MsgType.NORMAL);
   }
 
-  proc castGenSymEntryToBigInt(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType): string throws {
+  proc castGenSymEntryToBigInt(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    if !isSupportedType(fromType) {
+      const errorMsg = unsupportedTypeError(fromType, pn);
+      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+
     const before = toSymEntry(gse, fromType);
     const name = st.nextName();
     var tmp = makeDistArray(before.size, bigint);
@@ -45,19 +67,26 @@ module Cast {
         tmp = before.a:bigint;
       }
     } catch e: IllegalArgumentError {
-      var errorMsg = "bad value in cast from %s to bigint".doFormat(fromType:string);
+      const errorMsg = "Error: bad value in cast from %s to bigint".doFormat(fromType:string);
       castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-      return "Error: %s".doFormat(errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
     }
-    var after = st.addEntry(name, createSymEntry(tmp));
+    st.addEntry(name, createSymEntry(tmp));
 
-    var returnMsg = "created " + st.attrib(name);
+    const returnMsg = "created " + st.attrib(name);
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
-    return returnMsg;
+    return new MsgTuple(returnMsg, MsgType.NORMAL);
   }
 
-  proc castGenSymEntryToString(gse: borrowed GenSymEntry, st: borrowed SymTab, 
-                                                       type fromType): string throws {
+  proc castGenSymEntryToString(gse: borrowed GenSymEntry, st: borrowed SymTab,
+                                                       type fromType): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    if !isSupportedType(fromType) {
+      const errorMsg = unsupportedTypeError(fromType, pn);
+      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+
     const before = toSymEntry(gse, fromType);
     const oname = st.nextName();
     var segments = st.addEntry(oname, before.size, int);
@@ -68,17 +97,17 @@ module Cast {
               s = "%.17r".doFormat(v);
           }
       } catch e {
-          var errorMsg = "could not convert float64 value to decimal representation";
+          const errorMsg = "Error: could not convert float64 value to decimal representation";
           castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
-          return "Error: %s".doFormat(errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
       }
     } else {
       try {
           strings = [s in before.a] s : string;
       } catch e: IllegalArgumentError {
-          var errorMsg = "bad value in cast from %s to string".doFormat(fromType:string);
+          const errorMsg = "Error: bad value in cast from %s to string".doFormat(fromType:string);
           castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
-          return "Error: %s".doFormat(errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
       }
     }
     const byteLengths = [s in strings] s.numBytes + 1;
@@ -97,7 +126,7 @@ module Cast {
 
     var returnMsg ="created " + st.attrib(oname) + "+created " + st.attrib(vname);
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
-    return returnMsg;
+    return new MsgTuple(returnMsg, MsgType.NORMAL);
   }
 
   enum ErrorMode {
@@ -148,8 +177,15 @@ module Cast {
     return (num, valid);
   }
 
-  
-  proc castStringToSymEntry(s: SegString, st: borrowed SymTab, type toType, errors: ErrorMode): string throws {
+
+  proc castStringToSymEntry(s: SegString, st: borrowed SymTab, type toType, errors: ErrorMode): MsgTuple throws {
+      param pn = Reflection.getRoutineName();
+      if !isSupportedType(toType) {
+        const errorMsg = unsupportedTypeError(toType, pn);
+        castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+
       use SegmentedComputation;
       ref oa = s.offsets.a;
       ref va = s.values.a;
@@ -174,10 +210,10 @@ module Cast {
         }
       }
       castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
-      return returnMsg;
+      return new MsgTuple(returnMsg, MsgType.NORMAL);
   }
 
-    proc castStringToBigInt(s: SegString, st: borrowed SymTab, errors: ErrorMode): string throws {
+    proc castStringToBigInt(s: SegString, st: borrowed SymTab, errors: ErrorMode): MsgTuple throws {
       use SegmentedComputation;
       ref oa = s.offsets.a;
       ref va = s.values.a;
@@ -207,6 +243,6 @@ module Cast {
         }
       }
       castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
-      return returnMsg;
+      return new MsgTuple(returnMsg, MsgType.NORMAL);
   }
 }

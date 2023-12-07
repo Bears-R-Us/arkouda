@@ -84,7 +84,7 @@ ifndef ARKOUDA_CONFIG_FILE
 ARKOUDA_CONFIG_FILE := $(ARKOUDA_PROJECT_DIR)/serverConfig.json
 endif
 
-CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -liconv -lidn2 -lparquet -larrow
+CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -liconv -lidn2 -lparquet -larrow -lgmp
 
 ARROW_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/ArrowFunctions
 ARROW_CPP += $(ARROW_FILE_NAME).cpp
