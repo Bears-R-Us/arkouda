@@ -13,6 +13,7 @@ module AryUtil
     use ArkoudaPOSIXCompat;
     use ArkoudaCTypesCompat;
     use ArkoudaBlockCompat;
+    use ArkoudaRandomCompat;
 
     param bitsPerDigit = RSLSD_bitsPerDigit;
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
@@ -159,7 +160,7 @@ module AryUtil
 
     proc fillUniform(A:[?D] int, a_min:int ,a_max:int, seed:int=241) {
         // random numer generator
-        var R = new owned RandomStream(real, seed); R.getNext();
+        var R = new randomStream(real, seed); R.getNext();
         [a in A] a = (R.getNext() * (a_max - a_min) + a_min):int;
     }
 
