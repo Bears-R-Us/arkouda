@@ -46,6 +46,7 @@ Functions
    arkouda.numeric.where
    arkouda.numeric.histogram
    arkouda.numeric.histogram2d
+   arkouda.numeric.histogramdd
    arkouda.numeric.value_counts
    arkouda.numeric.isnan
 
@@ -646,7 +647,7 @@ Functions
    .. rubric:: Examples
 
    >>> x = ak.arange(0, 10, 1)
-   >>> y = ak.arange(9, 0, -1)
+   >>> y = ak.arange(9, -1, -1)
    >>> nbins = 3
    >>> h, x_edges, y_edges = ak.histogram2d(x, y, bins=nbins)
    >>> h
@@ -657,6 +658,50 @@ Functions
    array([0.0 3.0 6.0 9.0])
    >>> x_edges
    array([0.0 3.0 6.0 9.0])
+
+
+.. py:function:: histogramdd(sample: Sequence[arkouda.pdarrayclass.pdarray], bins: Union[arkouda.dtypes.int_scalars, Sequence[arkouda.dtypes.int_scalars]] = 10) -> Tuple[arkouda.pdarrayclass.pdarray, Sequence[arkouda.pdarrayclass.pdarray]]
+
+   Compute the multidimensional histogram of data in sample with evenly spaced bins.
+
+   :param sample: A sequence of pdarrays containing the coordinates of the points to be histogrammed.
+   :type sample: Sequence[pdarray]
+   :param bins: The number of equal-size bins to use.
+                If int, the number of bins for all dimensions (nx=ny=...=bins).
+                If [int, int, ...], the number of bins in each dimension (nx, ny, ... = bins).
+                Defaults to 10
+   :type bins: int_scalars or Sequence[int_scalars] = 10
+
+   :returns: * **hist** (*ArrayView, shape(nx, ny, ..., nd)*) -- The multidimensional histogram of pdarrays in sample.
+               Values in first pdarray are histogrammed along the first dimension.
+               Values in second pdarray are histogrammed along the second dimension and so on.
+             * **edges** (*List[pdarray]*) -- A list of pdarrays containing the bin edges for each dimension.
+
+   :raises ValueError: Raised if bins < 1
+   :raises NotImplementedError: Raised if pdarray dtype is bool or uint8
+
+   .. seealso:: :obj:`histogram`
+
+   .. rubric:: Notes
+
+   The bins for each dimension, m, are evenly spaced in the interval [m.min(), m.max()]
+
+   .. rubric:: Examples
+
+   >>> x = ak.arange(0, 10, 1)
+   >>> y = ak.arange(9, -1, -1)
+   >>> z = ak.where(x % 2 == 0, x, y)
+   >>> h, edges = ak.histogramdd((x, y,z), bins=(2,2,5))
+   >>> h
+   array([[[0, 0, 0, 0, 0],
+           [1, 1, 1, 1, 1]],
+
+          [[1, 1, 1, 1, 1],
+           [0, 0, 0, 0, 0]]])
+   >>> edges
+   [array([0.0 4.5 9.0]),
+    array([0.0 4.5 9.0]),
+    array([0.0 1.6 3.2 4.8 6.4 8.0])]
 
 
 .. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[Categorical, Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Optional[arkouda.pdarrayclass.pdarray]]]
