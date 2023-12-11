@@ -67,7 +67,7 @@ module SymArrayDmapCompat
       return dom.tryCreateArray(etype);
     }
 
-    proc makeDistArray(shape: int ...?) throws
+    proc makeDistArray(shape: int ...?N, type etype) throws
       where N > 1
     {
       var a: [makeDistDom((...shape))] etype;
@@ -118,7 +118,7 @@ module SymArrayDmapCompat
     proc makeDistArray(D: domain(?), initExpr: ?t) throws
       where D.rank > 1
     {
-      var res = [D] t = initExpr;
+      var res: [D] t = initExpr;
       return res;
     }
 
