@@ -32,19 +32,21 @@ module NumPyDType
     :returns: DType
     */
     proc whichDtype(type etype) param : DType {
-      if etype == uint(8)   then return DType.UInt8;
-      if etype == uint(16)  then return DType.UInt16;
-      if etype == uint(32)  then return DType.UInt32;
-      if etype == uint      then return DType.UInt64;
-      if etype == int(8)    then return DType.Int8;
-      if etype == int(16)   then return DType.Int16;
-      if etype == int(32)   then return DType.Int32;
-      if etype == int       then return DType.Int64;
-      if etype == real(32)  then return DType.Float32;
-      if etype == real      then return DType.Float64;
-      if etype == bool      then return DType.Bool;
-      if etype == bigint    then return DType.BigInt;
-      if etype == string    then return DType.Strings;
+      if etype == uint(8)       then return DType.UInt8;
+      if etype == uint(16)      then return DType.UInt16;
+      if etype == uint(32)      then return DType.UInt32;
+      if etype == uint          then return DType.UInt64;
+      if etype == int(8)        then return DType.Int8;
+      if etype == int(16)       then return DType.Int16;
+      if etype == int(32)       then return DType.Int32;
+      if etype == int           then return DType.Int64;
+      if etype == real(32)      then return DType.Float32;
+      if etype == real          then return DType.Float64;
+      if etype == complex(64)   then return DType.Complex64;
+      if etype == complex(128)  then return DType.Complex128;
+      if etype == bool          then return DType.Bool;
+      if etype == bigint        then return DType.BigInt;
+      if etype == string        then return DType.Strings;
       return DType.UNDEF; // undefined type
     }
 
