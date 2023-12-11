@@ -436,9 +436,9 @@ class DataFrameTest(ArkoudaTest):
         gb = df.GroupBy(["userName", "userID"])
         keys, count = gb.count()
         self.assertEqual(len(keys), 2)
-        self.assertListEqual(keys[0].to_list(), ["Carol", "Bob", "Alice"])
-        self.assertListEqual(keys[1].to_list(), [333, 222, 111])
-        self.assertListEqual(count.to_list(), [1, 2, 3])
+        self.assertListEqual(keys[0].to_list(), ["Bob", "Alice", "Carol"])
+        self.assertListEqual(keys[1].to_list(), [222, 111, 333])
+        self.assertListEqual(count.to_list(), [2, 3, 1])
 
         # testing counts with IPv4 column
         s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count()

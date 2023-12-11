@@ -48,7 +48,6 @@ module SegmentedComputation {
     StringIsLower,
     StringIsUpper,
     StringIsTitle,
-    StringBytesToUintArr,
   }
   
   proc computeOnSegments(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
@@ -108,9 +107,6 @@ module SegmentedComputation {
                 }
                 when SegFunction.StringIsTitle {
                   agg.copy(res[i], stringIsTitle(values, start..#len));
-                }
-                when SegFunction.StringBytesToUintArr {
-                  agg.copy(res[i], stringBytesToUintArr(values, start..#len));
                 }
                 otherwise {
                   compilerError("Unrecognized segmented function");
