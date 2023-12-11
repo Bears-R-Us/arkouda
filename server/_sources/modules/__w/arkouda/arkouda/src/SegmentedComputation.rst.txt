@@ -19,7 +19,7 @@ or
 
 .. function:: proc computeSegmentOwnership(segments: [?D] int, vD) throws
 
-.. enum:: enum SegFunction { SipHash128, StringToNumericStrict, StringToNumericIgnore, StringToNumericReturnValidity, StringCompareLiteralEq, StringCompareLiteralNeq, StringSearch, StringIsLower, StringIsUpper, StringIsTitle, StringBytesToUintArr }
+.. enum:: enum SegFunction { SipHash128, StringToNumericStrict, StringToNumericIgnore, StringToNumericReturnValidity, StringCompareLiteralEq, StringCompareLiteralNeq, StringSearch, StringIsLower, StringIsUpper, StringIsTitle }
 
 .. function:: proc computeOnSegments(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws
 

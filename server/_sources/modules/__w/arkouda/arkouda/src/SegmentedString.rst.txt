@@ -172,7 +172,7 @@ or
       :returns: [domain] bool where index i indicates whether the string i of the SegString is titlecase
       
 
-   .. method:: proc bytesToUintArr(const max_bytes: int, st) throws
+   .. method:: proc bytesToUintArr(const max_bytes: int, lens: [?D] ?t, st) throws
 
    .. method:: proc findSubstringInBytes(const substr: string) throws
 
@@ -358,10 +358,6 @@ or
    
 
 .. function:: proc stringBytesToUintArr(ref values, rng) throws
-
-   
-   The SegFunction called by computeOnSegments for bytesToUintArr
-   
 
 .. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false) throws
 
