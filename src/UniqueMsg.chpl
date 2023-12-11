@@ -219,7 +219,9 @@ module UniqueMsg
       }
 
       var (perm, segments) = if replaceStrings then digitHelper(newNames, newTypes) else digitHelper();
-      cleanup(strNames, st);
+      if replaceStrings {
+        cleanup(strNames, st);
+      }
       return (perm, segments);
     }
 
