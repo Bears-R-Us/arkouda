@@ -606,7 +606,7 @@ def arctan2(
         )
         return create_pdarray(repMsg)
     elif where is False:
-        return num / denom
+        return num / denom  # type: ignore
     else:
         if where.dtype != bool:
             raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
@@ -636,7 +636,7 @@ def arctan2(
             )
         new_pda = num / denom
         ret = create_pdarray(repMsg)
-        # new_pda = cast(new_pda, ret.dtype)
+        new_pda = cast(new_pda, ret.dtype)
         new_pda[where] = ret
         return new_pda
 
