@@ -409,7 +409,7 @@ def sin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "sin", where)
+    return _trig_helper(pda, "sin", where)
 
 
 @typechecked
@@ -436,7 +436,7 @@ def cos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "cos", where)
+    return _trig_helper(pda, "cos", where)
 
 
 @typechecked
@@ -463,7 +463,7 @@ def tan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "tan", where)
+    return _trig_helper(pda, "tan", where)
 
 
 @typechecked
@@ -490,7 +490,7 @@ def arcsin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "arcsin", where)
+    return _trig_helper(pda, "arcsin", where)
 
 
 @typechecked
@@ -517,7 +517,7 @@ def arccos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "arccos", where)
+    return _trig_helper(pda, "arccos", where)
 
 
 @typechecked
@@ -544,7 +544,7 @@ def arctan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "arctan", where)
+    return _trig_helper(pda, "arctan", where)
 
 
 @typechecked
@@ -606,13 +606,7 @@ def arctan2(
         )
         return create_pdarray(repMsg)
     elif where is False:
-        if isinstance(num, pdarray) and isinstance(denom, pdarray):
-            ret = num / denom
-        if isinstance(num, pdarray) and not isinstance(denom, pdarray):
-            ret = num / denom
-        if isinstance(denom, pdarray) and not isinstance(num, pdarray):
-            ret = num / denom
-        return ret
+        return num / denom
     else:
         if where.dtype != bool:
             raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
@@ -628,33 +622,21 @@ def arctan2(
                     },
                 ),
             )
-        elif isinstance(num, pdarray) and isSupportedNumber(denom):
+        if not isinstance(num, pdarray) or not isinstance(denom, pdarray):
             repMsg = type_cast(
                 str,
                 generic_msg(
                     cmd="efunc2",
                     args={
                         "func": "arctan2",
-                        "A": num[where],
-                        "B": denom,
-                    },
-                ),
-            )
-        elif isinstance(denom, pdarray) and isSupportedNumber(num):
-            repMsg = type_cast(
-                str,
-                generic_msg(
-                    cmd="efunc2",
-                    args={
-                        "func": "arctan2",
-                        "A": num,
-                        "B": denom[where],
+                        "A": num if not isinstance(num, pdarray) else num[where],
+                        "B": denom if not isinstance(denom, pdarray) else denom[where],
                     },
                 ),
             )
         new_pda = num / denom
         ret = create_pdarray(repMsg)
-        new_pda = cast(new_pda, ret.dtype)
+        # new_pda = cast(new_pda, ret.dtype)
         new_pda[where] = ret
         return new_pda
 
@@ -683,7 +665,7 @@ def sinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "sinh", where)
+    return _trig_helper(pda, "sinh", where)
 
 
 @typechecked
@@ -710,7 +692,7 @@ def cosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "cosh", where)
+    return _trig_helper(pda, "cosh", where)
 
 
 @typechecked
@@ -737,7 +719,7 @@ def tanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "tanh", where)
+    return _trig_helper(pda, "tanh", where)
 
 
 @typechecked
@@ -764,7 +746,7 @@ def arcsinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "arcsinh", where)
+    return _trig_helper(pda, "arcsinh", where)
 
 
 @typechecked
@@ -777,8 +759,8 @@ def arccosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     pda : pdarray
     where : Boolean or pdarray
         This condition is broadcast over the input. At locations where the condition is True,
-        the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        the inverse hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will
+        retain its original value. Default set to True.
 
     Returns
     -------
@@ -791,7 +773,7 @@ def arccosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    return trig_helper(pda, "arccosh", where)
+    return _trig_helper(pda, "arccosh", where)
 
 
 @typechecked
@@ -818,10 +800,10 @@ def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     TypeError
         Raised if the parameters are not a pdarray or numeric scalar.
     """
-    return trig_helper(pda, "arctanh", where)
+    return _trig_helper(pda, "arctanh", where)
 
 
-def trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
+def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Returns the result of the input trig function acting element-wise on the array.
 
@@ -838,8 +820,7 @@ def trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> 
     Returns
     -------
     pdarray
-        A pdarray containing sin for each element
-        of the original pdarray
+        A pdarray with the trig function applied at each element of pda
 
     Raises
     ------
