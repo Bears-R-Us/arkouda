@@ -479,7 +479,7 @@ module ParquetMsg {
               var pqErr = new parquetErrorMsg();
               if c_writeColumnToParquet(parFilename.localize().c_str(), c_ptrTo(coreArr), 0,
                                         dsetname.localize().c_str(), coreArr.size, rowGroupSize,
-                                        dtypeRep, compressed, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+                                        dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
                 pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
               }
             }
