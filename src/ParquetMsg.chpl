@@ -457,16 +457,10 @@ module ParquetMsg {
           valPtr = c_ptrTo(locArr);
         }
         if mode == TRUNCATE || !filesExist {
-<<<<<<< HEAD
-          if c_writeColumnToParquet(myFilename.localize().c_str(), valPtr, 0,
-                                    dsetname.localize().c_str(), locDom.size, rowGroupSize,
-                                    dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-            pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-=======
           if !doParallel {
-            if c_writeColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locArr), 0,
+            if c_writeColumnToParquet(myFilename.localize().c_str(), valPtr, 0,
                                       dsetname.localize().c_str(), locDom.size, rowGroupSize,
-                                      dtypeRep, compressed, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+                                      dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
           } else {
@@ -489,7 +483,6 @@ module ParquetMsg {
                 pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
               }
             }
->>>>>>> 6e08f5bf5 (Add parallel writing for truncate Parquet)
           }
         } else {
           if c_appendColumnToParquet(myFilename.localize().c_str(), valPtr,
