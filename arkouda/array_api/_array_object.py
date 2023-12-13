@@ -470,7 +470,7 @@ class Array:
 
     @property
     def ndim(self) -> int:
-        return int(self._array.ndim)
+        return len(self._array.shape)
 
     @property
     def shape(self) -> Tuple[int, ...]:

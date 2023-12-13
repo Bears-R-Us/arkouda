@@ -73,9 +73,10 @@ module MsgProcessing
         // on the client side, scalar (0D) arrays have a shape of "()" and a size of 1
         // here, we represent that using a 1D array with a shape of (1,) and a size of 1
         var e = toGenSymEntry(st.addEntry(rname, 1, dtype));
-        e.ndim = 1;
         e.size = 1;
         e.shape = "[]";
+        e.ndim = 1; // this is 1 rather than 0 s.t. calls to other message handlers treat it as a 1D
+                    // array (e.g., we should call 'set1D', not 'set0D' on this array)
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "created the pdarray %s".doFormat(st.attrib(rname)));

@@ -350,7 +350,6 @@ module ServerDaemon {
          * 3. "Optional" modules which are included at compilation time via ServerModules.cfg
          */
         proc registerServerCommands() {
-            registerBinaryFunction("tondarray", tondarrayMsg);
             registerFunction("create0D", createMsg0D);
             registerFunction("delete", deleteMsg);
             registerFunction("info", infoMsg);

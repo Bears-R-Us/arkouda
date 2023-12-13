@@ -33,15 +33,24 @@ def ndMultiStamp(msg_proc_name, base_proc_name, command_name, d1, d2):
     registerFunction("{command_name}{d1}Dx{d2}D", {msg_proc_name}{d1}Dx{d2}D);
     """
 
+def ndStampBinary(msg_proc_name, base_proc_name, command_name, d):
+    return f"""
+    proc {msg_proc_name}{d}D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws
+        do return {base_proc_name}(cmd, msgArgs, st, {d});
+
+    registerBinaryFunction("{command_name}{d}D", {msg_proc_name}{d}D);
+    """
+
 # TODO: use Chapel's compiler bindings to do this more robustly
 def stampOutNDArrayHandlers(mod, src_dir, stamp_file, max_dims):
     with open(f"{src_dir}/{mod}.chpl", 'r') as src_file:
         found_annotation = False
+        text = src_file.read()
 
         # find each procedure annotated with '@arkouda.registerND'
         #  (with an optional 'cmd_prefix' argument)
         #            group 0  \/                  1 \/            2 \/                          3 \/
-        for m in re.finditer(r'\@arkouda\.registerND(\(cmd_prefix=\"([a-zA-Z0-9]*)\"\))?\s*proc\s*([a-zA-Z0-9]*)\(', src_file.read()):
+        for m in re.finditer(r'\@arkouda\.registerND(\(cmd_prefix=\"([a-zA-Z0-9]*)\"\))?\s*proc\s*([a-zA-Z0-9]*)\(', text):
             found_annotation = True
             g = m.groups()
 
@@ -59,6 +68,26 @@ def stampOutNDArrayHandlers(mod, src_dir, stamp_file, max_dims):
             # and register the instantiated proc with a unique command name
             for d in range(1, max_dims+1):
                 stamp_file.write(ndStamp(msg_proc_name, base_proc_name, command_name, d))
+
+        # find each procedure annotated with '@arkouda.registerNDBinary'
+        for m in re.finditer(r'\@arkouda\.registerNDBinary(\(cmd_prefix=\"([a-zA-Z0-9]*)\"\))?\s*proc\s*([a-zA-Z0-9]*)\(', text):
+            found_annotation = True
+            g = m.groups()
+
+            base_proc_name = g[2]
+            msg_proc_name = "_nd_gen_" + base_proc_name
+
+            if g[0] == None:
+                # no 'cmd_prefix' argument
+                command_name = base_proc_name.replace('Msg', '')
+            else:
+                # group 2 contains the 'cmd_prefix' argument
+                command_name = g[1]
+
+            # instantiate the message handler for each rank from 1..max_dims
+            # and register the instantiated proc with a unique command name
+            for d in range(1, max_dims+1):
+                stamp_file.write(ndStampBinary(msg_proc_name, base_proc_name, command_name, d))
 
         # include the source module in the stamp file if any procs were stamped out
         if found_annotation:
@@ -91,6 +120,7 @@ def generateServerIncludes(config_filename, src_dir):
 
         # explicitly stamp out basic message handlers
         stampOutNDArrayHandlers("MsgProcessing", src_dir, stamp_file, max_dims)
+        stampOutNDArrayHandlers("GenSymIO", src_dir, stamp_file, max_dims)
 
         # handle broadcast specially
         specialBroadcastStamp(src_dir, stamp_file, max_dims)
