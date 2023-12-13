@@ -83,6 +83,17 @@ class Array:
             Use an array creation function, such as asarray(), instead."
         )
 
+    def tolist(self):
+        """
+        Convert the array to a Python list or nested lists
+        """
+        x = self._array.to_list()
+        if self.shape == ():
+            # to match numpy, return a scalar for a 0-dimensional array
+            return x[0]
+        else:
+            return x
+
     # These functions are not required by the spec, but are implemented for
     # the sake of usability.
 
@@ -209,6 +220,7 @@ class Array:
         # Outside of those bounds we use the default NumPy behavior (either
         # cast or raise OverflowError).
         return Array._new(np.array(scalar, self.dtype))
+
 
     @staticmethod
     def _normalize_two_args(x1, x2) -> Tuple[Array, Array]:
