@@ -7,6 +7,7 @@ module IndexingMsg
     use ServerErrors;
     use Logging;
     use Message;
+    use AryUtil;
 
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
@@ -142,7 +143,7 @@ module IndexingMsg
                 idxParam.setVal(idx:string);
                 idxParam.setDType("int");
                 var subArgs = new MessageArgs(new list([arrParam, idxParam]));
-                return intIndexMsg(cmd, subArgs, st);
+                return intIndexMsg(cmd, subArgs, st, 1);
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
@@ -150,7 +151,7 @@ module IndexingMsg
                 idxParam.setVal(idx:string);
                 idxParam.setDType("uint");
                 var subArgs = new MessageArgs(new list([arrParam, idxParam]));
-                return intIndexMsg(cmd, subArgs, st);
+                return intIndexMsg(cmd, subArgs, st, 1);
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
@@ -275,7 +276,7 @@ module IndexingMsg
 
     /* sliceIndex "a[slice]" response to __getitem__(slice) */
     @akrouda.registerND
-    proc sliceIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd:): MsgTuple throws {
+    proc sliceIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         if nd == 1 then return sliceIndexMsg1DFast(cmd, msgArgs, st);
 
         const starts = msgArgs.get("starts").getTuple(nd),
@@ -292,9 +293,9 @@ module IndexingMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(array, st);
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s pdarray to slice: %s starts: %? stops: %? strides: %? new name: %s".doFormat(
-                       cmd, st.attrib(name), start, stop, stride, rname));
+                       cmd, st.attrib(array), starts, stops, strides, rname));
 
-        proc sliceHelper(type t): msgTuple throws {
+        proc sliceHelper(type t): MsgTuple throws {
             var e = toSymEntry(gEnt,t, nd);
             var a = st.addEntry(rname, (...sliceDom.shape), t);
             ref ea = e.a;
@@ -315,7 +316,7 @@ module IndexingMsg
             when DType.Bool do return sliceHelper(bool);
             when DType.BigInt do return sliceHelper(bigint);
             otherwise {
-                var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+                var errorMsg = notImplementedError(getRoutineName(),dtype2str(gEnt.dtype));
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -323,7 +324,7 @@ module IndexingMsg
     }
 
     // this is likely faster than the more general ND implementation
-    // because of the iteration over a range instead of a domain
+    // because of the iteration over a range instead of a domain when gathering into the new array
     proc sliceIndexMsg1DFast(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
@@ -1451,6 +1452,7 @@ module IndexingMsg
 
     @arkouda.registerND
     proc takeAlongAxisMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
         const name = msgArgs.getValueOf("x"),
               idxName = msgArgs.getValueOf("indices"),
               axis = msgArgs.get("axis").getIntValue();
@@ -1466,8 +1468,18 @@ module IndexingMsg
                 y = st.addEntry(rname, (...x.tupShape), eltType);
 
             if x.tupShape[axis] != idx.size {
-                const errMsg = "Error: %s: index array length (%i) does not match x's length (%i) along the provided axis (%i)".doFormat(
-                    Reflection.getRoutineName(), idx.size, x.tupShape[axis], axis);
+                const errMsg = "Error: %s: index array length (%i) does not match x's length (%i) along the provided axis (%i)"
+                    .doFormat(pn, idx.size, x.tupShape[axis], axis);
+                imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+                return new MsgTuple(errMsg, MsgType.ERROR);
+            }
+
+            const minIdx = min reduce idx.a,
+                  maxIdx = max reduce idx.a;
+
+            if minIdx < 0 || maxIdx >= x.a.shape(axis) {
+                const errMsg = "Error: %s: index array contains out-of-bounds indices (%i, %i) along the provided axis (%i)"
+                    .doFormat(pn, minIdx, maxIdx, axis);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
                 return new MsgTuple(errMsg, MsgType.ERROR);
             }
@@ -1476,12 +1488,20 @@ module IndexingMsg
             ref ya = y.a;
             ref idxa = idx.a;
 
-            for sliceIdx in domOffAxis(x.a.domain, axis) {;
-                forall i in domOnAxis(x.a.domain, sliceIdx, axis) with (var agg = newSrcAggregator(XType)) {
-                    if doCast {
-                        agg.copy(ya[i], xa[idxa[i[axis]]:int]);
-                    } else {
-                        agg.copy(ya[i], xa[idxa[i[axis]]]);
+            if nd == 1 {
+                forall i in idx.a.domain with (var agg = newSrcAggregator(eltType)) {
+                    if doCast
+                        then agg.copy(ya[i], xa[idxa[i]:int]);
+                        else agg.copy(ya[i], xa[idxa[i]]);
+                }
+            } else {
+                for sliceIdx in domOffAxis(x.a.domain, axis) {
+                    forall i in idx.a.domain with (var agg = newSrcAggregator(eltType)) {
+                        var yIdx = sliceIdx,
+                            xIdx = sliceIdx;
+                        yIdx[axis] = i;
+                        xIdx[axis] = if doCast then idxa[i]:int else idxa[i];
+                        agg.copy(ya[yIdx], xa[xIdx]);
                     }
                 }
             }
@@ -1501,8 +1521,8 @@ module IndexingMsg
             when (DType.Float64, DType.UInt64) do return doIndex(real, uint, true);
             when (DType.Bool, DType.Int64) do return doIndex(bool, int, false);
             when (DType.Bool, DType.UInt64) do return doIndex(bool, uint, true);
-            when (DType.Bigint, DType.Int64) do return doIndex(bigint, int, false);
-            when (DType.Bigint, DType.UInt64) do return doIndex(bigint, uint, true);
+            when (DType.BigInt, DType.Int64) do return doIndex(bigint, int, false);
+            when (DType.BigInt, DType.UInt64) do return doIndex(bigint, uint, true);
             otherwise {
                 const errMsg = notImplementedError(Reflection.getRoutineName(),
                     "("+dtype2str(gEnt.dtype)+","+dtype2str(gIEnt.dtype)+")");

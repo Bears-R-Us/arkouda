@@ -94,6 +94,12 @@ class Array:
         else:
             return x
 
+    def to_ndarray(self):
+        """
+        Convert the array to a numpy ndarray
+        """
+        return self._array.to_ndarray()
+
     # These functions are not required by the spec, but are implemented for
     # the sake of usability.
 

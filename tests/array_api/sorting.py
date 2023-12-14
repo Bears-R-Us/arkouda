@@ -23,9 +23,23 @@ class ArrayCreationTests(ArkoudaTest):
 
                     if len(shape) == 1:
                         aSorted = Array.take(a, b, axis=axis).tolist()
+
+                        for i in range(1, len(aSorted)):
+                            self.assertLessEqual(aSorted[i - 1], aSorted[i])
                     else:
                         aSorted = []
-                        for i in range(shape[0 if axis == 1 else 1]):
+                        for i in range(shape[0]):
+                            # TODO: use this once 'squeeze' is implemented
+                            # aSorted.append(Array.take(a, Array.squeeze(b[i, :]), axis=axis).tolist())
                             aSorted.append([])
-                            for j in range(shape[1 if axis == 1 else 0]):
-                                aSorted[i].append(a[i][b[i, j]])
+                            for j in range(shape[1]):
+                                aSorted[i].append(a[b[i, j]])
+
+                        if axis == 0:
+                            for j in range(shape[1]):
+                                for i in range(1, shape[0]):
+                                    self.assertLessEqual(aSorted[i - 1][j], aSorted[i][j])
+                        else:
+                            for i in range(shape[0]):
+                                for j in range(1, shape[1]):
+                                    self.assertLessEqual(aSorted[i][j - 1], aSorted[i][j])
