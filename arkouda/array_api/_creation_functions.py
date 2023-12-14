@@ -63,6 +63,8 @@ def asarray(
         return Array._new(res)
     elif isinstance(obj, Array):
         return Array._new(ak.array(obj._array))
+    elif isinstance(obj, ak.pdarray):
+        return Array._new(obj)
     else:
         raise ValueError("asarray not implemented for 'NestedSequence'")
 

@@ -221,7 +221,6 @@ class Array:
         # cast or raise OverflowError).
         return Array._new(np.array(scalar, self.dtype))
 
-
     @staticmethod
     def _normalize_two_args(x1, x2) -> Tuple[Array, Array]:
         """

@@ -192,8 +192,8 @@ SeriesDTypes = {
     "datetime64[ns]": np.int64,
     "timedelta64[ns]": np.int64,
 }
-
 ScalarDTypes = frozenset(["bool", "float64", "int64"])
+
 
 def isSupportedInt(num):
     return isinstance(num, ARKOUDA_SUPPORTED_INTS)

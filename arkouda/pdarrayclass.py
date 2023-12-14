@@ -617,14 +617,15 @@ class pdarray:
 
     # overload a[] to treat like list
     def __getitem__(self, key):
-        if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
+        if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]) \
+           and self.ndim == 1:
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if key >= 0 and key < self.size:
                 repMsg = generic_msg(
-                    cmd="[int]",
+                    cmd=f"[int]1D",
                     args={
                         "array": self,
                         "idx": key,
@@ -635,20 +636,56 @@ class pdarray:
                 return parse_single_value(" ".join(fields[1:]))
             else:
                 raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
-        if isinstance(key, slice):
-            (start, stop, stride) = key.indices(self.size)
-            logger.debug("start: {} stop: {} stride: {}".format(start, stop, stride))
-            repMsg = generic_msg(
-                cmd="[slice]",
-                args={
-                    "array": self,
-                    "start": start,
-                    "stop": stop,
-                    "stride": stride,
-                },
-            )
-            return create_pdarray(repMsg)
-        if isinstance(key, pdarray):
+        if isinstance(key, tuple):
+            allScalar = True
+            starts = []
+            stops = []
+            strides = []
+            for k, dim in enumerate(key):
+                if isinstance(k, slice):
+                    allScalar = False
+                    (start, stop, stride) = key.indices(self.shape[dim])
+                    starts.append(start)
+                    stops.append(stop)
+                    strides.append(stride)
+                elif np.isscalar(k) and (resolve_scalar_dtype(k) in ["int64", "uint64"]):
+                    if k < 0:
+                        # Interpret negative key as offset from end of array
+                        k += self.size
+                    if k < 0 or k >= self.shape[dim]:
+                        raise IndexError(f"index {k} is out of bounds in dimension {dim} with size {self.shape[dim]}")
+                    else:
+                        # treat this as a single element slice
+                        starts.append(k)
+                        stops.append(k + 1)
+                        strides.append(1)
+                else:
+                    raise IndexError(f"Unhandled key type: {k} ({type(k)})")
+
+            if allScalar:
+                # use simpler indexing (and return a scalar) if we got a tuple of only scalars
+                repMsg = generic_msg(
+                    cmd=f"[int]{self.ndim}D",
+                    args={
+                        "array": self,
+                        "idx": key,
+                    },
+                )
+                fields = repMsg.split()
+                return parse_single_value(" ".join(fields[1:]))
+            else:
+                repMsg = generic_msg(
+                    cmd=f"[slice]{self.ndim}D",
+                    args={
+                        "array": self,
+                        "start": starts,
+                        "stop": stops,
+                        "stride": strides,
+                    },
+                )
+                return create_pdarray(repMsg)
+
+        if isinstance(key, pdarray) and self.ndim == 1:
             kind, _ = translate_np_dtype(key.dtype)
             if kind not in ("bool", "int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
