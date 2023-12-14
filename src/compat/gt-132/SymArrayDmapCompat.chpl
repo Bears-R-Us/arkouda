@@ -82,7 +82,7 @@ module SymArrayDmapCompat
     }
 
     proc makeDistArray(in a: [?D] ?etype) throws
-      where D.rank == 1
+      where D.rank == 1 && (MyDmap == Dmap.defaultRectangular || !a.isDefaultRectangular())
     {
       var res = D.tryCreateArray(etype);
       res = a;
@@ -90,7 +90,7 @@ module SymArrayDmapCompat
     }
 
     proc makeDistArray(in a: [?D] ?etype) throws
-      where D.rank > 1
+      where D.rank > 1 && (MyDmap == Dmap.defaultRectangular || !a.isDefaultRectangular())
     {
       return a;
     }
