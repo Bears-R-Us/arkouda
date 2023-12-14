@@ -403,9 +403,6 @@ class GroupByTest(ArkoudaTest):
             ak.GroupBy(ak.arange(4), ak.arange(4))
 
         with self.assertRaises(TypeError):
-            ak.GroupBy(self.fvalues)
-
-        with self.assertRaises(TypeError):
             gb.broadcast([])
 
         with self.assertRaises(TypeError):

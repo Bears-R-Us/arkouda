@@ -736,10 +736,6 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(ak.array([1]), result[0])
         self.assertEqual(ak.array([100]), result[1])
 
-        pda = ak.linspace(1, 10, 10)
-        with self.assertRaises(TypeError):
-            ak.value_counts(pda)
-
         with self.assertRaises(TypeError):
             ak.value_counts([0])
 

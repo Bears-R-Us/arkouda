@@ -190,6 +190,21 @@ module CastMsg {
     }
   }
 
+  proc transmuteFloatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    var name = msgArgs.getValueOf("name");
+    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"name: %s".doFormat(name));
+    var e = toSymEntry(getGenericTypedArrayEntry(name, st), real);
+    var transmuted = makeDistArray(e.a.domain, uint);
+    transmuted = [ei in e.a] ei.transmute(uint(64));
+    var transmuteName = st.nextName();
+    st.addEntry(transmuteName, createSymEntry(transmuted));
+    var repMsg = "created " + st.attrib(transmuteName);
+    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
   use CommandMap;
   registerFunction("cast", castMsg, getModuleName());
+  registerFunction("transmuteFloat", transmuteFloatMsg, getModuleName());
 }

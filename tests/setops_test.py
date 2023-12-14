@@ -94,9 +94,6 @@ class SetOpsTest(ArkoudaTest):
 
         self.assertListEqual([1, 4, 5, 7], ak.setxor1d(pdaOne, pdaTwo).to_list())
 
-        with self.assertRaises(TypeError):
-            ak.setxor1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-
     def testSetxor1d_Multi(self):
         # Test Numeric pdarray
         a = [1, 2, 3, 4, 5]
@@ -150,9 +147,6 @@ class SetOpsTest(ArkoudaTest):
 
         self.assertListEqual([1, 2], ak.setdiff1d(pdaOne, pdaTwo).to_list())
 
-        with self.assertRaises(TypeError):
-            ak.setdiff1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-
         with self.assertRaises(RuntimeError):
             ak.setdiff1d(ak.array([True, False, True]), ak.array([True, True]))
 
@@ -202,9 +196,6 @@ class SetOpsTest(ArkoudaTest):
         pdaTwo = ak.array([3, 1, 2, 1])
         self.assertListEqual([1, 3], ak.intersect1d(pdaOne, pdaTwo).to_list())
 
-        with self.assertRaises(TypeError):
-            ak.intersect1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-
     def testIntersect1d_Multi(self):
         # Test for numeric
         a = [1, 2, 3, 4, 5]
@@ -250,9 +241,6 @@ class SetOpsTest(ArkoudaTest):
         pdaOne = ak.array([-1, 0, 1])
         pdaTwo = ak.array([-2, 0, 2])
         self.assertListEqual([-2, -1, 0, 1, 2], ak.union1d(pdaOne, pdaTwo).to_list())
-
-        with self.assertRaises(TypeError):
-            ak.union1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
 
     def testUnion1d_Multi(self):
         # test for numeric
