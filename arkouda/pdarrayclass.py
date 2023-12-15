@@ -641,6 +641,19 @@ class pdarray:
             else:
                 raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
 
+        if self.ndim == 1 and isinstance(key, slice):
+            (start, stop, stride) = key.indices(self.size)
+            repMsg = generic_msg(
+                cmd="[slice]1D",
+                args={
+                    "array": self,
+                    "start": start,
+                    "stop": stop,
+                    "stride": stride,
+                },
+            )
+            return create_pdarray(repMsg)
+
         if isinstance(key, tuple):
             allScalar = True
             starts = []
@@ -656,8 +669,8 @@ class pdarray:
                 elif np.isscalar(k) and (resolve_scalar_dtype(k) in ["int64", "uint64"]):
                     if k < 0:
                         # Interpret negative key as offset from end of array
-                        k += self.size
-                    if k < 0 or k >= self.shape[dim]:
+                        k += int(self.shape[dim])
+                    if k < 0 or k >= int(self.shape[dim]):
                         raise IndexError(
                             f"index {k} is out of bounds in dimension {dim} with size {self.shape[dim]}"
                         )

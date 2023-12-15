@@ -891,7 +891,7 @@ def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars)
 def randint(
     low: numeric_scalars,
     high: numeric_scalars,
-    shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1,
+    size: Union[int_scalars, Tuple[int_scalars, ...]] = 1,
     dtype=akint64,
     seed: int_scalars = None,
 ) -> pdarray:
@@ -954,17 +954,19 @@ def randint(
     >>> ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
     array([False, True, True, True, True, False, True, True, True, True])
     """
-    if isinstance(shape, tuple):
-        size = 1
+    shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
+    if isinstance(size, tuple):
+        shape = cast(Tuple, size)
+        full_size = 1
         for s in cast(Tuple, shape):
-            size *= s
+            full_size *= s
         ndim = len(shape)
     else:
-        size = cast(int, shape)
-        shape = (size,)
+        full_size = cast(int, size)
+        shape = full_size
         ndim = 1
 
-    if size < 0 or ndim < 1 or high < low:
+    if full_size < 0 or ndim < 1 or high < low:
         raise ValueError("size must be >= 0, ndim >= 1, and high >= low")
     dtype = akdtype(dtype)  # normalize dtype
     # check dtype for error

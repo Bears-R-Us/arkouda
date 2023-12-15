@@ -254,44 +254,28 @@ module MultiTypeSymEntry
             :returns: s (string) containing the array data
         */
         override proc __str__(thresh:int=6, prefix:string = "[", suffix:string = "]", baseFormat:string = "%?"): string throws {
-            return prefix + " array " + suffix;
-            // if this.dimensions == 1 {
-            //     var s:string = "";
-            //     if (this.size == 0) {
-            //         s =  ""; // Unnecessary, but left for clarity
-            //     } else if (this.size < thresh || this.size <= 6) {
-            //         for i in 0..(this.size-2) {s += try! baseFormat.doFormat(this.a[i]) + " ";}
-            //         s += try! baseFormat.doFormat(this.a[this.size-1]);
-            //     } else {
-            //         var b = baseFormat + " " + baseFormat + " " + baseFormat + " ... " +
-            //                     baseFormat + " " + baseFormat + " " + baseFormat;
-            //         s = try! b.doFormat(
-            //                     this.a[0], this.a[1], this.a[2],
-            //                     this.a[this.size-3], this.a[this.size-2], this.a[this.size-1]);
-            //     }
-            //     return prefix + s + suffix;
-            // } else {
-            //     return prefix + "ND array: " + this.shape + suffix;
-            //     // var s = (baseFormat+"\n").doFormat(this.tupShape),
-            //     //     front_indices: this.dimensions*range,
-            //     //     back_indices: this.dimensions*range;
-
-            //     // for param i in 0..<this.dimensions {
-            //     //     front_indices[i] = if this.tupShape[i] < 3
-            //     //         then 0..<this.tupShape[i]
-            //     //         else 0..2;
-            //     //     back_indices[i] = if this.tupShape[i] < 3
-            //     //         then 0..<this.tupShape[i]
-            //     //         else (this.tupShape[i]-3)..<this.tupShape[i];
-            //     // }
-
-            //     // const frontDom = {(...front_indices)},
-            //     //       backDom = {(...back_indices)};
-
-            //     // s += (baseFormat+"..."+baseFormat).doFormat(this.a[frontDom], this.a[backDom]);
-
-            //     // return s;
-            // }
+            if this.dimensions == 1 {
+                var s:string = "";
+                if (this.size == 0) {
+                    s =  ""; // Unnecessary, but left for clarity
+                } else if (this.size < thresh || this.size <= 6) {
+                    for i in 0..(this.size-2) {s += try! baseFormat.doFormat(this.a[i]) + " ";}
+                    s += try! baseFormat.doFormat(this.a[this.size-1]);
+                } else {
+                    var b = baseFormat + " " + baseFormat + " " + baseFormat + " ... " +
+                                baseFormat + " " + baseFormat + " " + baseFormat;
+                    s = try! b.doFormat(
+                                this.a[0], this.a[1], this.a[2],
+                                this.a[this.size-3], this.a[this.size-2], this.a[this.size-1]);
+                }
+                if this.etype == bool {
+                    s = s.replace("true","True");
+                    s = s.replace("false","False");
+                }
+                return prefix + s + suffix;
+            } else {
+                return prefix + "ND array: " + this.shape + suffix;
+            }
         }
     }
 

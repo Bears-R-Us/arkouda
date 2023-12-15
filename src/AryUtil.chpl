@@ -68,6 +68,8 @@ module AryUtil
                   backDom = {(...back_indices)};
 
             s += "%? ... %?".doFormat(A[frontDom], A[backDom]);
+
+            return s;
         }
     }
 
