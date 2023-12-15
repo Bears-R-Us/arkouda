@@ -174,7 +174,7 @@ module ServerDaemon {
 
         proc printServerSplashMessage(token: string, arkDirectory: string) throws {
             var verMessage = "arkouda server version = %s".doFormat(arkoudaVersion);
-            var chplVerMessage = "built with chapel version%s".doFormat(chplVersion);
+            var chplVerMessage = "built with chapel version%s".doFormat(chplVersionArkouda);
             var dirMessage = ".arkouda directory %s".doFormat(arkDirectory);
             var memLimMessage =  "memory limit = %i".doFormat(getMemLimit());
             var memUsedMessage = "bytes of memory used = %i".doFormat(getMemUsed());

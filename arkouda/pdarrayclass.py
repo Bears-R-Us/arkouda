@@ -27,6 +27,7 @@ from arkouda.dtypes import (
 from arkouda.dtypes import str_ as akstr_
 from arkouda.dtypes import translate_np_dtype
 from arkouda.dtypes import uint64 as akuint64
+from arkouda.dtypes import float64 as akfloat64
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 
@@ -2019,6 +2020,9 @@ class pdarray:
         )
         return attach(user_defined_name)
 
+    def _float_to_uint(self):
+        return generic_msg(cmd="transmuteFloat", args={"name": self})
+
     def _get_grouping_keys(self) -> List[pdarray]:
         """
         Private method for generating grouping keys used by GroupBy.
@@ -2033,6 +2037,8 @@ class pdarray:
         elif self.dtype in (akint64, akuint64):
             # Integral pdarrays are their own grouping keys
             return [self]
+        elif self.dtype == akfloat64:
+            return [create_pdarray(self._float_to_uint())]
         elif self.dtype == bigint:
             return self.bigint_to_uint_arrays()
         else:

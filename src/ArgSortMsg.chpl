@@ -243,7 +243,7 @@ module ArgSortMsg
       var arrTypes = msgArgs.get("arr_types").getList(n);
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                    "number of arrays: %i arrNames: %?, arrTypes: %?".doFormat(n,arrNames, arrTypes));
-      var (arrSize, hasStr, names, types) = validateArraysSameLength(n, arrNames, arrTypes, st);
+      var (arrSize, hasStr, allSmallStrs, extraArraysNeeded, numStrings, names, types) = validateArraysSameLength(n, arrNames, arrTypes, st);
 
       // If there were no string arrays, merge the arrays into a single array and sort
       // that. This eliminates having to merge index vectors, but has a memory overhead

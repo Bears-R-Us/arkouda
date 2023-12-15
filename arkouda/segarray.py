@@ -11,7 +11,7 @@ import numpy as np  # type: ignore
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import isSupportedInt, str_, int_scalars
+from arkouda.dtypes import int_scalars, isSupportedInt, str_
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.join import gen_ranges
@@ -661,18 +661,10 @@ class SegArray:
         isrepeat[self.segments[self.non_empty]] = False
         truepaths = self.values[~isrepeat]
         nhops = self.grouping.sum(~isrepeat)[1]
-        truesegs = cumsum(nhops) - nhops
         # Correct segments to properly assign empty lists - prevents dropping empty segments
-        if not self.non_empty.all():
-            truelens = concatenate((truesegs[1:], array([truepaths.size]))) - truesegs
-            len_diff = self.lengths[self.non_empty] - truelens
-
-            x = 0  # tracking which non-empty segment length we need
-            truesegs = zeros(self.size, dtype=akint64)
-            for i in range(1, self.size):
-                truesegs[i] = self.segments[i] - len_diff[: x + 1].sum()
-                if self.non_empty[i]:
-                    x += 1
+        lens = self.lengths[:]
+        lens[self.non_empty] = nhops
+        truesegs = cumsum(lens) - lens
 
         norepeats = SegArray(truesegs, truepaths)
         if return_multiplicity:
@@ -1386,10 +1378,11 @@ class SegArray:
         )
 
         new_vals = self.values[keep]
-
+        lens = self.lengths[:]
         # recreate the segment boundaries
         seg_cts = self.grouping.sum(keep)[1]
-        new_segs = cumsum(seg_cts) - seg_cts
+        lens[self.non_empty] = seg_cts
+        new_segs = cumsum(lens) - lens
 
         new_segarray = SegArray(new_segs, new_vals)
         return new_segarray[new_segarray.non_empty] if discard_empty else new_segarray
@@ -1594,9 +1587,14 @@ class SegArray:
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
-        return generic_msg(cmd="sendArray", args={"segments": self.segments,
-                                                  "values": self.values,
-                                                  "hostname": hostname,
-                                                  "port": port,
-                                                  "dtype": self.dtype,
-                                                  "objType": "segarray"})
+        return generic_msg(
+            cmd="sendArray",
+            args={
+                "segments": self.segments,
+                "values": self.values,
+                "hostname": hostname,
+                "port": port,
+                "dtype": self.dtype,
+                "objType": "segarray",
+            },
+        )

@@ -70,7 +70,7 @@ module HashMsg {
     var s = msgArgs.get("size").getIntValue();
     var namesList = msgArgs.get("nameslist").getList(n);
     var typesList = msgArgs.get("typeslist").getList(n);
-    var (size, hasStr, names, types) = validateArraysSameLength(n, namesList, typesList, st);
+    var (size, hasStr, allSmallStrs, extraArraysNeeded, numStrings, names, types) = validateArraysSameLength(n, namesList, typesList, st);
 
     // Call hashArrays on list of given array names
     var hashes = hashArrays(size, names, types, st);

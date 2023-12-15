@@ -94,9 +94,6 @@ class SetOpsTest(ArkoudaTest):
 
         self.assertListEqual([1, 4, 5, 7], ak.setxor1d(pdaOne, pdaTwo).to_list())
 
-        with self.assertRaises(TypeError):
-            ak.setxor1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-
     def testSetxor1d_Multi(self):
         # Test Numeric pdarray
         a = [1, 2, 3, 4, 5]
@@ -150,9 +147,6 @@ class SetOpsTest(ArkoudaTest):
 
         self.assertListEqual([1, 2], ak.setdiff1d(pdaOne, pdaTwo).to_list())
 
-        with self.assertRaises(TypeError):
-            ak.setdiff1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-
         with self.assertRaises(RuntimeError):
             ak.setdiff1d(ak.array([True, False, True]), ak.array([True, True]))
 
@@ -202,9 +196,6 @@ class SetOpsTest(ArkoudaTest):
         pdaTwo = ak.array([3, 1, 2, 1])
         self.assertListEqual([1, 3], ak.intersect1d(pdaOne, pdaTwo).to_list())
 
-        with self.assertRaises(TypeError):
-            ak.intersect1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-
     def testIntersect1d_Multi(self):
         # Test for numeric
         a = [1, 2, 3, 4, 5]
@@ -251,9 +242,6 @@ class SetOpsTest(ArkoudaTest):
         pdaTwo = ak.array([-2, 0, 2])
         self.assertListEqual([-2, -1, 0, 1, 2], ak.union1d(pdaOne, pdaTwo).to_list())
 
-        with self.assertRaises(TypeError):
-            ak.union1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-
     def testUnion1d_Multi(self):
         # test for numeric
         a = [1, 2, 3, 4, 5]
@@ -282,8 +270,8 @@ class SetOpsTest(ArkoudaTest):
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.union1d([a1, a2], [b1, b2])
-        self.assertListEqual(["xyz", "def", "abc"], t[0].to_list())
-        self.assertListEqual(["0", "456", "123"], t[1].to_list())
+        self.assertListEqual(["abc", "def", "xyz"], t[0].to_list())
+        self.assertListEqual(["123", "456", "0"], t[1].to_list())
 
         # Test for Categorical
         cat_a1 = ak.Categorical(a1)

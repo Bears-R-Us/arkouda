@@ -137,8 +137,8 @@ module UniqueMsg
                                          getModuleName(),
                                          "ArgumentError");
       }
-      var (size, hasStr, names, types) = validateArraysSameLength(n, namesList, typesList, st);
-      if (size == 0) {
+      var (size, hasStr, allSmallStrs, extraArraysNeeded, numStrings, names, types) = validateArraysSameLength(n, namesList, typesList, st);
+      if size == 0 {
         return (createSymEntry(0, int), createSymEntry(0, int));
       }
       proc helper(itemsize, type t, keys: [?D] t) throws {
@@ -167,58 +167,62 @@ module UniqueMsg
         return (permutation, segments);
       }
 
-      inline proc cleanup(str_names: [] string, st) throws {
-        for name in str_names {
+      inline proc cleanup(strNames: [] string, st) throws {
+        for name in strNames {
           st.deleteEntry(name);
         }
       }
 
-      if hasStr && n == 1 {
-        // Only one array which is a strings
-        var (myNames, _) = namesList[0].splitMsgToTuple("+", 2);
-        var strings = getSegString(myNames, st);
-        // should we do strings.getLengths()-1 to not account for null
-        const max_bytes = max reduce strings.getLengths();
-        if max_bytes < 16 {
-          var str_names = strings.bytesToUintArr(max_bytes, st).split("+");
-          var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(str_names, st);
-          if totalDigits <= 2 { 
-            var (perm, segments) = helper(2 * bitsPerDigit / 8, 2*uint(bitsPerDigit), mergeNumericArrays(2, size, totalDigits, bitWidths, negs, str_names, st));
-            cleanup(str_names, st);
-            return (perm, segments);
+      var strNames: [0..#(numStrings + extraArraysNeeded)] string;
+      var newNames: [0..#(n+extraArraysNeeded)] string;
+      var newTypes: [0..#(n+extraArraysNeeded)] string;
+      var replaceStrings = hasStr && allSmallStrs;
+      if replaceStrings {
+        var strIdx = 0;
+        var nameIdx = 0;
+        for (name, objtype) in zip(namesList, types) {
+          if objtype.toUpper(): ObjType == ObjType.STRINGS {
+            var (myNames, _) = name.splitMsgToTuple("+", 2);
+            var strings = getSegString(myNames, st);
+            const lengths = strings.getLengths() - 1;
+            const max_bytes = (max reduce lengths);
+            for arrName in strings.bytesToUintArr(max_bytes, lengths, st).split("+") {
+              strNames[strIdx] = arrName;
+              strIdx += 1;
+              newNames[nameIdx] = arrName;
+              newTypes[nameIdx] = "PDARRAY";
+              nameIdx += 1;
+            }
           }
-          if totalDigits <= 4 { 
-            var (perm, segments) = helper(4 * bitsPerDigit / 8, 4*uint(bitsPerDigit), mergeNumericArrays(4, size, totalDigits, bitWidths, negs, str_names, st));
-            cleanup(str_names, st);
-            return (perm, segments);
-          }
-          if totalDigits <= 6 { 
-            var (perm, segments) = helper(6 * bitsPerDigit / 8, 6*uint(bitsPerDigit), mergeNumericArrays(6, size, totalDigits, bitWidths, negs, str_names, st));
-            cleanup(str_names, st);
-            return (perm, segments);
-          }
-          if totalDigits <= 8 { 
-            var (perm, segments) = helper(8 * bitsPerDigit / 8, 8*uint(bitsPerDigit), mergeNumericArrays(8, size, totalDigits, bitWidths, negs, str_names, st));
-            cleanup(str_names, st);
-            return (perm, segments);
+          else {
+            newNames[nameIdx] = name;
+            newTypes[nameIdx] = objtype;
+            nameIdx += 1;
           }
         }
       }
 
-      // If no strings are present and row values can fit in 128 bits (8 digits),
-      // then pack into tuples of uint(16) for sorting keys.
-      if !hasStr {
-        var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(names, st);
-        if totalDigits <= 2 { return helper(2 * bitsPerDigit / 8, 2*uint(bitsPerDigit), mergeNumericArrays(2, size, totalDigits, bitWidths, negs, names, st)); }
-        if totalDigits <= 4 { return helper(4 * bitsPerDigit / 8, 4*uint(bitsPerDigit), mergeNumericArrays(4, size, totalDigits, bitWidths, negs, names, st)); }
-        if totalDigits <= 6 { return helper(6 * bitsPerDigit / 8, 6*uint(bitsPerDigit), mergeNumericArrays(6, size, totalDigits, bitWidths, negs, names, st)); }
-        if totalDigits <= 8 { return helper(8 * bitsPerDigit / 8, 8*uint(bitsPerDigit), mergeNumericArrays(8, size, totalDigits, bitWidths, negs, names, st)); }
+      proc digitHelper(helperNames = names, helperTypes = types) throws {
+        // If row values can fit in 128 bits (8 digits) and all strings are small,
+        // then pack into tuples of uint(16) for sorting keys.
+        if !hasStr || allSmallStrs {
+          var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(helperNames, st);
+          if totalDigits <= 2 { return helper(2 * bitsPerDigit / 8, 2*uint(bitsPerDigit), mergeNumericArrays(2, size, totalDigits, bitWidths, negs, helperNames, st)); }
+          else if totalDigits <= 4 { return helper(4 * bitsPerDigit / 8, 4*uint(bitsPerDigit), mergeNumericArrays(4, size, totalDigits, bitWidths, negs, helperNames, st)); }
+          else if totalDigits <= 6 { return helper(6 * bitsPerDigit / 8, 6*uint(bitsPerDigit), mergeNumericArrays(6, size, totalDigits, bitWidths, negs, helperNames, st)); }
+          else if totalDigits <= 8 { return helper(8 * bitsPerDigit / 8, 8*uint(bitsPerDigit), mergeNumericArrays(8, size, totalDigits, bitWidths, negs, helperNames, st)); }
+        }
+        // If here, either the row values are too large to fit in 128 bits, or
+        // large strings are present and must be hashed anyway, so hash all arrays
+        // and combine hashes of row values into sorting keys.
+        return helper(16, 2*uint(64), hashArrays(size, helperNames, helperTypes, st));
       }
 
-      // If here, either the row values are too large to fit in 128 bits, or
-      // strings are present and must be hashed anyway, so hash all arrays
-      // and combine hashes of row values into sorting keys.
-      return helper(16, 2*uint(64), hashArrays(size, names, types, st));
+      var (perm, segments) = if replaceStrings then digitHelper(newNames, newTypes) else digitHelper();
+      if replaceStrings {
+        cleanup(strNames, st);
+      }
+      return (perm, segments);
     }
 
     proc hashArrays(size, names, types, st): [] 2*uint throws {

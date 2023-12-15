@@ -13,6 +13,7 @@ module AryUtil
     use ArkoudaPOSIXCompat;
     use ArkoudaCTypesCompat;
     use ArkoudaBlockCompat;
+    use ArkoudaRandomCompat;
 
     use CommAggregation;
 
@@ -123,7 +124,7 @@ module AryUtil
 
     proc fillUniform(A:[?D] int, a_min:int ,a_max:int, seed:int=241) {
         // random numer generator
-        var R = new owned RandomStream(real, seed); R.getNext();
+        var R = new randomStream(real, seed); R.getNext();
         [a in A] a = (R.getNext() * (a_max - a_min) + a_min):int;
     }
 
@@ -195,6 +196,10 @@ module AryUtil
       var size: int;
       // Check that all arrays exist in the symbol table and have the same size
       var hasStr = false;
+      var allSmallStrs = true;
+      var extraArraysNeeded = 0;
+      var numStrings = 0;
+      const smallStrCap = 17;  // one bigger to ignore null byte
       for (name, objtype, i) in zip(names, types, 1..) {
         var thisSize: int;
         select objtype.toUpper(): ObjType {
@@ -207,6 +212,17 @@ module AryUtil
             var g = getSegStringEntry(myNames, st);
             thisSize = g.size;
             hasStr = true;
+            numStrings += 1;
+            if allSmallStrs {
+              var strings = getSegString(myNames, st);
+              const maxLen = max reduce strings.getLengths();
+              if maxLen > smallStrCap {
+                allSmallStrs = false;
+              }
+              else if maxLen > 9 {
+                extraArraysNeeded += 1;
+              }
+            }
           }
           when ObjType.CATEGORICAL {
             if st.contains(name) {
@@ -253,7 +269,7 @@ module AryUtil
             }
         }
       }
-      return (size, hasStr, names, types);
+      return (size, hasStr, allSmallStrs, extraArraysNeeded, numStrings, names, types);
     }
 
     inline proc getBitWidth(a: [?aD] int): (int, bool) {

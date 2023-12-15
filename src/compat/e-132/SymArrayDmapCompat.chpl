@@ -60,9 +60,16 @@ module SymArrayDmapCompat
 
     :returns: [] ?etype
     */
-    proc makeDistArray(shape: int ...?N, type etype) throws {
-      // var dom = makeDistDom((...shape));
-      // return dom.tryCreateArray(etype);
+    proc makeDistArray(shape: int ...?N, type etype) throws
+      where N == 1
+    {
+      var dom = makeDistDom((...shape));
+      return dom.tryCreateArray(etype);
+    }
+
+    proc makeDistArray(shape: int ...?N, type etype) throws
+      where N > 1
+    {
       var a: [makeDistDom((...shape))] etype;
       return a;
     }
@@ -75,7 +82,7 @@ module SymArrayDmapCompat
     }
 
     proc makeDistArray(in a: [?D] ?etype) throws
-      where D.rank == 1 // tryCreateArray is only supported for 1D arrays
+      where D.rank == 1 && (MyDmap == Dmap.defaultRectangular || !a.isDefaultRectangular())
     {
       var res = D.tryCreateArray(etype);
       res = a;
@@ -83,15 +90,13 @@ module SymArrayDmapCompat
     }
 
     proc makeDistArray(in a: [?D] ?etype) throws
-      where D.rank > 1
+      where D.rank > 1 && (MyDmap == Dmap.defaultRectangular || !a.isDefaultRectangular())
     {
-      var res: [makeDistDom((...D.shape))] etype;
-      res = a;
-      return res;
+      return a;
     }
 
     proc makeDistArray(D: domain(?), type etype) throws
-      where D.rank == 1 // tryCreateArray is only supported for 1D arrays
+      where D.rank == 1
     {
       var res = D.tryCreateArray(etype);
       return res;
@@ -100,12 +105,12 @@ module SymArrayDmapCompat
     proc makeDistArray(D: domain(?), type etype) throws
       where D.rank > 1
     {
-      var res: [makeDistDom((...D.shape))] etype;
+      var res = [D] etype;
       return res;
     }
 
     proc makeDistArray(D: domain(?), initExpr: ?t) throws
-      where D.rank == 1 // tryCreateArray is only supported for 1D arrays
+      where D.rank == 1
     {
       return D.tryCreateArray(t, initExpr);
     }
@@ -113,8 +118,7 @@ module SymArrayDmapCompat
     proc makeDistArray(D: domain(?), initExpr: ?t) throws
       where D.rank > 1
     {
-      var res: [makeDistDom((...D.shape))] t;
-      res = initExpr;
+      var res: [D] t = initExpr;
       return res;
     }
 
