@@ -370,10 +370,11 @@ module ArgSortMsg
         }
         when SortingAlgorithm.RadixSortLSD {
           for idx in DD {
-            const idxDom = domOnAxis(D, idx, axis);
-            const aSorted = radixSortLSD_ranks(removeDegenRanks(A[idxDom], 1));
+            const sliceDom = domOnAxis(D, idx, axis),
+                  aSliced1D = removeDegenRanks(A[sliceDom], 1),
+                  aSorted = radixSortLSD_ranks(aSliced1D);
 
-            forall i in idxDom do iv[i] = aSorted[i[axis]];
+            forall i in sliceDom do iv[i] = aSorted[i[axis]];
           }
         }
         otherwise {

@@ -207,7 +207,7 @@ module IndexingMsg
     }
 
     /* intIndex "a[int]" response to __getitem__(int) */
-    @arkouda.registerND
+    @arkouda.registerND(cmd_prefix="[int]")
     proc intIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
@@ -275,7 +275,7 @@ module IndexingMsg
     }
 
     /* sliceIndex "a[slice]" response to __getitem__(slice) */
-    @akrouda.registerND
+    @arkouda.registerND(cmd_prefix="[slice]")
     proc sliceIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         if nd == 1 then return sliceIndexMsg1DFast(cmd, msgArgs, st);
 

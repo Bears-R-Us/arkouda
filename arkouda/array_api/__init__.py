@@ -115,6 +115,7 @@ from . import linalg
 from .linalg import matmul, tensordot, matrix_transpose, vecdot
 
 from ._manipulation_functions import (
+    broadcast_to,
     concat,
     expand_dims,
     flip,
@@ -251,7 +252,7 @@ __all__ += ["linalg"]
 
 __all__ += ["matmul", "tensordot", "matrix_transpose", "vecdot"]
 
-__all__ += ["concat", "expand_dims", "flip", "permute_dims", "reshape", "roll", "squeeze", "stack"]
+__all__ += ["broadcast_to", "concat", "expand_dims", "flip", "permute_dims", "reshape", "roll", "squeeze", "stack"]
 
 __all__ += ["argmax", "argmin", "nonzero", "where"]
 

@@ -13,7 +13,7 @@ def matmul(x1: Array, x2: Array, /) -> Array:
     if x1._array.ndim < 2 and x2._array.ndim < 2:
         raise ValueError("matmul requires at least one array argument to have more than two dimensions")
 
-    x1b, x2b = broadcast_if_needed(x1._array, x2._array)
+    x1b, x2b, tmp_x1, tmp_x2 = broadcast_if_needed(x1._array, x2._array)
 
     repMsg = generic_msg(
         cmd=f"matMul{len(x1b.shape)}D",
@@ -22,6 +22,9 @@ def matmul(x1: Array, x2: Array, /) -> Array:
             "x2": x2b.name,
         },
     )
+
+    if tmp_x1: del x1b
+    if tmp_x2: del x2b
 
     return Array._new(create_pdarray(repMsg))
 
@@ -52,7 +55,7 @@ def matrix_transpose(x: Array) -> Array:
 def vecdot(x1: Array, x2: Array, /, *, axis: int = -1) -> Array:
     from ._array_object import Array
 
-    x1b, x2b = broadcast_if_needed(x1._array, x2._array)
+    x1b, x2b, tmp_x1, tmp_x2 = broadcast_if_needed(x1._array, x2._array)
 
     repMsg = generic_msg(
         cmd=f"vecdot{len(x1b.shape)}D",
@@ -63,5 +66,11 @@ def vecdot(x1: Array, x2: Array, /, *, axis: int = -1) -> Array:
             "axis": axis,
         },
     )
+
+    if tmp_x1:
+        del x1b
+
+    if tmp_x2:
+        del x2b
 
     return Array._new(create_pdarray(repMsg))

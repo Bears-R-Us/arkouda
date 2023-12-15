@@ -278,7 +278,10 @@ class Array:
         return self
 
     def __add__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array + other)
+        else:
+            return Array._new(self._array + other._array)
 
     def __and__(self: Array, other: Union[int, bool, Array], /) -> Array:
         return self
@@ -320,7 +323,11 @@ class Array:
         ],
         /,
     ) -> Array:
-        return self
+        if isinstance(key, Array):
+            # TODO: hack for testing
+            return self._array[key._array]
+        else:
+            return self._array[key]
 
     def __gt__(self: Array, other: Union[int, float, Array], /) -> Array:
         return self

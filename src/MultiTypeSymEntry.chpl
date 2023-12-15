@@ -224,6 +224,7 @@ module MultiTypeSymEntry
             this.tupShape = D.shape;
             this.a = a;
             this.shape = tupShapeString(this.tupShape);
+            this.ndim = D.rank;
         }
 
         /*

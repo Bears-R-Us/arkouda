@@ -50,7 +50,7 @@ def stampOutNDArrayHandlers(mod, src_dir, stamp_file, max_dims):
         # find each procedure annotated with '@arkouda.registerND'
         #  (with an optional 'cmd_prefix' argument)
         #            group 0  \/                  1 \/            2 \/                          3 \/
-        for m in re.finditer(r'\@arkouda\.registerND(\(cmd_prefix=\"([a-zA-Z0-9]*)\"\))?\s*proc\s*([a-zA-Z0-9]*)\(', text):
+        for m in re.finditer(r'\@arkouda\.registerND(\(cmd_prefix=\"([\[\]a-zA-Z0-9]*)\"\))?\s*proc\s*([a-zA-Z0-9]*)\(', text):
             found_annotation = True
             g = m.groups()
 
@@ -70,7 +70,7 @@ def stampOutNDArrayHandlers(mod, src_dir, stamp_file, max_dims):
                 stamp_file.write(ndStamp(msg_proc_name, base_proc_name, command_name, d))
 
         # find each procedure annotated with '@arkouda.registerNDBinary'
-        for m in re.finditer(r'\@arkouda\.registerNDBinary(\(cmd_prefix=\"([a-zA-Z0-9]*)\"\))?\s*proc\s*([a-zA-Z0-9]*)\(', text):
+        for m in re.finditer(r'\@arkouda\.registerNDBinary(\(cmd_prefix=\"([\[\]a-zA-Z0-9]*)\"\))?\s*proc\s*([a-zA-Z0-9]*)\(', text):
             found_annotation = True
             g = m.groups()
 

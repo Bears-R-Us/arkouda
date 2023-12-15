@@ -312,10 +312,12 @@ class pdarray:
         # pdarray binop pdarray
         if isinstance(other, pdarray):
             try:
-                (x1, x2) = broadcast_if_needed(self, other)
+                x1, x2, tmp_x1, tmp_x2 = broadcast_if_needed(self, other)
             except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
             repMsg = generic_msg(cmd=f"binopvv{x1.ndim}D", args={"op": op, "a": x1, "b": x2})
+            if tmp_x1: del x1
+            if tmp_x2: del x2
             return create_pdarray(repMsg)
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
@@ -617,8 +619,7 @@ class pdarray:
 
     # overload a[] to treat like list
     def __getitem__(self, key):
-        if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]) \
-           and self.ndim == 1:
+        if self.ndim == 1 and np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array
@@ -636,12 +637,13 @@ class pdarray:
                 return parse_single_value(" ".join(fields[1:]))
             else:
                 raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
+
         if isinstance(key, tuple):
             allScalar = True
             starts = []
             stops = []
             strides = []
-            for k, dim in enumerate(key):
+            for dim, k in enumerate(key):
                 if isinstance(k, slice):
                     allScalar = False
                     (start, stop, stride) = key.indices(self.shape[dim])
@@ -657,7 +659,7 @@ class pdarray:
                     else:
                         # treat this as a single element slice
                         starts.append(k)
-                        stops.append(k + 1)
+                        stops.append(k)
                         strides.append(1)
                 else:
                     raise IndexError(f"Unhandled key type: {k} ({type(k)})")
@@ -3319,26 +3321,35 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
 
 
 @typechecked
-def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray]:
+def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, bool, bool]:
     from arkouda.util import broadcast_dims
     if x1.shape == x2.shape:
-        return (x1, x2)
+        return (x1, x2, False, False)
     else:
+        tmp_x1 = False
+        tmp_x2 = False
         try:
+            # determine common shape for broadcasting
             bc_shape = broadcast_dims(x1.shape, x2.shape)
-            if bc_shape != x1.shape:
-                x1b = broadcast_to_shape(x1, bc_shape)
-            else:
-                x1b = x1
-            if bc_shape != x2.shape:
-                x2b = broadcast_to_shape(x2, bc_shape)
-            else:
-                x2b = x2
-            return (x1b, x2b)
         except ValueError:
             raise ValueError(
                 f"Incompatible array shapes for broadcasted operation: {x1.shape} and {x2.shape}"
             )
+
+        # broadcast x1 if needed
+        if bc_shape != x1.shape:
+            x1b = broadcast_to_shape(x1, bc_shape)
+            tmp_x1 = True
+        else:
+            x1b = x1
+
+        # broadcast x2 if needed
+        if bc_shape != x2.shape:
+            x2b = broadcast_to_shape(x2, bc_shape)
+            tmp_x2 = True
+        else:
+            x2b = x2
+        return (x1b, x2b, tmp_x1, tmp_x2)
 
 
 @typechecked

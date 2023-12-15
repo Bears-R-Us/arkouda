@@ -14,6 +14,8 @@ module AryUtil
     use ArkoudaCTypesCompat;
     use ArkoudaBlockCompat;
 
+    use CommAggregation;
+
     param bitsPerDigit = RSLSD_bitsPerDigit;
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
     private param maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
@@ -494,8 +496,6 @@ module AryUtil
       halts if this condition isn't met.
 
       Analogous to matlab's 'squeeze': https://www.mathworks.com/help/matlab/ref/squeeze.html
-
-      Assumes that the degenerate ranks have an index of 0 (i.e., they have a range of 0..0)
     */
     proc removeDegenRanks(A: [?D] ?t, param N: int) throws
       where N <= D.rank
@@ -505,6 +505,7 @@ module AryUtil
 
       // determine which, and how many, ranks are degenerate
       for param i in 0..<D.rank {
+        // is this rank degenerate? (i.e., does it have a size of 1)
         if D.shape[i] == 1 {
           degenRanks[i] = true;
           numDegenRanks += 1;
@@ -521,18 +522,17 @@ module AryUtil
           i = 0;
 
       for param ii in 0..<D.rank {
-        mapping(i) = ii;
         if !degenRanks[ii] {
+          mapping(i) = ii;
           shape[i] = D.dim(ii);
           i += 1;
         }
       }
 
-      // used to map indices from the new array to the old array
-      // (assumes that the degenerate ranks have an index of 0, s.t.
-      //  the default initialization of 'ret' will index into 'A')
       inline proc map(idx: int ...N): D.rank*int {
         var ret: D.rank*int;
+        for param ii in 0..<D.rank do
+            ret[ii] = D.dim(ii).low;
         for param i in 0..<N do
           ret[mapping[i]] = idx[i];
         return ret;
@@ -542,11 +542,10 @@ module AryUtil
       var AReduced = makeDistArray({(...shape)}, t);
 
       // copy values from the old array to the new one
-      // TODO: Is this being auto-aggregated? If not, add explicit aggregation
-      forall idx in AReduced.domain do
-        if N == 1
-          then AReduced[idx] = A[map(idx)];
-          else AReduced[idx] = A[map((...idx))];
+      forall idx in AReduced.domain with (var agg = newSrcAggregator(t)) {
+        const mapIdx = if N == 1 then map(idx) else map((...idx));
+        agg.copy(AReduced[idx], A[mapIdx]);
+      }
 
       return AReduced;
     }

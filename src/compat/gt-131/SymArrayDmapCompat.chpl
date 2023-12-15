@@ -69,7 +69,7 @@ module SymArrayDmapCompat
 
     proc makeDistArray(in a: [?D] ?etype) throws
       where MyDmap != Dmap.defaultRectangular && a.isDefaultRectangular() {
-        var res = makeDistArray(D.size, etype);
+        var res = makeDistArray((...D.shape), etype);
         res = a;
         return res;
     }

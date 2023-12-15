@@ -5,6 +5,13 @@ from ._array_object import Array
 from typing import List, Optional, Tuple, Union
 
 import arkouda as ak
+from arkouda.pdarrayclass import broadcast_to_shape as bts
+
+def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
+    """
+    Broadcast the array to the specified shape.
+    """
+    return Array._new(bts(x._array, shape))
 
 
 # Note: the function name is different here
