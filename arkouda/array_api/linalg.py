@@ -23,8 +23,10 @@ def matmul(x1: Array, x2: Array, /) -> Array:
         },
     )
 
-    if tmp_x1: del x1b
-    if tmp_x2: del x2b
+    if tmp_x1:
+        del x1b
+    if tmp_x2:
+        del x2b
 
     return Array._new(create_pdarray(repMsg))
 

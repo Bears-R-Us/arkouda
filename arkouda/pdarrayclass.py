@@ -316,8 +316,10 @@ class pdarray:
             except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
             repMsg = generic_msg(cmd=f"binopvv{x1.ndim}D", args={"op": op, "a": x1, "b": x2})
-            if tmp_x1: del x1
-            if tmp_x2: del x2
+            if tmp_x1:
+                del x1
+            if tmp_x2:
+                del x2
             return create_pdarray(repMsg)
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
@@ -626,7 +628,7 @@ class pdarray:
                 key += self.size
             if key >= 0 and key < self.size:
                 repMsg = generic_msg(
-                    cmd=f"[int]1D",
+                    cmd="[int]1D",
                     args={
                         "array": self,
                         "idx": key,
@@ -655,7 +657,9 @@ class pdarray:
                         # Interpret negative key as offset from end of array
                         k += self.size
                     if k < 0 or k >= self.shape[dim]:
-                        raise IndexError(f"index {k} is out of bounds in dimension {dim} with size {self.shape[dim]}")
+                        raise IndexError(
+                            f"index {k} is out of bounds in dimension {dim} with size {self.shape[dim]}"
+                        )
                     else:
                         # treat this as a single element slice
                         starts.append(k)

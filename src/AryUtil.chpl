@@ -531,10 +531,8 @@ module AryUtil
 
       inline proc map(idx: int ...N): D.rank*int {
         var ret: D.rank*int;
-        for param ii in 0..<D.rank do
-            ret[ii] = D.dim(ii).low;
-        for param i in 0..<N do
-          ret[mapping[i]] = idx[i];
+        for param ii in 0..<D.rank do ret[ii] = D.dim(ii).low;
+        for param i in 0..<N do ret[mapping[i]] = idx[i];
         return ret;
       }
 

@@ -6,6 +6,7 @@ from typing import Optional
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray
 
+
 def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
     """
     Array API compatible wrapper for :py:func:`np.take <numpy.take>`.

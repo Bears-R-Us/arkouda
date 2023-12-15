@@ -5,13 +5,23 @@ from ._array_object import Array
 from typing import List, Optional, Tuple, Union
 
 import arkouda as ak
-from arkouda.pdarrayclass import broadcast_to_shape as bts
+from arkouda.pdarrayclass import broadcast_to_shape
+
+
+def broadcast_arrays(*arrays: Array) -> List[Array]:
+    """
+    Array API compatible wrapper for :py:func:`np.broadcast_arrays <numpy.broadcast_arrays>`.
+
+    See its docstring for more information.
+    """
+    raise ValueError("broadcast_arrays not implemented")
+
 
 def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
     """
     Broadcast the array to the specified shape.
     """
-    return Array._new(bts(x._array, shape))
+    return Array._new(broadcast_to_shape(x._array, shape))
 
 
 # Note: the function name is different here
