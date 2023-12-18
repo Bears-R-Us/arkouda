@@ -3125,47 +3125,45 @@ module HDF5Msg {
                     h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             "File %s does not contain data for this dataset, skipping".doFormat(filename));
                 } else {
-                    // Look for overlap between A's local subdomains and this file
-                    for locdom in A.localSubdomains() {
-                        const intersection = domain_intersection(locdom, filedom);
-                        if intersection.size > 0 {
-                            // Only open the file once, even if it intersects with many local subdomains
-                            if !isopen {
-                                file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
-                                                                                        C_HDF5.H5P_DEFAULT);  
-                                try! dataset = C_HDF5.H5Dopen(file_id, dsetName.localize().c_str(), C_HDF5.H5P_DEFAULT);
-                                isopen = true;
-                            }
-                            // do A[intersection] = file[intersection - offset]
-                            var dataspace = C_HDF5.H5Dget_space(dataset);
-                            var dsetOffset = (intersection.low - filedom.low): C_HDF5.hsize_t;
-                            var dsetStride = intersection.stride: C_HDF5.hsize_t;
-                            var dsetCount = intersection.size: C_HDF5.hsize_t;
-                            C_HDF5.H5Sselect_hyperslab(dataspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(dsetOffset), 
-                                                            c_ptrTo(dsetStride), c_ptrTo(dsetCount), nil);
-                            var memOffset = 0: C_HDF5.hsize_t;
-                            var memStride = 1: C_HDF5.hsize_t;
-                            var memCount = intersection.size: C_HDF5.hsize_t;
-                            var memspace = C_HDF5.H5Screate_simple(1, c_ptrTo(memCount), nil);
-                            C_HDF5.H5Sselect_hyperslab(memspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(memOffset), 
-                                                            c_ptrTo(memStride), c_ptrTo(memCount), nil);
-
-                            h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                    "Locale %? intersection %? dataset slice %?".doFormat(loc,intersection,
-                                    (intersection.low - filedom.low, intersection.high - filedom.low)));
-
-                            /*
-                            * The fact that intersection is a subset of a local subdomain means
-                            * there should be no communication in the read
-                            */
-                            local {
-                                C_HDF5.H5Dread(dataset, getHDF5Type(A.eltType), memspace, 
-                                        dataspace, C_HDF5.H5P_DEFAULT, 
-                                        c_ptrTo(A.localSlice(intersection)));
-                            }
-                            C_HDF5.H5Sclose(memspace);
-                            C_HDF5.H5Sclose(dataspace);
+                    // Look for overlap between A's local subdomain and this file
+                    const intersection = domain_intersection(A.localSubdomain(), filedom);
+                    if intersection.size > 0 {
+                        // Only open the file once, even if it intersects with many local subdomains
+                        if !isopen {
+                            file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
+                                                                                    C_HDF5.H5P_DEFAULT);  
+                            try! dataset = C_HDF5.H5Dopen(file_id, dsetName.localize().c_str(), C_HDF5.H5P_DEFAULT);
+                            isopen = true;
                         }
+                        // do A[intersection] = file[intersection - offset]
+                        var dataspace = C_HDF5.H5Dget_space(dataset);
+                        var dsetOffset = (intersection.low - filedom.low): C_HDF5.hsize_t;
+                        var dsetStride = intersection.stride: C_HDF5.hsize_t;
+                        var dsetCount = intersection.size: C_HDF5.hsize_t;
+                        C_HDF5.H5Sselect_hyperslab(dataspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(dsetOffset), 
+                                                        c_ptrTo(dsetStride), c_ptrTo(dsetCount), nil);
+                        var memOffset = 0: C_HDF5.hsize_t;
+                        var memStride = 1: C_HDF5.hsize_t;
+                        var memCount = intersection.size: C_HDF5.hsize_t;
+                        var memspace = C_HDF5.H5Screate_simple(1, c_ptrTo(memCount), nil);
+                        C_HDF5.H5Sselect_hyperslab(memspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(memOffset), 
+                                                        c_ptrTo(memStride), c_ptrTo(memCount), nil);
+
+                        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "Locale %? intersection %? dataset slice %?".doFormat(loc,intersection,
+                                (intersection.low - filedom.low, intersection.high - filedom.low)));
+
+                        /*
+                        * The fact that intersection is a subset of a local subdomain means
+                        * there should be no communication in the read
+                        */
+                        local {
+                            C_HDF5.H5Dread(dataset, getHDF5Type(A.eltType), memspace, 
+                                    dataspace, C_HDF5.H5P_DEFAULT, 
+                                    c_ptrTo(A.localSlice(intersection)));
+                        }
+                        C_HDF5.H5Sclose(memspace);
+                        C_HDF5.H5Sclose(dataspace);
                     }
                 }
                 if isopen {
@@ -3281,12 +3279,10 @@ module HDF5Msg {
         var adjustments = (+ scan diffs) - diffs;
         coforall loc in a.targetLocales() do on loc {
             forall(sd, adj) in zip(segSubdoms, adjustments) {
-                for locdom in a.localSubdomains() {
-                    const intersection = domain_intersection(locdom, sd);
-                    if intersection.size > 0 {
-                        // adjust offset of the segment based on the sizes of the segments preceeding it
-                        a[intersection] += adj;
-                    }
+                const intersection = domain_intersection(a.localSubdomain(), sd);
+                if intersection.size > 0 {
+                    // adjust offset of the segment based on the sizes of the segments preceeding it
+                    a[intersection] += adj;
                 }
             }
         }
@@ -4171,11 +4167,9 @@ module HDF5Msg {
                             "File %s does not contain data for this dataset, skipping".doFormat(filename));
                 } else {
                     // Look for overlap between A's local subdomains and this file
-                    for locdom in A.localSubdomains() {
-                        const intersection = domain_intersection(locdom, filedom);
-                        if intersection.size > 0 {
-                            A[intersection] = tag;
-                        }
+                    const intersection = domain_intersection(A.localSubdomain(), filedom);
+                    if intersection.size > 0 {
+                        A[intersection] = tag;
                     }
                 }
             }
