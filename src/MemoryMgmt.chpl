@@ -3,6 +3,7 @@ module MemoryMgmt {
     use Subprocess;
     use FileSystem;
     use Reflection;
+    use Math;
 
     use Logging;
     use ServerErrors;
@@ -119,7 +120,7 @@ module MemoryMgmt {
             }
         }
 
-        return (AutoMath.round(availableMemoryPct/100 * memAvail)*1000):uint(64);
+        return (Math.round(availableMemoryPct/100 * memAvail)*1000):uint(64);
     }
     
     proc getTotalMemory() : uint(64) throws {

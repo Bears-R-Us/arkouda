@@ -408,6 +408,7 @@ module CommAggregation {
     use BigInteger, GMP;
     use ArkoudaPOSIXCompat;
     use ArkoudaAggCompat;
+    use Math;
 
     proc bigint._serializedSize() {
       extern proc chpl_gmp_mpz_struct_sign_size(from: __mpz_struct) : mp_size_t;
@@ -415,7 +416,7 @@ module CommAggregation {
       var sign_size = chpl_gmp_mpz_struct_sign_size(this.getImpl());
 
       var size_bytes = c_sizeof(mp_size_t):int;
-      var limb_bytes = AutoMath.abs(sign_size:int) * c_sizeof(mp_limb_t):int;
+      var limb_bytes = Math.abs(sign_size:int) * c_sizeof(mp_limb_t):int;
 
       return size_bytes + limb_bytes;
     }
@@ -427,7 +428,7 @@ module CommAggregation {
       var sign_size = chpl_gmp_mpz_struct_sign_size(this.getImpl());
 
       var size_bytes = c_sizeof(mp_size_t):int;
-      var limb_bytes = AutoMath.abs(sign_size:int) * c_sizeof(mp_limb_t):int;
+      var limb_bytes = Math.abs(sign_size:int) * c_sizeof(mp_limb_t):int;
 
       var limb_ptr = chpl_gmp_mpz_struct_limbs(this.getImpl());
 
@@ -446,7 +447,7 @@ module CommAggregation {
 
       memcpy(c_ptrTo(sign_size), x, size_bytes);
 
-      var nlimbs = AutoMath.abs(sign_size:int);
+      var nlimbs = Math.abs(sign_size:int);
       var limb_bytes = nlimbs * c_sizeof(mp_limb_t):int;
 
       _mpz_realloc(this.mpz, nlimbs);
