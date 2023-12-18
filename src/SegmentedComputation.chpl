@@ -75,7 +75,7 @@ module SegmentedComputation {
         try {
           // Apply function to bytes of each owned segment, aggregating return value to res
           if function == SegFunction.StringSearch {
-            forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(retType), var myRegex = _unsafeCompileRegex(strArg)) {
+            forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(retType), var myRegex = unsafeCompileRegex(strArg)) {
               agg.copy(res[i], stringSearch(values, start..#len, myRegex));
             }
           } else {

@@ -558,7 +558,7 @@ module SegmentedString {
       var searchBools = makeDistArray(this.offsets.a.domain, false);
       var matchBools = makeDistArray(this.offsets.a.domain, false);
       var fullMatchBools = makeDistArray(this.offsets.a.domain, false);
-      forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern),
+      forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = unsafeCompileRegex(pattern),
                                                                                var lenAgg = newDstAggregator(int),
                                                                                var startPosAgg = newDstAggregator(int),
                                                                                var startBoolAgg = newDstAggregator(bool),
@@ -708,7 +708,7 @@ module SegmentedString {
       // count = 0 means substitute all occurances, so we set count equal to 10**9
       var count = if initCount == 0 then 10**9:int else initCount;
       // since the pattern matches are variable length, we don't know what the size of subbedVals should be until we've found the matches
-      forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern),
+      forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = unsafeCompileRegex(pattern),
                                                                                var numReplAgg = newDstAggregator(int),
                                                                                var LenAgg = newDstAggregator(int),
                                                                                var nonMatchAgg = newDstAggregator(bool),
@@ -903,7 +903,7 @@ module SegmentedString {
       var leftEnd = makeDistArray(offsets.a.domain, int);
       var rightStart = makeDistArray(offsets.a.domain, int);
 
-      forall (o, len, i) in zip(oa, lengths, offsets.a.domain) with (var myRegex = _unsafeCompileRegex(delimiter)) {
+      forall (o, len, i) in zip(oa, lengths, offsets.a.domain) with (var myRegex = unsafeCompileRegex(delimiter)) {
         var matches = myRegex.matches(interpretAsString(va, o..#len, borrow=true));
         if matches.size < times {
           // not enough occurances of delim, the entire string stays together, and the param args
@@ -1400,7 +1400,7 @@ module SegmentedString {
     }
   }
 
-  proc _unsafeCompileRegex(const pattern: ?t) where t == bytes || t == string {
+  proc unsafeCompileRegex(const pattern: ?t) where t == bytes || t == string {
     // This is a private function and should not be called to compile pattern. Use checkCompile instead
 
     // This proc is a workaound to allow declaring regexps using a with clause in forall loops

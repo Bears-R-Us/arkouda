@@ -2940,7 +2940,7 @@ module HDF5Msg {
          * This is an H5Literate call-back function, c_helper funcs are used to process data in void*
          * this proc counts the number of of HDF5 groups/datasets under the root, non-recursive
          */
-        proc _get_item_count(loc_id:C_HDF5.hid_t, name:c_ptr_void, info:c_ptr_void, data:c_ptr_void) {
+        proc get_item_count(loc_id:C_HDF5.hid_t, name:c_ptr_void, info:c_ptr_void, data:c_ptr_void) {
             var obj_name = name:c_string_ptr;
             var obj_type:C_HDF5.H5O_type_t;
             var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));
@@ -2954,7 +2954,7 @@ module HDF5Msg {
          * This is an H5Literate call-back function, c_helper funcs are used to process data in void*
          * this proc builds string of HDF5 group/dataset objects names under the root, non-recursive
          */
-        proc _simulate_h5ls(loc_id:C_HDF5.hid_t, name:c_ptr_void, info:c_ptr_void, data:c_ptr_void) {
+        proc simulate_h5ls_help(loc_id:C_HDF5.hid_t, name:c_ptr_void, info:c_ptr_void, data:c_ptr_void) {
             var obj_name = name:c_string_ptr;
             var obj_type:C_HDF5.H5O_type_t;
             var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));
@@ -2969,12 +2969,12 @@ module HDF5Msg {
         
         // First iteration to get the item count so we can ballpark the char* allocation
         var nfields:c_int = 0:c_int;
-        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(_get_item_count), c_ptrTo(nfields));
+        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(get_item_count), c_ptrTo(nfields));
         
         // Allocate space for array of strings
         var c_field_names = allocate(c_char, 255 * nfields, clear=true);
         idx_p = 0:C_HDF5.hsize_t; // reset our iteration counter
-        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(_simulate_h5ls), c_field_names);
+        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(simulate_h5ls_help), c_field_names);
         var pos = c_strlen(c_field_names):int;
         var items = string.createCopyingBuffer(c_field_names, pos, pos+1);
         deallocate(c_field_names);
@@ -3255,7 +3255,7 @@ module HDF5Msg {
      *
      * :returns: bool True iff the lower bound is less than or equal to upper bound
      */
-    inline proc _isValidRange(r: domain(1)): bool {
+    inline proc isValidRange(r: domain(1)): bool {
         return r.low <= r.high;
     }
 
@@ -3267,7 +3267,7 @@ module HDF5Msg {
         forall (i, sd, vd, d) in zip(fD, segSubdoms, valSubdoms, diffs) {
             // if we encounter a malformed subdomain i.e. {1..0} that means we encountered a file
             // that has no data for this SegString object, we can safely skip processing this file.
-            if (_isValidRange(sd)) {
+            if (isValidRange(sd)) {
                 d = vd.size;
             } else {
                 h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -3526,19 +3526,19 @@ module HDF5Msg {
         var entryVal = createSymEntry(len, uint(8));
         read_files_into_distributed_array(entryVal.a, subdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
 
-        proc _buildEntryCalcOffsets() throws {
+        proc buildEntryCalcOffsets() throws {
             var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.a.domain);
             return createSymEntry(offsetsArray);
         }
 
-        proc _buildEntryLoadOffsets() throws {
+        proc buildEntryLoadOffsets() throws {
             var offsetsEntry = createSymEntry(nSeg, int);
             read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
             fixupSegBoundaries(offsetsEntry.a, segSubdoms, subdoms);
             return offsetsEntry;
         }
 
-        var entrySeg = if (calcStringOffsets || nSeg < 1 || !skips.isEmpty()) then _buildEntryCalcOffsets() else _buildEntryLoadOffsets();
+        var entrySeg = if (calcStringOffsets || nSeg < 1 || !skips.isEmpty()) then buildEntryCalcOffsets() else buildEntryLoadOffsets();
 
         return assembleSegStringFromParts(entrySeg, entryVal, st);
     }
@@ -4423,7 +4423,7 @@ module HDF5Msg {
             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                 "allowErrors:true, fileErrorCount:%?".doFormat(fileErrorCount));
         }
-        var repMsg: string = _buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
+        var repMsg: string = buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
         h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg,MsgType.NORMAL);
     }

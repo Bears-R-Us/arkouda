@@ -63,7 +63,7 @@ module KReduce {
     // when combining, merge instead of
     // accumulating each individual value
     proc combine(state: borrowed kreduce(eltType)) {
-      v._data = merge(v, state.v);
+      v.data = merge(v, state.v);
     }
 
     proc generate() {

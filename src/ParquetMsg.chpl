@@ -885,7 +885,7 @@ module ParquetMsg {
         }
     }
 
-    repMsg = _buildReadAllMsgJson(rnames, false, 0, fileErrors, st);
+    repMsg = buildReadAllMsgJson(rnames, false, 0, fileErrors, st);
     pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg,MsgType.NORMAL);
   }
@@ -1700,7 +1700,7 @@ module ParquetMsg {
     return filesExist;
   }
 
-  proc _identifyTargetLocales(name: string, objType: string, st: borrowed SymTab) throws {
+  proc identifyTargetLocales(name: string, objType: string, st: borrowed SymTab) throws {
     var targetLocales;
     select objType.toUpper(): ObjType {
       when ObjType.STRINGS {
@@ -1779,7 +1779,7 @@ module ParquetMsg {
     const compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
     // use the first entry to identify target locales. Assuming all have same distribution
-    var targetLocales = _identifyTargetLocales(sym_names[0], col_objType_strs[0], st);
+    var targetLocales = identifyTargetLocales(sym_names[0], col_objType_strs[0], st);
     
     var warnFlag: bool;
     try {
@@ -1973,7 +1973,7 @@ module ParquetMsg {
         }
     }
 
-    repMsg = _buildReadAllMsgJson(rnames, false, 0, fileErrors, st);
+    repMsg = buildReadAllMsgJson(rnames, false, 0, fileErrors, st);
     pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg,MsgType.NORMAL);
   }

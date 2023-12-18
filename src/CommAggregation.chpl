@@ -80,7 +80,7 @@ module CommAggregation {
     proc ref flush() {
       for offsetLoc in myLocaleSpace + lastLocale {
         const loc = offsetLoc % numLocales;
-        _flushBuffer(loc, bufferIdxs[loc], freeData=true);
+        flushBuffer(loc, bufferIdxs[loc], freeData=true);
       }
     }
 
@@ -101,7 +101,7 @@ module CommAggregation {
       // other tasks run, yield so that we're not blocking remote tasks from
       // flushing their buffers.
       if bufferIdx == bufferSize {
-        _flushBuffer(loc, bufferIdx, freeData=false);
+        flushBuffer(loc, bufferIdx, freeData=false);
         opsUntilYield = yieldFrequency;
       } else if opsUntilYield == 0 {
         yieldTask();
@@ -111,7 +111,7 @@ module CommAggregation {
       }
     }
 
-    proc ref _flushBuffer(loc: int, ref bufferIdx, freeData) {
+    proc ref flushBuffer(loc: int, ref bufferIdx, freeData) {
       const myBufferIdx = bufferIdx;
       if myBufferIdx == 0 then return;
 
@@ -203,7 +203,7 @@ module CommAggregation {
     proc ref flush() {
       for offsetLoc in myLocaleSpace + lastLocale {
         const loc = offsetLoc % numLocales;
-        _flushBuffer(loc, bufferIdxs[loc], freeData=true);
+        flushBuffer(loc, bufferIdxs[loc], freeData=true);
       }
     }
 
@@ -223,7 +223,7 @@ module CommAggregation {
       bufferIdx += 1;
 
       if bufferIdx == bufferSize {
-        _flushBuffer(loc, bufferIdx, freeData=false);
+        flushBuffer(loc, bufferIdx, freeData=false);
         opsUntilYield = yieldFrequency;
       } else if opsUntilYield == 0 {
         yieldTask();
@@ -233,7 +233,7 @@ module CommAggregation {
       }
     }
 
-    proc ref _flushBuffer(loc: int, ref bufferIdx, freeData) {
+    proc ref flushBuffer(loc: int, ref bufferIdx, freeData) {
       const myBufferIdx = bufferIdx;
       if myBufferIdx == 0 then return;
 
@@ -410,7 +410,7 @@ module CommAggregation {
     use ArkoudaAggCompat;
     use Math;
 
-    proc bigint._serializedSize() {
+    proc bigint.serializedSize() {
       extern proc chpl_gmp_mpz_struct_sign_size(from: __mpz_struct) : mp_size_t;
 
       var sign_size = chpl_gmp_mpz_struct_sign_size(this.getImpl());
@@ -436,7 +436,7 @@ module CommAggregation {
       memcpy(x+size_bytes, limb_ptr, limb_bytes);
     }
 
-    proc ref bigint._deserializeFrom(x: c_ptr(uint(8))) {
+    proc ref bigint.deserializeFrom(x: c_ptr(uint(8))) {
       extern proc chpl_gmp_mpz_struct_limbs(from: __mpz_struct) : c_ptr(mp_limb_t);
       extern proc chpl_gmp_mpz_set_sign_size(ref dst:mpz_t, sign_size:mp_size_t);
 
@@ -491,7 +491,7 @@ module CommAggregation {
       proc ref flush() {
         for offsetLoc in myLocaleSpace + lastLocale {
           const loc = offsetLoc % numLocales;
-          _flushBuffer(loc, bufferIdxs[loc], freeData=true);
+          flushBuffer(loc, bufferIdxs[loc], freeData=true);
         }
       }
 
@@ -501,7 +501,7 @@ module CommAggregation {
         // the same as the mpz storage itself.
         const loc = dst.locale.id;
 
-        const serialize_bytes = src._serializedSize();
+        const serialize_bytes = src.serializedSize();
 
         // Just do direct assignment if dst is local or src size is large
         if loc == here.id || serialize_bytes > (bufferSize >> 2) {
@@ -519,7 +519,7 @@ module CommAggregation {
 
         // Flush our buffer if this entry will exceed capacity
         if bufferIdx + addr_bytes + serialize_bytes > bufferSize {
-          _flushBuffer(loc, bufferIdx, freeData=false);
+          flushBuffer(loc, bufferIdx, freeData=false);
           opsUntilYield = yieldFrequency;
         }
 
@@ -538,7 +538,7 @@ module CommAggregation {
         }
       }
 
-      proc ref _flushBuffer(loc: int, ref bufferIdx, freeData) {
+      proc ref flushBuffer(loc: int, ref bufferIdx, freeData) {
         const myBufferIdx = bufferIdx;
         if myBufferIdx == 0 then return;
 
@@ -561,7 +561,7 @@ module CommAggregation {
             // assert that record locality matches mpz locality
             if boundsChecking { assert(dstAddr.deref().localeId == here.id); }
             // deserialize into bigint
-            var ser_bytes = dstAddr.deref()._deserializeFrom(c_ptrTo(remBufferPtr[curBufferIdx+addr_bytes]));
+            var ser_bytes = dstAddr.deref().deserializeFrom(c_ptrTo(remBufferPtr[curBufferIdx+addr_bytes]));
             curBufferIdx += addr_bytes + ser_bytes;
           }
 
@@ -617,7 +617,7 @@ module CommAggregation {
       proc ref flush() {
         for offsetLoc in myLocaleSpace + lastLocale {
           const loc = offsetLoc % numLocales;
-          _flushBuffer(loc, bufferIdxs[loc], freeData=true);
+          flushBuffer(loc, bufferIdxs[loc], freeData=true);
         }
       }
 
@@ -637,7 +637,7 @@ module CommAggregation {
         bufferIdx += 1;
 
         if bufferIdx == bufferSize {
-          _flushBuffer(loc, bufferIdx, freeData=false);
+          flushBuffer(loc, bufferIdx, freeData=false);
           opsUntilYield = yieldFrequency;
         } else if opsUntilYield == 0 {
           yieldTask();
@@ -647,7 +647,7 @@ module CommAggregation {
         }
       }
 
-      proc ref _flushBuffer(loc: int, ref bufferIdx, freeData) {
+      proc ref flushBuffer(loc: int, ref bufferIdx, freeData) {
         const myBufferIdx = bufferIdx;
         if myBufferIdx == 0 then return;
 
@@ -678,7 +678,7 @@ module CommAggregation {
             while valueBufferIdx < myBufferSize && addrBufferIdx < myBufferIdx {
               var srcAddr = rSrcAddrPtr[addrBufferIdx];
 
-              var ser_size = srcAddr.deref()._serializedSize();
+              var ser_size = srcAddr.deref().serializedSize();
               if ser_size > myBufferSize {
                 // Halt if the size is too big. A slow fallback would be to
                 // just break and have the initiator see the bytes written
@@ -712,7 +712,7 @@ module CommAggregation {
           var curBufferIdx = 0;
           while addrBufferIdx < bytesValsWritten(1) {
             var dstAddr = dstAddrPtr[addrBufferIdx];
-            var ser_size = dstAddr.deref()._deserializeFrom(c_ptrTo(srcValPtr[curBufferIdx]));
+            var ser_size = dstAddr.deref().deserializeFrom(c_ptrTo(srcValPtr[curBufferIdx]));
             curBufferIdx += ser_size:int;
             addrBufferIdx += 1;
           }
