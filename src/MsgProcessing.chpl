@@ -3,7 +3,6 @@ module MsgProcessing
 {
     use ServerConfig;
 
-    use Math only;
     use Reflection;
     use ServerErrors;
     use Logging;
@@ -17,6 +16,7 @@ module MsgProcessing
 
     use ArkoudaBigIntCompat;
     use ArkoudaTimeCompat as Time;
+    use ArkoudaMathCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -176,10 +176,10 @@ module MsgProcessing
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".doFormat(cmd));
         var memUsed = if memTrack then getMemUsed():real * numLocales else st.memUsed():real;
         if asPercent {
-            repMsg = Math.round((memUsed / (getMemLimit():real * numLocales)) * 100):uint:string;
+            repMsg = mathRound((memUsed / (getMemLimit():real * numLocales)) * 100):uint:string;
         }
         else {
-            repMsg = Math.round(memUsed / factor):uint:string;
+            repMsg = mathRound(memUsed / factor):uint:string;
         }
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
@@ -203,10 +203,10 @@ module MsgProcessing
         var memUsed = if memTrack then getMemUsed():real * numLocales else st.memUsed():real;
         var totMem = getMemLimit():real * numLocales;
         if asPercent {
-            repMsg = (100 - Math.round((memUsed / totMem) * 100)):uint:string;
+            repMsg = (100 - mathRound((memUsed / totMem) * 100)):uint:string;
         }
         else {
-            repMsg = Math.round((totMem - memUsed) / factor):uint:string;
+            repMsg = mathRound((totMem - memUsed) / factor):uint:string;
         }
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
