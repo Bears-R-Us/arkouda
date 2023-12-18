@@ -120,7 +120,7 @@ module ParquetMsg {
   }
 
   proc readFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty, byteLength=-1) throws {
-    extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, byteLength, errMsg): int;
+    extern proc c_readColumnByName(filename, arr_chpl, colNum, numElems, startIdx, batchSize, byteLength, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     var fileOffsets = (+ scan sizes) - sizes;
     
@@ -149,7 +149,7 @@ module ParquetMsg {
   }
 
   proc readStrFilesByName(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, byteLength, errMsg): int;
+    extern proc c_readColumnByName(filename, arr_chpl, colNum, numElems, startIdx, batchSize, byteLength, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     
     coforall loc in A.targetLocales() do on loc {
@@ -193,7 +193,7 @@ module ParquetMsg {
   }
 
   proc readListFilesByName(A: [] ?t, rows_per_file: [] int, seg_sizes: [] int, offsets: [] int, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_readListColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
+    extern proc c_readListColumnByName(filename, arr_chpl, colNum, numElems, startIdx, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     var fileOffsets = (+ scan sizes) - sizes;
     var segmentOffsets = (+ scan rows_per_file) - rows_per_file;
@@ -270,7 +270,7 @@ module ParquetMsg {
   }
 
   proc getNullIndices(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_getStringColumnNullIndices(filename, colname, chpl_nulls, errMsg): int;
+    extern proc c_getStringColumnNullIndices(filename, colname, nulls_chpl, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     
     coforall loc in A.targetLocales() do on loc {
@@ -326,7 +326,7 @@ module ParquetMsg {
   }
   
   proc getArrSize(filename: string) throws {
-    extern proc c_getNumRows(chpl_str, errMsg): int;
+    extern proc c_getNumRows(str_chpl, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
     var size = c_getNumRows(filename.localize().c_str(),
@@ -409,10 +409,10 @@ module ParquetMsg {
   }
 
   proc writeDistArrayToParquet(A, filename, dsetname, dtype, rowGroupSize, compression, mode) throws {
-    extern proc c_writeColumnToParquet(filename, chpl_arr, colnum,
+    extern proc c_writeColumnToParquet(filename, arr_chpl, colnum,
                                        dsetname, numelems, rowGroupSize,
                                        dtype, compression, errMsg): int;
-    extern proc c_appendColumnToParquet(filename, chpl_arr,
+    extern proc c_appendColumnToParquet(filename, arr_chpl,
                                         dsetname, numelems,
                                         dtype, compression,
                                         errMsg): int;
@@ -562,10 +562,10 @@ module ParquetMsg {
   }
 
   private proc writeStringsComponentToParquet(filename, dsetname, ref values: [] uint(8), ref offsets: [] int, rowGroupSize, compression, mode, filesExist) throws {
-    extern proc c_writeStrColumnToParquet(filename, chpl_arr, chpl_offsets,
+    extern proc c_writeStrColumnToParquet(filename, arr_chpl, offsets_chpl,
                                           dsetname, numelems, rowGroupSize,
                                           dtype, compression, errMsg): int;
-    extern proc c_appendColumnToParquet(filename, chpl_arr,
+    extern proc c_appendColumnToParquet(filename, arr_chpl,
                                         dsetname, numelems,
                                         dtype, compression,
                                         errMsg): int;
@@ -1024,7 +1024,7 @@ module ParquetMsg {
 
   proc writeSegArrayComponent(filename: string, dsetname: string, const ref distVals: [] ?t, valIdxRange, segments, locDom, 
                               extraOffset, lastOffset, lastValId, c_dtype, compression) throws {
-    extern proc c_writeListColumnToParquet(filename, chpl_arr, chpl_offsets,
+    extern proc c_writeListColumnToParquet(filename, arr_chpl, offsets_chpl,
                                           dsetname, numelems, rowGroupSize,
                                           dtype, compression, errMsg): int;
     var localVals: [valIdxRange] t = distVals[valIdxRange];
@@ -1095,7 +1095,7 @@ module ParquetMsg {
   }
 
   proc writeStrSegArrayParquet(filename: string, dsetName: string, segments_entry, values_entry, compression: int): bool throws {
-    extern proc c_writeStrListColumnToParquet(filename, chpl_segs, chpl_offsets, chpl_arr,
+    extern proc c_writeStrListColumnToParquet(filename, segs_chpl, offsets_chpl, arr_chpl,
                                           dsetname, numelems, rowGroupSize,
                                           dtype, compression, errMsg): int;
     // get the array of segments

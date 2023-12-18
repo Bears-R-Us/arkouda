@@ -421,7 +421,7 @@ module CommAggregation {
       return size_bytes + limb_bytes;
     }
 
-    proc bigint._serializeInto(x: c_ptr(uint(8))) {
+    proc bigint.serializeInto(x: c_ptr(uint(8))) {
       extern proc chpl_gmp_mpz_struct_sign_size(from: __mpz_struct) : mp_size_t;
       extern proc chpl_gmp_mpz_struct_limbs(from: __mpz_struct) : c_ptr(mp_limb_t);
 
@@ -525,7 +525,7 @@ module CommAggregation {
 
         // Buffer the address and the serialized value
         memcpy(c_ptrTo(lBuffers[loc][bufferIdx]), c_ptrTo(dstAddr), addr_bytes);
-        src._serializeInto(c_ptrTo(lBuffers[loc][bufferIdx+addr_bytes]));
+        src.serializeInto(c_ptrTo(lBuffers[loc][bufferIdx+addr_bytes]));
         bufferIdx += addr_bytes + serialize_bytes;
 
         // If it's been a while since we've let other tasks run, yield so that
@@ -691,7 +691,7 @@ module CommAggregation {
               }
 
               // copy value for current address into value array
-              srcAddr.deref()._serializeInto(c_ptrTo(rSrcValPtr[valueBufferIdx]));
+              srcAddr.deref().serializeInto(c_ptrTo(rSrcValPtr[valueBufferIdx]));
 
               valueBufferIdx += ser_size;
               addrBufferIdx += 1;
