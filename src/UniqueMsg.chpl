@@ -173,6 +173,39 @@ module UniqueMsg
         }
       }
 
+      if hasStr && n == 1 {
+        // Only one array which is a strings
+        var (myNames, _) = namesList[0].splitMsgToTuple("+", 2);
+        var strings = getSegString(myNames, st);
+        // should we do strings.getLengths()-1 to not account for null
+        const lengths = strings.getLengths() - 1;
+        const max_bytes = (max reduce lengths);
+        if max_bytes < 16 {
+          var str_names = strings.bytesToUintArr(max_bytes, lengths, st).split("+");
+          var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(str_names, st);
+          if totalDigits <= 2 {
+            var (perm, segments) = helper(2 * bitsPerDigit / 8, 2*uint(bitsPerDigit), mergeNumericArrays(2, size, totalDigits, bitWidths, negs, str_names, st));
+            cleanup(str_names, st);
+            return (perm, segments);
+          }
+          if totalDigits <= 4 {
+            var (perm, segments) = helper(4 * bitsPerDigit / 8, 4*uint(bitsPerDigit), mergeNumericArrays(4, size, totalDigits, bitWidths, negs, str_names, st));
+            cleanup(str_names, st);
+            return (perm, segments);
+          }
+          if totalDigits <= 6 {
+            var (perm, segments) = helper(6 * bitsPerDigit / 8, 6*uint(bitsPerDigit), mergeNumericArrays(6, size, totalDigits, bitWidths, negs, str_names, st));
+            cleanup(str_names, st);
+            return (perm, segments);
+          }
+          if totalDigits <= 8 {
+            var (perm, segments) = helper(8 * bitsPerDigit / 8, 8*uint(bitsPerDigit), mergeNumericArrays(8, size, totalDigits, bitWidths, negs, str_names, st));
+            cleanup(str_names, st);
+            return (perm, segments);
+          }
+        }
+      }
+
       var strNames: [0..#(numStrings + extraArraysNeeded)] string;
       var newNames: [0..#(n+extraArraysNeeded)] string;
       var newTypes: [0..#(n+extraArraysNeeded)] string;
