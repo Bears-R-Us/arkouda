@@ -305,8 +305,8 @@ def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
         n1 = Na - N + i
         n2 = Nb - N + i
 
-        d1 = 1 if n1 < 0 else sa[n1]
-        d2 = 1 if n2 < 0 else sb[n2]
+        d1 = sa[n1] if n1 >= 0 else 1
+        d2 = sb[n2] if n2 >= 0 else 1
 
         if d1 == 1:
             shapeOut[i] = d2

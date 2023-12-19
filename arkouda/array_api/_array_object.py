@@ -357,7 +357,10 @@ class Array:
         return self
 
     def __mul__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array * other)
+        else:
+            return Array._new(self._array * other._array)
 
     def __ne__(self: object, other: object, /) -> bool:
         raise ValueError("Not implemented")
@@ -388,12 +391,18 @@ class Array:
         raise ValueError("Not implemented")
 
     def __sub__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array - other)
+        else:
+            return Array._new(self._array - other._array)
 
     # PEP 484 requires int to be a subtype of float, but __truediv__ should
     # not accept int.
     def __truediv__(self: Array, other: Union[float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array / other)
+        else:
+            return Array._new(self._array / other._array)
 
     def __xor__(self: Array, other: Union[int, bool, Array], /) -> Array:
         return self

@@ -544,12 +544,13 @@ module MsgProcessing
 
     proc checkValidBroadcast(from: ?Nf*int, to: ?Nt*int): (bool, Nf*bool) {
         var dimsToBroadcast: Nf*bool;
-        if Nt < Nf then return (false, dimsToBroadcast);
+        if Nf > Nt then return (false, dimsToBroadcast);
 
-        for param i in 0..<Nf {
-            if from[i] == 1 && to[i] != 1 {
-                dimsToBroadcast[i] = true;
-            } else if from[i] != to[i] {
+        for param iIn in 0..<Nf {
+            param iOut = Nt - Nf + iIn;
+            if from[iIn] == 1 && to[iOut] != 1 {
+                dimsToBroadcast[iIn] = true;
+            } else if from[iIn] != to[iOut] {
                 return (false, dimsToBroadcast);
             }
         }

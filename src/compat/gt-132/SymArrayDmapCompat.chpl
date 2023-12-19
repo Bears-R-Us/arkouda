@@ -105,7 +105,7 @@ module SymArrayDmapCompat
     proc makeDistArray(D: domain(?), type etype) throws
       where D.rank > 1
     {
-      var res = [D] etype;
+      var res: [D] etype;
       return res;
     }
 
