@@ -58,6 +58,15 @@ module In1dMsg
                 var truth = in1d(ar1.a, ar2.a, invert);
                 st.addEntry(rname, createSymEntry(truth));
             }
+            when (DType.Float64, DType.Float64) {
+                var ar1 = toSymEntry(gAr1,real);
+                var ar2 = toSymEntry(gAr2,real);
+
+                var transmuted1 = [ei in ar1.a] ei.transmute(uint(64));
+                var transmuted2 = [ei in ar2.a] ei.transmute(uint(64));
+                var truth = in1d(transmuted1, transmuted2, invert);
+                st.addEntry(rname, createSymEntry(truth));
+            }
             otherwise {
                 var errorMsg = notImplementedError(pn,gAr1.dtype,"in",gAr2.dtype);
                 iLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

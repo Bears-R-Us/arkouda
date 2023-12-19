@@ -201,7 +201,7 @@ module AryUtil
       var allSmallStrs = true;
       var extraArraysNeeded = 0;
       var numStrings = 0;
-      const smallStrCap = 17;  // one bigger to ignore null byte
+      const smallStrCap = 9;  // one bigger to ignore null byte
       for (name, objtype, i) in zip(names, types, 1..) {
         var thisSize: int;
         select objtype.toUpper(): ObjType {
