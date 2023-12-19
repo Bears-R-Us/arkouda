@@ -493,26 +493,27 @@ module SegmentedString {
       return computeOnSegments(offsets.a, values.a, SegFunction.StringIsTitle, bool);
     }
 
-    proc bytesToUintArr(const max_bytes:int, st) throws {
+    proc bytesToUintArr(const max_bytes:int, lens: [?D] ?t, st) throws {
       // bytes contained in strings < 128 bits, so concatenating is better than the hash
-      if max_bytes < 8 {
+      ref off = offsets.a;
+      ref vals = values.a;
+      if max_bytes <= 8 {
         // we only need one uint array
-        var numeric = computeOnSegments(offsets.a, values.a, SegFunction.StringBytesToUintArr, uint);
+        var numeric = makeDistArray(offsets.a.domain, uint);
+        forall (o, l, n) in zip(off, lens, numeric) {
+          n = stringBytesToUintArr(vals, o..#l);
+        }
         const concatName = st.nextName();
         st.addEntry(concatName, createSymEntry(numeric));
         return concatName;
       }
       else {
         // we need two uint arrays
-        ref off = offsets.a;
-        ref vals = values.a;
-        // should we do strings.getLengths()-1 to not account for null byte
-        const lens = getLengths();
         var numeric1, numeric2 = makeDistArray(offsets.a.domain, uint);
         forall (o, l, n1, n2) in zip(off, lens, numeric1, numeric2) {
           const half = (l/2):int;
           n1 = stringBytesToUintArr(vals, o..#half);
-          n2 = stringBytesToUintArr(vals, (o+half)..#half);
+          n2 = stringBytesToUintArr(vals, (o+half)..<(o+l));
         }
         const concat1Name = st.nextName();
         const concat2Name = st.nextName();
@@ -1433,9 +1434,6 @@ module SegmentedString {
     return interpretAsString(values, rng, borrow=true).isTitle();
   }
 
-  /*
-    The SegFunction called by computeOnSegments for bytesToUintArr
-  */
   inline proc stringBytesToUintArr(ref values, rng) throws {
       var localSlice = new lowLevelLocalizingSlice(values, rng);
       return | reduce [i in 0..#rng.size] (localSlice.ptr(i):uint)<<(8*(rng.size-1-i));
