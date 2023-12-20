@@ -8,12 +8,11 @@ def getModuleFiles(config, src_dir):
                      for mod in config["modules"]])
 
 def ndStamp(nd_msg_handler_name, command_name, d):
-    msg_proc_name = f"_nd_stamp_{nd_msg_handler_name}{d}D"
-    return f"""
-    proc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
-        do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});
-    registerFunction("{command_name}{d}D", {msg_proc_name});
-    """
+    msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d}D"
+    return \
+    f"proc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws" + \
+    f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});" + \
+    f"registerFunction(\"{command_name}{d}D\", {msg_proc_name});"
 
 def stampOutModule(mod, src_dir, stamp_file, max_dims):
     with open(f"{src_dir}/{mod}.chpl", 'r') as src_file:

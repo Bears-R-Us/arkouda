@@ -42,27 +42,29 @@ module MsgProcessing
         var size = 1;
         for s in shape do size *= s;
 
-        if (dtype == DType.UInt8) || (dtype == DType.Bool) {
-          overMemLimit(size);
-        } else {
-          overMemLimit(8*size);
-        }
         // get next symbol name
-        var rname = st.nextName();
+        overMemLimit(dtypeSize(dtype) * size);
+        const rname = st.nextName();
 
         // if verbose print action
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s dtype: %s size: %i new pdarray name: %s".doFormat(
                                                      cmd,dtype2str(dtype),size,rname));
-        // create and add entry to symbol table
-        st.addEntry(rname, (...shape), dtype);
-        // if verbose print result
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                    "created the pdarray %s".doFormat(st.attrib(rname)));
+        if isSupportedDType(dtype) {
+            // create and add entry to symbol table
+            st.addEntry(rname, (...shape), dtype);
+            // if verbose print result
+            mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "created the pdarray %s".doFormat(st.attrib(rname)));
 
-        repMsg = "created " + st.attrib(rname);
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+            repMsg = "created " + st.attrib(rname);
+            mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        } else {
+            const errorMsg = unsupportedTypeError(dtype, getRoutineName());
+            mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
     }
 
     // this proc is not technically needed with the 'arkouda.registerND' annotation above
@@ -303,116 +305,100 @@ module MsgProcessing
     @arkouda.registerND(cmd_prefix="set")
     proc setMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd = 1): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        const name = msgArgs.getValueOf("array");
-        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
-        const value = msgArgs.get("val");
+        const name = msgArgs.getValueOf("array"),
+              value = msgArgs.get("val");
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             "cmd: %s value: %s in pdarray %s".doFormat(cmd,name,st.attrib(name)));
 
-        select (gEnt.dtype, dtype) {
-            when (DType.Int64, DType.Int64) {
-                var e = toSymEntry(gEnt,int, nd);
-                var val: int = value.getIntValue();
-                e.a = val;
-                repMsg = "set %s to %?".doFormat(name, val);
+        proc doAssignment(type t): MsgTuple throws {
+            var e = toSymEntry(gEnt, t, nd);
+            const val = value.getScalarValue(t);
+            e.a = val;
+            mpLogger.debug(getModuleName(),pn,getLineNumber(),
+                            "cmd: %s name: %s to val: %?".doFormat(cmd,name,val));
+
+            const repMsg = "set %s to %?".doFormat(name, val);
+            mpLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        proc notImplemented(): MsgTuple throws {
+            const errorMsg = unsupportedTypeError(gEnt.dtype, pn);
+            mpLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        select gEnt.dtype {
+            when DType.Int8 {
+                if SupportsInt8
+                    then return doAssignment(int(8));
+                    else return notImplemented();
             }
-            when (DType.Int64, DType.Float64) {
-                var e = toSymEntry(gEnt,int, nd);
-                var val: real = value.getRealValue();
-                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "cmd: %s name: %s to val: %?".doFormat(cmd,name,val:int));
-                e.a = val:int;
-                repMsg = "set %s to %?".doFormat(name, val:int);
+            when DType.Int16 {
+                if SupportsInt16
+                    then return doAssignment(int(16));
+                    else return notImplemented();
             }
-            when (DType.Int64, DType.Bool) {
-                var e = toSymEntry(gEnt,int, nd);
-                var val: bool = value.getBoolValue();
-                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "cmd: %s name: %s to val: %?".doFormat(cmd,name,val:int));
-                e.a = val:int;
-                repMsg = "set %s to %?".doFormat(name, val:int);
+            when DType.Int32 {
+                if SupportsInt32
+                    then return doAssignment(int(32));
+                    else return notImplemented();
             }
-            when (DType.Float64, DType.Int64) {
-                var e = toSymEntry(gEnt,real, nd);
-                var val: int = value.getIntValue();
-                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "cmd: %s name: %s to value: %?".doFormat(cmd,name,val:real));
-                e.a = val:real;
-                repMsg = "set %s to %?".doFormat(name, val:real);
+            when DType.Int64 {
+                if SupportsInt64
+                    then return doAssignment(int(64));
+                    else return notImplemented();
             }
-            when (DType.Float64, DType.Float64) {
-                var e = toSymEntry(gEnt,real, nd);
-                var val: real = value.getRealValue();
-                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "cmd: %s name; %s to value: %?".doFormat(cmd,name,val));
-                e.a = val;
-                repMsg = "set %s to %?".doFormat(name, val);
+            when DType.UInt8 {
+                if SupportsUint8
+                    then return doAssignment(uint(8));
+                    else return notImplemented();
             }
-            when (DType.Float64, DType.Bool) {
-                var e = toSymEntry(gEnt,real, nd);
-                var val: bool = value.getBoolValue();
-                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "cmd: %s name: %s to value: %?".doFormat(cmd,name,val:real));
-                e.a = val:real;
-                repMsg = "set %s to %?".doFormat(name, val:real);
+            when DType.UInt16 {
+                if SupportsUint16
+                    then return doAssignment(uint(16));
+                    else return notImplemented();
             }
-            when (DType.Bool, DType.Int64) {
-                var e = toSymEntry(gEnt,bool, nd);
-                var val: int = value.getIntValue();
-                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "cmd: %s name: %s to value: %?".doFormat(cmd,name,val:bool));
-                e.a = val:bool;
-                repMsg = "set %s to %?".doFormat(name, val:bool);
+            when DType.UInt32 {
+                if SupportsUint32
+                    then return doAssignment(uint(32));
+                    else return notImplemented();
             }
-            when (DType.Bool, DType.Float64) {
-                var e = toSymEntry(gEnt,int, nd);
-                var val: real = value.getRealValue();
-                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "cmd: %s name: %s to  value: %?".doFormat(cmd,name,val:bool));
-                e.a = val:bool;
-                repMsg = "set %s to %?".doFormat(name, val:bool);
+            when DType.UInt64 {
+                if SupportsUint64
+                    then return doAssignment(uint(64));
+                    else return notImplemented();
             }
-            when (DType.Bool, DType.Bool) {
-                var e = toSymEntry(gEnt,bool, nd);
-                var val: bool = value.getBoolValue();
-                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                            "cmd: %s name: %s to value: %?".doFormat(cmd,name,val));
-                e.a = val;
-                repMsg = "set %s to %?".doFormat(name, val);
+            when DType.Float32 {
+                if SupportsFloat32
+                    then return doAssignment(real(32));
+                    else return notImplemented();
             }
-            when (DType.UInt64, DType.UInt64) {
-                var e = toSymEntry(gEnt,uint, nd);
-                var val: uint = value.getUIntValue();
-                e.a = val;
-                repMsg = "set %s to %?".doFormat(name, val);
+            when DType.Float64 {
+                if SupportsFloat64
+                    then return doAssignment(real(64));
+                    else return notImplemented();
             }
-            when (DType.BigInt, DType.BigInt) {
-                var e = toSymEntry(gEnt,bigint, nd);
-                var val: bigint = value.getBigIntValue();
-                e.a = val;
-                repMsg = "set %s to %?".doFormat(name, val);
+            when DType.Complex64 {
+                if SupportsComplex64
+                    then return doAssignment(complex(64));
+                    else return notImplemented();
             }
-            when (DType.BigInt, DType.UInt64) {
-                var e = toSymEntry(gEnt,bigint, nd);
-                var val: uint = value.getUIntValue();
-                e.a = val:bigint;
-                repMsg = "set %s to %?".doFormat(name, val);
+            when DType.Complex128 {
+                if SupportsComplex128
+                    then return doAssignment(complex(128));
+                    else return notImplemented();
             }
-            when (DType.BigInt, DType.Int64) {
-                var e = toSymEntry(gEnt,bigint, nd);
-                var val: int = value.getIntValue();
-                e.a = val:bigint;
-                repMsg = "set %s to %?".doFormat(name, val);
+            when DType.Bool {
+                if SupportsBool
+                    then return doAssignment(bool);
+                    else return notImplemented();
             }
-            when (DType.BigInt, DType.Bool) {
-                var e = toSymEntry(gEnt,bigint, nd);
-                var val: bool = value.getBoolValue();
-                e.a = val:bigint;
-                repMsg = "set %s to %?".doFormat(name, val);
+            when DType.BigInt {
+                return doAssignment(bigint);
             }
             otherwise {
                 mpLogger.error(getModuleName(),getRoutineName(),
@@ -420,8 +406,6 @@ module MsgProcessing
                 return new MsgTuple(unrecognizedTypeError(pn,msgArgs.getValueOf("dtype")), MsgType.ERROR);
             }
         }
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     // this proc is not technically needed with the 'arkouda.registerND' annotation above

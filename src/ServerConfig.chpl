@@ -14,6 +14,7 @@ module ServerConfig
     use Logging;
     use MemoryMgmt;
     use CTypes;
+    import NumPyDType.DType;
 
     use ArkoudaFileCompat;
     private use ArkoudaCTypesCompat;
@@ -81,6 +82,25 @@ module ServerConfig
       if t == string then return true;
       if t == bytes then return true;
       if t == bigint then return true;
+      return false;
+    }
+
+    proc isSupportedDType(dt: DType): bool {
+      if dt == DType.UInt8 then return SupportsUint8;
+      if dt == DType.UInt16 then return SupportsUint16;
+      if dt == DType.UInt32 then return SupportsUint32;
+      if dt == DType.UInt64 then return SupportsUint64;
+      if dt == DType.Int8 then return SupportsInt8;
+      if dt == DType.Int16 then return SupportsInt16;
+      if dt == DType.Int32 then return SupportsInt32;
+      if dt == DType.Int64 then return SupportsInt64;
+      if dt == DType.Float32 then return SupportsFloat32;
+      if dt == DType.Float64 then return SupportsFloat64;
+      if dt == DType.Complex64 then return SupportsComplex64;
+      if dt == DType.Complex128 then return SupportsComplex128;
+      if dt == DType.Bool then return SupportsBool;
+      if dt == DType.Strings then return true;
+      if dt == DType.BigInt then return true;
       return false;
     }
 

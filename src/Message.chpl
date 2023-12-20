@@ -126,7 +126,9 @@ module Message {
         */
         proc getScalarValue(type t): t throws {
             try {
-                return this.val:t;
+                if t == bool
+                    then return this.val.toLower():bool;
+                    else return this.val:t;
             } catch {
                 throw new ErrorWithContext(
                     "Parameter cannot be cast as %s. Attempting to cast %s as type %s failed".doFormat(t:string, this.val, t:string),
