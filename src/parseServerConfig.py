@@ -3,16 +3,25 @@ import sys
 import re
 import json
 
-def getModuleFiles(config, src_dir):
+def getModules(config):
+    with open(config, 'r') as cfg_file:
+        mods = []
+        for line in cfg_file.readlines():
+            mod = line.split("#")[0].strip()
+            if mod != "":
+                mods.append(mod)
+        return mods
+
+def getModuleFiles(mods, src_dir):
     return " ".join([f"{mod}.chpl" if mod[0] == '/' else f"{src_dir}/{mod}.chpl" \
-                     for mod in config["modules"]])
+                        for mod in mods])
 
 def ndStamp(nd_msg_handler_name, command_name, d):
     msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d}D"
     return \
-    f"proc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws" + \
-    f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});" + \
-    f"registerFunction(\"{command_name}{d}D\", {msg_proc_name});"
+    f"proc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws\n" + \
+    f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n" + \
+    f"registerFunction(\"{command_name}{d}D\", {msg_proc_name});\n\n"
 
 def stampOutModule(mod, src_dir, stamp_file, max_dims):
     with open(f"{src_dir}/{mod}.chpl", 'r') as src_file:
@@ -42,16 +51,16 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
         if found_annotation:
             stamp_file.write(f"use {mod};\n")
 
-def createNDHandlerInstantiations(config, src_dir):
+def createNDHandlerInstantiations(config, modules, src_dir):
     max_dims = config["max_array_dims"]
     filename = f"{src_dir}/nd_support/nd_array_stamps.chpl"
 
     with open(filename, 'w') as stamps:
-        stamps.write("use CommandMap, Message, MultiTypeSymbolTable;\n")
+        stamps.write("use CommandMap, Message, MultiTypeSymbolTable;\n\n")
 
         # stamp out message handlers for each included module with
         # '@arkouda.registerND' annotations
-        for mod in config["modules"]:
+        for mod in modules:
             stampOutModule(mod, src_dir, stamps, max_dims)
 
         # explicitly stamp out basic message handlers
@@ -69,19 +78,20 @@ def getSupportedTypes(config):
     return " ".join(supportedFlags)
 
 def parseServerConfig(config_filename, src_dir):
-    config = json.load(open(config_filename))
+    server_config = json.load(open('serverConfig.json', 'r'))
 
     # Create a list of module source files to include in the server build commands
-    module_source_files = getModuleFiles(config, src_dir)
+    modules = getModules(config_filename)
+    module_source_files = getModuleFiles(modules, src_dir)
 
     # Populate 'nd_array_stamps.chpl' with message handler instantiations
     # and produce relevant flags for building the server
     # All procedures in included modules annotated with '@arkouda.registerND'
     # will be instantiated for each rank from 1..max_array_dims
-    nd_stamp_flags = createNDHandlerInstantiations(config, src_dir)
+    nd_stamp_flags = createNDHandlerInstantiations(server_config, modules, src_dir)
 
     # Create build flags to designate which types the server should support
-    type_flags = getSupportedTypes(config)
+    type_flags = getSupportedTypes(server_config)
 
     print(f"{module_source_files} {nd_stamp_flags} {type_flags}")
 
