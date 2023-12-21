@@ -460,6 +460,27 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(appended[1].to_list(), [99] + b)
         self.assertListEqual(appended[2].to_list(), [99])
 
+        a = [1, 2, 1, 1, 3, 3, 5, 4, 6, 2]
+        b = [10, 11, 11, 12, 13, 10, 4, 6, 1, 12]
+        segments = ak.array([0, len(a), len(a), len(a), len(a) + len(b)])
+        flat = ak.array(a + b)
+        sa = ak.SegArray(segments, flat)
+
+        appended = sa.append_single(99)
+        self.assertListEqual(appended[0].to_list(), a + [99])
+        self.assertListEqual(appended[1].to_list(), [99])
+        self.assertListEqual(appended[2].to_list(), [99])
+        self.assertListEqual(appended[3].to_list(), b + [99])
+        self.assertListEqual(appended[4].to_list(), [99])
+
+        arange = ak.arange(5, 10)
+        appended = sa.append_single(arange)
+        self.assertListEqual(appended[0].to_list(), a + [arange[0]])
+        self.assertListEqual(appended[1].to_list(), [arange[1]])
+        self.assertListEqual(appended[2].to_list(), [arange[2]])
+        self.assertListEqual(appended[3].to_list(), b + [arange[3]])
+        self.assertListEqual(appended[4].to_list(), [arange[4]])
+
     def test_remove_repeats(self):
         a = [1, 1, 1, 2, 3]
         b = [10, 11, 11, 12]
