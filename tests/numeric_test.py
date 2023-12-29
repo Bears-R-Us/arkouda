@@ -229,49 +229,130 @@ class NumericTest(ArkoudaTest):
             ak.cumprod([range(0, 10)])
 
     def testSin(self):
-        na = np.arange(0, 10, dtype="int64")
+        na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.sin(na), ak.sin(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.sin(na, where=True), ak.sin(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.sin(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.sin(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.sin(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(0, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.sin(na), ak.sin(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.sin(na, where=True), ak.sin(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.sin(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.sin(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.sin(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(0, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.sin(na), ak.sin(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.sin(na, where=True), ak.sin(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.sin(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.sin(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.sin(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.sin([range(0, 10)])
 
     def testCos(self):
-        na = np.arange(0, 10, dtype="int64")
+        na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.cos(na), ak.cos(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.cos(na, where=True), ak.cos(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.cos(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.cos(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.cos(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(0, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.cos(na), ak.cos(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.cos(na, where=True), ak.cos(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.cos(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.cos(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.cos(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(0, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.cos(na), ak.cos(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.cos(na, where=True), ak.cos(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.cos(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.cos(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.cos(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.cos([range(0, 10)])
 
     def testTan(self):
-        na = np.arange(0, 10, dtype="int64")
+        na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.tan(na), ak.tan(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.tan(na, where=True), ak.tan(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.tan(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.tan(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.tan(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(0, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.tan(na), ak.tan(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.tan(na, where=True), ak.tan(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.tan(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.tan(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.tan(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(0, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.tan(na), ak.tan(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.tan(na, where=True), ak.tan(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.tan(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.tan(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.tan(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.tan([range(0, 10)])
@@ -279,47 +360,128 @@ class NumericTest(ArkoudaTest):
     def testArcsin(self):
         na = np.arange(-1, 2, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arcsin(na), ak.arcsin(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.arcsin(na, where=True), ak.arcsin(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.arcsin(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arcsin(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arcsin(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.arange(0, 2, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arcsin(na), ak.arcsin(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.arcsin(na, where=True), ak.arcsin(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.arcsin(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arcsin(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arcsin(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(-1, 1)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arcsin(na), ak.arcsin(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.arcsin(na, where=True), ak.arcsin(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.arcsin(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arcsin(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arcsin(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.arcsin([range(0, 10)])
 
     def testArccos(self):
-        na = np.arange(-1, 2, dtype="int64")
+        na = np.arange(-1, 1, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arccos(na), ak.arccos(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.arccos(na, where=True), ak.arccos(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.arccos(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arccos(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arccos(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.arange(0, 2, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arccos(na), ak.arccos(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.arccos(na, where=True), ak.arccos(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.arccos(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arccos(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arccos(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(-1, 1)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arccos(na), ak.arccos(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.arccos(na, where=True), ak.arccos(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.arccos(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arccos(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arccos(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.arccos([range(0, 10)])
 
     def testArctan(self):
-        na = np.arange(0, 10, dtype="int64")
+        na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arctan(na), ak.arctan(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.arctan(na, where=True), ak.arctan(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.arctan(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arctan(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arctan(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(0, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arctan(na), ak.arctan(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.arctan(na, where=True), ak.arctan(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.arctan(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arctan(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arctan(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(0, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arctan(na), ak.arctan(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.arctan(na), ak.arctan(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.arctan(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arctan(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arctan(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.arctan([range(0, 10)])
@@ -346,36 +508,93 @@ class NumericTest(ArkoudaTest):
         na2_float = np.linspace(0, 10, 10)
         pda2_float = ak.array(na2_float)
 
+        truth_np = np.arange(len(na1_int)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+
         # vector-vector case
         self.assertTrue(
-            np.allclose(np.arctan2(na1_int, na2_int), ak.arctan2(pda1_int, pda2_int).to_ndarray())
-        )
-        self.assertTrue(
-            np.allclose(np.arctan2(na1_int, na2_uint), ak.arctan2(pda1_int, pda2_uint).to_ndarray())
-        )
-        self.assertTrue(
-            np.allclose(np.arctan2(na1_int, na2_float), ak.arctan2(pda1_int, pda2_float).to_ndarray())
-        )
-
-        self.assertTrue(
-            np.allclose(np.arctan2(na1_uint, na2_int), ak.arctan2(pda1_uint, pda2_int).to_ndarray())
-        )
-        self.assertTrue(
-            np.allclose(np.arctan2(na1_uint, na2_uint), ak.arctan2(pda1_uint, pda2_uint).to_ndarray())
-        )
-        self.assertTrue(
-            np.allclose(np.arctan2(na1_uint, na2_float), ak.arctan2(pda1_uint, pda2_float).to_ndarray())
-        )
-
-        self.assertTrue(
-            np.allclose(np.arctan2(na1_float, na2_int), ak.arctan2(pda1_float, pda2_int).to_ndarray())
-        )
-        self.assertTrue(
-            np.allclose(np.arctan2(na1_float, na2_uint), ak.arctan2(pda1_float, pda2_uint).to_ndarray())
+            np.allclose(
+                [
+                    np.arctan2(na1_int[i], na2_int[i]) if truth_np[i] else na1_int[i] / na2_int[i]
+                    for i in range(len(na1_int))
+                ],
+                ak.arctan2(pda1_int, pda2_int, where=truth_ak).to_ndarray(),
+            )
         )
         self.assertTrue(
             np.allclose(
-                np.arctan2(na1_float, na2_float), ak.arctan2(pda1_float, pda2_float).to_ndarray()
+                [
+                    np.arctan2(na1_int[i], na2_uint[i]) if truth_np[i] else na1_int[i] / na2_uint[i]
+                    for i in range(len(na1_int))
+                ],
+                ak.arctan2(pda1_int, pda2_uint, where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_int[i], na2_float[i]) if truth_np[i] else na1_int[i] / na2_float[i]
+                    for i in range(len(na1_int))
+                ],
+                ak.arctan2(pda1_int, pda2_float, where=truth_ak).to_ndarray(),
+            )
+        )
+
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_uint[i], na2_int[i]) if truth_np[i] else na1_uint[i] / na2_int[i]
+                    for i in range(len(na1_uint))
+                ],
+                ak.arctan2(pda1_uint, pda2_int, where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_uint[i], na2_uint[i]) if truth_np[i] else na1_uint[i] / na2_uint[i]
+                    for i in range(len(na1_uint))
+                ],
+                ak.arctan2(pda1_uint, pda2_uint, where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_uint[i], na2_float[i]) if truth_np[i] else na1_uint[i] / na2_float[i]
+                    for i in range(len(na1_uint))
+                ],
+                ak.arctan2(pda1_uint, pda2_float, where=truth_ak).to_ndarray(),
+            )
+        )
+
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_float[i], na2_int[i]) if truth_np[i] else na1_float[i] / na2_int[i]
+                    for i in range(len(na1_float))
+                ],
+                ak.arctan2(pda1_float, pda2_int, where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_float[i], na2_uint[i]) if truth_np[i] else na1_float[i] / na2_uint[i]
+                    for i in range(len(na1_float))
+                ],
+                ak.arctan2(pda1_float, pda2_uint, where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_float[i], na2_float[i])
+                    if truth_np[i]
+                    else na1_float[i] / na2_float[i]
+                    for i in range(len(na1_float))
+                ],
+                ak.arctan2(pda1_float, pda2_float, where=truth_ak).to_ndarray(),
             )
         )
 
@@ -385,24 +604,88 @@ class NumericTest(ArkoudaTest):
         # vector-scalar case
         denom = np.array([5]).astype(np.uint)  # work around to get a scalar uint
 
-        self.assertTrue(np.allclose(np.arctan2(na1_int, 5), ak.arctan2(pda1_int, 5).to_ndarray()))
         self.assertTrue(
-            np.allclose(np.arctan2(na1_int, denom[0]), ak.arctan2(pda1_int, denom[0]).to_ndarray())
+            np.allclose(
+                [
+                    np.arctan2(na1_int[i], 5) if truth_np[i] else na1_int[i] / 5
+                    for i in range(len(na1_int))
+                ],
+                ak.arctan2(pda1_int, 5, where=truth_ak).to_ndarray(),
+            )
         )
-        self.assertTrue(np.allclose(np.arctan2(na1_int, 5.0), ak.arctan2(pda1_int, 5.0).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_int[i], denom[0]) if truth_np[i] else na1_int[i] / denom[0]
+                    for i in range(len(na1_int))
+                ],
+                ak.arctan2(pda1_int, denom[0], where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_int[i], 5.0) if truth_np[i] else na1_int[i] / 5.0
+                    for i in range(len(na1_int))
+                ],
+                ak.arctan2(pda1_int, 5.0, where=truth_ak).to_ndarray(),
+            )
+        )
 
-        self.assertTrue(np.allclose(np.arctan2(na1_uint, 5), ak.arctan2(pda1_uint, 5).to_ndarray()))
         self.assertTrue(
-            np.allclose(np.arctan2(na1_uint, denom[0]), ak.arctan2(pda1_uint, denom[0]).to_ndarray())
+            np.allclose(
+                [
+                    np.arctan2(na1_uint[i], 5) if truth_np[i] else na1_uint[i] / 5
+                    for i in range(len(na1_uint))
+                ],
+                ak.arctan2(pda1_uint, 5, where=truth_ak).to_ndarray(),
+            )
         )
-        self.assertTrue(np.allclose(np.arctan2(na1_uint, 5.0), ak.arctan2(pda1_uint, 5.0).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_uint[i], denom[0]) if truth_np[i] else na1_uint[i] / denom[0]
+                    for i in range(len(na1_uint))
+                ],
+                ak.arctan2(pda1_uint, denom[0], where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_uint[i], 5.0) if truth_np[i] else na1_uint[i] / 5.0
+                    for i in range(len(na1_uint))
+                ],
+                ak.arctan2(pda1_uint, 5.0, where=truth_ak).to_ndarray(),
+            )
+        )
 
-        self.assertTrue(np.allclose(np.arctan2(na1_float, 5), ak.arctan2(pda1_float, 5).to_ndarray()))
         self.assertTrue(
-            np.allclose(np.arctan2(na1_float, denom[0]), ak.arctan2(pda1_float, denom[0]).to_ndarray())
+            np.allclose(
+                [
+                    np.arctan2(na1_float[i], 5) if truth_np[i] else na1_float[i] / 5
+                    for i in range(len(na1_float))
+                ],
+                ak.arctan2(pda1_float, 5, where=truth_ak).to_ndarray(),
+            )
         )
         self.assertTrue(
-            np.allclose(np.arctan2(na1_float, 5.0), ak.arctan2(pda1_float, 5.0).to_ndarray())
+            np.allclose(
+                [
+                    np.arctan2(na1_float[i], denom[0]) if truth_np[i] else na1_float[i] / denom[0]
+                    for i in range(len(na1_float))
+                ],
+                ak.arctan2(pda1_float, denom[0], where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(na1_float[i], 5.0) if truth_np[i] else na1_float[i] / 5.0
+                    for i in range(len(na1_float))
+                ],
+                ak.arctan2(pda1_float, 5.0, where=truth_ak).to_ndarray(),
+            )
         )
 
         with self.assertRaises(TypeError):
@@ -415,24 +698,88 @@ class NumericTest(ArkoudaTest):
         # scalar-vector case
         num = np.array([1]).astype(np.uint)  # work around to get a scalar uint
 
-        self.assertTrue(np.allclose(np.arctan2(1, na2_int), ak.arctan2(1, pda2_int).to_ndarray()))
-        self.assertTrue(np.allclose(np.arctan2(1, na2_uint), ak.arctan2(1, pda2_uint).to_ndarray()))
-        self.assertTrue(np.allclose(np.arctan2(1, na2_float), ak.arctan2(1, pda2_float).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(1, na2_int[i]) if truth_np[i] else 1 / na2_int[i]
+                    for i in range(len(na1_int))
+                ],
+                ak.arctan2(1, pda2_int, where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(1, na2_uint[i]) if truth_np[i] else 1 / na2_uint[i]
+                    for i in range(len(na1_int))
+                ],
+                ak.arctan2(1, pda2_uint, where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(1, na2_float[i]) if truth_np[i] else 1 / na2_float[i]
+                    for i in range(len(na1_int))
+                ],
+                ak.arctan2(1, pda2_float, where=truth_ak).to_ndarray(),
+            )
+        )
 
         self.assertTrue(
-            np.allclose(np.arctan2(num[0], na2_int), ak.arctan2(num[0], pda2_int).to_ndarray())
+            np.allclose(
+                [
+                    np.arctan2(num[0], na2_int[i]) if truth_np[i] else num[0] / na2_int[i]
+                    for i in range(len(na1_uint))
+                ],
+                ak.arctan2(num[0], pda2_int, where=truth_ak).to_ndarray(),
+            )
         )
         self.assertTrue(
-            np.allclose(np.arctan2(num[0], na2_uint), ak.arctan2(num[0], pda2_uint).to_ndarray())
+            np.allclose(
+                [
+                    np.arctan2(num[0], na2_uint[i]) if truth_np[i] else num[0] / na2_uint[i]
+                    for i in range(len(na1_uint))
+                ],
+                ak.arctan2(num[0], pda2_uint, where=truth_ak).to_ndarray(),
+            )
         )
         self.assertTrue(
-            np.allclose(np.arctan2(num[0], na2_float), ak.arctan2(num[0], pda2_float).to_ndarray())
+            np.allclose(
+                [
+                    np.arctan2(num[0], na2_float[i]) if truth_np[i] else num[0] / na2_float[i]
+                    for i in range(len(na1_uint))
+                ],
+                ak.arctan2(num[0], pda2_float, where=truth_ak).to_ndarray(),
+            )
         )
 
-        self.assertTrue(np.allclose(np.arctan2(1.0, na2_int), ak.arctan2(1.0, pda2_int).to_ndarray()))
-        self.assertTrue(np.allclose(np.arctan2(1.0, na2_uint), ak.arctan2(1.0, pda2_uint).to_ndarray()))
         self.assertTrue(
-            np.allclose(np.arctan2(1.0, na2_float), ak.arctan2(1.0, pda2_float).to_ndarray())
+            np.allclose(
+                [
+                    np.arctan2(1.0, na2_int[i]) if truth_np[i] else 1.0 / na2_int[i]
+                    for i in range(len(na1_float))
+                ],
+                ak.arctan2(1.0, pda2_int, where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(1.0, na2_uint[i]) if truth_np[i] else 1.0 / na2_uint[i]
+                    for i in range(len(na1_float))
+                ],
+                ak.arctan2(1.0, pda2_uint, where=truth_ak).to_ndarray(),
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                [
+                    np.arctan2(1.0, na2_float[i]) if truth_np[i] else 1.0 / na2_float[i]
+                    for i in range(len(na1_float))
+                ],
+                ak.arctan2(1.0, pda2_float, where=truth_ak).to_ndarray(),
+            )
         )
 
         with self.assertRaises(TypeError):
@@ -470,17 +817,44 @@ class NumericTest(ArkoudaTest):
         )
 
     def testSinh(self):
-        na = np.arange(0, 10, dtype="int64")
+        na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.sinh(na, where=True), ak.sinh(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.sinh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.sinh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.sinh(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(0, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.sinh(na, where=True), ak.sinh(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.sinh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.sinh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.sinh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(0, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.sinh(na, where=True), ak.sinh(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.sinh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.sinh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.sinh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.sinh([range(0, 10)])
@@ -491,17 +865,44 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray(), equal_nan=True))
 
     def testCosh(self):
-        na = np.arange(0, 10, dtype="int64")
+        na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.cosh(na, where=True), ak.cosh(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.cosh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.cosh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.cosh(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(0, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.cosh(na, where=True), ak.cosh(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.cosh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.cosh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.cosh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(0, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.cosh(na, where=True), ak.cosh(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.cosh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.cosh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.cosh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.cosh([range(0, 10)])
@@ -512,17 +913,44 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray(), equal_nan=True))
 
     def testTanh(self):
-        na = np.arange(0, 10, dtype="int64")
+        na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.tanh(na, where=True), ak.tanh(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.tanh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.tanh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.tanh(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(0, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.tanh(na, where=True), ak.tanh(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.tanh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.tanh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.tanh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(0, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(np.allclose(np.tanh(na, where=True), ak.tanh(pda, where=True).to_ndarray()))
+        self.assertTrue(np.allclose(na, ak.tanh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.tanh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.tanh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.tanh([range(0, 10)])
@@ -533,17 +961,50 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray(), equal_nan=True))
 
     def testArcsinh(self):
-        na = np.arange(0, 10, dtype="int64")
+        na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.arcsinh(na, where=True), ak.arcsinh(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.arcsinh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arcsinh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arcsinh(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(0, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.arcsinh(na, where=True), ak.arcsinh(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.arcsinh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arcsinh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arcsinh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(0, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.arcsinh(na, where=True), ak.arcsinh(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.arcsinh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arcsinh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arcsinh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.arcsinh([range(0, 10)])
@@ -554,17 +1015,50 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray(), equal_nan=True))
 
     def testArccosh(self):
-        na = np.arange(1, 10, dtype="int64")
+        na = np.arange(1, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.arccosh(na, where=True), ak.arccosh(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.arccosh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arccosh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arccosh(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(1, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.arccosh(na, where=True), ak.arccosh(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.arccosh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arccosh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arccosh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(1, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.arccosh(na, where=True), ak.arccosh(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.arccosh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arccosh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arccosh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.arccosh([range(0, 10)])
@@ -578,47 +1072,146 @@ class NumericTest(ArkoudaTest):
     def testArctanh(self):
         na = np.arange(-1, 2, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arctanh(na), ak.arctanh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.arctanh(na, where=True), ak.arctanh(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.arctanh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arctanh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arctanh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.arange(0, 2, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arctanh(na), ak.arctanh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.arctanh(na, where=True), ak.arctanh(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.arctanh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arctanh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arctanh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(-1, 1)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.arctanh(na), ak.arctanh(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.arctanh(na, where=True), ak.arctanh(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.arctanh(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.arctanh(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.arctanh(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.arctanh([range(0, 10)])
 
     def testRad2deg(self):
-        na = np.arange(0, 10, dtype="int64")
+        na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.rad2deg(na), ak.rad2deg(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.rad2deg(na, where=True), ak.rad2deg(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.rad2deg(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.rad2deg(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.rad2deg(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(0, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.rad2deg(na), ak.rad2deg(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.rad2deg(na, where=True), ak.rad2deg(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.rad2deg(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.rad2deg(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.rad2deg(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(0, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.rad2deg(na), ak.rad2deg(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.rad2deg(na, where=True), ak.rad2deg(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.rad2deg(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.rad2deg(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.rad2deg(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.rad2deg([range(0, 10)])
 
     def testDeg2rad(self):
-        na = np.arange(0, 10, dtype="int64")
+        na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.deg2rad(na), ak.deg2rad(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.deg2rad(na, where=True), ak.deg2rad(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.deg2rad(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.deg2rad(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.deg2rad(pda, where=truth_ak).to_list(),
+            )
+        )
 
-        na = np.arange(0, 10, dtype="uint64")
+        na = np.arange(2**64 - 10, 2**64, dtype="uint64")
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.deg2rad(na), ak.deg2rad(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.deg2rad(na, where=True), ak.deg2rad(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.deg2rad(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.deg2rad(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.deg2rad(pda, where=truth_ak).to_list(),
+            )
+        )
 
         na = np.linspace(0, 10)
         pda = ak.array(na)
-        self.assertTrue(np.allclose(np.deg2rad(na), ak.deg2rad(pda).to_ndarray()))
+        truth_np = np.arange(len(na)) % 2 == 0
+        truth_ak = ak.array(truth_np)
+        self.assertTrue(
+            np.allclose(np.deg2rad(na, where=True), ak.deg2rad(pda, where=True).to_ndarray())
+        )
+        self.assertTrue(np.allclose(na, ak.deg2rad(pda, where=False).to_ndarray()))
+        self.assertTrue(
+            np.allclose(
+                [np.deg2rad(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+                ak.deg2rad(pda, where=truth_ak).to_list(),
+            )
+        )
 
         with self.assertRaises(TypeError):
             ak.deg2rad([range(0, 10)])
