@@ -7161,12 +7161,16 @@ Attributes
           134.05309592737584, 450.21589865655358])
 
 
-.. py:function:: sin(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: sin(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise sine of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the sine will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing sin for each element
              of the original pdarray
@@ -7175,12 +7179,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: cos(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: cos(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise cosine of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the cosine will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing cosine for each element
              of the original pdarray
@@ -7189,12 +7197,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: tan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: tan(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise tangent of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the tangent will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing tangent for each element
              of the original pdarray
@@ -7203,12 +7215,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: arcsin(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arcsin(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise inverse sine of the array. The result is between -pi/2 and pi/2.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the inverse sine will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing inverse sine for each element
              of the original pdarray
@@ -7217,12 +7233,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: arccos(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arccos(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise inverse cosine of the array. The result is between 0 and pi.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the inverse cosine will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing inverse cosine for each element
              of the original pdarray
@@ -7231,12 +7251,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: arctan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arctan(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise inverse tangent of the array. The result is between -pi/2 and pi/2.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the inverse tangent will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing inverse tangent for each element
              of the original pdarray
@@ -7245,7 +7269,7 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: arctan2(num: Union[arkouda.pdarrayclass.pdarray, arkouda.dtypes.numeric_scalars], denom: Union[arkouda.pdarrayclass.pdarray, arkouda.dtypes.numeric_scalars]) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arctan2(num: Union[arkouda.pdarrayclass.pdarray, arkouda.dtypes.numeric_scalars], denom: Union[arkouda.pdarrayclass.pdarray, arkouda.dtypes.numeric_scalars], where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise inverse tangent of the array pair. The result chosen is the
    signed angle in radians between the ray ending at the origin and passing through the
@@ -7256,6 +7280,10 @@ Attributes
    :type num: Union[numeric_scalars, pdarray]
    :param denom: Denominator of the arctan2 argument.
    :type denom: Union[numeric_scalars, pdarray]
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing inverse tangent for each corresponding element pair
              of the original pdarray, using the signed values or the numerator and
@@ -7265,12 +7293,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: sinh(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: sinh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise hyperbolic sine of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing hyperbolic sine for each element
              of the original pdarray
@@ -7279,12 +7311,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: cosh(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: cosh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise hyperbolic cosine of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing hyperbolic cosine for each element
              of the original pdarray
@@ -7293,12 +7329,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: tanh(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: tanh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise hyperbolic tangent of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the hyperbolic tangent will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing hyperbolic tangent for each element
              of the original pdarray
@@ -7307,12 +7347,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: arcsinh(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arcsinh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise inverse hyperbolic sine of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing inverse hyperbolic sine for each element
              of the original pdarray
@@ -7321,12 +7365,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: arccosh(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arccosh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise inverse hyperbolic cosine of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the inverse hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will
+                 retain its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing inverse hyperbolic cosine for each element
              of the original pdarray
@@ -7335,12 +7383,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: arctanh(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arctanh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise inverse hyperbolic tangent of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the inverse hyperbolic tangent will be applied to the corresponding value. Elsewhere,
+                 it will retain its original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing inverse hyperbolic tangent for each element
              of the original pdarray
@@ -7349,12 +7401,16 @@ Attributes
    :raises TypeError: Raised if the parameters are not a pdarray or numeric scalar.
 
 
-.. py:function:: rad2deg(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: rad2deg(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Converts angles element-wise from radians to degrees.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True, the
+                 corresponding value will be converted from radians to degrees. Elsewhere, it will retain its
+                 original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing an angle converted to degrees, from radians, for each element
              of the original pdarray
@@ -7363,12 +7419,16 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: deg2rad(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: deg2rad(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Converts angles element-wise from degrees to radians.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True, the
+                 corresponding value will be converted from degrees to radians. Elsewhere, it will retain its
+                 original value. Default set to True.
+   :type where: Boolean or pdarray
 
    :returns: A pdarray containing an angle converted to radians, from degrees, for each element
              of the original pdarray
