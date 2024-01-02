@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-
+prob_size = 1000
 import arkouda as ak
 from arkouda.dtypes import npstr
 
@@ -33,6 +33,19 @@ ROUNDTRIP_CAST = [
     (ak.uint8, ak.float64),
     (ak.uint8, npstr),
 ]
+
+
+def _trig_test_helper(np_func, na, ak_func, pda):
+    assert np.allclose(np_func(na), ak_func(pda).to_ndarray(), equal_nan=True)
+    truth_np = np.arange(len(na)) % 2 == 0
+    truth_ak = ak.array(truth_np)
+    assert np.allclose(np_func(na, where=True), ak_func(pda, where=True).to_ndarray(), equal_nan=True)
+    assert np.allclose(na, ak_func(pda, where=False).to_ndarray(), equal_nan=True)
+    assert np.allclose(
+        [np_func(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+        ak_func(pda, where=truth_ak).to_list(),
+        equal_nan=True,
+    )
 
 
 class TestNumeric:
@@ -210,8 +223,8 @@ class TestNumeric:
     def test_sin(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.sin, na, ak.sin, pda)
 
-        assert np.allclose(np.sin(na), ak.sin(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.sin(np.array([range(0, 10)]).astype(num_type))
 
@@ -219,8 +232,8 @@ class TestNumeric:
     def test_cos(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.cos, na, ak.cos, pda)
 
-        assert np.allclose(np.cos(na), ak.cos(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.cos(np.array([range(0, 10)]).astype(num_type))
 
@@ -228,8 +241,8 @@ class TestNumeric:
     def test_tan(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.tan, na, ak.tan, pda)
 
-        assert np.allclose(np.tan(na), ak.tan(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.tan(np.array([range(0, 10)]).astype(num_type))
 
@@ -237,8 +250,8 @@ class TestNumeric:
     def test_arcsin(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.arcsin, na, ak.arcsin, pda)
 
-        assert np.allclose(np.arcsin(na), ak.arcsin(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.arcsin(np.array([range(0, 10)]).astype(num_type))
 
@@ -246,8 +259,8 @@ class TestNumeric:
     def test_arccos(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.arccos, na, ak.arccos, pda)
 
-        assert np.allclose(np.arccos(na), ak.arccos(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.arccos(np.array([range(0, 10)]).astype(num_type))
 
@@ -255,8 +268,8 @@ class TestNumeric:
     def test_arctan(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.arctan, na, ak.arctan, pda)
 
-        assert np.allclose(np.arctan(na), ak.arctan(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.arctan(np.array([range(0, 10)]).astype(num_type))
 
@@ -269,17 +282,62 @@ class TestNumeric:
         pda_num = ak.array(na_num, dtype=num_type)
         pda_denom = ak.array(na_denom, dtype=denom_type)
 
-        num = pda_num[0]
-        denom = pda_denom[0]
+        truth_np = np.arange(len(na_num)) % 2 == 0
+        truth_ak = ak.array(truth_np)
 
         assert np.allclose(
-            np.arctan2(na_num, na_denom), ak.arctan2(pda_num, pda_denom).to_ndarray(), equal_nan=True
+            np.arctan2(na_num, na_denom, where=True),
+            ak.arctan2(pda_num, pda_denom, where=True).to_ndarray(),
+            equal_nan=True,
         )
         assert np.allclose(
-            np.arctan2(num, na_denom), ak.arctan2(num, pda_denom).to_ndarray(), equal_nan=True
+            np.arctan2(na_num[0], na_denom, where=True),
+            ak.arctan2(pda_num[0], pda_denom, where=True).to_ndarray(),
+            equal_nan=True,
         )
         assert np.allclose(
-            np.arctan2(na_num, denom), ak.arctan2(pda_num, denom).to_ndarray(), equal_nan=True
+            np.arctan2(na_num, na_denom[0], where=True),
+            ak.arctan2(pda_num, pda_denom[0], where=True).to_ndarray(),
+            equal_nan=True,
+        )
+
+        assert np.allclose(
+            na_num / na_denom, ak.arctan2(pda_num, pda_denom, where=False).to_list(), equal_nan=True
+        )
+        assert np.allclose(
+            na_num[0] / na_denom,
+            ak.arctan2(pda_num[0], pda_denom, where=False).to_ndarray(),
+            equal_nan=True,
+        )
+        assert np.allclose(
+            na_num / na_denom[0],
+            ak.arctan2(pda_num, pda_denom[0], where=False).to_ndarray(),
+            equal_nan=True,
+        )
+
+        assert np.allclose(
+            [
+                np.arctan2(na_num[i], na_denom[i]) if truth_np[i] else na_num[i] / na_denom[i]
+                for i in range(len(na_num))
+            ],
+            ak.arctan2(pda_num, pda_denom, where=truth_ak).to_ndarray(),
+            equal_nan=True,
+        )
+        assert np.allclose(
+            [
+                np.arctan2(na_num[0], na_denom[i]) if truth_np[i] else na_num[0] / na_denom[i]
+                for i in range(len(na_denom))
+            ],
+            ak.arctan2(pda_num[0], pda_denom, where=truth_ak).to_ndarray(),
+            equal_nan=True,
+        )
+        assert np.allclose(
+            [
+                np.arctan2(na_num[i], na_denom[0]) if truth_np[i] else na_num[i] / na_denom[0]
+                for i in range(len(na_num))
+            ],
+            ak.arctan2(pda_num, pda_denom[0], where=truth_ak).to_ndarray(),
+            equal_nan=True,
         )
 
         with pytest.raises(TypeError):
@@ -287,16 +345,16 @@ class TestNumeric:
                 np.array([range(0, 10)]).astype(num_type), np.array([range(10, 20)]).astype(num_type)
             )
         with pytest.raises(TypeError):
-            ak.arctan2(num, np.array([range(10, 20)]).astype(num_type))
+            ak.arctan2(pda_num[0], np.array([range(10, 20)]).astype(num_type))
         with pytest.raises(TypeError):
-            ak.arctan2(np.array([range(0, 10)]).astype(num_type), denom)
+            ak.arctan2(np.array([range(0, 10)]).astype(num_type), pda_denom[0])
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_sinh(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.sinh, na, ak.sinh, pda)
 
-        assert np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.sinh(np.array([range(0, 10)]).astype(num_type))
 
@@ -304,8 +362,8 @@ class TestNumeric:
     def test_cosh(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.cosh, na, ak.cosh, pda)
 
-        assert np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.cosh(np.array([range(0, 10)]).astype(num_type))
 
@@ -313,8 +371,8 @@ class TestNumeric:
     def test_tanh(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.tanh, na, ak.tanh, pda)
 
-        assert np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.tanh(np.array([range(0, 10)]).astype(num_type))
 
@@ -322,8 +380,8 @@ class TestNumeric:
     def test_arcsinh(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.arcsinh, na, ak.arcsinh, pda)
 
-        assert np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.arcsinh(np.array([range(0, 10)]).astype(num_type))
 
@@ -331,8 +389,8 @@ class TestNumeric:
     def test_arccosh(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.arccosh, na, ak.arccosh, pda)
 
-        assert np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.arccosh(np.array([range(0, 10)]).astype(num_type))
 
@@ -340,8 +398,8 @@ class TestNumeric:
     def test_arctanh(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.arctanh, na, ak.arctanh, pda)
 
-        assert np.allclose(np.arctanh(na), ak.arctanh(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.arctanh(np.array([range(0, 10)]).astype(num_type))
 
@@ -349,8 +407,8 @@ class TestNumeric:
     def test_rad2deg(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.rad2deg, na, ak.rad2deg, pda)
 
-        assert np.allclose(np.rad2deg(na), ak.rad2deg(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.rad2deg(np.array([range(0, 10)]).astype(num_type))
 
@@ -358,8 +416,8 @@ class TestNumeric:
     def test_deg2rad(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
+        _trig_test_helper(np.deg2rad, na, ak.deg2rad, pda)
 
-        assert np.allclose(np.deg2rad(na), ak.deg2rad(pda).to_ndarray(), equal_nan=True)
         with pytest.raises(TypeError):
             ak.deg2rad(np.array([range(0, 10)]).astype(num_type))
 
@@ -399,7 +457,7 @@ class TestNumeric:
     def test_str_cat_cast(self):
         test_strs = [
             ak.array([f"str {i}" for i in range(101)]),
-            ak.array([f"str {i%3}" for i in range(101)]),
+            ak.array([f"str {i % 3}" for i in range(101)]),
         ]
         for test_str, test_cat in zip(test_strs, [ak.Categorical(s) for s in test_strs]):
             cast_str = ak.cast(test_cat, ak.Strings)
