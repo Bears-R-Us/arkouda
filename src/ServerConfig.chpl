@@ -51,7 +51,7 @@ module ServerConfig
       Scalar (numpy) data types supported by the server
       set by 'serverModuleGen.py' based on 'serverConfig.json'
     */
-    config param  SupportsUint8 = false,
+    config param  SupportsUint8 = true,
                   SupportsUint16 = false,
                   SupportsUint32 = false,
                   SupportsUint64 = true,
