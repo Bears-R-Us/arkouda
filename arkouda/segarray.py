@@ -629,7 +629,7 @@ class SegArray:
             lastscatter = newsegs + newlens - 1
         newvals[lastscatter] = x
         origscatter = arange(self.valsize) + self.grouping.broadcast(
-            arange(self._non_empty_count), permute=True
+            arange(self.size)[self.non_empty], permute=True
         )
         if prepend:
             origscatter += 1
