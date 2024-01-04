@@ -3,12 +3,13 @@ import itertools
 import numpy as np
 import pandas as pd
 import pytest
-from pandas.testing import assert_frame_equal, assert_series_equal
+from pandas.testing import assert_frame_equal, assert_series_equal, assert_series_equal
 
 import arkouda as ak
 
 
 class TestDataFrame:
+
     @staticmethod
     def build_pd_df():
         username = ["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"]
@@ -16,8 +17,8 @@ class TestDataFrame:
         item = [0, 0, 1, 1, 2, 0]
         day = [5, 5, 6, 5, 6, 6]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6]
-        bi = [2**200, 2**200 + 1, 2**200 + 2, 2**200 + 3, 2**200 + 4, 2**200 + 5]
-        ui = (np.arange(6).astype(ak.uint64)) + 2**63
+        bi = [2 ** 200, 2 ** 200 + 1, 2 ** 200 + 2, 2 ** 200 + 3, 2 ** 200 + 4, 2 ** 200 + 5]
+        ui = (np.arange(6).astype(ak.uint64)) + 2 ** 63
         return pd.DataFrame(
             {
                 "userName": username,
@@ -33,6 +34,23 @@ class TestDataFrame:
     @staticmethod
     def build_ak_df():
         return ak.DataFrame(TestDataFrame.build_pd_df())
+    
+    @staticmethod   
+    def build_ak_df_example2():
+        data = {"key1":["valuew", "valuex", "valuew", "valuex"], "key2":["valueA", "valueB", "valueA", "valueB"], "key3":["value1", "value2", "value3", "value4"], "count":[34, 25, 11, 4], "nums":[1, 2, 5, 21]}
+        ak_df = ak.DataFrame({k:ak.array(v) for k, v in data.items()})
+        return ak_df
+
+    @staticmethod
+    def build_ak_df_example_numeric_types():
+        ak_df = ak.DataFrame({"gb_id":ak.randint(0, 5, 20, dtype=ak.int64),
+                   "float64":ak.randint(0, 1, 20, dtype=ak.float64),
+                  "int64":ak.randint(0, 10, 20, dtype=ak.int64),
+                    "uint64":ak.randint(0, 10, 20, dtype=ak.uint64),
+                   "bigint":ak.randint(0, 10, 20, dtype=ak.uint64) + 2 ** 200
+                  }
+                    )
+        return ak_df
 
     @staticmethod
     def build_pd_df_duplicates():
@@ -53,8 +71,8 @@ class TestDataFrame:
         item = ak.array([0, 2])
         day = ak.array([1, 2])
         amount = ak.array([0.5, 5.1])
-        bi = ak.array([2**200 + 6, 2**200 + 7])
-        ui = ak.array([6, 7], dtype=ak.uint64) + 2**63
+        bi = ak.array([2 ** 200 + 6, 2 ** 200 + 7])
+        ui = ak.array([6, 7], dtype=ak.uint64) + 2 ** 63
         return ak.DataFrame(
             {
                 "userName": username,
@@ -74,8 +92,8 @@ class TestDataFrame:
         item = [0, 0, 1, 1, 2, 0, 0, 2]
         day = [5, 5, 6, 5, 6, 6, 1, 2]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
-        bi = (np.arange(8) + 2**200).tolist()
-        ui = (np.arange(8).astype(ak.uint64)) + 2**63
+        bi = (np.arange(8) + 2 ** 200).tolist()
+        ui = (np.arange(8).astype(ak.uint64)) + 2 ** 63
         return pd.DataFrame(
             {
                 "userName": username,
@@ -101,8 +119,8 @@ class TestDataFrame:
         item = ak.array([0, 0, 1, 1, 2, 0])
         day = ak.array([5, 5, 6, 5, 6, 6])
         amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        bi = ak.arange(2**200, 2**200 + 6)
-        ui = ak.arange(6, dtype=ak.uint64) + 2**63
+        bi = ak.arange(2 ** 200, 2 ** 200 + 6)
+        ui = ak.arange(6, dtype=ak.uint64) + 2 ** 63
         return ak.DataFrame(
             {
                 "userName": username,
@@ -127,7 +145,7 @@ class TestDataFrame:
             {
                 "int": np.arange(size),
                 "uint": np.random.randint(0, size / 2, size, dtype=np.uint64),
-                "bigint": np.arange(2**200, 2**200 + size),
+                "bigint": np.arange(2 ** 200, 2 ** 200 + size),
                 "bool": np.random.randint(0, 1, size=size, dtype=bool),
                 "segarray": [np.random.randint(0, size / 2, 2) for i in range(size)],
             }
@@ -142,7 +160,7 @@ class TestDataFrame:
             {
                 "int": ak.arange(size),
                 "uint": ak.array(pddf["uint"]),
-                "bigint": ak.arange(2**200, 2**200 + size),
+                "bigint": ak.arange(2 ** 200, 2 ** 200 + size),
                 "bool": ak.array(pddf["bool"]),
                 "segarray": ak.SegArray.from_multi_array([ak.array(x) for x in pddf["segarray"]]),
             }
@@ -245,7 +263,7 @@ class TestDataFrame:
             "c_3": str_arr,
             "c_4": ak.Categorical(ak.array(["str"] * 3)),
             "c_5": ak.SegArray(ak.array([0, 9, 14]), ak.arange(20)),
-            "c_6": ak.arange(2**200, 2**200 + 3),
+            "c_6": ak.arange(2 ** 200, 2 ** 200 + 3),
         }
         akdf = ak.DataFrame(df_dict)
         assert len(akdf.columns) == len(akdf.dtypes)
@@ -437,7 +455,7 @@ class TestDataFrame:
         assert count.to_list() == [1, 2, 3]
 
         # testing counts with IPv4 column
-        s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count()
+        s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count(as_series=True)
         pds = pd.Series(
             data=np.ones(4, dtype=np.int64),
             index=pd.Index(data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7")),
@@ -445,7 +463,7 @@ class TestDataFrame:
         assert_series_equal(pds, s.to_pandas())
 
         # testing counts with Categorical column
-        s = ak.DataFrame({"a": ak.Categorical(ak.array(["a", "a", "a", "b"]))}).groupby("a").count()
+        s = ak.DataFrame({"a": ak.Categorical(ak.array(["a", "a", "a", "b"]))}).groupby("a").count(as_series=True)
         pds = pd.Series(data=np.array([3, 1]), index=pd.Index(data=np.array(["a", "b"], dtype="<U7")))
         assert_series_equal(pds, s.to_pandas())
 
@@ -454,7 +472,7 @@ class TestDataFrame:
 
         gb = df.GroupBy("userName", use_series=True)
 
-        c = gb.count()
+        c = gb.count(as_series=True)
         assert isinstance(c, ak.Series)
         assert c.index.to_list() == ["Bob", "Alice", "Carol"]
         assert c.values.to_list() == [2, 3, 1]
@@ -473,7 +491,7 @@ class TestDataFrame:
             if col == group_on:
                 # pandas groupby doesn't return the column used to group
                 continue
-            ak_ans = getattr(df.groupby(group_on), agg)(col)
+            ak_ans = getattr(df.groupby(group_on), agg)()[col]
             pd_ans = getattr(pd_df.groupby(group_on), agg)()[col]
             assert ak_ans.to_list() == pd_ans.to_list()
 
@@ -481,9 +499,94 @@ class TestDataFrame:
         cols_without_group_on = list(set(df.columns) - {group_on})
         ak_ans = getattr(df.groupby(group_on), agg)()[cols_without_group_on]
         pd_ans = getattr(pd_df.groupby(group_on), agg)()[cols_without_group_on]
-        # we don't currently support index names in arkouda
-        pd_ans.index.name = None
         assert_frame_equal(pd_ans, ak_ans.to_pandas(retain_index=True))
+        
+    def test_gb_aggregations_return_dataframe(self):
+        ak_df = self.build_ak_df_example2()
+        pd_df = ak_df.to_pandas(retain_index=True)
+        
+        pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False).sum("count").drop(['nums'], axis=1)
+        ak_result1 = ak_df.groupby(["key1", "key2"]).sum("count")
+        assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
+        assert type(ak_result1) == ak.dataframe.DataFrame
+
+        pd_result2 = pd_df.groupby(["key1", "key2"], as_index=False).sum(["count"]).drop(['nums'], axis=1)
+        ak_result2 = ak_df.groupby(["key1", "key2"]).sum(["count"])
+        assert_frame_equal(pd_result2, ak_result2.to_pandas(retain_index=True))
+        assert type(ak_result2) == ak.dataframe.DataFrame
+
+        pd_result3 = pd_df.groupby(["key1", "key2"], as_index=False).sum(["count", "nums"])
+        ak_result3 = ak_df.groupby(["key1", "key2"]).sum(["count", "nums"])
+        assert_frame_equal(pd_result3, ak_result3.to_pandas(retain_index=True)) 
+        assert type(ak_result3) == ak.dataframe.DataFrame                          
+
+        pd_result4 = pd_df.groupby(["key1", "key2"], as_index=False).sum().drop(['key3'], axis=1)
+        ak_result4 = ak_df.groupby(["key1", "key2"]).sum()
+        assert_frame_equal(pd_result4, ak_result4.to_pandas(retain_index=True))
+        assert type(ak_result4) == ak.dataframe.DataFrame
+
+    def test_gb_aggregations_numeric_types(self):
+        ak_df = self.build_ak_df_example_numeric_types()
+        pd_df = ak_df.to_pandas(retain_index=True)
+        
+        assert_frame_equal(ak_df.groupby('gb_id').sum().to_pandas(retain_index=True), pd_df.groupby('gb_id').sum())
+        assert set(ak_df.groupby('gb_id').sum().columns) == set(pd_df.groupby('gb_id').sum().columns)        
+        
+        assert_frame_equal(ak_df.groupby(['gb_id']).sum().to_pandas(retain_index=True), pd_df.groupby(['gb_id']).sum())
+        assert set(ak_df.groupby(['gb_id']).sum().columns) == set(pd_df.groupby(['gb_id']).sum().columns) 
+        
+    def get_gb_count_single(self):
+        ak_df = self.build_ak_df_example_numeric_types()
+        pd_df = ak_df.to_pandas(retain_index=True)
+        
+        assert_frame_equal(ak_df.groupby('gb_id').count().to_pandas(retain_index=True),
+                           pd_df.groupby('gb_id').count().drop(["int64", "uint64", "bigint"], axis=1).rename(columns={"float64": "count"}, errors="raise"))        
+
+        assert_frame_equal(ak_df.groupby(['gb_id']).count().to_pandas(retain_index=True),
+                           pd_df.groupby(['gb_id']).count().drop(["int64", "uint64", "bigint"], axis=1).rename(columns={"float64": "count"}, errors="raise")) 
+
+    def get_gb_count_multiple(self):
+        ak_df = self.build_ak_df_example2()
+        pd_df = ak_df.to_pandas(retain_index=True)
+        
+        pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False).count().drop(['nums', 'key3'], axis=1)
+        ak_result1 = ak_df.groupby(["key1", "key2"]).count()
+        assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
+        assert type(ak_result1) == ak.dataframe.DataFrame
+
+    def get_gb_size_single(self):
+        ak_df = self.build_ak_df_example_numeric_types()
+        pd_df = ak_df.to_pandas(retain_index=True)
+        
+        assert_frame_equal(ak_df.groupby('gb_id', as_index=False).size().to_pandas(retain_index=True),
+                           pd_df.groupby('gb_id', as_index=False).size())        
+
+        assert_frame_equal(ak_df.groupby(['gb_id'], as_index=False).size().to_pandas(retain_index=True),
+                           pd_df.groupby(['gb_id'], as_index=False).size()) 
+
+    def get_gb_size_multiple(self):
+        ak_df = self.build_ak_df_example2()
+        pd_df = ak_df.to_pandas(retain_index=True)
+        
+        pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False).size()
+        ak_result1 = ak_df.groupby(["key1", "key2"]).size()
+        assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
+        assert type(ak_result1) == ak.dataframe.DataFrame
+        
+        assert_frame_equal(ak_df.groupby(["key1", "key2"], as_index=False).size().to_pandas(retain_index=True),
+                           pd_df.groupby(["key1", "key2"], as_index=False).size())   
+        
+        assert_frame_equal(ak_df.groupby(["key1", "key2"], as_index=True).size().to_pandas(retain_index=True),
+                           pd_df.groupby(["key1", "key2"], as_index=False).size())   
+        
+        assert_frame_equal(ak_df.groupby(["key1"], as_index=False).size().to_pandas(retain_index=True),
+                           pd_df.groupby(["key1"], as_index=False).size())   
+        
+        assert_frame_equal(ak_df.groupby("key1", as_index=False).size().to_pandas(retain_index=True),
+                           pd_df.groupby("key1", as_index=False).size())   
+        
+        assert_series_equal(ak_df.groupby("key1").size(as_series=True).to_pandas(),
+                           pd_df.groupby("key1").size())
 
     def test_argsort(self):
         df = self.build_ak_df()
@@ -616,7 +719,7 @@ class TestDataFrame:
     def test_uint_greediness(self):
         # default to uint when all supportedInt and any value > 2**63
         # to avoid loss of precision see (#1983)
-        df = pd.DataFrame({"Test": [2**64 - 1, 0]})
+        df = pd.DataFrame({"Test": [2 ** 64 - 1, 0]})
         assert df["Test"].dtype == ak.uint64
 
     def test_head_tail_datetime_display(self):

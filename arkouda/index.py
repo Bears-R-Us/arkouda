@@ -24,7 +24,7 @@ class Index:
     def __init__(
         self,
         values: Union[List, pdarray, Strings, Categorical, pd.Index, "Index"],
-        name: Optional[str] = None,
+        name: Optional[str]=None,
     ):
         self.registered_name: Optional[str] = None
         if isinstance(values, Index):
@@ -347,9 +347,9 @@ class Index:
     def to_hdf(
         self,
         prefix_path: str,
-        dataset: str = "index",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        dataset: str="index",
+        mode: str="truncate",
+        file_type: str="distribute",
     ) -> str:
         """
         Save the Index to HDF5.
@@ -437,8 +437,8 @@ class Index:
     def update_hdf(
         self,
         prefix_path: str,
-        dataset: str = "index",
-        repack: bool = True,
+        dataset: str="index",
+        repack: bool=True,
     ):
         """
         Overwrite the dataset with the name provided with this Index object. If
@@ -530,9 +530,9 @@ class Index:
     def to_parquet(
         self,
         prefix_path: str,
-        dataset: str = "index",
-        mode: str = "truncate",
-        compression: Optional[str] = None,
+        dataset: str="index",
+        mode: str="truncate",
+        compression: Optional[str]=None,
     ):
         """
         Save the Index to Parquet. The result is a collection of files,
@@ -578,9 +578,9 @@ class Index:
     def to_csv(
         self,
         prefix_path: str,
-        dataset: str = "index",
-        col_delim: str = ",",
-        overwrite: bool = False,
+        dataset: str="index",
+        col_delim: str=",",
+        overwrite: bool=False,
     ):
         """
         Write Index to CSV file(s). File will contain a single column with the pdarray data.
@@ -628,11 +628,11 @@ class Index:
     def save(
         self,
         prefix_path: str,
-        dataset: str = "index",
-        mode: str = "truncate",
-        compression: Optional[str] = None,
-        file_format: str = "HDF5",
-        file_type: str = "distribute",
+        dataset: str="index",
+        mode: str="truncate",
+        compression: Optional[str]=None,
+        file_format: str="HDF5",
+        file_type: str="distribute",
     ) -> str:
         """
         DEPRECATED
@@ -909,9 +909,9 @@ class MultiIndex(Index):
     def to_hdf(
         self,
         prefix_path: str,
-        dataset: str = "index",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        dataset: str="index",
+        mode: str="truncate",
+        file_type: str="distribute",
     ) -> str:
         """
         Save the Index to HDF5.
@@ -992,8 +992,8 @@ class MultiIndex(Index):
     def update_hdf(
         self,
         prefix_path: str,
-        dataset: str = "index",
-        repack: bool = True,
+        dataset: str="index",
+        repack: bool=True,
     ):
         """
         Overwrite the dataset with the name provided with this Index object. If

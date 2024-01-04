@@ -17,6 +17,8 @@ from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import BigInt 
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
@@ -56,37 +58,179 @@ def groupby_operators(cls):
 
 @groupby_operators
 class GroupBy:
-    """A DataFrame that has been grouped by a subset of columns"""
+    """
+    A DataFrame that has been grouped by a subset of columns
+    
+    Parameters
+    ----------
+    
+    gb_key_names : str or list(str), default=None
+        The column name(s) associated with the aggregated columns. 
+        
+    as_index : as_index, default=True  
+        If True, interpret aggregated column as index (only implemented for single dimensional aggregates).  Otherwise, treat aggregated column as a dataframe column.
+    
+    Attributes
+    ----------
+    gb :    arkouda.groupbyclass.GroupBy
+        GroupBy object, where the aggregation keys are values of column(s) of a dataframe, usually in preparation
+    for aggregating with respect to the other columns.
+    df :    arkouda.dataframe.DataFrame
+        The dataframe containing the original data.
+    gb_key_names    :    str or list(str)
+        The column name(s) associated with the aggregated columns.
+    
+    
+    """
 
-    def __init__(self, gb, df):
+    def __init__(self, gb, df, gb_key_names=None, as_index=True):
         self.gb = gb
         self.df = df
-        for attr in ["nkeys", "size", "permutation", "unique_keys", "segments"]:
+        self.gb_key_names = gb_key_names
+        if(self.gb is not None and (isinstance(self.gb_key_names, str) or len(self.gb_key_names) == 1)):
+            self.as_index = as_index
+        else:
+            self.as_index = False
+            if(as_index == True):
+                msg = "WARNING: multi-indexing not implemented and as_index==True will be ignored in this case."
+                warn(msg, UserWarning)
+            
+        for attr in ["nkeys", "permutation", "unique_keys", "segments"]:
             setattr(self, attr, getattr(gb, attr))
 
     @classmethod
     def _make_aggop(cls, opname):
+        numerical_dtypes = [akfloat64, akint64, akuint64]
+
         def aggop(self, colnames=None):
-            if isinstance(colnames, str):
-                return Series(self.gb.aggregate(self.df.data[colnames], opname))
-            else:
-                if colnames is None:
-                    colnames = list(self.df.data.keys())
-                if isinstance(colnames, List):
+            """
+            Aggregate the operation, with the grouped column(s) values as keys.
+
+            Parameters
+            ----------
+
+            colnames : (list of) str, default=None
+                Column name or list of column names to compute the aggregation over.
+
+            Returns
+            -------
+            arkouda.dataframe.DataFrame
+
+            """
+            if colnames is None:
+                colnames = list(self.df.data.keys())
+            elif isinstance(colnames, str):
+                colnames = [colnames]
+            colnames = [ c for c in colnames if ((self.df.data[c].dtype.type in numerical_dtypes) or (type(self.df.data[c].dtype) == BigInt))
+                        and (c != self.gb_key_names) and  (isinstance(self.gb_key_names, str) or c not in self.gb_key_names)]
+
+            if isinstance(colnames, List):
+                if isinstance(self.gb_key_names, str):
                     return DataFrame(
                         {c: self.gb.aggregate(self.df.data[c], opname)[1] for c in colnames},
-                        index=self.gb.unique_keys,
+                        index=Index(self.gb.unique_keys, name=self.gb_key_names),
+                    ) 
+                elif (len(self.gb_key_names) == 1):
+                    return DataFrame(
+                        {c: self.gb.aggregate(self.df.data[c], opname)[1] for c in colnames},
+                        index=Index(self.gb.unique_keys, name=self.gb_key_names[0]),
                     )
+                else:
+                    return DataFrame(
+                        { self.gb_key_names[i]:self.unique_keys[i] for i in range(len(self.gb_key_names))} | 
+                        {c: self.gb.aggregate(self.df.data[c], opname)[1] for c in colnames},
+                    )              
 
         return aggop
 
-    def count(self):
-        return Series(self.gb.count())
+    def count(self, as_series=False):
+        """
+        Compute the count of each value as the total number of rows, including NaN values.  This is an alias for size(), and may change in the future.
+
+        Parameters
+        ----------
+
+        as_series : bool, default=False
+            Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or arkouda.series.Series (if as_series = True)
+
+        Returns
+        -------
+
+        arkouda.dataframe.DataFrame (if as_series = False) or
+        arkouda.series.Series (if as_series = True)
+
+        """
+        if as_series:
+            return self.__return_agg_series(self.gb.count())
+        else:
+            return self.__return_agg_dataframe(self.gb.count(), "count")
+
+    def size(self, as_series=False):
+        """
+        Compute the size of each value as the total number of rows, including NaN values.
+
+        Parameters
+        ----------
+
+        as_series : bool, default=False
+            Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or arkouda.series.Series (if as_series = True)
+
+        Returns
+        -------
+
+        arkouda.dataframe.DataFrame (if as_series = False) or
+        arkouda.series.Series (if as_series = True)
+
+        """
+        if as_series:
+            return self.__return_agg_series(self.gb.size())
+        else:
+            return self.__return_agg_dataframe(self.gb.size(), "size")
+            
+    def __return_agg_series(self, values): 
+        if self.as_index:
+            if isinstance(self.gb_key_names, str):
+                return Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names))
+            elif(len(self.gb_key_names) == 1):
+                return Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names[0]))
+            else:
+                return Series(values)
+        else:
+            return Series(values)
+            
+    def __return_agg_dataframe(self, values, name):
+        
+        if isinstance(self.gb_key_names, str):
+            if self.as_index:
+                return DataFrame(
+                    {name: values[1]},
+                    index=Index(self.gb.unique_keys, name=self.gb_key_names),
+                    )
+            else:
+                return DataFrame(
+                    {self.gb_key_names:self.gb.unique_keys,
+                     name: values[1]
+                     }
+                    )
+        elif(len(self.gb_key_names) == 1):
+            if self.as_index:
+                return DataFrame(
+                    {name: values[1]},
+                    index=Index(self.gb.unique_keys, name=self.gb_key_names[0]),
+                ) 
+            else:
+                return DataFrame(
+                    {self.gb_key_names[0]:self.gb.unique_keys,
+                     name: values[1]
+                     },
+                ) 
+        else:
+            return Series(values).to_dataframe(index_labels=self.gb_key_names, value_label=name)
 
     def diff(self, colname):
         """Create a difference aggregate for the given column
 
-        For each group, the differnce between successive values is calculated.
+        For each group, the difference between successive values is calculated.
         Aggregate operations (mean,min,max,std,var) can be done on the results.
 
         Parameters
@@ -141,11 +285,11 @@ class DiffAggregate:
 
     @classmethod
     def _make_aggop(cls, opname):
+
         def aggop(self):
             return Series(self.gb.aggregate(self.values, opname))
 
         return aggop
-
 
 """
 DataFrame structure based on Arkouda arrays.
@@ -502,9 +646,9 @@ class DataFrame(UserDict):
         # Get units that make the most sense.
         if self._bytes < 1024:
             mem = self.memory_usage(unit="B")
-        elif self._bytes < 1024**2:
+        elif self._bytes < 1024 ** 2:
             mem = self.memory_usage(unit="KB")
-        elif self._bytes < 1024**3:
+        elif self._bytes < 1024 ** 3:
             mem = self.memory_usage(unit="MB")
         else:
             mem = self.memory_usage(unit="GB")
@@ -753,10 +897,10 @@ class DataFrame(UserDict):
         for k in keys:
             if not isinstance(k, int):
                 raise TypeError("Index keys must be integers.")
-            idx_list.append(self.index.index[(last_idx + 1) : k])
+            idx_list.append(self.index.index[(last_idx + 1): k])
             last_idx = k
 
-        idx_list.append(self.index.index[(last_idx + 1) :])
+        idx_list.append(self.index.index[(last_idx + 1):])
 
         idx_to_keep = concatenate(idx_list)
         for key in self.keys():
@@ -770,8 +914,8 @@ class DataFrame(UserDict):
     def drop(
         self,
         keys: Union[str, int, List[Union[str, int]]],
-        axis: Union[str, int] = 0,
-        inplace: bool = False,
+        axis: Union[str, int]=0,
+        inplace: bool=False,
     ) -> Union[None, DataFrame]:
         """
         Drop column/s or row/s from the dataframe.
@@ -932,7 +1076,7 @@ class DataFrame(UserDict):
             )
 
     @typechecked
-    def reset_index(self, size: bool = False, inplace: bool = False) -> Union[None, DataFrame]:
+    def reset_index(self, size: bool=False, inplace: bool=False) -> Union[None, DataFrame]:
         """
         Set the index to an integer range.
 
@@ -993,9 +1137,9 @@ class DataFrame(UserDict):
         # Get units that make the most sense.
         if self._bytes < 1024:
             mem = self.memory_usage(unit="B")
-        elif self._bytes < 1024**2:
+        elif self._bytes < 1024 ** 2:
             mem = self.memory_usage(unit="KB")
-        elif self._bytes < 1024**3:
+        elif self._bytes < 1024 ** 3:
             mem = self.memory_usage(unit="MB")
         else:
             mem = self.memory_usage(unit="GB")
@@ -1021,7 +1165,7 @@ class DataFrame(UserDict):
 
     @typechecked
     def _rename_column(
-        self, mapper: Union[Callable, Dict], inplace: bool = False
+        self, mapper: Union[Callable, Dict], inplace: bool=False
     ) -> Optional[DataFrame]:
         """
         Rename columns within the dataframe
@@ -1073,7 +1217,7 @@ class DataFrame(UserDict):
         return None
 
     @typechecked
-    def _rename_index(self, mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]:
+    def _rename_index(self, mapper: Union[Callable, Dict], inplace: bool=False) -> Optional[DataFrame]:
         """
         Rename indexes within the dataframe
 
@@ -1120,11 +1264,11 @@ class DataFrame(UserDict):
     @typechecked
     def rename(
         self,
-        mapper: Optional[Union[Callable, Dict]] = None,
-        index: Optional[Union[Callable, Dict]] = None,
-        column: Optional[Union[Callable, Dict]] = None,
-        axis: Union[str, int] = 0,
-        inplace: bool = False,
+        mapper: Optional[Union[Callable, Dict]]=None,
+        index: Optional[Union[Callable, Dict]]=None,
+        column: Optional[Union[Callable, Dict]]=None,
+        axis: Union[str, int]=0,
+        inplace: bool=False,
     ) -> Optional[DataFrame]:
         """
         Rename indexes or columns according to a mapping.
@@ -1347,7 +1491,7 @@ class DataFrame(UserDict):
         self.update_size()
         if self._size <= n:
             return self
-        return self[self._size - n :]
+        return self[self._size - n:]
 
     def sample(self, n=5):
         """
@@ -1368,7 +1512,7 @@ class DataFrame(UserDict):
             return self
         return self[array(random.sample(range(self._size), n))]
 
-    def GroupBy(self, keys, use_series=False):
+    def GroupBy(self, keys, use_series=False, as_index=False):
         """
         Group the dataframe by a column or a list of columns.
 
@@ -1376,30 +1520,30 @@ class DataFrame(UserDict):
         ----------
         keys : string or list
             An (ordered) list of column names or a single string to group by.
-        use_series : If True, returns an ak.GroupBy oject. Otherwise an arkouda GroupBy object
+        use_series : If True, returns an arkouda.dataframe.GroupBy object. Otherwise an arkouda.groupbyclass.GroupBy object
 
         Returns
         -------
         GroupBy
-            Either an ak GroupBy or an arkouda GroupBy object.
+            Either an ak arkouda.groupbyclass.GroupBy or an arkouda.dataframe.GroupBy object.
 
         See Also
         --------
         arkouda.GroupBy
         """
-
+        
         self.update_size()
         if isinstance(keys, str):
             cols = self.data[keys]
         elif not isinstance(keys, (list, tuple)):
-            raise TypeError("keys must be a colum name or a list/tuple of column names")
+            raise TypeError("keys must be a column name or a list/tuple of column names")
         elif len(keys) == 1:
             cols = self.data[keys[0]]
         else:
             cols = [self.data[col] for col in keys]
         gb = akGroupBy(cols)
         if use_series:
-            gb = GroupBy(gb, self)
+            gb = GroupBy(gb, self, gb_key_names=keys, as_index=as_index) 
         return gb
 
     def memory_usage(self, unit="GB"):
@@ -1630,7 +1774,7 @@ class DataFrame(UserDict):
             ),
         )
 
-    def update_hdf(self, prefix_path: str, index=False, columns=None, repack: bool = True):
+    def update_hdf(self, prefix_path: str, index=False, columns=None, repack: bool=True):
         """
         Overwrite the dataset with the name provided with this dataframe. If
         the dataset does not exist it is added
@@ -1675,8 +1819,8 @@ class DataFrame(UserDict):
         path,
         index=False,
         columns=None,
-        compression: Optional[str] = None,
-        convert_categoricals: bool = False,
+        compression: Optional[str]=None,
+        convert_categoricals: bool=False,
     ):
         """
         Save DataFrame to disk as parquet, preserving column names.
@@ -1731,10 +1875,10 @@ class DataFrame(UserDict):
     def to_csv(
         self,
         path: str,
-        index: bool = False,
-        columns: Optional[List[str]] = None,
-        col_delim: str = ",",
-        overwrite: bool = False,
+        index: bool=False,
+        columns: Optional[List[str]]=None,
+        col_delim: str=",",
+        overwrite: bool=False,
     ):
         """
         Writes DataFrame to CSV file(s). File will contain a column for each column in the DataFrame.
@@ -1788,7 +1932,7 @@ class DataFrame(UserDict):
         to_csv(data, path, names=columns, col_delim=col_delim, overwrite=overwrite)
 
     @classmethod
-    def read_csv(cls, filename: str, col_delim: str = ","):
+    def read_csv(cls, filename: str, col_delim: str=","):
         """
         Read the columns of a CSV file into an Arkouda DataFrame.
         If the file contains the appropriately formatted header, typed data will be returned.
@@ -1843,7 +1987,7 @@ class DataFrame(UserDict):
         columns=None,
         file_format="HDF5",
         file_type="distribute",
-        compression: Optional[str] = None,
+        compression: Optional[str]=None,
     ):
         """
         DEPRECATED
@@ -2104,7 +2248,7 @@ class DataFrame(UserDict):
         else:
             return DataFrame(self)
 
-    def groupby(self, keys, use_series=True):
+    def groupby(self, keys, use_series=True, as_index=True):
         """Group the dataframe by a column or a list of columns.  Alias for GroupBy
 
         Parameters
@@ -2117,7 +2261,7 @@ class DataFrame(UserDict):
         An arkouda Groupby instance
         """
 
-        return self.GroupBy(keys, use_series)
+        return self.GroupBy(keys, use_series, as_index=as_index)
 
     @typechecked
     def isin(self, values: Union[pdarray, Dict, Series, DataFrame]) -> DataFrame:
@@ -2189,7 +2333,7 @@ class DataFrame(UserDict):
             segs = concatenate(
                 [array([0]), cumsum(array([self.data[col].size for col in self.columns]))]
             )
-            df_def = {col: flat_in1d[segs[i] : segs[i + 1]] for i, col in enumerate(self.columns)}
+            df_def = {col: flat_in1d[segs[i]: segs[i + 1]] for i, col in enumerate(self.columns)}
         elif isinstance(values, Dict):
             # key is column name, val is the list of values to check
             df_def = {
@@ -2271,10 +2415,10 @@ class DataFrame(UserDict):
     def merge(
         self,
         right: DataFrame,
-        on: Optional[Union[str, List[str]]] = None,
-        how: str = "inner",
-        left_suffix: str = "_x",
-        right_suffix: str = "_y",
+        on: Optional[Union[str, List[str]]]=None,
+        how: str="inner",
+        left_suffix: str="_x",
+        right_suffix: str="_y",
     ) -> DataFrame:
         """
         Utilizes the ak.join.inner_join_merge and the ak.join.right_join_merge
@@ -2703,7 +2847,7 @@ def intersect(a, b, positions=True, unique=False):
 
             # Masks
             maska = (counts > 1)[: a.size]
-            maskb = (counts > 1)[a.size :]
+            maskb = (counts > 1)[a.size:]
 
             # The intersection for each array of hash values
             if positions:
@@ -2736,7 +2880,7 @@ def intersect(a, b, positions=True, unique=False):
 
             # Broadcast back up one more level
             countsa = counts[: a0.size]
-            countsb = counts[a0.size :]
+            countsb = counts[a0.size:]
             counts2a = gba.broadcast(countsa, permute=False)
             counts2b = gbb.broadcast(countsb, permute=False)
 
@@ -2787,8 +2931,8 @@ def _inner_join_merge(
     right: DataFrame,
     on: Union[str, List[str]],
     col_intersect: Union[str, List[str]],
-    left_suffix: str = "_x",
-    right_suffix: str = "_y",
+    left_suffix: str="_x",
+    right_suffix: str="_y",
 ) -> DataFrame:
     """
     Utilizes the ak.join.inner_join function to return an ak
@@ -2842,8 +2986,8 @@ def _right_join_merge(
     right: DataFrame,
     on: Union[str, List[str]],
     col_intersect: Union[str, List[str]],
-    left_suffix: str = "_x",
-    right_suffix: str = "_y",
+    left_suffix: str="_x",
+    right_suffix: str="_y",
 ) -> DataFrame:
     """
     Utilizes the ak.join.inner_join_merge function to return an
@@ -2907,10 +3051,10 @@ def _right_join_merge(
 def merge(
     left: DataFrame,
     right: DataFrame,
-    on: Optional[Union[str, List[str]]] = None,
-    how: str = "inner",
-    left_suffix: str = "_x",
-    right_suffix: str = "_y",
+    on: Optional[Union[str, List[str]]]=None,
+    how: str="inner",
+    left_suffix: str="_x",
+    right_suffix: str="_y",
 ) -> DataFrame:
     """
     Utilizes the ak.join.inner_join_merge and the ak.join.right_join_merge

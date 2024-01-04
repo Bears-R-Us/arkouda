@@ -261,9 +261,9 @@ def resolve_scalar_dtype(val: object) -> str:  # type: ignore
     elif isinstance(val, int) or (hasattr(val, "dtype") and cast(np.uint, val).dtype.kind in "ui"):
         # we've established these are int, uint, or bigint,
         # so we can do comparisons
-        if isSupportedInt(val) and val >= 2**64:  # type: ignore
+        if isSupportedInt(val) and val >= 2 ** 64:  # type: ignore
             return "bigint"
-        elif isinstance(val, np.uint64) or val >= 2**63:  # type: ignore
+        elif isinstance(val, np.uint64) or val >= 2 ** 63:  # type: ignore
             return "uint64"
         else:
             return "int64"

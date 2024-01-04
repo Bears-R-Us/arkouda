@@ -61,9 +61,9 @@ def _get_grouping_keys(pda: groupable):
 
 def unique(
     pda: groupable,
-    return_groups: bool = False,
-    assume_sorted: bool = False,
-    return_indices: bool = False,
+    return_groups: bool=False,
+    assume_sorted: bool=False,
+    return_indices: bool=False,
 ) -> Union[
     groupable, Tuple[groupable, pdarray, pdarray, int]  # type: ignore
 ]:  # type: ignore
@@ -148,7 +148,7 @@ def unique(
         unique_keys = tuple(a[unique_key_indices] for a in pda)
     if return_groups:
         groups = unique_keys, permutation, segments, nkeys
-        return *groups, unique_key_indices if return_indices else groups
+        return * groups, unique_key_indices if return_indices else groups
     else:
         return unique_keys
 
@@ -250,8 +250,8 @@ class GroupBy:
 
     def __init__(
         self,
-        keys: Optional[groupable] = None,
-        assume_sorted: bool = False,
+        keys: Optional[groupable]=None,
+        assume_sorted: bool=False,
         **kwargs,
     ):
         # Type Checks required because @typechecked was removed for causing other issues
@@ -301,7 +301,7 @@ class GroupBy:
                 self.segments,
                 self.nkeys,
                 self._uki,
-            ) = unique(  # type: ignore
+            ) = unique(# type: ignore
                 self.keys, return_groups=True, return_indices=True, assume_sorted=self.assume_sorted
             )
         self.length = self.permutation.size
@@ -407,8 +407,8 @@ class GroupBy:
     def update_hdf(
         self,
         prefix_path: str,
-        dataset: str = "groupby",
-        repack: bool = True,
+        dataset: str="groupby",
+        repack: bool=True,
     ):
         from arkouda.io import (
             _file_type_to_int,
@@ -470,7 +470,7 @@ class GroupBy:
     def size(self) -> Tuple[groupable, pdarray]:
         """
         Count the number of elements in each group, i.e. the number of times
-        each key appears.
+        each key appears.  This counts the total number of rows (including NaN values).
 
         Parameters
         ----------
@@ -487,10 +487,6 @@ class GroupBy:
         --------
         count
 
-        Notes
-        -----
-        This alias for "count" was added to conform with Pandas API
-
         Examples
         --------
         >>> a = ak.randint(1,5,10)
@@ -503,12 +499,17 @@ class GroupBy:
         >>> counts
         array([1, 2, 4, 3])
         """
-        return self.count()
+        repMsg = generic_msg(
+            cmd="countReduction",
+            args={"segments": cast(pdarray, self.segments), "size": self.length},
+        )
+        self.logger.debug(repMsg)
+        return self.unique_keys, create_pdarray(repMsg)        
 
     def count(self) -> Tuple[groupable, pdarray]:
         """
         Count the number of elements in each group, i.e. the number of times
-        each key appears.
+        each key appears.  This counts the total number of rows (including NaN values).
 
         Parameters
         ----------
@@ -520,6 +521,10 @@ class GroupBy:
             The unique keys, in grouped order
         counts : pdarray, int64
             The number of times each unique key appears
+            
+        Notes
+        -----
+        This alias is an alias of "size".
 
         Examples
         --------
@@ -533,15 +538,10 @@ class GroupBy:
         >>> counts
         array([1, 2, 4, 3])
         """
-        repMsg = generic_msg(
-            cmd="countReduction",
-            args={"segments": cast(pdarray, self.segments), "size": self.length},
-        )
-        self.logger.debug(repMsg)
-        return self.unique_keys, create_pdarray(repMsg)
+        return self.size()
 
     def aggregate(
-        self, values: groupable, operator: str, skipna: bool = True, ddof: int_scalars = 1
+        self, values: groupable, operator: str, skipna: bool=True, ddof: int_scalars=1
     ) -> Tuple[groupable, groupable]:
         """
         Using the permutation stored in the GroupBy instance, group another
@@ -633,7 +633,7 @@ class GroupBy:
         else:
             return self.unique_keys, create_pdarray(repMsg)
 
-    def sum(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
+    def sum(self, values: pdarray, skipna: bool=True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and sum each group's values.
@@ -681,7 +681,7 @@ class GroupBy:
         k, v = self.aggregate(values, "sum", skipna)
         return k, cast(pdarray, v)
 
-    def prod(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
+    def prod(self, values: pdarray, skipna: bool=True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and compute the product of each group's
@@ -733,7 +733,7 @@ class GroupBy:
         return k, cast(pdarray, v)
 
     def var(
-        self, values: pdarray, skipna: bool = True, ddof: int_scalars = 1
+        self, values: pdarray, skipna: bool=True, ddof: int_scalars=1
     ) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
@@ -796,7 +796,7 @@ class GroupBy:
         return k, cast(pdarray, v)
 
     def std(
-        self, values: pdarray, skipna: bool = True, ddof: int_scalars = 1
+        self, values: pdarray, skipna: bool=True, ddof: int_scalars=1
     ) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
@@ -861,7 +861,7 @@ class GroupBy:
         k, v = self.aggregate(values, "std", skipna, ddof)
         return k, cast(pdarray, v)
 
-    def mean(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
+    def mean(self, values: pdarray, skipna: bool=True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and compute the mean of each group's
@@ -910,7 +910,7 @@ class GroupBy:
         k, v = self.aggregate(values, "mean", skipna)
         return k, cast(pdarray, v)
 
-    def median(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
+    def median(self, values: pdarray, skipna: bool=True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and compute the median of each group's
@@ -959,7 +959,7 @@ class GroupBy:
         k, v = self.aggregate(values, "median", skipna)
         return k, cast(pdarray, v)
 
-    def min(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
+    def min(self, values: pdarray, skipna: bool=True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and return the minimum of each group's
@@ -1009,7 +1009,7 @@ class GroupBy:
         k, v = self.aggregate(values, "min", skipna)
         return k, cast(pdarray, v)
 
-    def max(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
+    def max(self, values: pdarray, skipna: bool=True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and return the maximum of each
@@ -1531,7 +1531,7 @@ class GroupBy:
 
     @typechecked
     def broadcast(
-        self, values: Union[pdarray, Strings], permute: bool = True
+        self, values: Union[pdarray, Strings], permute: bool=True
     ) -> Union[pdarray, Strings]:
         """
         Fill each group's segment with a constant value.
@@ -1611,7 +1611,7 @@ class GroupBy:
             return create_pdarray(repMsg)
 
     @staticmethod
-    def build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy:
+    def build_from_components(user_defined_name: str=None, **kwargs) -> GroupBy:
         """
         function to build a new GroupBy object from component keys and permutation.
 
@@ -1899,8 +1899,8 @@ class GroupBy:
 def broadcast(
     segments: pdarray,
     values: Union[pdarray, Strings],
-    size: Union[int, np.int64, np.uint64] = -1,
-    permutation: Union[pdarray, None] = None,
+    size: Union[int, np.int64, np.uint64]=-1,
+    permutation: Union[pdarray, None]=None,
 ):
     """
     Broadcast a dense column vector to the rows of a sparse matrix or grouped array.
