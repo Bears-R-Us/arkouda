@@ -245,7 +245,6 @@ module CastMsg {
             when (DType.Complex128, DType.Float64) do return doScalarCast(complex(128), real(64));
             when (DType.Complex128, DType.Complex64) do return doScalarCast(complex(128), complex(64));
             when (DType.Complex128, DType.Complex128) do return doScalarCast(complex(128), complex(128));
-            when (DType.Complex128, DType.Bool) do return doScalarCast(complex(128), bool);
             when (DType.Complex128, DType.Strings) do return doStringCast(complex(128));
 
             when (DType.Complex64, DType.Int8) do return doScalarCast(complex(64), int(8));
@@ -260,7 +259,6 @@ module CastMsg {
             when (DType.Complex64, DType.Float64) do return doScalarCast(complex(64), real(64));
             when (DType.Complex64, DType.Complex64) do return doScalarCast(complex(64), complex(64));
             when (DType.Complex64, DType.Complex128) do return doScalarCast(complex(64), complex(128));
-            when (DType.Complex64, DType.Bool) do return doScalarCast(complex(64), bool);
             when (DType.Complex64, DType.Strings) do return doStringCast(complex(64));
 
             when (DType.Bool, DType.Int8) do return doScalarCast(bool, int(8));
@@ -289,8 +287,6 @@ module CastMsg {
             when (DType.BigInt, DType.Int64) do return doScalarCast(bigint, int(64));
             when (DType.BigInt, DType.Float32) do return doScalarCast(bigint, real(32));
             when (DType.BigInt, DType.Float64) do return doScalarCast(bigint, real(64));
-            when (DType.BigInt, DType.Complex64) do return doScalarCast(bigint, complex(64));
-            when (DType.BigInt, DType.Complex128) do return doScalarCast(bigint, complex(128));
             when (DType.BigInt, DType.Strings) do return doStringCast(bigint);
             when (DType.BigInt, DType.BigInt) do return doBigintCast(bigint);
 

@@ -73,8 +73,8 @@ def getSupportedTypes(config):
     for t in ["uint8", "uint16", "uint32", "uint64", \
               "int8", "int16", "int32", "int64", \
               "float32", "float64", "complex64", "complex128", "bool"]:
-        if config["supported_scalar_types"][t]:
-            supportedFlags.append(f"-sSupports{t.capitalize()}=true")
+        isSupported = "true" if config["supported_scalar_types"][t] else "false"
+        supportedFlags.append(f"-sSupports{t.capitalize()}={isSupported}")
     return " ".join(supportedFlags)
 
 def parseServerConfig(config_filename, src_dir):
