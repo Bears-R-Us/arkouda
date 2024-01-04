@@ -81,7 +81,8 @@ class GroupBy:
         The dataframe containing the original data.
     gb_key_names    :    str or list(str)
         The column name(s) associated with the aggregated columns.
-
+    as_index : bool (default=True)
+        If True the grouped values of the aggregation keys will be treated as an index.
 
     """
 
@@ -89,13 +90,7 @@ class GroupBy:
         self.gb = gb
         self.df = df
         self.gb_key_names = gb_key_names
-        if self.gb is not None and (isinstance(self.gb_key_names, str) or len(self.gb_key_names) == 1):
-            self.as_index = as_index
-        else:
-            self.as_index = False
-            if as_index is True:
-                msg = "multi-indexing not implemented: as_index==True will be ignored in this case."
-                warn(msg, UserWarning)
+        self.as_index = as_index
 
         for attr in ["nkeys", "permutation", "unique_keys", "segments"]:
             setattr(self, attr, getattr(gb, attr))
@@ -159,7 +154,7 @@ class GroupBy:
 
         return aggop
 
-    def count(self, as_series=False):
+    def count(self, as_series=None):
         """
         Compute the count of each value as the total number of rows, including NaN values.
         This is an alias for size(), and may change in the future.
@@ -167,7 +162,7 @@ class GroupBy:
         Parameters
         ----------
 
-        as_series : bool, default=False
+        as_series : bool, default=None
             Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
             arkouda.series.Series (if as_series = True)
 
@@ -178,30 +173,30 @@ class GroupBy:
         arkouda.series.Series (if as_series = True)
 
         """
-        if as_series:
+        if as_series is True or (as_series is None and self.as_index is True):
             return self.__return_agg_series(self.gb.count())
         else:
             return self.__return_agg_dataframe(self.gb.count(), "count")
 
-    def size(self, as_series=False):
+    def size(self, as_series=None):
         """
         Compute the size of each value as the total number of rows, including NaN values.
 
         Parameters
         ----------
 
-        as_series : bool, default=False
+        as_series : bool, default=None
             Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
             arkouda.series.Series (if as_series = True)
 
         Returns
         -------
 
-        arkouda.dataframe.DataFrame (if as_series = False) or
-        arkouda.series.Series (if as_series = True)
+        arkouda.dataframe.DataFrame or
+        arkouda.series.Series
 
         """
-        if as_series:
+        if as_series is True or (as_series is None and self.as_index is True):
             return self.__return_agg_series(self.gb.size())
         else:
             return self.__return_agg_dataframe(self.gb.size(), "size")
