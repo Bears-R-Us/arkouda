@@ -1519,7 +1519,7 @@ class DataFrame(UserDict):
             return self
         return self[array(random.sample(range(self._size), n))]
 
-    def GroupBy(self, keys, use_series=False, as_index=False):
+    def GroupBy(self, keys, use_series=False, as_index=True):
         """
         Group the dataframe by a column or a list of columns.
 
@@ -1530,7 +1530,7 @@ class DataFrame(UserDict):
         use_series : bool (default=False)
             If True, returns an arkouda.dataframe.GroupBy object.
             Otherwise an arkouda.groupbyclass.GroupBy object.
-        as_index: bool (default=False)
+        as_index: bool (default=True)
             If True, groupby columns will be set as index
             otherwise, the groupby columns will be treated as DataFrame columns.
 
@@ -2265,8 +2265,13 @@ class DataFrame(UserDict):
 
         Parameters
         ----------
-        keys : a single column name or a list of column names
-        use_series : Change return type to Arkouda Groupby object.
+        keys : str or list(str)
+            a single column name or a list of column names
+        use_series : bool (default = True)
+            Change return type to Arkouda Groupby object.
+        as_index: bool (default=True)
+            If true groupby aggregation values will be treated as an index.
+            Otherwise, the groupby values will be treated as DataFrame column(s).
 
         Returns
         -------
