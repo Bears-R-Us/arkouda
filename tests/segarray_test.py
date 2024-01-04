@@ -281,6 +281,26 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(res.to_list(), [12, 0, 0])
         self.assertListEqual(origin.to_list(), [True, False, False])
 
+        # verify that segarr.get_jth works with bool vals
+        a = [True] * 10
+        b = [False] * 10
+        segments = ak.array([0, len(a), len(a), len(a), len(a) + len(b)])
+        flat = ak.array(a + b)
+        sa = ak.SegArray(segments, flat)
+        origins_ans = [True, False, False, True, False]
+
+        res, origin = sa.get_jth(1, compressed=True)
+        self.assertListEqual(res.to_list(), [True, False])
+        self.assertListEqual(origin.to_list(), origins_ans)
+
+        res, origin = sa.get_jth(1)
+        self.assertListEqual(res.to_list(), [True, False, False, False, False])
+        self.assertListEqual(origin.to_list(), origins_ans)
+
+        res, origin = sa.get_jth(1, default=True)
+        self.assertListEqual(res.to_list(), [True, True, True, False, True])
+        self.assertListEqual(origin.to_list(), origins_ans)
+
     def test_set_jth(self):
         """
         No testing for empty segments. Function not designed to add values to segments at

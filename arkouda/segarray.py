@@ -508,7 +508,8 @@ class SegArray:
         if compressed or self.dtype == str_:  # Strings not supported by uncompressed version
             res = self.values[ind]
         else:
-            res = zeros(self.size, dtype=self.dtype) + default
+            res = zeros(self.size, dtype=self.dtype)
+            res.fill(default)
             res[longenough] = self.values[ind]
         if return_origins:
             return res, longenough
