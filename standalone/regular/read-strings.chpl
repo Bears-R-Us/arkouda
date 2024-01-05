@@ -10,27 +10,37 @@ config const batchSize = 100;
 extern var ARROWERROR: c_int;
 
 proc main() {
-  var t: stopwatch;
+  var totalT: stopwatch;
+  var t1: stopwatch;
+  var t2: stopwatch;
+  var t3: stopwatch;
+
+  totalT.start();
+  
   var filenames: [0..#1] string;
   filenames[0] = filename;
-  t.start();
+
+  t1.start();
   var len = getArrSize(filenames[0]);
-  t.stop();
-  writeln("Get arr size                  : ", t.elapsed());
+  t1.stop();
+
+  t2.start();
   var seg: [0..#len] int;
   var sizes: [0..#1] int = len;
-  t.reset();
-  t.start();
   var byteSizes = calcStrSizesAndOffset(seg, filenames, sizes, colname);
-  t.stop();
-  writeln("Calc str sizes and offset    : ", t.elapsed());
   seg = (+ scan seg) - seg;
   var ret: [0..#(+ reduce byteSizes)] uint(8);
-  t.reset();
-  t.start();
+  t2.stop();
+  
+  t3.start();
   readStrFilesByName(ret, filenames, byteSizes, colname);
-  t.stop();
-  writeln("Actually read file          : ", t.elapsed());
+  t3.stop();
+
+  totalT.stop();
+  writeln("Total time     : ", totalT.elapsed());
+  writeln("Get size       : ", t1.elapsed());
+  writeln("Created seg    : ", t2.elapsed());
+  writeln("Read files     : ", t3.elapsed());
 }
 
 proc getArrSize(filename: string) throws {
