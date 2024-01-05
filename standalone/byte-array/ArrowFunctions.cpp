@@ -784,11 +784,6 @@ void* cpp_readColumnByName(const char* filename, void* chpl_arr, const char* col
           (parquet::ByteArray*)malloc(numElems*sizeof(parquet::ByteArray));
         std::vector<int16_t> definition_level(numElems);
         (void)reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values, &values_read);
-        for(int j = 0; j < 10; j++) {
-          for(int i = 0; i < string_values[0].len; i++)
-            std::cout << string_values[j].ptr[i];
-          std::cout << std::endl;
-        }
         return (void*)string_values;
       }
     }
