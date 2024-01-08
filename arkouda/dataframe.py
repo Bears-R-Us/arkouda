@@ -14,9 +14,11 @@ from typeguard import typechecked
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
+from arkouda.dtypes import BigInt
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
@@ -56,37 +58,181 @@ def groupby_operators(cls):
 
 @groupby_operators
 class GroupBy:
-    """A DataFrame that has been grouped by a subset of columns"""
+    """
+    A DataFrame that has been grouped by a subset of columns
 
-    def __init__(self, gb, df):
+    Parameters
+    ----------
+
+    gb_key_names : str or list(str), default=None
+        The column name(s) associated with the aggregated columns.
+
+    as_index : bool, default=True
+        If True, interpret aggregated column as index
+        (only implemented for single dimensional aggregates).
+        Otherwise, treat aggregated column as a dataframe column.
+
+    Attributes
+    ----------
+    gb :    arkouda.groupbyclass.GroupBy
+        GroupBy object, where the aggregation keys are values of column(s) of a dataframe,
+        usually in preparation for aggregating with respect to the other columns.
+    df :    arkouda.dataframe.DataFrame
+        The dataframe containing the original data.
+    gb_key_names    :    str or list(str)
+        The column name(s) associated with the aggregated columns.
+    as_index : bool (default=True)
+        If True the grouped values of the aggregation keys will be treated as an index.
+
+    """
+
+    def __init__(self, gb, df, gb_key_names=None, as_index=True):
         self.gb = gb
         self.df = df
-        for attr in ["nkeys", "size", "permutation", "unique_keys", "segments"]:
+        self.gb_key_names = gb_key_names
+        self.as_index = as_index
+
+        for attr in ["nkeys", "permutation", "unique_keys", "segments"]:
             setattr(self, attr, getattr(gb, attr))
 
     @classmethod
     def _make_aggop(cls, opname):
+        numerical_dtypes = [akfloat64, akint64, akuint64]
+
         def aggop(self, colnames=None):
-            if isinstance(colnames, str):
-                return Series(self.gb.aggregate(self.df.data[colnames], opname))
-            else:
-                if colnames is None:
-                    colnames = list(self.df.data.keys())
-                if isinstance(colnames, List):
+            """
+            Aggregate the operation, with the grouped column(s) values as keys.
+
+            Parameters
+            ----------
+
+            colnames : (list of) str, default=None
+                Column name or list of column names to compute the aggregation over.
+
+            Returns
+            -------
+            arkouda.dataframe.DataFrame
+
+            """
+            if colnames is None:
+                colnames = list(self.df.data.keys())
+            elif isinstance(colnames, str):
+                colnames = [colnames]
+            colnames = [
+                c
+                for c in colnames
+                if (
+                    (self.df.data[c].dtype.type in numerical_dtypes)
+                    or isinstance(self.df.data[c].dtype, BigInt)
+                )
+                and (
+                    (isinstance(self.gb_key_names, str) and (c != self.gb_key_names))
+                    or (isinstance(self.gb_key_names, list) and c not in self.gb_key_names)
+                )
+            ]
+
+            if isinstance(colnames, List):
+                if isinstance(self.gb_key_names, str):
                     return DataFrame(
                         {c: self.gb.aggregate(self.df.data[c], opname)[1] for c in colnames},
-                        index=self.gb.unique_keys,
+                        index=Index(self.gb.unique_keys, name=self.gb_key_names),
                     )
+                elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) == 1:
+                    return DataFrame(
+                        {c: self.gb.aggregate(self.df.data[c], opname)[1] for c in colnames},
+                        index=Index(self.gb.unique_keys, name=self.gb_key_names[0]),
+                    )
+                elif isinstance(self.gb_key_names, list):
+                    column_dict = dict(zip(self.gb_key_names, self.unique_keys))
+                    for c in colnames:
+                        column_dict[c] = self.gb.aggregate(self.df.data[c], opname)[1]
+                    return DataFrame(column_dict)
+                else:
+                    return None
 
         return aggop
 
-    def count(self):
-        return Series(self.gb.count())
+    def count(self, as_series=None):
+        """
+        Compute the count of each value as the total number of rows, including NaN values.
+        This is an alias for size(), and may change in the future.
+
+        Parameters
+        ----------
+
+        as_series : bool, default=None
+            Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
+            arkouda.series.Series (if as_series = True)
+
+        Returns
+        -------
+
+        arkouda.dataframe.DataFrame (if as_series = False) or
+        arkouda.series.Series (if as_series = True)
+
+        """
+        if as_series is True or (as_series is None and self.as_index is True):
+            return self.__return_agg_series(self.gb.count())
+        else:
+            return self.__return_agg_dataframe(self.gb.count(), "count")
+
+    def size(self, as_series=None):
+        """
+        Compute the size of each value as the total number of rows, including NaN values.
+
+        Parameters
+        ----------
+
+        as_series : bool, default=None
+            Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
+            arkouda.series.Series (if as_series = True)
+
+        Returns
+        -------
+
+        arkouda.dataframe.DataFrame or
+        arkouda.series.Series
+
+        """
+        if as_series is True or (as_series is None and self.as_index is True):
+            return self.__return_agg_series(self.gb.size())
+        else:
+            return self.__return_agg_dataframe(self.gb.size(), "size")
+
+    def __return_agg_series(self, values):
+        if self.as_index:
+            if isinstance(self.gb_key_names, str):
+                return Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names))
+            elif len(self.gb_key_names) == 1:
+                return Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names[0]))
+        return Series(values)
+
+    def __return_agg_dataframe(self, values, name):
+        if isinstance(self.gb_key_names, str):
+            if self.as_index:
+                return DataFrame(
+                    {name: values[1]},
+                    index=Index(self.gb.unique_keys, name=self.gb_key_names),
+                )
+            else:
+                return DataFrame({self.gb_key_names: self.gb.unique_keys, name: values[1]})
+        elif len(self.gb_key_names) == 1:
+            if self.as_index:
+                return DataFrame(
+                    {name: values[1]},
+                    index=Index(self.gb.unique_keys, name=self.gb_key_names[0]),
+                )
+            else:
+                return DataFrame(
+                    {self.gb_key_names[0]: self.gb.unique_keys, name: values[1]},
+                )
+        else:
+            return Series(values).to_dataframe(index_labels=self.gb_key_names, value_label=name)
 
     def diff(self, colname):
         """Create a difference aggregate for the given column
 
-        For each group, the differnce between successive values is calculated.
+        For each group, the difference between successive values is calculated.
         Aggregate operations (mean,min,max,std,var) can be done on the results.
 
         Parameters
@@ -1368,7 +1514,7 @@ class DataFrame(UserDict):
             return self
         return self[array(random.sample(range(self._size), n))]
 
-    def GroupBy(self, keys, use_series=False):
+    def GroupBy(self, keys, use_series=False, as_index=True):
         """
         Group the dataframe by a column or a list of columns.
 
@@ -1376,12 +1522,17 @@ class DataFrame(UserDict):
         ----------
         keys : string or list
             An (ordered) list of column names or a single string to group by.
-        use_series : If True, returns an ak.GroupBy oject. Otherwise an arkouda GroupBy object
+        use_series : bool (default=False)
+            If True, returns an arkouda.dataframe.GroupBy object.
+            Otherwise an arkouda.groupbyclass.GroupBy object.
+        as_index: bool (default=True)
+            If True, groupby columns will be set as index
+            otherwise, the groupby columns will be treated as DataFrame columns.
 
         Returns
         -------
         GroupBy
-            Either an ak GroupBy or an arkouda GroupBy object.
+            Either an ak arkouda.groupbyclass.GroupBy or an arkouda.dataframe.GroupBy object.
 
         See Also
         --------
@@ -1392,14 +1543,14 @@ class DataFrame(UserDict):
         if isinstance(keys, str):
             cols = self.data[keys]
         elif not isinstance(keys, (list, tuple)):
-            raise TypeError("keys must be a colum name or a list/tuple of column names")
+            raise TypeError("keys must be a column name or a list/tuple of column names")
         elif len(keys) == 1:
             cols = self.data[keys[0]]
         else:
             cols = [self.data[col] for col in keys]
         gb = akGroupBy(cols)
         if use_series:
-            gb = GroupBy(gb, self)
+            gb = GroupBy(gb, self, gb_key_names=keys, as_index=as_index)
         return gb
 
     def memory_usage(self, unit="GB"):
@@ -2104,20 +2255,25 @@ class DataFrame(UserDict):
         else:
             return DataFrame(self)
 
-    def groupby(self, keys, use_series=True):
+    def groupby(self, keys, use_series=True, as_index=True):
         """Group the dataframe by a column or a list of columns.  Alias for GroupBy
 
         Parameters
         ----------
-        keys : a single column name or a list of column names
-        use_series : Change return type to Arkouda Groupby object.
+        keys : str or list(str)
+            a single column name or a list of column names
+        use_series : bool (default = True)
+            Change return type to Arkouda Groupby object.
+        as_index: bool (default=True)
+            If true groupby aggregation values will be treated as an index.
+            Otherwise, the groupby values will be treated as DataFrame column(s).
 
         Returns
         -------
         An arkouda Groupby instance
         """
 
-        return self.GroupBy(keys, use_series)
+        return self.GroupBy(keys, use_series, as_index=as_index)
 
     @typechecked
     def isin(self, values: Union[pdarray, Dict, Series, DataFrame]) -> DataFrame:
