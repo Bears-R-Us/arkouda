@@ -47,6 +47,7 @@ Attributes
    arkouda.dtypes.ARKOUDA_SUPPORTED_DTYPES
    arkouda.dtypes.DTypes
    arkouda.dtypes.DTypeObjects
+   arkouda.dtypes.ScalarDTypes
 
 
 .. py:function:: dtype(x)
@@ -125,6 +126,10 @@ Attributes
    
 
 .. py:data:: DTypeObjects
+
+   
+
+.. py:data:: ScalarDTypes
 
    
 

@@ -1,0 +1,84 @@
+:orphan:
+
+:py:mod:`arkouda.array_api._creation_functions`
+===============================================
+
+.. py:module:: arkouda.array_api._creation_functions
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.array_api._creation_functions.asarray
+   arkouda.array_api._creation_functions.arange
+   arkouda.array_api._creation_functions.empty
+   arkouda.array_api._creation_functions.empty_like
+   arkouda.array_api._creation_functions.eye
+   arkouda.array_api._creation_functions.from_dlpack
+   arkouda.array_api._creation_functions.full
+   arkouda.array_api._creation_functions.full_like
+   arkouda.array_api._creation_functions.linspace
+   arkouda.array_api._creation_functions.meshgrid
+   arkouda.array_api._creation_functions.ones
+   arkouda.array_api._creation_functions.ones_like
+   arkouda.array_api._creation_functions.tril
+   arkouda.array_api._creation_functions.triu
+   arkouda.array_api._creation_functions.zeros
+   arkouda.array_api._creation_functions.zeros_like
+
+
+
+.. py:function:: asarray(obj: Union[arkouda.array_api._array_object.Array, bool, int, float, arkouda.array_api._typing.NestedSequence[bool | int | float], arkouda.array_api._typing.SupportsBufferProtocol], /, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None, copy: Optional[bool] = None) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: arange(start: Union[int, float], /, stop: Optional[Union[int, float]] = None, step: Union[int, float] = 1, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: empty(shape: Union[int, Tuple[int, Ellipsis]], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: empty_like(x: arkouda.array_api._array_object.Array, /, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: eye(n_rows: int, n_cols: Optional[int] = None, /, *, k: int = 0, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: from_dlpack(x: object, /) -> arkouda.array_api._typing.Array
+
+
+.. py:function:: full(shape: Union[int, Tuple[int, Ellipsis]], fill_value: Union[int, float], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._typing.Array
+
+
+.. py:function:: full_like(x: arkouda.array_api._typing.Array, /, fill_value: Union[int, float], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._typing.Array
+
+
+.. py:function:: linspace(start: Union[int, float], stop: Union[int, float], /, num: int, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None, endpoint: bool = True) -> arkouda.array_api._typing.Array
+
+
+.. py:function:: meshgrid(*arrays: arkouda.array_api._typing.Array, indexing: str = 'xy') -> List[arkouda.array_api._typing.Array]
+
+
+.. py:function:: ones(shape: Union[int, Tuple[int, Ellipsis]], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._typing.Array
+
+
+.. py:function:: ones_like(x: arkouda.array_api._typing.Array, /, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._typing.Array
+
+
+.. py:function:: tril(x: arkouda.array_api._array_object.Array, /, *, k: int = 0) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: triu(x: arkouda.array_api._array_object.Array, /, *, k: int = 0) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: zeros(shape: Union[int, Tuple[int, Ellipsis]], /, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: zeros_like(x: arkouda.array_api._typing.Array, /, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._typing.Array
+
+

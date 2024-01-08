@@ -370,6 +370,83 @@ a local buffer and <cite>isOwned</cite> is true.</p>
 
 </dd></dl>
 
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.removeDegenRanks">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">removeDegenRanks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">N:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#AryUtil.removeDegenRanks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a rank ‘N’ array by removing the degenerate ranks from
+‘A’ and copying it’s contents into the new array</p>
+<p>‘N’ must be equal to ‘A’s rank minus the number of degenerate ranks;
+halts if this condition isn’t met.</p>
+<p>Analogous to matlab’s ‘squeeze’: <a class="reference external" href="https://www.mathworks.com/help/matlab/ref/squeeze.html">https://www.mathworks.com/help/matlab/ref/squeeze.html</a></p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.domOnAxis">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span><a class="headerlink" href="#AryUtil.domOnAxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a domain that selects out the idx’th set of indices along the specified axes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>D</strong> – the domain to slice</p></li>
+<li><p><strong>idx</strong> – the index to select along the specified axes (must have the same rank as D)</p></li>
+<li><p><strong>axes</strong> – the axes to slice along (must be a subset of the axes of D)</p></li>
+</ul>
+</dd>
+</dl>
+<p>For example, if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25..25}
+(i.e., the 25th matrix)</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.domOffAxis">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span><a class="headerlink" href="#AryUtil.domOffAxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a domain over the set of indices orthogonal to the specified axes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>D</strong> – the domain to slice</p></li>
+<li><p><strong>axes</strong> – the axes to slice along (must be a subset of the axes of D)</p></li>
+</ul>
+</dd>
+</dl>
+<p>For example, if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
+(i.e., a set of indices for the 1000 matrices)</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.broadcastShape">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">broadcastShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sa:</span> <span class="pre">?Na*int</span></em>, <em class="sig-param"><span class="pre">sb:</span> <span class="pre">?Nb*int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">N:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">N*int</span> <span class="pre">throws</span><a class="headerlink" href="#AryUtil.broadcastShape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Algorithm to determine shape of broadcasted PD array given two array shapes</p>
+<p>see: <a class="reference external" href="https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm">https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm</a></p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">broadcastShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sa:</span> <span class="pre">?N1*int</span></em>, <em class="sig-param"><span class="pre">sb:</span> <span class="pre">?N2*int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">N1*int</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">broadcastShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sa:</span> <span class="pre">?N1*int</span></em>, <em class="sig-param"><span class="pre">sb:</span> <span class="pre">?N2*int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">N2*int</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.removeAxis">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">removeAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(N-1)*int</span><a class="headerlink" href="#AryUtil.removeAxis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.appendAxis">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">value:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(N+1)*int</span> <span class="pre">throws</span><a class="headerlink" href="#AryUtil.appendAxis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">value:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">2*(int)</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
 </div>
 
 

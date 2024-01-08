@@ -23,8 +23,21 @@ Functions
 
    arkouda.numeric.cast
    arkouda.numeric.abs
+   arkouda.numeric.ceil
+   arkouda.numeric.floor
+   arkouda.numeric.round
+   arkouda.numeric.trunc
+   arkouda.numeric.sign
+   arkouda.numeric.isfinite
+   arkouda.numeric.isinf
+   arkouda.numeric.isnan
    arkouda.numeric.log
+   arkouda.numeric.log10
+   arkouda.numeric.log2
+   arkouda.numeric.log1p
    arkouda.numeric.exp
+   arkouda.numeric.expm1
+   arkouda.numeric.square
    arkouda.numeric.cumsum
    arkouda.numeric.cumprod
    arkouda.numeric.sin
@@ -48,7 +61,6 @@ Functions
    arkouda.numeric.histogram2d
    arkouda.numeric.histogramdd
    arkouda.numeric.value_counts
-   arkouda.numeric.isnan
 
 
 
@@ -142,6 +154,156 @@ Functions
    array([5, 4, 3, 2, 1])
 
 
+.. py:function:: ceil(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise ceiling of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing ceiling values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.ceil(ak.linspace(1.1,5.5,5))
+   array([2, 3, 4, 5, 6])
+
+
+.. py:function:: floor(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise floor of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing floor values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.floor(ak.linspace(1.1,5.5,5))
+   array([1, 2, 3, 4, 5])
+
+
+.. py:function:: round(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise rounding of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing input array elements rounded to the nearest integer
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
+   array([1, 3, 3])
+
+
+.. py:function:: trunc(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise truncation of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing input array elements truncated to the nearest integer
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
+   array([1, 2, 3])
+
+
+.. py:function:: sign(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise sign of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing sign values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
+   array([-1, -1, 0, 1, 1])
+
+
+.. py:function:: isfinite(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise isfinite check applied to the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing boolean values indicating whether the
+             input array elements are finite
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises RuntimeError: if the underlying pdarray is not float-based
+
+   .. rubric:: Examples
+
+   >>> ak.isfinite(ak.array[1.0, 2.0, ak.inf])
+   array([True, True, False])
+
+
+.. py:function:: isinf(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise isinf check applied to the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing boolean values indicating whether the
+             input array elements are infinite
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises RuntimeError: if the underlying pdarray is not float-based
+
+   .. rubric:: Examples
+
+   >>> ak.isinf(ak.array[1.0, 2.0, ak.inf])
+   array([False, False, True])
+
+
+.. py:function:: isnan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise isnan check applied to the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing boolean values indicating whether the
+             input array elements are NaN
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises RuntimeError: if the underlying pdarray is not float-based
+
+   .. rubric:: Examples
+
+   >>> ak.isnan(ak.array[1.0, 2.0, 1.0 / 0.0])
+   array([False, False, True])
+
+
 .. py:function:: log(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise natural log of the array.
@@ -173,6 +335,36 @@ Functions
    array([0, 3.3219280948873626, 6.6438561897747253])
 
 
+.. py:function:: log10(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise base 10 log of the array.
+
+   :param x: array to compute on
+   :type x: pdarray
+
+   :rtype: pdarray contain values of the base 10 log
+
+
+.. py:function:: log2(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise base 2 log of the array.
+
+   :param x: array to compute on
+   :type x: pdarray
+
+   :rtype: pdarray contain values of the base 2 log
+
+
+.. py:function:: log1p(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise natural log of one plus the array.
+
+   :param x: array to compute on
+   :type x: pdarray
+
+   :rtype: pdarray contain values of the natural log of one plus the array
+
+
 .. py:function:: exp(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise exponential of the array.
@@ -194,6 +386,48 @@ Functions
    >>> ak.exp(ak.uniform(5,1.0,5.0))
    array([11.84010843172504, 46.454368507659211, 5.5571769623557188,
           33.494295836924771, 13.478894913238722])
+
+
+.. py:function:: expm1(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise exponential of the array minus one.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing exponential values of the input
+             array elements minus one
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.exp1m(ak.arange(1,5))
+   array([1.7182818284590451, 6.3890560989306504, 19.085536923187668, 53.598150033144236])
+
+   >>> ak.exp1m(ak.uniform(5,1.0,5.0))
+   array([10.84010843172504, 45.454368507659211, 4.5571769623557188,
+          32.494295836924771, 12.478894913238722])
+
+
+.. py:function:: square(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise square of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing square values of the input
+             array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.square(ak.arange(1,5))
+   array([1, 4, 9, 16])
 
 
 .. py:function:: cumsum(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
@@ -790,19 +1024,5 @@ Functions
    >>> A = ak.array([2, 0, 2, 4, 0, 0])
    >>> ak.value_counts(A)
    (array([0, 2, 4]), array([3, 2, 1]))
-
-
-.. py:function:: isnan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Test a pdarray for Not a number / NaN values
-   Currently only supports float-value-based arrays
-
-   :param pda:
-   :type pda: pdarray to test
-
-   :rtype: pdarray consisting of True / False values; True where NaN, False otherwise
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-   :raises RuntimeError: if the underlying pdarray is not float-based
 
 

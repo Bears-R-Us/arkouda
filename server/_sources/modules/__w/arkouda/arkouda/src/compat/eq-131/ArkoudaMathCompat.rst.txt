@@ -25,3 +25,5 @@ or
 
 .. function:: proc isInf(x: real(64)): bool
 
+.. function:: proc isFinite(x: real(64)): bool
+

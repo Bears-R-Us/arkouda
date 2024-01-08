@@ -30,6 +30,7 @@ Functions
    arkouda.util.register_all
    arkouda.util.unregister_all
    arkouda.util.attach_all
+   arkouda.util.broadcast_dims
 
 
 
@@ -144,5 +145,12 @@ Functions
    :type names: list
 
    :rtype: dict
+
+
+.. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, Ellipsis]
+
+   Algorithm to determine shape of broadcasted PD array given two array shapes
+
+   see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
 
 

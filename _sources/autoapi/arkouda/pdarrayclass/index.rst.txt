@@ -51,6 +51,7 @@ Functions
    arkouda.pdarrayclass.sqrt
    arkouda.pdarrayclass.mod
    arkouda.pdarrayclass.fmod
+   arkouda.pdarrayclass.broadcast_to_shape
    arkouda.pdarrayclass.attach_pdarray
    arkouda.pdarrayclass.unregister_pdarray_by_name
 
@@ -1601,6 +1602,11 @@ Functions
 
    :returns: Returns an array that contains the element-wise remainder of division.
    :rtype: pdarray
+
+
+.. py:function:: broadcast_to_shape(pda: pdarray, shape: Tuple[int, Ellipsis]) -> pdarray
+
+   expand an array's rank to the specified shape using broadcasting
 
 
 .. py:function:: attach_pdarray(user_defined_name: str) -> pdarray

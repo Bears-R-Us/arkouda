@@ -34,6 +34,8 @@ error string to return to client... generate consistent error strings for notImp
 
    efunc is not implemented for DType 
 
+.. function:: proc notImplementedError(pname: string, efunc: string, ldtype: DType, param nd: int): string
+
 .. function:: proc notImplementedError(pname: string, efunc: string, dt1: DType, dt2: DType): string
 
    efunc is not implemented for DTypes 

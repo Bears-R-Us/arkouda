@@ -195,6 +195,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
@@ -232,7 +236,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -303,83 +307,119 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.abs" title="arkouda.numeric.abs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">abs</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise absolute value of the array.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.ceil" title="arkouda.numeric.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ceil</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise ceiling of the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.floor" title="arkouda.numeric.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floor</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise floor of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.round" title="arkouda.numeric.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise rounding of the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.trunc" title="arkouda.numeric.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise truncation of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.sign" title="arkouda.numeric.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sign</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise sign of the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.isfinite" title="arkouda.numeric.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isfinite</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise isfinite check applied to the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.isinf" title="arkouda.numeric.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isinf</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise isinf check applied to the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.isnan" title="arkouda.numeric.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnan</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise isnan check applied to the array.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.log" title="arkouda.numeric.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise natural log of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.exp" title="arkouda.numeric.exp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.log10" title="arkouda.numeric.log10"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log10</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise base 10 log of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.log2" title="arkouda.numeric.log2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log2</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise base 2 log of the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.log1p" title="arkouda.numeric.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log1p</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise natural log of one plus the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.exp" title="arkouda.numeric.exp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise exponential of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.cumsum" title="arkouda.numeric.cumsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumsum</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.expm1" title="arkouda.numeric.expm1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expm1</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise exponential of the array minus one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.square" title="arkouda.numeric.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise square of the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.cumsum" title="arkouda.numeric.cumsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumsum</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the cumulative sum over the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.cumprod" title="arkouda.numeric.cumprod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumprod</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.cumprod" title="arkouda.numeric.cumprod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumprod</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the cumulative product over the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.sin" title="arkouda.numeric.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.sin" title="arkouda.numeric.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise sine of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.cos" title="arkouda.numeric.cos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cos</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.cos" title="arkouda.numeric.cos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cos</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise cosine of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.tan" title="arkouda.numeric.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.tan" title="arkouda.numeric.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise tangent of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.arcsin" title="arkouda.numeric.arcsin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arcsin</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.arcsin" title="arkouda.numeric.arcsin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arcsin</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise inverse sine of the array. The result is between -pi/2 and pi/2.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.arccos" title="arkouda.numeric.arccos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arccos</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.arccos" title="arkouda.numeric.arccos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arccos</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise inverse cosine of the array. The result is between 0 and pi.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.arctan" title="arkouda.numeric.arctan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctan</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.arctan" title="arkouda.numeric.arctan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctan</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise inverse tangent of the array. The result is between -pi/2 and pi/2.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.arctan2" title="arkouda.numeric.arctan2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctan2</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.arctan2" title="arkouda.numeric.arctan2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctan2</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise inverse tangent of the array pair. The result chosen is the</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.sinh" title="arkouda.numeric.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.sinh" title="arkouda.numeric.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic sine of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.cosh" title="arkouda.numeric.cosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cosh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.cosh" title="arkouda.numeric.cosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cosh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic cosine of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.tanh" title="arkouda.numeric.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.tanh" title="arkouda.numeric.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic tangent of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.arcsinh" title="arkouda.numeric.arcsinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arcsinh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.arcsinh" title="arkouda.numeric.arcsinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arcsinh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise inverse hyperbolic sine of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.arccosh" title="arkouda.numeric.arccosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arccosh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.arccosh" title="arkouda.numeric.arccosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arccosh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise inverse hyperbolic cosine of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.arctanh" title="arkouda.numeric.arctanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctanh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.arctanh" title="arkouda.numeric.arctanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctanh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise inverse hyperbolic tangent of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.rad2deg" title="arkouda.numeric.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rad2deg</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.rad2deg" title="arkouda.numeric.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rad2deg</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Converts angles element-wise from radians to degrees.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.deg2rad" title="arkouda.numeric.deg2rad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deg2rad</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.deg2rad" title="arkouda.numeric.deg2rad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deg2rad</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Converts angles element-wise from degrees to radians.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.hash" title="arkouda.numeric.hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hash</span></code></a>(→ Union[Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.hash" title="arkouda.numeric.hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hash</span></code></a>(→ Union[Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Return an element-wise hash of the array or list of arrays.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.where" title="arkouda.numeric.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.where" title="arkouda.numeric.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Returns an array with elements chosen from A and B based upon a</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.histogram" title="arkouda.numeric.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.histogram" title="arkouda.numeric.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Compute a histogram of evenly spaced bins over the range of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.histogram2d" title="arkouda.numeric.histogram2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram2d</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.histogram2d" title="arkouda.numeric.histogram2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram2d</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Compute the bi-dimensional histogram of two data samples with evenly spaced bins</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.histogramdd" title="arkouda.numeric.histogramdd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogramdd</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.histogramdd" title="arkouda.numeric.histogramdd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogramdd</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Compute the multidimensional histogram of data in sample with evenly spaced bins.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.value_counts" title="arkouda.numeric.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ Union[Categorical, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.value_counts" title="arkouda.numeric.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ Union[Categorical, ...)</p></td>
 <td><p>Count the occurrences of the unique values of an array.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.isnan" title="arkouda.numeric.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnan</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
-<td><p>Test a pdarray for Not a number / NaN values</p></td>
 </tr>
 </tbody>
 </table>
@@ -497,6 +537,218 @@ has the precision and capacity to hold the desired result.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.ceil">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">ceil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.ceil" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise ceiling of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing ceiling values of the input array elements</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="go">array([2, 3, 4, 5, 6])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.floor">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">floor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.floor" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise floor of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing floor values of the input array elements</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="go">array([1, 2, 3, 4, 5])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.round">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">round</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.round" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise rounding of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing input array elements rounded to the nearest integer</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.14159</span><span class="p">]))</span>
+<span class="go">array([1, 3, 3])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.trunc">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">trunc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.trunc" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise truncation of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing input array elements truncated to the nearest integer</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.14159</span><span class="p">]))</span>
+<span class="go">array([1, 2, 3])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.sign">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">sign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.sign" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise sign of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing sign values of the input array elements</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">]))</span>
+<span class="go">array([-1, -1, 0, 1, 1])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.isfinite">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">isfinite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.isfinite" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise isfinite check applied to the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing boolean values indicating whether the
+input array elements are finite</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p></li>
+<li><p><strong>RuntimeError</strong> – if the underlying pdarray is not float-based</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">inf</span><span class="p">])</span>
+<span class="go">array([True, True, False])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.isinf">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">isinf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.isinf" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise isinf check applied to the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing boolean values indicating whether the
+input array elements are infinite</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p></li>
+<li><p><strong>RuntimeError</strong> – if the underlying pdarray is not float-based</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">inf</span><span class="p">])</span>
+<span class="go">array([False, False, True])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.isnan">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">isnan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.isnan" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise isnan check applied to the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing boolean values indicating whether the
+input array elements are NaN</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p></li>
+<li><p><strong>RuntimeError</strong> – if the underlying pdarray is not float-based</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="go">array([False, False, True])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numeric.log">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.log" title="Link to this definition">#</a></dt>
 <dd><p>Return the element-wise natural log of the array.</p>
@@ -533,6 +785,48 @@ array elements</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.log10">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">log10</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.log10" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise base 10 log of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – array to compute on</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pdarray contain values of the base 10 log</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.log2">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">log2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.log2" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise base 2 log of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – array to compute on</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pdarray contain values of the base 2 log</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.log1p">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">log1p</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.log1p" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise natural log of one plus the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – array to compute on</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pdarray contain values of the natural log of one plus the array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numeric.exp">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.exp" title="Link to this definition">#</a></dt>
 <dd><p>Return the element-wise exponential of the array.</p>
@@ -559,6 +853,63 @@ array elements</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">5.0</span><span class="p">))</span>
 <span class="go">array([11.84010843172504, 46.454368507659211, 5.5571769623557188,</span>
 <span class="go">       33.494295836924771, 13.478894913238722])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.expm1">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">expm1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.expm1" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise exponential of the array minus one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing exponential values of the input
+array elements minus one</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">exp1m</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="go">array([1.7182818284590451, 6.3890560989306504, 19.085536923187668, 53.598150033144236])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">exp1m</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">5.0</span><span class="p">))</span>
+<span class="go">array([10.84010843172504, 45.454368507659211, 4.5571769623557188,</span>
+<span class="go">       32.494295836924771, 12.478894913238722])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.square">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">square</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.square" title="Link to this definition">#</a></dt>
+<dd><p>Return the element-wise square of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing square values of the input
+array elements</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="go">array([1, 4, 9, 16])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1351,27 +1702,6 @@ return_counts parameter is set to True.</p>
 </div>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.numeric.isnan">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">isnan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.numeric.isnan" title="Link to this definition">#</a></dt>
-<dd><p>Test a pdarray for Not a number / NaN values
-Currently only supports float-value-based arrays</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<em>pdarray to test</em>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>pdarray consisting of True / False values; True where NaN, False otherwise</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p></li>
-<li><p><strong>RuntimeError</strong> – if the underlying pdarray is not float-based</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 </section>
 </section>
 </section>
@@ -1443,8 +1773,21 @@ Currently only supports float-value-based arrays</p>
 </li>
 <li><a class="reference internal" href="#arkouda.numeric.cast"><code class="docutils literal notranslate"><span class="pre">cast()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.abs"><code class="docutils literal notranslate"><span class="pre">abs()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.ceil"><code class="docutils literal notranslate"><span class="pre">ceil()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.floor"><code class="docutils literal notranslate"><span class="pre">floor()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.round"><code class="docutils literal notranslate"><span class="pre">round()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.trunc"><code class="docutils literal notranslate"><span class="pre">trunc()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.sign"><code class="docutils literal notranslate"><span class="pre">sign()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.isfinite"><code class="docutils literal notranslate"><span class="pre">isfinite()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.isinf"><code class="docutils literal notranslate"><span class="pre">isinf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.isnan"><code class="docutils literal notranslate"><span class="pre">isnan()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.log"><code class="docutils literal notranslate"><span class="pre">log()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.log10"><code class="docutils literal notranslate"><span class="pre">log10()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.log2"><code class="docutils literal notranslate"><span class="pre">log2()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.log1p"><code class="docutils literal notranslate"><span class="pre">log1p()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.exp"><code class="docutils literal notranslate"><span class="pre">exp()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.expm1"><code class="docutils literal notranslate"><span class="pre">expm1()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.square"><code class="docutils literal notranslate"><span class="pre">square()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.cumsum"><code class="docutils literal notranslate"><span class="pre">cumsum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.cumprod"><code class="docutils literal notranslate"><span class="pre">cumprod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.sin"><code class="docutils literal notranslate"><span class="pre">sin()</span></code></a></li>
@@ -1468,7 +1811,6 @@ Currently only supports float-value-based arrays</p>
 <li><a class="reference internal" href="#arkouda.numeric.histogram2d"><code class="docutils literal notranslate"><span class="pre">histogram2d()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.histogramdd"><code class="docutils literal notranslate"><span class="pre">histogramdd()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.value_counts"><code class="docutils literal notranslate"><span class="pre">value_counts()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numeric.isnan"><code class="docutils literal notranslate"><span class="pre">isnan()</span></code></a></li>
 </ul>
 </li>
 </ul>

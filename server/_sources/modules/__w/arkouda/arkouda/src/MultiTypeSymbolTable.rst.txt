@@ -62,6 +62,8 @@ or
       :returns: borrow of newly created `SymEntry(t)`
       
 
+   .. method:: proc addEntry(name: string, shape: ?ND*int, type t): borrowed SymEntry(t, ND) throws
+
    .. method:: proc addEntry(name: string, in entry: shared AbstractSymEntry): borrowed AbstractSymEntry throws
 
       
@@ -91,6 +93,8 @@ or
       
       :returns: borrow of newly created GenSymEntry
       
+
+   .. method:: proc addEntry(name: string, shape: ?ND*int, dtype: DType): borrowed AbstractSymEntry throws
 
    .. method:: proc deleteEntry(name: string): bool throws
 

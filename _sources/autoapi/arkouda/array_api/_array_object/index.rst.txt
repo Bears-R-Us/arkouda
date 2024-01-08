@@ -1,0 +1,95 @@
+:orphan:
+
+:py:mod:`arkouda.array_api._array_object`
+=========================================
+
+.. py:module:: arkouda.array_api._array_object
+
+.. autoapi-nested-parse::
+
+   Wrapper class around the ndarray object for the array API standard.
+
+   The array API standard defines some behaviors differently than ndarray, in
+   particular, type promotion rules are different (the standard has no
+   value-based casting). The standard also specifies a more limited subset of
+   array methods and functionalities than are implemented on ndarray. Since the
+   goal of the array_api namespace is to be a minimal implementation of the array
+   API standard, we need to define a separate wrapper class for the array_api
+   namespace.
+
+   The standard compliant class is only a wrapper class. It is *not* a subclass
+   of ndarray.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.array_api._array_object.Array
+
+
+
+
+.. py:class:: Array
+
+
+   n-d array object for the array API namespace.
+
+   See the docstring of :py:obj:`np.ndarray <numpy.ndarray>` for more
+   information.
+
+   This is a wrapper around numpy.ndarray that restricts the usage to only
+   those things that are required by the array API namespace. Note,
+   attributes on this object that start with a single underscore are not part
+   of the API specification and should only be used internally. This object
+   should not be constructed directly. Rather, use one of the creation
+   functions, such as asarray().
+
+
+   .. py:property:: dtype
+      :type: arkouda.array_api._typing.Dtype
+
+
+   .. py:property:: device
+      :type: arkouda.array_api._typing.Device
+
+
+   .. py:property:: mT
+      :type: Array
+
+
+   .. py:property:: ndim
+      :type: int
+
+
+   .. py:property:: shape
+      :type: Tuple[int, Ellipsis]
+
+
+   .. py:property:: size
+      :type: int
+
+
+   .. py:property:: T
+      :type: Array
+
+
+   .. py:method:: tolist()
+
+      Convert the array to a Python list or nested lists
+
+
+   .. py:method:: to_ndarray()
+
+      Convert the array to a numpy ndarray
+
+
+   .. py:method:: to_device(device: arkouda.array_api._typing.Device, /, stream: None = None) -> Array
+
+
+

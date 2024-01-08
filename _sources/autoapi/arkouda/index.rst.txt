@@ -4,6 +4,15 @@
 .. py:module:: arkouda
 
 
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   array_api/index.rst
+
+
 Submodules
 ----------
 .. toctree::
@@ -143,6 +152,7 @@ Functions
    arkouda.fmod
    arkouda.attach_pdarray
    arkouda.unregister_pdarray_by_name
+   arkouda.broadcast_to_shape
    arkouda.argsort
    arkouda.coargsort
    arkouda.sort
@@ -170,8 +180,21 @@ Functions
    arkouda.bigint_from_uint_arrays
    arkouda.cast
    arkouda.abs
+   arkouda.ceil
+   arkouda.floor
+   arkouda.trunc
+   arkouda.round
+   arkouda.sign
+   arkouda.isfinite
+   arkouda.isinf
+   arkouda.isnan
    arkouda.log
+   arkouda.log2
+   arkouda.log10
+   arkouda.log1p
    arkouda.exp
+   arkouda.expm1
+   arkouda.square
    arkouda.cumsum
    arkouda.cumprod
    arkouda.sin
@@ -195,7 +218,6 @@ Functions
    arkouda.histogram2d
    arkouda.histogramdd
    arkouda.value_counts
-   arkouda.isnan
    arkouda.unique
    arkouda.broadcast
    arkouda.join_on_eq_with_dt
@@ -305,6 +327,7 @@ Functions
    arkouda.unregister_all
    arkouda.register_all
    arkouda.is_registered
+   arkouda.broadcast_dims
 
 
 
@@ -318,6 +341,7 @@ Attributes
    arkouda.akuint64
    arkouda.DTypes
    arkouda.DTypeObjects
+   arkouda.ScalarDTypes
    arkouda.bool
    arkouda.int64
    arkouda.float64
@@ -4306,6 +4330,10 @@ Attributes
 
    
 
+.. py:data:: ScalarDTypes
+
+   
+
 .. py:function:: dtype(x)
 
 
@@ -6028,7 +6056,12 @@ Attributes
    Error/Exception used when the Arkouda Server cannot register an object
 
 
-.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
+.. py:function:: broadcast_to_shape(pda: pdarray, shape: Tuple[int, Ellipsis]) -> pdarray
+
+   expand an array's rank to the specified shape using broadcasting
+
+
+.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
 
    Return the permutation that sorts the array.
 
@@ -6702,7 +6735,7 @@ Attributes
    array([-5, -3.75, -2.5, -1.25, 0])
 
 
-.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: arkouda.dtypes.int_scalars, dtype=akint64, seed: arkouda.dtypes.int_scalars = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: arkouda.dtypes.int_scalars = None) -> arkouda.pdarrayclass.pdarray
 
    Generate a pdarray of randomized int, float, or bool values in a
    specified range bounded by the low and high parameters.
@@ -7052,6 +7085,156 @@ Attributes
    array([5, 4, 3, 2, 1])
 
 
+.. py:function:: ceil(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise ceiling of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing ceiling values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.ceil(ak.linspace(1.1,5.5,5))
+   array([2, 3, 4, 5, 6])
+
+
+.. py:function:: floor(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise floor of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing floor values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.floor(ak.linspace(1.1,5.5,5))
+   array([1, 2, 3, 4, 5])
+
+
+.. py:function:: trunc(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise truncation of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing input array elements truncated to the nearest integer
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
+   array([1, 2, 3])
+
+
+.. py:function:: round(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise rounding of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing input array elements rounded to the nearest integer
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
+   array([1, 3, 3])
+
+
+.. py:function:: sign(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise sign of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing sign values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
+   array([-1, -1, 0, 1, 1])
+
+
+.. py:function:: isfinite(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise isfinite check applied to the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing boolean values indicating whether the
+             input array elements are finite
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises RuntimeError: if the underlying pdarray is not float-based
+
+   .. rubric:: Examples
+
+   >>> ak.isfinite(ak.array[1.0, 2.0, ak.inf])
+   array([True, True, False])
+
+
+.. py:function:: isinf(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise isinf check applied to the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing boolean values indicating whether the
+             input array elements are infinite
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises RuntimeError: if the underlying pdarray is not float-based
+
+   .. rubric:: Examples
+
+   >>> ak.isinf(ak.array[1.0, 2.0, ak.inf])
+   array([False, False, True])
+
+
+.. py:function:: isnan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise isnan check applied to the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing boolean values indicating whether the
+             input array elements are NaN
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises RuntimeError: if the underlying pdarray is not float-based
+
+   .. rubric:: Examples
+
+   >>> ak.isnan(ak.array[1.0, 2.0, 1.0 / 0.0])
+   array([False, False, True])
+
+
 .. py:function:: log(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise natural log of the array.
@@ -7083,6 +7266,36 @@ Attributes
    array([0, 3.3219280948873626, 6.6438561897747253])
 
 
+.. py:function:: log2(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise base 2 log of the array.
+
+   :param x: array to compute on
+   :type x: pdarray
+
+   :rtype: pdarray contain values of the base 2 log
+
+
+.. py:function:: log10(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise base 10 log of the array.
+
+   :param x: array to compute on
+   :type x: pdarray
+
+   :rtype: pdarray contain values of the base 10 log
+
+
+.. py:function:: log1p(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise natural log of one plus the array.
+
+   :param x: array to compute on
+   :type x: pdarray
+
+   :rtype: pdarray contain values of the natural log of one plus the array
+
+
 .. py:function:: exp(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise exponential of the array.
@@ -7104,6 +7317,48 @@ Attributes
    >>> ak.exp(ak.uniform(5,1.0,5.0))
    array([11.84010843172504, 46.454368507659211, 5.5571769623557188,
           33.494295836924771, 13.478894913238722])
+
+
+.. py:function:: expm1(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise exponential of the array minus one.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing exponential values of the input
+             array elements minus one
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.exp1m(ak.arange(1,5))
+   array([1.7182818284590451, 6.3890560989306504, 19.085536923187668, 53.598150033144236])
+
+   >>> ak.exp1m(ak.uniform(5,1.0,5.0))
+   array([10.84010843172504, 45.454368507659211, 4.5571769623557188,
+          32.494295836924771, 12.478894913238722])
+
+
+.. py:function:: square(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise square of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing square values of the input
+             array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.square(ak.arange(1,5))
+   array([1, 4, 9, 16])
 
 
 .. py:function:: cumsum(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
@@ -7700,20 +7955,6 @@ Attributes
    >>> A = ak.array([2, 0, 2, 4, 0, 0])
    >>> ak.value_counts(A)
    (array([0, 2, 4]), array([3, 2, 1]))
-
-
-.. py:function:: isnan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Test a pdarray for Not a number / NaN values
-   Currently only supports float-value-based arrays
-
-   :param pda:
-   :type pda: pdarray to test
-
-   :rtype: pdarray consisting of True / False values; True where NaN, False otherwise
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-   :raises RuntimeError: if the underlying pdarray is not float-based
 
 
 .. py:class:: ErrorMode
@@ -19114,7 +19355,7 @@ Attributes
    array([True, True, True, True, True])
 
 
-.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
+.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
 
    Return the permutation that sorts the array.
 
@@ -22185,7 +22426,7 @@ Attributes
    Only works for pdarrays of int64 dtype, Strings, or Categorical
 
 
-.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
+.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
 
    Return the permutation that sorts the array.
 
@@ -25287,16 +25528,22 @@ Attributes
 
 .. py:function:: isnan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
-   Test a pdarray for Not a number / NaN values
-   Currently only supports float-value-based arrays
+   Return the element-wise isnan check applied to the array.
 
    :param pda:
-   :type pda: pdarray to test
+   :type pda: pdarray
 
-   :rtype: pdarray consisting of True / False values; True where NaN, False otherwise
+   :returns: A pdarray containing boolean values indicating whether the
+             input array elements are NaN
+   :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
    :raises RuntimeError: if the underlying pdarray is not float-based
+
+   .. rubric:: Examples
+
+   >>> ak.isnan(ak.array[1.0, 2.0, 1.0 / 0.0])
+   array([False, False, True])
 
 
 .. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
@@ -27197,5 +27444,12 @@ Attributes
    :type as_component: bool
 
    :rtype: bool
+
+
+.. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, Ellipsis]
+
+   Algorithm to determine shape of broadcasted PD array given two array shapes
+
+   see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
 
 

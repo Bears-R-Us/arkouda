@@ -1,0 +1,151 @@
+:orphan:
+
+:py:mod:`arkouda.array_api._typing`
+===================================
+
+.. py:module:: arkouda.array_api._typing
+
+.. autoapi-nested-parse::
+
+   This file defines the types for type annotations.
+
+   These names aren't part of the module namespace, but they are used in the
+   annotations in the function signatures. The functions in the module are only
+   valid for inputs that match the given type annotations.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.array_api._typing.Array
+   arkouda.array_api._typing.SupportsDLPack
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.array_api._typing.Device
+   arkouda.array_api._typing.Dtype
+   arkouda.array_api._typing.SupportsBufferProtocol
+   arkouda.array_api._typing.PyCapsule
+
+
+.. py:class:: Array
+
+
+   n-d array object for the array API namespace.
+
+   See the docstring of :py:obj:`np.ndarray <numpy.ndarray>` for more
+   information.
+
+   This is a wrapper around numpy.ndarray that restricts the usage to only
+   those things that are required by the array API namespace. Note,
+   attributes on this object that start with a single underscore are not part
+   of the API specification and should only be used internally. This object
+   should not be constructed directly. Rather, use one of the creation
+   functions, such as asarray().
+
+
+   .. py:property:: dtype
+      :type: arkouda.array_api._typing.Dtype
+
+
+   .. py:property:: device
+      :type: arkouda.array_api._typing.Device
+
+
+   .. py:property:: mT
+      :type: Array
+
+
+   .. py:property:: ndim
+      :type: int
+
+
+   .. py:property:: shape
+      :type: Tuple[int, Ellipsis]
+
+
+   .. py:property:: size
+      :type: int
+
+
+   .. py:property:: T
+      :type: Array
+
+
+   .. py:method:: tolist()
+
+      Convert the array to a Python list or nested lists
+
+
+   .. py:method:: to_ndarray()
+
+      Convert the array to a numpy ndarray
+
+
+   .. py:method:: to_device(device: arkouda.array_api._typing.Device, /, stream: None = None) -> Array
+
+
+
+.. py:data:: Device
+
+   
+
+.. py:data:: Dtype
+
+   
+
+.. py:data:: SupportsBufferProtocol
+
+   
+
+.. py:data:: PyCapsule
+
+   
+
+.. py:class:: SupportsDLPack
+
+
+   Bases: :py:obj:`Protocol`
+
+   Base class for protocol classes.
+
+   Protocol classes are defined as::
+
+       class Proto(Protocol):
+           def meth(self) -> int:
+               ...
+
+   Such classes are primarily used with static type checkers that recognize
+   structural subtyping (static duck-typing), for example::
+
+       class C:
+           def meth(self) -> int:
+               return 0
+
+       def func(x: Proto) -> int:
+           return x.meth()
+
+       func(C())  # Passes static type check
+
+   See PEP 544 for details. Protocol classes decorated with
+   @typing.runtime_checkable act as simple-minded runtime protocols that check
+   only the presence of given attributes, ignoring their type signatures.
+   Protocol classes can be generic, they are defined as::
+
+       class GenProto(Protocol[T]):
+           def meth(self) -> T:
+               ...
+
+

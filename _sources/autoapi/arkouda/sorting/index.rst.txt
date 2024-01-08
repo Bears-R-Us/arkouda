@@ -19,7 +19,7 @@ Functions
 
 
 
-.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
+.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
 
    Return the permutation that sorts the array.
 

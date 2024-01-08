@@ -1,0 +1,492 @@
+:orphan:
+
+:py:mod:`arkouda.array_api._elementwise_functions`
+==================================================
+
+.. py:module:: arkouda.array_api._elementwise_functions
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.array_api._elementwise_functions.abs
+   arkouda.array_api._elementwise_functions.acos
+   arkouda.array_api._elementwise_functions.acosh
+   arkouda.array_api._elementwise_functions.add
+   arkouda.array_api._elementwise_functions.asin
+   arkouda.array_api._elementwise_functions.asinh
+   arkouda.array_api._elementwise_functions.atan
+   arkouda.array_api._elementwise_functions.atan2
+   arkouda.array_api._elementwise_functions.atanh
+   arkouda.array_api._elementwise_functions.bitwise_and
+   arkouda.array_api._elementwise_functions.bitwise_left_shift
+   arkouda.array_api._elementwise_functions.bitwise_invert
+   arkouda.array_api._elementwise_functions.bitwise_or
+   arkouda.array_api._elementwise_functions.bitwise_right_shift
+   arkouda.array_api._elementwise_functions.bitwise_xor
+   arkouda.array_api._elementwise_functions.ceil
+   arkouda.array_api._elementwise_functions.conj
+   arkouda.array_api._elementwise_functions.cos
+   arkouda.array_api._elementwise_functions.cosh
+   arkouda.array_api._elementwise_functions.divide
+   arkouda.array_api._elementwise_functions.equal
+   arkouda.array_api._elementwise_functions.exp
+   arkouda.array_api._elementwise_functions.expm1
+   arkouda.array_api._elementwise_functions.floor
+   arkouda.array_api._elementwise_functions.floor_divide
+   arkouda.array_api._elementwise_functions.greater
+   arkouda.array_api._elementwise_functions.greater_equal
+   arkouda.array_api._elementwise_functions.imag
+   arkouda.array_api._elementwise_functions.isfinite
+   arkouda.array_api._elementwise_functions.isinf
+   arkouda.array_api._elementwise_functions.isnan
+   arkouda.array_api._elementwise_functions.less
+   arkouda.array_api._elementwise_functions.less_equal
+   arkouda.array_api._elementwise_functions.log
+   arkouda.array_api._elementwise_functions.log1p
+   arkouda.array_api._elementwise_functions.log2
+   arkouda.array_api._elementwise_functions.log10
+   arkouda.array_api._elementwise_functions.logaddexp
+   arkouda.array_api._elementwise_functions.logical_and
+   arkouda.array_api._elementwise_functions.logical_not
+   arkouda.array_api._elementwise_functions.logical_or
+   arkouda.array_api._elementwise_functions.logical_xor
+   arkouda.array_api._elementwise_functions.multiply
+   arkouda.array_api._elementwise_functions.negative
+   arkouda.array_api._elementwise_functions.not_equal
+   arkouda.array_api._elementwise_functions.positive
+   arkouda.array_api._elementwise_functions.pow
+   arkouda.array_api._elementwise_functions.real
+   arkouda.array_api._elementwise_functions.remainder
+   arkouda.array_api._elementwise_functions.round
+   arkouda.array_api._elementwise_functions.sign
+   arkouda.array_api._elementwise_functions.sin
+   arkouda.array_api._elementwise_functions.sinh
+   arkouda.array_api._elementwise_functions.square
+   arkouda.array_api._elementwise_functions.sqrt
+   arkouda.array_api._elementwise_functions.subtract
+   arkouda.array_api._elementwise_functions.tan
+   arkouda.array_api._elementwise_functions.tanh
+   arkouda.array_api._elementwise_functions.trunc
+
+
+
+.. py:function:: abs(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`ak.abs`.
+
+   See its docstring for more information.
+
+
+.. py:function:: acos(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.arccos`.
+
+   See its docstring for more information.
+
+
+.. py:function:: acosh(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`ak.arccosh`.
+
+   See its docstring for more information.
+
+
+.. py:function:: add(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.add <numpy.add>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: asin(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`ak.arcsin`.
+
+   See its docstring for more information.
+
+
+.. py:function:: asinh(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`ak.arcsinh`.
+
+   See its docstring for more information.
+
+
+.. py:function:: atan(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.arctan`.
+
+   See its docstring for more information.
+
+
+.. py:function:: atan2(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`ak.arctan2`.
+
+   See its docstring for more information.
+
+
+.. py:function:: atanh(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`ak.arctanh`.
+
+   See its docstring for more information.
+
+
+.. py:function:: bitwise_and(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.bitwise_and`.
+
+   See its docstring for more information.
+
+
+.. py:function:: bitwise_left_shift(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.left_shift <numpy.left_shift>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: bitwise_invert(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.invert <numpy.invert>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: bitwise_or(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.bitwise_or <numpy.bitwise_or>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: bitwise_right_shift(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.right_shift <numpy.right_shift>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: bitwise_xor(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.bitwise_xor <numpy.bitwise_xor>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: ceil(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.ceil <numpy.ceil>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: conj(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.conj <numpy.conj>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: cos(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.cos <numpy.cos>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: cosh(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.cosh <numpy.cosh>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: divide(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.divide <numpy.divide>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: equal(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.equal <numpy.equal>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: exp(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.exp <numpy.exp>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: expm1(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.expm1 <numpy.expm1>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: floor(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.floor <numpy.floor>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: floor_divide(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.floor_divide <numpy.floor_divide>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: greater(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.greater <numpy.greater>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: greater_equal(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.greater_equal <numpy.greater_equal>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: imag(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.imag <numpy.imag>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: isfinite(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.isfinite <numpy.isfinite>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: isinf(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.isinf <numpy.isinf>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: isnan(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.isnan <numpy.isnan>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: less(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.less <numpy.less>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: less_equal(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.less_equal <numpy.less_equal>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: log(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.log <numpy.log>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: log1p(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.log1p <numpy.log1p>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: log2(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.log2 <numpy.log2>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: log10(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.log10 <numpy.log10>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: logaddexp(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.logaddexp <numpy.logaddexp>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: logical_and(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.logical_and <numpy.logical_and>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: logical_not(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.logical_not <numpy.logical_not>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: logical_or(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.logical_or <numpy.logical_or>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: logical_xor(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.logical_xor <numpy.logical_xor>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: multiply(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.multiply <numpy.multiply>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: negative(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.negative <numpy.negative>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: not_equal(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.not_equal <numpy.not_equal>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: positive(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.positive <numpy.positive>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: pow(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.power <numpy.power>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: real(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.real <numpy.real>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: remainder(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.remainder <numpy.remainder>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: round(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.round <numpy.round>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: sign(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.sign <numpy.sign>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: sin(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.sin <numpy.sin>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: sinh(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.sinh <numpy.sinh>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: square(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.square <numpy.square>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: sqrt(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.sqrt <numpy.sqrt>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: subtract(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.subtract <numpy.subtract>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: tan(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.tan <numpy.tan>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: tanh(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.tanh <numpy.tanh>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: trunc(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.trunc <numpy.trunc>`.
+
+   See its docstring for more information.
+
+

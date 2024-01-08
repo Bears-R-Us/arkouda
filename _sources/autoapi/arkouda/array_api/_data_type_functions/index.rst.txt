@@ -1,0 +1,117 @@
+:orphan:
+
+:py:mod:`arkouda.array_api._data_type_functions`
+================================================
+
+.. py:module:: arkouda.array_api._data_type_functions
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.array_api._data_type_functions.finfo_object
+   arkouda.array_api._data_type_functions.iinfo_object
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.array_api._data_type_functions.astype
+   arkouda.array_api._data_type_functions.can_cast
+   arkouda.array_api._data_type_functions.isdtype
+   arkouda.array_api._data_type_functions.result_type
+
+
+
+.. py:function:: astype(x: arkouda.array_api._array_object.Array, dtype: arkouda.array_api._typing.Dtype, /, *, copy: bool = True) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: can_cast(from_: Union[arkouda.array_api._typing.Dtype, arkouda.array_api._array_object.Array], to: arkouda.array_api._typing.Dtype, /) -> bool
+
+   Array API compatible wrapper for :py:func:`np.can_cast <numpy.can_cast>`.
+
+   See its docstring for more information.
+
+
+.. py:class:: finfo_object
+
+
+   .. py:attribute:: bits
+      :type: int
+
+      
+
+   .. py:attribute:: eps
+      :type: float
+
+      
+
+   .. py:attribute:: max
+      :type: float
+
+      
+
+   .. py:attribute:: min
+      :type: float
+
+      
+
+   .. py:attribute:: smallest_normal
+      :type: float
+
+      
+
+   .. py:attribute:: dtype
+      :type: arkouda.array_api._typing.Dtype
+
+      
+
+
+.. py:class:: iinfo_object
+
+
+   .. py:attribute:: bits
+      :type: int
+
+      
+
+   .. py:attribute:: max
+      :type: int
+
+      
+
+   .. py:attribute:: min
+      :type: int
+
+      
+
+   .. py:attribute:: dtype
+      :type: arkouda.array_api._typing.Dtype
+
+      
+
+
+.. py:function:: isdtype(dtype: arkouda.array_api._typing.Dtype, kind: Union[arkouda.array_api._typing.Dtype, str, Tuple[Union[arkouda.array_api._typing.Dtype, str], Ellipsis]]) -> bool
+
+   Returns a boolean indicating whether a provided dtype is of a specified data type ``kind``.
+
+   See
+   https://data-apis.org/array-api/latest/API_specification/generated/array_api.isdtype.html
+   for more details
+
+
+.. py:function:: result_type(*arrays_and_dtypes: Union[arkouda.array_api._array_object.Array, arkouda.array_api._typing.Dtype]) -> arkouda.array_api._typing.Dtype
+
+   Array API compatible wrapper for :py:func:`np.result_type <numpy.result_type>`.
+
+   See its docstring for more information.
+
+

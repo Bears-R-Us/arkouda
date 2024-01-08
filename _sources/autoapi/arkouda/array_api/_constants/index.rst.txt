@@ -1,0 +1,27 @@
+:orphan:
+
+:py:mod:`arkouda.array_api._constants`
+======================================
+
+.. py:module:: arkouda.array_api._constants
+
+
+Module Contents
+---------------
+
+.. py:data:: e
+
+   
+
+.. py:data:: inf
+
+   
+
+.. py:data:: nan
+
+   
+
+.. py:data:: pi
+
+   
+

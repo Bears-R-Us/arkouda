@@ -36,7 +36,7 @@ or
    * converted to uint8
    
 
-.. function:: proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws
+.. function:: proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): bytes throws
 
    
    * Outputs the pdarray as a Numpy ndarray in the form of a 

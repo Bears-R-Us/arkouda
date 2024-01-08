@@ -33,7 +33,7 @@ or
    :returns: (MsgTuple) response message
    
 
-.. function:: proc createMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+.. function:: proc createMsg0D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
 
 .. function:: proc deleteMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
 
@@ -184,5 +184,48 @@ or
    :throws: `UndefinedSymbolError(name)`
    
 
-.. function:: proc setMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+.. function:: proc broadcastNDArray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param ndIn: int, param ndOut: int): MsgTuple throws
+
+   
+   Create a "broadcasted" array (of rank 'nd') by copying an array into an
+   array of the given shape.
+   
+   E.g., given the following broadcast:
+   A      (4d array):  8 x 1 x 6 x 1
+   B      (3d array):      7 x 1 x 5
+   ---------------------------------
+   Result (4d array):  8 x 7 x 6 x 5
+   
+   Two separate calls would be made to store 'A' and 'B' in arrays with
+   result's shape.
+   
+   When copying from a singleton dimension, the value is repeated along
+   that dimension (e.g., A's 1st and 3rd, or B's 2nd dimension above).
+   For non singleton dimensions, the size of the two arrays must match,
+   and the values are copied into the result array.
+   
+   When prepending a new dimension to increase an array's rank, the
+   values from the other dimensions are repeated along the new dimension.
+   
+   !!! TODO: Avoid the promoted copies here by leaving the singleton
+   dimensions in the result array, and making operations on arrays
+   aware that promotion of singleton dimensions may be necessary. E.g.,
+   make matrix multiplication aware that it can treat a singleton
+   value as a vector of the appropriate length during multiplication.
+   
+   (this may require a modification of SymEntry to keep track of
+   which dimensions are explicitly singletons)
+   
+   NOTE: registration of this procedure is handled specially in
+   'serverModuleGen.py' because it has two param fields. The purpose of
+   designing "broadcast" this way is to avoid the the need for multiple
+   dimensionality param fields in **all** other message handlers (e.g.,
+   matrix multiply can be designed to expect matrices of equal rank,
+   requiring only one dimensionality param field. As such, the client
+   implementation of matrix-multiply may be required to broadcast the array
+   arguments up to some common rank (N) before issuing a 'matMult{N}D'
+   command to the server)
+   
+
+.. function:: proc checkValidBroadcast(from: ?Nf*int, to: ?Nt*int): (bool, Nf*bool)
 

@@ -195,6 +195,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
@@ -232,7 +236,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -392,10 +396,13 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.fmod" title="arkouda.pdarrayclass.fmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fmod</span></code></a>(→ pdarray)</p></td>
 <td><p>Returns the element-wise remainder of division.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.attach_pdarray" title="arkouda.pdarrayclass.attach_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_pdarray</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.broadcast_to_shape" title="arkouda.pdarrayclass.broadcast_to_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_to_shape</span></code></a>(→ pdarray)</p></td>
+<td><p>expand an array's rank to the specified shape using broadcasting</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.attach_pdarray" title="arkouda.pdarrayclass.attach_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_pdarray</span></code></a>(→ pdarray)</p></td>
 <td><p>class method to return a pdarray attached to the registered name in the arkouda</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray_by_name" title="arkouda.pdarrayclass.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray_by_name" title="arkouda.pdarrayclass.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>(→ None)</p></td>
 <td><p>Unregister a named pdarray in the arkouda server which was previously</p></td>
 </tr>
 </tbody>
@@ -2453,6 +2460,12 @@ It is equivalent to np.mod, the remainder has the same sign as the divisor.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.broadcast_to_shape">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">broadcast_to_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.broadcast_to_shape" title="Link to this definition">#</a></dt>
+<dd><p>expand an array’s rank to the specified shape using broadcasting</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.attach_pdarray">
 <span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">attach_pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.attach_pdarray" title="Link to this definition">#</a></dt>
 <dd><p>class method to return a pdarray attached to the registered name in the arkouda
@@ -2684,6 +2697,7 @@ they are unregistered.</p>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.sqrt"><code class="docutils literal notranslate"><span class="pre">sqrt()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.mod"><code class="docutils literal notranslate"><span class="pre">mod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.fmod"><code class="docutils literal notranslate"><span class="pre">fmod()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarrayclass.broadcast_to_shape"><code class="docutils literal notranslate"><span class="pre">broadcast_to_shape()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.attach_pdarray"><code class="docutils literal notranslate"><span class="pre">attach_pdarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray_by_name"><code class="docutils literal notranslate"><span class="pre">unregister_pdarray_by_name()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.RegistrationError"><code class="docutils literal notranslate"><span class="pre">RegistrationError</span></code></a></li>
