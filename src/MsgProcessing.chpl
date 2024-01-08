@@ -35,40 +35,55 @@ module MsgProcessing
     */
     @arkouda.registerND(cmd_prefix="create")
     proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        var repMsg: string, // response message
-            dtype = str2dtype(msgArgs.getValueOf("dtype")),
-            shape = msgArgs.get("shape").getTuple(nd);
+        const dtype = str2dtype(msgArgs.getValueOf("dtype")),
+              shape = msgArgs.get("shape").getTuple(nd),
+              rname = st.nextName();
 
         var size = 1;
         for s in shape do size *= s;
 
-        if (dtype == DType.UInt8) || (dtype == DType.Bool) {
-          overMemLimit(size);
-        } else {
-          overMemLimit(8*size);
-        }
-        // get next symbol name
-        var rname = st.nextName();
+        if (dtype == DType.UInt8) || (dtype == DType.Bool)
+            then overMemLimit(size);
+            else overMemLimit(8*size);
 
         // if verbose print action
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s dtype: %s size: %i new pdarray name: %s".doFormat(
                                                      cmd,dtype2str(dtype),size,rname));
         // create and add entry to symbol table
         st.addEntry(rname, (...shape), dtype);
         // if verbose print result
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                     "created the pdarray %s".doFormat(st.attrib(rname)));
 
-        repMsg = "created " + st.attrib(rname);
+        const repMsg = "created " + st.attrib(rname);
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    // this proc is not technically needed with the 'arkouda.registerND' annotation above
-    //  (keeping it for now as a stopgap until the ND array work is further along)
-    proc createMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        return createMsg(cmd, msgArgs, st, 1);
+    // used for "zero-dimensional" array api scalars
+    proc createMsg0D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const dtype = str2dtype(msgArgs.getValueOf("dtype")),
+              rname = st.nextName();
+
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "cmd: %s dtype: %s size: 1 new pdarray name: %s".doFormat(
+                       cmd,dtype2str(dtype),rname));
+
+        // on the client side, scalar (0D) arrays have a shape of "()" and a size of 1
+        // here, we represent that using a 1D array with a shape of (1,) and a size of 1
+        var e = toGenSymEntry(st.addEntry(rname, 1, dtype));
+        e.size = 1;
+        e.shape = "[]";
+        e.ndim = 1; // this is 1 rather than 0 s.t. calls to other message handlers treat it as a 1D
+                    // array (e.g., we should call 'set1D', not 'set0D' on this array)
+
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "created the pdarray %s".doFormat(st.attrib(rname)));
+
+        var repMsg = "created " + st.attrib(rname);
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     /* 
@@ -424,9 +439,122 @@ module MsgProcessing
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    // this proc is not technically needed with the 'arkouda.registerND' annotation above
-    //   (keeping it for now as a stopgap until the ND array work is further along)
-    proc setMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        return setMsg(cmd, msgArgs, st, 1);
+
+    /*
+        Create a "broadcasted" array (of rank 'nd') by copying an array into an
+        array of the given shape.
+
+        E.g., given the following broadcast:
+        A      (4d array):  8 x 1 x 6 x 1
+        B      (3d array):      7 x 1 x 5
+        ---------------------------------
+        Result (4d array):  8 x 7 x 6 x 5
+
+        Two separate calls would be made to store 'A' and 'B' in arrays with
+        result's shape.
+
+        When copying from a singleton dimension, the value is repeated along
+        that dimension (e.g., A's 1st and 3rd, or B's 2nd dimension above).
+        For non singleton dimensions, the size of the two arrays must match,
+        and the values are copied into the result array.
+
+        When prepending a new dimension to increase an array's rank, the
+        values from the other dimensions are repeated along the new dimension.
+
+        !!! TODO: Avoid the promoted copies here by leaving the singleton
+        dimensions in the result array, and making operations on arrays
+        aware that promotion of singleton dimensions may be necessary. E.g.,
+        make matrix multiplication aware that it can treat a singleton
+        value as a vector of the appropriate length during multiplication.
+
+        (this may require a modification of SymEntry to keep track of
+        which dimensions are explicitly singletons)
+
+        NOTE: registration of this procedure is handled specially in
+        'serverModuleGen.py' because it has two param fields. The purpose of
+        designing "broadcast" this way is to avoid the the need for multiple
+        dimensionality param fields in **all** other message handlers (e.g.,
+        matrix multiply can be designed to expect matrices of equal rank,
+        requiring only one dimensionality param field. As such, the client
+        implementation of matrix-multiply may be required to broadcast the array
+        arguments up to some common rank (N) before issuing a 'matMult{N}D'
+        command to the server)
+    */
+    proc broadcastNDArray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+        param ndIn: int, // rank of the array to be broadcast
+        param ndOut: int // rank of the result array
+    ): MsgTuple throws {
+        const name = msgArgs.getValueOf("name"),
+              shapeOut = msgArgs.get("shape").getTuple(ndOut),
+              rname = st.nextName();
+
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+        proc doAssignment(type dtype): MsgTuple throws {
+            var eIn = toSymEntry(gEnt, dtype, ndIn),
+                eOut = st.addEntry(rname, (...shapeOut), dtype);
+
+            if ndIn == ndOut && eIn.tupShape == shapeOut {
+                // no broadcast necessary, copy the array
+                eOut.a = eIn.a;
+            } else {
+                // ensure that 'shapeOut' is a valid broadcast of 'eIn.tupShape'
+                //   and determine which dimensions will require promoted assignment
+                var (valid, bcDims) = checkValidBroadcast(eIn.tupShape, shapeOut);
+
+                if !valid {
+                    const errorMsg = "Invalid broadcast: " + eIn.tupShape:string + " -> " + shapeOut:string;
+                    mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                } else {
+                    // define a mapping from the output array's indices to the input array's indices
+                    inline proc map(idx: int ...ndOut): ndIn*int {
+                        var ret: ndIn*int; // 'ret' is initialized to zero (assumes zero-based arrays)
+                        for param i in 0..<ndIn do
+                            ret[i] = if bcDims[i] then 0 else idx[i];
+                        return ret;
+                    }
+
+                    // TODO: Is this being auto-aggregated? If not, add explicit aggregation
+                    forall idx in eOut.a.domain do
+                        if ndOut == 1
+                            then eOut.a[idx] = eIn.a[map(idx)];
+                            else eOut.a[idx] = eIn.a[map((...idx))];
+                }
+            }
+
+            const repMsg = "created " + st.attrib(rname);
+            mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select gEnt.dtype {
+            when DType.Int64 do return doAssignment(int);
+            when DType.UInt8 do return doAssignment(uint(8));
+            when DType.UInt64 do return doAssignment(uint);
+            when DType.Float64 do return doAssignment(real);
+            when DType.Bool do return doAssignment(bool);
+            otherwise {
+                var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
+                mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
+    proc checkValidBroadcast(from: ?Nf*int, to: ?Nt*int): (bool, Nf*bool) {
+        var dimsToBroadcast: Nf*bool;
+        if Nf > Nt then return (false, dimsToBroadcast);
+
+        for param iIn in 0..<Nf {
+            param iOut = Nt - Nf + iIn;
+            if from[iIn] == 1 && to[iOut] != 1 {
+                dimsToBroadcast[iIn] = true;
+            } else if from[iIn] != to[iOut] {
+                return (false, dimsToBroadcast);
+            }
+        }
+
+        return (true, dimsToBroadcast);
     }
 }

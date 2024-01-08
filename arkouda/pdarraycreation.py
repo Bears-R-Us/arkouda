@@ -1,5 +1,5 @@
 import itertools
-from typing import Iterable, List, Optional, Union, cast
+from typing import Iterable, List, Optional, Union, Tuple, cast
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -891,7 +891,7 @@ def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars)
 def randint(
     low: numeric_scalars,
     high: numeric_scalars,
-    size: int_scalars,
+    size: Union[int_scalars, Tuple[int_scalars, ...]] = 1,
     dtype=akint64,
     seed: int_scalars = None,
 ) -> pdarray:
@@ -954,17 +954,29 @@ def randint(
     >>> ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
     array([False, True, True, True, True, False, True, True, True, True])
     """
-    if size < 0 or high < low:
-        raise ValueError("size must be > 0 and high > low")
+    shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
+    if isinstance(size, tuple):
+        shape = cast(Tuple, size)
+        full_size = 1
+        for s in cast(Tuple, shape):
+            full_size *= s
+        ndim = len(shape)
+    else:
+        full_size = cast(int, size)
+        shape = full_size
+        ndim = 1
+
+    if full_size < 0 or ndim < 1 or high < low:
+        raise ValueError("size must be >= 0, ndim >= 1, and high >= low")
     dtype = akdtype(dtype)  # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
     repMsg = generic_msg(
-        cmd="randint",
+        cmd=f"randint{ndim}D",
         args={
-            "size": NUMBER_FORMAT_STRINGS["int64"].format(size),
+            "shape": shape,
             "dtype": dtype.name,
             "low": NUMBER_FORMAT_STRINGS[dtype.name].format(low),
             "high": NUMBER_FORMAT_STRINGS[dtype.name].format(high),

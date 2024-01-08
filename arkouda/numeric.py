@@ -31,8 +31,21 @@ SegArray = ForwardRef("SegArray")
 __all__ = [
     "cast",
     "abs",
+    "ceil",
+    "floor",
+    "trunc",
+    "round",
+    "sign",
+    "isfinite",
+    "isinf",
+    "isnan",
     "log",
+    "log2",
+    "log10",
+    "log1p",
     "exp",
+    "expm1",
+    "square",
     "cumsum",
     "cumprod",
     "sin",
@@ -56,7 +69,6 @@ __all__ = [
     "histogram2d",
     "histogramdd",
     "value_counts",
-    "isnan",
     "ErrorMode",
 ]
 
@@ -185,9 +197,290 @@ def abs(pda: pdarray) -> pdarray:
     array([5, 4, 3, 2, 1])
     """
     repMsg = generic_msg(
-        cmd="efunc",
+        cmd=f"efunc{pda.ndim}D",
         args={
             "func": "abs",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def ceil(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise ceiling of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing ceiling values of the input array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> ak.ceil(ak.linspace(1.1,5.5,5))
+    array([2, 3, 4, 5, 6])
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{pda.ndim}D",
+        args={
+            "func": "ceil",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def floor(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise floor of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing floor values of the input array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> ak.floor(ak.linspace(1.1,5.5,5))
+    array([1, 2, 3, 4, 5])
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{pda.ndim}D",
+        args={
+            "func": "floor",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def round(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise rounding of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing input array elements rounded to the nearest integer
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
+    array([1, 3, 3])
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{pda.ndim}D",
+        args={
+            "func": "round",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def trunc(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise truncation of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing input array elements truncated to the nearest integer
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
+    array([1, 2, 3])
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{pda.ndim}D",
+        args={
+            "func": "trunc",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def sign(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise sign of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing sign values of the input array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
+    array([-1, -1, 0, 1, 1])
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{pda.ndim}D",
+        args={
+            "func": "sign",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def isfinite(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise isfinite check applied to the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing boolean values indicating whether the
+        input array elements are finite
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    RuntimeError
+        if the underlying pdarray is not float-based
+
+    Examples
+    --------
+    >>> ak.isfinite(ak.array[1.0, 2.0, ak.inf])
+    array([True, True, False])
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{pda.ndim}D",
+        args={
+            "func": "isfinite",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def isinf(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise isinf check applied to the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing boolean values indicating whether the
+        input array elements are infinite
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    RuntimeError
+        if the underlying pdarray is not float-based
+
+    Examples
+    --------
+    >>> ak.isinf(ak.array[1.0, 2.0, ak.inf])
+    array([False, False, True])
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{pda.ndim}D",
+        args={
+            "func": "isinf",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def isnan(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise isnan check applied to the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing boolean values indicating whether the
+        input array elements are NaN
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    RuntimeError
+        if the underlying pdarray is not float-based
+
+    Examples
+    --------
+    >>> ak.isnan(ak.array[1.0, 2.0, 1.0 / 0.0])
+    array([False, False, True])
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{pda.ndim}D",
+        args={
+            "func": "isnan",
             "array": pda,
         },
     )
@@ -232,7 +525,7 @@ def log(pda: pdarray) -> pdarray:
     array([0, 3.3219280948873626, 6.6438561897747253])
     """
     repMsg = generic_msg(
-        cmd="efunc",
+        cmd=f"efunc{pda.ndim}D",
         args={
             "func": "log",
             "array": pda,
@@ -244,7 +537,7 @@ def log(pda: pdarray) -> pdarray:
 @typechecked
 def log10(x: pdarray) -> pdarray:
     """
-    compute the log of a pdarray and perform a basechange
+    Return the element-wise base 10 log of the array.
 
     Parameters
     __________
@@ -255,8 +548,62 @@ def log10(x: pdarray) -> pdarray:
     _______
     pdarray contain values of the base 10 log
     """
-    basechange = float(np.log10(np.exp(1)))
-    return basechange * log(x)
+    repMsg = generic_msg(
+        cmd=f"efunc{x.ndim}D",
+        args={
+            "func": "log10",
+            "array": x,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def log2(x: pdarray) -> pdarray:
+    """
+    Return the element-wise base 2 log of the array.
+
+    Parameters
+    __________
+    x : pdarray
+        array to compute on
+
+    Returns
+    _______
+    pdarray contain values of the base 2 log
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{x.ndim}D",
+        args={
+            "func": "log2",
+            "array": x,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def log1p(x: pdarray) -> pdarray:
+    """
+    Return the element-wise natural log of one plus the array.
+
+    Parameters
+    __________
+    x : pdarray
+        array to compute on
+
+    Returns
+    _______
+    pdarray contain values of the natural log of one plus the array
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{x.ndim}D",
+        args={
+            "func": "log1p",
+            "array": x,
+        },
+    )
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -289,9 +636,83 @@ def exp(pda: pdarray) -> pdarray:
            33.494295836924771, 13.478894913238722])
     """
     repMsg = generic_msg(
-        cmd="efunc",
+        cmd=f"efunc{pda.ndim}D",
         args={
             "func": "exp",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def expm1(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise exponential of the array minus one.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing exponential values of the input
+        array elements minus one
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> ak.exp1m(ak.arange(1,5))
+    array([1.7182818284590451, 6.3890560989306504, 19.085536923187668, 53.598150033144236])
+
+    >>> ak.exp1m(ak.uniform(5,1.0,5.0))
+    array([10.84010843172504, 45.454368507659211, 4.5571769623557188,
+           32.494295836924771, 12.478894913238722])
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{pda.ndim}D",
+        args={
+            "func": "expm1",
+            "array": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def square(pda: pdarray) -> pdarray:
+    """
+    Return the element-wise square of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing square values of the input
+        array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> ak.square(ak.arange(1,5))
+    array([1, 4, 9, 16])
+    """
+    repMsg = generic_msg(
+        cmd=f"efunc{pda.ndim}D",
+        args={
+            "func": "square",
             "array": pda,
         },
     )
@@ -334,7 +755,7 @@ def cumsum(pda: pdarray) -> pdarray:
     array([0, 1, 1, 2, 3])
     """
     repMsg = generic_msg(
-        cmd="efunc",
+        cmd=f"efunc{pda.ndim}D",
         args={
             "func": "cumsum",
             "array": pda,
@@ -376,7 +797,7 @@ def cumprod(pda: pdarray) -> pdarray:
            134.05309592737584, 450.21589865655358])
     """
     repMsg = generic_msg(
-        cmd="efunc",
+        cmd=f"efunc{pda.ndim}D",
         args={
             "func": "cumprod",
             "array": pda,
@@ -833,7 +1254,7 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
         repMsg = type_cast(
             str,
             generic_msg(
-                cmd="efunc",
+                cmd=f"efunc{pda.ndim}D",
                 args={
                     "func": func,
                     "array": pda,
@@ -849,7 +1270,7 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
         repMsg = type_cast(
             str,
             generic_msg(
-                cmd="efunc",
+                cmd=f"efunc{pda.ndim}D",
                 args={
                     "func": func,
                     "array": pda[where],
@@ -1058,7 +1479,7 @@ def _hash_single(pda: pdarray, full: bool = True):
     repMsg = type_cast(
         str,
         generic_msg(
-            cmd="efunc",
+            cmd=f"efunc{pda.ndim}D",
             args={
                 "func": "hash128" if full else "hash64",
                 "array": pda,
@@ -1580,34 +2001,3 @@ def value_counts(
     (array([0, 2, 4]), array([3, 2, 1]))
     """
     return GroupBy(pda).count()
-
-
-@typechecked
-def isnan(pda: pdarray) -> pdarray:
-    """
-    Test a pdarray for Not a number / NaN values
-    Currently only supports float-value-based arrays
-
-    Parameters
-    ----------
-    pda : pdarray to test
-
-    Returns
-    -------
-    pdarray consisting of True / False values; True where NaN, False otherwise
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-    RuntimeError
-        if the underlying pdarray is not float-based
-    """
-    rep_msg = generic_msg(
-        cmd="efunc",
-        args={
-            "func": "isnan",
-            "array": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, rep_msg))

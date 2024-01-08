@@ -1656,7 +1656,7 @@ module BinOp
 
   proc doBigIntBinOpvsBoolReturn(l, val, op: string) throws {
     ref la = l.a;
-    var tmp = makeDistArray(la.size, bool);
+    var tmp = makeDistArray((...la.shape), bool);
     select op {
       when "<" {
         forall (t, li) in zip(tmp, la) with (var local_val = val) {
@@ -1706,7 +1706,7 @@ module BinOp
       max_size -= 1;
     }
     ref ra = r.a;
-    var tmp = makeDistArray(ra.size, bigint);
+    var tmp = makeDistArray((...ra.shape), bigint);
     tmp = val:bigint;
     // these cases are not mutually exclusive,
     // so we have a flag to track if tmp is ever populated
@@ -1800,7 +1800,7 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotl");
             }
-            var botBits = makeDistArray(ra.size, bigint);
+            var botBits = makeDistArray((...ra.shape), bigint);
             botBits = val;
             forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
               var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
@@ -1816,7 +1816,7 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotr");
             }
-            var topBits = makeDistArray(ra.size, bigint);
+            var topBits = makeDistArray((...ra.shape), bigint);
             topBits = val;
             forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
               var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
@@ -1918,7 +1918,7 @@ module BinOp
 
   proc doBigIntBinOpsvBoolReturn(val, r, op: string) throws {
     ref ra = r.a;
-    var tmp = makeDistArray(ra.size, bool);
+    var tmp = makeDistArray((...ra.shape), bool);
     select op {
       when "<" {
         forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
