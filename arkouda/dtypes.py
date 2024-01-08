@@ -9,6 +9,7 @@ from typeguard import typechecked
 __all__ = [
     "DTypes",
     "DTypeObjects",
+    "ScalarDTypes",
     "dtype",
     "uint8",
     "uint16",
@@ -221,6 +222,7 @@ SeriesDTypes = {
     "datetime64[ns]": np.int64,
     "timedelta64[ns]": np.int64,
 }
+ScalarDTypes = frozenset(["bool", "float64", "int64"])
 
 
 def isSupportedInt(num):
@@ -300,6 +302,8 @@ def resolve_scalar_dtype(val: object) -> str:  # type: ignore
     # Python float or np.float*
     elif isinstance(val, float) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"):
         return "float64"
+    elif isinstance(val, complex) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "c"):
+        return "float64"  # TODO: actually support complex values in the backend
     elif isinstance(val, builtins.str) or isinstance(val, np.str_):
         return "str"
     # Other numpy dtype

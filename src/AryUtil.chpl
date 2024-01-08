@@ -15,6 +15,8 @@ module AryUtil
     use ArkoudaBlockCompat;
     use ArkoudaRandomCompat;
 
+    use CommAggregation;
+
     param bitsPerDigit = RSLSD_bitsPerDigit;
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
     private param maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
@@ -36,75 +38,39 @@ module AryUtil
       :arg A: array to be printed
     */
     proc formatAry(A: [?d]):string throws {
-        proc dimSummary(dimIdx: int): string throws {
-            const dimSize = d.dim(dimIdx).size;
-            var s: string;
-            if dimSize == 0 {
-                s = "";
-            } else if dimSize < printThresh {
-                // create a string representation of all elements along this dimension
-                var first = true,
-                    idx: d.rank*int;
-
-                for i in 0..<dimSize {
-                    if first then first = false; else s += " ";
-                    idx[dimIdx] = i;
-                    s += "?".doFormat(A[idx]);
-                }
+        if d.rank == 1 {
+            var s:string = "";
+            if (d.size == 0) {
+                s =  ""; // Unnecessary, but left for clarity
+            } else if (d.size < printThresh || d.size <= 6) {
+                for i in 0..(d.size-2) {s += try! "%?".doFormat(A[i]) + " ";}
+                s += try! "%?".doFormat(A[d.size-1]);
             } else {
-                // create a string representation of the first three and last three elements
-                // along this dimension
-                var indices: 6*(d.rank*int);
-                indices[0][dimIdx] = 0;
-                indices[1][dimIdx] = 1;
-                indices[2][dimIdx] = 2;
-
-                for dd in 0..<d.rank {
-                    const dMax = d.dim(dd).high;
-                    indices[3][dd] = dMax;
-                    indices[4][dd] = dMax;
-                    indices[5][dd] = dMax;
-                }
-
-                indices[3][dimIdx] = dimSize-3;
-                indices[4][dimIdx] = dimSize-2;
-                indices[5][dimIdx] = dimSize-1;
-
-                s = "%? %? %? ... %? %? %?".doFormat(A[indices[0]], A[indices[1]], A[indices[2]],
-                                                    A[indices[3]], A[indices[4]], A[indices[5]]);
+                s = try! "%? %? %? ... %? %? %?".doFormat(A[0], A[1], A[2], A[d.size-3], A[d.size-2], A[d.size-1]);
             }
             return s;
-        }
+        } else {
+            const shape = d.shape;
+            var s = "%?\n".doFormat(shape),
+                front_indices: d.rank*range,
+                back_indices: d.rank*range;
 
-        // create a string with a summary of each dimension individually
-        // For a 2D array, the first dimension;s summary would include:
-        /*
-          | X X X                |
-          |                      |
-          |                      |
-          |                      |
-          |                      |
-          |                      |
-          |                X X X |
-        */
-        // And the second dimension's summary would include:
-        /*
-          | X                    |
-          | X                    |
-          | X                    |
-          |                      |
-          |                    X |
-          |                    X |
-          |                    X |
-        */
-        var s = "",
-            first = true;
-        for dimIdx in 0..<d.rank {
-            if first then first = false; else s += "\n";
-            s += dimSummary(dimIdx);
-        }
+            for param i in 0..<d.rank {
+                front_indices[i] = if shape[i] < 3
+                    then 0..<shape[i]
+                    else 0..2;
+                back_indices[i] = if shape[i] < 3
+                    then 0..<shape[i]
+                    else (shape[i]-3)..<shape[i];
+            }
 
-        return s;
+            const frontDom = {(...front_indices)},
+                  backDom = {(...back_indices)};
+
+            s += "%? ... %?".doFormat(A[frontDom], A[backDom]);
+
+            return s;
+        }
     }
 
     proc printAry(name:string, A) {
@@ -537,5 +503,189 @@ module AryUtil
                 deallocate(ptr);
             }
         }
+    }
+
+
+    /*
+      Create a rank 'N' array by removing the degenerate ranks from
+      'A' and copying it's contents into the new array
+
+      'N' must be equal to 'A's rank minus the number of degenerate ranks;
+      halts if this condition isn't met.
+
+      Analogous to matlab's 'squeeze': https://www.mathworks.com/help/matlab/ref/squeeze.html
+    */
+    proc removeDegenRanks(A: [?D] ?t, param N: int) throws
+      where N <= D.rank
+    {
+      var degenRanks: D.rank*bool,
+          numDegenRanks: int;
+
+      // determine which, and how many, ranks are degenerate
+      for param i in 0..<D.rank {
+        // is this rank degenerate? (i.e., does it have a size of 1)
+        if D.shape[i] == 1 {
+          degenRanks[i] = true;
+          numDegenRanks += 1;
+        }
+      }
+
+      if N != D.rank - numDegenRanks then
+        halt("removeDegenRanks: N must be equal to A's rank minus the number of degenerate ranks");
+
+      // compute the shape of the new array and create a mapping from the
+      // new array's ranks to the old array's ranks
+      var shape: N*range,
+          mapping: N*int,
+          i = 0;
+
+      for param ii in 0..<D.rank {
+        if !degenRanks[ii] {
+          mapping(i) = ii;
+          shape[i] = D.dim(ii);
+          i += 1;
+        }
+      }
+
+      inline proc map(idx: int ...N): D.rank*int {
+        var ret: D.rank*int;
+        for param ii in 0..<D.rank do ret[ii] = D.dim(ii).low;
+        for param i in 0..<N do ret[mapping[i]] = idx[i];
+        return ret;
+      }
+
+      // create the new array
+      var AReduced = makeDistArray({(...shape)}, t);
+
+      // copy values from the old array to the new one
+      forall idx in AReduced.domain with (var agg = newSrcAggregator(t)) {
+        const mapIdx = if N == 1 then map(idx) else map((...idx));
+        agg.copy(AReduced[idx], A[mapIdx]);
+      }
+
+      return AReduced;
+    }
+
+    /*
+      Get a domain that selects out the idx'th set of indices along the specified axes
+
+      :arg D: the domain to slice
+      :arg idx: the index to select along the specified axes (must have the same rank as D)
+      :arg axes: the axes to slice along (must be a subset of the axes of D)
+
+      For example, if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+      Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25..25}
+      (i.e., the 25th matrix)
+    */
+    proc domOnAxis(D: domain, idx: D.rank*int, axes: int ...?NA): domain
+      where NA < D.rank
+    {
+      var outDims: D.rank*range;
+      label ranks for i in 0..<D.rank {
+        for param j in 0..<NA {
+          if i == axes[j] {
+            outDims[i] = D.dim(i);
+            continue ranks;
+          }
+        }
+        outDims[i] = idx[i]..idx[i];
+      }
+      return D[{(...outDims)}];
+    }
+
+    /*
+      Get a domain over the set of indices orthogonal to the specified axes
+
+      :arg D: the domain to slice
+      :arg axes: the axes to slice along (must be a subset of the axes of D)
+
+      For example, if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+      Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
+      (i.e., a set of indices for the 1000 matrices)
+    */
+    proc domOffAxis(D: domain, axes: int ...?NA): domain
+      where NA < D.rank
+    {
+      var outDims: D.rank*range;
+      label ranks for i in 0..<D.rank {
+        for param j in 0..<NA {
+          if i == axes[j] {
+            outDims[i] = 0..0;
+            continue ranks;
+          }
+        }
+        outDims[i] = D.dim(i);
+      }
+      return D[{(...outDims)}];
+    }
+
+    /*
+    Algorithm to determine shape of broadcasted PD array given two array shapes
+
+    see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
+    */
+    proc broadcastShape(sa: ?Na*int, sb: ?Nb*int, param N: int): N*int throws {
+      var s: N*int;
+      for param i in 0..<N by -1 do {
+        const n1 = Na - N + i,
+              n2 = Nb - N + i,
+              d1 = if n1 < 0 then 1 else sa[n1],
+              d2 = if n2 < 0 then 1 else sb[n2];
+
+        if      d1 == 1  then s[i] = d2;
+        else if d2 == 1  then s[i] = d1;
+        else if d1 == d2 then s[i] = d1;
+        else throw new Error("Incompatible shapes for broadcast");
+      }
+      return s;
+    }
+
+    proc broadcastShape(sa: ?N1*int, sb: ?N2*int): N1*int throws
+      where N1 >= N2
+        do return broadcastShape(sa, sb, N1);
+
+    proc broadcastShape(sa: ?N1*int, sb: ?N2*int): N2*int throws
+      where N1 < N2
+        do return broadcastShape(sa, sb, N2);
+
+    proc removeAxis(shape: ?N*int, axis: int): (N-1)*int {
+      var s: (N-1)*int,
+          i = 0;
+      for param ii in 0..<N {
+        if ii != axis {
+          s[i] = shape[ii];
+          i += 1;
+        }
+      }
+      return s;
+    }
+
+    proc appendAxis(shape: ?N*int, axis: int, param value: int): (N+1)*int throws {
+      var s: (N+1)*int,
+          i = 0;
+      if axis > N then throw new Error("Axis out of bounds");
+      for param ii in 0..<N+1 {
+        if ii == axis {
+          s[ii] = value;
+        } else {
+          s[ii] = shape[i];
+          i += 1;
+        }
+      }
+      return s;
+    }
+
+    proc appendAxis(shape: int, axis: int, param value: int): 2*int throws {
+      var s: 2*int;
+      if axis == 0 {
+        s[0] = value;
+        s[1] = shape;
+      } else if axis == 1 {
+        s[0] = shape;
+        s[1] = value;
+      } else {
+        throw new Error("Axis out of bounds");
+      }
+      return s;
     }
 }

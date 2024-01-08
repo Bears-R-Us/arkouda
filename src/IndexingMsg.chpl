@@ -7,6 +7,7 @@ module IndexingMsg
     use ServerErrors;
     use Logging;
     use Message;
+    use AryUtil;
 
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
@@ -142,7 +143,7 @@ module IndexingMsg
                 idxParam.setVal(idx:string);
                 idxParam.setDType("int");
                 var subArgs = new MessageArgs(new list([arrParam, idxParam]));
-                return intIndexMsg(cmd, subArgs, st);
+                return intIndexMsg(cmd, subArgs, st, 1);
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
@@ -150,7 +151,7 @@ module IndexingMsg
                 idxParam.setVal(idx:string);
                 idxParam.setDType("uint");
                 var subArgs = new MessageArgs(new list([arrParam, idxParam]));
-                return intIndexMsg(cmd, subArgs, st);
+                return intIndexMsg(cmd, subArgs, st, 1);
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
@@ -206,40 +207,41 @@ module IndexingMsg
     }
 
     /* intIndex "a[int]" response to __getitem__(int) */
-    proc intIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND(cmd_prefix="[int]")
+    proc intIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var idx = msgArgs.get("idx").getIntValue();
+        var idx = msgArgs.get("idx").getTuple(nd);
         const name = msgArgs.getValueOf("array");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                    "%s %s %i".doFormat(cmd, name, idx));
+                                                    "%s %s %?".doFormat(cmd, name, idx));
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-         
+
         select (gEnt.dtype) {
              when (DType.Int64) {
-                 var e = toSymEntry(gEnt, int);
-                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[idx]);
+                 var e = toSymEntry(gEnt, int, nd);
+                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[(...idx)]);
 
                  imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                  return new MsgTuple(repMsg, MsgType.NORMAL);  
              }
              when (DType.UInt64) {
-               var e = toSymEntry(gEnt, uint);
-                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[idx]);
+               var e = toSymEntry(gEnt, uint, nd);
+                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[(...idx)]);
 
                  imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                  return new MsgTuple(repMsg, MsgType.NORMAL);  
              }
              when (DType.Float64) {
-                 var e = toSymEntry(gEnt,real);
-                 repMsg = "item %s %.17r".doFormat(dtype2str(e.dtype),e.a[idx]);
+                 var e = toSymEntry(gEnt,real, nd);
+                 repMsg = "item %s %.17r".doFormat(dtype2str(e.dtype),e.a[(...idx)]);
 
                  imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                  return new MsgTuple(repMsg, MsgType.NORMAL); 
              }
              when (DType.Bool) {
-                 var e = toSymEntry(gEnt,bool);
-                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[idx]);
+                 var e = toSymEntry(gEnt,bool, nd);
+                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[(...idx)]);
                  repMsg = repMsg.replace("true","True"); // chapel to python bool
                  repMsg = repMsg.replace("false","False"); // chapel to python bool
 
@@ -247,8 +249,8 @@ module IndexingMsg
                  return new MsgTuple(repMsg, MsgType.NORMAL); 
              }
              when (DType.BigInt) {
-                 var e = toSymEntry(gEnt,bigint);
-                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[idx]);
+                 var e = toSymEntry(gEnt,bigint, nd);
+                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[(...idx)]);
                  imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                  return new MsgTuple(repMsg, MsgType.NORMAL);
              }
@@ -273,7 +275,57 @@ module IndexingMsg
     }
 
     /* sliceIndex "a[slice]" response to __getitem__(slice) */
-    proc sliceIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND(cmd_prefix="[slice]")
+    proc sliceIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        if nd == 1 then return sliceIndexMsg1DFast(cmd, msgArgs, st);
+
+        const starts = msgArgs.get("starts").getTuple(nd),
+              stops = msgArgs.get("stops").getTuple(nd),
+              strides = msgArgs.get("strides").getTuple(nd),
+              array = msgArgs.getValueOf("array"),
+              rname = msgArgs.getValueOf("rname");
+
+        var sliceRanges: nd * stridableRange;
+        for param dim in 0..<nd do
+            sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
+        const sliceDom = {(...sliceRanges)};
+
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(array, st);
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s pdarray to slice: %s starts: %? stops: %? strides: %? new name: %s".doFormat(
+                       cmd, st.attrib(array), starts, stops, strides, rname));
+
+        proc sliceHelper(type t): MsgTuple throws {
+            var e = toSymEntry(gEnt,t, nd);
+            var a = st.addEntry(rname, (...sliceDom.shape), t);
+            ref ea = e.a;
+            ref aa = a.a;
+            forall (elt,j) in zip(aa, sliceDom) with (var agg = newSrcAggregator(t)) {
+              agg.copy(elt,ea[j]);
+            }
+            a.max_bits = e.max_bits;
+            var repMsg = "created " + st.attrib(rname);
+            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select gEnt.dtype {
+            when DType.Int64 do return sliceHelper(int);
+            when DType.UInt64 do return sliceHelper(uint);
+            when DType.Float64 do return sliceHelper(real);
+            when DType.Bool do return sliceHelper(bool);
+            when DType.BigInt do return sliceHelper(bigint);
+            otherwise {
+                var errorMsg = notImplementedError(getRoutineName(),dtype2str(gEnt.dtype));
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+        }
+    }
+
+    // this is likely faster than the more general ND implementation
+    // because of the iteration over a range instead of a domain when gathering into the new array
+    proc sliceIndexMsg1DFast(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         const start = msgArgs.get("start").getIntValue();
@@ -1398,12 +1450,92 @@ module IndexingMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    @arkouda.registerND
+    proc takeAlongAxisMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        const name = msgArgs.getValueOf("x"),
+              idxName = msgArgs.getValueOf("indices"),
+              axis = msgArgs.get("axis").getIntValue();
+
+        const rname = st.nextName();
+
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st),
+            gIEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(idxName, st);
+
+        proc doIndex(type eltType, type idxType, param doCast: bool): MsgTuple throws {
+            var x = toSymEntry(gEnt, eltType, nd),
+                idx = toSymEntry(gIEnt, idxType, 1),
+                y = st.addEntry(rname, (...x.tupShape), eltType);
+
+            if x.tupShape[axis] != idx.size {
+                const errMsg = "Error: %s: index array length (%i) does not match x's length (%i) along the provided axis (%i)"
+                    .doFormat(pn, idx.size, x.tupShape[axis], axis);
+                imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+                return new MsgTuple(errMsg, MsgType.ERROR);
+            }
+
+            const minIdx = min reduce idx.a,
+                  maxIdx = max reduce idx.a;
+
+            if minIdx < 0 || maxIdx >= x.a.shape(axis) {
+                const errMsg = "Error: %s: index array contains out-of-bounds indices (%i, %i) along the provided axis (%i)"
+                    .doFormat(pn, minIdx, maxIdx, axis);
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                return new MsgTuple(errMsg, MsgType.ERROR);
+            }
+
+            ref xa = x.a;
+            ref ya = y.a;
+            ref idxa = idx.a;
+
+            if nd == 1 {
+                forall i in idx.a.domain with (var agg = newSrcAggregator(eltType)) {
+                    if doCast
+                        then agg.copy(ya[i], xa[idxa[i]:int]);
+                        else agg.copy(ya[i], xa[idxa[i]]);
+                }
+            } else {
+                for sliceIdx in domOffAxis(x.a.domain, axis) {
+                    forall i in idx.a.domain with (var agg = newSrcAggregator(eltType)) {
+                        var yIdx = sliceIdx,
+                            xIdx = sliceIdx;
+                        yIdx[axis] = i;
+                        xIdx[axis] = if doCast then idxa[i]:int else idxa[i];
+                        agg.copy(ya[yIdx], xa[xIdx]);
+                    }
+                }
+            }
+            y.max_bits = x.max_bits;
+
+            const repMsg = "created " + st.attrib(rname);
+            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select (gEnt.dtype, gIEnt.dtype) {
+            when (DType.Int64, DType.Int64) do return doIndex(int, int, false);
+            when (DType.Int64, DType.UInt64) do return doIndex(int, uint, true);
+            when (DType.UInt64, DType.Int64) do return doIndex(uint, int, false);
+            when (DType.UInt64, DType.UInt64) do return doIndex(uint, uint, true);
+            when (DType.Float64, DType.Int64) do return doIndex(real, int, false);
+            when (DType.Float64, DType.UInt64) do return doIndex(real, uint, true);
+            when (DType.Bool, DType.Int64) do return doIndex(bool, int, false);
+            when (DType.Bool, DType.UInt64) do return doIndex(bool, uint, true);
+            when (DType.BigInt, DType.Int64) do return doIndex(bigint, int, false);
+            when (DType.BigInt, DType.UInt64) do return doIndex(bigint, uint, true);
+            otherwise {
+                const errMsg = notImplementedError(Reflection.getRoutineName(),
+                    "("+dtype2str(gEnt.dtype)+","+dtype2str(gIEnt.dtype)+")");
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                return new MsgTuple(errMsg, MsgType.ERROR);
+            }
+        }
+    }
+
     use CommandMap;
     registerFunction("arrayViewIntIndex", arrayViewIntIndexMsg, getModuleName());
     registerFunction("arrayViewMixedIndex", arrayViewMixedIndexMsg, getModuleName());
     registerFunction("arrayViewIntIndexAssign", arrayViewIntIndexAssignMsg, getModuleName());
-    registerFunction("[int]", intIndexMsg, getModuleName());
-    registerFunction("[slice]", sliceIndexMsg, getModuleName());
     registerFunction("[pdarray]", pdarrayIndexMsg, getModuleName());
     registerFunction("[int]=val", setIntIndexToValueMsg, getModuleName());
     registerFunction("[pdarray]=val", setPdarrayIndexToValueMsg, getModuleName());

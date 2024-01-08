@@ -135,7 +135,7 @@ module MultiTypeSymEntry
         var itemsize: int; // answer to numpy itemsize = num bytes per elt
         var size: int = 0; // answer to numpy size == num elts
         var ndim: int = 1; // answer to numpy ndim == 1-axis for now
-        var shape: string = "[0]"; // answer to numpy shape == 1*int tuple
+        var shape: string = "[0]"; // answer to numpy shape
 
         // not sure yet how to implement numpy data() function
 
@@ -224,6 +224,7 @@ module MultiTypeSymEntry
             this.tupShape = D.shape;
             this.a = a;
             this.shape = tupShapeString(this.tupShape);
+            this.ndim = D.rank;
         }
 
         /*
@@ -253,62 +254,31 @@ module MultiTypeSymEntry
             :returns: s (string) containing the array data
         */
         override proc __str__(thresh:int=6, prefix:string = "[", suffix:string = "]", baseFormat:string = "%?"): string throws {
-            proc dimSummary(dim: int): string throws {
-                const dimSize = this.tupShape[dim];
-                var s: string;
-                if dimSize == 0 {
-                    s = "";
-                } else if dimSize < thresh || dimSize <= 6 {
-                    var first = true,
-                        idx: this.dimensions*int;
-
-                    for i in 0..<dimSize {
-                        if first then first = false; else s += " ";
-                        idx[dim] = i;
-                        s += baseFormat.doFormat(this.a[idx]);
-                    }
+            if this.dimensions == 1 {
+                var s:string = "";
+                if (this.size == 0) {
+                    s =  ""; // Unnecessary, but left for clarity
+                } else if (this.size < thresh || this.size <= 6) {
+                    for i in 0..(this.size-2) {s += try! baseFormat.doFormat(this.a[i]) + " ";}
+                    s += try! baseFormat.doFormat(this.a[this.size-1]);
                 } else {
-                    const fstring = baseFormat + " " + baseFormat + " " + baseFormat + " ... " +
-                        baseFormat + " " + baseFormat + " " + baseFormat;
-
-                    var indices: 6*(this.dimensions*int);
-                    indices[0][dim] = 0;
-                    indices[1][dim] = 1;
-                    indices[2][dim] = 2;
-
-                    for d in 0..<this.dimensions {
-                        const dMax = this.tupShape[d]-1;
-                        indices[3][d] = dMax;
-                        indices[4][d] = dMax;
-                        indices[5][d] = dMax;
-                    }
-
-                    indices[3][dim] = dimSize-3;
-                    indices[4][dim] = dimSize-2;
-                    indices[5][dim] = dimSize-1;
-
-                    s = fstring.doFormat(this.a[indices[0]], this.a[indices[1]], this.a[indices[2]],
-                                            this.a[indices[3]], this.a[indices[4]], this.a[indices[5]]);
+                    var b = baseFormat + " " + baseFormat + " " + baseFormat + " ... " +
+                                baseFormat + " " + baseFormat + " " + baseFormat;
+                    s = try! b.doFormat(
+                                this.a[0], this.a[1], this.a[2],
+                                this.a[this.size-3], this.a[this.size-2], this.a[this.size-1]);
                 }
-
                 if this.etype == bool {
                     s = s.replace("true","True");
                     s = s.replace("false","False");
                 }
-                return s;
+                return prefix + s + suffix;
+            } else {
+                return prefix + "ND array: " + this.shape + suffix;
             }
-
-            var s = "",
-                first = true;
-            for d in 0..<this.dimensions {
-                if first then first = false; else s += "\n";
-                s += prefix + dimSummary(d) + suffix;
-            }
-
-            return s;
         }
     }
-    
+
     inline proc createSymEntry(len: int, type etype) throws {
       var a = makeDistArray(len, etype);
       return new shared SymEntry(a);

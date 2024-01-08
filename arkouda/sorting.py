@@ -21,6 +21,7 @@ SortingAlgorithm = Enum("SortingAlgorithm", ["RadixSortLSD", "TwoArrayRadixSort"
 def argsort(
     pda: Union[pdarray, Strings, "Categorical"],  # type: ignore # noqa
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+    axis: int_scalars = 0,
 ) -> pdarray:  # type: ignore
     """
     Return the permutation that sorts the array.
@@ -58,6 +59,11 @@ def argsort(
     """
     from arkouda.categorical import Categorical
 
+    if axis < -1 or axis > pda.ndim:
+        raise ValueError(f"Axis must be between -1 and the PD Array's rank ({pda.ndim})")
+    if axis == -1:
+        axis = pda.ndim - 1
+
     check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
     if hasattr(pda, "argsort"):
         return cast(Categorical, pda).argsort()
@@ -66,11 +72,12 @@ def argsort(
     if isinstance(pda, pdarray) and pda.dtype == bigint:
         return coargsort(pda.bigint_to_uint_arrays(), algorithm)
     repMsg = generic_msg(
-        cmd="argsort",
+        cmd=f"argsort{pda.ndim}D",
         args={
             "name": pda.entry.name if isinstance(pda, Strings) else pda.name,
             "algoName": algorithm.name,
             "objType": pda.objType,
+            "axis": axis,
         },
     )
     return create_pdarray(cast(str, repMsg))

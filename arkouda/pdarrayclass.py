@@ -66,6 +66,7 @@ __all__ = [
     "attach_pdarray",
     "unregister_pdarray_by_name",
     "RegistrationError",
+    "broadcast_to_shape",
 ]
 
 logger = getArkoudaLogger(name="pdarrayclass")
@@ -216,7 +217,7 @@ class pdarray:
         return builtins.bool(self[0])
 
     def __len__(self):
-        return self.shape[0]
+        return self.size
 
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
@@ -311,9 +312,15 @@ class pdarray:
             raise ValueError(f"bad operator {op}")
         # pdarray binop pdarray
         if isinstance(other, pdarray):
-            if self.size != other.size:
-                raise ValueError(f"size mismatch {self.size} {other.size}")
-            repMsg = generic_msg(cmd="binopvv", args={"op": op, "a": self, "b": other})
+            try:
+                x1, x2, tmp_x1, tmp_x2 = broadcast_if_needed(self, other)
+            except ValueError:
+                raise ValueError(f"shape mismatch {self.shape} {other.shape}")
+            repMsg = generic_msg(cmd=f"binopvv{x1.ndim}D", args={"op": op, "a": x1, "b": x2})
+            if tmp_x1:
+                del x1
+            if tmp_x2:
+                del x2
             return create_pdarray(repMsg)
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
@@ -326,7 +333,7 @@ class pdarray:
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
-            cmd="binopvs",
+            cmd=f"binopvs{self.ndim}D",
             args={"op": op, "a": self, "dtype": dt, "value": other},
         )
         return create_pdarray(repMsg)
@@ -371,7 +378,7 @@ class pdarray:
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
-            cmd="binopsv",
+            cmd=f"binopsv{self.ndim}D",
             args={"op": op, "dtype": dt, "value": other, "a": self},
         )
         return create_pdarray(repMsg)
@@ -543,9 +550,9 @@ class pdarray:
             raise ValueError(f"bad operator {op}")
         # pdarray op= pdarray
         if isinstance(other, pdarray):
-            if self.size != other.size:
-                raise ValueError(f"size mismatch {self.size} {other.size}")
-            generic_msg(cmd="opeqvv", args={"op": op, "a": self, "b": other})
+            if self.shape != other.shape:
+                raise ValueError(f"shape mismatch {self.shape} {other.shape}")
+            generic_msg(cmd=f"opeqvv{self.ndim}D", args={"op": op, "a": self, "b": other})
             return self
         # pdarray binop scalar
         # opeq requires scalar to be cast as pdarray dtype
@@ -556,7 +563,7 @@ class pdarray:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
 
         generic_msg(
-            cmd="opeqvs",
+            cmd=f"opeqvs{self.ndim}D",
             args={"op": op, "a": self, "dtype": self.dtype.name, "value": self.format_other(other)},
         )
         return self
@@ -615,14 +622,14 @@ class pdarray:
 
     # overload a[] to treat like list
     def __getitem__(self, key):
-        if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
+        if self.ndim == 1 and np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if key >= 0 and key < self.size:
                 repMsg = generic_msg(
-                    cmd="[int]",
+                    cmd="[int]1D",
                     args={
                         "array": self,
                         "idx": key,
@@ -633,11 +640,11 @@ class pdarray:
                 return parse_single_value(" ".join(fields[1:]))
             else:
                 raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
-        if isinstance(key, slice):
+
+        if self.ndim == 1 and isinstance(key, slice):
             (start, stop, stride) = key.indices(self.size)
-            logger.debug("start: {} stop: {} stride: {}".format(start, stop, stride))
             repMsg = generic_msg(
-                cmd="[slice]",
+                cmd="[slice]1D",
                 args={
                     "array": self,
                     "start": start,
@@ -646,7 +653,59 @@ class pdarray:
                 },
             )
             return create_pdarray(repMsg)
-        if isinstance(key, pdarray):
+
+        if isinstance(key, tuple):
+            allScalar = True
+            starts = []
+            stops = []
+            strides = []
+            for dim, k in enumerate(key):
+                if isinstance(k, slice):
+                    allScalar = False
+                    (start, stop, stride) = key.indices(self.shape[dim])
+                    starts.append(start)
+                    stops.append(stop)
+                    strides.append(stride)
+                elif np.isscalar(k) and (resolve_scalar_dtype(k) in ["int64", "uint64"]):
+                    if k < 0:
+                        # Interpret negative key as offset from end of array
+                        k += int(self.shape[dim])
+                    if k < 0 or k >= int(self.shape[dim]):
+                        raise IndexError(
+                            f"index {k} is out of bounds in dimension {dim} with size {self.shape[dim]}"
+                        )
+                    else:
+                        # treat this as a single element slice
+                        starts.append(k)
+                        stops.append(k)
+                        strides.append(1)
+                else:
+                    raise IndexError(f"Unhandled key type: {k} ({type(k)})")
+
+            if allScalar:
+                # use simpler indexing (and return a scalar) if we got a tuple of only scalars
+                repMsg = generic_msg(
+                    cmd=f"[int]{self.ndim}D",
+                    args={
+                        "array": self,
+                        "idx": key,
+                    },
+                )
+                fields = repMsg.split()
+                return parse_single_value(" ".join(fields[1:]))
+            else:
+                repMsg = generic_msg(
+                    cmd=f"[slice]{self.ndim}D",
+                    args={
+                        "array": self,
+                        "start": starts,
+                        "stop": stops,
+                        "stride": strides,
+                    },
+                )
+                return create_pdarray(repMsg)
+
+        if isinstance(key, pdarray) and self.ndim == 1:
             kind, _ = translate_np_dtype(key.dtype)
             if kind not in ("bool", "int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
@@ -1315,7 +1374,7 @@ class pdarray:
         # The reply from the server will be binary data
         data = cast(
             memoryview,
-            generic_msg(cmd="tondarray", args={"array": self}, recv_binary=True),
+            generic_msg(cmd=f"tondarray{self.ndim}D", args={"array": self}, recv_binary=True),
         )
         # Make sure the received data has the expected length
         if len(data) != self.size * self.dtype.itemsize:
@@ -1330,9 +1389,14 @@ class pdarray:
             dt = dt.newbyteorder("<")
 
         if data.readonly:
-            return np.frombuffer(data, dt).copy()
+            x = np.frombuffer(data, dt).copy()
         else:
-            return np.frombuffer(data, dt)
+            x = np.frombuffer(data, dt)
+
+        if self.ndim == 1:
+            return x
+        else:
+            return x.reshape(self.shape)
 
     def to_list(self) -> List:
         """
@@ -2034,8 +2098,11 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         size = int(fields[3])
         ndim = int(fields[4])
 
-        trailing_comma_offset = -2 if fields[5][len(fields[5]) - 2] == "," else -1
-        shape = [int(el) for el in fields[5][1:trailing_comma_offset].split(",")]
+        if fields[5] == "[]":
+            shape = []
+        else:
+            trailing_comma_offset = -2 if fields[5][len(fields[5]) - 2] == "," else -1
+            shape = [int(el) for el in fields[5][1:trailing_comma_offset].split(",")]
 
         itemsize = int(fields[6])
     except Exception as e:
@@ -2085,7 +2152,7 @@ def any(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "any", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "any", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2111,7 +2178,7 @@ def all(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "all", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "all", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2137,7 +2204,7 @@ def is_sorted(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "is_sorted", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "is_sorted", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2163,7 +2230,7 @@ def sum(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "sum", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "sum", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2190,7 +2257,7 @@ def prod(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "prod", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "prod", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2215,7 +2282,7 @@ def min(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "min", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "min", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2241,7 +2308,7 @@ def max(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "max", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "max", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2267,7 +2334,7 @@ def argmin(pda: pdarray) -> Union[np.int64, np.uint64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "argmin", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "argmin", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2293,7 +2360,7 @@ def argmax(pda: pdarray) -> Union[np.int64, np.uint64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "argmax", "array": pda})
+    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "argmax", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2820,7 +2887,7 @@ def popcount(pda: pdarray) -> pdarray:
         return sum(popcount(a) for a in pda.bigint_to_uint_arrays())
     else:
         repMsg = generic_msg(
-            cmd="efunc",
+            cmd=f"efunc{pda.ndim}D",
             args={
                 "func": "popcount",
                 "array": pda,
@@ -2861,7 +2928,7 @@ def parity(pda: pdarray) -> pdarray:
         return reduce(lambda x, y: x ^ y, [parity(a) for a in pda.bigint_to_uint_arrays()])
     else:
         repMsg = generic_msg(
-            cmd="efunc",
+            cmd=f"efunc{pda.ndim}D",
             args={
                 "func": "parity",
                 "array": pda,
@@ -2929,7 +2996,7 @@ def clz(pda: pdarray) -> pdarray:
         return lz
     else:
         repMsg = generic_msg(
-            cmd="efunc",
+            cmd=f"efunc{pda.ndim}D",
             args={
                 "func": "clz",
                 "array": pda,
@@ -2999,7 +3066,7 @@ def ctz(pda: pdarray) -> pdarray:
         return tz
     else:
         repMsg = generic_msg(
-            cmd="efunc",
+            cmd=f"efunc{pda.ndim}D",
             args={
                 "func": "ctz",
                 "array": pda,
@@ -3270,6 +3337,58 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
                     "func": "fmod",
                     "A": dividend,
                     "B": divisor,
+                },
+            ),
+        )
+    )
+
+
+@typechecked
+def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, bool, bool]:
+    from arkouda.util import broadcast_dims
+    if x1.shape == x2.shape:
+        return (x1, x2, False, False)
+    else:
+        tmp_x1 = False
+        tmp_x2 = False
+        try:
+            # determine common shape for broadcasting
+            bc_shape = broadcast_dims(x1.shape, x2.shape)
+        except ValueError:
+            raise ValueError(
+                f"Incompatible array shapes for broadcasted operation: {x1.shape} and {x2.shape}"
+            )
+
+        # broadcast x1 if needed
+        if bc_shape != x1.shape:
+            x1b = broadcast_to_shape(x1, bc_shape)
+            tmp_x1 = True
+        else:
+            x1b = x1
+
+        # broadcast x2 if needed
+        if bc_shape != x2.shape:
+            x2b = broadcast_to_shape(x2, bc_shape)
+            tmp_x2 = True
+        else:
+            x2b = x2
+        return (x1b, x2b, tmp_x1, tmp_x2)
+
+
+@typechecked
+def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
+    """
+    expand an array's rank to the specified shape using broadcasting
+    """
+
+    return create_pdarray(
+        cast(
+            str,
+            generic_msg(
+                cmd=f"broadcast{pda.ndim}Dx{len(shape)}D",
+                args={
+                    "name": pda,
+                    "shape": shape,
                 },
             ),
         )

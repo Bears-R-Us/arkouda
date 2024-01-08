@@ -25,13 +25,19 @@ module RandMsg
 
     :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
     */
-    proc randintMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND
+    proc randintMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        const len = msgArgs.get("size").getIntValue();
+        var repMsg: string; // response message
+        
+        const shape = msgArgs.get("shape").getTuple(nd);
         const dtype = str2dtype(msgArgs.getValueOf("dtype"));
         const seed = msgArgs.getValueOf("seed");
         const low = msgArgs.get("low");
         const high = msgArgs.get("high");
+
+        var len = 1;
+        for s in shape do len *= s;
 
         // get next symbol name
         const rname = st.nextName();
@@ -46,7 +52,7 @@ module RandMsg
             const aMin = low.getScalarValue(t),
                   aMax = high.getScalarValue(t) - sub,
                   t1 = Time.timeSinceEpoch().totalSeconds();
-            var e = st.addEntry(rname, len, t);
+            var e = st.addEntry(rname, (...shape), t);
             randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               "alloc time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
             const t2 = Time.timeSinceEpoch().totalSeconds();
@@ -130,7 +136,7 @@ module RandMsg
                 if SupportsBool {
                     overMemLimit(len);
                     const t1 = Time.timeSinceEpoch().totalSeconds();
-                    var e = st.addEntry(rname, len, bool);
+                    var e = st.addEntry(rname, (...shape), bool);
                     randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               "alloc time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
                     const t2 = Time.timeSinceEpoch().totalSeconds();
@@ -168,6 +174,5 @@ module RandMsg
     }
     
     use CommandMap;
-    registerFunction("randint", randintMsg, getModuleName());
     registerFunction("randomNormal", randomNormalMsg, getModuleName());
 }

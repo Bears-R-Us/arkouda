@@ -279,8 +279,15 @@ module Message {
         */
         proc getTuple(param size: int): size*int throws {
             if size == 1 {
-                return (this.getIntValue(),);
+                try {
+                    // try to parse 'x' (fast path)
+                    return (this.getIntValue(),);
+                } catch {
+                    // try to parse '(x,)'
+                    return parseJsonTuple(this.val, 1);
+                }
             } else {
+                // try to parse '(x,y,...)'
                 return parseJsonTuple(this.val, size);
             }
         }
