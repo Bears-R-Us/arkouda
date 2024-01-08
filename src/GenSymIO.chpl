@@ -133,9 +133,8 @@ module GenSymIO {
      * Outputs the pdarray as a Numpy ndarray in the form of a 
      * Chapel Bytes object
      */
-    @arkouda.registerNDBinary
-    proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st:
-                                          borrowed SymTab, param nd: int): bytes throws {
+    @arkouda.registerND
+    proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): bytes throws {
         var arrayBytes: bytes;
         var abstractEntry = st.lookup(msgArgs.getValueOf("array"));
         if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {

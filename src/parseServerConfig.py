@@ -2,6 +2,8 @@ import os
 import sys
 import re
 import json
+import io
+import math
 
 def getModules(config):
     with open(config, 'r') as cfg_file:
@@ -16,40 +18,76 @@ def getModuleFiles(mods, src_dir):
     return " ".join([f"{mod}.chpl" if mod[0] == '/' else f"{src_dir}/{mod}.chpl" \
                         for mod in mods])
 
-def ndStamp(nd_msg_handler_name, command_name, d):
+def ndStamp(nd_msg_handler_name, cmd_prefix, d):
     msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d}D"
     return \
-    f"proc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws\n" + \
+    f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws\n" + \
     f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n" + \
-    f"registerFunction(\"{command_name}{d}D\", {msg_proc_name});\n\n"
+    f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name});\n"
+
+def ndStampBinary(nd_msg_handler_name, cmd_prefix, d):
+    msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d}D"
+    return \
+    f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws\n" + \
+    f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n" + \
+    f"registerBinaryFunction(\"{cmd_prefix}{d}D\", {msg_proc_name});\n"
+
+def ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2):
+    msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d1}x{d2}D"
+    return \
+    f"proc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws\n" + \
+    f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d1}, {d2});\n" + \
+    f"registerFunction(\"{cmd_prefix}{d1}x{d2}D\", {msg_proc_name});\n"
+
+def stampOutBroadcast(src_dir, stamp_file, max_dims):
+    # broadcast is a special case because it has a different signature
+    # including two param fields for the source and destination ranks
+    # so we need to stamp out a separate handler for each rank pair
+    # (e.g., broadcast1Dx1D, broadcast1Dx2D, broadcast1Dx3D, broadcast2Dx2D, broadcast2Dx3D etc.)
+    stamp_file.write('/'*44 + "broadcasting" + '/'*44 + '\n')
+    for d1 in range(1, max_dims+1):
+        for d2 in range(d1, max_dims+1):
+            stamp_file.write(ndStampMultiRank("broadcastNDArray", "broadcast", d1, d2))
+    stamp_file.write('/'*100 + '\n\n')
 
 def stampOutModule(mod, src_dir, stamp_file, max_dims):
     with open(f"{src_dir}/{mod}.chpl", 'r') as src_file:
         found_annotation = False
 
+        modOut = io.StringIO()
+        modOut.write('/'*math.ceil((100-len(mod))/2) + mod + '/'*math.floor((100-len(mod))/2) + '\n')
+        modOut.write(f"use {mod};")
+
         # find each procedure annotated with '@arkouda.registerND'
         #  (with an optional 'cmd_prefix' argument)
-        #            group 0  \/                  1 \/            2 \/                          3 \/
-        for m in re.finditer(r'\@arkouda\.registerND(\(cmd_prefix=\"([a-zA-Z0-9]*)\"\))?\s*proc\s*([a-zA-Z0-9]*)\(', src_file.read()):
+        #            group 0  \/                    1 \/            2 \/                          3 \/                        4\/
+        for m in re.finditer(r'\@arkouda\.registerND\(?(cmd_prefix=\"([a-zA-Z0-9]*)\")?\)?\s*proc\s*([a-zA-Z0-9]*)\(.*\)\s*:\s*(bytes)?', src_file.read()):
             found_annotation = True
             g = m.groups()
             proc_name = g[2]
 
             if g[0] == None:
                 # no 'cmd_prefix' argument
-                command_name = proc_name.replace('Msg', '')
+                cmd_prefix = proc_name.replace('Msg', '')
             else:
                 # group 2 contains the 'cmd_prefix' argument
-                command_name = g[1]
+                cmd_prefix = g[1]
+
+            # if return type is bytes, this is a binary message handler
+            binaryHandler = g[3] != None
 
             # instantiate the message handler for each rank from 1..max_dims
             # and register the instantiated proc with a unique command name
             for d in range(1, max_dims+1):
-                stamp_file.write(ndStamp(proc_name, command_name, d))
+                if binaryHandler:
+                    modOut.write(ndStampBinary(proc_name, cmd_prefix, d))
+                else:
+                    modOut.write(ndStamp(proc_name, cmd_prefix, d))
 
         # include the source module in the stamp file if any procs were stamped out
         if found_annotation:
-            stamp_file.write(f"use {mod};\n")
+            modOut.write('/'*100 + '\n\n')
+            stamp_file.write(modOut.getvalue())
 
 def createNDHandlerInstantiations(config, modules, src_dir):
     max_dims = config["max_array_dims"]
@@ -65,6 +103,10 @@ def createNDHandlerInstantiations(config, modules, src_dir):
 
         # explicitly stamp out basic message handlers
         stampOutModule("MsgProcessing", src_dir, stamps, max_dims)
+        stampOutModule("GenSymIO", src_dir, stamps, max_dims)
+
+        # explicitly stamp out the broadcast handler
+        stampOutBroadcast(src_dir, stamps, max_dims)
 
     return f"{filename} -sMaxArrayDims={max_dims}"
 

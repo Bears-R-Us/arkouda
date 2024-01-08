@@ -44,9 +44,6 @@ module MsgProcessing
 
         overMemLimit(dtypeSize(dtype) * size);
 
-        // get next symbol name
-        const rname = st.nextName();
-
         // if verbose print action
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s dtype: %s size: %i new pdarray name: %s".doFormat(
@@ -58,7 +55,7 @@ module MsgProcessing
             mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                         "created the pdarray %s".doFormat(st.attrib(rname)));
 
-            repMsg = "created " + st.attrib(rname);
+            const repMsg = "created " + st.attrib(rname);
             mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         } else {
