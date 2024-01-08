@@ -67,7 +67,7 @@ class GroupBy:
     gb_key_names : str or list(str), default=None
         The column name(s) associated with the aggregated columns.
 
-    as_index : as_index, default=True
+    as_index : bool, default=True
         If True, interpret aggregated column as index
         (only implemented for single dimensional aggregates).
         Otherwise, treat aggregated column as a dataframe column.
@@ -143,9 +143,7 @@ class GroupBy:
                         index=Index(self.gb.unique_keys, name=self.gb_key_names[0]),
                     )
                 elif isinstance(self.gb_key_names, list):
-                    column_dict = {
-                        self.gb_key_names[i]: self.unique_keys[i] for i in range(len(self.gb_key_names))
-                    }
+                    column_dict = dict(zip(self.gb_key_names, self.unique_keys))
                     for c in colnames:
                         column_dict[c] = self.gb.aggregate(self.df.data[c], opname)[1]
                     return DataFrame(column_dict)
@@ -207,10 +205,7 @@ class GroupBy:
                 return Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names))
             elif len(self.gb_key_names) == 1:
                 return Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names[0]))
-            else:
-                return Series(values)
-        else:
-            return Series(values)
+        return Series(values)
 
     def __return_agg_dataframe(self, values, name):
         if isinstance(self.gb_key_names, str):

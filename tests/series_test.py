@@ -4,7 +4,6 @@ from context import arkouda as ak
 
 
 class SeriesTest(ArkoudaTest):
-
     def test_series_creation(self):
         # Use positional arguments
         ar_tuple = ak.arange(3), ak.arange(3)
@@ -102,9 +101,6 @@ class SeriesTest(ArkoudaTest):
         self.assertEqual(l, 3)
 
     def test_add(self):
-        ar_tuple = (ak.arange(3), ak.arange(3))
-        ar_tuple_add = (ak.arange(3, 6, 1), ak.arange(3, 6, 1))
-
         i = ak.arange(3)
         v = ak.arange(3, 6, 1)
         s = ak.Series(data=i, index=i)
