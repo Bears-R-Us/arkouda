@@ -791,7 +791,7 @@ each value to the non-zero elements in the corresponding row.</p>
 <dt class="sig sig-object py" id="arkouda.GroupBy.count">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.count" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -804,6 +804,8 @@ each key appears.</p>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This alias is an alias of “size”.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -1202,7 +1204,7 @@ they are unregistered.</p>
 <dt class="sig sig-object py" id="id0">
 <span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id0" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -1219,8 +1221,6 @@ each key appears.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.GroupBy.count" title="arkouda.GroupBy.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p>
 </div>
-<p class="rubric">Notes</p>
-<p>This alias for “count” was added to conform with Pandas API</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>

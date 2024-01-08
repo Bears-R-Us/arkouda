@@ -1687,7 +1687,7 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 <dt class="sig sig-object py" id="id0">
 <span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id0" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -1704,8 +1704,6 @@ each key appears.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy.count" title="arkouda.GroupBy.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p>
 </div>
-<p class="rubric">Notes</p>
-<p>This alias for “count” was added to conform with Pandas API</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -1724,7 +1722,7 @@ each key appears.</p>
 <dt class="sig sig-object py" id="arkouda.GroupBy.count">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.count" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -1737,6 +1735,8 @@ each key appears.</p>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This alias is an alias of “size”.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -11358,7 +11358,7 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 <dt class="sig sig-object py" id="id83">
 <span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id83" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -11375,8 +11375,6 @@ each key appears.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy.count" title="arkouda.GroupBy.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p>
 </div>
-<p class="rubric">Notes</p>
-<p>This alias for “count” was added to conform with Pandas API</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -11395,7 +11393,7 @@ each key appears.</p>
 <dt class="sig sig-object py" id="id84">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id84" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -11408,6 +11406,8 @@ each key appears.</p>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This alias is an alias of “size”.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -16592,7 +16592,7 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 <dt class="sig sig-object py" id="id261">
 <span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id261" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -16609,8 +16609,6 @@ each key appears.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy.count" title="arkouda.GroupBy.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p>
 </div>
-<p class="rubric">Notes</p>
-<p>This alias for “count” was added to conform with Pandas API</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -16629,7 +16627,7 @@ each key appears.</p>
 <dt class="sig sig-object py" id="id262">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id262" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -16642,6 +16640,8 @@ each key appears.</p>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This alias is an alias of “size”.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -22403,17 +22403,20 @@ it.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame.GroupBy">
-<span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.GroupBy" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.GroupBy" title="Link to this definition">#</a></dt>
 <dd><p>Group the dataframe by a column or a list of columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>string</em><em> or </em><em>list</em>) – An (ordered) list of column names or a single string to group by.</p></li>
-<li><p><strong>use_series</strong> (<em>If True</em><em>, </em><em>returns an ak.GroupBy oject. Otherwise an arkouda GroupBy object</em>) – </p></li>
+<li><p><strong>use_series</strong> (<em>bool</em><em> (</em><em>default=False</em><em>)</em>) – If True, returns an arkouda.dataframe.GroupBy object.
+Otherwise an arkouda.groupbyclass.GroupBy object.</p></li>
+<li><p><strong>as_index</strong> (<em>bool</em><em> (</em><em>default=True</em><em>)</em>) – If True, groupby columns will be set as index
+otherwise, the groupby columns will be treated as DataFrame columns.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Either an ak GroupBy or an arkouda GroupBy object.</p>
+<dd class="field-even"><p>Either an ak arkouda.groupbyclass.GroupBy or an arkouda.dataframe.GroupBy object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy" title="arkouda.GroupBy">GroupBy</a></p>
@@ -22822,13 +22825,15 @@ be reflected in the shallow copy, and vice versa.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame.groupby">
-<span class="sig-name descname"><span class="pre">groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.groupby" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.groupby" title="Link to this definition">#</a></dt>
 <dd><p>Group the dataframe by a column or a list of columns.  Alias for GroupBy</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>a single column name</em><em> or </em><em>a list</em><em> of </em><em>column names</em>) – </p></li>
-<li><p><strong>use_series</strong> (<em>Change return type to Arkouda Groupby object.</em>) – </p></li>
+<li><p><strong>keys</strong> (<em>str</em><em> or </em><em>list</em><em>(</em><em>str</em><em>)</em>) – a single column name or a list of column names</p></li>
+<li><p><strong>use_series</strong> (<em>bool</em><em> (</em><em>default = True</em><em>)</em>) – Change return type to Arkouda Groupby object.</p></li>
+<li><p><strong>as_index</strong> (<em>bool</em><em> (</em><em>default=True</em><em>)</em>) – If true groupby aggregation values will be treated as an index.
+Otherwise, the groupby values will be treated as DataFrame column(s).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -23398,7 +23403,7 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 <dt class="sig sig-object py" id="id443">
 <span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id443" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -23415,8 +23420,6 @@ each key appears.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy.count" title="arkouda.GroupBy.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p>
 </div>
-<p class="rubric">Notes</p>
-<p>This alias for “count” was added to conform with Pandas API</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -23435,7 +23438,7 @@ each key appears.</p>
 <dt class="sig sig-object py" id="id444">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id444" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -23448,6 +23451,8 @@ each key appears.</p>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This alias is an alias of “size”.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -27198,7 +27203,7 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 <dt class="sig sig-object py" id="id563">
 <span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id563" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -27215,8 +27220,6 @@ each key appears.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy.count" title="arkouda.GroupBy.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p>
 </div>
-<p class="rubric">Notes</p>
-<p>This alias for “count” was added to conform with Pandas API</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -27235,7 +27238,7 @@ each key appears.</p>
 <dt class="sig sig-object py" id="id564">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id564" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -27248,6 +27251,8 @@ each key appears.</p>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This alias is an alias of “size”.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -32392,17 +32397,20 @@ it.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="id749">
-<span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id749" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id749" title="Link to this definition">#</a></dt>
 <dd><p>Group the dataframe by a column or a list of columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>string</em><em> or </em><em>list</em>) – An (ordered) list of column names or a single string to group by.</p></li>
-<li><p><strong>use_series</strong> (<em>If True</em><em>, </em><em>returns an ak.GroupBy oject. Otherwise an arkouda GroupBy object</em>) – </p></li>
+<li><p><strong>use_series</strong> (<em>bool</em><em> (</em><em>default=False</em><em>)</em>) – If True, returns an arkouda.dataframe.GroupBy object.
+Otherwise an arkouda.groupbyclass.GroupBy object.</p></li>
+<li><p><strong>as_index</strong> (<em>bool</em><em> (</em><em>default=True</em><em>)</em>) – If True, groupby columns will be set as index
+otherwise, the groupby columns will be treated as DataFrame columns.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Either an ak GroupBy or an arkouda GroupBy object.</p>
+<dd class="field-even"><p>Either an ak arkouda.groupbyclass.GroupBy or an arkouda.dataframe.GroupBy object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy" title="arkouda.GroupBy">GroupBy</a></p>
@@ -32811,13 +32819,15 @@ be reflected in the shallow copy, and vice versa.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="id769">
-<span class="sig-name descname"><span class="pre">groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id769" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id769" title="Link to this definition">#</a></dt>
 <dd><p>Group the dataframe by a column or a list of columns.  Alias for GroupBy</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>a single column name</em><em> or </em><em>a list</em><em> of </em><em>column names</em>) – </p></li>
-<li><p><strong>use_series</strong> (<em>Change return type to Arkouda Groupby object.</em>) – </p></li>
+<li><p><strong>keys</strong> (<em>str</em><em> or </em><em>list</em><em>(</em><em>str</em><em>)</em>) – a single column name or a list of column names</p></li>
+<li><p><strong>use_series</strong> (<em>bool</em><em> (</em><em>default = True</em><em>)</em>) – Change return type to Arkouda Groupby object.</p></li>
+<li><p><strong>as_index</strong> (<em>bool</em><em> (</em><em>default=True</em><em>)</em>) – If true groupby aggregation values will be treated as an index.
+Otherwise, the groupby values will be treated as DataFrame column(s).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -33969,7 +33979,7 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 <dt class="sig sig-object py" id="id852">
 <span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id852" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -33986,8 +33996,6 @@ each key appears.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy.count" title="arkouda.GroupBy.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p>
 </div>
-<p class="rubric">Notes</p>
-<p>This alias for “count” was added to conform with Pandas API</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -34006,7 +34014,7 @@ each key appears.</p>
 <dt class="sig sig-object py" id="id853">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id853" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
-each key appears.</p>
+each key appears.  This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>none</strong> – </p>
@@ -34019,6 +34027,8 @@ each key appears.</p>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This alias is an alias of “size”.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>

@@ -350,16 +350,20 @@ Functions
       :rtype: ak.DataFrame
 
 
-   .. py:method:: GroupBy(keys, use_series=False)
+   .. py:method:: GroupBy(keys, use_series=False, as_index=True)
 
       Group the dataframe by a column or a list of columns.
 
       :param keys: An (ordered) list of column names or a single string to group by.
       :type keys: string or list
-      :param use_series:
-      :type use_series: If True, returns an ak.GroupBy oject. Otherwise an arkouda GroupBy object
+      :param use_series: If True, returns an arkouda.dataframe.GroupBy object.
+                         Otherwise an arkouda.groupbyclass.GroupBy object.
+      :type use_series: bool (default=False)
+      :param as_index: If True, groupby columns will be set as index
+                       otherwise, the groupby columns will be treated as DataFrame columns.
+      :type as_index: bool (default=True)
 
-      :returns: Either an ak GroupBy or an arkouda GroupBy object.
+      :returns: Either an ak arkouda.groupbyclass.GroupBy or an arkouda.dataframe.GroupBy object.
       :rtype: GroupBy
 
       .. seealso:: :obj:`arkouda.GroupBy`
@@ -711,14 +715,17 @@ Functions
       :rtype: aku.DataFrame
 
 
-   .. py:method:: groupby(keys, use_series=True)
+   .. py:method:: groupby(keys, use_series=True, as_index=True)
 
       Group the dataframe by a column or a list of columns.  Alias for GroupBy
 
-      :param keys:
-      :type keys: a single column name or a list of column names
-      :param use_series:
-      :type use_series: Change return type to Arkouda Groupby object.
+      :param keys: a single column name or a list of column names
+      :type keys: str or list(str)
+      :param use_series: Change return type to Arkouda Groupby object.
+      :type use_series: bool (default = True)
+      :param as_index: If true groupby aggregation values will be treated as an index.
+                       Otherwise, the groupby values will be treated as DataFrame column(s).
+      :type as_index: bool (default=True)
 
       :rtype: An arkouda Groupby instance
 

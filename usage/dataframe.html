@@ -428,13 +428,15 @@ or
 <h3>GroupBy<a class="headerlink" href="#groupby" title="Link to this heading">#</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.groupby">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.groupby" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.groupby" title="Link to this definition">#</a></dt>
 <dd><p>Group the dataframe by a column or a list of columns.  Alias for GroupBy</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>a single column name</em><em> or </em><em>a list</em><em> of </em><em>column names</em>) – </p></li>
-<li><p><strong>use_series</strong> (<em>Change return type to Arkouda Groupby object.</em>) – </p></li>
+<li><p><strong>keys</strong> (<em>str</em><em> or </em><em>list</em><em>(</em><em>str</em><em>)</em>) – a single column name or a list of column names</p></li>
+<li><p><strong>use_series</strong> (<em>bool</em><em> (</em><em>default = True</em><em>)</em>) – Change return type to Arkouda Groupby object.</p></li>
+<li><p><strong>as_index</strong> (<em>bool</em><em> (</em><em>default=True</em><em>)</em>) – If true groupby aggregation values will be treated as an index.
+Otherwise, the groupby values will be treated as DataFrame column(s).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>

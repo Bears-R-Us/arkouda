@@ -186,7 +186,7 @@ Attributes
    .. py:method:: size() -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Count the number of elements in each group, i.e. the number of times
-      each key appears.
+      each key appears.  This counts the total number of rows (including NaN values).
 
       :param none:
 
@@ -194,10 +194,6 @@ Attributes
                 * **counts** (*pdarray, int64*) -- The number of times each unique key appears
 
       .. seealso:: :obj:`count`
-
-      .. rubric:: Notes
-
-      This alias for "count" was added to conform with Pandas API
 
       .. rubric:: Examples
 
@@ -215,12 +211,16 @@ Attributes
    .. py:method:: count() -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Count the number of elements in each group, i.e. the number of times
-      each key appears.
+      each key appears.  This counts the total number of rows (including NaN values).
 
       :param none:
 
       :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
                 * **counts** (*pdarray, int64*) -- The number of times each unique key appears
+
+      .. rubric:: Notes
+
+      This alias is an alias of "size".
 
       .. rubric:: Examples
 
