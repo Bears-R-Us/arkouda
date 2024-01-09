@@ -187,4 +187,5 @@ class TestSeries:
         # added to validate functionality for issue #1506
         df = ak.DataFrame({"a": ak.arange(10), "b": ak.arange(10), "c": ak.arange(10)})
         g = df.groupby(["a", "b"])
-        g.broadcast(g.sum("c"))
+        series = ak.Series(data=g.sum("c")["c"], index=g.sum("c").index)
+        g.broadcast(series)
