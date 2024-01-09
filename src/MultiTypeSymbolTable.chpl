@@ -61,7 +61,7 @@ module MultiTypeSymbolTable
             :returns: borrow of newly created `SymEntry(t)`
         */
         proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws
-            when isSupportedType(t)
+            where isSupportedType(t)
         {
             // check and throw if memory limit would be exceeded
             // TODO figure out a way to do memory checking for bigint
@@ -85,15 +85,15 @@ module MultiTypeSymbolTable
             return (tab[name]:borrowed GenSymEntry).toSymEntry(t, N);
         }
 
-        proc addEntry(name: string, shape: ?ND*int, type t): borrowed SymEntry(t, ND) throw
+        proc addEntry(name: string, shape: ?ND*int, type t): borrowed SymEntry(t, ND) throws
             do return addEntry(name, (...shape), t);
 
         proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws
-            when !isSupportedType(t)
+            where !isSupportedType(t)
         {
             throw new ConfigurationError(
-                "The server was not configured to support pdarray's of type %s."doFormat(t:string) +
-                "Please update the configuration and recompile",
+                "The server was not configured to support pdarray's of type %s. ".doFormat(t:string) +
+                "Please update the configuration and recompile.",
                 getLineNumber(),getRoutineName(),getModuleName()
             );
         }
@@ -149,16 +149,16 @@ module MultiTypeSymbolTable
             select dtype {
                 when DType.Int64 { return addEntry(name, (...shape), int); }
                 when DType.Int32 { return addEntry(name, (...shape), int(32)); }
-                when DType.Int16 { return addEntry(name, (...shape), int(32)); }
+                when DType.Int16 { return addEntry(name, (...shape), int(16)); }
                 when DType.Int8 { return addEntry(name, (...shape), int(8)); }
                 when DType.UInt64 { return addEntry(name, (...shape), uint); }
                 when DType.UInt32 { return addEntry(name, (...shape), uint(32)); }
-                when DType.UInt16 { return addEntry(name, (...shape), uint(32)); }
+                when DType.UInt16 { return addEntry(name, (...shape), uint(16)); }
                 when DType.UInt8 { return addEntry(name, (...shape), uint(8)); }
                 when DType.Float64 { return addEntry(name, (...shape), real); }
                 when DType.Float32 { return addEntry(name, (...shape), real(32)); }
-                when DType.Complex64 { return addEntry(name, (...shape), complex(64)); }
                 when DType.Complex128 { return addEntry(name, (...shape), complex(128)); }
+                when DType.Complex64 { return addEntry(name, (...shape), complex(64)); }
                 when DType.Bool { return addEntry(name, (...shape), bool); }
                 when DType.BigInt { return addEntry(name, (...shape), bigint); }
                 otherwise {

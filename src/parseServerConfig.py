@@ -60,8 +60,8 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
 
         # find each procedure annotated with '@arkouda.registerND'
         #  (with an optional 'cmd_prefix' argument)
-        #            group 0  \/                    1 \/            2 \/                          3 \/                        4\/
-        for m in re.finditer(r'\@arkouda\.registerND\(?(cmd_prefix=\"([a-zA-Z0-9]*)\")?\)?\s*proc\s*([a-zA-Z0-9]*)\(.*\)\s*:\s*(bytes)?', src_file.read()):
+        #            group 0  \/                     1 \/          2 \/                               3 \/                        4\/
+        for m in re.finditer(r'\@arkouda\.registerND\(?(cmd_prefix=\"([\[\]a-zA-Z0-9]*)\")?\)?\s*proc\s*([a-zA-Z0-9]*)\(.*\)\s*:\s*(bytes)?', src_file.read()):
             found_annotation = True
             g = m.groups()
             proc_name = g[2]
