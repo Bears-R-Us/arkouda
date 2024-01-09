@@ -55,7 +55,7 @@ def stampOutNDArrayHandlers(mod, src_dir, stamp_file, max_dims):
             g = m.groups()
 
             base_proc_name = g[2]
-            msg_proc_name = "_nd_gen_" + base_proc_name
+            msg_proc_name = "arkouda_nd_gen_" + base_proc_name
 
             if g[0] == None:
                 # no 'cmd_prefix' argument

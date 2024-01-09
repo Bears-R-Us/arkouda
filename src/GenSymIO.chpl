@@ -201,7 +201,7 @@ module GenSymIO {
         }
     }
 
-    proc _buildReadAllMsgJson(rnames:list((string, ObjType, string)), allowErrors:bool, fileErrorCount:int, fileErrors:list(string), st: borrowed SymTab): string throws {
+    proc buildReadAllMsgJson(rnames:list((string, ObjType, string)), allowErrors:bool, fileErrorCount:int, fileErrors:list(string), st: borrowed SymTab): string throws {
         var items: list(map(string, string));
 
         for rname in rnames {

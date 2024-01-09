@@ -103,7 +103,7 @@ module MultiTypeSymEntry
          *
          * :returns: s (string) containing the array data
          */
-        proc __str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
+        proc entry__str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
             genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
             var s = "AbstractSymEntry:subClasses should override this __str__ proc";
             return prefix + s + suffix;
@@ -173,7 +173,7 @@ module MultiTypeSymEntry
 
             :returns: s (string) containing the array data
         */
-        override proc __str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
+        override proc entry__str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
             genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
             var s = "DType: %s, itemsize: %?, size: %?".doFormat(this.dtype, this.itemsize, this.size);
             return prefix + s + suffix;
@@ -253,7 +253,7 @@ module MultiTypeSymEntry
 
             :returns: s (string) containing the array data
         */
-        override proc __str__(thresh:int=6, prefix:string = "[", suffix:string = "]", baseFormat:string = "%?"): string throws {
+        override proc entry__str__(thresh:int=6, prefix:string = "[", suffix:string = "]", baseFormat:string = "%?"): string throws {
             if this.dimensions == 1 {
                 var s:string = "";
                 if (this.size == 0) {
@@ -364,7 +364,7 @@ module MultiTypeSymEntry
          *
          * :returns: s (string) containing the array data
          */
-        override proc __str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
+        override proc entry__str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
             genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
             var s = "DType: %s, itemsize: %?, size: %?".doFormat(this.dtype, this.itemsize, this.size);
             return prefix + s + suffix;

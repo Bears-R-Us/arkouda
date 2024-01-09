@@ -41,7 +41,7 @@ module Flatten {
     var nullByteLocations = makeDistArray(this.values.a.domain, false);
 
     // since the delim matches are variable length, we don't know what the size of flattenedVals should be until we've found the matches
-    forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(delim.encode()),
+    forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = unsafeCompileRegex(delim.encode()),
                                                                              var writeAgg = newDstAggregator(bool),
                                                                              var nbAgg = newDstAggregator(bool),
                                                                              var matchAgg = newDstAggregator(int)) {
@@ -144,7 +144,7 @@ module Flatten {
     // maxSplit = 0 means replace all occurances, so we set maxsplit equal to 10**9
     var maxsplit = if initMaxSplit == 0 then 10**9:int else initMaxSplit;
     // since the pattern matches are variable length, we don't know what the size of splitVals should be until we've found the matches
-    forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern.encode()),
+    forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = unsafeCompileRegex(pattern.encode()),
                                                                              var writeAgg = newDstAggregator(bool),
                                                                              var nbAgg = newDstAggregator(bool),
                                                                              var matchAgg = newDstAggregator(int)) {

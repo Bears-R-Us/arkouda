@@ -648,11 +648,11 @@ module CSVMsg {
         try {
             if headers[0] {
                 rtnData = readTypedCSV(filenames, dsetlist, data_types[0], row_cts, validFiles, col_delim, allowErrors, st);
-                rtnMsg = _buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
+                rtnMsg = buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
             }
             else {
                 rtnData = readGenericCSV(filenames, dsetlist, row_cts, validFiles, col_delim, allowErrors, st);
-                rtnMsg = _buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
+                rtnMsg = buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
             }
         }
         catch e: Error {

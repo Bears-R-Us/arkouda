@@ -3,12 +3,14 @@ module MemoryMgmt {
     use Subprocess;
     use FileSystem;
     use Reflection;
+    use Math;
 
     use Logging;
     use ServerErrors;
     use ArkoudaMemDiagnosticsCompat;
     use ArkoudaFileCompat;
-    
+    use ArkoudaMathCompat;
+
     private config const logLevel = LogLevel.DEBUG;
     private config const logChannel = LogChannel.CONSOLE;
     const mmLogger = new Logger(logLevel,logChannel);
@@ -119,7 +121,7 @@ module MemoryMgmt {
             }
         }
 
-        return (AutoMath.round(availableMemoryPct/100 * memAvail)*1000):uint(64);
+        return (mathRound(availableMemoryPct/100 * memAvail)*1000):uint(64);
     }
     
     proc getTotalMemory() : uint(64) throws {
