@@ -335,7 +335,7 @@ or
    Returns Regexp.compile if pattern can be compiled without an error
    
 
-.. function:: proc _unsafeCompileRegex(const pattern: ?t)
+.. function:: proc unsafeCompileRegex(const pattern: ?t)
 
 .. function:: proc stringSearch(ref values, rng, myRegex) throws
 

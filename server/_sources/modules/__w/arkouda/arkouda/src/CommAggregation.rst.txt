@@ -68,7 +68,7 @@ or
 
    .. method:: proc ref copy(ref dst: elemType, const in srcVal: elemType)
 
-   .. method:: proc ref _flushBuffer(loc: int, ref bufferIdx, freeData)
+   .. method:: proc ref flushBuffer(loc: int, ref bufferIdx, freeData)
 
 .. record:: DstUnorderedAggregator
 
@@ -124,7 +124,7 @@ or
 
    .. method:: proc ref copy(ref dst: elemType, const ref src: elemType)
 
-   .. method:: proc ref _flushBuffer(loc: int, ref bufferIdx, freeData)
+   .. method:: proc ref flushBuffer(loc: int, ref bufferIdx, freeData)
 
 .. record:: SrcUnorderedAggregator
 

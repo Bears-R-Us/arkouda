@@ -17,11 +17,11 @@ or
 
    import CommAggregation.BigIntegerAggregation;
 
-.. method:: proc bigint._serializedSize()
+.. method:: proc bigint.serializedSize()
 
-.. method:: proc bigint._serializeInto(x: c_ptr(uint(8)))
+.. method:: proc bigint.serializeInto(x: c_ptr(uint(8)))
 
-.. method:: proc ref bigint._deserializeFrom(x: c_ptr(uint(8)))
+.. method:: proc ref bigint.deserializeFrom(x: c_ptr(uint(8)))
 
 .. record:: DstAggregatorBigint
 
@@ -49,7 +49,7 @@ or
 
    .. method:: proc ref copy(ref dst: bigint, const ref src: bigint)
 
-   .. method:: proc ref _flushBuffer(loc: int, ref bufferIdx, freeData)
+   .. method:: proc ref flushBuffer(loc: int, ref bufferIdx, freeData)
 
 .. record:: SrcAggregatorBigint
 
@@ -85,5 +85,5 @@ or
 
    .. method:: proc ref copy(ref dst: bigint, const ref src: bigint)
 
-   .. method:: proc ref _flushBuffer(loc: int, ref bufferIdx, freeData)
+   .. method:: proc ref flushBuffer(loc: int, ref bufferIdx, freeData)
 

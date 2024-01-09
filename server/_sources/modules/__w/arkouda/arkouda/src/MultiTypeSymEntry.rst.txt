@@ -70,7 +70,7 @@ or
       * All concrete classes should override this method
       
 
-   .. method:: proc __str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
+   .. method:: proc entry__str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
 
       *
       * Formats and returns data in this entry up to the specified threshold. 
@@ -136,7 +136,7 @@ or
       :type etype: type
       
 
-   .. method:: override proc __str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
+   .. method:: override proc entry__str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
 
        
       Formats and returns data in this entry up to the specified threshold. 
@@ -216,7 +216,7 @@ or
       Verbose flag utility method
       
 
-   .. method:: override proc __str__(thresh: int = 6, prefix: string = "[", suffix: string = "]", baseFormat: string = "%\?"): string throws
+   .. method:: override proc entry__str__(thresh: int = 6, prefix: string = "[", suffix: string = "]", baseFormat: string = "%\?"): string throws
 
       
       Formats and returns data in this entry up to the specified threshold. 
@@ -280,7 +280,7 @@ or
 
    .. method:: override proc getSizeEstimate(): int
 
-   .. method:: override proc __str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
+   .. method:: override proc entry__str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
 
       *
       * Formats and returns data in this entry up to the specified threshold. 

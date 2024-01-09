@@ -56,7 +56,7 @@ or
    * :returns: bool true if the cast was successful, false otherwise
    
 
-.. function:: proc _buildReadAllMsgJson(rnames: list((string, ObjType, string)), allowErrors: bool, fileErrorCount: int, fileErrors: list(string), st: borrowed SymTab): string throws
+.. function:: proc buildReadAllMsgJson(rnames: list((string, ObjType, string)), allowErrors: bool, fileErrorCount: int, fileErrors: list(string), st: borrowed SymTab): string throws
 
 .. function:: proc jsonToMap(json: string): map(string, string) throws
 

@@ -27,3 +27,5 @@ or
 
 .. function:: proc isFinite(x: real(64)): bool
 
+.. function:: proc mathRound(x)
+
