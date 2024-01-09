@@ -508,7 +508,8 @@ class SegArray:
         if compressed or self.dtype == str_:  # Strings not supported by uncompressed version
             res = self.values[ind]
         else:
-            res = zeros(self.size, dtype=self.dtype) + default
+            res = zeros(self.size, dtype=self.dtype)
+            res.fill(default)
             res[longenough] = self.values[ind]
         if return_origins:
             return res, longenough
@@ -629,7 +630,7 @@ class SegArray:
             lastscatter = newsegs + newlens - 1
         newvals[lastscatter] = x
         origscatter = arange(self.valsize) + self.grouping.broadcast(
-            arange(self._non_empty_count), permute=True
+            arange(self.size)[self.non_empty], permute=True
         )
         if prepend:
             origscatter += 1

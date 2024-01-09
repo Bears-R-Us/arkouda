@@ -35,7 +35,8 @@ module ReductionMsg
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
-    proc reductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND
+    proc reductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         const reductionop = msgArgs.getValueOf("op");
@@ -47,7 +48,7 @@ module ReductionMsg
        
         select (gEnt.dtype) {
             when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
+                var e = toSymEntry(gEnt,int,nd);
                 select reductionop
                 {
                     when "any" {
@@ -119,7 +120,7 @@ module ReductionMsg
                 }
             }
             when (DType.UInt64) {
-                var e = toSymEntry(gEnt,uint);
+                var e = toSymEntry(gEnt,uint,nd);
                 select reductionop
                 {
                     when "sum" {
@@ -163,7 +164,7 @@ module ReductionMsg
                 }
             }
             when (DType.Float64) {
-                var e = toSymEntry(gEnt,real);
+                var e = toSymEntry(gEnt,real,nd);
                 select reductionop
                 {
                     when "any" {
@@ -216,7 +217,7 @@ module ReductionMsg
                 }
             }
             when (DType.Bool) {
-                var e = toSymEntry(gEnt,bool);
+                var e = toSymEntry(gEnt, bool, nd);
                 select reductionop
                 {
                     when "any" {
@@ -1431,8 +1432,11 @@ module ReductionMsg
       return res;
     }
 
+    proc reductionMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+      return reductionMsg(cmd, msgArgs, st, 1);
+
     use CommandMap;
     registerFunction("segmentedReduction", segmentedReductionMsg, getModuleName());
-    registerFunction("reduction", reductionMsg, getModuleName());
+    registerFunction("reduction", reductionMsg1D, getModuleName());
     registerFunction("countReduction", countReductionMsg, getModuleName());
 }

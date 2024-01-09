@@ -75,7 +75,7 @@ class SeriesTest(ArkoudaTest):
         lk = s.locate(i)
         self.assertIsInstance(lk, ak.Series)
         self.assertListEqual(lk.index.to_list(), i.index.to_list())
-        self.assertEqual(lk.values.to_list(), v[ak.array([0,2])].to_list())
+        self.assertEqual(lk.values.to_list(), v[ak.array([0, 2])].to_list())
 
         # testing multi-index lookup
         mi = ak.MultiIndex([ak.arange(3), ak.array([2, 1, 0])])
@@ -90,8 +90,7 @@ class SeriesTest(ArkoudaTest):
             lk = s.locate(0)
 
         with self.assertRaises(TypeError):
-            lk = s.locate([0,2])
-
+            lk = s.locate([0, 2])
 
     def test_shape(self):
         v = ak.array(["A", "B", "C"])
@@ -102,9 +101,6 @@ class SeriesTest(ArkoudaTest):
         self.assertEqual(l, 3)
 
     def test_add(self):
-        ar_tuple = (ak.arange(3), ak.arange(3))
-        ar_tuple_add = (ak.arange(3, 6, 1), ak.arange(3, 6, 1))
-
         i = ak.arange(3)
         v = ak.arange(3, 6, 1)
         s = ak.Series(data=i, index=i)
@@ -225,4 +221,5 @@ class SeriesTest(ArkoudaTest):
         # added to validate functionality for issue #1506
         df = ak.DataFrame({"a": ak.arange(10), "b": ak.arange(10), "c": ak.arange(10)})
         g = df.groupby(["a", "b"])
-        g.broadcast(g.sum("c"))
+        series = ak.Series(data=g.sum("c")["c"], index=g.sum("c").index)
+        g.broadcast(series)

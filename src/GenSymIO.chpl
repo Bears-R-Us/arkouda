@@ -133,8 +133,9 @@ module GenSymIO {
      * Outputs the pdarray as a Numpy ndarray in the form of a 
      * Chapel Bytes object
      */
-    proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: 
-                                          borrowed SymTab): bytes throws {
+    @arkouda.registerNDBinary
+    proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st:
+                                          borrowed SymTab, param nd: int): bytes throws {
         var arrayBytes: bytes;
         var abstractEntry = st.lookup(msgArgs.getValueOf("array"));
         if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
@@ -143,27 +144,35 @@ module GenSymIO {
             return errorMsg.encode(); // return as bytes
         }
         var entry:borrowed GenSymEntry = abstractEntry: borrowed GenSymEntry;
-        
+
         overMemLimit(2 * entry.getSizeEstimate());
 
         proc distArrToBytes(A: [?D] ?eltType) {
             var ptr = allocate(eltType, D.size);
             var localA = makeArrayFromPtr(ptr, D.size:uint);
-            localA = A;
+            if nd == 1
+                then localA = A;
+                else {
+                    var i = 0;
+                    for x in A {
+                        localA[i] = x;
+                        i += 1;
+                    };
+                }
             const size = D.size*c_sizeof(eltType):int;
             return bytes.createAdoptingBuffer(ptr:c_ptr(uint(8)), size, size);
         }
 
         if entry.dtype == DType.Int64 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, int).a);
+            arrayBytes = distArrToBytes(toSymEntry(entry, int, nd).a);
         } else if entry.dtype == DType.UInt64 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, uint).a);
+            arrayBytes = distArrToBytes(toSymEntry(entry, uint, nd).a);
         } else if entry.dtype == DType.Float64 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, real).a);
+            arrayBytes = distArrToBytes(toSymEntry(entry, real, nd).a);
         } else if entry.dtype == DType.Bool {
-            arrayBytes = distArrToBytes(toSymEntry(entry, bool).a);
+            arrayBytes = distArrToBytes(toSymEntry(entry, bool, nd).a);
         } else if entry.dtype == DType.UInt8 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, uint(8)).a);
+            arrayBytes = distArrToBytes(toSymEntry(entry, uint(8), nd).a);
         } else {
             var errorMsg = "Error: Unhandled dtype %s".doFormat(entry.dtype);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

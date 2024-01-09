@@ -131,7 +131,7 @@ class Series:
             if not isinstance(data[1], (pdarray, Strings, Categorical)):
                 raise TypeError("values must be a pdarray, Strings, or Categorical")
             self.values = data[1]
-            self.index = Index.factory(data[0])
+            self.index = Index.factory(index) if index else Index.factory(data[0])
         else:
             # When only 1 positional argument it will be treated as data and not index
             self.values = array(data) if not isinstance(data, (Strings, Categorical)) else data

@@ -54,7 +54,7 @@ module ArkoudaSymEntryCompat {
   */
   proc SymEntry.init(args: int ...?N, type etype) {
     var len = 1;
-    for i in 0..#N {
+    for param i in 0..#N {
       len *= args[i];
     }
     super.init(etype, len, N);
@@ -67,6 +67,7 @@ module ArkoudaSymEntryCompat {
     this.a = try! makeDistArray((...args), etype);
     init this;
     this.shape = tupShapeString(this.tupShape);
+    this.ndim = N;
   }
 
   /*
@@ -87,5 +88,6 @@ module ArkoudaSymEntryCompat {
     this.max_bits=max_bits;
     init this;
     this.shape = tupShapeString(this.tupShape);
+    this.ndim = D.rank;
   }
 }

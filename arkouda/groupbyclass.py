@@ -470,7 +470,7 @@ class GroupBy:
     def size(self) -> Tuple[groupable, pdarray]:
         """
         Count the number of elements in each group, i.e. the number of times
-        each key appears.
+        each key appears.  This counts the total number of rows (including NaN values).
 
         Parameters
         ----------
@@ -487,10 +487,6 @@ class GroupBy:
         --------
         count
 
-        Notes
-        -----
-        This alias for "count" was added to conform with Pandas API
-
         Examples
         --------
         >>> a = ak.randint(1,5,10)
@@ -503,12 +499,17 @@ class GroupBy:
         >>> counts
         array([1, 2, 4, 3])
         """
-        return self.count()
+        repMsg = generic_msg(
+            cmd="countReduction",
+            args={"segments": cast(pdarray, self.segments), "size": self.length},
+        )
+        self.logger.debug(repMsg)
+        return self.unique_keys, create_pdarray(repMsg)
 
     def count(self) -> Tuple[groupable, pdarray]:
         """
         Count the number of elements in each group, i.e. the number of times
-        each key appears.
+        each key appears.  This counts the total number of rows (including NaN values).
 
         Parameters
         ----------
@@ -520,6 +521,10 @@ class GroupBy:
             The unique keys, in grouped order
         counts : pdarray, int64
             The number of times each unique key appears
+
+        Notes
+        -----
+        This alias is an alias of "size".
 
         Examples
         --------
@@ -533,12 +538,7 @@ class GroupBy:
         >>> counts
         array([1, 2, 4, 3])
         """
-        repMsg = generic_msg(
-            cmd="countReduction",
-            args={"segments": cast(pdarray, self.segments), "size": self.length},
-        )
-        self.logger.debug(repMsg)
-        return self.unique_keys, create_pdarray(repMsg)
+        return self.size()
 
     def aggregate(
         self, values: groupable, operator: str, skipna: bool = True, ddof: int_scalars = 1

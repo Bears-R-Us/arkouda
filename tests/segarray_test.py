@@ -281,6 +281,26 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(res.to_list(), [12, 0, 0])
         self.assertListEqual(origin.to_list(), [True, False, False])
 
+        # verify that segarr.get_jth works with bool vals
+        a = [True] * 10
+        b = [False] * 10
+        segments = ak.array([0, len(a), len(a), len(a), len(a) + len(b)])
+        flat = ak.array(a + b)
+        sa = ak.SegArray(segments, flat)
+        origins_ans = [True, False, False, True, False]
+
+        res, origin = sa.get_jth(1, compressed=True)
+        self.assertListEqual(res.to_list(), [True, False])
+        self.assertListEqual(origin.to_list(), origins_ans)
+
+        res, origin = sa.get_jth(1)
+        self.assertListEqual(res.to_list(), [True, False, False, False, False])
+        self.assertListEqual(origin.to_list(), origins_ans)
+
+        res, origin = sa.get_jth(1, default=True)
+        self.assertListEqual(res.to_list(), [True, True, True, False, True])
+        self.assertListEqual(origin.to_list(), origins_ans)
+
     def test_set_jth(self):
         """
         No testing for empty segments. Function not designed to add values to segments at
@@ -459,6 +479,27 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(appended[0].to_list(), [99] + a)
         self.assertListEqual(appended[1].to_list(), [99] + b)
         self.assertListEqual(appended[2].to_list(), [99])
+
+        a = [1, 2, 1, 1, 3, 3, 5, 4, 6, 2]
+        b = [10, 11, 11, 12, 13, 10, 4, 6, 1, 12]
+        segments = ak.array([0, len(a), len(a), len(a), len(a) + len(b)])
+        flat = ak.array(a + b)
+        sa = ak.SegArray(segments, flat)
+
+        appended = sa.append_single(99)
+        self.assertListEqual(appended[0].to_list(), a + [99])
+        self.assertListEqual(appended[1].to_list(), [99])
+        self.assertListEqual(appended[2].to_list(), [99])
+        self.assertListEqual(appended[3].to_list(), b + [99])
+        self.assertListEqual(appended[4].to_list(), [99])
+
+        arange = ak.arange(5, 10)
+        appended = sa.append_single(arange)
+        self.assertListEqual(appended[0].to_list(), a + [arange[0]])
+        self.assertListEqual(appended[1].to_list(), [arange[1]])
+        self.assertListEqual(appended[2].to_list(), [arange[2]])
+        self.assertListEqual(appended[3].to_list(), b + [arange[3]])
+        self.assertListEqual(appended[4].to_list(), [arange[4]])
 
     def test_remove_repeats(self):
         a = [1, 1, 1, 2, 3]
