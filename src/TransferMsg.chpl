@@ -369,7 +369,7 @@ module TransferMsg
       }
       
       var transferErrors: list(string);
-      var repMsg = _buildReadAllMsgJson(rnames, false, 0, transferErrors, st);
+      var repMsg = buildReadAllMsgJson(rnames, false, 0, transferErrors, st);
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
@@ -690,7 +690,7 @@ module TransferMsg
       }
 
       var transferErrors: list(string);
-      var repMsg = _buildReadAllMsgJson(rnames, false, 0, transferErrors, st);
+      var repMsg = buildReadAllMsgJson(rnames, false, 0, transferErrors, st);
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
@@ -872,13 +872,13 @@ module TransferMsg
       type idxType = int;
       var inds: range(idxType);
       const numelems = hi - lo + 1;
-      const (blo, bhi) = _computeBlock(numelems, numlocs, chpl__tuplify(locid)(0),
+      const (blo, bhi) = computeBlock(numelems, numlocs, chpl__tuplify(locid)(0),
                                        hi, lo, lo);
       inds = blo..bhi;
       return inds;
     }
 
-    proc _computeBlock(numelems, numblocks, blocknum, wayhi,
+    proc computeBlock(numelems, numblocks, blocknum, wayhi,
                        waylo=0:wayhi.type, lo=0:wayhi.type) {
       if numelems == 0 then
         return (1:lo.type, 0:lo.type);

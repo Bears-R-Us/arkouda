@@ -203,13 +203,13 @@ module FileIO {
     proc getFileTypeByMagic(header:bytes): FileType {
         var t = FileType.UNKNOWN;
         var length = header.size;
-        if (length >= 4 && MAGIC_PARQUET == header.this(0..3)) {
+        if (length >= 4 && MAGIC_PARQUET == header[0..3]) {
             t = FileType.PARQUET;
-        } else if (length >= 8 && MAGIC_HDF5 == header.this(0..7)) {
+        } else if (length >= 8 && MAGIC_HDF5 == header[0..7]) {
             t = FileType.HDF5;
-        } else if (length >= 8 && MAGIC_ARROW == header.this(0..7)) {
+        } else if (length >= 8 && MAGIC_ARROW == header[0..7]) {
             t = FileType.ARROW;
-        } else if (length >= 8 && MAGIC_CSV == header.this(0..7)) {
+        } else if (length >= 8 && MAGIC_CSV == header[0..7]) {
           t = FileType.CSV;
         }
         return t;

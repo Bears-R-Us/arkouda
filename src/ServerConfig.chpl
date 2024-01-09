@@ -15,8 +15,10 @@ module ServerConfig
     use MemoryMgmt;
     use CTypes;
     import NumPyDType.DType;
+    use Math;
 
     use ArkoudaFileCompat;
+    use ArkoudaMathCompat;
     private use ArkoudaCTypesCompat;
 
     import BigInteger.bigint;
@@ -360,7 +362,7 @@ module ServerConfig
         // to use memoryUsed() procedure from Chapel's Memory module
         proc checkStaticMemoryLimit(total: real) {
             if total > getMemLimit() {
-                var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
+                var pct = mathRound((total:real / getMemLimit():real * 100):uint);
                 var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
                                    total * numLocales, getMemLimit() * numLocales, pct);
                 scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
@@ -383,7 +385,7 @@ module ServerConfig
                     "memory high watermark = %i memory limit = %i projected pct memory used of %i%%".doFormat(
                            memHighWater:uint * numLocales:uint, 
                            getMemLimit():uint * numLocales:uint,
-                           AutoMath.round((memHighWater:real * numLocales / 
+                           mathRound((memHighWater:real * numLocales / 
                                          (getMemLimit():real * numLocales)) * 100):uint));
                 }
             }
@@ -401,7 +403,7 @@ module ServerConfig
              */
             if memMgmtType == MemMgmtType.STATIC {
                 if total > getMemLimit() {
-                    var pct = AutoMath.round((total:real / getMemLimit():real * 100):uint);
+                    var pct = mathRound((total:real / getMemLimit():real * 100):uint);
                     var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
                                    total * numLocales, getMemLimit() * numLocales, pct);
                     scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  

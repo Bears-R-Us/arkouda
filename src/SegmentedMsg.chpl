@@ -57,9 +57,9 @@ module SegmentedMsg {
       var entry = getSegString(msgArgs.getValueOf("obj"), st);
       const comp = msgArgs.getValueOf("comp");
       if comp == "offsets" {
-          return _tondarrayMsg(entry.offsets);
+          return tondarrayMsg(entry.offsets);
       } else if (comp == "values") {
-          return _tondarrayMsg(entry.values);
+          return tondarrayMsg(entry.values);
       } else {
           var msg = "Unrecognized component: %s".doFormat(comp);
           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);
@@ -71,7 +71,7 @@ module SegmentedMsg {
      * Outputs the pdarray as a Numpy ndarray in the form of a 
      * Chapel Bytes object
      */
-    proc _tondarrayMsg(entry): bytes throws {
+    proc tondarrayMsg(entry): bytes throws {
         var arrayBytes: bytes;
 
         proc distArrToBytes(A: [?D] ?eltType) {

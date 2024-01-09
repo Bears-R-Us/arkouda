@@ -34,7 +34,7 @@ to increase the efficiency of the merge step.
     var numEmpty: int = size-2;
     var isSorted: bool = false;
     var isMinReduction=true;
-    var _data: [dom] (eltType, int) = if isMinReduction then (max(eltType), -1) else (min(eltType), -1);
+    var data: [dom] (eltType, int) = if isMinReduction then (max(eltType), -1) else (min(eltType), -1);
     
     proc pushArr(arr: [?D]) {
       for i in D {
@@ -57,15 +57,15 @@ to increase the efficiency of the merge step.
         return;
       }
 
-      const shouldAdd = if isMinReduction then val(0)<_data[0](0) else val(0)>_data[0](0);
+      const shouldAdd = if isMinReduction then val(0)<data[0](0) else val(0)>data[0](0);
       const shouldAddEmpty = (numEmpty>0) && if isMinReduction then
-        _data[0](0)==max(eltType) else _data[0](0)==min(eltType);
+        data[0](0)==max(eltType) else data[0](0)==min(eltType);
 
       if shouldAddEmpty {
-        _data[numEmpty+1] = val;
+        data[numEmpty+1] = val;
         numEmpty-=1;
       } else if shouldAdd {
-        _data[0] = val;
+        data[0] = val;
         heapifyDown();
       }
     }
@@ -79,15 +79,15 @@ to increase the efficiency of the merge step.
         const l = 2*i+1; // left child
         const r = 2*i+2; // right child
         const cmpLeft = l<size && if isMinReduction then
-          _data[l](0) > _data[i](0) else _data[l](0) < _data[i](0);
+          data[l](0) > data[i](0) else data[l](0) < data[i](0);
         if (cmpLeft) then i = l;
         // if right child is more extreme than largest so far
         const cmpRight = r<size && if isMinReduction then
-          _data[r](0) > _data[i](0) else _data[r](0) < _data[i](0);
+          data[r](0) > data[i](0) else data[r](0) < data[i](0);
         if (cmpRight) then i = r;
         // if the extreme value isn't the initial 
         if (initial != i) {
-          _data[i] <=> _data[initial];
+          data[i] <=> data[initial];
         } else break;
       }
     }
@@ -95,12 +95,12 @@ to increase the efficiency of the merge step.
     // Sort the KExtreme values if needed,
     // moving from a heap to a sorted array
     proc ref doSort() {
-      sort(_data);
+      sort(data);
       isSorted = true;
     }
 
     iter these() {
-      for e in _data {
+      for e in data {
         yield e;
       }
     }
@@ -110,13 +110,13 @@ to increase the efficiency of the merge step.
   // returns an array that contains the
   // smallest values from each array sorted.
   // Returned array is size of the original heaps.
-  proc merge(ref v1: KExtreme(?t), ref v2: KExtreme(t)): [v1._data.domain] (t ,int) {
+  proc merge(ref v1: KExtreme(?t), ref v2: KExtreme(t)): [v1.data.domain] (t ,int) {
     const isMin = v1.isMinReduction;
     if !v1.isSorted then v1.doSort();
     if !v2.isSorted then v2.doSort();
 
-    const first = v1._data;
-    const second = v2._data;
+    const first = v1.data;
+    const second = v2.data;
     var ret: [first.domain] (v1.eltType, int);
     var a,b,i: int = if v1.isMinReduction then
       0 else first.domain.high;

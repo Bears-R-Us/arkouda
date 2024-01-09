@@ -431,7 +431,7 @@ module MultiTypeSymbolTable
             //     mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);
             //     return s;
             // }
-            return u.__str__(thresh=thresh, prefix="[", suffix="]", baseFormat="%?");
+            return u.entry__str__(thresh=thresh, prefix="[", suffix="]", baseFormat="%?");
         }
 
         /*
@@ -460,7 +460,7 @@ module MultiTypeSymbolTable
                     return s;
                 }
                 var frmt:string = if (u.dtype == DType.Float64) then "%.17r" else "%?";
-                return u.__str__(thresh=thresh, prefix="array([", suffix="])", baseFormat=frmt);
+                return u.entry__str__(thresh=thresh, prefix="array([", suffix="])", baseFormat=frmt);
             } else {
                 return "Unhandled type %s".doFormat(entry.entryType);
             }
