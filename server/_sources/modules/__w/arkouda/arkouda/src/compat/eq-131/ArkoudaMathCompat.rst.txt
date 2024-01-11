@@ -29,3 +29,5 @@ or
 
 .. function:: proc mathRound(x)
 
+.. function:: proc mathAbs(x)
+
