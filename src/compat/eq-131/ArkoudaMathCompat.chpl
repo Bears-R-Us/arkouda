@@ -7,4 +7,5 @@ module ArkoudaMathCompat {
   inline proc isFinite(x: real(64)): bool do return isfinite(x);
 
   inline proc mathRound(x) do return AutoMath.round(x);
+  inline proc mathAbs(x) do return abs(x);
 }
