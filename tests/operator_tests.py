@@ -294,11 +294,10 @@ class OperatorsTest(ArkoudaTest):
         )
 
         pdaOne = ak.arange(5, max_bits=3)
-        pdaTwo = ak.arange(2 ** 200 - 1, 2 ** 200 + 4)
+        pdaTwo = ak.arange(2**200 - 1, 2**200 + 4)
         concatenated = ak.concatenate([pdaOne, pdaTwo])
         self.assertEqual(concatenated.max_bits, 3)
         self.assertListEqual([0, 1, 2, 3, 4, 7, 0, 1, 2, 3], concatenated.to_list())
-
 
     def test_invert(self):
         ak_uint = ak.arange(10, dtype=ak.uint64)
@@ -463,6 +462,54 @@ class OperatorsTest(ArkoudaTest):
         # Right shift
         self.assertListEqual((ak_uint >> ak_int_array).to_list(), (np_uint >> np_uint_array).tolist())
         self.assertListEqual((ak_int >> ak_uint_array).to_list(), (np_int >> np_int_array).tolist())
+
+    def test_shift_equals_scalar_binops(self):
+        vector_pairs = [
+            (ak.arange(0, 5, dtype=ak.int64), np.arange(5, dtype=np.int64)),
+            (ak.arange(0, 5, dtype=ak.uint64), np.arange(5, dtype=np.uint64)),
+        ]
+        shift_scalars = [np.int64(1), np.int64(5), np.uint64(1), np.uint64(5), True, False]
+
+        for ak_vector, np_vector in vector_pairs:
+            for x in shift_scalars:
+                self.assertListEqual(ak_vector.to_list(), np_vector.tolist())
+
+                ak_vector <<= x
+                np_vector <<= x
+                self.assertListEqual(ak_vector.to_list(), np_vector.tolist())
+
+                ak_vector >>= x
+                np_vector >>= x
+                self.assertListEqual(ak_vector.to_list(), np_vector.tolist())
+
+    def test_shift_equals_vector_binops(self):
+        vector_pairs = [
+            (ak.arange(0, 5, dtype=ak.int64), np.arange(5, dtype=np.int64)),
+            (ak.arange(0, 5, dtype=ak.uint64), np.arange(5, dtype=np.uint64)),
+        ]
+        shift_vectors = [
+            ak.ones(5, dtype=ak.int64),
+            ak.zeros(5, dtype=ak.int64),
+            ak.ones(5, dtype=ak.uint64),
+            ak.zeros(5, dtype=ak.uint64),
+            ak.array([1, 0, 1, 0, 1], dtype=bool),
+            ak.array([1, 1, 1, 1, 1], dtype=bool),
+        ]
+
+        for ak_vector, np_vector in vector_pairs:
+            for v in shift_vectors:
+                if (v[0].dtype.kind != "b") and (ak_vector[0].dtype.kind != v[0].dtype.kind):
+                    continue
+
+                self.assertListEqual(ak_vector.to_list(), np_vector.tolist())
+
+                ak_vector <<= v
+                np_vector <<= v.to_ndarray()
+                self.assertListEqual(ak_vector.to_list(), np_vector.tolist())
+
+                ak_vector >>= v
+                np_vector >>= v.to_ndarray()
+                self.assertListEqual(ak_vector.to_list(), np_vector.tolist())
 
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
