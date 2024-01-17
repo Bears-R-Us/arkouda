@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+import json
 from typing import List, Optional, Tuple, Union
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from pandas._config import get_option  # type: ignore
 from typeguard import typechecked
-import json
 
 import arkouda.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
@@ -17,7 +17,7 @@ from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import value_counts
-from arkouda.pdarrayclass import argmaxk, create_pdarray, pdarray, RegistrationError
+from arkouda.pdarrayclass import RegistrationError, argmaxk, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.strings import Strings
@@ -121,6 +121,7 @@ class Series:
     def __init__(
         self,
         data: Union[Tuple, List, groupable_element_type],
+        name=None,
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
         self.registered_name: Optional[str] = None
@@ -139,6 +140,7 @@ class Series:
 
         if self.index.size != self.values.size:
             raise ValueError("Index size does not match data size")
+        self.name = name
         self.size = self.index.size
 
     def __len__(self):
@@ -158,12 +160,18 @@ class Series:
             length_str = ""
         else:
             prt = pd.concat(
-                [self.head(maxrows // 2 + 2).to_pandas(), self.tail(maxrows // 2).to_pandas()]
+                [
+                    self.head(maxrows // 2 + 2).to_pandas(),
+                    self.tail(maxrows // 2).to_pandas(),
+                ]
             )
             length_str = f"\nLength {len(self)}"
         return (
             prt.to_string(
-                dtype=prt.dtype, min_rows=get_option("display.min_rows"), max_rows=maxrows, length=False
+                dtype=prt.dtype,
+                min_rows=get_option("display.min_rows"),
+                max_rows=maxrows,
+                length=False,
             )
             + length_str
         )
@@ -306,9 +314,24 @@ class Series:
 
         return Series(index=k.index[idx], data=v[idx])
 
+    def __reindex(self, idx):
+        if isinstance(self.index, MultiIndex):
+            new_index = MultiIndex(self.index[idx].values, name=self.index.name, names=self.index.names)
+        elif isinstance(self.index, Index) and hasattr(self.index, "name"):
+            new_index = Index(self.index[idx], name=self.index.name)
+        else:
+            new_index = Index(self.index[idx])
+
+        return Series(index=new_index, data=self.values[idx])
+
     @typechecked
     def sort_index(self, ascending: bool = True) -> Series:
         """Sort the series by its index
+
+        Parameters
+        ----------
+        ascending : bool
+            Sort values in ascending (default) or descending order.
 
         Returns
         -------
@@ -316,11 +339,16 @@ class Series:
         """
 
         idx = self.index.argsort(ascending=ascending)
-        return Series(index=self.index[idx], data=self.values[idx])
+        return self.__reindex(idx)
 
     @typechecked
     def sort_values(self, ascending: bool = True) -> Series:
         """Sort the series numerically
+
+        Parameters
+        ----------
+        ascending : bool
+            Sort values in ascending (default) or descending order.
 
         Returns
         -------
@@ -328,7 +356,10 @@ class Series:
         """
 
         if not ascending:
-            if isinstance(self.values, pdarray) and self.values.dtype in (int64, float64):
+            if isinstance(self.values, pdarray) and self.values.dtype in (
+                int64,
+                float64,
+            ):
                 # For numeric values, negation reverses sort order
                 idx = argsort(-self.values)
             else:
@@ -337,7 +368,7 @@ class Series:
                 idx = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
         else:
             idx = argsort(self.values)
-        return Series(index=self.index[idx], data=self.values[idx])
+        return self.__reindex(idx)  # Series(index=self.index[idx], data=self.values[idx])
 
     @typechecked
     def tail(self, n: int = 10) -> Series:
@@ -645,7 +676,10 @@ class Series:
     @staticmethod
     @typechecked
     def concat(
-        arrays: List, axis: int = 0, index_labels: List[str] = None, value_labels: List[str] = None
+        arrays: List,
+        axis: int = 0,
+        index_labels: List[str] = None,
+        value_labels: List[str] = None,
     ) -> Union[arkouda.dataframe.DataFrame, Series]:
         """Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
         vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each

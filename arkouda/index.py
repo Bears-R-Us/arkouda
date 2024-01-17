@@ -713,12 +713,14 @@ class Index:
 class MultiIndex(Index):
     objType = "MultiIndex"
 
-    def __init__(self, values):
+    def __init__(self, values, name=None, names=None):
         self.registered_name: Optional[str] = None
         if not (isinstance(values, list) or isinstance(values, tuple)):
             raise TypeError("MultiIndex should be an iterable")
         self.values = values
         first = True
+        self.names = names
+        self.name = name
         for col in self.values:
             # col can be a python int which doesn't have a size attribute
             col_size = col.size if not isinstance(col, int) else 0
@@ -763,8 +765,8 @@ class MultiIndex(Index):
 
     def to_pandas(self):
         idx = [convert_if_categorical(i) for i in self.index]
-        mi = [i.to_ndarray() for i in idx]
-        return pd.Series(index=mi, dtype="float64").index
+        mi = pd.MultiIndex.from_arrays([i.to_ndarray() for i in idx], names=self.names)
+        return pd.Series(index=mi, dtype="float64", name=self.name).index
 
     def set_dtype(self, dtype):
         """Change the data type of the index
