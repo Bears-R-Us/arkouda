@@ -300,7 +300,7 @@ def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
     N = max(Na, Nb)
     shapeOut = [0 for i in range(N)]
 
-    i = N-1
+    i = N - 1
     while i >= 0:
         n1 = Na - N + i
         n2 = Nb - N + i

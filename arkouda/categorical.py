@@ -1438,7 +1438,7 @@ class Categorical:
             "objType": self.objType,
             "NA_codes": self._akNAcode,
             "hostname": hostname,
-            "port": port
+            "port": port,
         }
         return generic_msg(
             cmd="sendArray",
