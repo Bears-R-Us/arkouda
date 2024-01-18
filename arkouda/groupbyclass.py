@@ -222,6 +222,10 @@ class GroupBy:
         The start index of each group in the grouped array(s)
     logger : ArkoudaLogger
         Used for all logging operations
+    dropna : bool (default=True)
+        If True, and the groupby keys contain NaN values,
+        the NaN values together with the corresponding row will be dropped.
+        Otherwise, the rows corresponding to NaN values will be kept.
 
     Raises
     ------
@@ -252,8 +256,28 @@ class GroupBy:
         self,
         keys: Optional[groupable] = None,
         assume_sorted: bool = False,
+        dropna: bool = True,
         **kwargs,
     ):
+        from arkouda.numeric import isnan
+
+        def drop_na_keys():
+            if self.dropna is True:
+                if isinstance(self.keys, pdarray) and self.keys.dtype == akfloat64:
+                    self.keys = self.keys[~isnan(self.keys)]
+                elif isinstance(self.keys, list):
+                    is_not_nan = [
+                        ~isnan(key)
+                        for key in self.keys
+                        if isinstance(key, pdarray) and key.dtype == akfloat64
+                    ]
+
+                    if len(is_not_nan) > 0:
+                        use_value = is_not_nan[0]
+                        for bool_arry in is_not_nan:
+                            use_value = use_value & bool_arry
+                        self.keys = [key[use_value] for key in keys]
+
         # Type Checks required because @typechecked was removed for causing other issues
         # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
         # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
@@ -264,6 +288,7 @@ class GroupBy:
 
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
+        self.dropna = dropna
         if (
             "orig_keys" in kwargs
             and "permutation" in kwargs
@@ -271,6 +296,7 @@ class GroupBy:
             and "segments" in kwargs
         ):
             self.keys = cast(groupable, kwargs.get("orig_keys", None))
+            drop_na_keys()
             self.unique_keys = kwargs.get("unique_keys", None)
             self.permutation = kwargs.get("permutation", None)
             self.segments = kwargs.get("segments", None)
@@ -283,6 +309,7 @@ class GroupBy:
             and "segments" in kwargs
         ):
             self.keys = cast(groupable, kwargs.get("orig_keys", None))
+            drop_na_keys()
             self._uki = kwargs.get("uki", None)
             self.permutation = kwargs.get("permutation", None)
             self.segments = kwargs.get("segments", None)
@@ -295,6 +322,7 @@ class GroupBy:
             raise ValueError("No keys passed to GroupBy.")
         else:
             self.keys = cast(groupable, keys)
+            drop_na_keys()
             (
                 self.unique_keys,
                 self.permutation,
@@ -302,7 +330,10 @@ class GroupBy:
                 self.nkeys,
                 self._uki,
             ) = unique(  # type: ignore
-                self.keys, return_groups=True, return_indices=True, assume_sorted=self.assume_sorted
+                self.keys,
+                return_groups=True,
+                return_indices=True,
+                assume_sorted=self.assume_sorted,
             )
         self.length = self.permutation.size
         self.ngroups = self.segments.size
@@ -386,6 +417,7 @@ class GroupBy:
             )
             for k in keys
         ]
+
         generic_msg(
             cmd="tohdf",
             args={
@@ -541,7 +573,11 @@ class GroupBy:
         return self.size()
 
     def aggregate(
-        self, values: groupable, operator: str, skipna: bool = True, ddof: int_scalars = 1
+        self,
+        values: groupable,
+        operator: str,
+        skipna: bool = True,
+        ddof: int_scalars = 1,
     ) -> Tuple[groupable, groupable]:
         """
         Using the permutation stored in the GroupBy instance, group another
@@ -1169,7 +1205,11 @@ class GroupBy:
         else:
             # Treat as a sequence of groupable arrays
             for v in values:
-                if isinstance(v, pdarray) and v.dtype not in [akint64, akuint64, bigint]:
+                if isinstance(v, pdarray) and v.dtype not in [
+                    akint64,
+                    akuint64,
+                    bigint,
+                ]:
                     raise TypeError("grouping/uniquing unsupported for this dtype")
             togroup = [unique_key_idx] + list(values)
         return togroup

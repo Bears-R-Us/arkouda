@@ -2551,7 +2551,7 @@ class Strings:
             a supported dtype
         """
         # hostname is the hostname to send to
-        return generic_msg(cmd="sendArray", args={"values": self.entry,
-                                                  "hostname": hostname,
-                                                  "port": port,
-                                                  "objType": "strings"})
+        return generic_msg(
+            cmd="sendArray",
+            args={"values": self.entry, "hostname": hostname, "port": port, "objType": "strings"},
+        )

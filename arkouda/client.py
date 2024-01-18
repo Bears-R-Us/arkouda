@@ -64,7 +64,6 @@ _memunit2factor = {
 
 
 def _mem_get_factor(unit: str) -> int:
-
     unit = unit.lower()
 
     if unit in _memunit2factor:
@@ -110,9 +109,10 @@ class ShellMode(Enum):
     The ShellMode Enum indicates whether the Python shell corresponds
     to a REPL shell, Jupyter notebook, or IPython shell.
     """
-    IPYTHON_NOTEBOOK = 'TerminalInteractiveShell'
-    JUPYTER_NOTEBOOK = 'ZMQInteractiveShell'
-    REPL_SHELL = 'REPL_SHELL'
+
+    IPYTHON_NOTEBOOK = "TerminalInteractiveShell"
+    JUPYTER_NOTEBOOK = "ZMQInteractiveShell"
+    REPL_SHELL = "REPL_SHELL"
 
     def __str__(self) -> str:
         """
@@ -132,8 +132,9 @@ class RequestMode(Enum):
     The RequestMode Enum indicates whether the Arkouda client-server
     communication pattern will be synchronous or asynchronous.
     """
-    SYNCHRONOUS = 'SYNCHRONOUS'
-    ASYNCHRONOUS = 'ASYNCHRONOUS'
+
+    SYNCHRONOUS = "SYNCHRONOUS"
+    ASYNCHRONOUS = "ASYNCHRONOUS"
 
     def __str__(self) -> str:
         """
@@ -153,9 +154,10 @@ class RequestStatus(Enum):
     The RequestStatus Enum indicates whether an asynchronous method
     invocation has completed.
     """
-    PENDING = 'PENDING'
-    RUNNING = 'RUNNING'
-    COMPLETE = 'COMPLETE'
+
+    PENDING = "PENDING"
+    RUNNING = "RUNNING"
+    COMPLETE = "COMPLETE"
 
     def __str__(self) -> str:
         """
@@ -220,10 +222,11 @@ class ChannelType(Enum):
     The ChannelType Enum specifies which Channel implementation is
     to be used for an Arkouda client deployment.
     """
-    ZMQ = 'ZMQ'
-    GRPC = 'GRPC'
-    ASYNC_GRPC = 'ASYNC_GRPC'
-    STREAMING_GRPC = 'STREAMING_GRPC'
+
+    ZMQ = "ZMQ"
+    GRPC = "GRPC"
+    ASYNC_GRPC = "ASYNC_GRPC"
+    STREAMING_GRPC = "STREAMING_GRPC"
 
     def __str__(self) -> str:
         """
@@ -238,7 +241,7 @@ class ChannelType(Enum):
         return self.value
 
 
-class Channel():
+class Channel:
     """
     The Channel class defines methods for connecting to and communicating with
     the Arkouda server.
@@ -255,11 +258,18 @@ class Channel():
     logger : ArkoudaLogger
         ArkoudaLogger used for logging
     """
-    __slots__ = ('url', 'user', 'token', 'logger')
 
-    def __init__(self, user: str, server: str = 'localhost', port: int = 5555, token: str = None,
-                 connect_url: str = None) -> None:
-        '''
+    __slots__ = ("url", "user", "token", "logger")
+
+    def __init__(
+        self,
+        user: str,
+        server: str = "localhost",
+        port: int = 5555,
+        token: str = None,
+        connect_url: str = None,
+    ) -> None:
+        """
         user : str
             Arkouda user who will use the Channel to connect to the arkouda_server
         server : str, optional
@@ -272,7 +282,7 @@ class Channel():
         connect_url : str, optional
             The complete url in the format of tcp://server:port?token=<token_value>
             where the token is optional
-        '''
+        """
         self._set_url(server, port, connect_url)
         self.user = user
         self._set_access_token(server, port, token)
@@ -298,7 +308,7 @@ class Channel():
         -------
         None
         """
-        self.url = connect_url if connect_url else f'tcp://{server}:{port}'
+        self.url = connect_url if connect_url else f"tcp://{server}:{port}"
 
     def _set_access_token(self, server: str, port: int, token: Optional[str]) -> None:
         """
@@ -346,8 +356,7 @@ class Channel():
             if saved_token is None or saved_token != token:
                 tokens[url] = cast(str, token)
                 try:
-                    io_util.dict_to_delimited_file(values=tokens,
-                                                   path=path, delimiter=",")
+                    io_util.dict_to_delimited_file(values=tokens, path=path, delimiter=",")
                 except Exception as e:
                     raise IOError(e)
             self.token = token
@@ -358,8 +367,14 @@ class Channel():
                 raise IOError(e)
             self.token = tokens.get(url)
 
-    def send_string_message(self, cmd: str, recv_binary: bool = False, args: str = None,
-                            size: int = -1, request_id: str = None) -> Union[str, memoryview]:
+    def send_string_message(
+        self,
+        cmd: str,
+        recv_binary: bool = False,
+        args: str = None,
+        size: int = -1,
+        request_id: str = None,
+    ) -> Union[str, memoryview]:
         """
         Generates a RequestMessage encapsulating command and requesting
         user information, sends it to the Arkouda server, and returns
@@ -397,11 +412,17 @@ class Channel():
         -----
         s- Size is not yet utilized. It is being provided in preparation for further development.
         """
-        raise NotImplementedError('send_string_message must be implemented in derived class')
+        raise NotImplementedError("send_string_message must be implemented in derived class")
 
-    def send_binary_message(self, cmd: str, payload: memoryview, recv_binary: bool = False,
-                            args: str = None, size: int = -1,
-                            request_id: str = None) -> Union[str, memoryview]:
+    def send_binary_message(
+        self,
+        cmd: str,
+        payload: memoryview,
+        recv_binary: bool = False,
+        args: str = None,
+        size: int = -1,
+        request_id: str = None,
+    ) -> Union[str, memoryview]:
         """
         Generates a RequestMessage encapsulating command and requesting user information,
         information prepends the binary payload, sends the binary request to the Arkouda
@@ -435,7 +456,7 @@ class Channel():
             Raised if the return message is malformed JSON or is missing 1..n
             expected fields
         """
-        raise NotImplementedError('send_binary_message must be implemented in derived class')
+        raise NotImplementedError("send_binary_message must be implemented in derived class")
 
     def connect(self, timeout: int = 0) -> None:
         """
@@ -452,7 +473,7 @@ class Channel():
             Raised if the return message contains the word "Error", indicating
             a server-side error was thrown
         """
-        raise NotImplementedError('connect must be implemented in derived class')
+        raise NotImplementedError("connect must be implemented in derived class")
 
     def disconnect(self) -> None:
         """
@@ -464,7 +485,7 @@ class Channel():
             Raised if the return message contains the word "Error", indicating
             a server-side error was thrown
         """
-        raise NotImplementedError('connect must be implemented in derived class')
+        raise NotImplementedError("connect must be implemented in derived class")
 
 
 class ZmqChannel(Channel):
@@ -472,11 +493,17 @@ class ZmqChannel(Channel):
     The ZmqChannel class implements the Channel methods for ZMQ request/reply communication
     patterns, which is the Arkouda-Chapel default
     """
-    __slots__ = ('socket')
 
-    def send_string_message(self, cmd: str, recv_binary: bool = False, args: str = None,
-                            size: int = -1, request_id: str = None) -> Union[str, memoryview]:
+    __slots__ = "socket"
 
+    def send_string_message(
+        self,
+        cmd: str,
+        recv_binary: bool = False,
+        args: str = None,
+        size: int = -1,
+        request_id: str = None,
+    ) -> Union[str, memoryview]:
         message = RequestMessage(
             user=username, token=self.token, cmd=cmd, format=MessageFormat.STRING, args=args, size=size
         )
@@ -509,15 +536,22 @@ class ZmqChannel(Channel):
             except json.decoder.JSONDecodeError:
                 raise ValueError(f"Return message is not valid JSON: {raw_message}")
 
-    def send_binary_message(self, cmd: str, payload: memoryview, recv_binary: bool = False,
-                            args: str = None, size: int = -1,
-                            request_id: str = None) -> Union[str, memoryview]:
+    def send_binary_message(
+        self,
+        cmd: str,
+        payload: memoryview,
+        recv_binary: bool = False,
+        args: str = None,
+        size: int = -1,
+        request_id: str = None,
+    ) -> Union[str, memoryview]:
         # Note - Size is a placeholder here because Binary msg not yet support json args and
         # request_id is a noop for now
         message = RequestMessage(
             user=username, token=self.token, cmd=cmd, format=MessageFormat.BINARY, args=args, size=size
         )
         import zmq  # type: ignore
+
         self.logger.debug(f"sending message {message}")
 
         self.socket.send(f"{json.dumps(message.asdict())}BINARY_PAYLOAD".encode(), flags=zmq.SNDMORE)
@@ -549,6 +583,7 @@ class ZmqChannel(Channel):
     def connect(self, timeout: int = 0) -> None:
         # create and configure socket for connections to arkouda server
         import zmq  # type: ignore
+
         context = zmq.Context()
         self.socket = context.socket(zmq.REQ)
 
@@ -577,11 +612,12 @@ channel = None
 
 
 # Get ChannelType, defaulting to ZMQ
-channelType = ChannelType(os.getenv('ARKOUDA_CHANNEL_TYPE', 'ZMQ').upper())
+channelType = ChannelType(os.getenv("ARKOUDA_CHANNEL_TYPE", "ZMQ").upper())
 
 
-def get_channel(server: str = 'localhost', port: int = 5555, token: str = None,
-                connect_url: str = None) -> Channel:
+def get_channel(
+    server: str = "localhost", port: int = 5555, token: str = None, connect_url: str = None
+) -> Channel:
     """
     Returns the configured Channel implementation
 
@@ -611,10 +647,9 @@ def get_channel(server: str = 'localhost', port: int = 5555, token: str = None,
         Raised if the ARKOUDA_CHANNEL_TYPE references an invalid ChannelType
     """
     if channelType == ChannelType.ZMQ:
-        return ZmqChannel(server=server, port=port, user=username, token=token,
-                          connect_url=connect_url)
+        return ZmqChannel(server=server, port=port, user=username, token=token, connect_url=connect_url)
     else:
-        raise EnvironmentError(f'Invalid channelType {channelType}')
+        raise EnvironmentError(f"Invalid channelType {channelType}")
 
 
 def connect(
@@ -623,7 +658,7 @@ def connect(
     timeout: int = 0,
     access_token: str = None,
     connect_url: str = None,
-    access_channel: Channel = None
+    access_channel: Channel = None,
 ) -> None:
     """
     Connect to a running arkouda server.
@@ -671,15 +706,14 @@ def connect(
     cmd = "connect"
     logger.debug(f"[Python] Sending request: {cmd}")
 
-    '''
+    """
     If access-channel is not None, set global channel to access_channel. If not,
     set the global channel object via the get_channel factory method
-    '''
+    """
     if access_channel:
         channel = access_channel
     else:
-        channel = get_channel(server=server, port=port, token=access_token,
-                              connect_url=connect_url)
+        channel = get_channel(server=server, port=port, token=access_token, connect_url=connect_url)
 
     # connect via the channel
     channel.connect(timeout)
@@ -967,8 +1001,9 @@ def generic_msg(
             )
         else:
             assert payload is None
-            return cast(Channel, channel).send_string_message(cmd=cmd, args=msg_args,
-                                                              size=size, recv_binary=recv_binary)
+            return cast(Channel, channel).send_string_message(
+                cmd=cmd, args=msg_args, size=size, recv_binary=recv_binary
+            )
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out
         # of sync reset the socket before raising the interrupt exception
@@ -1192,8 +1227,9 @@ def ruok() -> str:
         return f"ruok did not return response: {str(e)}"
 
 
-def generate_history(num_commands: Optional[int] = None,
-                     command_filter: Optional[str] = None) -> List[str]:
+def generate_history(
+    num_commands: Optional[int] = None, command_filter: Optional[str] = None
+) -> List[str]:
     """
     Generates list of commands executed within the the Python shell, Jupyter notebook,
     or IPython notebook, with an optional cmd_filter and number of commands to return.
@@ -1228,7 +1264,9 @@ def generate_history(num_commands: Optional[int] = None,
 
     if shell_mode == ShellMode.REPL_SHELL:
         from arkouda.history import ShellHistoryRetriever
+
         return ShellHistoryRetriever().retrieve(command_filter, num_commands)
     else:
         from arkouda.history import NotebookHistoryRetriever
+
         return NotebookHistoryRetriever().retrieve(command_filter, num_commands)

@@ -22,7 +22,7 @@ from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
-from arkouda.index import Index
+from arkouda.index import Index, MultiIndex
 from arkouda.join import inner_join
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum, where
@@ -72,6 +72,7 @@ class GroupBy:
         (only implemented for single dimensional aggregates).
         Otherwise, treat aggregated column as a dataframe column.
 
+
     Attributes
     ----------
     gb :    arkouda.groupbyclass.GroupBy
@@ -83,7 +84,6 @@ class GroupBy:
         The column name(s) associated with the aggregated columns.
     as_index : bool (default=True)
         If True the grouped values of the aggregation keys will be treated as an index.
-
     """
 
     def __init__(self, gb, df, gb_key_names=None, as_index=True):
@@ -91,7 +91,6 @@ class GroupBy:
         self.df = df
         self.gb_key_names = gb_key_names
         self.as_index = as_index
-
         for attr in ["nkeys", "permutation", "unique_keys", "segments"]:
             setattr(self, attr, getattr(gb, attr))
 
@@ -172,11 +171,11 @@ class GroupBy:
 
         """
         if as_series is True or (as_series is None and self.as_index is True):
-            return self.__return_agg_series(self.gb.count())
+            return self._return_agg_series(self.gb.count())
         else:
-            return self.__return_agg_dataframe(self.gb.count(), "count")
+            return self._return_agg_dataframe(self.gb.count(), "count")
 
-    def size(self, as_series=None):
+    def size(self, as_series=None, sort_index=True):
         """
         Compute the size of each value as the total number of rows, including NaN values.
 
@@ -186,6 +185,8 @@ class GroupBy:
         as_series : bool, default=None
             Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
             arkouda.series.Series (if as_series = True)
+        sort_index : bool, default=True
+            If True, results will be returned with index values sorted in ascending order.
 
         Returns
         -------
@@ -195,37 +196,61 @@ class GroupBy:
 
         """
         if as_series is True or (as_series is None and self.as_index is True):
-            return self.__return_agg_series(self.gb.size())
+            return self._return_agg_series(self.gb.size(), sort_index=sort_index)
         else:
-            return self.__return_agg_dataframe(self.gb.size(), "size")
+            return self._return_agg_dataframe(self.gb.size(), "size", sort_index=sort_index)
 
-    def __return_agg_series(self, values):
-        if self.as_index:
+    def _return_agg_series(self, values, sort_index=True):
+        if self.as_index is True:
             if isinstance(self.gb_key_names, str):
-                return Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names))
-            elif len(self.gb_key_names) == 1:
-                return Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names[0]))
-        return Series(values)
+                series = Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names))
+            elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) == 1:
+                series = Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names[0]))
+            elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) > 1:
+                from arkouda.index import MultiIndex
 
-    def __return_agg_dataframe(self, values, name):
+                series = Series(
+                    values,
+                    index=MultiIndex(self.gb.unique_keys, names=self.gb_key_names),
+                )
+        else:
+            series = Series(values)
+
+        if sort_index is True:
+            series = series.sort_index()
+
+        return series
+
+    def _return_agg_dataframe(self, values, name, sort_index=True):
         if isinstance(self.gb_key_names, str):
-            if self.as_index:
-                return DataFrame(
+            if self.as_index is True:
+                df = DataFrame(
                     {name: values[1]},
                     index=Index(self.gb.unique_keys, name=self.gb_key_names),
                 )
             else:
-                return DataFrame({self.gb_key_names: self.gb.unique_keys, name: values[1]})
+                df = DataFrame({self.gb_key_names: self.gb.unique_keys, name: values[1]})
+
+            if sort_index is True:
+                df = df.sort_index()
+
+            return df
+
         elif len(self.gb_key_names) == 1:
-            if self.as_index:
-                return DataFrame(
+            if self.as_index is True:
+                df = DataFrame(
                     {name: values[1]},
                     index=Index(self.gb.unique_keys, name=self.gb_key_names[0]),
                 )
             else:
-                return DataFrame(
+                df = DataFrame(
                     {self.gb_key_names[0]: self.gb.unique_keys, name: values[1]},
                 )
+
+            if sort_index is True:
+                df = df.sort_index()
+
+            return df
         else:
             return Series(values).to_dataframe(index_labels=self.gb_key_names, value_label=name)
 
@@ -759,7 +784,9 @@ class DataFrame(UserDict):
                 df_dict[msg[1]] = Datetime(create_pdarray(msg[2]))
             elif t == "BitVector":
                 df_dict[msg[1]] = BitVector(
-                    create_pdarray(msg[2]), width=self[msg[1]].width, reverse=self[msg[1]].reverse
+                    create_pdarray(msg[2]),
+                    width=self[msg[1]].width,
+                    reverse=self[msg[1]].reverse,
                 )
             else:
                 df_dict[msg[1]] = create_pdarray(msg[2])
@@ -1514,7 +1541,7 @@ class DataFrame(UserDict):
             return self
         return self[array(random.sample(range(self._size), n))]
 
-    def GroupBy(self, keys, use_series=False, as_index=True):
+    def GroupBy(self, keys, use_series=False, as_index=True, dropna=True):
         """
         Group the dataframe by a column or a list of columns.
 
@@ -1528,7 +1555,10 @@ class DataFrame(UserDict):
         as_index: bool (default=True)
             If True, groupby columns will be set as index
             otherwise, the groupby columns will be treated as DataFrame columns.
-
+        dropna : bool (default=True)
+            If True, and the groupby keys contain NaN values,
+            the NaN values together with the corresponding row will be dropped.
+            Otherwise, the rows corresponding to NaN values will be kept.
         Returns
         -------
         GroupBy
@@ -1548,7 +1578,8 @@ class DataFrame(UserDict):
             cols = self.data[keys[0]]
         else:
             cols = [self.data[col] for col in keys]
-        gb = akGroupBy(cols)
+
+        gb = akGroupBy(cols, dropna=dropna)
         if use_series:
             gb = GroupBy(gb, self, gb_key_names=keys, as_index=as_index)
         return gb
@@ -1875,7 +1906,10 @@ class DataFrame(UserDict):
                 "set to True."
             )
         to_parquet(
-            data, prefix_path=path, compression=compression, convert_categoricals=convert_categoricals
+            data,
+            prefix_path=path,
+            compression=compression,
+            convert_categoricals=convert_categoricals,
         )
 
     @typechecked
@@ -2079,7 +2113,10 @@ class DataFrame(UserDict):
         if ascending:
             return argsort(self[key])
         else:
-            if isinstance(self[key], pdarray) and self[key].dtype in (akint64, akfloat64):
+            if isinstance(self[key], pdarray) and self[key].dtype in (
+                akint64,
+                akfloat64,
+            ):
                 return argsort(-self[key])
             else:
                 return argsort(self[key])[arange(self.size - 1, -1, -1)]
@@ -2110,6 +2147,33 @@ class DataFrame(UserDict):
         if not ascending:
             i = i[arange(self.size - 1, -1, -1)]
         return i
+
+    def _reindex(self, idx):
+        if isinstance(self.index, MultiIndex):
+            new_index = MultiIndex(self.index[idx].values, name=self.index.name, names=self.index.names)
+        elif isinstance(self.index, Index):
+            new_index = Index(self.index[idx], name=self.index.name)
+        else:
+            new_index = Index(self.index[idx])
+
+        return DataFrame(self[idx], index=new_index)
+
+    def sort_index(self, ascending=True):
+        """
+        Sort the DataFrame by indexed columns.
+
+        Note: Fails on sorting ak.Strings when multiple columns being sorted
+
+        Parameters
+        ----------
+        ascending : bool
+            Sort values in ascending (default) or descending order.
+
+        """
+
+        idx = self.index.argsort(ascending=ascending)
+
+        return self._reindex(idx)
 
     def sort_values(self, by=None, ascending=True):
         """
@@ -2255,7 +2319,7 @@ class DataFrame(UserDict):
         else:
             return DataFrame(self)
 
-    def groupby(self, keys, use_series=True, as_index=True):
+    def groupby(self, keys, use_series=True, as_index=True, dropna=True):
         """Group the dataframe by a column or a list of columns.  Alias for GroupBy
 
         Parameters
@@ -2267,13 +2331,16 @@ class DataFrame(UserDict):
         as_index: bool (default=True)
             If true groupby aggregation values will be treated as an index.
             Otherwise, the groupby values will be treated as DataFrame column(s).
-
+        dropna : bool (default=True)
+            If True, and the groupby keys contain NaN values,
+            the NaN values together with the corresponding row will be dropped.
+            Otherwise, the rows corresponding to NaN values will be kept.
         Returns
         -------
         An arkouda Groupby instance
         """
 
-        return self.GroupBy(keys, use_series, as_index=as_index)
+        return self.GroupBy(keys, use_series, as_index=as_index, dropna=dropna)
 
     @typechecked
     def isin(self, values: Union[pdarray, Dict, Series, DataFrame]) -> DataFrame:
@@ -2343,7 +2410,10 @@ class DataFrame(UserDict):
             # flatten the DataFrame so single in1d can be used.
             flat_in1d = in1d(concatenate(list(self.data.values())), values)
             segs = concatenate(
-                [array([0]), cumsum(array([self.data[col].size for col in self.columns]))]
+                [
+                    array([0]),
+                    cumsum(array([self.data[col].size for col in self.columns])),
+                ]
             )
             df_def = {col: flat_in1d[segs[i] : segs[i + 1]] for i, col in enumerate(self.columns)}
         elif isinstance(values, Dict):
@@ -2525,7 +2595,11 @@ class DataFrame(UserDict):
             else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
             if isinstance(obj, SegArray)
             else json.dumps(
-                {"name": obj.name, "width": obj.width, "reverse": obj.reverse}  # BitVector Case
+                {
+                    "name": obj.name,
+                    "width": obj.width,
+                    "reverse": obj.reverse,
+                }  # BitVector Case
             )
             for obj in self.values()
         ]
