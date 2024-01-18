@@ -46,7 +46,7 @@ module Histogram
         forall v in a {
             var vBin = ((v - aMin) / binWidth):int;
             if v == aMax {vBin = bins-1;}
-            if (vBin < 0) | (vBin > (bins-1)) {
+            if (vBin < 0) || (vBin > (bins-1)) {
                 try! hgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),"OOB");
             }
             atomicHist[vBin].add(1);
@@ -72,7 +72,7 @@ module Histogram
             var yiBin = ((yi - yMin) / yBinWidth):int;
             if xi == xMax {xiBin = numXBins-1;}
             if yi == yMax {yiBin = numYBins-1;}
-            if xiBin < 0 | yiBin < 0 | (xiBin > (numXBins-1)) | (yiBin > (numYBins-1)) {
+            if xiBin < 0 || yiBin < 0 || (xiBin > (numXBins-1)) || (yiBin > (numYBins-1)) {
                 try! hgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),"OOB");
             }
             atomicHist[(xiBin * numYBins) + yiBin].add(1);
