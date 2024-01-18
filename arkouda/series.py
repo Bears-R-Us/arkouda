@@ -314,7 +314,7 @@ class Series:
 
         return Series(index=k.index[idx], data=v[idx])
 
-    def __reindex(self, idx):
+    def _reindex(self, idx):
         if isinstance(self.index, MultiIndex):
             new_index = MultiIndex(self.index[idx].values, name=self.index.name, names=self.index.names)
         elif isinstance(self.index, Index):
@@ -339,7 +339,7 @@ class Series:
         """
 
         idx = self.index.argsort(ascending=ascending)
-        return self.__reindex(idx)
+        return self._reindex(idx)
 
     @typechecked
     def sort_values(self, ascending: bool = True) -> Series:
@@ -368,7 +368,7 @@ class Series:
                 idx = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
         else:
             idx = argsort(self.values)
-        return self.__reindex(idx)
+        return self._reindex(idx)
 
     @typechecked
     def tail(self, n: int = 10) -> Series:

@@ -171,9 +171,9 @@ class GroupBy:
 
         """
         if as_series is True or (as_series is None and self.as_index is True):
-            return self.__return_agg_series(self.gb.count())
+            return self._return_agg_series(self.gb.count())
         else:
-            return self.__return_agg_dataframe(self.gb.count(), "count")
+            return self._return_agg_dataframe(self.gb.count(), "count")
 
     def size(self, as_series=None, sort_index=True):
         """
@@ -196,11 +196,11 @@ class GroupBy:
 
         """
         if as_series is True or (as_series is None and self.as_index is True):
-            return self.__return_agg_series(self.gb.size(), sort_index=sort_index)
+            return self._return_agg_series(self.gb.size(), sort_index=sort_index)
         else:
-            return self.__return_agg_dataframe(self.gb.size(), "size", sort_index=sort_index)
+            return self._return_agg_dataframe(self.gb.size(), "size", sort_index=sort_index)
 
-    def __return_agg_series(self, values, sort_index=True):
+    def _return_agg_series(self, values, sort_index=True):
         if self.as_index is True:
             if isinstance(self.gb_key_names, str):
                 series = Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names))
@@ -221,7 +221,7 @@ class GroupBy:
 
         return series
 
-    def __return_agg_dataframe(self, values, name, sort_index=True):
+    def _return_agg_dataframe(self, values, name, sort_index=True):
         if isinstance(self.gb_key_names, str):
             if self.as_index is True:
                 df = DataFrame(
@@ -2148,7 +2148,7 @@ class DataFrame(UserDict):
             i = i[arange(self.size - 1, -1, -1)]
         return i
 
-    def __reindex(self, idx):
+    def _reindex(self, idx):
         if isinstance(self.index, MultiIndex):
             new_index = MultiIndex(self.index[idx].values, name=self.index.name, names=self.index.names)
         elif isinstance(self.index, Index):
@@ -2173,7 +2173,7 @@ class DataFrame(UserDict):
 
         idx = self.index.argsort(ascending=ascending)
 
-        return self.__reindex(idx)
+        return self._reindex(idx)
 
     def sort_values(self, by=None, ascending=True):
         """
