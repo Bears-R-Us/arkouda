@@ -334,7 +334,7 @@ Classes
 
 
 
-.. py:class:: MultiIndex(values)
+.. py:class:: MultiIndex(values, name=None, names=None)
 
 
    Bases: :py:obj:`Index`

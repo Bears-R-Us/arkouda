@@ -570,7 +570,7 @@ Attributes
 
    
 
-.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, dropna: bool = True, **kwargs)
 
 
    Group an array or list of arrays by value, usually in preparation
@@ -622,6 +622,14 @@ Attributes
       Used for all logging operations
 
       :type: ArkoudaLogger
+
+   .. attribute:: dropna
+
+      If True, and the groupby keys contain NaN values,
+      the NaN values together with the corresponding row will be dropped.
+      Otherwise, the rows corresponding to NaN values will be kept.
+
+      :type: bool (default=True)
 
    :raises TypeError: Raised if keys is a pdarray with a dtype other than int64
 
@@ -8020,7 +8028,7 @@ Attributes
    array([1, 2, 3])
 
 
-.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, dropna: bool = True, **kwargs)
 
 
    Group an array or list of arrays by value, usually in preparation
@@ -8072,6 +8080,14 @@ Attributes
       Used for all logging operations
 
       :type: ArkoudaLogger
+
+   .. attribute:: dropna
+
+      If True, and the groupby keys contain NaN values,
+      the NaN values together with the corresponding row will be dropped.
+      Otherwise, the rows corresponding to NaN values will be kept.
+
+      :type: bool (default=True)
 
    :raises TypeError: Raised if keys is a pdarray with a dtype other than int64
 
@@ -12042,7 +12058,7 @@ Attributes
 
    
 
-.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, dropna: bool = True, **kwargs)
 
 
    Group an array or list of arrays by value, usually in preparation
@@ -12094,6 +12110,14 @@ Attributes
       Used for all logging operations
 
       :type: ArkoudaLogger
+
+   .. attribute:: dropna
+
+      If True, and the groupby keys contain NaN values,
+      the NaN values together with the corresponding row will be dropped.
+      Otherwise, the rows corresponding to NaN values will be kept.
+
+      :type: bool (default=True)
 
    :raises TypeError: Raised if keys is a pdarray with a dtype other than int64
 
@@ -16610,7 +16634,7 @@ Attributes
       :rtype: ak.DataFrame
 
 
-   .. py:method:: GroupBy(keys, use_series=False, as_index=True)
+   .. py:method:: GroupBy(keys, use_series=False, as_index=True, dropna=True)
 
       Group the dataframe by a column or a list of columns.
 
@@ -16622,6 +16646,10 @@ Attributes
       :param as_index: If True, groupby columns will be set as index
                        otherwise, the groupby columns will be treated as DataFrame columns.
       :type as_index: bool (default=True)
+      :param dropna: If True, and the groupby keys contain NaN values,
+                     the NaN values together with the corresponding row will be dropped.
+                     Otherwise, the rows corresponding to NaN values will be kept.
+      :type dropna: bool (default=True)
 
       :returns: Either an ak arkouda.groupbyclass.GroupBy or an arkouda.dataframe.GroupBy object.
       :rtype: GroupBy
@@ -16902,6 +16930,16 @@ Attributes
       :rtype: ak.pdarray
 
 
+   .. py:method:: sort_index(ascending=True)
+
+      Sort the DataFrame by indexed columns.
+
+      Note: Fails on sorting ak.Strings when multiple columns being sorted
+
+      :param ascending: Sort values in ascending (default) or descending order.
+      :type ascending: bool
+
+
    .. py:method:: sort_values(by=None, ascending=True)
 
       Sort the DataFrame by one or more columns.
@@ -16975,7 +17013,7 @@ Attributes
       :rtype: aku.DataFrame
 
 
-   .. py:method:: groupby(keys, use_series=True, as_index=True)
+   .. py:method:: groupby(keys, use_series=True, as_index=True, dropna=True)
 
       Group the dataframe by a column or a list of columns.  Alias for GroupBy
 
@@ -16986,6 +17024,10 @@ Attributes
       :param as_index: If true groupby aggregation values will be treated as an index.
                        Otherwise, the groupby values will be treated as DataFrame column(s).
       :type as_index: bool (default=True)
+      :param dropna: If True, and the groupby keys contain NaN values,
+                     the NaN values together with the corresponding row will be dropped.
+                     Otherwise, the rows corresponding to NaN values will be kept.
+      :type dropna: bool (default=True)
 
       :rtype: An arkouda Groupby instance
 
@@ -17304,7 +17346,7 @@ Attributes
 
    
 
-.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, dropna: bool = True, **kwargs)
 
 
    Group an array or list of arrays by value, usually in preparation
@@ -17356,6 +17398,14 @@ Attributes
       Used for all logging operations
 
       :type: ArkoudaLogger
+
+   .. attribute:: dropna
+
+      If True, and the groupby keys contain NaN values,
+      the NaN values together with the corresponding row will be dropped.
+      Otherwise, the rows corresponding to NaN values will be kept.
+
+      :type: bool (default=True)
 
    :raises TypeError: Raised if keys is a pdarray with a dtype other than int64
 
@@ -19791,7 +19841,7 @@ Attributes
 
 
 
-.. py:class:: MultiIndex(values)
+.. py:class:: MultiIndex(values, name=None, names=None)
 
 
    Bases: :py:obj:`Index`
@@ -19958,7 +20008,7 @@ Attributes
 
 
 
-.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type], index: Optional[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Tuple, List, arkouda.index.Index]] = None)
+.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type], name=None, index: Optional[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Tuple, List, arkouda.index.Index]] = None)
 
 
    One-dimensional arkouda array with axis labels.
@@ -20046,12 +20096,18 @@ Attributes
 
       Sort the series by its index
 
+      :param ascending: Sort values in ascending (default) or descending order.
+      :type ascending: bool
+
       :rtype: A new Series sorted.
 
 
    .. py:method:: sort_values(ascending: bool = True) -> Series
 
       Sort the series numerically
+
+      :param ascending: Sort values in ascending (default) or descending order.
+      :type ascending: bool
 
       :rtype: A new Series sorted smallest to largest
 
@@ -20255,7 +20311,7 @@ Attributes
 
    
 
-.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, dropna: bool = True, **kwargs)
 
 
    Group an array or list of arrays by value, usually in preparation
@@ -20307,6 +20363,14 @@ Attributes
       Used for all logging operations
 
       :type: ArkoudaLogger
+
+   .. attribute:: dropna
+
+      If True, and the groupby keys contain NaN values,
+      the NaN values together with the corresponding row will be dropped.
+      Otherwise, the rows corresponding to NaN values will be kept.
+
+      :type: bool (default=True)
 
    :raises TypeError: Raised if keys is a pdarray with a dtype other than int64
 
@@ -24401,7 +24465,7 @@ Attributes
       :rtype: ak.DataFrame
 
 
-   .. py:method:: GroupBy(keys, use_series=False, as_index=True)
+   .. py:method:: GroupBy(keys, use_series=False, as_index=True, dropna=True)
 
       Group the dataframe by a column or a list of columns.
 
@@ -24413,6 +24477,10 @@ Attributes
       :param as_index: If True, groupby columns will be set as index
                        otherwise, the groupby columns will be treated as DataFrame columns.
       :type as_index: bool (default=True)
+      :param dropna: If True, and the groupby keys contain NaN values,
+                     the NaN values together with the corresponding row will be dropped.
+                     Otherwise, the rows corresponding to NaN values will be kept.
+      :type dropna: bool (default=True)
 
       :returns: Either an ak arkouda.groupbyclass.GroupBy or an arkouda.dataframe.GroupBy object.
       :rtype: GroupBy
@@ -24693,6 +24761,16 @@ Attributes
       :rtype: ak.pdarray
 
 
+   .. py:method:: sort_index(ascending=True)
+
+      Sort the DataFrame by indexed columns.
+
+      Note: Fails on sorting ak.Strings when multiple columns being sorted
+
+      :param ascending: Sort values in ascending (default) or descending order.
+      :type ascending: bool
+
+
    .. py:method:: sort_values(by=None, ascending=True)
 
       Sort the DataFrame by one or more columns.
@@ -24766,7 +24844,7 @@ Attributes
       :rtype: aku.DataFrame
 
 
-   .. py:method:: groupby(keys, use_series=True, as_index=True)
+   .. py:method:: groupby(keys, use_series=True, as_index=True, dropna=True)
 
       Group the dataframe by a column or a list of columns.  Alias for GroupBy
 
@@ -24777,6 +24855,10 @@ Attributes
       :param as_index: If true groupby aggregation values will be treated as an index.
                        Otherwise, the groupby values will be treated as DataFrame column(s).
       :type as_index: bool (default=True)
+      :param dropna: If True, and the groupby keys contain NaN values,
+                     the NaN values together with the corresponding row will be dropped.
+                     Otherwise, the rows corresponding to NaN values will be kept.
+      :type dropna: bool (default=True)
 
       :rtype: An arkouda Groupby instance
 
@@ -25560,7 +25642,7 @@ Attributes
    array([False, False, True])
 
 
-.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, dropna: bool = True, **kwargs)
 
 
    Group an array or list of arrays by value, usually in preparation
@@ -25612,6 +25694,14 @@ Attributes
       Used for all logging operations
 
       :type: ArkoudaLogger
+
+   .. attribute:: dropna
+
+      If True, and the groupby keys contain NaN values,
+      the NaN values together with the corresponding row will be dropped.
+      Otherwise, the rows corresponding to NaN values will be kept.
+
+      :type: bool (default=True)
 
    :raises TypeError: Raised if keys is a pdarray with a dtype other than int64
 

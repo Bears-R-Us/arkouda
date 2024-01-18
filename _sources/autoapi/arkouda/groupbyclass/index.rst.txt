@@ -76,7 +76,7 @@ Attributes
 
    
 
-.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, dropna: bool = True, **kwargs)
 
 
    Group an array or list of arrays by value, usually in preparation
@@ -128,6 +128,14 @@ Attributes
       Used for all logging operations
 
       :type: ArkoudaLogger
+
+   .. attribute:: dropna
+
+      If True, and the groupby keys contain NaN values,
+      the NaN values together with the corresponding row will be dropped.
+      Otherwise, the rows corresponding to NaN values will be kept.
+
+      :type: bool (default=True)
 
    :raises TypeError: Raised if keys is a pdarray with a dtype other than int64
 

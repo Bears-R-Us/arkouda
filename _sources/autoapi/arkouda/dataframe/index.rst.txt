@@ -350,7 +350,7 @@ Functions
       :rtype: ak.DataFrame
 
 
-   .. py:method:: GroupBy(keys, use_series=False, as_index=True)
+   .. py:method:: GroupBy(keys, use_series=False, as_index=True, dropna=True)
 
       Group the dataframe by a column or a list of columns.
 
@@ -362,6 +362,10 @@ Functions
       :param as_index: If True, groupby columns will be set as index
                        otherwise, the groupby columns will be treated as DataFrame columns.
       :type as_index: bool (default=True)
+      :param dropna: If True, and the groupby keys contain NaN values,
+                     the NaN values together with the corresponding row will be dropped.
+                     Otherwise, the rows corresponding to NaN values will be kept.
+      :type dropna: bool (default=True)
 
       :returns: Either an ak arkouda.groupbyclass.GroupBy or an arkouda.dataframe.GroupBy object.
       :rtype: GroupBy
@@ -642,6 +646,16 @@ Functions
       :rtype: ak.pdarray
 
 
+   .. py:method:: sort_index(ascending=True)
+
+      Sort the DataFrame by indexed columns.
+
+      Note: Fails on sorting ak.Strings when multiple columns being sorted
+
+      :param ascending: Sort values in ascending (default) or descending order.
+      :type ascending: bool
+
+
    .. py:method:: sort_values(by=None, ascending=True)
 
       Sort the DataFrame by one or more columns.
@@ -715,7 +729,7 @@ Functions
       :rtype: aku.DataFrame
 
 
-   .. py:method:: groupby(keys, use_series=True, as_index=True)
+   .. py:method:: groupby(keys, use_series=True, as_index=True, dropna=True)
 
       Group the dataframe by a column or a list of columns.  Alias for GroupBy
 
@@ -726,6 +740,10 @@ Functions
       :param as_index: If true groupby aggregation values will be treated as an index.
                        Otherwise, the groupby values will be treated as DataFrame column(s).
       :type as_index: bool (default=True)
+      :param dropna: If True, and the groupby keys contain NaN values,
+                     the NaN values together with the corresponding row will be dropped.
+                     Otherwise, the rows corresponding to NaN values will be kept.
+      :type dropna: bool (default=True)
 
       :rtype: An arkouda Groupby instance
 
