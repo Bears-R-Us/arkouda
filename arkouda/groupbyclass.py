@@ -263,8 +263,6 @@ class GroupBy:
 
         def drop_na_keys():
             if self.dropna is True:
-                # if self.keys is None:
-                #     pass
                 if isinstance(self.keys, pdarray) and self.keys.dtype == akfloat64:
                     self.keys = self.keys[~isnan(self.keys)]
                 elif isinstance(self.keys, list):

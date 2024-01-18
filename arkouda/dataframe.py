@@ -2155,7 +2155,7 @@ class DataFrame(UserDict):
     def __reindex(self, idx):
         if isinstance(self.index, MultiIndex):
             new_index = MultiIndex(self.index[idx].values, name=self.index.name, names=self.index.names)
-        elif isinstance(self.index, Index) and hasattr(self.index, "name"):
+        elif isinstance(self.index, Index):
             new_index = Index(self.index[idx], name=self.index.name)
         else:
             new_index = Index(self.index[idx])
