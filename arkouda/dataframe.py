@@ -84,10 +84,6 @@ class GroupBy:
         The column name(s) associated with the aggregated columns.
     as_index : bool (default=True)
         If True the grouped values of the aggregation keys will be treated as an index.
-    dropna : bool (default=True)
-        If True, and the groupby keys contain NaN values,
-        the NaN values together with the corresponding row will be dropped.
-        Otherwise, the rows corresponding to NaN values will be kept.
     """
 
     def __init__(self, gb, df, gb_key_names=None, as_index=True):
