@@ -555,28 +555,28 @@ class StringTest(ArkoudaTest):
     def test_case_change(self):
         mixed = ak.array([f"StrINgS {i}" for i in range(10)])
 
-        lower = mixed.to_lower()
+        lower = mixed.lower()
         self.assertListEqual(lower.to_list(), [f"strings {i}" for i in range(10)])
 
-        upper = mixed.to_upper()
+        upper = mixed.upper()
         self.assertListEqual(upper.to_list(), [f"STRINGS {i}" for i in range(10)])
 
-        title = mixed.to_title()
+        title = mixed.title()
         self.assertListEqual(title.to_list(), [f"Strings {i}" for i in range(10)])
 
         # first 10 all lower, second 10 mixed case (not lower, upper, or title), third 10 all upper,
         # last 10 all title
         lmut = ak.concatenate([lower, mixed, upper, title])
 
-        islower = lmut.is_lower()
+        islower = lmut.islower()
         expected = 10 > ak.arange(40)
         self.assertListEqual(islower.to_list(), expected.to_list())
 
-        isupper = lmut.is_upper()
+        isupper = lmut.isupper()
         expected = (30 > ak.arange(40)) & (ak.arange(40) >= 20)
         self.assertListEqual(isupper.to_list(), expected.to_list())
 
-        istitle = lmut.is_title()
+        istitle = lmut.istitle()
         expected = ak.arange(40) >= 30
         self.assertListEqual(istitle.to_list(), expected.to_list())
 
