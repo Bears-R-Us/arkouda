@@ -348,6 +348,13 @@ their lowercase equivalent</p>
 </dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedString.SegString.isalnum">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isalnum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.SegString.isalnum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of bools where index i indicates whether the string i of the SegString is alphanumeric
+:returns: [domain] bool where index i indicates whether the string i of the SegString is alphanumeric</p>
+</dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.bytesToUintArr">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bytesToUintArr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">max_bytes:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">lens:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">st</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.SegString.bytesToUintArr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -587,6 +594,12 @@ target).</p>
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsTitle">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsTitle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.stringIsTitle" title="Permalink to this definition">¶</a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isTitle</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedString.stringIsAlphaNumeric">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsAlphaNumeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.stringIsAlphaNumeric" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SegFunction called by computeOnSegments for isalnum</p>
 </dd></dl>
 
 <dl class="chpl function">

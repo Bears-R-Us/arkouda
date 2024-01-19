@@ -3022,6 +3022,29 @@ Attributes
       array([False False False True True True])
 
 
+   .. py:method:: isalnum() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is alphanumeric.
+
+      :returns: True for elements that are alphanumeric, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`, :obj:`Strings.is_title`
+
+      .. rubric:: Examples
+
+      >>> not_alnum = ak.array([f'%Strings {i}' for i in range(3)])
+      >>> alnum = ak.array([f'Strings{i}' for i in range(3)])
+      >>> strings = ak.concatenate([not_alnum, alnum])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', 'Strings0', 'Strings1', 'Strings2'])
+      >>> strings.isalnum()
+      array([False False False True True True])
+
+
    .. py:method:: strip(chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
 
       Returns a new Strings object with all leading and trailing occurrences of characters contained
@@ -9321,6 +9344,29 @@ Attributes
       array([False False False True True True])
 
 
+   .. py:method:: isalnum() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is alphanumeric.
+
+      :returns: True for elements that are alphanumeric, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`, :obj:`Strings.is_title`
+
+      .. rubric:: Examples
+
+      >>> not_alnum = ak.array([f'%Strings {i}' for i in range(3)])
+      >>> alnum = ak.array([f'Strings{i}' for i in range(3)])
+      >>> strings = ak.concatenate([not_alnum, alnum])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', 'Strings0', 'Strings1', 'Strings2'])
+      >>> strings.isalnum()
+      array([False False False True True True])
+
+
    .. py:method:: strip(chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
 
       Returns a new Strings object with all leading and trailing occurrences of characters contained
@@ -14552,6 +14598,29 @@ Attributes
       >>> strings
       array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
       >>> strings.is_title()
+      array([False False False True True True])
+
+
+   .. py:method:: isalnum() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is alphanumeric.
+
+      :returns: True for elements that are alphanumeric, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`, :obj:`Strings.is_title`
+
+      .. rubric:: Examples
+
+      >>> not_alnum = ak.array([f'%Strings {i}' for i in range(3)])
+      >>> alnum = ak.array([f'Strings{i}' for i in range(3)])
+      >>> strings = ak.concatenate([not_alnum, alnum])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', 'Strings0', 'Strings1', 'Strings2'])
+      >>> strings.isalnum()
       array([False False False True True True])
 
 
@@ -22878,6 +22947,29 @@ Attributes
       >>> strings
       array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
       >>> strings.is_title()
+      array([False False False True True True])
+
+
+   .. py:method:: isalnum() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is alphanumeric.
+
+      :returns: True for elements that are alphanumeric, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`, :obj:`Strings.is_title`
+
+      .. rubric:: Examples
+
+      >>> not_alnum = ak.array([f'%Strings {i}' for i in range(3)])
+      >>> alnum = ak.array([f'Strings{i}' for i in range(3)])
+      >>> strings = ak.concatenate([not_alnum, alnum])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', 'Strings0', 'Strings1', 'Strings2'])
+      >>> strings.isalnum()
       array([False False False True True True])
 
 

@@ -172,6 +172,13 @@ or
       :returns: [domain] bool where index i indicates whether the string i of the SegString is titlecase
       
 
+   .. method:: proc isalnum() throws
+
+      
+      Returns list of bools where index i indicates whether the string i of the SegString is alphanumeric
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is alphanumeric
+      
+
    .. method:: proc bytesToUintArr(const max_bytes: int, lens: [?D] ?t, st) throws
 
    .. method:: proc findSubstringInBytes(const substr: string) throws
@@ -355,6 +362,12 @@ or
 
    
    The SegFunction called by computeOnSegments for isTitle
+   
+
+.. function:: proc stringIsAlphaNumeric(ref values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for isalnum
    
 
 .. function:: proc stringBytesToUintArr(ref values, rng) throws
