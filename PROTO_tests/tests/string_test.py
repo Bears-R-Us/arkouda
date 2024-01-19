@@ -494,6 +494,12 @@ class TestString:
         expected = ak.arange(40) >= 30
         assert istitle.to_list() == expected.to_list()
 
+    def test_string_isalnum(self):
+        not_alnum = ak.array([f"%Strings {i}" for i in range(3)])
+        alnum = ak.array([f"Strings{i}" for i in range(3)])
+        test_strings = ak.concatenate([not_alnum, alnum])
+        assert test_strings.isalnum().to_list() == [False, False, False, True, True, True]
+
     def test_where(self):
         revs = ak.arange(10) % 2 == 0
         s1 = ak.array([f"str {i}" for i in range(10)])

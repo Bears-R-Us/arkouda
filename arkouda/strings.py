@@ -699,6 +699,44 @@ class Strings:
         )
 
     @typechecked
+    def isalnum(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i of the
+        Strings is alphanumeric.
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are alphanumeric, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.is_lower
+        Strings.is_upper
+        Strings.is_title
+
+        Examples
+        --------
+        >>> not_alnum = ak.array([f'%Strings {i}' for i in range(3)])
+        >>> alnum = ak.array([f'Strings{i}' for i in range(3)])
+        >>> strings = ak.concatenate([not_alnum, alnum])
+        >>> strings
+        array(['%Strings 0', '%Strings 1', '%Strings 2', 'Strings0', 'Strings1', 'Strings2'])
+        >>> strings.isalnum()
+        array([False False False True True True])
+        """
+        return create_pdarray(
+            generic_msg(
+                cmd="checkChars", args={"subcmd": "isalnum", "objType": self.objType, "obj": self.entry}
+            )
+        )
+
+    @typechecked
     def strip(self, chars: Optional[Union[bytes, str_scalars]] = "") -> Strings:
         """
         Returns a new Strings object with all leading and trailing occurrences of characters contained
