@@ -493,7 +493,7 @@ class TestPdarrayCreation:
         assert str == pda.dtype
 
         assert ((1 <= pda.get_lengths()) & (pda.get_lengths() <= 5)).all()
-        assert (pda.is_upper()).all()
+        assert (pda.isupper()).all()
 
     def test_random_strings_uniform_errors(self):
         with pytest.raises(ValueError):

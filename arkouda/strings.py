@@ -489,7 +489,7 @@ class Strings:
         return self.encode(toEncoding, fromEncoding)
 
     @typechecked
-    def to_lower(self) -> Strings:
+    def lower(self) -> Strings:
         """
         Returns a new Strings with all uppercase characters from the original replaced with
         their lowercase equivalent
@@ -507,14 +507,14 @@ class Strings:
 
         See Also
         --------
-        Strings.to_upper
+        Strings.upper
 
         Examples
         --------
         >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
         >>> strings
         array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-        >>> strings.to_lower()
+        >>> strings.lower()
         array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
         """
         rep_msg = generic_msg(
@@ -523,7 +523,7 @@ class Strings:
         return Strings.from_return_msg(cast(str, rep_msg))
 
     @typechecked
-    def to_upper(self) -> Strings:
+    def upper(self) -> Strings:
         """
         Returns a new Strings with all lowercase characters from the original replaced with
         their uppercase equivalent
@@ -541,14 +541,14 @@ class Strings:
 
         See Also
         --------
-        Strings.to_lower
+        Strings.lower
 
         Examples
         --------
         >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
         >>> strings
         array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-        >>> strings.to_upper()
+        >>> strings.upper()
         array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
         """
         rep_msg = generic_msg(
@@ -557,7 +557,7 @@ class Strings:
         return Strings.from_return_msg(cast(str, rep_msg))
 
     @typechecked
-    def to_title(self) -> Strings:
+    def title(self) -> Strings:
         """
         Returns a new Strings from the original replaced with their titlecase equivalent
 
@@ -573,15 +573,15 @@ class Strings:
 
         See Also
         --------
-        Strings.to_lower
-        String.to_upper
+        Strings.lower
+        String.upper
 
         Examples
         --------
         >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
         >>> strings
         array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-        >>> strings.to_title()
+        >>> strings.title()
         array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
         """
         rep_msg = generic_msg(
@@ -590,7 +590,7 @@ class Strings:
         return Strings.from_return_msg(cast(str, rep_msg))
 
     @typechecked
-    def is_lower(self) -> pdarray:
+    def islower(self) -> pdarray:
         """
         Returns a boolean pdarray where index i indicates whether string i of the
         Strings is entirely lowercase
@@ -607,7 +607,7 @@ class Strings:
 
         See Also
         --------
-        Strings.is_upper
+        Strings.isupper
 
         Examples
         --------
@@ -616,7 +616,7 @@ class Strings:
         >>> strings = ak.concatenate([lower, upper])
         >>> strings
         array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
-        >>> strings.is_lower()
+        >>> strings.islower()
         array([True True True False False False])
         """
         return create_pdarray(
@@ -626,7 +626,7 @@ class Strings:
         )
 
     @typechecked
-    def is_upper(self) -> pdarray:
+    def isupper(self) -> pdarray:
         """
         Returns a boolean pdarray where index i indicates whether string i of the
         Strings is entirely uppercase
@@ -643,7 +643,7 @@ class Strings:
 
         See Also
         --------
-        Strings.is_lower
+        Strings.islower
 
         Examples
         --------
@@ -652,7 +652,7 @@ class Strings:
         >>> strings = ak.concatenate([lower, upper])
         >>> strings
         array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
-        >>> strings.is_upper()
+        >>> strings.isupper()
         array([False False False True True True])
         """
         return create_pdarray(
@@ -662,7 +662,7 @@ class Strings:
         )
 
     @typechecked
-    def is_title(self) -> pdarray:
+    def istitle(self) -> pdarray:
         """
         Returns a boolean pdarray where index i indicates whether string i of the
         Strings is titlecase
@@ -679,8 +679,8 @@ class Strings:
 
         See Also
         --------
-        Strings.is_lower
-        Strings.is_upper
+        Strings.islower
+        Strings.isupper
 
         Examples
         --------
@@ -689,7 +689,7 @@ class Strings:
         >>> strings = ak.concatenate([mixed, title])
         >>> strings
         array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
-        >>> strings.is_title()
+        >>> strings.istitle()
         array([False False False True True True])
         """
         return create_pdarray(
