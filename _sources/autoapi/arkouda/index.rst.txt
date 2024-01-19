@@ -2889,7 +2889,7 @@ Attributes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
-   .. py:method:: to_lower() -> Strings
+   .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
       their lowercase equivalent
@@ -2900,18 +2900,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_upper`
+      .. seealso:: :obj:`Strings.upper`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_lower()
+      >>> strings.lower()
       array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
 
 
-   .. py:method:: to_upper() -> Strings
+   .. py:method:: upper() -> Strings
 
       Returns a new Strings with all lowercase characters from the original replaced with
       their uppercase equivalent
@@ -2922,18 +2922,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_lower`
+      .. seealso:: :obj:`Strings.lower`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_upper()
+      >>> strings.upper()
       array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
 
 
-   .. py:method:: to_title() -> Strings
+   .. py:method:: title() -> Strings
 
       Returns a new Strings from the original replaced with their titlecase equivalent
 
@@ -2942,18 +2942,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_lower`, :obj:`String.to_upper`
+      .. seealso:: :obj:`Strings.lower`, :obj:`String.upper`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_title()
+      >>> strings.title()
       array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
 
 
-   .. py:method:: is_lower() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: islower() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is entirely lowercase
@@ -2963,7 +2963,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_upper`
+      .. seealso:: :obj:`Strings.isupper`
 
       .. rubric:: Examples
 
@@ -2972,11 +2972,11 @@ Attributes
       >>> strings = ak.concatenate([lower, upper])
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
-      >>> strings.is_lower()
+      >>> strings.islower()
       array([True True True False False False])
 
 
-   .. py:method:: is_upper() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isupper() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is entirely uppercase
@@ -2986,7 +2986,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_lower`
+      .. seealso:: :obj:`Strings.islower`
 
       .. rubric:: Examples
 
@@ -2995,11 +2995,11 @@ Attributes
       >>> strings = ak.concatenate([lower, upper])
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
-      >>> strings.is_upper()
+      >>> strings.isupper()
       array([False False False True True True])
 
 
-   .. py:method:: is_title() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: istitle() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is titlecase
@@ -3009,7 +3009,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`
 
       .. rubric:: Examples
 
@@ -3018,7 +3018,7 @@ Attributes
       >>> strings = ak.concatenate([mixed, title])
       >>> strings
       array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
-      >>> strings.is_title()
+      >>> strings.istitle()
       array([False False False True True True])
 
 
@@ -9211,7 +9211,7 @@ Attributes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
-   .. py:method:: to_lower() -> Strings
+   .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
       their lowercase equivalent
@@ -9222,18 +9222,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_upper`
+      .. seealso:: :obj:`Strings.upper`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_lower()
+      >>> strings.lower()
       array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
 
 
-   .. py:method:: to_upper() -> Strings
+   .. py:method:: upper() -> Strings
 
       Returns a new Strings with all lowercase characters from the original replaced with
       their uppercase equivalent
@@ -9244,18 +9244,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_lower`
+      .. seealso:: :obj:`Strings.lower`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_upper()
+      >>> strings.upper()
       array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
 
 
-   .. py:method:: to_title() -> Strings
+   .. py:method:: title() -> Strings
 
       Returns a new Strings from the original replaced with their titlecase equivalent
 
@@ -9264,18 +9264,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_lower`, :obj:`String.to_upper`
+      .. seealso:: :obj:`Strings.lower`, :obj:`String.upper`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_title()
+      >>> strings.title()
       array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
 
 
-   .. py:method:: is_lower() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: islower() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is entirely lowercase
@@ -9285,7 +9285,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_upper`
+      .. seealso:: :obj:`Strings.isupper`
 
       .. rubric:: Examples
 
@@ -9294,11 +9294,11 @@ Attributes
       >>> strings = ak.concatenate([lower, upper])
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
-      >>> strings.is_lower()
+      >>> strings.islower()
       array([True True True False False False])
 
 
-   .. py:method:: is_upper() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isupper() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is entirely uppercase
@@ -9308,7 +9308,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_lower`
+      .. seealso:: :obj:`Strings.islower`
 
       .. rubric:: Examples
 
@@ -9317,11 +9317,11 @@ Attributes
       >>> strings = ak.concatenate([lower, upper])
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
-      >>> strings.is_upper()
+      >>> strings.isupper()
       array([False False False True True True])
 
 
-   .. py:method:: is_title() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: istitle() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is titlecase
@@ -9331,7 +9331,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`
 
       .. rubric:: Examples
 
@@ -9340,7 +9340,7 @@ Attributes
       >>> strings = ak.concatenate([mixed, title])
       >>> strings
       array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
-      >>> strings.is_title()
+      >>> strings.istitle()
       array([False False False True True True])
 
 
@@ -14468,7 +14468,7 @@ Attributes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
-   .. py:method:: to_lower() -> Strings
+   .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
       their lowercase equivalent
@@ -14479,18 +14479,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_upper`
+      .. seealso:: :obj:`Strings.upper`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_lower()
+      >>> strings.lower()
       array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
 
 
-   .. py:method:: to_upper() -> Strings
+   .. py:method:: upper() -> Strings
 
       Returns a new Strings with all lowercase characters from the original replaced with
       their uppercase equivalent
@@ -14501,18 +14501,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_lower`
+      .. seealso:: :obj:`Strings.lower`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_upper()
+      >>> strings.upper()
       array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
 
 
-   .. py:method:: to_title() -> Strings
+   .. py:method:: title() -> Strings
 
       Returns a new Strings from the original replaced with their titlecase equivalent
 
@@ -14521,18 +14521,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_lower`, :obj:`String.to_upper`
+      .. seealso:: :obj:`Strings.lower`, :obj:`String.upper`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_title()
+      >>> strings.title()
       array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
 
 
-   .. py:method:: is_lower() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: islower() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is entirely lowercase
@@ -14542,7 +14542,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_upper`
+      .. seealso:: :obj:`Strings.isupper`
 
       .. rubric:: Examples
 
@@ -14551,11 +14551,11 @@ Attributes
       >>> strings = ak.concatenate([lower, upper])
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
-      >>> strings.is_lower()
+      >>> strings.islower()
       array([True True True False False False])
 
 
-   .. py:method:: is_upper() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isupper() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is entirely uppercase
@@ -14565,7 +14565,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_lower`
+      .. seealso:: :obj:`Strings.islower`
 
       .. rubric:: Examples
 
@@ -14574,11 +14574,11 @@ Attributes
       >>> strings = ak.concatenate([lower, upper])
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
-      >>> strings.is_upper()
+      >>> strings.isupper()
       array([False False False True True True])
 
 
-   .. py:method:: is_title() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: istitle() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is titlecase
@@ -14588,7 +14588,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`
 
       .. rubric:: Examples
 
@@ -14597,7 +14597,7 @@ Attributes
       >>> strings = ak.concatenate([mixed, title])
       >>> strings
       array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
-      >>> strings.is_title()
+      >>> strings.istitle()
       array([False False False True True True])
 
 
@@ -22817,7 +22817,7 @@ Attributes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
-   .. py:method:: to_lower() -> Strings
+   .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
       their lowercase equivalent
@@ -22828,18 +22828,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_upper`
+      .. seealso:: :obj:`Strings.upper`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_lower()
+      >>> strings.lower()
       array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
 
 
-   .. py:method:: to_upper() -> Strings
+   .. py:method:: upper() -> Strings
 
       Returns a new Strings with all lowercase characters from the original replaced with
       their uppercase equivalent
@@ -22850,18 +22850,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_lower`
+      .. seealso:: :obj:`Strings.lower`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_upper()
+      >>> strings.upper()
       array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
 
 
-   .. py:method:: to_title() -> Strings
+   .. py:method:: title() -> Strings
 
       Returns a new Strings from the original replaced with their titlecase equivalent
 
@@ -22870,18 +22870,18 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.to_lower`, :obj:`String.to_upper`
+      .. seealso:: :obj:`Strings.lower`, :obj:`String.upper`
 
       .. rubric:: Examples
 
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
-      >>> strings.to_title()
+      >>> strings.title()
       array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
 
 
-   .. py:method:: is_lower() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: islower() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is entirely lowercase
@@ -22891,7 +22891,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_upper`
+      .. seealso:: :obj:`Strings.isupper`
 
       .. rubric:: Examples
 
@@ -22900,11 +22900,11 @@ Attributes
       >>> strings = ak.concatenate([lower, upper])
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
-      >>> strings.is_lower()
+      >>> strings.islower()
       array([True True True False False False])
 
 
-   .. py:method:: is_upper() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isupper() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is entirely uppercase
@@ -22914,7 +22914,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_lower`
+      .. seealso:: :obj:`Strings.islower`
 
       .. rubric:: Examples
 
@@ -22923,11 +22923,11 @@ Attributes
       >>> strings = ak.concatenate([lower, upper])
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
-      >>> strings.is_upper()
+      >>> strings.isupper()
       array([False False False True True True])
 
 
-   .. py:method:: is_title() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: istitle() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is titlecase
@@ -22937,7 +22937,7 @@ Attributes
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`
 
       .. rubric:: Examples
 
@@ -22946,7 +22946,7 @@ Attributes
       >>> strings = ak.concatenate([mixed, title])
       >>> strings
       array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
-      >>> strings.is_title()
+      >>> strings.istitle()
       array([False False False True True True])
 
 

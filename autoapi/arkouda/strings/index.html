@@ -561,8 +561,8 @@ default to UTF-8</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.strings.Strings.to_lower">
-<span class="sig-name descname"><span class="pre">to_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.to_lower" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="arkouda.strings.Strings.lower">
+<span class="sig-name descname"><span class="pre">lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.lower" title="Link to this definition">#</a></dt>
 <dd><p>Returns a new Strings with all uppercase characters from the original replaced with
 their lowercase equivalent</p>
 <dl class="field-list simple">
@@ -579,21 +579,21 @@ their lowercase equivalent</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.strings.Strings.to_upper" title="arkouda.strings.Strings.to_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.to_upper</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.upper" title="arkouda.strings.Strings.upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.upper</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;StrINgS </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
 <span class="go">array([&#39;StrINgS 0&#39;, &#39;StrINgS 1&#39;, &#39;StrINgS 2&#39;, &#39;StrINgS 3&#39;, &#39;StrINgS 4&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">to_lower</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 <span class="go">array([&#39;strings 0&#39;, &#39;strings 1&#39;, &#39;strings 2&#39;, &#39;strings 3&#39;, &#39;strings 4&#39;])</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.strings.Strings.to_upper">
-<span class="sig-name descname"><span class="pre">to_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.to_upper" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="arkouda.strings.Strings.upper">
+<span class="sig-name descname"><span class="pre">upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.upper" title="Link to this definition">#</a></dt>
 <dd><p>Returns a new Strings with all lowercase characters from the original replaced with
 their uppercase equivalent</p>
 <dl class="field-list simple">
@@ -610,21 +610,21 @@ their uppercase equivalent</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.strings.Strings.to_lower" title="arkouda.strings.Strings.to_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.to_lower</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.lower" title="arkouda.strings.Strings.lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.lower</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;StrINgS </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
 <span class="go">array([&#39;StrINgS 0&#39;, &#39;StrINgS 1&#39;, &#39;StrINgS 2&#39;, &#39;StrINgS 3&#39;, &#39;StrINgS 4&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">to_upper</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
 <span class="go">array([&#39;STRINGS 0&#39;, &#39;STRINGS 1&#39;, &#39;STRINGS 2&#39;, &#39;STRINGS 3&#39;, &#39;STRINGS 4&#39;])</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.strings.Strings.to_title">
-<span class="sig-name descname"><span class="pre">to_title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.to_title" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="arkouda.strings.Strings.title">
+<span class="sig-name descname"><span class="pre">title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.title" title="Link to this definition">#</a></dt>
 <dd><p>Returns a new Strings from the original replaced with their titlecase equivalent</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -639,21 +639,21 @@ their uppercase equivalent</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.strings.Strings.to_lower" title="arkouda.strings.Strings.to_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.to_lower</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">String.to_upper</span></code></p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.lower" title="arkouda.strings.Strings.lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.lower</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">String.upper</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;StrINgS </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
 <span class="go">array([&#39;StrINgS 0&#39;, &#39;StrINgS 1&#39;, &#39;StrINgS 2&#39;, &#39;StrINgS 3&#39;, &#39;StrINgS 4&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">to_title</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
 <span class="go">array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39;Strings 3&#39;, &#39;Strings 4&#39;])</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.strings.Strings.is_lower">
-<span class="sig-name descname"><span class="pre">is_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.is_lower" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="arkouda.strings.Strings.islower">
+<span class="sig-name descname"><span class="pre">islower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.islower" title="Link to this definition">#</a></dt>
 <dd><p>Returns a boolean pdarray where index i indicates whether string i of the
 Strings is entirely lowercase</p>
 <dl class="field-list simple">
@@ -669,7 +669,7 @@ Strings is entirely lowercase</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.strings.Strings.is_upper" title="arkouda.strings.Strings.is_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_upper</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.isupper" title="arkouda.strings.Strings.isupper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.isupper</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lower</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;strings </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
@@ -677,15 +677,15 @@ Strings is entirely lowercase</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
 <span class="go">array([&#39;strings 0&#39;, &#39;strings 1&#39;, &#39;strings 2&#39;, &#39;STRINGS 0&#39;, &#39;STRINGS 1&#39;, &#39;STRINGS 2&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">is_lower</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">islower</span><span class="p">()</span>
 <span class="go">array([True True True False False False])</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.strings.Strings.is_upper">
-<span class="sig-name descname"><span class="pre">is_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.is_upper" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="arkouda.strings.Strings.isupper">
+<span class="sig-name descname"><span class="pre">isupper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.isupper" title="Link to this definition">#</a></dt>
 <dd><p>Returns a boolean pdarray where index i indicates whether string i of the
 Strings is entirely uppercase</p>
 <dl class="field-list simple">
@@ -701,7 +701,7 @@ Strings is entirely uppercase</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.strings.Strings.is_lower" title="arkouda.strings.Strings.is_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_lower</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.islower" title="arkouda.strings.Strings.islower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.islower</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lower</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;strings </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
@@ -709,15 +709,15 @@ Strings is entirely uppercase</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
 <span class="go">array([&#39;strings 0&#39;, &#39;strings 1&#39;, &#39;strings 2&#39;, &#39;STRINGS 0&#39;, &#39;STRINGS 1&#39;, &#39;STRINGS 2&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">is_upper</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span>
 <span class="go">array([False False False True True True])</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.strings.Strings.is_title">
-<span class="sig-name descname"><span class="pre">is_title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.is_title" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="arkouda.strings.Strings.istitle">
+<span class="sig-name descname"><span class="pre">istitle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.istitle" title="Link to this definition">#</a></dt>
 <dd><p>Returns a boolean pdarray where index i indicates whether string i of the
 Strings is titlecase</p>
 <dl class="field-list simple">
@@ -733,7 +733,7 @@ Strings is titlecase</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.strings.Strings.is_lower" title="arkouda.strings.Strings.is_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_lower</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.is_upper" title="arkouda.strings.Strings.is_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_upper</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.islower" title="arkouda.strings.Strings.islower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.islower</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.isupper" title="arkouda.strings.Strings.isupper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.isupper</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mixed</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;sTrINgs </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
@@ -741,7 +741,7 @@ Strings is titlecase</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">mixed</span><span class="p">,</span> <span class="n">title</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
 <span class="go">array([&#39;sTrINgs 0&#39;, &#39;sTrINgs 1&#39;, &#39;sTrINgs 2&#39;, &#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">is_title</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">istitle</span><span class="p">()</span>
 <span class="go">array([False False False True True True])</span>
 </pre></div>
 </div>
@@ -765,7 +765,7 @@ Strings is alphanumeric.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.strings.Strings.is_lower" title="arkouda.strings.Strings.is_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_lower</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.is_upper" title="arkouda.strings.Strings.is_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_upper</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.is_title" title="arkouda.strings.Strings.is_title"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_title</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_lower</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_upper</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_title</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">not_alnum</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;%Strings </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
@@ -2174,12 +2174,12 @@ a supported dtype</p></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.get_offsets"><code class="docutils literal notranslate"><span class="pre">Strings.get_offsets()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.encode"><code class="docutils literal notranslate"><span class="pre">Strings.encode()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.decode"><code class="docutils literal notranslate"><span class="pre">Strings.decode()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.strings.Strings.to_lower"><code class="docutils literal notranslate"><span class="pre">Strings.to_lower()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.strings.Strings.to_upper"><code class="docutils literal notranslate"><span class="pre">Strings.to_upper()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.strings.Strings.to_title"><code class="docutils literal notranslate"><span class="pre">Strings.to_title()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.strings.Strings.is_lower"><code class="docutils literal notranslate"><span class="pre">Strings.is_lower()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.strings.Strings.is_upper"><code class="docutils literal notranslate"><span class="pre">Strings.is_upper()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.strings.Strings.is_title"><code class="docutils literal notranslate"><span class="pre">Strings.is_title()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.lower"><code class="docutils literal notranslate"><span class="pre">Strings.lower()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.upper"><code class="docutils literal notranslate"><span class="pre">Strings.upper()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.title"><code class="docutils literal notranslate"><span class="pre">Strings.title()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.islower"><code class="docutils literal notranslate"><span class="pre">Strings.islower()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.isupper"><code class="docutils literal notranslate"><span class="pre">Strings.isupper()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.istitle"><code class="docutils literal notranslate"><span class="pre">Strings.istitle()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.isalnum"><code class="docutils literal notranslate"><span class="pre">Strings.isalnum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.strip"><code class="docutils literal notranslate"><span class="pre">Strings.strip()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.cached_regex_patterns"><code class="docutils literal notranslate"><span class="pre">Strings.cached_regex_patterns()</span></code></a></li>
