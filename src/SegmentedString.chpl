@@ -501,6 +501,14 @@ module SegmentedString {
       return computeOnSegments(offsets.a, values.a, SegFunction.StringIsAlphaNumeric, bool);
     }
 
+    /*
+      Returns list of bools where index i indicates whether the string i of the SegString is alphabetic
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is alphabetic
+    */
+    proc isalpha() throws {
+      return computeOnSegments(offsets.a, values.a, SegFunction.StringIsAlphabetic, bool);
+    }
+
     proc bytesToUintArr(const max_bytes:int, lens: [?D] ?t, st) throws {
       // bytes contained in strings < 128 bits, so concatenating is better than the hash
       ref off = offsets.a;
@@ -1447,6 +1455,13 @@ module SegmentedString {
   */
   inline proc stringIsAlphaNumeric(ref values, rng) throws {
     return interpretAsString(values, rng, borrow=true).isAlnum();
+  }
+
+  /*
+    The SegFunction called by computeOnSegments for isalnum
+  */
+  inline proc stringIsAlphabetic(ref values, rng) throws {
+    return interpretAsString(values, rng, borrow=true).isAlpha();
   }
 
   inline proc stringBytesToUintArr(ref values, rng) throws {
