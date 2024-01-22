@@ -737,6 +737,46 @@ class Strings:
         )
 
     @typechecked
+    def isalpha(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i of the
+        Strings is alphabetic.  This means there is at least one character,
+        and all the characters are alphabetic.
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are alphabetic, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.islower
+        Strings.isupper
+        Strings.istitle
+        Strings.isalnum
+
+        Examples
+        --------
+        >>> not_alpha = ak.array([f'%Strings {i}' for i in range(3)])
+        >>> alpha = ak.array(['StringA','StringB','StringC'])
+        >>> strings = ak.concatenate([not_alpha, alpha])
+        >>> strings
+        array(['%Strings 0', '%Strings 1', '%Strings 2', 'StringA','StringB','StringC'])
+        >>> strings.isalpha()
+        array([False False False True True True])
+        """
+        return create_pdarray(
+            generic_msg(
+                cmd="checkChars", args={"subcmd": "isalpha", "objType": self.objType, "obj": self.entry}
+            )
+        )
+
+    @typechecked
     def strip(self, chars: Optional[Union[bytes, str_scalars]] = "") -> Strings:
         """
         Returns a new Strings object with all leading and trailing occurrences of characters contained

@@ -289,6 +289,10 @@ module SegmentedMsg {
             truth.a = strings.isalnum();
             repMsg = "created "+st.attrib(rname);
           }
+          when "isalpha" {
+            truth.a = strings.isalpha();
+            repMsg = "created "+st.attrib(rname);
+          }
           otherwise {
             var errorMsg = notImplementedError(pn, "%s".doFormat(subcmd));
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

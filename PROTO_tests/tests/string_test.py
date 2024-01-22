@@ -497,8 +497,46 @@ class TestString:
     def test_string_isalnum(self):
         not_alnum = ak.array([f"%Strings {i}" for i in range(3)])
         alnum = ak.array([f"Strings{i}" for i in range(3)])
-        test_strings = ak.concatenate([not_alnum, alnum])
-        assert test_strings.isalnum().to_list() == [False, False, False, True, True, True]
+        example = ak.concatenate([not_alnum, alnum])
+        assert example.isalnum().to_list() == [False, False, False, True, True, True]
+
+    def test_string_isalpha(self):
+        not_alpha = ak.array([f"%Strings {i}" for i in range(3)])
+        alpha = ak.array(["StringA", "StringB", "StringC"])
+        example = ak.concatenate([not_alpha, alpha])
+        assert example.isalpha().to_list() == [False, False, False, True, True, True]
+
+        example2 = ak.array(
+            [
+                "",
+                "string1",
+                "stringA",
+                "String",
+                "12345",
+                "Hello\tWorld",
+                " ",
+                "\n",
+                "3.14",
+                "\u0030",
+                "\u00B2",
+            ]
+        )
+
+        expected = [
+            False,
+            False,
+            True,
+            True,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+        ]
+
+        assert example2.isalpha().to_list() == expected
 
     def test_where(self):
         revs = ak.arange(10) % 2 == 0
