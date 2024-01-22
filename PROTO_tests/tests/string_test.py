@@ -506,6 +506,38 @@ class TestString:
         example = ak.concatenate([not_alpha, alpha])
         assert example.isalpha().to_list() == [False, False, False, True, True, True]
 
+        example2 = ak.array(
+            [
+                "",
+                "string1",
+                "stringA",
+                "String",
+                "12345",
+                "Hello\tWorld",
+                " ",
+                "\n",
+                "3.14",
+                "\u0030",
+                "\u00B2",
+            ]
+        )
+
+        expected = [
+            False,
+            False,
+            True,
+            True,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+        ]
+
+        assert example2.isalpha().to_list() == expected
+
     def test_where(self):
         revs = ak.arange(10) % 2 == 0
         s1 = ak.array([f"str {i}" for i in range(10)])
