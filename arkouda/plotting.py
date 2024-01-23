@@ -114,7 +114,7 @@ def hist_all(ak_df: DataFrame, cols: list = []):
             GB_df = GroupBy(ak_df[col])
             new_labels = arange(GB_df.unique_keys.size)
             newcol = GB_df.broadcast(new_labels)
-            x = newcol[:ak_df.size]
+            x = newcol[: ak_df.size]
 
             if x.dtype == "float64":
                 x = x[~isnan(x)]
@@ -131,17 +131,9 @@ def hist_all(ak_df: DataFrame, cols: list = []):
         # Compute bins in numpy
         if isinstance(x, Datetime):
             # Matplotlib has trouble plotting np.datetime64 and np.timedelta64
-            bins = (
-                date_range(x.min(), x.max(), periods=num_bins)
-                .to_ndarray()
-                .astype("int")
-            )
+            bins = date_range(x.min(), x.max(), periods=num_bins).to_ndarray().astype("int")
         elif isinstance(x, Timedelta):
-            bins = (
-                timedelta_range(x.min(), x.max(), periods=num_bins)
-                .to_ndarray()
-                .astype("int")
-            )
+            bins = timedelta_range(x.min(), x.max(), periods=num_bins).to_ndarray().astype("int")
         else:
             bins = np.linspace(x.min(), x.max(), num_bins + 1)[:-1]
 

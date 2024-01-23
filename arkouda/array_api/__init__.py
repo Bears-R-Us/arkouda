@@ -259,7 +259,7 @@ __all__ += [
     "reshape",
     "roll",
     "squeeze",
-    "stack"
+    "stack",
 ]
 
 __all__ += ["argmax", "argmin", "nonzero", "where"]
@@ -272,6 +272,4 @@ __all__ += ["max", "mean", "min", "prod", "std", "sum", "var"]
 
 __all__ += ["all", "any"]
 
-warnings.warn(
-    "The arkouda.array_api submodule is still experimental."
-)
+warnings.warn("The arkouda.array_api submodule is still experimental.")

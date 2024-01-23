@@ -1103,6 +1103,8 @@ module OperatorMsg
                     when "+=" { l.a += r.a; }
                     when "-=" { l.a -= r.a; }
                     when "*=" { l.a *= r.a; }
+                    when ">>=" { l.a >>= r.a;}
+                    when "<<=" { l.a <<= r.a;}
                     when "//=" {
                         //l.a /= r.a;
                         ref la = l.a;
@@ -1147,6 +1149,8 @@ module OperatorMsg
                     when "+=" {l.a += r.a:int;}
                     when "-=" {l.a -= r.a:int;}
                     when "*=" {l.a *= r.a:int;}
+                    when ">>=" { l.a >>= r.a:int;}
+                    when "<<=" { l.a <<= r.a:int;}
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1189,6 +1193,8 @@ module OperatorMsg
                     when "**=" {
                         l.a **= r.a;
                     }
+                    when ">>=" { l.a >>= r.a;}
+                    when "<<=" { l.a <<= r.a;}
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1208,6 +1214,8 @@ module OperatorMsg
                     when "+=" {l.a += r.a:uint;}
                     when "-=" {l.a -= r.a:uint;}
                     when "*=" {l.a *= r.a:uint;}
+                    when ">>=" { l.a >>= r.a:uint;}
+                    when "<<=" { l.a <<= r.a:uint;}
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1691,6 +1699,8 @@ module OperatorMsg
                     when "+=" { l.a += val; }
                     when "-=" { l.a -= val; }
                     when "*=" { l.a *= val; }
+                    when ">>=" { l.a >>= val; }
+                    when "<<=" { l.a <<= val; }
                     when "//=" {
                         if val != 0 {l.a /= val;} else {l.a = 0;}
                     }//floordiv
@@ -1715,10 +1725,18 @@ module OperatorMsg
                 }
             }
             when (DType.Int64, DType.UInt64) {
-                // The result of operations between int and uint are float by default which doesn't fit in either type
-                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
+                var l = toSymEntry(left,int, nd);
+                var val = value.getUIntValue();
+                select op {
+                    when ">>=" { l.a >>= val; }
+                    when "<<=" { l.a <<= val; }
+                    otherwise {
+                        // The result of operations between int and uint are float by default which doesn't fit in either type
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
             }
             when (DType.Int64, DType.Float64) {
                 var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
@@ -1732,6 +1750,8 @@ module OperatorMsg
                     when "+=" {l.a += val:int;}
                     when "-=" {l.a -= val:int;}
                     when "*=" {l.a *= val:int;}
+                    when ">>=" {l.a >>= val:int; }
+                    when "<<=" {l.a <<= val:int; }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1745,10 +1765,18 @@ module OperatorMsg
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
             when (DType.UInt64, DType.Int64) {
-                // The result of operations between int and uint are float by default which doesn't fit in either type
-                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
+            var l = toSymEntry(left, uint, nd);
+                var val = value.getIntValue();
+                select op {
+                    when ">>=" { l.a >>= val; }
+                    when "<<=" { l.a <<= val; }
+                    otherwise {
+                        // The result of operations between int and uint are float by default which doesn't fit in either type
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
             }
             when (DType.UInt64, DType.UInt64) {
                 var l = toSymEntry(left,uint, nd);
@@ -1768,6 +1796,8 @@ module OperatorMsg
                     when "**=" {
                         l.a **= val;
                     }
+                    when ">>=" { l.a >>= val; }
+                    when "<<=" { l.a <<= val; }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1787,6 +1817,8 @@ module OperatorMsg
                     when "+=" {l.a += val:uint;}
                     when "-=" {l.a -= val:uint;}
                     when "*=" {l.a *= val:uint;}
+                    when ">>=" { l.a >>= val:uint;}
+                    when "<<=" { l.a <<= val:uint;}
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

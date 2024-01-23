@@ -555,30 +555,74 @@ class StringTest(ArkoudaTest):
     def test_case_change(self):
         mixed = ak.array([f"StrINgS {i}" for i in range(10)])
 
-        lower = mixed.to_lower()
+        lower = mixed.lower()
         self.assertListEqual(lower.to_list(), [f"strings {i}" for i in range(10)])
 
-        upper = mixed.to_upper()
+        upper = mixed.upper()
         self.assertListEqual(upper.to_list(), [f"STRINGS {i}" for i in range(10)])
 
-        title = mixed.to_title()
+        title = mixed.title()
         self.assertListEqual(title.to_list(), [f"Strings {i}" for i in range(10)])
 
         # first 10 all lower, second 10 mixed case (not lower, upper, or title), third 10 all upper,
         # last 10 all title
         lmut = ak.concatenate([lower, mixed, upper, title])
 
-        islower = lmut.is_lower()
+        islower = lmut.islower()
         expected = 10 > ak.arange(40)
         self.assertListEqual(islower.to_list(), expected.to_list())
 
-        isupper = lmut.is_upper()
+        isupper = lmut.isupper()
         expected = (30 > ak.arange(40)) & (ak.arange(40) >= 20)
         self.assertListEqual(isupper.to_list(), expected.to_list())
 
-        istitle = lmut.is_title()
+        istitle = lmut.istitle()
         expected = ak.arange(40) >= 30
         self.assertListEqual(istitle.to_list(), expected.to_list())
+
+    def test_string_isalnum(self):
+        not_alnum = ak.array([f"%Strings {i}" for i in range(3)])
+        alnum = ak.array([f"Strings{i}" for i in range(3)])
+        example = ak.concatenate([not_alnum, alnum])
+        self.assertListEqual(example.isalnum().to_list(), [False, False, False, True, True, True])
+
+    def test_string_isalpha(self):
+        not_alpha = ak.array([f"%Strings {i}" for i in range(3)])
+        alpha = ak.array(["StringA", "StringB", "StringC"])
+        example = ak.concatenate([not_alpha, alpha])
+        self.assertListEqual(example.isalpha().to_list(), [False, False, False, True, True, True])
+
+        example2 = ak.array(
+            [
+                "",
+                "string1",
+                "stringA",
+                "String",
+                "12345",
+                "Hello\tWorld",
+                " ",
+                "\n",
+                "3.14",
+                "\u0030",
+                "\u00B2",
+            ]
+        )
+
+        expected = [
+            False,
+            False,
+            True,
+            True,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+        ]
+
+        self.assertListEqual(example2.isalpha().to_list(), expected)
 
     def test_where(self):
         revs = ak.arange(10) % 2 == 0

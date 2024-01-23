@@ -108,9 +108,7 @@ class iinfo_object:
 
 
 # Note: isdtype is a new function from the 2022.12 array API specification.
-def isdtype(
-    dtype: Dtype, kind: Union[Dtype, str, Tuple[Union[Dtype, str], ...]]
-) -> bool:
+def isdtype(dtype: Dtype, kind: Union[Dtype, str, Tuple[Union[Dtype, str], ...]]) -> bool:
     """
     Returns a boolean indicating whether a provided dtype is of a specified data type ``kind``.
 
@@ -124,27 +122,29 @@ def isdtype(
             raise TypeError("'kind' must be a dtype, str, or tuple of dtypes and strs")
         return any(isdtype(dtype, k) for k in kind)
     elif isinstance(kind, str):
-        if kind == 'bool':
+        if kind == "bool":
             return dtype in _boolean_dtypes
-        elif kind == 'signed integer':
+        elif kind == "signed integer":
             return dtype in _signed_integer_dtypes
-        elif kind == 'unsigned integer':
+        elif kind == "unsigned integer":
             return dtype in _unsigned_integer_dtypes
-        elif kind == 'integral':
+        elif kind == "integral":
             return dtype in _integer_dtypes
-        elif kind == 'real floating':
+        elif kind == "real floating":
             return dtype in _real_floating_dtypes
-        elif kind == 'complex floating':
+        elif kind == "complex floating":
             return dtype in _complex_floating_dtypes
-        elif kind == 'numeric':
+        elif kind == "numeric":
             return dtype in _numeric_dtypes
         else:
             raise ValueError(f"Unrecognized data type kind: {kind!r}")
     elif kind in _all_dtypes:
         return dtype == kind
     else:
-        raise TypeError(f"'kind' must be a dtype, str, \
-            or tuple of dtypes and strs, not {type(kind).__name__}")
+        raise TypeError(
+            f"'kind' must be a dtype, str, \
+            or tuple of dtypes and strs, not {type(kind).__name__}"
+        )
 
 
 def result_type(*arrays_and_dtypes: Union[Array, Dtype]) -> Dtype:

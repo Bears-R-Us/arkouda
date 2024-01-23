@@ -12,6 +12,7 @@ from context import arkouda as ak
 from pandas.testing import assert_frame_equal, assert_series_equal
 
 from arkouda import io_util
+from arkouda.index import Index, MultiIndex
 
 
 def build_ak_df():
@@ -33,6 +34,19 @@ def build_ak_df_example2():
         "key3": ["value1", "value2", "value3", "value4"],
         "count": [34, 25, 11, 4],
         "nums": [1, 2, 5, 21],
+    }
+    index = Index(ak.array([2, 1, 4, 3]), name="index1")
+    ak_df = ak.DataFrame({k: ak.array(v) for k, v in data.items()}, index=index)
+    return ak_df
+
+
+def build_ak_df_with_nans():
+    data = {
+        "key1": ["valuew", "valuex", "valuew", "valuex"],
+        "key2": ["valueA", "valueB", "valueA", "valueB"],
+        "nums1": [1, np.nan, 3, 4],
+        "nums2": [1, np.nan, np.nan, 7],
+        "nums3": [10, 8, 9, 7],
     }
     ak_df = ak.DataFrame({k: ak.array(v) for k, v in data.items()})
     return ak_df
@@ -501,8 +515,8 @@ class DataFrameTest(ArkoudaTest):
 
         c = gb.count(as_series=True)
         self.assertIsInstance(c, ak.Series)
-        self.assertListEqual(c.index.to_list(), ["Bob", "Alice", "Carol"])
-        self.assertListEqual(c.values.to_list(), [2, 3, 1])
+        self.assertListEqual(c.index.to_list(), ["Alice", "Bob", "Carol"])
+        self.assertListEqual(c.values.to_list(), [3, 2, 1])
 
     def test_gb_aggregations(self):
         df = build_ak_df()
@@ -568,12 +582,12 @@ class DataFrameTest(ArkoudaTest):
         )
         assert set(ak_df.groupby(["gb_id"]).sum().columns) == set(pd_df.groupby(["gb_id"]).sum().columns)
 
-    def get_gb_count_single(self):
-        ak_df = self.build_ak_df_example_numeric_types()
+    def test_gb_count_single(self):
+        ak_df = build_ak_df_example_numeric_types()
         pd_df = ak_df.to_pandas(retain_index=True)
 
         assert_frame_equal(
-            ak_df.groupby("gb_id").count().to_pandas(retain_index=True),
+            ak_df.groupby("gb_id").count(as_series=False).to_pandas(retain_index=True),
             pd_df.groupby("gb_id")
             .count()
             .drop(["int64", "uint64", "bigint"], axis=1)
@@ -581,26 +595,26 @@ class DataFrameTest(ArkoudaTest):
         )
 
         assert_frame_equal(
-            ak_df.groupby(["gb_id"]).count().to_pandas(retain_index=True),
+            ak_df.groupby(["gb_id"]).count(as_series=False).to_pandas(retain_index=True),
             pd_df.groupby(["gb_id"])
             .count()
             .drop(["int64", "uint64", "bigint"], axis=1)
             .rename(columns={"float64": "count"}, errors="raise"),
         )
 
-    def get_gb_count_multiple(self):
-        ak_df = self.build_ak_df_example2()
+    def test_gb_count_multiple(self):
+        ak_df = build_ak_df_example2()
         pd_df = ak_df.to_pandas(retain_index=True)
 
         pd_result1 = (
             pd_df.groupby(["key1", "key2"], as_index=False).count().drop(["nums", "key3"], axis=1)
         )
-        ak_result1 = ak_df.groupby(["key1", "key2"]).count()
+        ak_result1 = ak_df.groupby(["key1", "key2"]).count(as_series=False)
         assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
         assert isinstance(ak_result1, ak.dataframe.DataFrame)
 
-    def get_gb_size_single(self):
-        ak_df = self.build_ak_df_example_numeric_types()
+    def test_gb_size_single(self):
+        ak_df = build_ak_df_example_numeric_types()
         pd_df = ak_df.to_pandas(retain_index=True)
 
         assert_frame_equal(
@@ -613,38 +627,49 @@ class DataFrameTest(ArkoudaTest):
             pd_df.groupby(["gb_id"], as_index=False).size(),
         )
 
-    def get_gb_size_multiple(self):
-        ak_df = self.build_ak_df_example2()
+    def test_gb_size_multiple(self):
+        ak_df = build_ak_df_example2()
         pd_df = ak_df.to_pandas(retain_index=True)
 
         pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False).size()
-        ak_result1 = ak_df.groupby(["key1", "key2"]).size()
+        ak_result1 = ak_df.groupby(["key1", "key2"], as_index=False).size()
         assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
         assert isinstance(ak_result1, ak.dataframe.DataFrame)
 
-        assert_frame_equal(
-            ak_df.groupby(["key1", "key2"], as_index=False).size().to_pandas(retain_index=True),
-            pd_df.groupby(["key1", "key2"], as_index=False).size(),
-        )
+        for as_index in [True, False]:
+            for dropna in [True, False]:
+                for gb_keys in ['key1', 'key2', ['key1', 'key2'], ['count', 'key1', 'key2']]:
+                    ak_result = ak_df.groupby(gb_keys, as_index=as_index, dropna=dropna).size()
+                    pd_result = pd_df.groupby(gb_keys, as_index=as_index, dropna=dropna).size()
 
-        assert_frame_equal(
-            ak_df.groupby(["key1", "key2"], as_index=True).size().to_pandas(retain_index=True),
-            pd_df.groupby(["key1", "key2"], as_index=False).size(),
-        )
+                    if isinstance(ak_result, ak.dataframe.DataFrame):
+                        assert_frame_equal(ak_result.to_pandas(retain_index=True),
+                                               pd_result)
+                    else:
+                        assert_series_equal(ak_result.to_pandas(),
+                                            pd_result)
 
-        assert_frame_equal(
-            ak_df.groupby(["key1"], as_index=False).size().to_pandas(retain_index=True),
-            pd_df.groupby(["key1"], as_index=False).size(),
-        )
+    def test_gb_size_match_pandas(self):
+        ak_df = build_ak_df_with_nans()
+        pd_df = ak_df.to_pandas(retain_index=True)
 
-        assert_frame_equal(
-            ak_df.groupby("key1", as_index=False).size().to_pandas(retain_index=True),
-            pd_df.groupby("key1", as_index=False).size(),
-        )
+        for as_index in [True, False]:
+            for dropna in [True, False]:
+                for gb_keys in [
+                    "nums1",
+                    "nums2",
+                    ["nums1", "nums2"],
+                    ["nums1", "nums3"],
+                    ["nums3", "nums1"],
+                    ["nums1", "nums2", "nums3"],
+                ]:
+                    ak_result = ak_df.groupby(gb_keys, as_index=as_index, dropna=dropna).size()
+                    pd_result = pd_df.groupby(gb_keys, as_index=as_index, dropna=dropna).size()
 
-        assert_series_equal(
-            ak_df.groupby("key1").size(as_series=True).to_pandas(), pd_df.groupby("key1").size()
-        )
+                    if isinstance(ak_result, ak.dataframe.DataFrame):
+                        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+                    else:
+                        assert_series_equal(ak_result.to_pandas(), pd_result)
 
     def test_gb_size_as_index_cases(self):
         ak_df = build_ak_df_example2()
@@ -731,6 +756,25 @@ class DataFrameTest(ArkoudaTest):
 
         with self.assertRaises(TypeError):
             df.sort_values(by=1)
+
+    def test_sort_index(self):
+        ak_df = build_ak_df_example_numeric_types()
+        ak_df["string"] = ak.array(["f", "g", "h", "i", "j",
+                                    "k", "l", "m", "n", "o",
+                                    "a", "b", "c", "d", "e",
+                                    "p", "q", "r", "s", "t"])
+        ak_df["negs"] = -1 * ak_df["int64"]
+
+        pd_df = ak_df.to_pandas()
+
+        group_bys = ["gb_id", "float64", "int64", "uint64", "bigint", "negs", "string", ["gb_id", "negs"]]
+        for group_by in group_bys:
+            ak_result = ak_df.groupby(group_by).size()
+            pd_result = ak_result.to_pandas()
+            if isinstance(ak_result, ak.dataframe.DataFrame):
+                assert_frame_equal(ak_result.sort_index().to_pandas(retain_index=True), pd_result.sort_index())
+            else:
+                assert_series_equal(ak_result.sort_index().to_pandas(), pd_result.sort_index())
 
     def test_intx(self):
         username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
