@@ -39,17 +39,22 @@ master_doc = 'index'
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 
               'sphinxarg.ext', 'sphinx.ext.githubpages',
               'sphinx.ext.coverage', 'autoapi.extension',
-              'ak_sphinx_extensions', 'myst_parser'
+              'ak_sphinx_extensions', 'myst_parser', 
+              'IPython.sphinxext.ipython_directive',
+              'sphinx.ext.viewcode'
              ]
 
 source_suffix = ['.rst', '.md']
 
 myst_enable_extensions = ["deflist", "linkify"]
 
+
 # path to directory containing files to autogenerate docs from comments
 autoapi_dirs = ['../arkouda']
 
 autoapi_options = ['members', 'undoc-members', 'show-inheritance', 'show-module-summary', 'imported-members', ]
+
+autoapi_member_order = "alphabetical"
 
 # do not create api reference for
 autoapi_ignore = ['*migrations*', "*_version.py", "*decorators.py", "*message.py"]
