@@ -501,12 +501,20 @@ module SegmentedString {
       return computeOnSegments(offsets.a, values.a, SegFunction.StringIsAlphaNumeric, bool);
     }
 
-    /*
+     /*
       Returns list of bools where index i indicates whether the string i of the SegString is alphabetic
       :returns: [domain] bool where index i indicates whether the string i of the SegString is alphabetic
     */
     proc isalpha() throws {
       return computeOnSegments(offsets.a, values.a, SegFunction.StringIsAlphabetic, bool);
+    }
+
+    /*
+      Returns list of bools where index i indicates whether the string i of the SegString is digits
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is digits
+    */
+    proc isdigit() throws {
+      return computeOnSegments(offsets.a, values.a, SegFunction.StringIsDigit, bool);
     }
 
     proc bytesToUintArr(const max_bytes:int, lens: [?D] ?t, st) throws {
@@ -1458,10 +1466,17 @@ module SegmentedString {
   }
 
   /*
-    The SegFunction called by computeOnSegments for isalnum
+    The SegFunction called by computeOnSegments for isalpha
   */
   inline proc stringIsAlphabetic(ref values, rng) throws {
     return interpretAsString(values, rng, borrow=true).isAlpha();
+  }
+
+  /*
+    The SegFunction called by computeOnSegments for isdigit
+  */
+  inline proc stringIsDigit(ref values, rng) throws {
+    return interpretAsString(values, rng, borrow=true).isDigit();
   }
 
   inline proc stringBytesToUintArr(ref values, rng) throws {
