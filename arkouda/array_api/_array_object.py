@@ -55,6 +55,7 @@ class Array:
     functions, such as asarray().
 
     """
+
     _array: ak.pdarray
     _empty: bool
 
@@ -131,8 +132,7 @@ class Array:
     # NumPy behavior
 
     def _check_allowed_dtypes(
-        self, other: bool | int | float | Array,
-        dtype_category: str, op: str
+        self, other: bool | int | float | Array, dtype_category: str, op: str
     ) -> Array:
         """
         Helper function for operators to only allow specific input dtypes
@@ -170,9 +170,7 @@ class Array:
 
             # The spec explicitly disallows this.
             if res_dtype != self.dtype:
-                raise TypeError(
-                    f"Cannot perform {op} with dtypes {self.dtype} and {other.dtype}"
-                )
+                raise TypeError(f"Cannot perform {op} with dtypes {self.dtype} and {other.dtype}")
 
         return other
 
@@ -190,14 +188,10 @@ class Array:
         # allowed.
         if isinstance(scalar, bool):
             if self.dtype not in _boolean_dtypes:
-                raise TypeError(
-                    "Python bool scalars can only be promoted with bool arrays"
-                )
+                raise TypeError("Python bool scalars can only be promoted with bool arrays")
         elif isinstance(scalar, int):
             if self.dtype in _boolean_dtypes:
-                raise TypeError(
-                    "Python int scalars cannot be promoted with bool arrays"
-                )
+                raise TypeError("Python int scalars cannot be promoted with bool arrays")
             if self.dtype in _integer_dtypes:
                 info = np.iinfo(int)
                 if not (info.min <= scalar <= info.max):
@@ -207,9 +201,7 @@ class Array:
             # int + array(floating) is allowed
         elif isinstance(scalar, float):
             if self.dtype not in _floating_dtypes:
-                raise TypeError(
-                    "Python float scalars can only be promoted with floating-point arrays."
-                )
+                raise TypeError("Python float scalars can only be promoted with floating-point arrays.")
         elif isinstance(scalar, complex):
             if self.dtype not in _complex_floating_dtypes:
                 raise TypeError(
@@ -265,9 +257,7 @@ class Array:
     # Note: A large fraction of allowed indices are disallowed here (see the
     # docstring below)
     def _validate_index(self, key):
-        raise IndexError(
-            "not implemented"
-        )
+        raise IndexError("not implemented")
 
     # Everything below this line is required by the spec.
 
@@ -286,9 +276,7 @@ class Array:
     def __and__(self: Array, other: Union[int, bool, Array], /) -> Array:
         return self
 
-    def __array_namespace__(
-        self: Array, /, *, api_version: Optional[str] = None
-    ) -> types.ModuleType:
+    def __array_namespace__(self: Array, /, *, api_version: Optional[str] = None) -> types.ModuleType:
         if api_version is not None:
             raise ValueError(f"Unrecognized array API version: {api_version!r}")
         return array_api
@@ -318,9 +306,7 @@ class Array:
 
     def __getitem__(
         self: Array,
-        key: Union[
-            int, slice, Tuple[Union[int, slice], ...], Array
-        ],
+        key: Union[int, slice, Tuple[Union[int, slice], ...], Array],
         /,
     ) -> Array:
         if isinstance(key, Array):
@@ -382,9 +368,7 @@ class Array:
 
     def __setitem__(
         self,
-        key: Union[
-            int, slice, Tuple[Union[int, slice], ...], Array
-        ],
+        key: Union[int, slice, Tuple[Union[int, slice], ...], Array],
         value: Union[int, float, bool, Array],
         /,
     ) -> None:
