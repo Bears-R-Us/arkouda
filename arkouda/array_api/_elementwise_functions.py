@@ -131,10 +131,7 @@ def bitwise_and(x1: Array, x2: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    if (
-        x1.dtype not in _integer_or_boolean_dtypes
-        or x2.dtype not in _integer_or_boolean_dtypes
-    ):
+    if x1.dtype not in _integer_or_boolean_dtypes or x2.dtype not in _integer_or_boolean_dtypes:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_and")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
@@ -174,10 +171,7 @@ def bitwise_or(x1: Array, x2: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    if (
-        x1.dtype not in _integer_or_boolean_dtypes
-        or x2.dtype not in _integer_or_boolean_dtypes
-    ):
+    if x1.dtype not in _integer_or_boolean_dtypes or x2.dtype not in _integer_or_boolean_dtypes:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_or")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
@@ -207,10 +201,7 @@ def bitwise_xor(x1: Array, x2: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    if (
-        x1.dtype not in _integer_or_boolean_dtypes
-        or x2.dtype not in _integer_or_boolean_dtypes
-    ):
+    if x1.dtype not in _integer_or_boolean_dtypes or x2.dtype not in _integer_or_boolean_dtypes:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_xor")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)

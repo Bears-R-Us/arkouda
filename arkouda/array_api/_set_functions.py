@@ -42,7 +42,5 @@ def unique_values(x: Array, /) -> Array:
 
     See its docstring for more information.
     """
-    res = ak.unique(
-        x._array
-    )
+    res = ak.unique(x._array)
     return Array._new(res)

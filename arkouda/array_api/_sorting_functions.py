@@ -8,9 +8,7 @@ import arkouda as ak
 
 
 # Note: the descending keyword argument is new in this function
-def argsort(
-    x: Array, /, *, axis: int = -1, descending: bool = False, stable: bool = True
-) -> Array:
+def argsort(x: Array, /, *, axis: int = -1, descending: bool = False, stable: bool = True) -> Array:
     """
     Array API compatible wrapper for :py:func:`np.argsort <numpy.argsort>`.
 
@@ -29,9 +27,7 @@ def argsort(
 
 
 # Note: the descending keyword argument is new in this function
-def sort(
-    x: Array, /, *, axis: int = -1, descending: bool = False, stable: bool = True
-) -> Array:
+def sort(x: Array, /, *, axis: int = -1, descending: bool = False, stable: bool = True) -> Array:
     """
     Array API compatible wrapper for :py:func:`np.sort <numpy.sort>`.
 
