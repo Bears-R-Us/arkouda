@@ -53,8 +53,12 @@ def asarray(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    if isinstance(obj, bool) or isinstance(obj, int) or \
-       isinstance(obj, float) or isinstance(obj, complex):
+    if (
+        isinstance(obj, bool)
+        or isinstance(obj, int)
+        or isinstance(obj, float)
+        or isinstance(obj, complex)
+    ):
         if dtype is None:
             xdtype = resolve_scalar_dtype(obj)
         else:
@@ -79,6 +83,7 @@ def arange(
     device: Optional[Device] = None,
 ) -> Array:
     from ._array_object import Array
+
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
@@ -95,6 +100,7 @@ def empty(
     device: Optional[Device] = None,
 ) -> Array:
     from ._array_object import Array
+
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
@@ -104,27 +110,33 @@ def empty(
         for s in tshape:
             size *= s
         return Array._new(
-            pdarray("__empty__", akdtype(dtype), size, len(tshape), tshape, 0, None),
-            empty=True)
+            pdarray("__empty__", akdtype(dtype), size, len(tshape), tshape, 0, None), empty=True
+        )
     else:
         vshape = cast(int, shape)
         return Array._new(
-            pdarray("__empty__", akdtype(dtype), vshape, 1, (vshape,), 0, None),
-            empty=True)
+            pdarray("__empty__", akdtype(dtype), vshape, 1, (vshape,), 0, None), empty=True
+        )
 
 
-def empty_like(
-    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
-) -> Array:
+def empty_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
     from ._array_object import Array
+
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
     t = x.dtype if dtype is None else akdtype(dtype)
 
     return Array._new(
-        pdarray("__empty__", t, x._array.size, x._array.ndim,
-                x._array.shape, x._array.itemsize, x._array.max_bits),
+        pdarray(
+            "__empty__",
+            t,
+            x._array.size,
+            x._array.ndim,
+            x._array.shape,
+            x._array.itemsize,
+            x._array.max_bits,
+        ),
         empty=True,
     )
 
@@ -139,6 +151,7 @@ def eye(
     device: Optional[Device] = None,
 ) -> Array:
     from ._array_object import Array
+
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
@@ -246,9 +259,7 @@ def ones(
     return a
 
 
-def ones_like(
-    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
-) -> Array:
+def ones_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
     return ones(x.shape, dtype=dtype, device=device)
 
 
@@ -281,7 +292,9 @@ def triu(x: Array, /, *, k: int = 0) -> Array:
 
 
 def zeros(
-    shape: Union[int, Tuple[int, ...]], /, *,
+    shape: Union[int, Tuple[int, ...]],
+    /,
+    *,
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
@@ -312,7 +325,5 @@ def zeros(
     return Array._new(create_pdarray(repMsg))
 
 
-def zeros_like(
-    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
-) -> Array:
+def zeros_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
     return zeros(x.shape, dtype=dtype, device=device)
