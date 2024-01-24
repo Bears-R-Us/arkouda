@@ -231,10 +231,8 @@ def in1dmulti(a, b, assume_unique=False, symmetric=False):
     """
     return in1d(a, b, assume_unique=assume_unique, symmetric=symmetric)
 
-def indexof1d(
-    keys: groupable,
-    arr: groupable
-) -> Union[pdarray, groupable]:
+
+def indexof1d(keys: groupable, arr: groupable) -> Union[pdarray, groupable]:
     """
     Returns an integer array of the index values where the values of the first
     array appear in the second.
@@ -244,7 +242,7 @@ def indexof1d(
     keys : pdarray or Strings or Categorical
         Input array of values to find the indices of in `arr`.
     arr : pdarray or Strings or Categorical
-        The values to search. 
+        The values to search.
 
     Returns
     -------
@@ -260,20 +258,19 @@ def indexof1d(
         Raised if the dtype of either array is not supported
     """
     from arkouda.categorical import Categorical as Categorical_
+
     if isinstance(keys, (pdarray, Strings, Categorical_)):
         if isinstance(keys, (Strings, Categorical_)) and not isinstance(arr, (Strings, Categorical_)):
             raise TypeError("Arguments must have compatible types, Strings/Categorical")
         elif isinstance(keys, pdarray) and not isinstance(arr, pdarray):
             raise TypeError("If keys is pdarray, arr must also be pdarray")
-    
+
     repMsg = generic_msg(
-            cmd="indexof1d",
-            args={
-                "keys": keys,
-                "arr": arr
-            },
-        )
+        cmd="indexof1d",
+        args={"keys": keys, "arr": arr},
+    )
     return create_pdarray(cast(str, repMsg))
+
 
 # fmt: off
 @typechecked

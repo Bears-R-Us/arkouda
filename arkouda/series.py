@@ -12,12 +12,18 @@ import arkouda.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
-from arkouda.dtypes import float64, int64, all_scalars, dtype
+from arkouda.dtypes import all_scalars, dtype, float64, int64
 from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import value_counts
-from arkouda.pdarrayclass import RegistrationError, argmaxk, create_pdarray, pdarray, any
+from arkouda.pdarrayclass import (
+    RegistrationError,
+    any,
+    argmaxk,
+    create_pdarray,
+    pdarray,
+)
 from arkouda.pdarraycreation import arange, array, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.strings import Strings
@@ -198,8 +204,8 @@ class Series:
         KeyError
             Raised if container of keys has keys not present in the Series
         IndexError
-            Raised if the length of a boolean key array is different 
-            from the Series 
+            Raised if the length of a boolean key array is different
+            from the Series
         """
         if isinstance(key, list):
             key = array(key)
@@ -208,13 +214,21 @@ class Series:
         if isinstance(key, Series):
             # @TODO align the series indexes
             key = key.values
-        
+
         if isinstance(key, all_scalars):
             if dtype(type(key)) != self.index.dtype:
-                raise TypeError("Unexpected key type. Received {} but expected {}".format(dtype(type(key)), self.index.dtype))
+                raise TypeError(
+                    "Unexpected key type. Received {} but expected {}".format(
+                        dtype(type(key)), self.index.dtype
+                    )
+                )
         elif isinstance(key, Strings):
             if self.index.dtype != dtype(str):
-                raise TypeError("Unexpected key type. Received Strings but expected {}".format(dtype(type(key)), self.index.dtype))
+                raise TypeError(
+                    "Unexpected key type. Received Strings but expected {}".format(
+                        self.index.dtype
+                    )
+                )
             if any(~in1d(key, self.index.values)):
                 raise KeyError("{} not in index".format(key[~in1d(key, self.index.values)]))
         elif isinstance(key, pdarray):
@@ -223,15 +237,25 @@ class Series:
                     raise KeyError("{} not in index".format(key[~in1d(key, self.index.values)]))
             elif key.dtype == bool:
                 if key.size != self.index.size:
-                    raise IndexError("Boolean index has wrong length: {} instead of {}".format(key.size, self.size))
+                    raise IndexError(
+                        "Boolean index has wrong length: {} instead of {}".format(key.size, self.size)
+                    )
             else:
-                raise TypeError("Unexpected key type. Received {} but expected {}".format(dtype(type(key)), self.index.dtype))
-            
+                raise TypeError(
+                    "Unexpected key type. Received {} but expected {}".format(
+                        dtype(type(key)), self.index.dtype
+                    )
+                )
+
         else:
-            raise TypeError("Series [] only supports indexing by scalars, lists of scalars, and arrays of scalars.")
+            raise TypeError(
+                "Series [] only supports indexing by scalars, lists of scalars, and arrays of scalars."
+            )
         return key
-    
-    def __getitem__(self, key: Union[Series, pdarray, Strings, list, all_scalars] ) -> Union[Series, all_scalars]:
+
+    def __getitem__(
+        self, key: Union[Series, pdarray, Strings, list, all_scalars]
+    ) -> Union[Series, all_scalars]:
         """
         Gets values from Series.
 
@@ -249,7 +273,7 @@ class Series:
         if isinstance(key, all_scalars):
             key = array([key])
         elif key.dtype == bool:
-            # boolean array indexes without sorting 
+            # boolean array indexes without sorting
             return Series(index=self.index[key], data=self.values[key])
 
         indices = indexof1d(key, self.index.values)
@@ -257,11 +281,13 @@ class Series:
             return self.values[indices[0]]
         else:
             return Series(index=self.index[indices], data=self.values[indices])
-        
-    
-    def validate_val(self, val: Union[pdarray, Strings, all_scalars, list]) -> Union[pdarray, all_scalars]:
+
+    def validate_val(
+        self, val: Union[pdarray, Strings, all_scalars, list]
+    ) -> Union[pdarray, all_scalars]:
         """
-        Validates type requirements for values being written into the Series. Also converts list and tuple arguments into pdarrays.
+        Validates type requirements for values being written into the Series.
+        Also converts list and tuple arguments into pdarrays.
 
         Parameters
         ----------
@@ -275,7 +301,8 @@ class Series:
         Raises
         ------
         TypeError
-            Raised if val is not the same type or a container with elements of the same time as the Series
+            Raised if val is not the same type or a container with elements
+              of the same time as the Series
             Raised if val is a string or Strings type.
             Raised if val is not one of the supported types
         """
@@ -283,22 +310,33 @@ class Series:
             val = array(val)
         if isinstance(val, all_scalars):
             if dtype(type(val)) != self.values.dtype:
-                raise TypeError("Unexpected value type. Received {} but expected {}".format(dtype(type(val)), self.values.dtype))
+                raise TypeError(
+                    "Unexpected value type. Received {} but expected {}".format(
+                        dtype(type(val)), self.values.dtype
+                    )
+                )
             if isinstance(val, str):
                 raise TypeError("Cannot modify string type dataframes")
         elif isinstance(val, Strings):
             raise TypeError("Cannot modify string type dataframes")
         elif isinstance(val, pdarray):
             if val.dtype != self.values.dtype:
-                raise TypeError("Unexpected value type. Received {} but expected {}".format(dtype(type(val)), self.values.dtype))
+                raise TypeError(
+                    "Unexpected value type. Received {} but expected {}".format(
+                        dtype(type(val)), self.values.dtype
+                    )
+                )
         else:
             raise TypeError("cannot set with unsupported value type: {}".format(type(val)))
         return val
 
-    def __setitem__(self, key: Union[Series, list, pdarray, Strings, all_scalars], 
-                    val: Union[list, pdarray, all_scalars]):
+    def __setitem__(
+        self,
+        key: Union[Series, list, pdarray, Strings, all_scalars],
+        val: Union[list, pdarray, all_scalars],
+    ):
         """
-        Sets or adds entries in a Series by label. 
+        Sets or adds entries in a Series by label.
 
         Parameters
         ----------
@@ -312,20 +350,20 @@ class Series:
         ------
         ValueError
             Raised when setting multiple values to a Series with repeated labels
-            Raised when number of values provided does not match the number of 
+            Raised when number of values provided does not match the number of
             entries to set.
         """
         val = self.validate_val(val)
         key = self.validate_key(key)
-        
-        if isinstance(key, (pdarray,Strings)) and len(key) > 1 and self.has_repeat_labels():
+
+        if isinstance(key, (pdarray, Strings)) and len(key) > 1 and self.has_repeat_labels():
             raise ValueError("Cannot set with multiple keys for Series with repeated labels.")
-            
+
         indices = self.index == key if isinstance(key, all_scalars) else in1d(self.index.values, key)
         tf, counts = GroupBy(indices).count()
         update_count = counts[1] if len(counts) == 2 else 0
         if update_count == 0:
-            #adding a new entry
+            # adding a new entry
             if isinstance(val, (pdarray, Strings)):
                 raise ValueError("Cannot set. Too many values provided")
             new_index_values = concatenate([self.index.values, array([key])])
@@ -340,7 +378,9 @@ class Series:
                 self.values[indices] = val[0]
                 return
             if update_count != val.size:
-                raise ValueError("Cannot set using a list-like indexer with a different length from the value")
+                raise ValueError(
+                    "Cannot set using a list-like indexer with a different length from the value"
+                )
             self.values[indices] = val
             return
 
@@ -350,8 +390,8 @@ class Series:
         """
         tf, counts = GroupBy(self.index.values).count()
         return counts.size != self.index.size
-    
-    @property 
+
+    @property
     def loc(self) -> _LocIndexer:
         """
         Accesses entries of a Series by label
@@ -385,7 +425,7 @@ class Series:
         key: int
             The positions or container of positions to access entries for
         """
-        return _iLocIndexer('iloc', self)
+        return _iLocIndexer("iloc", self)
 
     @property
     def iat(self) -> _iLocIndexer:
@@ -397,7 +437,7 @@ class Series:
         key: int
             The positions or container of positions to access entries for
         """
-        return _iLocIndexer('iat', self) 
+        return _iLocIndexer("iat", self)
 
     dt = CachedAccessor("dt", DatetimeAccessor)
     str_acc = CachedAccessor("str", StringAccessor)
@@ -1010,7 +1050,8 @@ class Series:
 
         return retval
 
-class _LocIndexer():
+
+class _LocIndexer:
     def __init__(self, series):
         self.series = series
 
@@ -1020,7 +1061,8 @@ class _LocIndexer():
     def __setitem__(self, key, val):
         self.series[key] = val
 
-class _iLocIndexer():
+
+class _iLocIndexer:
     def __init__(self, method_name, series):
         self.name = method_name
         self.series = series
@@ -1035,28 +1077,30 @@ class _iLocIndexer():
                 raise ValueError("Cannot index using 0-length iterables.")
             if key.dtype != int64 and key.dtype != bool:
                 raise TypeError(".{} requires integer keys".format(self.name))
-            
+
             if key.dtype == bool and key.size != self.series.size:
-                raise IndexError("Boolean index has wrong length: {} instead of {}".format(key.size, self.series.size))
+                raise IndexError(
+                    "Boolean index has wrong length: {} instead of {}".format(key.size, self.series.size)
+                )
             elif any(key >= self.series.size):
                 raise IndexError("{} cannot enlarge its target object.".format(self.name))
-            
+
         elif isinstance(key, int):
             if key >= self.series.size:
                 raise IndexError("{} cannot enlarge its target object.".format(self.name))
         else:
             raise TypeError(".{} requires integer keys".format(self.name))
         return key
-    
+
     def validate_val(self, val) -> Union[pdarray, all_scalars]:
         return self.series.validate_val(val)
-    
+
     def __getitem__(self, key) -> Series:
         key = self.validate_key(key)
         if isinstance(key, all_scalars):
             key = array([key])
         return Series(index=self.series.index[key], data=self.series.values[key])
-    
+
     def __setitem__(self, key, val):
         key = self.validate_key(key)
         val = self.validate_val(val)
@@ -1069,5 +1113,7 @@ class _iLocIndexer():
                 self.series.values[key] = val
                 return
             if key.dtype == int64 and len(val) != len(key):
-                raise ValueError("cannot set using a list-like indexer with a different length than the value")
+                raise ValueError(
+                    "cannot set using a list-like indexer with a different length than the value"
+                )
         self.series.values[key] = val
