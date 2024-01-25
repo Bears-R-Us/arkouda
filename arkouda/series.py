@@ -182,14 +182,16 @@ class Series:
             + length_str
         )
 
-    def validate_key(self, key) -> Union[pdarray, Strings, all_scalars]:
+    def validate_key(
+        self, key: Union[Series, pdarray, Strings, Categorical, List, all_scalars]
+    ) -> Union[pdarray, Strings, Categorical, all_scalars]:
         """
         Validates type requirements for keys when reading or writing the Series.
         Also converts list and tuple arguments into pdarrays.
 
         Parameters
         ----------
-        key: pdarray, Strings, list, tuple, all_scalars
+        key: Series, pdarray, Strings, Categorical, List, all_scalars
             The key or container of keys that might be used to index into the Series.
 
         Returns
@@ -208,14 +210,14 @@ class Series:
             from the Series
         """
         if isinstance(key, list):
-            key = array(key)
+            return self.validate_key(array(key))
         if isinstance(key, tuple):
             raise TypeError("Series does not support tuple keys")
         if isinstance(key, Series):
             # @TODO align the series indexes
-            key = key.values
+            return self.validate_key(key.values)
 
-        if isinstance(key, all_scalars):
+        if isinstance(key, all_scalars):  # type: ignore
             if dtype(type(key)) != self.index.dtype:
                 raise TypeError(
                     "Unexpected key type. Received {} but expected {}".format(
@@ -225,9 +227,7 @@ class Series:
         elif isinstance(key, Strings):
             if self.index.dtype != dtype(str):
                 raise TypeError(
-                    "Unexpected key type. Received Strings but expected {}".format(
-                        self.index.dtype
-                    )
+                    "Unexpected key type. Received Strings but expected {}".format(self.index.dtype)
                 )
             if any(~in1d(key, self.index.values)):
                 raise KeyError("{} not in index".format(key[~in1d(key, self.index.values)]))
@@ -253,9 +253,8 @@ class Series:
             )
         return key
 
-    def __getitem__(
-        self, key: Union[Series, pdarray, Strings, list, all_scalars]
-    ) -> Union[Series, all_scalars]:
+    @typechecked
+    def __getitem__(self, _key: Union[all_scalars, pdarray, Strings, List]):
         """
         Gets values from Series.
 
@@ -269,22 +268,22 @@ class Series:
         Series with all entries with matching labels. If only one entry in the
         Series is accessed, returns a scalar.
         """
-        key = self.validate_key(key)
-        if isinstance(key, all_scalars):
+        key = self.validate_key(_key)
+        if isinstance(key, (int, float, bool, str)):
             key = array([key])
         elif key.dtype == bool:
             # boolean array indexes without sorting
             return Series(index=self.index[key], data=self.values[key])
-
+        assert isinstance(key, (pdarray, Strings))
         indices = indexof1d(key, self.index.values)
-        if indices.size == 1:
+        if len(indices) == 1:
             return self.values[indices[0]]
         else:
             return Series(index=self.index[indices], data=self.values[indices])
 
     def validate_val(
-        self, val: Union[pdarray, Strings, all_scalars, list]
-    ) -> Union[pdarray, all_scalars]:
+        self, val: Union[pdarray, Strings, all_scalars, List]
+    ) -> Union[pdarray, Strings, all_scalars]:
         """
         Validates type requirements for values being written into the Series.
         Also converts list and tuple arguments into pdarrays.
@@ -308,7 +307,7 @@ class Series:
         """
         if isinstance(val, list):
             val = array(val)
-        if isinstance(val, all_scalars):
+        if isinstance(val, all_scalars):  # type: ignore
             if dtype(type(val)) != self.values.dtype:
                 raise TypeError(
                     "Unexpected value type. Received {} but expected {}".format(
@@ -330,11 +329,7 @@ class Series:
             raise TypeError("cannot set with unsupported value type: {}".format(type(val)))
         return val
 
-    def __setitem__(
-        self,
-        key: Union[Series, list, pdarray, Strings, all_scalars],
-        val: Union[list, pdarray, all_scalars],
-    ):
+    def __setitem__(self, key, val):
         """
         Sets or adds entries in a Series by label.
 
@@ -359,7 +354,11 @@ class Series:
         if isinstance(key, (pdarray, Strings)) and len(key) > 1 and self.has_repeat_labels():
             raise ValueError("Cannot set with multiple keys for Series with repeated labels.")
 
-        indices = self.index == key if isinstance(key, all_scalars) else in1d(self.index.values, key)
+        indices = None
+        if isinstance(key, all_scalars):  # type: ignore
+            indices = self.index == key
+        else:
+            indices = in1d(self.index.values, key)  # type: ignore
         tf, counts = GroupBy(indices).count()
         update_count = counts[1] if len(counts) == 2 else 0
         if update_count == 0:
@@ -370,12 +369,12 @@ class Series:
             self.index = Index.factory(new_index_values)
             self.values = concatenate([self.values, array([val])])
             return
-        if isinstance(val, all_scalars):
+        if isinstance(val, all_scalars):  # type: ignore
             self.values[indices] = val
             return
         else:
-            if val.size == 1 and isinstance(key, all_scalars):
-                self.values[indices] = val[0]
+            if val.size == 1 and isinstance(key, all_scalars):  # type: ignore
+                self.values[indices] = val[0]  # type: ignore
                 return
             if update_count != val.size:
                 raise ValueError(
@@ -1067,7 +1066,7 @@ class _iLocIndexer:
         self.name = method_name
         self.series = series
 
-    def validate_key(self, key) -> Union[pdarray, Strings, all_scalars]:
+    def validate_key(self, key):
         if isinstance(key, list):
             key = array(key)
         if isinstance(key, tuple):
@@ -1095,9 +1094,9 @@ class _iLocIndexer:
     def validate_val(self, val) -> Union[pdarray, all_scalars]:
         return self.series.validate_val(val)
 
-    def __getitem__(self, key) -> Series:
+    def __getitem__(self, key):
         key = self.validate_key(key)
-        if isinstance(key, all_scalars):
+        if isinstance(key, all_scalars):  # type: ignore
             key = array([key])
         return Series(index=self.series.index[key], data=self.series.values[key])
 
@@ -1105,11 +1104,11 @@ class _iLocIndexer:
         key = self.validate_key(key)
         val = self.validate_val(val)
 
-        if isinstance(val, all_scalars):
+        if isinstance(val, all_scalars):  # type: ignore
             self.series.values[key] = val
             return
         else:
-            if isinstance(key, all_scalars):
+            if isinstance(key, all_scalars):  # type: ignore
                 self.series.values[key] = val
                 return
             if key.dtype == int64 and len(val) != len(key):
