@@ -12,7 +12,7 @@ import arkouda.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
-from arkouda.dtypes import all_scalars, dtype, float64, int64
+from arkouda.dtypes import dtype, float64, int64
 from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numeric import cast as akcast
@@ -37,6 +37,12 @@ __all__ = [
 ]
 
 import operator
+
+supported_scalars = Union[int, float, bool, str, np.int64, np.float64, np.bool_, np.str_]
+
+
+def is_supported_scalar(x):
+    return isinstance(x, (int, float, bool, str, np.int64, np.float64, np.bool_, np.str_))
 
 
 def natural_binary_operators(cls):
@@ -183,15 +189,15 @@ class Series:
         )
 
     def validate_key(
-        self, key: Union[Series, pdarray, Strings, Categorical, List, all_scalars]
-    ) -> Union[pdarray, Strings, Categorical, all_scalars]:
+        self, key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars]
+    ) -> Union[pdarray, Strings, Categorical, supported_scalars]:
         """
         Validates type requirements for keys when reading or writing the Series.
         Also converts list and tuple arguments into pdarrays.
 
         Parameters
         ----------
-        key: Series, pdarray, Strings, Categorical, List, all_scalars
+        key: Series, pdarray, Strings, Categorical, List, supported_scalars
             The key or container of keys that might be used to index into the Series.
 
         Returns
@@ -217,7 +223,7 @@ class Series:
             # @TODO align the series indexes
             return self.validate_key(key.values)
 
-        if isinstance(key, all_scalars):  # type: ignore
+        if is_supported_scalar(key):  # type: ignore
             if dtype(type(key)) != self.index.dtype:
                 raise TypeError(
                     "Unexpected key type. Received {} but expected {}".format(
@@ -254,13 +260,13 @@ class Series:
         return key
 
     @typechecked
-    def __getitem__(self, _key: Union[all_scalars, pdarray, Strings, List]):
+    def __getitem__(self, _key: Union[supported_scalars, pdarray, Strings, List]):
         """
         Gets values from Series.
 
         Parameters
         ----------
-        key: pdarray, Strings, Series, list, all_scalars
+        key: pdarray, Strings, Series, list, supported_scalars
             The key or container of keys to get entries for.
 
         Returns
@@ -269,12 +275,12 @@ class Series:
         Series is accessed, returns a scalar.
         """
         key = self.validate_key(_key)
-        if isinstance(key, (int, float, bool, str)):
-            key = array([key])
-        elif key.dtype == bool:
+        if is_supported_scalar(key):
+            return self[array([key])]
+        assert isinstance(key, (pdarray, Strings))
+        if key.dtype == bool:
             # boolean array indexes without sorting
             return Series(index=self.index[key], data=self.values[key])
-        assert isinstance(key, (pdarray, Strings))
         indices = indexof1d(key, self.index.values)
         if len(indices) == 1:
             return self.values[indices[0]]
@@ -282,15 +288,15 @@ class Series:
             return Series(index=self.index[indices], data=self.values[indices])
 
     def validate_val(
-        self, val: Union[pdarray, Strings, all_scalars, List]
-    ) -> Union[pdarray, Strings, all_scalars]:
+        self, val: Union[pdarray, Strings, supported_scalars, List]
+    ) -> Union[pdarray, Strings, supported_scalars]:
         """
         Validates type requirements for values being written into the Series.
         Also converts list and tuple arguments into pdarrays.
 
         Parameters
         ----------
-        val: pdarray, Strings, list, all_scalars
+        val: pdarray, Strings, list, supported_scalars
             The value or container of values that might be assigned into the Series.
 
         Returns
@@ -307,7 +313,7 @@ class Series:
         """
         if isinstance(val, list):
             val = array(val)
-        if isinstance(val, all_scalars):  # type: ignore
+        if is_supported_scalar(val):  # type: ignore
             if dtype(type(val)) != self.values.dtype:
                 raise TypeError(
                     "Unexpected value type. Received {} but expected {}".format(
@@ -335,10 +341,10 @@ class Series:
 
         Parameters
         ----------
-        key: pdarray, Strings, Series, list, all_scalars
+        key: pdarray, Strings, Series, list, supported_scalars
             The key or container of keys to set entries for.
 
-        val: pdarray, list, all_scalars
+        val: pdarray, list, supported_scalars
             The values to set/add to the Series.
 
         Raises
@@ -355,7 +361,7 @@ class Series:
             raise ValueError("Cannot set with multiple keys for Series with repeated labels.")
 
         indices = None
-        if isinstance(key, all_scalars):  # type: ignore
+        if is_supported_scalar(key):  # type: ignore
             indices = self.index == key
         else:
             indices = in1d(self.index.values, key)  # type: ignore
@@ -369,11 +375,11 @@ class Series:
             self.index = Index.factory(new_index_values)
             self.values = concatenate([self.values, array([val])])
             return
-        if isinstance(val, all_scalars):  # type: ignore
+        if is_supported_scalar(val):  # type: ignore
             self.values[indices] = val
             return
         else:
-            if val.size == 1 and isinstance(key, all_scalars):  # type: ignore
+            if val.size == 1 and is_supported_scalar(key):  # type: ignore
                 self.values[indices] = val[0]  # type: ignore
                 return
             if update_count != val.size:
@@ -397,7 +403,7 @@ class Series:
 
         Parameters
         ----------
-        key: pdarray, Strings, Series, list, all_scalars
+        key: pdarray, Strings, Series, list, supported_scalars
             The key or container of keys to access entries for
         """
         return _LocIndexer(self)
@@ -409,7 +415,7 @@ class Series:
 
         Parameters
         ----------
-        key: pdarray, Strings, Series, list, all_scalars
+        key: pdarray, Strings, Series, list, supported_scalars
             The key or container of keys to access entries for
         """
         return _LocIndexer(self)
@@ -1091,12 +1097,12 @@ class _iLocIndexer:
             raise TypeError(".{} requires integer keys".format(self.name))
         return key
 
-    def validate_val(self, val) -> Union[pdarray, all_scalars]:
+    def validate_val(self, val) -> Union[pdarray, supported_scalars]:
         return self.series.validate_val(val)
 
     def __getitem__(self, key):
         key = self.validate_key(key)
-        if isinstance(key, all_scalars):  # type: ignore
+        if is_supported_scalar(key):  # type: ignore
             key = array([key])
         return Series(index=self.series.index[key], data=self.series.values[key])
 
@@ -1104,11 +1110,11 @@ class _iLocIndexer:
         key = self.validate_key(key)
         val = self.validate_val(val)
 
-        if isinstance(val, all_scalars):  # type: ignore
+        if is_supported_scalar(val):  # type: ignore
             self.series.values[key] = val
             return
         else:
-            if isinstance(key, all_scalars):  # type: ignore
+            if is_supported_scalar(key):  # type: ignore
                 self.series.values[key] = val
                 return
             if key.dtype == int64 and len(val) != len(key):
