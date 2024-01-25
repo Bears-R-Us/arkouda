@@ -186,6 +186,13 @@ or
       :returns: [domain] bool where index i indicates whether the string i of the SegString is alphabetic
       
 
+   .. method:: proc isdigit() throws
+
+      
+      Returns list of bools where index i indicates whether the string i of the SegString is digits
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is digits
+      
+
    .. method:: proc bytesToUintArr(const max_bytes: int, lens: [?D] ?t, st) throws
 
    .. method:: proc findSubstringInBytes(const substr: string) throws
@@ -380,7 +387,13 @@ or
 .. function:: proc stringIsAlphabetic(ref values, rng) throws
 
    
-   The SegFunction called by computeOnSegments for isalnum
+   The SegFunction called by computeOnSegments for isalpha
+   
+
+.. function:: proc stringIsDigit(ref values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for isdigit
    
 
 .. function:: proc stringBytesToUintArr(ref values, rng) throws

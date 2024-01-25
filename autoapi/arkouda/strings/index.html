@@ -765,7 +765,7 @@ Strings is alphanumeric.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_lower</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_upper</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.is_title</span></code></p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.islower" title="arkouda.strings.Strings.islower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.islower</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.isupper" title="arkouda.strings.Strings.isupper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.isupper</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.istitle" title="arkouda.strings.Strings.istitle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.istitle</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">not_alnum</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;%Strings </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
@@ -807,6 +807,38 @@ and all the characters are alphabetic.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
 <span class="go">array([&#39;%Strings 0&#39;, &#39;%Strings 1&#39;, &#39;%Strings 2&#39;, &#39;StringA&#39;,&#39;StringB&#39;,&#39;StringC&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span>
+<span class="go">array([False False False True True True])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.strings.Strings.isdigit">
+<span class="sig-name descname"><span class="pre">isdigit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.isdigit" title="Link to this definition">#</a></dt>
+<dd><p>Returns a boolean pdarray where index i indicates whether string i of the
+Strings has all digit characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True for elements that are digits, False otherwise</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, bool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.islower" title="arkouda.strings.Strings.islower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.islower</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.isupper" title="arkouda.strings.Strings.isupper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.isupper</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.istitle" title="arkouda.strings.Strings.istitle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.istitle</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">not_digit</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;Strings </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">digit</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;12</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">not_digit</span><span class="p">,</span> <span class="n">digit</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
+<span class="go">array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39;120&#39;, &#39;121&#39;, &#39;122&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span>
 <span class="go">array([False False False True True True])</span>
 </pre></div>
 </div>
@@ -1992,7 +2024,7 @@ Please note you cannot register two different objects with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id482" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
+<li><p><a class="reference internal" href="../index.html#id484" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
 If the user is attempting to register more than one object with the same name,
 the former should be unregistered first to free up the registration name.</p></li>
 </ul>
@@ -2215,6 +2247,7 @@ a supported dtype</p></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.istitle"><code class="docutils literal notranslate"><span class="pre">Strings.istitle()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.isalnum"><code class="docutils literal notranslate"><span class="pre">Strings.isalnum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.isalpha"><code class="docutils literal notranslate"><span class="pre">Strings.isalpha()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.isdigit"><code class="docutils literal notranslate"><span class="pre">Strings.isdigit()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.strip"><code class="docutils literal notranslate"><span class="pre">Strings.strip()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.cached_regex_patterns"><code class="docutils literal notranslate"><span class="pre">Strings.cached_regex_patterns()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.purge_cached_regex_patterns"><code class="docutils literal notranslate"><span class="pre">Strings.purge_cached_regex_patterns()</span></code></a></li>
