@@ -814,6 +814,45 @@ class Strings:
             )
         )
 
+    def isempty(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i of the
+        Strings is empty.
+
+
+        True for elements that are the empty string, False otherwise
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are digits, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.islower
+        Strings.isupper
+        Strings.istitle
+
+        Examples
+        --------
+        >>> not_empty = ak.array([f'Strings {i}' for i in range(3)])
+        >>> empty = ak.array(['' for i in range(3)])
+        >>> strings = ak.concatenate([not_empty, empty])
+        >>> strings
+        array(['%Strings 0', '%Strings 1', '%Strings 2', '', '', ''])
+        >>> strings.isempty()
+        """
+        return create_pdarray(
+            generic_msg(
+                cmd="checkChars", args={"subcmd": "isempty", "objType": self.objType, "obj": self.entry}
+            )
+        )
+
     @typechecked
     def strip(self, chars: Optional[Union[bytes, str_scalars]] = "") -> Strings:
         """
