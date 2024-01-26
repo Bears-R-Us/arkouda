@@ -1,3 +1,4 @@
+from typing import Union
 from warnings import warn
 
 import numpy as np
@@ -6,7 +7,7 @@ from arkouda.numeric import log
 from arkouda.pdarrayclass import pdarray
 
 
-def xlogy(x: pdarray or np.float64, y: pdarray):
+def xlogy(x: Union[pdarray, np.float64], y: pdarray):
     """
     Computes x * log(y).
 
