@@ -144,7 +144,7 @@ setup(
         'types-tabulate',
         'tables>=3.7.0',
         'pyarrow',
-        'scipy==1.11.2',
+        'scipy',
     ],
 
     # List additional groups of dependencies here (e.g. development

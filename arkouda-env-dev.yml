@@ -20,7 +20,7 @@ dependencies:
   - libiconv
   - libidn2
   - jupyter
-  - scipy==1.11.2
+  - scipy
 
   # Developer dependencies
   - pexpect
