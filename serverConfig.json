@@ -1,0 +1,18 @@
+{
+    "max_array_dims": 1,
+    "supported_scalar_types": {
+        "uint8": true,
+        "uint16": false,
+        "uint32": false,
+        "uint64": true,
+        "int8": false,
+        "int16": false,
+        "int32": false,
+        "int64": true,
+        "float32": false,
+        "float64": true,
+        "complex64": false,
+        "complex128": false,
+        "bool": true
+    }
+}

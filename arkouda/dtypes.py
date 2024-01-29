@@ -11,11 +11,19 @@ __all__ = [
     "DTypeObjects",
     "ScalarDTypes",
     "dtype",
-    "bool",
-    "int64",
-    "float64",
     "uint8",
+    "uint16",
+    "uint32",
     "uint64",
+    "int8",
+    "int16",
+    "int32",
+    "int64",
+    "float32",
+    "float64",
+    "complex64",
+    "complex128",
+    "bool",
     "str_",
     "bigint",
     "intTypes",
@@ -73,11 +81,19 @@ class BigInt:
         return int(x)
 
 
-bool = np.dtype(bool)
-int64 = np.dtype(np.int64)
-float64 = np.dtype(np.float64)
 uint8 = np.dtype(np.uint8)
+uint16 = np.dtype(np.uint16)
+uint32 = np.dtype(np.uint32)
 uint64 = np.dtype(np.uint64)
+int8 = np.dtype(np.int8)
+int16 = np.dtype(np.int16)
+int32 = np.dtype(np.int32)
+int64 = np.dtype(np.int64)
+float32 = np.dtype(np.float32)
+float64 = np.dtype(np.float64)
+complex64 = np.dtype(np.complex64)
+complex128 = np.dtype(np.complex128)
+bool = np.dtype(bool)
 str_ = np.dtype(np.str_)
 bigint = BigInt()
 npstr = np.dtype(str)
@@ -86,7 +102,7 @@ bitType = uint64
 
 # Union aliases used for static and runtime type checking
 bool_scalars = Union[builtins.bool, np.bool_]
-float_scalars = Union[float, np.float64]
+float_scalars = Union[float, np.float64, np.float32]
 int_scalars = Union[
     int,
     np.int8,
@@ -102,6 +118,7 @@ numeric_scalars = Union[float_scalars, int_scalars]
 numeric_and_bool_scalars = Union[bool_scalars, numeric_scalars]
 numpy_scalars = Union[
     np.float64,
+    np.float32,
     np.int8,
     np.int16,
     np.int32,
@@ -122,15 +139,24 @@ The DType enum defines the supported Arkouda data types in string form.
 
 
 class DType(Enum):
-    BOOL = "bool"
     FLOAT = "float"
     FLOAT64 = "float64"
+    FLOAT32 = "float32"
+    COMPLEX64 = "complex64"
+    COMPLEX128 = "complex128"
     INT = "int"
+    INT8 = "int8"
+    INT16 = "int16"
+    INT32 = "int32"
     INT64 = "int64"
-    STR = "str"
+    UINT = "uint"
     UINT8 = "uint8"
+    UINT16 = "uint16"
+    UINT32 = "uint32"
     UINT64 = "uint64"
+    BOOL = "bool"
     BIGINT = "bigint"
+    STR = "str"
 
     def __str__(self) -> str:  # type: ignore
         """
@@ -174,7 +200,12 @@ ARKOUDA_SUPPORTED_NUMBERS = (
     np.uint64,
     BigInt,
 )
-ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])
+
+# TODO: bring supported data types into parity with all numpy dtypes
+# missing full support for: float32, int32, int16, int8, uint32, uint16, complex64, complex128
+# ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])
+ARKOUDA_SUPPORTED_DTYPES = frozenset(["bool", "float", "float64", "int", "int64",
+                                      "uint", "uint64", "uint8", "bigint", "str"])
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
 DTypeObjects = frozenset([bool, float, float64, int, int64, str, str_, uint8, uint64])
@@ -245,7 +276,7 @@ def translate_np_dtype(dt: np.dtype) -> Tuple[builtins.str, int]:
     # Assert that dt is one of the arkouda supported dtypes
     dt = _as_dtype(dt)
     check_np_dtype(dt)
-    trans = {"i": "int", "f": "float", "b": "bool", "u": "uint", "U": "str"}
+    trans = {"i": "int", "f": "float", "b": "bool", "u": "uint", "U": "str", "c": "complex"}
     kind = trans[dt.kind]
     return kind, dt.itemsize
 
