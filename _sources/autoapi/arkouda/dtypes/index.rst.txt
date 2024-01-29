@@ -28,11 +28,19 @@ Attributes
 
 .. autoapisummary::
 
-   arkouda.dtypes.bool
-   arkouda.dtypes.int64
-   arkouda.dtypes.float64
    arkouda.dtypes.uint8
+   arkouda.dtypes.uint16
+   arkouda.dtypes.uint32
    arkouda.dtypes.uint64
+   arkouda.dtypes.int8
+   arkouda.dtypes.int16
+   arkouda.dtypes.int32
+   arkouda.dtypes.int64
+   arkouda.dtypes.float32
+   arkouda.dtypes.float64
+   arkouda.dtypes.complex64
+   arkouda.dtypes.complex128
+   arkouda.dtypes.bool
    arkouda.dtypes.str_
    arkouda.dtypes.bigint
    arkouda.dtypes.intTypes
@@ -53,7 +61,31 @@ Attributes
 .. py:function:: dtype(x)
 
 
-.. py:data:: bool
+.. py:data:: uint8
+
+   
+
+.. py:data:: uint16
+
+   
+
+.. py:data:: uint32
+
+   
+
+.. py:data:: uint64
+
+   
+
+.. py:data:: int8
+
+   
+
+.. py:data:: int16
+
+   
+
+.. py:data:: int32
 
    
 
@@ -61,15 +93,23 @@ Attributes
 
    
 
+.. py:data:: float32
+
+   
+
 .. py:data:: float64
 
    
 
-.. py:data:: uint8
+.. py:data:: complex64
 
    
 
-.. py:data:: uint64
+.. py:data:: complex128
+
+   
+
+.. py:data:: bool
 
    
 
