@@ -138,6 +138,26 @@ module Message {
         }
 
         /*
+        * Return the value as a positive int64
+        * If the value is negative, return 'value + max + 1', otherwise return the value
+        * This is useful for implementing Python's negative indexing rules
+        *
+        * Returns int
+        */
+        proc getPositiveIntValue(max: int): int throws {
+            var x = this.getIntValue();
+            if x >= 0 && x <= max then return x;
+            if x < 0 && x > -max - 1 then return x + max + 1;
+            else throw new ErrorWithContext(
+                "Parameter cannot be cast as positive in in the range: (%d, %d]".doFormat(-max, max),
+                getLineNumber(),
+                getRoutineName(),
+                getModuleName(),
+                "ValueError"
+            )
+        }
+
+        /*
         * Return the value as uint64
         * Returns uint
         */
