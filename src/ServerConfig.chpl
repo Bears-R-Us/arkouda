@@ -14,11 +14,14 @@ module ServerConfig
     use Logging;
     use MemoryMgmt;
     use CTypes;
+    import NumPyDType.DType;
     use Math;
 
     use ArkoudaFileCompat;
     use ArkoudaMathCompat;
     private use ArkoudaCTypesCompat;
+
+    import BigInteger.bigint;
     
     enum Deployment {STANDARD,KUBERNETES}
 
@@ -39,7 +42,70 @@ module ServerConfig
       INDEX=12,
       MULTIINDEX=13,
     };
-    
+
+    /*
+      maximum array dimensionality supported by the server
+      set by 'serverModuleGen.py' based on 'serverConfig.json'
+    */
+    config param MaxArrayDims: int = 1;
+
+    /*
+      Scalar (numpy) data types supported by the server
+      set by 'serverModuleGen.py' based on 'serverConfig.json'
+    */
+    config param  SupportsUint8 = true,
+                  SupportsUint16 = false,
+                  SupportsUint32 = false,
+                  SupportsUint64 = true,
+                  SupportsInt8 = false,
+                  SupportsInt16 = false,
+                  SupportsInt32 = false,
+                  SupportsInt64 = true,
+                  SupportsFloat32 = false,
+                  SupportsFloat64 = true,
+                  SupportsComplex64 = false,
+                  SupportsComplex128 = false,
+                  SupportsBool = true;
+
+    proc isSupportedType(type t) param: bool {
+      if t == uint(8) then return SupportsUint8;
+      if t == uint(16) then return SupportsUint16;
+      if t == uint(32) then return SupportsUint32;
+      if t == uint then return SupportsUint64;
+      if t == int(8) then return SupportsInt8;
+      if t == int(16) then return SupportsInt16;
+      if t == int(32) then return SupportsInt32;
+      if t == int(64) then return SupportsInt64;
+      if t == real(32) then return SupportsFloat32;
+      if t == real then return SupportsFloat64;
+      if t == complex(64) then return SupportsComplex64;
+      if t == complex(128) then return SupportsComplex128;
+      if t == bool then return SupportsBool;
+      if t == string then return true;
+      if t == bytes then return true;
+      if t == bigint then return true;
+      return false;
+    }
+
+    proc isSupportedDType(dt: DType): bool {
+      if dt == DType.UInt8 then return SupportsUint8;
+      if dt == DType.UInt16 then return SupportsUint16;
+      if dt == DType.UInt32 then return SupportsUint32;
+      if dt == DType.UInt64 then return SupportsUint64;
+      if dt == DType.Int8 then return SupportsInt8;
+      if dt == DType.Int16 then return SupportsInt16;
+      if dt == DType.Int32 then return SupportsInt32;
+      if dt == DType.Int64 then return SupportsInt64;
+      if dt == DType.Float32 then return SupportsFloat32;
+      if dt == DType.Float64 then return SupportsFloat64;
+      if dt == DType.Complex64 then return SupportsComplex64;
+      if dt == DType.Complex128 then return SupportsComplex128;
+      if dt == DType.Bool then return SupportsBool;
+      if dt == DType.Strings then return true;
+      if dt == DType.BigInt then return true;
+      return false;
+    }
+
     /*
     Type of deployment, which currently is either STANDARD, meaning
     that Arkouda is deployed bare-metal or within an HPC environment, 
@@ -148,7 +214,8 @@ module ServerConfig
     */
     config param regexMaxCaptures = 20;
 
-    config const saveUsedModules : bool = false;
+    config const saveUsedModules : bool = false,
+                 usedModulesFmt : string = "cfg";
 
     private config const lLevel = ServerConfig.logLevel;
     

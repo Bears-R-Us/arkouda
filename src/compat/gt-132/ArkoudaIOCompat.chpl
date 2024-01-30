@@ -1,5 +1,5 @@
 module ArkoudaIOCompat {
-  use IO, JSON;
+  use IO, JSON, Set;
   
   proc formatString(input) throws {
     return "%?".format(input);
@@ -69,5 +69,12 @@ module ArkoudaIOCompat {
 
   proc binaryCheckCompat(reader) throws {
     return reader.deserializerType == binarySerializer;
+  }
+
+  proc writeUsedModulesJson(ref mods: set(string)) {
+    const cfgFile = try! open("UsedModules.json", ioMode.cw),
+          w = try! cfgFile.writer(locking=false, serializer = new jsonSerializer());
+
+    try! w.write(mods);
   }
 }

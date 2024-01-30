@@ -67,8 +67,7 @@ module ArkoudaSymEntryCompat {
     this.a = try! makeDistArray((...args), etype);
     init this;
     this.shape = tupShapeString(this.tupShape);
-    // commented out for perf reasons, needs further investigation
-    // this.ndim = N;
+    this.ndim = this.tupShape.size;
   }
 
   /*
@@ -89,7 +88,6 @@ module ArkoudaSymEntryCompat {
     this.max_bits=max_bits;
     init this;
     this.shape = tupShapeString(this.tupShape);
-    // commented out for perf reasons, needs further investigation
-    // this.ndim = D.rank;
+    this.ndim = this.tupShape.size;
   }
 }

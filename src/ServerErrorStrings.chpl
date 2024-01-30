@@ -80,5 +80,13 @@ module ServerErrorStrings
       return try! "Error: %s: Incompatible arguments: %s".doFormat(pname, reason);
     }
 
-    
+    proc unsupportedTypeError(dtype: DType, pname: string): string {
+      return try!
+        "Error: server not configured to support '%s' (in %s). Please update the configuration and recompile."
+        .doFormat(dtype2str(dtype), pname);
+    }
+
+    proc unsupportedTypeError(type t, pname: string): string {
+      return unsupportedTypeError(whichDtype(t), pname);
+    }
 }

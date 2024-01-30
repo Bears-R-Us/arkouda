@@ -199,6 +199,20 @@ module ServerErrors {
         proc init(){ super.init(); }
     }
 
+     /*
+     * The ConfigurationError if the current instance of the server was not
+     * configured to complete a requested operation.
+     */
+    class ConfigurationError: ErrorWithContext {
+
+        proc init(msg : string, lineNumber: int, routineName: string,
+                                                           moduleName: string) {
+           super.init(msg,lineNumber,routineName,moduleName,errorClass='IOError');
+        }
+
+        proc init(){ super.init(); }
+    }
+
     /*
      * Generatea a detailed, context-rich error message for errors such as instances of 
      * built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext
