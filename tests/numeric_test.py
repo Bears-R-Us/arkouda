@@ -74,7 +74,7 @@ class NumericTest(ArkoudaTest):
             )
         )
         for t1, orig in arrays.items():
-            for t2 in ak.DTypes:
+            for t2 in ak.ARKOUDA_SUPPORTED_DTYPES:
                 t2 = ak.dtype(t2)
                 if t1 == ak.float64 and t2 == ak.bigint:
                     # we don't support casting a float to a bigint

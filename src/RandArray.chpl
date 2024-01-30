@@ -11,10 +11,19 @@ module RandArray {
   use Math;
 
   use Map;
-  
+
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const raLogger = new Logger(logLevel, logChannel);
+
+  proc fillRand(ref a: [] ?t, const in aMin: t, const in aMax: t, const seedStr:string="None") throws {
+    if (seedStr == "None") {
+      fillRandom(a, aMin, aMax);
+    } else {
+      var seed = (seedStr:int) + here.id;
+      fillRandom(a, aMin, aMax, seed);
+    }
+  }
 
   proc fillInt(ref a:[] ?t, const aMin: t, const aMax: t, const seedStr:string="None") throws where isIntType(t) {
       if (seedStr.toLower() == "none") {
