@@ -14,6 +14,7 @@ Functions
 .. autoapisummary::
 
    arkouda.pdarraysetops.in1d
+   arkouda.pdarraysetops.indexof1d
    arkouda.pdarraysetops.concatenate
    arkouda.pdarraysetops.union1d
    arkouda.pdarraysetops.intersect1d
@@ -55,6 +56,24 @@ Functions
    .. rubric:: Notes
 
    Only works for pdarrays of int64 dtype, Strings, or Categorical
+
+
+.. py:function:: indexof1d(keys: arkouda.groupbyclass.groupable, arr: arkouda.groupbyclass.groupable) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+
+   Returns an integer array of the index values where the values of the first
+   array appear in the second.
+
+   :param keys: Input array of values to find the indices of in `arr`.
+   :type keys: pdarray or Strings or Categorical
+   :param arr: The values to search.
+   :type arr: pdarray or Strings or Categorical
+
+   :returns: The indices of the values of `keys` in `arr`.
+   :rtype: pdarray, int
+
+   :raises TypeError: Raised if either `keys` or `arr` is not a pdarray, Strings, or
+       Categorical object
+   :raises RuntimeError: Raised if the dtype of either array is not supported
 
 
 .. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]

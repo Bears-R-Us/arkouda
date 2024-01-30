@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.plotting" href="../plotting/index.html" /><link rel="prev" title="arkouda.pdarraycreation" href="../pdarraycreation/index.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
         <title>arkouda.pdarraysetops - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -292,19 +292,22 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.in1d" title="arkouda.pdarraysetops.in1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in1d</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Test whether each element of a 1-D array is also present in a second array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.concatenate" title="arkouda.pdarraysetops.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concatenate</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.indexof1d" title="arkouda.pdarraysetops.indexof1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexof1d</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<td><p>Returns an integer array of the index values where the values of the first</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.concatenate" title="arkouda.pdarraysetops.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concatenate</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Concatenate a list or tuple of <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> or <code class="docutils literal notranslate"><span class="pre">Strings</span></code> objects into</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.union1d" title="arkouda.pdarraysetops.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.union1d" title="arkouda.pdarraysetops.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Find the union of two arrays/List of Arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.intersect1d" title="arkouda.pdarraysetops.intersect1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersect1d</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.intersect1d" title="arkouda.pdarraysetops.intersect1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersect1d</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Find the intersection of two arrays.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.setdiff1d" title="arkouda.pdarraysetops.setdiff1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdiff1d</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.setdiff1d" title="arkouda.pdarraysetops.setdiff1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdiff1d</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Find the set difference of two arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.setxor1d" title="arkouda.pdarraysetops.setxor1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setxor1d</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraysetops.setxor1d" title="arkouda.pdarraysetops.setxor1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setxor1d</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Find the set exclusive-or (symmetric difference) of two arrays.</p></td>
 </tr>
 </tbody>
@@ -343,6 +346,34 @@ to (but is faster than) <code class="docutils literal notranslate"><span class="
 <p class="rubric">Notes</p>
 <p>Only works for pdarrays of int64 dtype, Strings, or Categorical</p>
 </section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarraysetops.indexof1d">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraysetops.</span></span><span class="sig-name descname"><span class="pre">indexof1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="headerlink" href="#arkouda.pdarraysetops.indexof1d" title="Link to this definition">#</a></dt>
+<dd><p>Returns an integer array of the index values where the values of the first
+array appear in the second.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id897" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Input array of values to find the indices of in <cite>arr</cite>.</p></li>
+<li><p><strong>arr</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id897" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The values to search.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the values of <cite>keys</cite> in <cite>arr</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if either <cite>keys</cite> or <cite>arr</cite> is not a pdarray, Strings, or
+Categorical object</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if the dtype of either array is not supported</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -657,6 +688,7 @@ arrays.</p>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a><ul>
 <li><a class="reference internal" href="#arkouda.pdarraysetops.in1d"><code class="docutils literal notranslate"><span class="pre">in1d()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarraysetops.indexof1d"><code class="docutils literal notranslate"><span class="pre">indexof1d()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraysetops.concatenate"><code class="docutils literal notranslate"><span class="pre">concatenate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraysetops.union1d"><code class="docutils literal notranslate"><span class="pre">union1d()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraysetops.intersect1d"><code class="docutils literal notranslate"><span class="pre">intersect1d()</span></code></a></li>
