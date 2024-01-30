@@ -206,7 +206,7 @@ module ManipulationMsg {
     }
   }
 
-  inline proc concatenatedShape(param n: int, in shapes: [?d] n*int, axis: int): (bool, n*int, [d] int) {
+  private proc concatenatedShape(param n: int, in shapes: [?d] n*int, axis: int): (bool, n*int, [d] int) {
     var shapeOut = shapes[0],
         validConcat = true,
         startOffsets: [d] int;
@@ -229,7 +229,7 @@ module ManipulationMsg {
 
   // alternative to 'concatMsg' to be used when the axis argument is 'None'
   @arkouda.registerND
-  proc flatConcatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+  proc concatFlatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const nArrays = msgArgs.get("n").getIntValue(),
           names = msgArgs.get("names").getList(nArrays),

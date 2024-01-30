@@ -3386,7 +3386,7 @@ def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
         cast(
             str,
             generic_msg(
-                cmd=f"broadcast{pda.ndim}Dx{len(shape)}D",
+                cmd=f"broadcastTo{pda.ndim}Dx{len(shape)}D",
                 args={
                     "name": pda,
                     "shape": shape,

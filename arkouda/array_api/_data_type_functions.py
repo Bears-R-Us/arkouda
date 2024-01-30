@@ -108,7 +108,9 @@ class iinfo_object:
 
 
 # Note: isdtype is a new function from the 2022.12 array API specification.
-def isdtype(dtype: Dtype, kind: Union[Dtype, str, Tuple[Union[Dtype, str], ...]]) -> bool:
+def isdtype(
+    dtype: Dtype, kind: Union[Dtype, str, Tuple[Union[Dtype, str], ...]]
+) -> bool:
     """
     Returns a boolean indicating whether a provided dtype is of a specified data type ``kind``.
 
