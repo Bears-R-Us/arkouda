@@ -2,9 +2,15 @@ module ManipulationMsg {
   use CommandMap;
   use Message;
   use MultiTypeSymbolTable;
+  use MultiTypeSymEntry;
   use ServerConfig;
+  use NumPyDType;
   use Logging;
+  use ServerErrorStrings;
   use CommAggregation;
+
+  use Reflection;
+  use BigInteger;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -77,7 +83,7 @@ module ManipulationMsg {
 
         if !valid {
           const errorMsg = "Invalid broadcast: " + eIn.tupShape:string + " -> " + shapeOut:string;
-          mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          mLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         } else {
           // define a mapping from the output array's indices to the input array's indices
@@ -96,7 +102,7 @@ module ManipulationMsg {
       }
 
       const repMsg = "created " + st.attrib(rname);
-      mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
@@ -108,7 +114,7 @@ module ManipulationMsg {
       when DType.Bool do return doBroadcast(bool);
       otherwise {
         var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
-        mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        mLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
       }
     }
@@ -130,8 +136,159 @@ module ManipulationMsg {
     return (true, dimsToBroadcast);
   }
 
+  // https://data-apis.org/array-api/latest/API_specification/generated/array_api.concat.html#array_api.concat
   @arkouda.registerND
+  proc concatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    const nArrays = msgArgs.get("n").getIntValue(),
+          names = msgArgs.get("names").getList(nArrays),
+          axis = msgArgs.get("axis").getPositiveIntValue(nd),
+          rname = st.nextName();
+
+    var gEnts: [0..<nArrays] borrowed GenSymEntry = getGenericEntries(names, st);
+
+    // confirm that all arrays have the same dtype
+    // (type promotion needs to be completed before calling 'concat')
+    const dt = gEnts[0].dtype;
+    for i in 1..<nArrays do if gEnts[i].dtype != dt {
+      const errMsg = "All arrays must have the same dtype to concatenate";
+      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+      return new MsgTuple(errMsg,MsgType.ERROR);
+    }
+
+    proc doConcat(type t): MsgTuple throws {
+      const eIns = [i in 0..<nArrays] toSymEntry(gEnts[i], t, nd),
+            shapes = [i in 0..<nArrays] eIns[i].tupShape,
+            (valid, shapeOut, startOffsets) = concatenatedShape(nd, shapes, axis);
+
+      if !valid {
+        const errMsg = "Arrays must have compatible shapes to concatenate";
+        mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+        return new MsgTuple(errMsg,MsgType.ERROR);
+      } else {
+        var eOut = st.addEntry(rname, (...shapeOut), t);
+
+        // mapping between the input and output array indices
+        inline proc imap(arrIdx: int, idx: nd*int): nd*int
+          where nd > 1
+        {
+          var ret = idx;
+          ret[axis] += startOffsets[arrIdx];
+          return ret;
+        }
+
+        inline proc imap(arrIdx: int, idx: int): int
+          where nd == 1
+            do return idx + startOffsets[arrIdx];
+
+        // copy the data from the input arrays to the output array
+        forall (arrIdx, arr) in zip(eIns.domain, eIns) do
+          forall idx in arr.a.domain with (var agg = newDstAggregator(t)) do
+            agg.copy(eOut.a[imap(arrIdx, idx)], arr.a[idx]);
+
+        const repMsg = "created " + st.attrib(rname);
+        mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+      }
+    }
+
+    select dt {
+      when DType.Int64 do return doConcat(int);
+      when DType.UInt64 do return doConcat(uint);
+      when DType.Float64 do return doConcat(real);
+      when DType.Bool do return doConcat(bool);
+      when DType.BigInt do return doConcat(bigint);
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(dt));
+        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      }
+    }
+  }
+
+  inline proc concatenatedShape(param n: int, in shapes: [?d] n*int, axis: int): (bool, n*int, [d] int) {
+    var shapeOut = shapes[0],
+        validConcat = true,
+        startOffsets: [d] int;
+
+    label shapes for s in 1..<shapes.size {
+      for param i in 0..<n {
+        if i == axis {
+          shapeOut[i] += shapes[s][i];
+          startOffsets[s] = shapeOut[i];
+        } else {
+          if shapes[s][i] != shapeOut[i] {
+            validConcat = false;
+            break shapes;
+          }
+        }
+      }
+    }
+    return (validConcat, shapeOut, startOffsets);
+  }
+
+  // alternative to 'concatMsg' to be used when the axis argument is 'None'
+  @arkouda.registerND
+  proc flatConcatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    const nArrays = msgArgs.get("n").getIntValue(),
+          names = msgArgs.get("names").getList(nArrays),
+          rname = st.nextName();
+
+    var gEnts: [0..<nArrays] borrowed GenSymEntry = getGenericEntries(names, st);
+
+    // confirm that all arrays have the same dtype
+    // (type promotion needs to be completed before calling 'concat')
+    const dt = gEnts[0].dtype;
+    for i in 1..<nArrays do if gEnts[i].dtype != dt {
+      const errMsg = "All arrays must have the same dtype to concatenate";
+      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+      return new MsgTuple(errMsg,MsgType.ERROR);
+    }
+
+    proc doFlatConcat(type t): MsgTuple throws {
+      const eIns = [i in 0..<nArrays] toSymEntry(gEnts[i], t, nd),
+            sizes = [i in 0..<nArrays] eIns[i].a.size,
+            starts = + scan sizes;
+
+      // create a 1D output array
+      var eOut = st.addEntry(rname, + reduce sizes, t);
+
+      // copy the data from the input arrays to the output array
+      for arrIdx in 0..<nArrays {
+        const a = flatten(eIns[arrIdx].a);
+        forall idx in a.domain with (var agg = newSrcAggregator(t)) do
+          agg.copy(eOut.a[idx + starts[arrIdx]], a[idx]);
+      }
+
+      const repMsg = "created " + st.attrib(rname);
+      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    select dt {
+      when DType.Int64 do return doFlatConcat(int);
+      when DType.UInt64 do return doFlatConcat(uint);
+      when DType.Float64 do return doFlatConcat(real);
+      when DType.Bool do return doFlatConcat(bool);
+      when DType.BigInt do return doFlatConcat(bigint);
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(dt));
+        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      }
+    }
+  }
+
+  private proc flatten(const ref a: [?d] ?t): [] t throws {
+    var flat = makeDistArray({0..<d.size}, t);
+    forall idx in flat.domain with (var agg = newSrcAggregator(t)) do
+      agg.copy(flat[idx], a[d.orderToIndex(idx)]);
+    return flat;
+  }
+
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.expand_dims.html#array_api.expand_dims
+  @arkouda.registerND
   proc expandDimsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     // TODO: add a check and error handling if nd+1 exceeds the maximum supported array rank
@@ -196,152 +353,8 @@ module ManipulationMsg {
     return shapeOut;
   }
 
-  @arkouda.registerND
-  // https://data-apis.org/array-api/latest/API_specification/generated/array_api.concat.html#array_api.concat
-  proc concatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-    param pn = Reflection.getRoutineName();
-    const nArrays = msgArgs.get("n").getIntValue(),
-          names = msgArgs.get("names").getList(nArrays),
-          axis = msgArgs.get("axis").getPositiveIntValue(nd),
-          rname = st.nextName();
-
-    var gEnts: [] borrowed GenSymEntry = [name in names] getGenericTypedArrayEntry(name, st);
-
-    // confirm that all arrays have the same dtype
-    // (type promotion needs to be completed before calling 'concat')
-    const dt = gEnts[0].dtype;
-    for i in 1..#nArrays do if gEnts[i].dtype != dtype {
-      const errMsg = "All arrays must have the same dtype to concatenate";
-      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-      return new MsgTuple(errMsg,MsgType.ERROR);
-    }
-
-    proc doConcat(type t): MsgTuple throws {
-      const eIns = [i in 0..#nArrays] toSymEntry(gEnts[i], t, nd),
-            (validConcat, shapeOut, startOffsets) =
-              concatenatedShape(nd, [e in eIns] e.tupShape, axis);
-
-      if !validConcat {
-        const errMsg = "Arrays must have compatible shapes to concatenate";
-        mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-        return new MsgTuple(errMsg,MsgType.ERROR);
-      } else {
-        var eOut = st.addEntry(rname, (...shapeOut), t);
-
-        // mapping between the input and output array indices
-        inline proc imap(arrIdx: int, idx: nd*int): nd*int {
-          var ret = idx;
-          ret[axis] += startOffsets[arrIdx];
-          return ret;
-        }
-
-        // copy the data from the input arrays to the output array
-        forall (arrIdx, arr) in zip(eIns.domain, eIns) do
-          forall idx in arr.a.domain with (var agg = newDstAggregator(t)) do
-            agg.copy(eOut.a[imap(arrIdx, idx)], arr.a[idx]);
-
-        const repMsg = "created " + st.attrib(rname);
-        mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
-      }
-    }
-
-    select gEnt.dtype {
-      when DType.Int64 do return doConcat(int);
-      when DType.UInt64 do return doConcat(uint);
-      when DType.Float64 do return doConcat(real);
-      when DType.Bool do return doConcat(bool);
-      when DType.BigInt do return doConcat(bigint);
-      otherwise {
-        var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg,MsgType.ERROR);
-      }
-    }
-  }
-
-  inline proc concatenatedShape(param n: int, shapes: [?d] n*int, axis: int): (bool, n*int, [d] int) {
-    var shapeOut = shapes[0],
-        validConcat = true,
-        startOffsets: [d] int;
-
-    label shapes for s in 1..<shapes.size {
-      for param i in 0..<n {
-        if i == axis {
-          shapeOut[i] += shapes[s][i];
-          startOffsets[s] = shapeOut[i];
-        } else {
-          if shapes[s][i] != shapeOut[i] {
-            validConcat = false;
-            break shapes;
-          }
-        }
-      }
-    }
-    return (validConcat, shapeOut, startOffsets);
-  }
-
-  @arkouda.registerND
-  // alternative to 'concatMsg' to be used when the axis argument is 'None'
-  proc flatConcatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-    param pn = Reflection.getRoutineName();
-    const nArrays = msgArgs.get("n").getIntValue(),
-          names = msgArgs.get("names").getList(nArrays),
-          rname = st.nextName();
-
-    var gEnts: [] borrowed GenSymEntry = [name in names] getGenericTypedArrayEntry(name, st);
-
-    // confirm that all arrays have the same dtype
-    // (type promotion needs to be completed before calling 'concat')
-    const dt = gEnts[0].dtype;
-    for i in 1..#nArrays do if gEnts[i].dtype != dtype {
-      const errMsg = "All arrays must have the same dtype to concatenate";
-      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-      return new MsgTuple(errMsg,MsgType.ERROR);
-    }
-
-    proc doFlatConcat(type t): MsgTuple throws {
-      const eIns = [i in 0..#nArrays] toSymEntry(gEnts[i], t, nd),
-            flatArrays = [e in eIns] flatten(e.a),
-            sizes = [a in flatArrays] a.size,
-            starts = + scan sizes;
-
-      // create a 1D output array
-      var eOut = st.addEntry(rname, + reduce sizes, t);
-
-      // copy the data from the input arrays to the output array
-      forall (arrIdx, a) in zip(flatArrays.domain, flatArrays) do
-        forall idx in a.domain with (var agg = newSrcAggregator(t)) do
-          agg.copy(eOut.a[idx + starts[arrIdx]], a[idx]);
-
-      const repMsg = "created " + st.attrib(rname);
-      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-      return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
-
-    select gEnt.dtype {
-      when DType.Int64 do return doFlatConcat(int);
-      when DType.UInt64 do return doFlatConcat(uint);
-      when DType.Float64 do return doFlatConcat(real);
-      when DType.Bool do return doFlatConcat(bool);
-      when DType.BigInt do return doFlatConcat(bigint);
-      otherwise {
-        var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg,MsgType.ERROR);
-      }
-    }
-  }
-
-  private proc flatten(const ref a: [?d] ?t): [] t {
-    var flat : makeDistArray({0..<d.size}, t);
-    forall idx in flat.domain with (var agg = newSrcAggregator(t)) do
-      agg.copy(flat[idx], a[d.orderToIndex(idx)]);
-    return flat;
-  }
-
-  @arkouda.registerND
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.flip.html#array_api.flip
+  @arkouda.registerND
   proc flipMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
@@ -364,7 +377,7 @@ module ManipulationMsg {
       // copy the data from the input array to the output array
       // while flipping along the specified axis
       forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-        agg.copy(eOut.a[idx], eIn.a[imap(idx)]);
+        agg.copy(eOut.a[idx], eIn.a[imap(if nd == 1 then (idx,) else idx)]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -385,8 +398,8 @@ module ManipulationMsg {
     }
   }
 
-  @arkouda.registerND
   // alternative to 'flipMsg' to be used when the axis argument is 'None'
+  @arkouda.registerND
   proc flipAllMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
@@ -409,7 +422,7 @@ module ManipulationMsg {
       // copy the data from the input array to the output array
       // while flipping along each axis
       forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-        agg.copy(eOut.a[idx], eIn.a[imap(idx)]);
+        agg.copy(eOut.a[idx], eIn.a[imap(if nd == 1 then (idx, ) else idx)]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -430,8 +443,8 @@ module ManipulationMsg {
     }
   }
 
-  @arkouda.registerND
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.permute_dims.html#array_api.permute_dims
+  @arkouda.registerND
   proc permuteDims(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
@@ -448,7 +461,7 @@ module ManipulationMsg {
       // copy the data from the input array to the output array
       // while permuting the axes
       forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-        agg.copy(eOut.a[idx], eIn.a[permuteTuple(idx, perm)]);
+        agg.copy(eOut.a[idx], eIn.a[permuteTuple(if nd == 1 then (idx,) else idx, perm)]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -469,17 +482,17 @@ module ManipulationMsg {
     }
   }
 
-  private inline proc permuteTuple(param tup: ?N*int, param perm: N*int): N*int {
+  private inline proc permuteTuple(tup: ?N*int, perm: N*int): N*int {
     var ret: N*int;
     for param i in 0..<N do ret[i] = tup[perm[i]];
     return ret;
   }
 
-  @arkouda.registerNDPermAll
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.reshape.html#array_api.reshape
+  @arkouda.registerNDPermAll
   proc reshapeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
     param ndIn: int,
-    param ndOut: int,
+    param ndOut: int
   ): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
@@ -490,30 +503,31 @@ module ManipulationMsg {
 
     proc doReshape(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, ndIn),
-            (valid, shape) = validateShape(rawShape, eIn.a.size),
+            (valid, shape) = validateShape(rawShape, eIn.a.size);
 
       if !valid {
         const errMsg = "Cannot reshape array of shape %? into shape %?. The total number of elements must match".doFormat(eIn.tupShape, rawShape);
-        mLogger.error(getModuleName(),pn,getLineNumber(),errMsg,eIn.a.size,shape);
+        mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
         var eOut = st.addEntry(rname, (...shape), t);
 
+        const sizes = [i in 0..<ndOut] eOut.tupShape[i],
+              accumSizes = * scan sizes;
+
         // index -> order for the output array's indices
         // e.g., order = k + (nz * j) + (nz * ny * i)
         inline proc indexToOrder(idx: ndOut*int): int {
-          var order = 0,
-              accum = 1;
-          for param i in 0..<ndOut {
-            order += idx[i] * accum;
-            accum *= eOut.tupShape[i];
-          }
+          var order = 0;
+          for param i in 0..<ndOut do order += idx[i] * accumSizes[i];
           return order;
         }
 
         // copy the data from the input array to the output array
-        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-          agg.copy(eOut.a[idx], eIn.a[eIn.a.domain.orderToIndex(indexToOrder(idx))]);
+        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) {
+          const inIdx = eIn.a.domain.orderToIndex(indexToOrder(if ndOut==1 then (idx,) else idx));
+          agg.copy(eOut.a[idx], eIn.a[inIdx]);
+        }
 
         const repMsg = "created " + st.attrib(rname);
         mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -571,8 +585,8 @@ module ManipulationMsg {
     }
   }
 
-  @arkouda.registerND
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.roll.html#array_api.roll
+  @arkouda.registerND
   proc rollMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
@@ -593,12 +607,13 @@ module ManipulationMsg {
           shifts = [shift];
           axes = [msgArgs.get("axis").getIntValue()];
         } else {
-          shifts = [i in 0..<nAxes] shift;
-          axes = msgArgs.get("axis").getList(nAxes);
+          const s = [i in 0..<nAxes] shift;
+          shifts = s;
+          axes = msgArgs.get("axis").getListAs(int, nAxes);
         }
       } else if nShifts == nAxes {
-        shifts = msgArgs.get("shift").getList(nShifts);
-        axes = msgArgs.get("axis").getList(nAxes);
+        shifts = msgArgs.get("shift").getListAs(int, nShifts);
+        axes = msgArgs.get("axis").getListAs(int, nAxes);
       } else {
         const errMsg = "Unable to roll array; size of 'shift' must match size of 'axis' or be 1";
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
@@ -611,8 +626,8 @@ module ManipulationMsg {
         return ret;
       }
 
-      forall idx in rolled.domain with (var agg = newSrcAggregator(t)) do
-        agg.copy(eOut.a[idx], eIn.a[rollIdx(idx)]);
+      forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
+        agg.copy(eOut.a[idx], eIn.a[rollIdx(if nd==1 then (idx,) else idx)]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -633,8 +648,8 @@ module ManipulationMsg {
     }
   }
 
-  @arkouda.registerND
   // alternative to 'rollMsg' to be used when the axis argument is 'None'
+  @arkouda.registerND
   proc rollFlattenedMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
@@ -648,8 +663,11 @@ module ManipulationMsg {
             eOut = st.addEntry(rname, (...eIn.tupShape), t),
             inFlat = flatten(eIn.a);
 
-      forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-        agg.copy(eOut.a[idx], inFlat[(idx + shift) % inFlat.size]);
+      // copy the flattened array into the output array while applying the index shift
+      forall idx in inFlat.domain with (var agg = newDstAggregator(t)) do
+        // TODO: for a large shift, destination aggregation may not work well here.
+        // maybe split into two steps: shift into separate array, then unflatten into 'eOut'
+        agg.copy(eOut.a[eOut.a.domain.orderToIndex(idx)], inFlat[(idx + shift) % inFlat.size]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -670,8 +688,8 @@ module ManipulationMsg {
     }
   }
 
-  @arkouda.registerNDPermDec
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.squeeze.html#array_api.squeeze
+  @arkouda.registerNDPermDec
   proc squeezeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
     param ndIn: int,
     param ndOut: int
@@ -679,7 +697,7 @@ module ManipulationMsg {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
           nAxes = msgArgs.get("nAxes").getIntValue(),
-          axes = msgArgs.get("axes").getList(nAxes),
+          axes = msgArgs.get("axes").getListAs(int, nAxes),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -705,7 +723,7 @@ module ManipulationMsg {
 
         // copy the data from the input array to the output array
         forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-          agg.copy(eOut.a[idx], eIn.a[imap(idx)]);
+          agg.copy(eOut.a[idx], eIn.a[imap(if ndOut==1 then (idx,) else idx)]);
 
         const repMsg = "created " + st.attrib(rname);
         mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -728,34 +746,34 @@ module ManipulationMsg {
   }
 
   private proc validateSqueeze(shape: ?NIn*int, axes: [?d], param NOut: int): (bool, NOut*int, NOut*int) {
-    var ret: NOut*int;
+    var shapeOut: NOut*int,
+        mapping: NOut*int;
 
-    if NOut > NIn then return (false, ret);
-    if d.size >= NIn then return (false, ret);
+    if NOut > NIn then return (false, shapeOut, mapping);
+    if d.size >= NIn then return (false, shapeOut, mapping);
 
     var degenAxes: NIn*bool;
     for axis in axes {
-      if shape[axis] != 1 then return (false, ret);
+      if shape[axis] != 1 then return (false, shapeOut, mapping);
       degenAxes[axis] = true;
     }
 
-    if NOut != NIn - d.size then return (false, ret);
+    if NOut != NIn - d.size then return (false, shapeOut, mapping);
 
-    var mapping: NOut*int,
-        i = 0;
+    var i = 0;
     for param ii in 0..<NIn {
       if !degenAxes[ii] {
         mapping[i] = ii;
-        ret[i] = shape[ii];
+        shapeOut[i] = shape[ii];
         i += 1;
       }
     }
 
-    return (true, ret, mapping);
+    return (true, shapeOut, mapping);
   }
 
-  @arkouda.registerND
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.stack.html#array_api.stack
+  @arkouda.registerND
   proc stackMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const nArrays = msgArgs.get("n").getIntValue(),
@@ -763,13 +781,13 @@ module ManipulationMsg {
           axis = msgArgs.get("axis").getPositiveIntValue(nd),
           rname = st.nextName();
 
-    var gEnts: [] borrowed GenSymEntry = [name in names] getGenericTypedArrayEntry(name, st);
+    var gEnts: [0..<nArrays] borrowed GenSymEntry = getGenericEntries(names, st);
 
     // confirm that all arrays have the same dtype and shape
     // (type promotion needs to be completed before calling 'stack')
     const dt = gEnts[0].dtype,
           sh = gEnts[0].shape;
-    for i in 1..#nArrays do if gEnts[i].dtype != dtype || gEnts[i].shape != sh {
+    for i in 1..#nArrays do if gEnts[i].dtype != dt || gEnts[i].shape != sh {
       const errMsg = "All arrays must have the same dtype and shape to stack";
       mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
       return new MsgTuple(errMsg,MsgType.ERROR);
@@ -781,8 +799,8 @@ module ManipulationMsg {
       var eOut = st.addEntry(rname, (...shapeOut), t);
 
       // mapping between the input and output array indices
-      inline proc imap(arrIdx: int, idx: nd*int): nd*int {
-        var ret = (nd+1)*int;
+      inline proc imap(arrIdx: int, idx: nd*int): (nd+1)*int {
+        var ret: (nd+1)*int;
         for i in 0..nd {
           if i == axis
             then ret[i] = arrIdx;
@@ -794,21 +812,34 @@ module ManipulationMsg {
       // copy the data from the input arrays to the output array
       forall (arrIdx, arr) in zip(eIns.domain, eIns) do
         forall idx in arr.a.domain with (var agg = newDstAggregator(t)) do
-          agg.copy(eOut.a[imap(arrIdx, idx)], arr.a[idx]);
+          agg.copy(eOut.a[imap(arrIdx, if nd==1 then (idx,) else idx)], arr.a[idx]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+
+    select dt {
+      when DType.Int64 do return doStack(int);
+      when DType.UInt64 do return doStack(uint);
+      when DType.Float64 do return doStack(real);
+      when DType.Bool do return doStack(bool);
+      when DType.BigInt do return doStack(bigint);
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(dt));
+        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      }
+    }
   }
 
   private proc stackedShape(shape: ?N*int, axis: int, nArrays: int): ((N+1)*int, (N+1)*int) {
     var shapeOut: (N+1)*int,
-        mapping: (N+1)*int
+        mapping: (N+1)*int,
         ii = 0;
 
     for param i in 0..N {
-      if i = axis {
+      if i == axis {
         shapeOut[i] = nArrays;
       } else {
         shapeOut[i] = shape[ii];
@@ -819,4 +850,10 @@ module ManipulationMsg {
     return (shapeOut, mapping);
   }
 
+  proc getGenericEntries(names: [?d] string, st: borrowed SymTab): [] borrowed GenSymEntry throws {
+    var gEnts: [d] borrowed GenSymEntry?;
+    for (i, name) in zip(d, names) do gEnts[i] = getGenericTypedArrayEntry(name, st);
+    const ret = [i in d] gEnts[i]!;
+    return ret;
+  }
 }
