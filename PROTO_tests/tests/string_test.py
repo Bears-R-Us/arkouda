@@ -576,6 +576,84 @@ class TestString:
 
         assert example2.isdigit().to_list() == expected
 
+    def test_string_empty(self):
+        not_empty = ak.array([f"Strings {i}" for i in range(3)])
+        empty = ak.array(["" for i in range(3)])
+        example = ak.concatenate([not_empty, empty])
+
+        assert example.isempty().to_list() == [False, False, False, True, True, True]
+
+        example2 = ak.array(
+            [
+                "",
+                "string1",
+                "stringA",
+                "String",
+                "12345",
+                "Hello\tWorld",
+                " ",
+                "\n",
+                "3.14",
+                "\u0030",
+                "\u00B2",
+            ]
+        )
+
+        expected = [
+            True,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+        ]
+
+        assert example2.isempty().to_list() == expected
+
+    def test_string_empty(self):
+        not_empty = ak.array([f"%Strings {i}" for i in range(3)])
+        empty = ak.array(["" for i in range(3)])
+        example = ak.concatenate([not_empty, empty])
+
+        assert example.isempty().to_list() == [False, False, False, True, True, True]
+
+        example2 = ak.array(
+            [
+                "",
+                "string1",
+                "stringA",
+                "String",
+                "12345",
+                "Hello\tWorld",
+                " ",
+                "\n",
+                "3.14",
+                "\u0030",
+                "\u00B2",
+            ]
+        )
+
+        expected = [
+            True,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+        ]
+
+        assert example2.isempty().to_list() == expected
+
     def test_where(self):
         revs = ak.arange(10) % 2 == 0
         s1 = ak.array([f"str {i}" for i in range(10)])
