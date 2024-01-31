@@ -3101,6 +3101,31 @@ Attributes
       array([False False False True True True])
 
 
+   .. py:method:: isempty() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is empty.
+
+
+      True for elements that are the empty string, False otherwise
+
+      :returns: True for elements that are digits, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+
+      .. rubric:: Examples
+
+      >>> not_empty = ak.array([f'Strings {i}' for i in range(3)])
+      >>> empty = ak.array(['' for i in range(3)])
+      >>> strings = ak.concatenate([not_empty, empty])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', '', '', ''])
+      >>> strings.isempty()
+
+
    .. py:method:: strip(chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
 
       Returns a new Strings object with all leading and trailing occurrences of characters contained
@@ -9520,6 +9545,31 @@ Attributes
       array([False False False True True True])
 
 
+   .. py:method:: isempty() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is empty.
+
+
+      True for elements that are the empty string, False otherwise
+
+      :returns: True for elements that are digits, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+
+      .. rubric:: Examples
+
+      >>> not_empty = ak.array([f'Strings {i}' for i in range(3)])
+      >>> empty = ak.array(['' for i in range(3)])
+      >>> strings = ak.concatenate([not_empty, empty])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', '', '', ''])
+      >>> strings.isempty()
+
+
    .. py:method:: strip(chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
 
       Returns a new Strings object with all leading and trailing occurrences of characters contained
@@ -14822,6 +14872,31 @@ Attributes
       array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
       >>> strings.isdigit()
       array([False False False True True True])
+
+
+   .. py:method:: isempty() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is empty.
+
+
+      True for elements that are the empty string, False otherwise
+
+      :returns: True for elements that are digits, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+
+      .. rubric:: Examples
+
+      >>> not_empty = ak.array([f'Strings {i}' for i in range(3)])
+      >>> empty = ak.array(['' for i in range(3)])
+      >>> strings = ak.concatenate([not_empty, empty])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', '', '', ''])
+      >>> strings.isempty()
 
 
    .. py:method:: strip(chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
@@ -23288,6 +23363,31 @@ Attributes
       array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
       >>> strings.isdigit()
       array([False False False True True True])
+
+
+   .. py:method:: isempty() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is empty.
+
+
+      True for elements that are the empty string, False otherwise
+
+      :returns: True for elements that are digits, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+
+      .. rubric:: Examples
+
+      >>> not_empty = ak.array([f'Strings {i}' for i in range(3)])
+      >>> empty = ak.array(['' for i in range(3)])
+      >>> strings = ak.concatenate([not_empty, empty])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', '', '', ''])
+      >>> strings.isempty()
 
 
    .. py:method:: strip(chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
