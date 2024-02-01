@@ -42,7 +42,7 @@ pd.set_option("display.max_colwidth", 65)
 
 __all__ = [
     "DataFrame",
-    "GroupBy",
+    # "GroupBy",
     "DiffAggregate",
     "sorted",
     "intersect",
@@ -3117,42 +3117,42 @@ class DataFrame(UserDict):
 
     def coargsort(self, keys, ascending=True):
         """
-          Return the permutation that sorts the dataframe by `keys`.
+        Return the permutation that sorts the dataframe by `keys`.
 
-          Note: Sorting using Strings may not yield correct sort order.
+        Note: Sorting using Strings may not yield correct sort order.
 
-          Parameters
-          ----------
-          keys : list of str
-              The keys to sort on.
+        Parameters
+        ----------
+        keys : list of str
+            The keys to sort on.
 
-          Returns
-          -------
-          arkouda.pdarrayclass.pdarray
-              The permutation array that sorts the data on `keys`.
+        Returns
+        -------
+        arkouda.pdarrayclass.pdarray
+            The permutation array that sorts the data on `keys`.
 
-          Example
-          -------
+        Example
+        -------
 
-          >>> df = ak.DataFrame({'col1': [2, 2, 1], 'col2': [3, 4, 3], 'col3':[5, 6, 7]})
-          >>> display(df)
+        >>> df = ak.DataFrame({'col1': [2, 2, 1], 'col2': [3, 4, 3], 'col3':[5, 6, 7]})
+        >>> display(df)
 
-          +----+--------+--------+--------+
-          |    |   col1 |   col2 |   col3 |
-          +====+========+========+========+
-          |  0 |      2 |      3 |      5 |
-          +----+--------+--------+--------+
-          |  1 |      2 |      4 |      6 |
-          +----+--------+--------+--------+
-          |  2 |      1 |      3 |      7 |
-          +----+--------+--------+--------+
+        +----+--------+--------+--------+
+        |    |   col1 |   col2 |   col3 |
+        +====+========+========+========+
+        |  0 |      2 |      3 |      5 |
+        +----+--------+--------+--------+
+        |  1 |      2 |      4 |      6 |
+        +----+--------+--------+--------+
+        |  2 |      1 |      3 |      7 |
+        +----+--------+--------+--------+
 
-          >>> df.coargsort(['col1', 'col2'])
-          array([2 0 1])
-          >>>
+        >>> df.coargsort(['col1', 'col2'])
+        array([2 0 1])
+        >>>
 
 
-          """
+        """
 
         if self._empty:
             return array([], dtype=akint64)
@@ -3583,8 +3583,6 @@ class DataFrame(UserDict):
 
         """
         return self.GroupBy(keys, use_series, as_index=as_index, dropna=dropna)
-
-
 
     @typechecked
     def isin(self, values: Union[pdarray, Dict, Series, DataFrame]) -> DataFrame:
