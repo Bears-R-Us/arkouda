@@ -297,6 +297,10 @@ module SegmentedMsg {
             truth.a = strings.isdigit();
             repMsg = "created "+st.attrib(rname);
           }
+          when "isempty" {
+            truth.a = strings.isempty();
+            repMsg = "created "+st.attrib(rname);
+          }
           otherwise {
             var errorMsg = notImplementedError(pn, "%s".doFormat(subcmd));
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
