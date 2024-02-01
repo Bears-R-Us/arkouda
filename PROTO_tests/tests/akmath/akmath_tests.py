@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 import arkouda as ak
-from arkouda.math import xlogy
+from arkouda.akmath import xlogy
 from arkouda.pdarrayclass import pdarray
 
 
@@ -25,10 +25,4 @@ class TestStats:
 
                 scipy_result = scipy_xlogy(np_x, np_y)
 
-                for i in range(len(ak_result)):
-                    if math.isnan(ak_result[i]):
-                        assert math.isnan(scipy_result[i])
-                    elif math.isinf(ak_result[i]):
-                        assert math.isinf(scipy_result[i])
-                    else:
-                        assert abs(ak_result[i] - scipy_result[i]) < 0.1 / 10**6
+                assert np.allclose(ak_result.to_ndarray(), scipy_result, equal_nan=True)

@@ -1,5 +1,6 @@
 import math
 
+import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -51,17 +52,7 @@ class StatsTest(ArkoudaTest):
                         np_f_obs, np_f_exp, ddof=ddof, axis=0, lambda_=lambda0
                     )
 
-                    if math.isnan(ak_power_div.statistic):
-                        self.assertTrue(math.isnan(scipy_power_div.statistic))
-                    else:
-                        self.assertLess(
-                            abs(ak_power_div.statistic - scipy_power_div.statistic), 0.1 / 10**6
-                        )
-
-                    if math.isnan(ak_power_div.pvalue):
-                        self.assertTrue(math.isnan(scipy_power_div.pvalue))
-                    else:
-                        self.assertLess(abs(ak_power_div.pvalue - scipy_power_div.pvalue), 0.1 / 10**6)
+                    assert np.allclose(ak_power_div, scipy_power_div, equal_nan=True)
 
     def test_chisquare(self):
         from scipy.stats import chisquare as scipy_chisquare
@@ -83,12 +74,4 @@ class StatsTest(ArkoudaTest):
 
                 scipy_chisq = scipy_chisquare(np_f_obs, np_f_exp, ddof=ddof, axis=0)
 
-                if math.isnan(ak_chisq.statistic):
-                    self.assertTrue(math.isnan(scipy_chisq.statistic))
-                else:
-                    self.assertLess(abs(ak_chisq.statistic - scipy_chisq.statistic), 0.1 / 10**6)
-
-                if math.isnan(ak_chisq.pvalue):
-                    self.assertTrue(math.isnan(scipy_chisq.pvalue))
-                else:
-                    self.assertLess(abs(ak_chisq.pvalue - scipy_chisq.pvalue), 0.1 / 10**6)
+                assert np.allclose(ak_chisq, scipy_chisq, equal_nan=True)

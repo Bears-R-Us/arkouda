@@ -1,9 +1,10 @@
 import math
 
+import numpy as np
 from scipy.stats import power_divergence as scipy_power_divergence
 
 import arkouda as ak
-from arkouda.stats import power_divergence as ak_power_divergence
+from arkouda.akstats import power_divergence as ak_power_divergence
 
 
 class TestStats:
@@ -47,20 +48,12 @@ class TestStats:
                         np_f_obs, np_f_exp, ddof=ddof, axis=0, lambda_=lambda0
                     )
 
-                    if math.isnan(ak_power_div.statistic):
-                        assert math.isnan(scipy_power_div.statistic)
-                    else:
-                        assert abs(ak_power_div.statistic - scipy_power_div.statistic) < 0.1 / 10**6
-
-                    if math.isnan(ak_power_div.pvalue):
-                        assert math.isnan(scipy_power_div.pvalue)
-                    else:
-                        assert abs(ak_power_div.pvalue - scipy_power_div.pvalue) < 0.1 / 10**6
+                    assert np.allclose(ak_power_div, scipy_power_div, equal_nan=True)
 
     def test_chisquare(self):
         from scipy.stats import chisquare as scipy_chisquare
 
-        from arkouda.stats import chisquare as ak_chisquare
+        from arkouda.akstats import chisquare as ak_chisquare
 
         pairs = self.create_stat_test_pairs()
 
@@ -77,12 +70,4 @@ class TestStats:
 
                 scipy_chisq = scipy_chisquare(np_f_obs, np_f_exp, ddof=ddof, axis=0)
 
-                if math.isnan(ak_chisq.statistic):
-                    assert math.isnan(scipy_chisq.statistic)
-                else:
-                    assert abs(ak_chisq.statistic - scipy_chisq.statistic) < 0.1 / 10**6
-
-                if math.isnan(ak_chisq.pvalue):
-                    assert math.isnan(scipy_chisq.pvalue)
-                else:
-                    assert abs(ak_chisq.pvalue - scipy_chisq.pvalue) < 0.1 / 10**6
+                assert np.allclose(ak_chisq, scipy_chisq, equal_nan=True)

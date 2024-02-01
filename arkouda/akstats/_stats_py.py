@@ -4,7 +4,7 @@ import numpy as np
 from numpy import asarray
 from scipy.stats import chi2
 
-import arkouda
+import arkouda as ak
 from arkouda.akmath import xlogy
 from arkouda.dtypes import float64 as akfloat64
 
@@ -148,13 +148,13 @@ def power_divergence(f_obs, f_exp=None, ddof=0, lambda_=None):
         if f_exp is not None:
             terms = 2.0 * xlogy(f_obs, f_obs / f_exp)
         else:
-            terms = arkouda.zeros_like(f_obs)
+            terms = ak.zeros_like(f_obs)
     elif lambda_ == -1:
         # Modified log-likelihood ratio
         if (f_obs is not None) and (f_exp is not None):
             terms = 2.0 * xlogy(f_exp, f_exp / f_obs)
         else:
-            terms = arkouda.array([])
+            terms = ak.array([])
 
     else:
         # General Cressie-Read power divergence.
