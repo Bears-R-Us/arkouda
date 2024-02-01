@@ -524,10 +524,6 @@ module Message {
       Helper function to parse a JSON string as a tuple of integers
     */
     proc parseJsonTuple(json: string, param size: int): size*int throws {
-        writeln();
-        writeln("------JSON: ", json);
-        writeln();
-
         var f = openMemFile();
         var w = f.writer();
         w.write(json);

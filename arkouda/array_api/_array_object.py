@@ -302,7 +302,10 @@ class Array:
         raise ValueError("Not implemented")
 
     def __eq__(self: object, other: object, /) -> bool:
-        raise ValueError("Not implemented")
+        if isinstance(other, Array):
+            return self._array == other._array
+        else:
+            raise ValueError("Not implemented")
 
     def __float__(self: Array, /) -> float:
         # TODO: retrieve the value from a 0D array as a float
