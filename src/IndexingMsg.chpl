@@ -283,12 +283,16 @@ module IndexingMsg
               stops = msgArgs.get("stops").getTuple(nd),
               strides = msgArgs.get("strides").getTuple(nd),
               array = msgArgs.getValueOf("array"),
-              rname = msgArgs.getValueOf("rname");
+              rname = st.nextName();
 
-        var sliceRanges: nd * stridableRange;
-        for param dim in 0..<nd do
+        var sliceRanges: nd * stridableRange,
+            outDomRanges: nd * stridableRange;
+        for param dim in 0..<nd {
             sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
-        const sliceDom = {(...sliceRanges)};
+            outDomRanges[dim] = starts[dim]..#sliceRanges[dim].size;
+        }
+        const sliceDom = {(...sliceRanges)},
+              outDom = {(...outDomRanges)};
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(array, st);
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -296,13 +300,13 @@ module IndexingMsg
                        cmd, st.attrib(array), starts, stops, strides, rname));
 
         proc sliceHelper(type t): MsgTuple throws {
-            var e = toSymEntry(gEnt,t, nd);
-            var a = st.addEntry(rname, (...sliceDom.shape), t);
+            var e = toSymEntry(gEnt,t, nd),
+                a = st.addEntry(rname, (...outDom.shape), t);
             ref ea = e.a;
             ref aa = a.a;
-            forall (elt,j) in zip(aa, sliceDom) with (var agg = newSrcAggregator(t)) {
+            forall (elt,j) in zip(aa, sliceDom) with (var agg = newSrcAggregator(t)) do
               agg.copy(elt,ea[j]);
-            }
+
             a.max_bits = e.max_bits;
             var repMsg = "created " + st.attrib(rname);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);

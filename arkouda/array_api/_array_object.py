@@ -321,9 +321,9 @@ class Array:
     ) -> Array:
         if isinstance(key, Array):
             # TODO: hack for testing
-            return self._array[key._array]
+            return Array._new(self._array[key._array])
         else:
-            return self._array[key]
+            return Array._new(self._array[key])
 
     def __gt__(self: Array, other: Union[int, float, Array], /) -> Array:
         return self

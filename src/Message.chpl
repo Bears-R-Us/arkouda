@@ -166,10 +166,10 @@ module Message {
         */
         proc getPositiveIntValue(max: int): int throws {
             var x = this.getIntValue();
-            if x >= 0 && x <= max then return x;
-            if x < 0 && x > -max - 1 then return x + max + 1;
+            if x >= 0 && x < max then return x;
+            if x < 0 && x >= -max then return x + max;
             else throw new ErrorWithContext(
-                "Parameter cannot be cast as positive in in the range: (%d, %d]".doFormat(-max, max),
+                "Parameter cannot be cast as a positive int in the range: [%?, %?)".doFormat(-max, max),
                 getLineNumber(),
                 getRoutineName(),
                 getModuleName(),
@@ -524,6 +524,10 @@ module Message {
       Helper function to parse a JSON string as a tuple of integers
     */
     proc parseJsonTuple(json: string, param size: int): size*int throws {
+        writeln();
+        writeln("------JSON: ", json);
+        writeln();
+
         var f = openMemFile();
         var w = f.writer();
         w.write(json);

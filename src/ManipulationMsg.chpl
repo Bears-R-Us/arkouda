@@ -88,7 +88,7 @@ module ManipulationMsg {
         } else {
           // define a mapping from the output array's indices to the input array's indices
           inline proc imap(idx: int ...ndOut): ndIn*int {
-            var ret: ndIn*int; // 'ret' is initialized to zero (assumes zero-based arrays)
+            var ret: ndIn*int;
             for param i in 0..<ndIn do
               ret[i] = if bcDims[i] then 0 else idx[i];
             return ret;
@@ -162,7 +162,8 @@ module ManipulationMsg {
             (valid, shapeOut, startOffsets) = concatenatedShape(nd, shapes, axis);
 
       if !valid {
-        const errMsg = "Arrays must have compatible shapes to concatenate";
+        const errMsg = "Arrays must have compatible shapes to concatenate: " +
+          "attempt to concatenate arrays of shapes %? along axis %?".doFormat(shapes, axis);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
@@ -182,7 +183,7 @@ module ManipulationMsg {
             do return idx + startOffsets[arrIdx];
 
         // copy the data from the input arrays to the output array
-        forall (arrIdx, arr) in zip(eIns.domain, eIns) do
+        for (arrIdx, arr) in zip(eIns.domain, eIns) do
           forall idx in arr.a.domain with (var agg = newDstAggregator(t)) do
             agg.copy(eOut.a[imap(arrIdx, idx)], arr.a[idx]);
 
@@ -208,23 +209,24 @@ module ManipulationMsg {
 
   private proc concatenatedShape(param n: int, in shapes: [?d] n*int, axis: int): (bool, n*int, [d] int) {
     var shapeOut = shapes[0],
-        validConcat = true,
-        startOffsets: [d] int;
+        axisSizes: [d] int;
+    axisSizes[0] = shapes[0][axis];
 
-    label shapes for s in 1..<shapes.size {
+    for s in 1..<shapes.size {
       for param i in 0..<n {
         if i == axis {
           shapeOut[i] += shapes[s][i];
-          startOffsets[s] = shapeOut[i];
+          axisSizes[s] = shapes[s][i];
         } else {
-          if shapes[s][i] != shapeOut[i] {
-            validConcat = false;
-            break shapes;
-          }
+          // all non-axis dimensions must match
+          if shapes[s][i] != shapeOut[i] then
+            return (false, shapeOut, axisSizes);
         }
       }
     }
-    return (validConcat, shapeOut, startOffsets);
+
+    const startOffsets = (+ scan axisSizes) - axisSizes;
+    return (true, shapeOut, startOffsets);
   }
 
   // alternative to 'concatMsg' to be used when the axis argument is 'None'
@@ -249,7 +251,7 @@ module ManipulationMsg {
     proc doFlatConcat(type t): MsgTuple throws {
       const eIns = [i in 0..<nArrays] toSymEntry(gEnts[i], t, nd),
             sizes = [i in 0..<nArrays] eIns[i].a.size,
-            starts = + scan sizes;
+            starts = (+ scan sizes) - sizes;
 
       // create a 1D output array
       var eOut = st.addEntry(rname, + reduce sizes, t);
@@ -293,7 +295,7 @@ module ManipulationMsg {
     param pn = Reflection.getRoutineName();
     // TODO: add a check and error handling if nd+1 exceeds the maximum supported array rank
     const name = msgArgs.getValueOf("name"),
-          axis = msgArgs.get("axis").getPositiveIntValue(nd),
+          axis = msgArgs.get("axis").getPositiveIntValue(nd+1),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -358,30 +360,39 @@ module ManipulationMsg {
   proc flipMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
-          axis = msgArgs.get("axis").getPositiveIntValue(nd),
+          nAxes = msgArgs.get("nAxes").getIntValue(),
+          axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
     proc doFlip(type t): MsgTuple throws {
-      const eIn = toSymEntry(gEnt, t, nd);
+      const eIn = toSymEntry(gEnt, t, nd),
+            (valid, axes) = validateAxes(axesRaw, nd);
       var eOut = st.addEntry(rname, (...eIn.tupShape), t);
 
-      // mapping between the input and output array indices
-      inline proc imap(idx: nd*int): nd*int {
-        var ret = idx;
-        ret[axis] = eIn.tupShape[axis] - idx[axis] - 1;
-        return ret;
+      if !valid {
+        const errMsg = "Unable to flip array with shape %? along axes %?".doFormat(eIn.tupShape, axesRaw);
+        mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+        return new MsgTuple(errMsg,MsgType.ERROR);
+      } else {
+        // mapping between the input and output array indices with the specified axes flipped
+        inline proc imap(idx: nd*int): nd*int {
+          var ret = idx;
+          for axis in axes do
+            ret[axis] = eIn.tupShape[axis] - idx[axis] - 1;
+          return ret;
+        }
+
+        // copy the data from the input array to the output array
+        // while flipping along the specified axis
+        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
+          agg.copy(eOut.a[idx], eIn.a[imap(if nd == 1 then (idx,) else idx)]);
+
+        const repMsg = "created " + st.attrib(rname);
+        mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
       }
-
-      // copy the data from the input array to the output array
-      // while flipping along the specified axis
-      forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-        agg.copy(eOut.a[idx], eIn.a[imap(if nd == 1 then (idx,) else idx)]);
-
-      const repMsg = "created " + st.attrib(rname);
-      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-      return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     select gEnt.dtype {
@@ -398,6 +409,21 @@ module ManipulationMsg {
     }
   }
 
+  private proc validateAxes(axes: [?d] int, param nd: int): (bool, [d] int) {
+    var ret: [d] int;
+    if axes.size > nd then return (false, ret);
+    for (i, a) in zip(d, axes) {
+      if a >= 0 && a < nd {
+        ret[i] = a;
+      } else if a < 0 && a >= -nd {
+        ret[i] = nd + a;
+      } else {
+        return (false, ret);
+      }
+    }
+    return (true, ret);
+  }
+
   // alternative to 'flipMsg' to be used when the axis argument is 'None'
   @arkouda.registerND
   proc flipAllMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
@@ -411,7 +437,7 @@ module ManipulationMsg {
       const eIn = toSymEntry(gEnt, t, nd);
       var eOut = st.addEntry(rname, (...eIn.tupShape), t);
 
-      // mapping between the input and output array indices
+      // mapping between the input and output array indices with all axes flipped
       inline proc imap(idx: nd*int): nd*int {
         var ret: nd*int;
         for param i in 0..<nd do
@@ -448,24 +474,31 @@ module ManipulationMsg {
   proc permuteDims(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
-          perm = msgArgs.get("perm").getTuple(nd),
+          axes = msgArgs.get("axes").getTuple(nd),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
     proc doPermutation(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
-            outShape = permuteTuple(eIn.tupShape, perm);
-      var eOut = st.addEntry(rname, (...outShape), t);
+            (valid, perm) = validateAxes(axes);
 
-      // copy the data from the input array to the output array
-      // while permuting the axes
-      forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-        agg.copy(eOut.a[idx], eIn.a[permuteTuple(if nd == 1 then (idx,) else idx, perm)]);
+      if !valid {
+        const errMsg = "Unable to permute array with shape %? using axes %?".doFormat(eIn.tupShape, axes);
+        mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+        return new MsgTuple(errMsg,MsgType.ERROR);
+      } else {
+        const outShape = permuteTuple(eIn.tupShape, perm);
+        var eOut = st.addEntry(rname, (...outShape), t);
 
-      const repMsg = "created " + st.attrib(rname);
-      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+        // copy the data from the input array to the output array while permuting the axes
+        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
+          agg.copy(eOut.a[idx], eIn.a[permuteTuple(if nd == 1 then (idx,) else idx, perm)]);
+
+        const repMsg = "created " + st.attrib(rname);
+        mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+      }
     }
 
     select gEnt.dtype {
@@ -486,6 +519,21 @@ module ManipulationMsg {
     var ret: N*int;
     for param i in 0..<N do ret[i] = tup[perm[i]];
     return ret;
+  }
+
+  private proc validateAxes(axes: ?N*int): (bool, N*int) {
+    var ret: N*int;
+    for param i in 0..<N {
+      const a = axes[i];
+      if a >= 0 && a < N {
+        ret[i] = a;
+      } else if a < 0 && a >= -N {
+        ret[i] = N + a;
+      } else {
+        return (false, ret);
+      }
+    }
+    return (true, ret);
   }
 
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.reshape.html#array_api.reshape
@@ -512,8 +560,8 @@ module ManipulationMsg {
       } else {
         var eOut = st.addEntry(rname, (...shape), t);
 
-        const sizes = [i in 0..<ndOut] eOut.tupShape[i],
-              accumSizes = * scan sizes;
+        const sizes = [i in 0..<ndOut by -1] eOut.tupShape[i],
+              accumSizes = * scan sizes / sizes;
 
         // index -> order for the output array's indices
         // e.g., order = k + (nz * j) + (nz * ny * i)
@@ -523,7 +571,7 @@ module ManipulationMsg {
           return order;
         }
 
-        // copy the data from the input array to the output array
+        // copy the data from the input array to the output array while reshaping
         forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) {
           const inIdx = eIn.a.domain.orderToIndex(indexToOrder(if ndOut==1 then (idx,) else idx));
           agg.copy(eOut.a[idx], eIn.a[inIdx]);
@@ -592,46 +640,49 @@ module ManipulationMsg {
     const name = msgArgs.getValueOf("name"),
           nShifts = msgArgs.get("nShifts").getIntValue(), // number of elements in 'shift' argument
           nAxes = msgArgs.get("nAxes").getIntValue(),     // number of elements in 'axis' argument
+          shiftsRaw = msgArgs.get("shift").getListAs(int, nShifts),
+          axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
           rname = st.nextName();
 
+    if nShifts != 1 && nShifts != nAxes {
+      const errMsg = "Unable to roll array; size of 'shift' must match size of 'axis' or be 1";
+      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+      return new MsgTuple(errMsg,MsgType.ERROR);
+    }
+
+    var shifts: [0..<nAxes] int;
+      if nShifts == 1
+        then shifts = [i in 0..<nAxes] shiftsRaw[0];
+        else shifts = shiftsRaw;
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
     proc doRoll(type t): MsgTuple throws {
-      const eIn = toSymEntry(gEnt, t, nd);
-      var shifts, axes;
-      var eOut = st.addEntry(rname, (...eIn.tupShape), t);
+      const eIn = toSymEntry(gEnt, t, nd),
+            (valid, axes) = validateAxes(axesRaw, nd);
 
-      if nShifts == 1 {
-        const shift = msgArgs.get("shift").getIntValue();
-        if nAxes == 1 {
-          shifts = [shift];
-          axes = [msgArgs.get("axis").getIntValue()];
-        } else {
-          const s = [i in 0..<nAxes] shift;
-          shifts = s;
-          axes = msgArgs.get("axis").getListAs(int, nAxes);
-        }
-      } else if nShifts == nAxes {
-        shifts = msgArgs.get("shift").getListAs(int, nShifts);
-        axes = msgArgs.get("axis").getListAs(int, nAxes);
-      } else {
-        const errMsg = "Unable to roll array; size of 'shift' must match size of 'axis' or be 1";
+      if !valid {
+        const errMsg = "Unable to roll array with shape %? along axes %?".doFormat(eIn.tupShape, axesRaw);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
+      } else {
+        var eOut = st.addEntry(rname, (...eIn.tupShape), t);
+
+        // mapping between a starting index and the rolled index
+        inline proc rollIdx(idx: nd*int): nd*int {
+          var ret = idx;
+          for i in 0..<nAxes do
+            ret[axes[i]] = (idx[axes[i]] + shifts[i] + eIn.tupShape[axes[i]]) % eIn.tupShape[axes[i]];
+          return ret;
+        }
+
+        // copy the data from the input array to the output array while rolling along the specified axes
+        forall idx in eIn.a.domain with (var agg = newDstAggregator(t)) do
+          agg.copy(eOut.a[rollIdx(if nd == 1 then (idx, ) else idx)], eIn.a[idx]);
+
+        const repMsg = "created " + st.attrib(rname);
+        mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
       }
-
-      inline proc rollIdx(idx: nd*int): nd*int {
-        var ret = idx;
-        for i in 0..<nAxes do ret[axes[i]] = (idx[axes[i]] + shifts[i]) % eIn.tupShape[axes[i]];
-        return ret;
-      }
-
-      forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-        agg.copy(eOut.a[idx], eIn.a[rollIdx(if nd==1 then (idx,) else idx)]);
-
-      const repMsg = "created " + st.attrib(rname);
-      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-      return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     select gEnt.dtype {
@@ -653,7 +704,7 @@ module ManipulationMsg {
   proc rollFlattenedMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
-          shift = msgArgs.get("shift").getIntValue(),
+          shift = msgArgs.get("shift").getListAs(int, 1)[0],
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -661,13 +712,11 @@ module ManipulationMsg {
     proc doRoll(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
             eOut = st.addEntry(rname, (...eIn.tupShape), t),
-            inFlat = flatten(eIn.a);
+            inFlatRolled = rollBy(shift, flatten(eIn.a));
 
-      // copy the flattened array into the output array while applying the index shift
-      forall idx in inFlat.domain with (var agg = newDstAggregator(t)) do
-        // TODO: for a large shift, destination aggregation may not work well here.
-        // maybe split into two steps: shift into separate array, then unflatten into 'eOut'
-        agg.copy(eOut.a[eOut.a.domain.orderToIndex(idx)], inFlat[(idx + shift) % inFlat.size]);
+      // copy the flattened/rolled array into the output array while unflattening
+      forall idx in inFlatRolled.domain with (var agg = newDstAggregator(t)) do
+        agg.copy(eOut.a[eOut.a.domain.orderToIndex(idx)], inFlatRolled[idx]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -686,6 +735,13 @@ module ManipulationMsg {
         return new MsgTuple(errorMsg,MsgType.ERROR);
       }
     }
+  }
+
+  private proc rollBy(shift: int, in a: [?d] ?t): [d] t throws {
+    var ret = makeDistArray(d, t);
+    forall idx in d with (var agg = newDstAggregator(t)) do
+      agg.copy(ret[(idx + shift + a.size) % a.size], a[idx]);
+    return ret;
   }
 
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.squeeze.html#array_api.squeeze

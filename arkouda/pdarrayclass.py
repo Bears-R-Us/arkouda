@@ -662,7 +662,7 @@ class pdarray:
             for dim, k in enumerate(key):
                 if isinstance(k, slice):
                     allScalar = False
-                    (start, stop, stride) = key.indices(self.shape[dim])
+                    (start, stop, stride) = k.indices(self.shape[dim])
                     starts.append(start)
                     stops.append(stop)
                     strides.append(stride)
@@ -676,8 +676,9 @@ class pdarray:
                         )
                     else:
                         # treat this as a single element slice
+                        # TODO: implement rank-reducing slices
                         starts.append(k)
-                        stops.append(k)
+                        stops.append(k+1)
                         strides.append(1)
                 else:
                     raise IndexError(f"Unhandled key type: {k} ({type(k)})")
@@ -698,11 +699,12 @@ class pdarray:
                     cmd=f"[slice]{self.ndim}D",
                     args={
                         "array": self,
-                        "start": starts,
-                        "stop": stops,
-                        "stride": strides,
+                        "starts": tuple(starts),
+                        "stops": tuple(stops),
+                        "strides": tuple(strides),
                     },
                 )
+                print(repMsg)
                 return create_pdarray(repMsg)
 
         if isinstance(key, pdarray) and self.ndim == 1:
