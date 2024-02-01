@@ -40,7 +40,6 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon',
               'sphinxarg.ext', 'sphinx.ext.githubpages',
               'sphinx.ext.coverage', 'autoapi.extension',
               'ak_sphinx_extensions', 'myst_parser', 
-              'IPython.sphinxext.ipython_directive',
               'sphinx.ext.viewcode'
              ]
 

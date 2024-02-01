@@ -42,7 +42,6 @@ pd.set_option("display.max_colwidth", 65)
 
 __all__ = [
     "DataFrame",
-    # "GroupBy",
     "DiffAggregate",
     "sorted",
     "intersect",
