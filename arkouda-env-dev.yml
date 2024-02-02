@@ -20,6 +20,7 @@ dependencies:
   - libiconv
   - libidn2
   - jupyter
+  - scipy
 
   # Developer dependencies
   - pexpect
