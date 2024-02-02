@@ -148,6 +148,10 @@ module OperatorMsg
           when (DType.Bool, DType.Bool) {
             var l = toSymEntry(left,bool, nd);
             var r = toSymEntry(right,bool, nd);
+            if (op == "<<") || (op == ">>" )  {
+              var e = st.addEntry(rname, l.tupShape, uint);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
             var e = st.addEntry(rname, l.tupShape, bool);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
@@ -495,6 +499,10 @@ module OperatorMsg
           when (DType.Bool, DType.Bool) {
             var l = toSymEntry(left,bool, nd);
             var val = value.getBoolValue();
+            if (op == "<<") || (op == ">>") {
+              var e = st.addEntry(rname, l.tupShape, uint);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
             var e = st.addEntry(rname, l.tupShape, bool);
             return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
           }
@@ -842,6 +850,10 @@ module OperatorMsg
           when (DType.Bool, DType.Bool) {
             var val = value.getBoolValue();
             var r = toSymEntry(right,bool, nd);
+            if (op == "<<") || (op == ">>") {
+              var e = st.addEntry(rname, r.tupShape, uint);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
             var e = st.addEntry(rname, r.tupShape, bool);
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
