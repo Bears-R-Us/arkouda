@@ -27,7 +27,9 @@ extern "C" {
 
   void* c_readParquetColumn(void* reader, void* chpl_arr, int64_t batchSize, int64_t numElems);
   void* cpp_readParquetColumn(void* reader, void* chpl_arr, int64_t batchSize, int64_t numElems);  
-  
+
+  void* c_readParquetColumnChunks(const char* filename, const char* colname, int64_t batchSize, int64_t numElems);
+  void* cpp_readParquetColumnChunks(const char* filename, const char* colname, int64_t batchSize, int64_t numElems);
 
 #ifdef __cplusplus
 }
