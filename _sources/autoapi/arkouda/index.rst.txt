@@ -10,6 +10,8 @@ Subpackages
    :titlesonly:
    :maxdepth: 3
 
+   akmath/index.rst
+   akstats/index.rst
    array_api/index.rst
 
 
@@ -93,6 +95,7 @@ Classes
    arkouda.Datetime
    arkouda.Timedelta
    arkouda.GroupBy
+   arkouda.Power_divergenceResult
 
 
 
@@ -329,6 +332,9 @@ Functions
    arkouda.register_all
    arkouda.is_registered
    arkouda.broadcast_dims
+   arkouda.xlogy
+   arkouda.power_divergence
+   arkouda.chisquare
 
 
 
@@ -28064,5 +28070,137 @@ Attributes
    Algorithm to determine shape of broadcasted PD array given two array shapes
 
    see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
+
+
+.. py:function:: xlogy(x: Union[arkouda.pdarrayclass.pdarray, numpy.float64], y: arkouda.pdarrayclass.pdarray)
+
+   Computes x * log(y).
+
+   :param x: x must have a datatype that is castable to float64
+   :type x: pdarray or np.float64
+   :param y:
+   :type y: pdarray
+
+   :rtype: arkouda.pdarrayclass.pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.connect()
+   >>> from arkouda.akmath import xlogy
+   >>> xlogy( ak.array([1, 2, 3, 4]),  ak.array([5,6,7,8]))
+   array([1.6094379124341003 3.5835189384561099 5.8377304471659395 8.317766166719343])
+   >>> xlogy( 5.0, ak.array([1, 2, 3, 4]))
+   array([0.00000000000000000 3.4657359027997265 5.4930614433405491 6.9314718055994531])
+
+
+.. py:function:: power_divergence(f_obs, f_exp=None, ddof=0, lambda_=None)
+
+   Computes the power divergence statistic and p-value.
+
+   :param f_obs: The observed frequency.
+   :type f_obs: pdarray
+   :param f_exp: The expected frequency.
+   :type f_exp: pdarray, default = None
+   :param ddof: The delta degrees of freedom.
+   :type ddof: int
+   :param lambda_: The power in the Cressie-Read power divergence statistic.
+                   Allowed values: "pearson", "log-likelihood", "freeman-tukey", "mod-log-likelihood",
+                   "neyman", "cressie-read"
+
+                   Powers correspond as follows:
+
+                   "pearson": 1
+
+                   "log-likelihood": 0
+
+                   "freeman-tukey": -0.5
+
+                   "mod-log-likelihood": -1
+
+                   "neyman": -2
+
+                   "cressie-read": 2 / 3
+   :type lambda_: string, default = "pearson"
+
+   :rtype: arkouda.akstats.Power_divergenceResult
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.connect()
+   >>> from arkouda.akstats import power_divergence
+   >>> x = ak.array([10, 20, 30, 10])
+   >>> y = ak.array([10, 30, 20, 10])
+   >>> power_divergence(x, y, lambda_="pearson")
+   Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)
+   >>> power_divergence(x, y, lambda_="log-likelihood")
+   Power_divergenceResult(statistic=8.109302162163285, pvalue=0.04380595350226197)
+
+   .. seealso:: :obj:`scipy.stats.power_divergence`, :obj:`arkouda.akstats.chisquare`
+
+   .. rubric:: Notes
+
+   This is a modified version of scipy.stats.power_divergence [2]
+   in order to scale using arkouda pdarrays.
+
+   .. rubric:: References
+
+   [1] "scipy.stats.power_divergence",
+   https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.power_divergence.html
+
+   [2] Scipy contributors (2024) scipy (Version v1.12.0) [Source code].
+   https://github.com/scipy/scipy
+
+
+.. py:function:: chisquare(f_obs, f_exp=None, ddof=0)
+
+   Computes the chi square statistic and p-value.
+
+   :param f_obs: The observed frequency.
+   :type f_obs: pdarray
+   :param f_exp: The expected frequency.
+   :type f_exp: pdarray, default = None
+   :param ddof: The delta degrees of freedom.
+   :type ddof: int
+
+   :rtype: arkouda.akstats.Power_divergenceResult
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.connect()
+   >>> from arkouda.akstats import chisquare
+   >>> chisquare(ak.array([10, 20, 30, 10]), ak.array([10, 30, 20, 10]))
+   Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)
+
+   .. seealso:: :obj:`scipy.stats.chisquare`, :obj:`arkouda.akstats.power_divergence`
+
+   .. rubric:: References
+
+   [1] “Chi-squared test”, https://en.wikipedia.org/wiki/Chi-squared_test
+
+   [2] "scipy.stats.chisquare",
+   https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html
+
+
+.. py:class:: Power_divergenceResult
+
+
+   Bases: :py:obj:`namedtuple`\ (\ :py:obj:`'Power_divergenceResult'`\ , (\ :py:obj:`'statistic'`\ , :py:obj:`'pvalue'`\ )\ )
+
+   The results of a power divergence statistical test.
+
+   .. attribute:: statistic
+
+
+
+      :type: numpy.float64
+
+   .. attribute:: pvalue
+
+
+
+      :type: numpy.float64
 
 

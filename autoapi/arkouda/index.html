@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="arkouda.array_api" href="array_api/index.html" /><link rel="prev" title="API Reference" href="../index.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="arkouda.akmath" href="akmath/index.html" /><link rel="prev" title="API Reference" href="../index.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
         <title>arkouda - arkouda documentation</title>
@@ -195,6 +195,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="akmath/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akmath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="akstats/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akstats</span></code></a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
 </ul>
@@ -286,6 +288,8 @@
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="akmath/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akmath</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="akstats/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akstats</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
 </ul>
@@ -436,6 +440,9 @@
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy" title="arkouda.GroupBy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupBy</span></code></a></p></td>
 <td><p>Group an array or list of arrays by value, usually in preparation</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.Power_divergenceResult" title="arkouda.Power_divergenceResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Power_divergenceResult</span></code></a></p></td>
+<td><p>The results of a power divergence statistical test.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1134,6 +1141,15 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.broadcast_dims" title="arkouda.broadcast_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_dims</span></code></a>(→ Tuple[int, Ellipsis])</p></td>
 <td><p>Algorithm to determine shape of broadcasted PD array given two array shapes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.xlogy" title="arkouda.xlogy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xlogy</span></code></a>(x, y)</p></td>
+<td><p>Computes x * log(y).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.power_divergence" title="arkouda.power_divergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_divergence</span></code></a>(f_obs[, f_exp, ddof, lambda_])</p></td>
+<td><p>Computes the power divergence statistic and p-value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.chisquare" title="arkouda.chisquare"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chisquare</span></code></a>(f_obs[, f_exp, ddof])</p></td>
+<td><p>Computes the chi square statistic and p-value.</p></td>
 </tr>
 </tbody>
 </table>
@@ -37038,6 +37054,147 @@ a registered object</p></li>
 <p>see: <a class="reference external" href="https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm">https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm</a></p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.xlogy">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">xlogy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.xlogy" title="Link to this definition">#</a></dt>
+<dd><p>Computes x * log(y).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>np.float64</em>) – x must have a datatype that is castable to float64</p></li>
+<li><p><strong>y</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">arkouda.pdarrayclass.pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">arkouda.akmath</span> <span class="kn">import</span> <span class="n">xlogy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xlogy</span><span class="p">(</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span>  <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]))</span>
+<span class="go">array([1.6094379124341003 3.5835189384561099 5.8377304471659395 8.317766166719343])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xlogy</span><span class="p">(</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span>
+<span class="go">array([0.00000000000000000 3.4657359027997265 5.4930614433405491 6.9314718055994531])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.power_divergence">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">power_divergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.power_divergence" title="Link to this definition">#</a></dt>
+<dd><p>Computes the power divergence statistic and p-value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f_obs</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The observed frequency.</p></li>
+<li><p><strong>f_exp</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default = None</em>) – The expected frequency.</p></li>
+<li><p><strong>ddof</strong> (<em>int</em>) – The delta degrees of freedom.</p></li>
+<li><p><strong>lambda</strong> (<em>string</em><em>, </em><em>default = &quot;pearson&quot;</em>) – <p>The power in the Cressie-Read power divergence statistic.
+Allowed values: “pearson”, “log-likelihood”, “freeman-tukey”, “mod-log-likelihood”,
+“neyman”, “cressie-read”</p>
+<p>Powers correspond as follows:</p>
+<p>”pearson”: 1</p>
+<p>”log-likelihood”: 0</p>
+<p>”freeman-tukey”: -0.5</p>
+<p>”mod-log-likelihood”: -1</p>
+<p>”neyman”: -2</p>
+<p>”cressie-read”: 2 / 3</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="akstats/index.html#arkouda.akstats.Power_divergenceResult" title="arkouda.akstats.Power_divergenceResult">arkouda.akstats.Power_divergenceResult</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">arkouda.akstats</span> <span class="kn">import</span> <span class="n">power_divergence</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">power_divergence</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">lambda_</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">)</span>
+<span class="go">Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">power_divergence</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">lambda_</span><span class="o">=</span><span class="s2">&quot;log-likelihood&quot;</span><span class="p">)</span>
+<span class="go">Power_divergenceResult(statistic=8.109302162163285, pvalue=0.04380595350226197)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.stats.power_divergence</span></code>, <a class="reference internal" href="akstats/index.html#arkouda.akstats.chisquare" title="arkouda.akstats.chisquare"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.akstats.chisquare</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>This is a modified version of scipy.stats.power_divergence [2]
+in order to scale using arkouda pdarrays.</p>
+<p class="rubric">References</p>
+<p>[1] “scipy.stats.power_divergence”,
+<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.power_divergence.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.power_divergence.html</a></p>
+<p>[2] Scipy contributors (2024) scipy (Version v1.12.0) [Source code].
+<a class="reference external" href="https://github.com/scipy/scipy">https://github.com/scipy/scipy</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.chisquare">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">chisquare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.chisquare" title="Link to this definition">#</a></dt>
+<dd><p>Computes the chi square statistic and p-value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f_obs</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The observed frequency.</p></li>
+<li><p><strong>f_exp</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default = None</em>) – The expected frequency.</p></li>
+<li><p><strong>ddof</strong> (<em>int</em>) – The delta degrees of freedom.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="akstats/index.html#arkouda.akstats.Power_divergenceResult" title="arkouda.akstats.Power_divergenceResult">arkouda.akstats.Power_divergenceResult</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">arkouda.akstats</span> <span class="kn">import</span> <span class="n">chisquare</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chisquare</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">]))</span>
+<span class="go">Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.stats.chisquare</span></code>, <a class="reference internal" href="akstats/index.html#arkouda.akstats.power_divergence" title="arkouda.akstats.power_divergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.akstats.power_divergence</span></code></a></p>
+</div>
+<p class="rubric">References</p>
+<p>[1] “Chi-squared test”, <a class="reference external" href="https://en.wikipedia.org/wiki/Chi-squared_test">https://en.wikipedia.org/wiki/Chi-squared_test</a></p>
+<p>[2] “scipy.stats.chisquare”,
+<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html</a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda.Power_divergenceResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Power_divergenceResult</span></span><a class="headerlink" href="#arkouda.Power_divergenceResult" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">namedtuple</span></code>(<code class="xref py py-obj docutils literal notranslate"><span class="pre">'Power_divergenceResult'</span></code>, (<code class="xref py py-obj docutils literal notranslate"><span class="pre">'statistic'</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">'pvalue'</span></code>))</p>
+<p>The results of a power divergence statistical test.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.Power_divergenceResult.statistic">
+<span class="sig-name descname"><span class="pre">statistic</span></span><a class="headerlink" href="#arkouda.Power_divergenceResult.statistic" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.Power_divergenceResult.pvalue">
+<span class="sig-name descname"><span class="pre">pvalue</span></span><a class="headerlink" href="#arkouda.Power_divergenceResult.pvalue" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 </section>
@@ -37047,12 +37204,12 @@ a registered object</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="array_api/index.html">
+          <a class="next-page" href="akmath/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></div>
+                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akmath</span></code></div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -38710,6 +38867,14 @@ a registered object</p></li>
 <li><a class="reference internal" href="#arkouda.register_all"><code class="docutils literal notranslate"><span class="pre">register_all()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.is_registered"><code class="docutils literal notranslate"><span class="pre">is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.broadcast_dims"><code class="docutils literal notranslate"><span class="pre">broadcast_dims()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.xlogy"><code class="docutils literal notranslate"><span class="pre">xlogy()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.power_divergence"><code class="docutils literal notranslate"><span class="pre">power_divergence()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.chisquare"><code class="docutils literal notranslate"><span class="pre">chisquare()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Power_divergenceResult"><code class="docutils literal notranslate"><span class="pre">Power_divergenceResult</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.Power_divergenceResult.statistic"><code class="docutils literal notranslate"><span class="pre">Power_divergenceResult.statistic</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Power_divergenceResult.pvalue"><code class="docutils literal notranslate"><span class="pre">Power_divergenceResult.pvalue</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
