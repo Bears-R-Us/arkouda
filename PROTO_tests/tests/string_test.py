@@ -654,6 +654,55 @@ class TestString:
 
         assert example2.isempty().to_list() == expected
 
+    def test_string_isspace(self):
+        not_space = ak.array([f"Strings {i}" for i in range(3)])
+        space = ak.array([" ", "\t", "\n", "\v", "\f", "\r", " \t\n\v\f\r"])
+        example = ak.concatenate([not_space, space])
+        assert example.isspace().to_list() == [
+            False,
+            False,
+            False,
+            True,
+            True,
+            True,
+            True,
+            True,
+            True,
+            True,
+        ]
+
+        example2 = ak.array(
+            [
+                "",
+                "string1",
+                "stringA",
+                "String",
+                "12345",
+                "Hello\tWorld",
+                " ",
+                "\n",
+                "3.14",
+                "\u0030",
+                "\u00B2",
+            ]
+        )
+
+        expected = [
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            True,
+            True,
+            False,
+            False,
+            False,
+        ]
+
+        assert example2.isspace().to_list() == expected
+
     def test_where(self):
         revs = ak.arange(10) % 2 == 0
         s1 = ak.array([f"str {i}" for i in range(10)])

@@ -525,6 +525,14 @@ module SegmentedString {
       return computeOnSegments(offsets.a, values.a, SegFunction.StringIsEmpty, bool);
     }
 
+    /*
+      Returns list of bools where index i indicates whether the string i of the SegString is whitespace
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is whitespace
+    */
+    proc isspace() throws {
+      return computeOnSegments(offsets.a, values.a, SegFunction.StringIsSpace, bool);
+    }
+
     proc bytesToUintArr(const max_bytes:int, lens: [?D] ?t, st) throws {
       // bytes contained in strings < 128 bits, so concatenating is better than the hash
       ref off = offsets.a;
@@ -1492,6 +1500,13 @@ module SegmentedString {
   */
   inline proc stringIsEmpty(ref values, rng) throws {
     return interpretAsString(values, rng, borrow=true).isEmpty();
+  }
+
+  /*
+    The SegFunction called by computeOnSegments for isspace
+  */
+  inline proc stringIsSpace(ref values, rng) throws {
+    return interpretAsString(values, rng, borrow=true).isSpace();
   }
 
   inline proc stringBytesToUintArr(ref values, rng) throws {

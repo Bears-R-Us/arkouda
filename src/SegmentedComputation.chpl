@@ -52,6 +52,7 @@ module SegmentedComputation {
     StringIsAlphabetic,
     StringIsDigit,
     StringIsEmpty,
+    StringIsSpace,
   }
   
   proc computeOnSegments(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
@@ -123,6 +124,9 @@ module SegmentedComputation {
                 }
                 when SegFunction.StringIsEmpty {
                   agg.copy(res[i], stringIsEmpty(values, start..#len));
+                }
+                when SegFunction.StringIsSpace {
+                  agg.copy(res[i], stringIsSpace(values, start..#len));
                 }
                 otherwise {
                   compilerError("Unrecognized segmented function");
