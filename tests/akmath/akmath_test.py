@@ -28,11 +28,3 @@ class StatsTest(ArkoudaTest):
                 scipy_result = scipy_xlogy(np_x, np_y)
 
                 assert np.allclose(ak_result.to_ndarray(), scipy_result, equal_nan=True)
-
-                # for i in range(len(ak_result)):
-                #     if math.isnan(ak_result[i]):
-                #         assert math.isnan(scipy_result[i])
-                #     elif math.isinf(ak_result[i]):
-                #         assert math.isinf(scipy_result[i])
-                #     else:
-                #         self.assertLess(abs(ak_result[i] - scipy_result[i]), 0.1 / 10**6)
