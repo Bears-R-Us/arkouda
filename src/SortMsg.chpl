@@ -15,6 +15,7 @@ module SortMsg
     use Logging;
     use Message;
     private use ArgSortMsg;
+    use ArkoudaSortCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -63,7 +64,7 @@ module SortMsg
         select algorithm {
           when SortingAlgorithm.TwoArrayRadixSort {
             var b = makeDistArray(a);
-            Sort.TwoArrayRadixSort.twoArrayRadixSort(b, comparator=myDefaultComparator);
+            ArkoudaSortCompat.twoArrayRadixSort(b, comparator=myDefaultComparator);
             return b;
           }
           when SortingAlgorithm.RadixSortLSD {
