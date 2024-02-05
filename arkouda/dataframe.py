@@ -168,6 +168,8 @@ class GroupBy:
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
         >>> display(df)
 
@@ -221,6 +223,8 @@ class GroupBy:
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
         >>> display(df)
 
@@ -309,7 +313,8 @@ class GroupBy:
             return Series(values).to_dataframe(index_labels=self.gb_key_names, value_label=name)
 
     def diff(self, colname):
-        """Create a difference aggregate for the given column.
+        """
+        Create a difference aggregate for the given column.
 
         For each group, the difference between successive values is calculated.
         Aggregate operations (mean,min,max,std,var) can be done on the results.
@@ -327,6 +332,8 @@ class GroupBy:
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({"A":[1,2,2,2,3,3],"B":[3,9,11,27,86,100]})
         >>> display(df)
 
@@ -355,7 +362,8 @@ class GroupBy:
         return DiffAggregate(self.gb, self.df.data[colname])
 
     def broadcast(self, x, permute=True):
-        """Fill each group’s segment with a constant value.
+        """
+        Fill each group’s segment with a constant value.
 
         Parameters
         ----------
@@ -374,6 +382,8 @@ class GroupBy:
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> from arkouda.dataframe import GroupBy
         >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
 
@@ -476,10 +486,20 @@ class DataFrame(UserDict):
     Create an empty DataFrame and add a column of data:
 
     >>> import arkouda as ak
-    >>> import numpy as np
-    >>> import pandas as pd
+    >>> ak.connect()
     >>> df = ak.DataFrame()
     >>> df['a'] = ak.array([1,2,3])
+    >>> display(df)
+
+    +----+-----+
+    |    |   a |
+    +====+=====+
+    |  0 |   1 |
+    +----+-----+
+    |  1 |   2 |
+    +----+-----+
+    |  2 |   3 |
+    +----+-----+
 
     Create a new DataFrame using a dictionary of data:
 
@@ -490,13 +510,41 @@ class DataFrame(UserDict):
     >>> amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
     >>> df = ak.DataFrame({'userName': userName, 'userID': userID,
     >>>            'item': item, 'day': day, 'amount': amount})
-    >>> df
-    DataFrame(['userName', 'userID', 'item', 'day', 'amount'] [6 rows : 224 B])
+    >>> display(df)
+
+    +----+------------+----------+--------+-------+----------+
+    |    | userName   |   userID |   item |   day |   amount |
+    +====+============+==========+========+=======+==========+
+    |  0 | Alice      |      111 |      0 |     5 |      0.5 |
+    +----+------------+----------+--------+-------+----------+
+    |  1 | Bob        |      222 |      0 |     5 |      0.6 |
+    +----+------------+----------+--------+-------+----------+
+    |  2 | Alice      |      111 |      1 |     6 |      1.1 |
+    +----+------------+----------+--------+-------+----------+
+    |  3 | Carol      |      333 |      1 |     5 |      1.2 |
+    +----+------------+----------+--------+-------+----------+
+    |  4 | Bob        |      222 |      2 |     6 |      4.3 |
+    +----+------------+----------+--------+-------+----------+
+    |  5 | Alice      |      111 |      0 |     6 |      0.6 |
+    +----+------------+----------+--------+-------+----------+
 
     Indexing works slightly differently than with pandas:
 
     >>> df[0]
-    {'userName': 'Alice', 'userID': 111, 'item': 0, 'day': 5, 'amount': 0.5}
+
+    +------------+----------+
+    | keys       |   values |
+    +============+==========+
+    | userName   |    Alice |
+    +------------+----------+
+    |userID      |      111 |
+    +------------+----------+
+    | item       |      0   |
+    +------------+----------+
+    | day        |      5   |
+    +------------+----------+
+    | amount     |     0.5  |
+    +------------+----------+
 
     >>> df['userID']
     array([111, 222, 111, 333, 222, 111])
@@ -504,19 +552,63 @@ class DataFrame(UserDict):
     >>> df['userName']
     array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
 
-    >>> df[[1,5,7]]
-      userName  userID  item  day  amount
-    1      Bob     222     0    5     0.6
-    2    Alice     111     1    6     1.1
-    3    Carol     333     1    5     1.2
+    >>> df[ak.array([1,3,5])]
 
-    Note that strides are not implemented except for stride = 1.
+    +----+------------+----------+--------+-------+----------+
+    |    | userName   |   userID |   item |   day |   amount |
+    +====+============+==========+========+=======+==========+
+    |  0 | Bob        |      222 |      0 |     5 |      0.6 |
+    +----+------------+----------+--------+-------+----------+
+    |  1 | Carol      |      333 |      1 |     5 |      1.2 |
+    +----+------------+----------+--------+-------+----------+
+    |  2 | Alice      |      111 |      0 |     6 |      0.6 |
+    +----+------------+----------+--------+-------+----------+
+
+    Compute the stride:
     >>> df[1:5:1]
-    DataFrame(['userName', 'userID', 'item', 'day', 'amount'] [4 rows : 148 B])
+
+    +----+------------+----------+--------+-------+----------+
+    |    | userName   |   userID |   item |   day |   amount |
+    +====+============+==========+========+=======+==========+
+    |  0 | Bob        |      222 |      0 |     5 |      0.6 |
+    +----+------------+----------+--------+-------+----------+
+    |  1 | Alice      |      111 |      1 |     6 |      1.1 |
+    +----+------------+----------+--------+-------+----------+
+    |  2 | Carol      |      333 |      1 |     5 |      1.2 |
+    +----+------------+----------+--------+-------+----------+
+    |  3 | Bob        |      222 |      2 |     6 |      4.3 |
+    +----+------------+----------+--------+-------+----------+
+
     >>> df[ak.array([1,2,3])]
-    DataFrame(['userName', 'userID', 'item', 'day', 'amount'] [3 rows : 112 B])
+
+    +----+------------+----------+--------+-------+----------+
+    |    | userName   |   userID |   item |   day |   amount |
+    +====+============+==========+========+=======+==========+
+    |  0 | Bob        |      222 |      0 |     5 |      0.6 |
+    +----+------------+----------+--------+-------+----------+
+    |  1 | Alice      |      111 |      1 |     6 |      1.1 |
+    +----+------------+----------+--------+-------+----------+
+    |  2 | Carol      |      333 |      1 |     5 |      1.2 |
+    +----+------------+----------+--------+-------+----------+
+
     >>> df[['userID', 'day']]
-    DataFrame(['userID', 'day'] [6 rows : 96 B])
+
+    +----+----------+-------+
+    |    |   userID |   day |
+    +====+==========+=======+
+    |  0 |      111 |     5 |
+    +----+----------+-------+
+    |  1 |      222 |     5 |
+    +----+----------+-------+
+    |  2 |      111 |     6 |
+    +----+----------+-------+
+    |  3 |      333 |     5 |
+    +----+----------+-------+
+    |  4 |      222 |     6 |
+    +----+----------+-------+
+    |  5 |      111 |     6 |
+    +----+----------+-------+
+
     """
 
     _COLUMN_CLASSES = (pdarray, Strings, Categorical, SegArray)
@@ -1047,6 +1139,9 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> import pandas as pd
         >>> pd_df = pd.DataFrame({"A":[1,2],"B":[3,4]})
         >>> type(pd_df)
         pandas.core.frame.DataFrame
@@ -1143,6 +1238,10 @@ class DataFrame(UserDict):
 
         Examples
         ----------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+
         Drop column
         >>> df.drop('col_name', axis=1)
 
@@ -1286,6 +1385,9 @@ class DataFrame(UserDict):
 
         Examples
         --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
         >>> df
 
@@ -1321,6 +1423,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1, 2], 'col2': ["a", "b"]})
         >>> df
 
@@ -1372,6 +1476,9 @@ class DataFrame(UserDict):
 
         Examples
         --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({})
         >>> df
          0 rows x 0 columns
@@ -1392,6 +1499,9 @@ class DataFrame(UserDict):
 
         Examples
         --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
         >>> df
 
@@ -1425,6 +1535,9 @@ class DataFrame(UserDict):
 
         Examples
         --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
         >>> df
 
@@ -1453,6 +1566,9 @@ class DataFrame(UserDict):
 
         Examples
         --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
         >>> df
 
@@ -1579,6 +1695,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1, 2], 'col2': ["a", "b"]})
         >>> df
 
@@ -1779,6 +1897,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({"A": ak.array([1, 2, 3]), "B": ak.array([4, 5, 6])})
         >>> display(df)
 
@@ -1885,6 +2005,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df1 = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
 
         +----+--------+--------+
@@ -2011,6 +2133,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': ak.arange(10), 'col2': -1 * ak.arange(10)})
         >>> display(df)
 
@@ -2093,6 +2217,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': ak.arange(10), 'col2': -1 * ak.arange(10)})
         >>> display(df)
 
@@ -2237,6 +2363,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1.0, 1.0, 2.0, np.nan], 'col2': [4, 5, 6, 7]})
         >>> df
 
@@ -2306,6 +2434,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': ak.arange(1000), 'col2': ak.arange(1000)})
         >>> df.memory_usage()
         '0.00 GB'
@@ -2355,6 +2485,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> ak_df = ak.DataFrame({"A": ak.arange(2), "B": -1 * ak.arange(2)})
         >>> type(ak_df)
         arkouda.dataframe.DataFrame
@@ -2368,6 +2500,7 @@ class DataFrame(UserDict):
         |  1 |   1 |  -1 |
         +----+-----+-----+
 
+        >>> import pandas as pd
         >>> pd_df = ak_df.to_pandas()
         >>> type(pd_df)
         pandas.core.frame.DataFrame
@@ -2482,6 +2615,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> import os.path
         >>> from pathlib import Path
         >>> my_path = os.path.join(os.getcwd(), 'hdf_output')
@@ -2619,6 +2754,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> import os.path
         >>> from pathlib import Path
         >>> my_path = os.path.join(os.getcwd(), 'hdf_output')
@@ -2703,6 +2840,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> import os.path
         >>> from pathlib import Path
         >>> my_path = os.path.join(os.getcwd(), 'parquet_output')
@@ -2795,6 +2934,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> import os.path
         >>> from pathlib import Path
         >>> my_path = os.path.join(os.getcwd(), 'csv_output')
@@ -2866,6 +3007,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> import os.path
         >>> from pathlib import Path
         >>> my_path = os.path.join(os.getcwd(), 'csv_output','my_data')
@@ -2933,6 +3076,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> import os.path
         >>> from pathlib import Path
         >>> my_path = os.path.join(os.getcwd(), 'hdf5_output')
@@ -2994,6 +3139,8 @@ class DataFrame(UserDict):
         To store data in <my_dir>/my_data_LOCALE0000,
         use "<my_dir>/my_data" as the prefix.
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> import os.path
         >>> from pathlib import Path
         >>> my_path = os.path.join(os.getcwd(), 'hdf5_output','my_data')
@@ -3056,6 +3203,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1.1, 3.1, 2.1], 'col2': [6, 5, 4]})
         >>> display(df)
 
@@ -3243,6 +3392,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [2, 2, 1], 'col2': [3, 4, 3], 'col3':[5, 6, 7]})
         >>> display(df)
 
@@ -3325,6 +3476,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
 
         +----+--------+--------+
@@ -3460,6 +3613,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
         >>> display(df)
 
@@ -3545,6 +3700,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col1': [1.0, 1.0, 2.0, np.nan], 'col2': [4, 5, 6, 7]})
         >>> df
 
@@ -3610,6 +3767,9 @@ class DataFrame(UserDict):
 
         Examples
         ________
+
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> df = ak.DataFrame({'col_A': ak.array([7, 3]), 'col_B':ak.array([1, 9])})
         >>> display(df)
 
@@ -3836,6 +3996,8 @@ class DataFrame(UserDict):
         Examples
         --------
 
+        >>> import arkouda as ak
+        >>> ak.connect()
         >>> left_df = ak.DataFrame({'col1': ak.arange(5), 'col2': -1 * ak.arange(5)})
         >>> display(left_df)
 
@@ -4313,6 +4475,8 @@ def sorted(df, column=False):
     Examples
     --------
 
+    >>> import arkouda as ak
+    >>> ak.connect()
     >>> df = ak.DataFrame({'col1': ak.arange(5), 'col2': -1 * ak.arange(5)})
     >>> display(df)
 
@@ -4356,7 +4520,8 @@ def sorted(df, column=False):
 
 
 def intx(a, b):
-    """Find all the rows that are in both dataframes. Columns should be in
+    """
+    Find all the rows that are in both dataframes. Columns should be in
     identical order.
 
     Note: does not work for columns of floating point values, but does work for
@@ -4365,6 +4530,8 @@ def intx(a, b):
     Examples
     --------
 
+    >>> import arkouda as ak
+    >>> ak.connect()
     >>> a = ak.DataFrame({'a':ak.arange(5),'b': 2* ak.arange(5)})
     >>> display(a)
 
@@ -4462,6 +4629,8 @@ def intersect(a, b, positions=True, unique=False):
     Examples
     --------
 
+    >>> import arkouda as ak
+    >>> ak.connect()
     >>> a = ak.arange(10)
     >>> print(a)
     [0 1 2 3 4 5 6 7 8 9]
@@ -4587,6 +4756,9 @@ def invert_permutation(perm):
     Examples
     --------
 
+    >>> import arkouda as ak
+    >>> ak.connect()
+    >>> from arkouda.index import Index
     >>> i = Index(ak.array([1,2,0,5,4]))
     >>> perm = i.argsort()
     >>> print(perm)
@@ -4771,6 +4943,9 @@ def merge(
 
     Examples
     --------
+
+    >>> import arkouda as ak
+    >>> ak.connect()
     >>> left_df = ak.DataFrame({'col1': ak.arange(5), 'col2': -1 * ak.arange(5)})
     >>> display(left_df)
 
