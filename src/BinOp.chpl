@@ -1230,15 +1230,11 @@ module BinOp
           when "<<" {
             if(val){
               e.a = val:int << r.a:int;
-            }else{
-              e.a = val:int;
             }
           }
           when ">>" {
             if(val){
               e.a = val:int >> r.a:int;
-            }else{
-              e.a = val:int;
             }
           }
           otherwise {
