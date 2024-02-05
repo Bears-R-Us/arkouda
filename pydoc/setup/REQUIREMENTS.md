@@ -32,6 +32,7 @@ The following python packages are required by the Arkouda client package.
 - `types-tabulate`
 - `tables>=3.7.0`
 - `pyarrow`
+- `scipy`
 
 ### Developer Specific
 
