@@ -104,13 +104,12 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
             else:
                 cmd_prefix = g[2]
 
-            match g[0]:
-                case "Inc":
-                    ndStampPermInc(proc_name, cmd_prefix, modOut, max_dims)
-                case "Dec":
-                    ndStampPermDec(proc_name, cmd_prefix, modOut, max_dims)
-                case "All":
-                    ndStampPermAll(proc_name, cmd_prefix, modOut, max_dims)
+            if g[0] == "Inc":
+                ndStampPermInc(proc_name, cmd_prefix, modOut, max_dims)
+            if g[0] == "Dec":
+                ndStampPermDec(proc_name, cmd_prefix, modOut, max_dims)
+            else:
+                ndStampPermAll(proc_name, cmd_prefix, modOut, max_dims)
 
         # include the source module in the stamp file if any procs were stamped out
         if found_annotation:

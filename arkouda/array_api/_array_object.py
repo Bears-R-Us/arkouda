@@ -302,7 +302,7 @@ class Array:
         raise ValueError("Not implemented")
 
     def __eq__(self: object, other: object, /) -> bool:
-        if isinstance(other, Array):
+        if isinstance(other, Array) and isinstance(self, Array):
             return self._array == other._array
         else:
             raise ValueError("Not implemented")

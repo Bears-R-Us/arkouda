@@ -99,7 +99,7 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
             )
         )
     except RuntimeError as e:
-        raise(IndexError(f"Failed to expand array dimensions: {e}"))
+        raise (IndexError(f"Failed to expand array dimensions: {e}"))
 
 
 def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Array:
@@ -206,11 +206,15 @@ def roll(
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"rollFlattened{x.ndim}D" if axis is None else f"roll{x.ndim}D",
+                        cmd=f"rollFlattened{x.ndim}D"
+                        if axis is None
+                        else f"roll{x.ndim}D",
                         args={
                             "name": x._array,
                             "nShifts": len(shift) if isinstance(shift, tuple) else 1,
-                            "shift": list(shift) if isinstance(shift, tuple) else [shift],
+                            "shift": list(shift)
+                            if isinstance(shift, tuple)
+                            else [shift],
                             "nAxes": len(axisList),
                             "axis": axisList,
                         },
