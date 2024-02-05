@@ -423,12 +423,16 @@ class OperatorsTest(ArkoudaTest):
         np_uint = np.array([maxbits, maxbits, maxbits, maxbits], dtype=np.uint64)
         ak_int = ak.array([maxbits, maxbits, maxbits, maxbits], dtype=ak.int64)
         np_int = np.array([maxbits, maxbits, maxbits, maxbits], dtype=np.int64)
+        ak_bool = ak.array([True, True, False, False], dtype=ak.bool)
+        np_bool = np.array([True, True, False, False], dtype=bool)
 
         # Shifting value arrays
         ak_uint_array = ak.array([62, 63, 64, 65], dtype=ak.uint64)
         np_uint_array = np.array([62, 63, 64, 65], dtype=np.uint64)
         ak_int_array = ak.array([62, 63, 64, 65], dtype=ak.int64)
         np_int_array = np.array([62, 63, 64, 65], dtype=np.int64)
+        ak_bool_array = ak.array([True, False, True, False], dtype=ak.bool)
+        np_bool_array = np.array([True, False, True, False], dtype=bool)
 
         # Binopvs case
         for i in range(62, 66):
@@ -439,26 +443,39 @@ class OperatorsTest(ArkoudaTest):
             self.assertTrue(np.allclose((ak_uint >> i).to_ndarray(), np_uint >> i))
             self.assertTrue(np.allclose((ak_int >> i).to_ndarray(), np_int >> i))
 
+        self.assertListEqual((ak_bool_array << True).to_list(), (np_bool_array << True).tolist())
+        self.assertListEqual((ak_bool_array << False).to_list(), (np_bool_array << False).tolist())
+        self.assertListEqual((ak_bool_array >> True).to_list(), (np_bool_array >> True).tolist())
+        self.assertListEqual((ak_bool_array >> False).to_list(), (np_bool_array >> False).tolist())
+
         # Binopsv case
         # Left Shift
         self.assertListEqual((maxbits << ak_uint_array).to_list(), (maxbits << np_uint_array).tolist())
         self.assertListEqual((maxbits << ak_int_array).to_list(), (maxbits << np_int_array).tolist())
+        self.assertListEqual((True << ak_bool_array).to_list(), (True << np_bool_array).tolist())
+        self.assertListEqual((False << ak_bool_array).to_list(), (False << np_bool_array).tolist())
+
         # Right Shift
         self.assertListEqual((maxbits >> ak_uint_array).to_list(), (maxbits >> np_uint_array).tolist())
         self.assertListEqual((maxbits >> ak_int_array).to_list(), (maxbits >> np_int_array).tolist())
+        self.assertListEqual((True >> ak_bool_array).to_list(), (True >> np_bool_array).tolist())
+        self.assertListEqual((False >> ak_bool_array).to_list(), (False >> np_bool_array).tolist())
 
         # Binopvv case, Same type
         # Left Shift
         self.assertListEqual((ak_uint << ak_uint_array).to_list(), (np_uint << np_uint_array).tolist())
         self.assertListEqual((ak_int << ak_int_array).to_list(), (np_int << np_int_array).tolist())
+        self.assertListEqual((ak_bool << ak_bool_array).to_list(), (np_bool << np_bool_array).tolist())
         # Right Shift
         self.assertListEqual((ak_uint >> ak_uint_array).to_list(), (np_uint >> np_uint_array).tolist())
         self.assertListEqual((ak_int >> ak_int_array).to_list(), (np_int >> np_int_array).tolist())
+        self.assertListEqual((ak_bool >> ak_bool_array).to_list(), (np_bool >> np_bool_array).tolist())
 
         # Binopvv case, Mixed type
         # Left Shift
         self.assertListEqual((ak_uint << ak_int_array).to_list(), (np_uint << np_uint_array).tolist())
         self.assertListEqual((ak_int << ak_uint_array).to_list(), (np_int << np_int_array).tolist())
+
         # Right shift
         self.assertListEqual((ak_uint >> ak_int_array).to_list(), (np_uint >> np_uint_array).tolist())
         self.assertListEqual((ak_int >> ak_uint_array).to_list(), (np_int >> np_int_array).tolist())
@@ -865,9 +882,11 @@ class OperatorsTest(ArkoudaTest):
         self.assertTrue(ak.array([1.1, 2.3, 5]).__repr__() in answers)
 
         answers = [
-            "array([0 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10])",
+            "array([0 0.52631578947368418 1.0526315789473684 ... "
+            "8.9473684210526319 9.473684210526315 10])",
             "array([0 0.5 1.1 ... 8.9 9.5 10])",
-            "array([0.00000000000000000 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10.00000000000000000])",
+            "array([0.00000000000000000 0.52631578947368418 1.0526315789473684 "
+            "... 8.9473684210526319 9.473684210526315 10.00000000000000000])",
         ]
         self.assertTrue(ak.linspace(0, 10, 20).__repr__() in answers)
         self.assertEqual("array([False False False])", ak.isnan(ak.array([1.1, 2.3, 5])).__repr__())

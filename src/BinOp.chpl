@@ -458,6 +458,22 @@ module BinOp
         }
       var repMsg = "created %s".doFormat(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if (l.etype == bool && r.etype == bool)  {
+      select op {
+          when "<<" {
+            e.a = l.a:int << r.a:int;
+          }
+          when ">>" {
+            e.a = l.a:int >> r.a:int;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".doFormat(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
     omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -639,7 +655,6 @@ module BinOp
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
             return new MsgTuple(errorMsg, MsgType.ERROR); 
           }
-            
         }
       }
       var repMsg = "created %s".doFormat(st.attrib(rname));
@@ -669,6 +684,31 @@ module BinOp
         }
         when "-" {
           e.a = l.a - val:l.etype;
+        }
+        otherwise {
+          var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+      }
+      var repMsg = "created %s".doFormat(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    else if (l.etype == bool && val.type == bool) {
+      select op {
+        when ">>" {
+          if(val){
+            e.a = l.a:int >> val:int;
+          }else{
+            e.a = l.a:int;
+          }
+        }
+        when "<<" {
+          if(val){
+            e.a = l.a:int << val:int;
+          }else{
+            e.a = l.a:int;
+          }
         }
         otherwise {
           var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
@@ -1176,6 +1216,26 @@ module BinOp
           }
           when "*" {
             e.a = val:real * r.a:real;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".doFormat(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if (r.etype == bool && val.type == bool)  {
+      select op {
+          when "<<" {
+            if(val){
+              e.a = val:int << r.a:int;
+            }
+          }
+          when ">>" {
+            if(val){
+              e.a = val:int >> r.a:int;
+            }
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
