@@ -697,10 +697,18 @@ module BinOp
     else if (l.etype == bool && val.type == bool) {
       select op {
         when ">>" {
-          e.a = l.a:int >> val:int;
+          if(val){
+            e.a = l.a:int >> val:int;
+          }else{
+            e.a = l.a:int;
+          }
         }
         when "<<" {
-          e.a = l.a:int << val:int;
+          if(val){
+            e.a = l.a:int << val:int;
+          }else{
+            e.a = l.a:int;
+          }
         }
         otherwise {
           var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
@@ -1220,10 +1228,18 @@ module BinOp
     } else if (r.etype == bool && val.type == bool)  {
       select op {
           when "<<" {
-            e.a = val:int << r.a:int;
+            if(val){
+              e.a = val:int << r.a:int;
+            }else{
+              e.a = val:int;
+            }
           }
           when ">>" {
-            e.a = val:int >> r.a:int;
+            if(val){
+              e.a = val:int >> r.a:int;
+            }else{
+              e.a = val:int;
+            }
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);

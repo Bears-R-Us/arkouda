@@ -149,7 +149,7 @@ module OperatorMsg
             var l = toSymEntry(left,bool, nd);
             var r = toSymEntry(right,bool, nd);
             if (op == "<<") || (op == ">>" )  {
-              var e = st.addEntry(rname, l.tupShape, uint);
+              var e = st.addEntry(rname, l.tupShape, int);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             }
             var e = st.addEntry(rname, l.tupShape, bool);
@@ -500,7 +500,7 @@ module OperatorMsg
             var l = toSymEntry(left,bool, nd);
             var val = value.getBoolValue();
             if (op == "<<") || (op == ">>") {
-              var e = st.addEntry(rname, l.tupShape, uint);
+              var e = st.addEntry(rname, l.tupShape, int);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
             var e = st.addEntry(rname, l.tupShape, bool);
@@ -851,7 +851,7 @@ module OperatorMsg
             var val = value.getBoolValue();
             var r = toSymEntry(right,bool, nd);
             if (op == "<<") || (op == ">>") {
-              var e = st.addEntry(rname, r.tupShape, uint);
+              var e = st.addEntry(rname, r.tupShape, int);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             }
             var e = st.addEntry(rname, r.tupShape, bool);
