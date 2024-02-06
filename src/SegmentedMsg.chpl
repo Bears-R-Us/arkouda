@@ -301,6 +301,10 @@ module SegmentedMsg {
             truth.a = strings.isempty();
             repMsg = "created "+st.attrib(rname);
           }
+          when "isspace" {
+            truth.a = strings.isspace();
+            repMsg = "created "+st.attrib(rname);
+          }
           otherwise {
             var errorMsg = notImplementedError(pn, "%s".doFormat(subcmd));
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

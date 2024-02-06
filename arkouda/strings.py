@@ -814,6 +814,7 @@ class Strings:
             )
         )
 
+    @typechecked
     def isempty(self) -> pdarray:
         """
         Returns a boolean pdarray where index i indicates whether string i of the
@@ -850,6 +851,45 @@ class Strings:
         return create_pdarray(
             generic_msg(
                 cmd="checkChars", args={"subcmd": "isempty", "objType": self.objType, "obj": self.entry}
+            )
+        )
+
+    @typechecked
+    def isspace(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i has all
+        whitespace characters (‘ ‘, ‘\t’, ‘\n’, ‘\v’, ‘\f’, ‘\r’).
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are whitespace, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.islower
+        Strings.isupper
+        Strings.istitle
+
+        Examples
+        --------
+        >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
+        >>> space = ak.array([' ', '\t', '\n', '\v', '\f', '\r', ' \t\n\v\f\r'])
+        >>> strings = ak.concatenate([not_space, space])
+        >>> strings
+        array(['Strings 0', 'Strings 1', 'Strings 2', ' ',
+        ... 'u0009', 'n', 'u000B', 'u000C', 'u000D', ' u0009nu000Bu000Cu000D'])
+        >>> strings.isspace()
+        array([False False False True True True True True True True])
+        """
+        return create_pdarray(
+            generic_msg(
+                cmd="checkChars", args={"subcmd": "isspace", "objType": self.objType, "obj": self.entry}
             )
         )
 
