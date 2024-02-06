@@ -565,6 +565,7 @@ class DataFrame(UserDict):
     +----+------------+----------+--------+-------+----------+
 
     Compute the stride:
+
     >>> df[1:5:1]
 
     +----+------------+----------+--------+-------+----------+
@@ -1223,9 +1224,9 @@ class DataFrame(UserDict):
         Parameters
         ----------
         keys : str, int or list
-            The labels to be dropped on the given axis
+            The labels to be dropped on the given axis.
         axis : int or str
-            The axis on which to drop from. 0/'index' - drop rows, 1/'columns' - drop columns
+            The axis on which to drop from. 0/'index' - drop rows, 1/'columns' - drop columns.
         inplace: bool, default=False
             When True, perform the operation on the calling object.
             When False, return a new object.
@@ -1233,7 +1234,7 @@ class DataFrame(UserDict):
         Returns
         -------
         arkouda.dataframe.DataFrame or None
-            DateFrame when `inplace=False`
+            DateFrame when `inplace=False`;
             None when `inplace=True`
 
         Examples
@@ -1241,15 +1242,6 @@ class DataFrame(UserDict):
 
         >>> import arkouda as ak
         >>> ak.connect()
-
-        Drop column
-        >>> df.drop('col_name', axis=1)
-
-        Drop Row
-        >>> df.drop(1)
-        or
-        >>> df.drop(1, axis=0)
-
         >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
         >>> display(df)
 
@@ -1261,8 +1253,9 @@ class DataFrame(UserDict):
         |  1 |      2 |      4 |
         +----+--------+--------+
 
-        >>> df2 = df.drop('col1', axis = 1)
-        >>> display(df2)
+        Drop column
+
+        >>> df.drop('col1', axis = 1)
 
         +----+--------+
         |    |   col2 |
@@ -1271,6 +1264,16 @@ class DataFrame(UserDict):
         +----+--------+
         |  1 |      4 |
         +----+--------+
+
+        Drop row
+
+        >>> df.drop(0, axis = 0)
+
+        +----+--------+--------+
+        |    |   col1 |   col2 |
+        +====+========+========+
+        |  0 |      2 |      4 |
+        +----+--------+--------+
 
         """
 
@@ -2212,7 +2215,7 @@ class DataFrame(UserDict):
 
         See Also
         --------
-        ak.dataframe.head
+        arkouda.dataframe.head
 
         Examples
         --------
@@ -3959,13 +3962,12 @@ class DataFrame(UserDict):
         right_suffix: str = "_y",
     ) -> DataFrame:
         r"""
-        Utilizes the ak.join.inner_join_merge and the ak.join.right_join_merge
-        functions to return a merged Arkouda DataFrame object
-        containing rows from both DataFrames as specified by the merge
-        condition (based on the "how" and "on" parameters). For this function self
-        is considered the left dataframe.
+        Merge Arkouda DataFrames with a database-style join.
+        The resulting dataframe contains rows from both DataFrames as specified by
+        the merge condition (based on the "how" and "on" parameters).
+
         Based on pandas merge functionality.
-        https://github.com/pandas-dev/pandas/blob/main/pandas/core/reshape/merge.py#L137
+        https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.merge.html
 
         Parameters
         ----------
@@ -4411,6 +4413,7 @@ class DataFrame(UserDict):
         Parameters
         ----------
         rep_msg : string
+            Server response message used to create a DataFrame.
 
         Returns
         -------
@@ -4469,7 +4472,7 @@ def sorted(df, column=False):
 
     Returns
     -------
-    ak.dataframe.DataFrame
+    arkouda.dataframe.DataFrame
         A sorted copy of the original DataFrame.
 
     Examples
@@ -4521,8 +4524,8 @@ def sorted(df, column=False):
 
 def intx(a, b):
     """
-    Find all the rows that are in both dataframes. Columns should be in
-    identical order.
+    Find all the rows that are in both dataframes.
+    Columns should be in identical order.
 
     Note: does not work for columns of floating point values, but does work for
     Strings, pdarrays of int64 type, and Categorical *should* work.
@@ -4845,6 +4848,7 @@ def _right_join_merge(
     as well as corresponding rows in the left (based on the "on" param),
     and all of their associated values.
     Based on pandas merge functionality.
+
     Parameters
     ----------
     left: DataFrame
@@ -4907,12 +4911,12 @@ def merge(
     right_suffix: str = "_y",
 ) -> DataFrame:
     r"""
-    Utilizes the ak.join.inner_join_merge and the ak.join.right_join_merge
-    functions to return a merged Arkouda DataFrame object
-    containing rows from both DataFrames as specified by the merge
-    condition (based on the "how" and "on" parameters).
+    Merge Arkouda DataFrames with a database-style join.
+    The resulting dataframe contains rows from both DataFrames as specified by
+    the merge condition (based on the "how" and "on" parameters).
+
     Based on pandas merge functionality.
-    https://github.com/pandas-dev/pandas/blob/main/pandas/core/reshape/merge.py#L137
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.merge.html
 
     Parameters
     ----------
