@@ -429,6 +429,52 @@ Classes
       >>> strings.isempty()
 
 
+   .. py:method:: isspace() -> arkouda.pdarrayclass.pdarray
+
+              Returns a boolean pdarray where index i indicates whether string i has all
+              whitespace characters (‘ ‘, ‘   ’, ‘
+      ’, ‘
+      ’, ‘
+      ’, ‘
+      ’).
+
+              Returns
+              -------
+              pdarray, bool
+                  True for elements that are whitespace, False otherwise
+
+              Raises
+              ------
+              RuntimeError
+                  Raised if there is a server-side error thrown
+
+              See Also
+              --------
+              Strings.islower
+              Strings.isupper
+              Strings.istitle
+
+              Examples
+              --------
+              >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
+              >>> space = ak.array([' ', '    ', '
+      ', '
+      ', '
+      ', '
+      ', '
+
+
+
+      '])
+              >>> strings = ak.concatenate([not_space, space])
+              >>> strings
+              array(['Strings 0', 'Strings 1', 'Strings 2', ' ',
+              ... 'u0009', 'n', 'u000B', 'u000C', 'u000D', ' u0009nu000Bu000Cu000D'])
+              >>> strings.isspace()
+              array([False False False True True True True True True True])
+
+
+
    .. py:method:: strip(chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
 
       Returns a new Strings object with all leading and trailing occurrences of characters contained
