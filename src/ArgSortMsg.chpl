@@ -20,7 +20,8 @@ module ArgSortMsg
     use CommAggregation;
 
     use AryUtil;
-    
+    use ArkoudaAryUtilCompat;
+
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
