@@ -450,9 +450,9 @@ module SegmentedString {
 
     /*
       Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
-      and the remaining characters replaced with their lowercase equivalent
+      and the remaining characters replaced with their lowercase equivalent.  The first character following a space character will be uppercase.
       :returns: Strings – Substrings with first characters replaced with uppercase equivalent and remaining characters replaced with
-      their lowercase equivalent
+      their lowercase equivalent.  The first character following a space character will be uppercase.
     */
     proc title() throws {
       ref origVals = this.values.a;
@@ -467,6 +467,38 @@ module SegmentedString {
         }
       }
       return (offs, titleVals);
+    }
+
+    /*
+      Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
+      and the remaining characters replaced with their lowercase equivalent
+      :returns: Strings – Substrings with first characters replaced with uppercase equivalent and remaining characters replaced with
+      their lowercase equivalent
+    */
+    proc capitalize() throws {
+      ref origVals = this.values.a;
+      ref offs = this.offsets.a;
+      var capitalizedVals: [this.values.a.domain] uint(8);
+      const lengths = this.getLengths();
+      forall (off, len) in zip(offs, lengths) with (var valAgg = newDstAggregator(uint(8))) {
+        var i = 0;
+        var first = true;
+        for char in interpretAsString(origVals, off..#len, borrow=true).items(){
+          if(first){
+            for b in char.toUpper().bytes(){
+              valAgg.copy(capitalizedVals[off+i], b:uint(8));
+              i += 1;
+            }
+            first = false;
+          }else{
+            for b in char.toLower().bytes(){
+              valAgg.copy(capitalizedVals[off+i], b:uint(8));
+              i += 1;
+            }
+          }
+        }
+      }
+      return (offs, capitalizedVals);
     }
 
     /*
