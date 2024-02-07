@@ -32,7 +32,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:1.33.0
+      image: chapel/chapel:1.32.0
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
