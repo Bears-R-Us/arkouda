@@ -35,11 +35,16 @@ void cpp_createRowGroupReader(int64_t rowGroup, int64_t readerIdx) {
 }
 
 void cpp_createColumnReader(const char* colname, int64_t readerIdx) {
+  
   std::shared_ptr<parquet::FileMetaData> file_metadata = globalFiles[readerIdx]->metadata();
   auto idx = file_metadata -> schema() -> ColumnIndex(colname);
-  
+
+  auto start = std::chrono::high_resolution_clock::now();
   std::shared_ptr<parquet::ColumnReader> column_reader;
   column_reader = globalRowGroupReaders[readerIdx]->Column(idx);
+  auto finish = std::chrono::high_resolution_clock::now();
+  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
+  std::cout << microseconds.count()/1000 << "ms\n";
   globalColumnReaders[readerIdx] = column_reader;
 }
 
