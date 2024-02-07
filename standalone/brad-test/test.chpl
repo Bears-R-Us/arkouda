@@ -23,14 +23,18 @@ proc main() {
   var readT: stopwatch;
   var copyT: stopwatch;
 
-  var createReadersT: stopwatch;
+  var createReaders1T: stopwatch;
+  var createReaders2T: stopwatch;
+  var openFilesT: stopwatch;
   
   var filename = "test-file_LOCALE0000";
   var colname = "strings_array";
   var numElems = 100000000;
 
+  openFilesT.start();
   c_openFile(c_ptrTo(filename), 0);
   c_openFile(c_ptrTo(filename), 1);
+  openFilesT.stop();
   var numRowGroups = c_getNumRowGroups(0);
   var allocT: stopwatch;
   allocT.start();
@@ -39,10 +43,14 @@ proc main() {
   var numCopied = 0;
 
   for i in 0..#numRowGroups {
-    createReadersT.start();
+    createReaders1T.start();
     c_createRowGroupReader(i, i);
+    createReaders1T.stop();
+
+    createReaders2T.start();
     c_createColumnReader(c_ptrTo(colname), i);
-    createReadersT.stop();
+    createReaders2T.stop();
+    
     var numRead = 0;
     readT.start();
     var vals = c_readParquetColumnChunks(c_ptrTo(filename), 8192, numElems, i, c_ptrTo(numRead)): c_ptr(MyByteArray);
@@ -57,9 +65,11 @@ proc main() {
     numCopied += numRead;
   }
   t.stop();
-  writeln("Read took              : ", readT.elapsed());
-  writeln("Copy took              : ", copyT.elapsed());
-  writeln("Alloc took             : ", allocT.elapsed());
-  writeln("Create readers took    : ", createReadersT.elapsed());
-  writeln("Total took             : ", t.elapsed());
+  writeln("Read took                : ", readT.elapsed());
+  writeln("Copy took                : ", copyT.elapsed());
+  writeln("Alloc took               : ", allocT.elapsed());
+  writeln("Open files took          : ", openFilesT.elapsed());
+  writeln("Create row readers took  : ", createReaders1T.elapsed());
+  writeln("Create col readers took  : ", createReaders2T.elapsed());
+  writeln("Total took               : ", t.elapsed());
 }
