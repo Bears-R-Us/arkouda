@@ -238,6 +238,11 @@ module SegmentedMsg {
             var retString = getSegString(off, val, st);
             repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
           }
+          when "capitalize" {
+            var (off, val) = strings.capitalize();
+            var retString = getSegString(off, val, st);
+            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+          }
           otherwise {
             var errorMsg = notImplementedError(pn, "%s".doFormat(subcmd));
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
