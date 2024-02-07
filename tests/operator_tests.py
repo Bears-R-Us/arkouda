@@ -413,7 +413,7 @@ class OperatorsTest(ArkoudaTest):
             self.assertTrue(np.allclose((ak_float % aku).to_ndarray(), np_float % npu, equal_nan=True))
             self.assertTrue(np.allclose((aku % ak_float).to_ndarray(), npu % np_float, equal_nan=True))
 
-    def test_shift_binop(self):
+    def test_shift_maxbits_binop(self):
         # This tests for a bug when left shifting by a value >=64 bits for int/uint, Issue #2099
         # Max bit value
         maxbits = 2**63 - 1
@@ -479,6 +479,31 @@ class OperatorsTest(ArkoudaTest):
         # Right shift
         self.assertListEqual((ak_uint >> ak_int_array).to_list(), (np_uint >> np_uint_array).tolist())
         self.assertListEqual((ak_int >> ak_uint_array).to_list(), (np_int >> np_int_array).tolist())
+
+    def test_shift_bool_int64_binop(self):
+        # This tests for a missing implementation of bit shifting booleans and ints, Issue #2945
+        np_int = np.arange(5)
+        ak_int = ak.array(np_int)
+        np_bool = np.array([True, False, True, False, True])
+        ak_bool = ak.array(np_bool)
+
+        # Binopvv case
+        assert np.allclose((ak_int >> ak_bool).to_ndarray(), np_int >> np_bool)
+        assert np.allclose((ak_int << ak_bool).to_ndarray(), np_int << np_bool)
+        assert np.allclose((ak_bool >> ak_int).to_ndarray(), np_bool >> np_int)
+        assert np.allclose((ak_bool << ak_int).to_ndarray(), np_bool << np_int)
+
+        # Binopvs case
+        assert np.allclose((ak_int >> ak_bool[0]).to_ndarray(), np_int >> np_bool[0])
+        assert np.allclose((ak_int << ak_bool[0]).to_ndarray(), np_int << np_bool[0])
+        assert np.allclose((ak_bool >> ak_int[0]).to_ndarray(), np_bool >> np_int[0])
+        assert np.allclose((ak_bool << ak_int[0]).to_ndarray(), np_bool << np_int[0])
+
+        # Binopsv case
+        assert np.allclose((ak_int[0] >> ak_bool).to_ndarray(), np_int[0] >> np_bool)
+        assert np.allclose((ak_int[0] << ak_bool).to_ndarray(), np_int[0] << np_bool)
+        assert np.allclose((ak_bool[0] >> ak_int).to_ndarray(), np_bool[0] >> np_int)
+        assert np.allclose((ak_bool[0] << ak_int).to_ndarray(), np_bool[0] << np_int)
 
     def test_shift_equals_scalar_binops(self):
         vector_pairs = [

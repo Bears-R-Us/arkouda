@@ -216,7 +216,7 @@ class TestOperator:
 
     def test_max_bits_concatenation(self):
         # reproducer for issue #2802
-        concatenated = ak.concatenate([ak.arange(5, max_bits=3), ak.arange(2 ** 200 - 1, 2 ** 200 + 4)])
+        concatenated = ak.concatenate([ak.arange(5, max_bits=3), ak.arange(2**200 - 1, 2**200 + 4)])
         assert concatenated.max_bits == 3
         assert [0, 1, 2, 3, 4, 7, 0, 1, 2, 3] == concatenated.to_list()
 
@@ -319,7 +319,7 @@ class TestOperator:
             assert np.allclose((ak_float % aku).to_ndarray(), np_float % npu, equal_nan=True)
             assert np.allclose((aku % ak_float).to_ndarray(), npu % np_float, equal_nan=True)
 
-    def test_shift_binop(self):
+    def test_shift_maxbits_binop(self):
         # This tests for a bug when left shifting by a value >=64 bits for int/uint, Issue #2099
         max_bits = 2**63 - 1
         for dtype in "int64", "uint64":
@@ -348,6 +348,31 @@ class TestOperator:
             ak_shift_other_dtype = ak.cast(ak_shift, "int64" if dtype != "int64" else "uint64")
             assert (ak_arr << ak_shift_other_dtype).to_list() == (np_arr << np_shift).tolist()
             assert (ak_arr >> ak_shift_other_dtype).to_list() == (np_arr >> np_shift).tolist()
+
+    def test_shift_bool_int64_binop(self):
+        # This tests for a missing implementation of bit shifting booleans and ints, Issue #2945
+        np_int = make_np_arrays(10, "int64")
+        ak_int = ak.array(np_int)
+        np_bool = make_np_arrays(10, "bool")
+        ak_bool = ak.array(np_bool)
+
+        # Binopvv case
+        assert np.allclose((ak_int >> ak_bool).to_ndarray(), np_int >> np_bool)
+        assert np.allclose((ak_int << ak_bool).to_ndarray(), np_int << np_bool)
+        assert np.allclose((ak_bool >> ak_int).to_ndarray(), np_bool >> np_int)
+        assert np.allclose((ak_bool << ak_int).to_ndarray(), np_bool << np_int)
+
+        # Binopvs case
+        assert np.allclose((ak_int >> ak_bool[0]).to_ndarray(), np_int >> np_bool[0])
+        assert np.allclose((ak_int << ak_bool[0]).to_ndarray(), np_int << np_bool[0])
+        assert np.allclose((ak_bool >> ak_int[0]).to_ndarray(), np_bool >> np_int[0])
+        assert np.allclose((ak_bool << ak_int[0]).to_ndarray(), np_bool << np_int[0])
+
+        # Binopsv case
+        assert np.allclose((ak_int[0] >> ak_bool).to_ndarray(), np_int[0] >> np_bool)
+        assert np.allclose((ak_int[0] << ak_bool).to_ndarray(), np_int[0] << np_bool)
+        assert np.allclose((ak_bool[0] >> ak_int).to_ndarray(), np_bool[0] >> np_int)
+        assert np.allclose((ak_bool[0] << ak_int).to_ndarray(), np_bool[0] << np_int)
 
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)

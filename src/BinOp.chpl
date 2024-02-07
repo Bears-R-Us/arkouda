@@ -412,6 +412,12 @@ module BinOp
           when "*" {
             e.a = l.a:int * r.a:int;
           }
+          when ">>" {
+            e.a = l.a:int >> r.a:int;
+          }
+          when "<<" {
+            e.a = l.a:int << r.a:int;
+          }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -832,6 +838,12 @@ module BinOp
           when "*" {
             e.a = l.a:int * val:int;
           }
+          when ">>" {
+            e.a = l.a:int >> val:int;
+          }
+          when "<<" {
+            e.a = l.a:int << val:int;
+          }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1197,6 +1209,12 @@ module BinOp
           }
           when "*" {
             e.a = val:int * r.a:int;
+          }
+          when ">>" {
+            e.a = val:int >> r.a:int;
+          }
+          when "<<" {
+            e.a = val:int << r.a:int;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
