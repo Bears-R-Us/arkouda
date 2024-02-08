@@ -43,7 +43,6 @@ pd.set_option("display.max_colwidth", 65)
 __all__ = [
     "DataFrame",
     "DiffAggregate",
-    "sorted",
     "intersect",
     "invert_permutation",
     "intx",
@@ -3390,7 +3389,6 @@ class DataFrame(UserDict):
         See Also
         --------
         apply_permutation
-        sorted
 
         Examples
         --------
@@ -4451,75 +4449,6 @@ class DataFrame(UserDict):
                     columns[k] = BitVector.from_return_msg(comps[1])
 
         return cls(columns, idx)
-
-
-def sorted(df, column=False):
-    """
-    Analogous to other python 'sorted(obj)' functions in that it returns
-    a sorted copy of the DataFrame.
-
-    If no sort key is specified, sort by the first key returned.
-
-    Note: This fails on sorting ak.Strings, as does DataFrame.sort().
-
-    Parameters
-    ----------
-    df : DataFrame
-        The DataFrame to sort.
-
-    column : str
-        The name of the column to sort by.
-
-    Returns
-    -------
-    arkouda.dataframe.DataFrame
-        A sorted copy of the original DataFrame.
-
-    Examples
-    --------
-
-    >>> import arkouda as ak
-    >>> ak.connect()
-    >>> df = ak.DataFrame({'col1': ak.arange(5), 'col2': -1 * ak.arange(5)})
-    >>> display(df)
-
-    +----+--------+--------+
-    |    |   col1 |   col2 |
-    +====+========+========+
-    |  0 |      0 |      0 |
-    +----+--------+--------+
-    |  1 |      1 |     -1 |
-    +----+--------+--------+
-    |  2 |      2 |     -2 |
-    +----+--------+--------+
-    |  3 |      3 |     -3 |
-    +----+--------+--------+
-    |  4 |      4 |     -4 |
-    +----+--------+--------+
-
-    >>> sorted(df, column="col2")
-
-    +----+--------+--------+
-    |    |   col1 |   col2 |
-    +====+========+========+
-    |  0 |      4 |     -4 |
-    +----+--------+--------+
-    |  1 |      3 |     -3 |
-    +----+--------+--------+
-    |  2 |      2 |     -2 |
-    +----+--------+--------+
-    |  3 |      1 |     -1 |
-    +----+--------+--------+
-    |  4 |      0 |      0 |
-    +----+--------+--------+
-
-    """
-
-    if not isinstance(df, DataFrame):
-        raise TypeError("The sorted operation requires an DataFrame.")
-    result = DataFrame(df.data)
-    result.sort(column)
-    return result
 
 
 def intx(a, b):
