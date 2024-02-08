@@ -26,7 +26,7 @@ def xlogy(x: Union[pdarray, np.float64], y: pdarray):
 
     >>> import arkouda as ak
     >>> ak.connect()
-    >>> from arkouda.akmath import xlogy
+    >>> from arkouda.akscipy.special import xlogy
     >>> xlogy( ak.array([1, 2, 3, 4]),  ak.array([5,6,7,8]))
     array([1.6094379124341003 3.5835189384561099 5.8377304471659395 8.317766166719343])
     >>> xlogy( 5.0, ak.array([1, 2, 3, 4]))
