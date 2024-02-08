@@ -39,5 +39,5 @@ from arkouda.util import (
     is_registered,
     broadcast_dims,
 )
-from arkouda.akmath import *
-from arkouda.akstats import *
+from arkouda.akscipy.special import *
+from arkouda.akscipy import *
