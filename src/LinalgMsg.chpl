@@ -9,6 +9,7 @@ module LinalgMsg {
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use AryUtil;
+    use ArkoudaAryUtilCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

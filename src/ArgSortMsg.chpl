@@ -11,6 +11,8 @@ module ArgSortMsg
     use ArkoudaTimeCompat as Time;
     use Math only;
     private use Sort;
+    use ArkoudaSortCompat;
+    
     use Reflection only;
     
     use PrivateDist;
@@ -18,7 +20,8 @@ module ArgSortMsg
     use CommAggregation;
 
     use AryUtil;
-    
+    use ArkoudaAryUtilCompat;
+
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
@@ -318,7 +321,7 @@ module ArgSortMsg
         when SortingAlgorithm.TwoArrayRadixSort {
           var AI = makeDistArray(D, (t,int));
           AI = [(a, i) in zip(A, D)] (a, i);
-          Sort.TwoArrayRadixSort.twoArrayRadixSort(AI, comparator=myDefaultComparator);
+          ArkoudaSortCompat.twoArrayRadixSort(AI, comparator=myDefaultComparator);
           iv = [(a, i) in AI] i;
         }
         when SortingAlgorithm.RadixSortLSD {
@@ -359,7 +362,7 @@ module ArgSortMsg
             }
 
             // sort the array
-            Sort.TwoArrayRadixSort.twoArrayRadixSort(AI, comparator=myDefaultComparator);
+            ArkoudaSortCompat.twoArrayRadixSort(AI, comparator=myDefaultComparator);
 
             // store result in 'iv'
             forall i in D.dim(axis) with (var perpIdx = idx) {

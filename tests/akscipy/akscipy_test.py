@@ -23,7 +23,7 @@ class StatsTest(ArkoudaTest):
     def test_power_divergence(self):
         from scipy.stats import power_divergence as scipy_power_divergence
 
-        from arkouda.akstats import power_divergence as ak_power_divergence
+        from arkouda.akscipy import power_divergence as ak_power_divergence
 
         pairs = self.create_stat_test_pairs()
 
@@ -57,7 +57,7 @@ class StatsTest(ArkoudaTest):
     def test_chisquare(self):
         from scipy.stats import chisquare as scipy_chisquare
 
-        from arkouda.akstats import chisquare as ak_chisquare
+        from arkouda.akscipy import chisquare as ak_chisquare
 
         pairs = self.create_stat_test_pairs()
 

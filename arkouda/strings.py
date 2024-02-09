@@ -559,17 +559,17 @@ class Strings:
     @typechecked
     def title(self) -> Strings:
         """
-        Returns a new Strings from the original replaced with their titlecase equivalent
+        Returns a new Strings from the original replaced with their titlecase equivalent.
 
         Returns
         -------
         Strings
-            Strings from the original replaced with their titlecase equivalent
+            Strings from the original replaced with their titlecase equivalent.
 
         Raises
         ------
         RuntimeError
-            Raised if there is a server-side error thrown
+            Raised if there is a server-side error thrown.
 
         See Also
         --------
@@ -586,6 +586,43 @@ class Strings:
         """
         rep_msg = generic_msg(
             cmd="caseChange", args={"subcmd": "toTitle", "objType": self.objType, "obj": self.entry}
+        )
+        return Strings.from_return_msg(cast(str, rep_msg))
+
+    @typechecked
+    def capitalize(self) -> Strings:
+        """
+        Returns a new Strings from the original replaced with the first letter capitilzed
+        and the remaining letters lowercase.
+
+        Returns
+        -------
+        Strings
+            Strings from the original replaced with the capitalized equivalent.
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown.
+
+        See Also
+        --------
+        Strings.lower
+        String.upper
+        String.title
+
+        Examples
+        --------
+        >>> strings = ak.array([f'StrINgS aRe Here {i}' for i in range(5)])
+        >>> strings
+        array(['StrINgS aRe Here 0', 'StrINgS aRe Here 1', 'StrINgS aRe Here 2', 'StrINgS aRe Here 3',
+        ... 'StrINgS aRe Here 4'])
+        >>> strings.title()
+        array(['Strings are here 0', 'Strings are here 1', 'Strings are here 2', 'Strings are here 3',
+        ... 'Strings are here 4'])
+        """
+        rep_msg = generic_msg(
+            cmd="caseChange", args={"subcmd": "capitalize", "objType": self.objType, "obj": self.entry}
         )
         return Strings.from_return_msg(cast(str, rep_msg))
 
@@ -814,6 +851,7 @@ class Strings:
             )
         )
 
+    @typechecked
     def isempty(self) -> pdarray:
         """
         Returns a boolean pdarray where index i indicates whether string i of the
@@ -850,6 +888,45 @@ class Strings:
         return create_pdarray(
             generic_msg(
                 cmd="checkChars", args={"subcmd": "isempty", "objType": self.objType, "obj": self.entry}
+            )
+        )
+
+    @typechecked
+    def isspace(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i has all
+        whitespace characters (‘ ‘, ‘\t’, ‘\n’, ‘\v’, ‘\f’, ‘\r’).
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are whitespace, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.islower
+        Strings.isupper
+        Strings.istitle
+
+        Examples
+        --------
+        >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
+        >>> space = ak.array([' ', '\t', '\n', '\v', '\f', '\r', ' \t\n\v\f\r'])
+        >>> strings = ak.concatenate([not_space, space])
+        >>> strings
+        array(['Strings 0', 'Strings 1', 'Strings 2', ' ',
+        ... 'u0009', 'n', 'u000B', 'u000C', 'u000D', ' u0009nu000Bu000Cu000D'])
+        >>> strings.isspace()
+        array([False False False True True True True True True True])
+        """
+        return create_pdarray(
+            generic_msg(
+                cmd="checkChars", args={"subcmd": "isspace", "objType": self.objType, "obj": self.entry}
             )
         )
 

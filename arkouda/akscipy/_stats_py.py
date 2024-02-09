@@ -5,7 +5,7 @@ from numpy import asarray
 from scipy.stats import chi2
 
 import arkouda as ak
-from arkouda.akmath import xlogy
+from arkouda.akscipy.special import xlogy
 from arkouda.dtypes import float64 as akfloat64
 
 __all__ = ["power_divergence", "chisquare", "Power_divergenceResult"]

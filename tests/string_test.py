@@ -3,7 +3,6 @@ from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
-import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -553,16 +552,19 @@ class StringTest(ArkoudaTest):
         self.assertListEqual(s.strip().to_list(), ["Strings", "StringS", "StringS"])
 
     def test_case_change(self):
-        mixed = ak.array([f"StrINgS {i}" for i in range(10)])
+        mixed = ak.array([f"StrINgS hErE {i}" for i in range(10)])
 
         lower = mixed.lower()
-        self.assertListEqual(lower.to_list(), [f"strings {i}" for i in range(10)])
+        self.assertListEqual(lower.to_list(), [f"strings here {i}" for i in range(10)])
 
         upper = mixed.upper()
-        self.assertListEqual(upper.to_list(), [f"STRINGS {i}" for i in range(10)])
+        self.assertListEqual(upper.to_list(), [f"STRINGS HERE {i}" for i in range(10)])
 
         title = mixed.title()
-        self.assertListEqual(title.to_list(), [f"Strings {i}" for i in range(10)])
+        self.assertListEqual(title.to_list(), [f"Strings Here {i}" for i in range(10)])
+
+        capital = mixed.capitalize()
+        self.assertListEqual(capital.to_list(), [f"Strings here {i}" for i in range(10)])
 
         # first 10 all lower, second 10 mixed case (not lower, upper, or title), third 10 all upper,
         # last 10 all title
@@ -737,6 +739,46 @@ class StringTest(ArkoudaTest):
         ]
 
         self.assertListEqual(example2.isempty().to_list(), expected)
+
+    def test_string_isspace(self):
+        not_space = ak.array([f"Strings {i}" for i in range(3)])
+        space = ak.array([" ", "\t", "\n", "\v", "\f", "\r", " \t\n\v\f\r"])
+        example = ak.concatenate([not_space, space])
+        self.assertListEqual(
+            example.isspace().to_list(), [False, False, False, True, True, True, True, True, True, True]
+        )
+
+        example2 = ak.array(
+            [
+                "",
+                "string1",
+                "stringA",
+                "String",
+                "12345",
+                "Hello\tWorld",
+                " ",
+                "\n",
+                "3.14",
+                "\u0030",
+                "\u00B2",
+            ]
+        )
+
+        expected = [
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            True,
+            True,
+            False,
+            False,
+            False,
+        ]
+
+        self.assertListEqual(example2.isspace().to_list(), expected)
 
     def test_where(self):
         revs = ak.arange(10) % 2 == 0

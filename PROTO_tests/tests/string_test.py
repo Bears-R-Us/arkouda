@@ -467,16 +467,19 @@ class TestString:
         assert s.strip().to_list() == ["Strings", "StringS", "StringS"]
 
     def test_case_change(self):
-        mixed = ak.array([f"StrINgS {i}" for i in range(10)])
+        mixed = ak.array([f"StrINgS hErE {i}" for i in range(10)])
 
         lower = mixed.lower()
-        assert lower.to_list() == [f"strings {i}" for i in range(10)]
+        assert lower.to_list() == [f"strings here {i}" for i in range(10)]
 
         upper = mixed.upper()
-        assert upper.to_list() == [f"STRINGS {i}" for i in range(10)]
+        assert upper.to_list() == [f"STRINGS HERE {i}" for i in range(10)]
 
         title = mixed.title()
-        assert title.to_list() == [f"Strings {i}" for i in range(10)]
+        assert title.to_list() == [f"Strings Here {i}" for i in range(10)]
+
+        capital = mixed.capitalize()
+        assert capital.to_list() == [f"Strings here {i}" for i in range(10)]
 
         # first 10 all lower, second 10 mixed case (not lower, upper, or title), third 10 all upper,
         # last 10 all title
@@ -615,12 +618,22 @@ class TestString:
 
         assert example2.isempty().to_list() == expected
 
-    def test_string_empty(self):
-        not_empty = ak.array([f"%Strings {i}" for i in range(3)])
-        empty = ak.array(["" for i in range(3)])
-        example = ak.concatenate([not_empty, empty])
-
-        assert example.isempty().to_list() == [False, False, False, True, True, True]
+    def test_string_isspace(self):
+        not_space = ak.array([f"Strings {i}" for i in range(3)])
+        space = ak.array([" ", "\t", "\n", "\v", "\f", "\r", " \t\n\v\f\r"])
+        example = ak.concatenate([not_space, space])
+        assert example.isspace().to_list() == [
+            False,
+            False,
+            False,
+            True,
+            True,
+            True,
+            True,
+            True,
+            True,
+            True,
+        ]
 
         example2 = ak.array(
             [
@@ -639,20 +652,20 @@ class TestString:
         )
 
         expected = [
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
             True,
-            False,
-            False,
-            False,
-            False,
-            False,
-            False,
-            False,
+            True,
             False,
             False,
             False,
         ]
 
-        assert example2.isempty().to_list() == expected
+        assert example2.isspace().to_list() == expected
 
     def test_where(self):
         revs = ak.arange(10) % 2 == 0
