@@ -727,7 +727,12 @@ class DataFrame(UserDict):
                 self._set_index(arange(self._nrows))
             else:
                 self._set_index(index)
+
             self.update_nrows()
+        self.column_index = Index(self._columns)
+
+    def _update_column_index(self):
+        self.column_index = Index(self._columns)
 
 
 
@@ -1566,10 +1571,11 @@ class DataFrame(UserDict):
         """
         A list of column names of the dataframe.
 
+
         Returns
         -------
-        list of str
-            A list of column names of the dataframe.
+        arkouda.index.Index
+            An index with string values, a list of column names of the dataframe.
 
         Examples
         --------
@@ -1588,9 +1594,10 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         >>> df.columns
-        ['col1', 'col2']
+        Index(array(['col1', 'col2']), dtype='<U0')
         """
         return self._column_names
+
 
     @property
     def index(self):

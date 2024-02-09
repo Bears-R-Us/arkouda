@@ -105,5 +105,6 @@ class ImportExportTest(ArkoudaTest):
             self.assertEqual(len(glob.glob(f"{tmp_dirname}/pd_from_ak.parquet")), 1)
             self.assertTrue(pddf[akdf.column_names].equals(akdf.to_pandas()))
 
+
             with self.assertRaises(RuntimeError):
                 pddf = ak.export(f"{tmp_dirname}/foo.h5", write_file=f"{tmp_dirname}/pd_from_ak.h5", index=True)
