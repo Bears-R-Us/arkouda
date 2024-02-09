@@ -265,7 +265,7 @@ class RegistrationTest(ArkoudaTest):
                 "td": ak.Timedelta(ak.arange(10)),
                 "cat": ak.Categorical(ak.array(["a", "b", "c", "c", "a", "a", "d", "d", "e", "c"])),
                 "seg": ak.SegArray(ak.arange(0, 20, 2), ak.arange(20)),
-                "bv": ak.BitVector(ak.arange(10))
+                "bv": ak.BitVector(ak.arange(10)),
             }
         )
         df.register(reg_name)
@@ -298,7 +298,9 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(attach_df.is_registered())
         self.assertEqual(df.registered_name, attach_df.registered_name)
         # need to index the attached to ensure same columns order
-        self.assertTrue(assert_frame_equal(df.to_pandas(), attach_df[df.columns].to_pandas()) is None)
+        self.assertTrue(
+            assert_frame_equal(df.to_pandas(), attach_df[df.column_names].to_pandas()) is None
+        )
         self.assertIsInstance(attach_df, ak.DataFrame)
 
         # validate error handling for double registration

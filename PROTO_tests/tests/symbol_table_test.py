@@ -286,7 +286,7 @@ class TestRegistration:
         assert attach_df.is_registered()
         assert df.registered_name == attach_df.registered_name
         # need to index the attached to ensure same columns order
-        assert assert_frame_equal(df.to_pandas(), attach_df[df.columns].to_pandas()) is None
+        assert assert_frame_equal(df.to_pandas(), attach_df[df.column_names].to_pandas()) is None
         assert isinstance(attach_df, ak.DataFrame)
 
         # validate error handling for double registration

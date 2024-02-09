@@ -196,15 +196,15 @@ class TestDataFrame:
             np.random.randint(5, 10, size),
         ]
         pddf = pd.DataFrame(x)
+        pddf.columns = pddf.columns.astype(str)
         akdf = ak.DataFrame([ak.array(val) for val in list(zip(*x))])
         assert isinstance(akdf, ak.DataFrame)
         assert len(akdf) == len(pddf)
         # arkouda does not allow for numeric columns.
-        assert akdf.columns == [str(x) for x in pddf.columns.values]
+        assert akdf.column_names == [str(x) for x in pddf.columns.values]
         # use the columns from the pandas created for equivalence check
         # these should be equivalent
         ak_to_pd = akdf.to_pandas()
-        ak_to_pd.columns = pddf.columns
         assert_frame_equal(pddf, ak_to_pd)
 
     def test_client_type_creation(self):
@@ -255,7 +255,7 @@ class TestDataFrame:
         assert isinstance(df.index, ak.Index)
         assert df.index.to_list() == ref_df.index.to_list()
 
-        for cname in df.columns:
+        for cname in df.column_names:
             col, ref_col = getattr(df, cname), getattr(ref_df, cname)
             assert isinstance(col, ak.Series)
             assert col.to_list() == ref_col.to_list()
@@ -285,11 +285,11 @@ class TestDataFrame:
             "c_6": ak.arange(2**200, 2**200 + 3),
         }
         akdf = ak.DataFrame(df_dict)
-        assert len(akdf.columns) == len(akdf.dtypes)
+        assert len(akdf.column_names) == len(akdf.dtypes)
         # dtypes returns objType for categorical, segarray. We should probably fix
         # this and add a df.objTypes property. pdarrays return actual dtype
         for ref_type, c in zip(
-            ["int64", "int64", "int64", "str", "Categorical", "SegArray", "bigint"], akdf.columns
+            ["int64", "int64", "int64", "str", "Categorical", "SegArray", "bigint"], akdf.column_names
         ):
             assert ref_type == str(akdf.dtypes[c])
 
@@ -309,7 +309,7 @@ class TestDataFrame:
         pddf_drop = pd_df.drop(labels=["userName"], axis=1)
         assert_frame_equal(pddf_drop, df_drop.to_pandas())
 
-        # Test dropping columns
+        # Test dropping column_names
         df.drop("userName", axis=1, inplace=True)
         pd_df.drop(labels=["userName"], axis=1, inplace=True)
 
@@ -372,21 +372,21 @@ class TestDataFrame:
 
         # Test out of Place - column
         df_rename = df.rename(rename, axis=1)
-        assert "user_id" in df_rename.columns
-        assert "name_col" in df_rename.columns
-        assert "userName" not in df_rename.columns
-        assert "userID" not in df_rename.columns
-        assert "userID" in df.columns
-        assert "userName" in df.columns
-        assert "user_id" not in df.columns
-        assert "name_col" not in df.columns
+        assert "user_id" in df_rename.column_names
+        assert "name_col" in df_rename.column_names
+        assert "userName" not in df_rename.column_names
+        assert "userID" not in df_rename.column_names
+        assert "userID" in df.column_names
+        assert "userName" in df.column_names
+        assert "user_id" not in df.column_names
+        assert "name_col" not in df.column_names
 
         # Test in place - column
         df.rename(column=rename, inplace=True)
-        assert "user_id" in df.columns
-        assert "name_col" in df.columns
-        assert "userName" not in df.columns
-        assert "userID" not in df.columns
+        assert "user_id" in df.column_names
+        assert "name_col" in df.column_names
+        assert "userName" not in df.column_names
+        assert "userID" not in df.column_names
 
         # prep for index renaming
         rename_idx = {1: 17, 2: 93}
@@ -469,15 +469,15 @@ class TestDataFrame:
         gb = df.GroupBy(["userName", "userID"])
         keys, count = gb.count()
         assert len(keys) == 2
-        assert keys[0].to_list() == ["Carol", "Bob", "Alice"]
-        assert keys[1].to_list() == [333, 222, 111]
-        assert count.to_list() == [1, 2, 3]
+        assert keys[0].to_list() == ["Bob", "Alice", "Carol"]
+        assert keys[1].to_list() == [222, 111, 333]
+        assert count.to_list() == [2, 3, 1]
 
         # testing counts with IPv4 column
         s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count(as_series=True)
         pds = pd.Series(
             data=np.ones(4, dtype=np.int64),
-            index=pd.Index(data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7")),
+            index=pd.Index(data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7"),name="a"),
         )
         assert_series_equal(pds, s.to_pandas())
 
@@ -487,7 +487,7 @@ class TestDataFrame:
             .groupby("a")
             .count(as_series=True)
         )
-        pds = pd.Series(data=np.array([3, 1]), index=pd.Index(data=np.array(["a", "b"], dtype="<U7")))
+        pds = pd.Series(data=np.array([3, 1]), index=pd.Index(data=np.array(["a", "b"], dtype="<U7"), name="a"))
         assert_series_equal(pds, s.to_pandas())
 
     def test_gb_series(self):
@@ -497,20 +497,20 @@ class TestDataFrame:
 
         c = gb.count(as_series=True)
         assert isinstance(c, ak.Series)
-        assert c.index.to_list() == ["Bob", "Alice", "Carol"]
-        assert c.values.to_list() == [2, 3, 1]
+        assert c.index.to_list() == ['Alice', 'Bob', 'Carol']
+        assert c.values.to_list() == [3, 2, 1]
 
     @pytest.mark.parametrize("agg", ["sum", "first"])
     def test_gb_aggregations(self, agg):
         df = self.build_ak_df()
         pd_df = self.build_pd_df()
         # remove strings col because many aggregations don't support it
-        cols_without_str = list(set(df.columns) - {"userName"})
+        cols_without_str = list(set(df.column_names) - {"userName"})
         df = df[cols_without_str]
         pd_df = pd_df[cols_without_str]
 
         group_on = "userID"
-        for col in df.columns:
+        for col in df.column_names:
             if col == group_on:
                 # pandas groupby doesn't return the column used to group
                 continue
@@ -519,7 +519,7 @@ class TestDataFrame:
             assert ak_ans.to_list() == pd_ans.to_list()
 
         # pandas groupby doesn't return the column used to group
-        cols_without_group_on = list(set(df.columns) - {group_on})
+        cols_without_group_on = list(set(df.column_names) - {group_on})
         ak_ans = getattr(df.groupby(group_on), agg)()[cols_without_group_on]
         pd_ans = getattr(pd_df.groupby(group_on), agg)()[cols_without_group_on]
         assert_frame_equal(pd_ans, ak_ans.to_pandas(retain_index=True))
@@ -557,28 +557,32 @@ class TestDataFrame:
         assert_frame_equal(
             ak_df.groupby("gb_id").sum().to_pandas(retain_index=True), pd_df.groupby("gb_id").sum()
         )
-        assert set(ak_df.groupby("gb_id").sum().columns) == set(pd_df.groupby("gb_id").sum().columns)
+        assert set(ak_df.groupby("gb_id").sum().column_names) == set(
+            pd_df.groupby("gb_id").sum().columns.values
+        )
 
         assert_frame_equal(
             ak_df.groupby(["gb_id"]).sum().to_pandas(retain_index=True), pd_df.groupby(["gb_id"]).sum()
         )
-        assert set(ak_df.groupby(["gb_id"]).sum().columns) == set(pd_df.groupby(["gb_id"]).sum().columns)
+        assert set(ak_df.groupby(["gb_id"]).sum().column_names) == set(
+            pd_df.groupby(["gb_id"]).sum().columns.values
+        )
 
     def test_gb_count_single(self):
         ak_df = self.build_ak_df_example_numeric_types()
         pd_df = ak_df.to_pandas(retain_index=True)
 
         assert_frame_equal(
-            ak_df.groupby("gb_id").count().to_pandas(retain_index=True),
-            pd_df.groupby("gb_id")
+            ak_df.groupby("gb_id", as_index=False).count().to_pandas(retain_index=True),
+            pd_df.groupby("gb_id", as_index=False)
             .count()
             .drop(["int64", "uint64", "bigint"], axis=1)
             .rename(columns={"float64": "count"}, errors="raise"),
         )
 
         assert_frame_equal(
-            ak_df.groupby(["gb_id"]).count().to_pandas(retain_index=True),
-            pd_df.groupby(["gb_id"])
+            ak_df.groupby(["gb_id"], as_index=False).count().to_pandas(retain_index=True),
+            pd_df.groupby(["gb_id"], as_index=False)
             .count()
             .drop(["int64", "uint64", "bigint"], axis=1)
             .rename(columns={"float64": "count"}, errors="raise"),
@@ -591,7 +595,7 @@ class TestDataFrame:
         pd_result1 = (
             pd_df.groupby(["key1", "key2"], as_index=False).count().drop(["nums", "key3"], axis=1)
         )
-        ak_result1 = ak_df.groupby(["key1", "key2"]).count()
+        ak_result1 = ak_df.groupby(["key1", "key2"]).count(as_series=False)
         assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
         assert isinstance(ak_result1, ak.dataframe.DataFrame)
 
@@ -614,7 +618,7 @@ class TestDataFrame:
         pd_df = ak_df.to_pandas(retain_index=True)
 
         pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False).size()
-        ak_result1 = ak_df.groupby(["key1", "key2"]).size()
+        ak_result1 = ak_df.groupby(["key1", "key2"], as_index=False).size()
         assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
         assert isinstance(ak_result1, ak.dataframe.DataFrame)
 
@@ -623,9 +627,9 @@ class TestDataFrame:
             pd_df.groupby(["key1", "key2"], as_index=False).size(),
         )
 
-        assert_frame_equal(
-            ak_df.groupby(["key1", "key2"], as_index=True).size().to_pandas(retain_index=True),
-            pd_df.groupby(["key1", "key2"], as_index=False).size(),
+        assert_series_equal(
+            ak_df.groupby(["key1", "key2"], as_index=True).size().to_pandas(),
+            pd_df.groupby(["key1", "key2"], as_index=True).size(),
         )
 
         assert_frame_equal(
@@ -641,6 +645,7 @@ class TestDataFrame:
         assert_series_equal(
             ak_df.groupby("key1").size(as_series=True).to_pandas(), pd_df.groupby("key1").size()
         )
+
     def test_gb_size_match_pandas(self):
         ak_df = self.build_ak_df_with_nans()
         pd_df = ak_df.to_pandas(retain_index=True)
@@ -662,7 +667,6 @@ class TestDataFrame:
                         assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
                     else:
                         assert_series_equal(ak_result.to_pandas(), pd_result)
-
 
     def test_gb_size_as_index_cases(self):
         ak_df = self.build_ak_df_example2()
@@ -739,20 +743,51 @@ class TestDataFrame:
 
     def test_sort_index(self):
         ak_df = self.build_ak_df_example_numeric_types()
-        ak_df["string"] = ak.array(["f", "g", "h", "i", "j",
-                                    "k", "l", "m", "n", "o",
-                                    "a", "b", "c", "d", "e",
-                                    "p", "q", "r", "s", "t"])
+        ak_df["string"] = ak.array(
+            [
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n",
+                "o",
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "p",
+                "q",
+                "r",
+                "s",
+                "t",
+            ]
+        )
         ak_df["negs"] = -1 * ak_df["int64"]
 
         pd_df = ak_df.to_pandas()
 
-        group_bys = ["gb_id", "float64", "int64", "uint64", "bigint", "negs", "string", ["gb_id", "negs"]]
+        group_bys = [
+            "gb_id",
+            "float64",
+            "int64",
+            "uint64",
+            "bigint",
+            "negs",
+            "string",
+            ["gb_id", "negs"],
+        ]
         for group_by in group_bys:
             ak_result = ak_df.groupby(group_by).size()
             pd_result = ak_result.to_pandas()
             if isinstance(ak_result, ak.dataframe.DataFrame):
-                assert_frame_equal(ak_result.sort_index().to_pandas(retain_index=True), pd_result.sort_index())
+                assert_frame_equal(
+                    ak_result.sort_index().to_pandas(retain_index=True), pd_result.sort_index()
+                )
             else:
                 assert_series_equal(ak_result.sort_index().to_pandas(), pd_result.sort_index())
 
@@ -890,7 +925,7 @@ class TestDataFrame:
             }
         )
         df2 = df[["a", "b"]]
-        assert ["a", "b"] == df2.columns
+        assert ["a", "b"] == df2.column_names
         assert df.index.to_list() == df2.index.to_list()
         assert df["a"].to_list() == df2["a"].to_list()
         assert df["b"].to_list() == df2["b"].to_list()
@@ -916,9 +951,9 @@ class TestDataFrame:
                     ak_merge = ak.merge(left_df, right_df, on=on, how=how)
                     pd_merge = pd.merge(l_pd, r_pd, on=on, how=how)
 
-                    sorted_columns = sorted(ak_merge.columns)
-                    assert sorted_columns == sorted(pd_merge.columns.to_list())
-                    for col in sorted_columns:
+                    sorted_column_names = sorted(ak_merge.column_names)
+                    assert sorted_column_names == sorted(pd_merge.columns.to_list())
+                    for col in sorted_column_names:
                         from_ak = ak_merge[col].to_ndarray()
                         from_pd = pd_merge[col].to_numpy()
                         if isinstance(ak_merge[col], ak.pdarray):
@@ -931,8 +966,8 @@ class TestDataFrame:
                     #  when pandas doesnt. Eventually we want to test frame_equal, not just value
                     #  equality
                     # from pandas.testing import assert_frame_equal
-                    # assert_frame_equal(sorted_ak.to_pandas()[sorted_columns],
-                    # sorted_pd[sorted_columns])
+                    # assert_frame_equal(sorted_ak.to_pandas()[sorted_column_names],
+                    # sorted_pd[sorted_column_names])
 
 
 def pda_to_str_helper(pda):

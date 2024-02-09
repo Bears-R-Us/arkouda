@@ -1236,7 +1236,7 @@ class IOTest(ArkoudaTest):
         )
         df_str_idx = df.copy()
         df_str_idx._set_index(["A" + str(i) for i in range(len(df))])
-        col_order = df.columns
+        col_order = df.column_names
         df_ref = df.to_pandas()
         df_str_idx_ref = df_str_idx.to_pandas(retain_index=True)
         a = ak.randint(0, 10, 100)

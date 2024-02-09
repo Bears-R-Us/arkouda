@@ -468,7 +468,7 @@ class TestParquet:
             file_name = f"{tmp_dirname}/pq_small_int"
             df_pd.to_parquet(file_name)
             df_ak = ak.DataFrame(ak.read_parquet(f"{file_name}*"))
-            for c in df_ak.columns:
+            for c in df_ak.column_names:
                 assert df_ak[c].to_list() == df_pd[c].to_list()
 
     def test_read_nested(self):
@@ -646,11 +646,11 @@ class TestHDF5:
             rd_data = ak.read_hdf(f"{file_name}*")
             rd_df = ak.DataFrame(rd_data)
             # fix column ordering see issue #2611
-            rd_df = rd_df[akdf.columns]
+            rd_df = rd_df[akdf.column_names]
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
             # test read_hdf with only one dataset specified (each tested)
-            for col_name in akdf.columns:
+            for col_name in akdf.column_names:
                 gen_arr = ak.read_hdf(f"{file_name}*", datasets=[col_name])
                 if akdf[col_name].dtype != ak.float64:
                     assert akdf[col_name].to_list() == gen_arr.to_list()
@@ -663,33 +663,33 @@ class TestHDF5:
                         assert np.allclose(a, b, equal_nan=True)
 
             # test read_hdf with half of columns names specified as datasets
-            half_cols = akdf.columns[: len(akdf.columns) // 2]
+            half_cols = akdf.column_names[: len(akdf.column_names) // 2]
             rd_data = ak.read_hdf(f"{file_name}*", datasets=half_cols)
             rd_df = ak.DataFrame(rd_data)
             pd.testing.assert_frame_equal(akdf[half_cols].to_pandas(), rd_df[half_cols].to_pandas())
 
             # test read_hdf with all columns names specified as datasets
-            rd_data = ak.read_hdf(f"{file_name}*", datasets=akdf.columns)
+            rd_data = ak.read_hdf(f"{file_name}*", datasets=akdf.column_names)
             rd_df = ak.DataFrame(rd_data)
             # fix column ordering see issue #2611
-            rd_df = rd_df[akdf.columns]
+            rd_df = rd_df[akdf.column_names]
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
             # test read_hdf with filenames
             rd_data = ak.read_hdf(filenames=[f"{file_name}_LOCALE{i:04d}" for i in range(pytest.nl)])
             rd_df = ak.DataFrame(rd_data)
             # fix column ordering see issue #2611
-            rd_df = rd_df[akdf.columns]
+            rd_df = rd_df[akdf.column_names]
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
             # verify generic read works
             rd_data = ak.read(f"{file_name}*")
             rd_df = ak.DataFrame(rd_data)
             # fix column ordering see issue #2611
-            rd_df = rd_df[akdf.columns]
+            rd_df = rd_df[akdf.column_names]
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
-            for col_name in akdf.columns:
+            for col_name in akdf.column_names:
                 # verify generic load works
                 gen_arr = ak.load(path_prefix=file_name, dataset=col_name)
                 if akdf[col_name].dtype != ak.float64:
@@ -716,13 +716,13 @@ class TestHDF5:
 
             # Test load with invalid file
             with pytest.raises(RuntimeError):
-                ak.load(path_prefix=f"{TestHDF5.hdf_test_base_tmp}/not-a-file", dataset=akdf.columns[0])
+                ak.load(path_prefix=f"{TestHDF5.hdf_test_base_tmp}/not-a-file", dataset=akdf.column_names[0])
 
             # verify load_all works
             rd_data = ak.load_all(path_prefix=file_name)
             rd_df = ak.DataFrame(rd_data)
             # fix column ordering see issue #2611
-            rd_df = rd_df[akdf.columns]
+            rd_df = rd_df[akdf.column_names]
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
             # Test load_all with invalid file
@@ -731,19 +731,19 @@ class TestHDF5:
 
             # test get_datasets
             datasets = ak.get_datasets(f"{file_name}*")
-            assert sorted(datasets) == sorted(akdf.columns)
+            assert sorted(datasets) == sorted(akdf.column_names)
 
             # test save with index true
             akdf.to_hdf(file_name, index=True)
             rd_data = ak.read_hdf(f"{file_name}*")
             rd_df = ak.DataFrame(rd_data)
             # fix column ordering see issue #2611
-            rd_df = rd_df[akdf.columns]
+            rd_df = rd_df[akdf.column_names]
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
             # test get_datasets with index
             datasets = ak.get_datasets(f"{file_name}*")
-            assert sorted(datasets) == ["Index"] + sorted(akdf.columns)
+            assert sorted(datasets) == ["Index"] + sorted(akdf.column_names)
 
     def test_ls_hdf(self):
         df_dict = make_multi_dtype_dict()
@@ -754,7 +754,7 @@ class TestHDF5:
             akdf.to_hdf(file_name)
 
             message = ak.ls(f"{file_name}_LOCALE0000")
-            for col_name in akdf.columns:
+            for col_name in akdf.column_names:
                 assert col_name in message
 
             with pytest.raises(RuntimeError):
@@ -1229,7 +1229,7 @@ class TestHDF5:
         df = ak.DataFrame(make_multi_dtype_dict())
         df_str_idx = df.copy()
         df_str_idx._set_index([f"A{i}" for i in range(len(df))])
-        col_order = df.columns
+        col_order = df.column_names
         df_ref = df.to_pandas()
         df_str_idx_ref = df_str_idx.to_pandas(retain_index=True)
         a = ak.randint(0, 10, 100)
@@ -1541,7 +1541,7 @@ class TestImportExport:
                 f"{file_name}_ak_write", write_file=f"{file_name}_pd_from_ak.parquet", index=True
             )
             assert len(glob.glob(f"{file_name}_pd_from_ak.parquet")) == 1
-            assert pddf[self.akdf.columns].equals(self.akdf.to_pandas())
+            assert pddf[self.akdf.column_names].equals(self.akdf.to_pandas())
 
             with pytest.raises(RuntimeError):
                 ak.export(

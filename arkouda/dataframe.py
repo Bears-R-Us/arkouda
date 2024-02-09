@@ -624,7 +624,7 @@ class DataFrame(UserDict):
             self._nrows = initialdata._nrows
             self._bytes = initialdata._bytes
             self._empty = initialdata._empty
-            self._columns = initialdata._columns
+            self._column_names = initialdata._column_names
             if index is None:
                 self._set_index(initialdata.index)
             else:
@@ -637,7 +637,7 @@ class DataFrame(UserDict):
             self._nrows = initialdata.shape[0]
             self._bytes = 0
             self._empty = initialdata.empty
-            self._columns = initialdata.columns.tolist()
+            self._column_names = initialdata.columns.values
 
             if index is None:
                 self._set_index(initialdata.index.values.tolist())
@@ -660,7 +660,7 @@ class DataFrame(UserDict):
         self._empty = True
 
         # Initial attempts to keep an order on the columns
-        self._columns = []
+        self._column_names = []
         self._set_index(index)
 
         # Add data to the DataFrame if there is any
@@ -685,7 +685,7 @@ class DataFrame(UserDict):
                     self._empty = False
                     UserDict.__setitem__(self, key, val)
                     # Update the column index
-                    self._columns.append(key)
+                    self._column_names.append(key)
 
             # Initial data is a list of arkouda arrays
             elif isinstance(initialdata, list):
@@ -711,7 +711,7 @@ class DataFrame(UserDict):
                     self._empty = False
                     UserDict.__setitem__(self, key, col)
                     # Update the column index
-                    self._columns.append(key)
+                    self._column_names.append(key)
 
             # Initial data is invalid.
             else:
@@ -729,24 +729,26 @@ class DataFrame(UserDict):
                 self._set_index(index)
             self.update_nrows()
 
+
+
     def __getattr__(self, key):
-        if key not in self.columns:
+        if key not in self.column_names:
             raise AttributeError(f"Attribute {key} not found")
         # Should this be cached?
         return Series(data=self[key], index=self.index.index)
 
     def __dir__(self):
-        return dir(DataFrame) + self.columns
+        return dir(DataFrame) + self.column_names + ['columns','column_names']
 
     # delete a column
     def __delitem__(self, key):
         # This function is a backdoor to messing up the indices and columns.
         # I needed to reimplement it to prevent bad behavior
         UserDict.__delitem__(self, key)
-        self._columns.remove(key)
+        self._column_names.remove(key)
 
         # If removing this column emptied the dataframe
-        if len(self._columns) == 0:
+        if len(self._column_names) == 0:
             self._set_index(None)
             self._empty = True
         self.update_nrows()
@@ -762,7 +764,7 @@ class DataFrame(UserDict):
             if key.dtype == akbool:
                 key = arange(key.size)[key]
             result = {}
-            for k in self._columns:
+            for k in self._column_names:
                 result[k] = UserDict.__getitem__(self, k)[key]
             # To stay consistent with numpy, provide the old index values
             return DataFrame(initialdata=result, index=self.index.index[key])
@@ -777,7 +779,7 @@ class DataFrame(UserDict):
             if isinstance(key[0], str):
                 for k in key:
                     result.data[k] = UserDict.__getitem__(self, k)
-                    result._columns.append(k)
+                    result._column_names.append(k)
                 result._empty = False
                 result._set_index(self.index)  # column lens remain the same. Copy the indexing
                 return result
@@ -791,7 +793,7 @@ class DataFrame(UserDict):
         if isinstance(key, int):
             result = {}
             row = array([key])
-            for k in self._columns:
+            for k in self._column_names:
                 result[k] = (UserDict.__getitem__(self, k)[row])[0]
             return Row(result)
 
@@ -806,7 +808,7 @@ class DataFrame(UserDict):
             # result = DataFrame()
             rtn_data = {}
             s = key
-            for k in self._columns:
+            for k in self._column_names:
                 rtn_data[k] = UserDict.__getitem__(self, k)[s]
             return DataFrame(initialdata=rtn_data, index=self.index.index[arange(self._nrows)[s]])
         else:
@@ -822,7 +824,7 @@ class DataFrame(UserDict):
 
         # Set a single row in the dataframe using a dict of values
         if isinstance(key, int):
-            for k in self._columns:
+            for k in self._column_names:
                 if isinstance(self.data[k], Strings):
                     raise ValueError(
                         "This DataFrame has a column of type ak.Strings;"
@@ -852,8 +854,8 @@ class DataFrame(UserDict):
                 self._empty = False
                 UserDict.__setitem__(self, key, value)
                 # Update the index values
-                if key not in self._columns:
-                    self._columns.append(key)
+                if key not in self._column_names:
+                    self._column_names.append(key)
 
         # Do nothing and return if there's no valid data
         else:
@@ -876,7 +878,7 @@ class DataFrame(UserDict):
         If index appears, we now want to utilize this
         because the actual index has been moved to a property
         """
-        return len(self._columns)
+        return len(self._column_names)
 
     def __str__(self):
         """
@@ -888,7 +890,7 @@ class DataFrame(UserDict):
         if self._empty:
             return "DataFrame([ -- ][ 0 rows : 0 B])"
 
-        keys = [str(key) for key in list(self._columns)]
+        keys = [str(key) for key in list(self._column_names)]
         keys = [("'" + key + "'") for key in keys]
         keystr = ", ".join(keys)
 
@@ -916,7 +918,7 @@ class DataFrame(UserDict):
         maxrows = pd.get_option("display.max_rows")
         if self._nrows <= maxrows:
             newdf = DataFrame()
-            for col in self._columns:
+            for col in self._column_names:
                 if isinstance(self[col], Categorical):
                     newdf[col] = self[col].categories[self[col].codes]
                 else:
@@ -928,7 +930,7 @@ class DataFrame(UserDict):
             list(range(maxrows // 2 + 1)) + list(range(self._nrows - (maxrows // 2), self._nrows))
         )
         newdf = DataFrame()
-        for col in self._columns:
+        for col in self._column_names:
             if isinstance(self[col], Categorical):
                 newdf[col] = self[col].categories[self[col].codes[idx]]
             else:
@@ -943,7 +945,7 @@ class DataFrame(UserDict):
         maxrows = pd.get_option("display.max_rows")
         if self._nrows <= maxrows:
             newdf = DataFrame()
-            for col in self._columns:
+            for col in self._column_names:
                 if isinstance(self[col], Categorical):
                     newdf[col] = self[col].categories[self[col].codes]
                 else:
@@ -955,7 +957,7 @@ class DataFrame(UserDict):
             list(range(maxrows // 2 + 1)) + list(range(self._nrows - (maxrows // 2), self._nrows))
         )
         msg_list = []
-        for col in self._columns:
+        for col in self._column_names:
             if isinstance(self[col], Categorical):
                 msg_list.append(f"Categorical+{col}+{self[col].codes.name}+{self[col].categories.name}")
             elif isinstance(self[col], SegArray):
@@ -1022,7 +1024,7 @@ class DataFrame(UserDict):
 
         new_df = DataFrame(df_dict)
         new_df._set_index(self.index.index[idx])
-        return new_df.to_pandas(retain_index=True)[self._columns]
+        return new_df.to_pandas(retain_index=True)[self._column_names]
 
     def transfer(self, hostname, port):
         """
@@ -1062,7 +1064,7 @@ class DataFrame(UserDict):
         self.update_nrows()
         idx = self._index
         msg_list = []
-        for col in self._columns:
+        for col in self._column_names:
             if isinstance(self[col], Categorical):
                 msg_list.append(
                     f"Categorical+{col}+{self[col].codes.name} \
@@ -1124,7 +1126,7 @@ class DataFrame(UserDict):
         return retval
 
     def _ipython_key_completions_(self):
-        return self._columns
+        return self._column_names
 
     @classmethod
     def from_pandas(cls, pd_df):
@@ -1295,7 +1297,7 @@ class DataFrame(UserDict):
             raise ValueError(f"No axis named {axis} for object type DataFrame")
 
         # If the dataframe just became empty...
-        if len(obj._columns) == 0:
+        if len(obj._column_names) == 0:
             obj._set_index(None)
             obj._empty = True
         obj.update_nrows()
@@ -1359,7 +1361,7 @@ class DataFrame(UserDict):
             return self
 
         if not subset:
-            subset = self._columns
+            subset = self._column_names
 
         if len(subset) == 1:
             if not subset[0] in self.data:
@@ -1525,12 +1527,42 @@ class DataFrame(UserDict):
         (3, 2)
         """
         self.update_nrows()
-        num_cols = len(self._columns)
+        num_cols = len(self._column_names)
         nrows = self._nrows
         return (nrows, num_cols)
 
     @property
     def columns(self):
+        """
+        An Index where the values are the column names of the dataframe.
+
+        Returns
+        -------
+        arkouda.index.Index
+            The values of the index are the column names of the dataframe.
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
+        >>> df
+
+        +----+--------+--------+
+        |    |   col1 |   col2 |
+        +====+========+========+
+        |  0 |      1 |      3 |
+        +----+--------+--------+
+        |  1 |      2 |      4 |
+        +----+--------+--------+
+
+        >>> df.columns
+        Index(array(['col1', 'col2']), dtype='<U0')
+        """
+        return Index(self._column_names)
+    @property
+    def column_names(self):
         """
         A list of column names of the dataframe.
 
@@ -1558,7 +1590,7 @@ class DataFrame(UserDict):
         >>> df.columns
         ['col1', 'col2']
         """
-        return self._columns
+        return self._column_names
 
     @property
     def index(self):
@@ -1724,7 +1756,7 @@ class DataFrame(UserDict):
         if self._nrows is None:
             return "DataFrame([ -- ][ 0 rows : 0 B])"
 
-        keys = [str(key) for key in list(self._columns)]
+        keys = [str(key) for key in list(self._column_names)]
         keys = [("'" + key + "'") for key in keys]
         keystr = ", ".join(keys)
 
@@ -1789,12 +1821,12 @@ class DataFrame(UserDict):
         obj = self if inplace else self.copy()
 
         if callable(mapper):
-            for i in range(0, len(obj._columns)):
-                oldname = obj._columns[i]
+            for i in range(0, len(obj._column_names)):
+                oldname = obj._column_names[i]
                 newname = mapper(oldname)
                 # Only rename if name has changed
                 if newname != oldname:
-                    obj._columns[i] = newname
+                    obj._column_names[i] = newname
                     obj.data[newname] = obj.data[oldname]
                     del obj.data[oldname]
         elif isinstance(mapper, dict):
@@ -1802,8 +1834,8 @@ class DataFrame(UserDict):
                 # Only rename if name has changed
                 if newname != oldname:
                     try:
-                        i = obj._columns.index(oldname)
-                        obj._columns[i] = newname
+                        i = obj._column_names.index(oldname)
+                        obj._column_names[i] = newname
                         obj.data[newname] = obj.data[oldname]
                         del obj.data[oldname]
                     except Exception:
@@ -2054,14 +2086,14 @@ class DataFrame(UserDict):
         # Check all the columns to make sure they can be concatenated
         self.update_nrows()
 
-        keyset = set(self._columns)
-        keylist = list(self._columns)
+        keyset = set(self._column_names)
+        keylist = list(self._column_names)
 
         # Allow for starting with an empty dataframe
         if self.empty:
             self = other.copy()
         # Keys don't match
-        elif keyset != set(other._columns):
+        elif keyset != set(other._column_names):
             raise KeyError("Key mismatch; keys must be identical in both DataFrames.")
         # Keys do match
         else:
@@ -2100,11 +2132,11 @@ class DataFrame(UserDict):
             if df.empty:
                 continue
             if first:
-                columnset = set(df._columns)
-                columnlist = df._columns
+                columnset = set(df._column_names)
+                columnlist = df._column_names
                 first = False
             else:
-                if set(df._columns) != columnset:
+                if set(df._column_names) != columnset:
                     raise KeyError("Cannot concatenate DataFrames with mismatched columns")
         # if here, columns match
         ret = cls()
@@ -2551,14 +2583,14 @@ class DataFrame(UserDict):
             print(f"This will transfer {msg} from arkouda to pandas.")
         # If the total memory transfer requires more than `datalimit` per
         # column, we will warn the user and return.
-        if nbytes > (datalimit * len(self._columns) * MB):
+        if nbytes > (datalimit * len(self._column_names) * MB):
             msg = f"This operation would transfer more than {datalimit} bytes."
             warn(msg, UserWarning)
             return None
 
         # Proceed with conversion if possible
         pandas_data = {}
-        for key in self._columns:
+        for key in self._column_names:
             val = self[key]
             try:
                 # in order for proper pandas functionality, SegArrays must be seen as 1d
@@ -2713,8 +2745,8 @@ class DataFrame(UserDict):
                     "file_format": _file_type_to_int(file_type),
                     "write_mode": _mode_str_to_int(mode),
                     "objType": self.objType,
-                    "num_cols": len(self.columns),
-                    "column_names": self.columns,
+                    "num_cols": len(self.column_names),
+                    "column_names": self.column_names,
                     "column_objTypes": col_objTypes,
                     "column_dtypes": dtypes,
                     "columns": column_data,
@@ -3184,7 +3216,7 @@ class DataFrame(UserDict):
         # columns load backwards
         df = cls(_dict_recombine_segarrays_categoricals(load_all(prefix_path, file_format=filetype)))
         # if parquet, return reversed dataframe to match what was saved
-        return df if filetype == "HDF5" else df[df.columns[::-1]]
+        return df if filetype == "HDF5" else df[df.column_names[::-1]]
 
     def argsort(self, key, ascending=True):
         """
@@ -3442,10 +3474,10 @@ class DataFrame(UserDict):
         if self._empty:
             return array([], dtype=akint64)
         if by is None:
-            if len(self._columns) == 1:
-                i = self.argsort(self._columns[0], ascending=ascending)
+            if len(self._column_names) == 1:
+                i = self.argsort(self._column_names[0], ascending=ascending)
             else:
-                i = self.coargsort(self._columns, ascending=ascending)
+                i = self.coargsort(self._column_names, ascending=ascending)
         elif isinstance(by, str):
             i = self.argsort(by, ascending=ascending)
         elif isinstance(by, (list, tuple)):
@@ -3663,7 +3695,7 @@ class DataFrame(UserDict):
             res._size = self._nrows
             res._bytes = self._bytes
             res._empty = self._empty
-            res._columns = self._columns[:]  # if this is not a slice, droping columns modifies both
+            res._column_names = self._column_names[:]  # if this is not a slice, droping columns modifies both
 
             for key, val in self.items():
                 res[key] = val[:]
@@ -3849,10 +3881,10 @@ class DataFrame(UserDict):
             segs = concatenate(
                 [
                     array([0]),
-                    cumsum(array([self.data[col].size for col in self.columns])),
+                    cumsum(array([self.data[col].size for col in self.column_names])),
                 ]
             )
-            df_def = {col: flat_in1d[segs[i] : segs[i + 1]] for i, col in enumerate(self.columns)}
+            df_def = {col: flat_in1d[segs[i] : segs[i + 1]] for i, col in enumerate(self.column_names)}
         elif isinstance(values, Dict):
             # key is column name, val is the list of values to check
             df_def = {
@@ -3861,13 +3893,13 @@ class DataFrame(UserDict):
                     if col in values.keys()
                     else zeros(self._nrows, dtype=akbool)
                 )
-                for col in self.columns
+                for col in self.column_names
             }
         elif isinstance(values, DataFrame) or (
             isinstance(values, Series) and isinstance(values.index, Index)
         ):
             # create the dataframe with all false
-            df_def = {col: zeros(self._nrows, dtype=akbool) for col in self.columns}
+            df_def = {col: zeros(self._nrows, dtype=akbool) for col in self.column_names}
             # identify the indexes in both
             rows_self, rows_val = intersect(self.index.index, values.index.index, unique=True)
 
@@ -3876,7 +3908,7 @@ class DataFrame(UserDict):
             sort_val = values.index[rows_val].argsort()
             # update values in columns that exist in both. only update the rows whose indexes match
 
-            for col in self.columns:
+            for col in self.column_names:
                 if isinstance(values, DataFrame) and col in values.columns:
                     df_def[col][rows_self] = (
                         self.data[col][rows_self][sort_self] == values.data[col][rows_val][sort_val]
@@ -3947,13 +3979,13 @@ class DataFrame(UserDict):
             return d if isinstance(d, pdarray) else d.codes
 
         args = {
-            "size": len(self.columns),
-            "columns": self.columns,
-            "data_names": [numeric_help(self[c]) for c in self.columns],
+            "size": len(self.column_names),
+            "columns": self.column_names,
+            "data_names": [numeric_help(self[c]) for c in self.column_names],
         }
 
         ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
-        return DataFrame({c: create_pdarray(ret_dict[c]) for c in self.columns})
+        return DataFrame({c: create_pdarray(ret_dict[c]) for c in self.column_names})
 
     @typechecked
     def merge(
@@ -4179,8 +4211,8 @@ class DataFrame(UserDict):
                 "name": user_defined_name,
                 "objType": self.objType,
                 "idx": self.index.values.name,
-                "num_cols": len(self.columns),
-                "column_names": self.columns,
+                "num_cols": len(self.column_names),
+                "column_names": self.column_names,
                 "columns": column_data,
                 "col_objTypes": col_objTypes,
             },
@@ -4746,7 +4778,7 @@ def _inner_join_merge(
     arkouda.dataframe.DataFrame
         Inner-Joined Arkouda DataFrame
     """
-    left_cols, right_cols = left.columns.copy(), right.columns.copy()
+    left_cols, right_cols = left.column_names.copy(), right.column_names.copy()
     if isinstance(on, str):
         left_inds, right_inds = inner_join(left[on], right[on])
         new_dict = {on: left[on][left_inds]}
@@ -4804,7 +4836,7 @@ def _right_join_merge(
         Right-Joined Arkouda DataFrame
     """
     in_left = _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix)
-    in_left_cols, left_cols = in_left.columns.copy(), left.columns.copy()
+    in_left_cols, left_cols = in_left.column_names.copy(), left.column_names.copy()
     if isinstance(on, str):
         left_at_on = left[on]
         right_at_on = right[on]
