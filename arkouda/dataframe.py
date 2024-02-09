@@ -621,7 +621,7 @@ class DataFrame(UserDict):
 
         if isinstance(initialdata, DataFrame):
             # Copy constructor
-            self._size = initialdata._size
+            self._nrows = initialdata._nrows
             self._bytes = initialdata._bytes
             self._empty = initialdata._empty
             self._columns = initialdata._columns
@@ -630,11 +630,11 @@ class DataFrame(UserDict):
             else:
                 self._set_index(index)
             self.data = initialdata.data
-            self.update_size()
+            self.update_nrows()
             return
         elif isinstance(initialdata, pd.DataFrame):
             # copy pd.DataFrame data into the ak.DataFrame object
-            self._size = initialdata.size
+            self._nrows = initialdata.shape[0]
             self._bytes = 0
             self._empty = initialdata.empty
             self._columns = initialdata.columns.tolist()
@@ -655,7 +655,7 @@ class DataFrame(UserDict):
             return
 
         # Some metadata about this dataframe.
-        self._size = 0
+        self._nrows = 0
         self._bytes = 0
         self._empty = True
 
@@ -719,15 +719,15 @@ class DataFrame(UserDict):
 
             # Update the dataframe indices and metadata.
             if len(sizes) > 0:
-                self._size = sizes.pop()
+                self._nrows = sizes.pop()
 
             # If the index param was passed in, use that instead of
             # creating a new one.
             if self.index is None:
-                self._set_index(arange(self._size))
+                self._set_index(arange(self._nrows))
             else:
                 self._set_index(index)
-            self.update_size()
+            self.update_nrows()
 
     def __getattr__(self, key):
         if key not in self.columns:
@@ -749,7 +749,7 @@ class DataFrame(UserDict):
         if len(self._columns) == 0:
             self._set_index(None)
             self._empty = True
-        self.update_size()
+        self.update_nrows()
 
     def __getitem__(self, key):
         # convert series to underlying values
@@ -808,12 +808,12 @@ class DataFrame(UserDict):
             s = key
             for k in self._columns:
                 rtn_data[k] = UserDict.__getitem__(self, k)[s]
-            return DataFrame(initialdata=rtn_data, index=self.index.index[arange(self.size)[s]])
+            return DataFrame(initialdata=rtn_data, index=self.index.index[arange(self._nrows)[s]])
         else:
             raise IndexError("Invalid selector: unknown error.")
 
     def __setitem__(self, key, value):
-        self.update_size()
+        self.update_nrows()
 
         # If this is the first column added, we must create an index column.
         add_index = False
@@ -833,7 +833,7 @@ class DataFrame(UserDict):
                 raise ValueError("Initial data must be dict of arkouda arrays.")
             elif not isinstance(value, (dict, UserDict)):
                 raise ValueError("Expected dict or Row type.")
-            elif key >= self._size:
+            elif key >= self._nrows:
                 raise KeyError("The row index is out of range.")
             else:
                 for k, v in value.items():
@@ -846,8 +846,8 @@ class DataFrame(UserDict):
         elif isinstance(key, str):
             if not isinstance(value, self._COLUMN_CLASSES):
                 raise ValueError(f"Column must be one of {self._COLUMN_CLASSES}.")
-            elif self._size is not None and self._size != value.size:
-                raise ValueError(f"Expected size {self.size} but received size {value.size}.")
+            elif self._nrows is not None and self._nrows != value.size:
+                raise ValueError(f"Expected size {self._nrows} but received size {value.size}.")
             else:
                 self._empty = False
                 UserDict.__setitem__(self, key, value)
@@ -861,14 +861,14 @@ class DataFrame(UserDict):
 
         # Update the dataframe indices and metadata.
         if add_index:
-            self.update_size()
-            self._set_index(arange(self._size))
+            self.update_nrows()
+            self._set_index(arange(self._nrows))
 
     def __len__(self):
         """
-        Return the number of rows
+        Return the number of rows.
         """
-        return self.size
+        return self._nrows
 
     def _ncols(self):
         """
@@ -883,7 +883,7 @@ class DataFrame(UserDict):
         Returns a summary string of this dataframe.
         """
 
-        self.update_size()
+        self.update_nrows()
 
         if self._empty:
             return "DataFrame([ -- ][ 0 rows : 0 B])"
@@ -905,16 +905,16 @@ class DataFrame(UserDict):
         else:
             mem = self.memory_usage(unit="GB")
         rows = " rows"
-        if self._size == 1:
+        if self._nrows == 1:
             rows = " row"
-        return "DataFrame([" + keystr + "], {:,}".format(self._size) + rows + ", " + str(mem) + ")"
+        return "DataFrame([" + keystr + "], {:,}".format(self._nrows) + rows + ", " + str(mem) + ")"
 
     def _get_head_tail(self):
         if self._empty:
             return pd.DataFrame()
-        self.update_size()
+        self.update_nrows()
         maxrows = pd.get_option("display.max_rows")
-        if self._size <= maxrows:
+        if self._nrows <= maxrows:
             newdf = DataFrame()
             for col in self._columns:
                 if isinstance(self[col], Categorical):
@@ -924,7 +924,9 @@ class DataFrame(UserDict):
             newdf._set_index(self.index)
             return newdf.to_pandas(retain_index=True)
         # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
-        idx = array(list(range(maxrows // 2 + 1)) + list(range(self._size - (maxrows // 2), self._size)))
+        idx = array(
+            list(range(maxrows // 2 + 1)) + list(range(self._nrows - (maxrows // 2), self._nrows))
+        )
         newdf = DataFrame()
         for col in self._columns:
             if isinstance(self[col], Categorical):
@@ -937,9 +939,9 @@ class DataFrame(UserDict):
     def _get_head_tail_server(self):
         if self._empty:
             return pd.DataFrame()
-        self.update_size()
+        self.update_nrows()
         maxrows = pd.get_option("display.max_rows")
-        if self._size <= maxrows:
+        if self._nrows <= maxrows:
             newdf = DataFrame()
             for col in self._columns:
                 if isinstance(self[col], Categorical):
@@ -949,7 +951,9 @@ class DataFrame(UserDict):
             newdf._set_index(self.index)
             return newdf.to_pandas(retain_index=True)
         # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
-        idx = array(list(range(maxrows // 2 + 1)) + list(range(self._size - (maxrows // 2), self._size)))
+        idx = array(
+            list(range(maxrows // 2 + 1)) + list(range(self._nrows - (maxrows // 2), self._nrows))
+        )
         msg_list = []
         for col in self._columns:
             if isinstance(self[col], Categorical):
@@ -1055,7 +1059,7 @@ class DataFrame(UserDict):
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
-        self.update_size()
+        self.update_nrows()
         idx = self._index
         msg_list = []
         for col in self._columns:
@@ -1095,7 +1099,7 @@ class DataFrame(UserDict):
         return repMsg
 
     def _shape_str(self):
-        return f"{self.size} rows x {self._ncols()} columns"
+        return f"{self._nrows} rows x {self._ncols()} columns"
 
     def __repr__(self):
         """
@@ -1294,7 +1298,7 @@ class DataFrame(UserDict):
         if len(obj._columns) == 0:
             obj._set_index(None)
             obj._empty = True
-        obj.update_size()
+        obj.update_nrows()
 
         if not inplace:
             return obj
@@ -1407,10 +1411,10 @@ class DataFrame(UserDict):
         6
         """
 
-        self.update_size()
-        if self._size is None:
+        self.update_nrows()
+        if self._nrows is None:
             return 0
-        return self._size
+        return self.shape[0] * self.shape[1]
 
     @property
     def dtypes(self):
@@ -1520,10 +1524,10 @@ class DataFrame(UserDict):
         >>> df.shape
         (3, 2)
         """
-        self.update_size()
+        self.update_nrows()
         num_cols = len(self._columns)
-        num_rows = self._size
-        return (num_rows, num_cols)
+        nrows = self._nrows
+        return (nrows, num_cols)
 
     @property
     def columns(self):
@@ -1675,8 +1679,8 @@ class DataFrame(UserDict):
         obj = self if inplace else self.copy()
 
         if not size:
-            obj.update_size()
-            obj._set_index(arange(obj._size))
+            obj.update_nrows()
+            obj._set_index(arange(obj._nrows))
         else:
             obj._set_index(arange(size))
 
@@ -1715,9 +1719,9 @@ class DataFrame(UserDict):
 
         """
 
-        self.update_size()
+        self.update_nrows()
 
-        if self._size is None:
+        if self._nrows is None:
             return "DataFrame([ -- ][ 0 rows : 0 B])"
 
         keys = [str(key) for key in list(self._columns)]
@@ -1737,13 +1741,13 @@ class DataFrame(UserDict):
         else:
             mem = self.memory_usage(unit="GB")
         rows = " rows"
-        if self._size == 1:
+        if self._nrows == 1:
             rows = " row"
-        return "DataFrame([" + keystr + "], {:,}".format(self._size) + rows + ", " + str(mem) + ")"
+        return "DataFrame([" + keystr + "], {:,}".format(self._nrows) + rows + ", " + str(mem) + ")"
 
-    def update_size(self):
+    def update_nrows(self):
         """
-        Computes the number of bytes on the arkouda server and updates the size parameter.
+        Computes the number of rows on the arkouda server and updates the size parameter.
         """
         sizes = set()
         for key, val in self.items():
@@ -1752,9 +1756,9 @@ class DataFrame(UserDict):
         if len(sizes) > 1:
             raise ValueError("Size mismatch in DataFrame columns.")
         if len(sizes) == 0:
-            self._size = None
+            self._nrows = None
         else:
-            self._size = sizes.pop()
+            self._nrows = sizes.pop()
 
     @typechecked
     def _rename_column(
@@ -2048,7 +2052,7 @@ class DataFrame(UserDict):
             return self
 
         # Check all the columns to make sure they can be concatenated
-        self.update_size()
+        self.update_nrows()
 
         keyset = set(self._columns)
         keylist = list(self._columns)
@@ -2072,8 +2076,9 @@ class DataFrame(UserDict):
             self.data = tmp_data
 
         # Clean up
+        self.update_nrows()
         self.reset_index(inplace=True)
-        self.update_size()
+
         self._empty = False
         return self
 
@@ -2275,10 +2280,10 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         """
-        self.update_size()
-        if self._size <= n:
+        self.update_nrows()
+        if self._nrows <= n:
             return self
-        return self[self._size - n :]
+        return self[self._nrows - n :]
 
     def sample(self, n=5):
         """
@@ -2329,10 +2334,10 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        self.update_size()
-        if self._size <= n:
+        self.update_nrows()
+        if self._nrows <= n:
             return self
-        return self[array(random.sample(range(self._size), n))]
+        return self[array(random.sample(range(self._nrows), n))]
 
     def GroupBy(self, keys, use_series=False, as_index=True, dropna=True):
         """
@@ -2404,7 +2409,7 @@ class DataFrame(UserDict):
 
         """
 
-        self.update_size()
+        self.update_nrows()
         if isinstance(keys, str):
             cols = self.data[keys]
         elif not isinstance(keys, (list, tuple)):
@@ -2518,13 +2523,13 @@ class DataFrame(UserDict):
 
         """
 
-        self.update_size()
+        self.update_nrows()
 
         # Estimate how much memory would be required for this DataFrame
         nbytes = 0
         for key, val in self.items():
             if isinstance(val, pdarray):
-                nbytes += (val.dtype).itemsize * self._size
+                nbytes += (val.dtype).itemsize * self._nrows
             elif isinstance(val, Strings):
                 nbytes += val.nbytes
 
@@ -3263,7 +3268,7 @@ class DataFrame(UserDict):
             ):
                 return argsort(-self[key])
             else:
-                return argsort(self[key])[arange(self.size - 1, -1, -1)]
+                return argsort(self[key])[arange(self._nrows - 1, -1, -1)]
 
     def coargsort(self, keys, ascending=True):
         """
@@ -3311,7 +3316,7 @@ class DataFrame(UserDict):
             arrays.append(self[key])
         i = coargsort(arrays)
         if not ascending:
-            i = i[arange(self.size - 1, -1, -1)]
+            i = i[arange(self._nrows - 1, -1, -1)]
         return i
 
     def _reindex(self, idx):
@@ -3655,7 +3660,7 @@ class DataFrame(UserDict):
 
         if deep:
             res = DataFrame()
-            res._size = self._size
+            res._size = self._nrows
             res._bytes = self._bytes
             res._empty = self._empty
             res._columns = self._columns[:]  # if this is not a slice, droping columns modifies both
@@ -3854,7 +3859,7 @@ class DataFrame(UserDict):
                 col: (
                     in1d(self.data[col], values[col])
                     if col in values.keys()
-                    else zeros(self.size, dtype=akbool)
+                    else zeros(self._nrows, dtype=akbool)
                 )
                 for col in self.columns
             }
@@ -3862,7 +3867,7 @@ class DataFrame(UserDict):
             isinstance(values, Series) and isinstance(values.index, Index)
         ):
             # create the dataframe with all false
-            df_def = {col: zeros(self.size, dtype=akbool) for col in self.columns}
+            df_def = {col: zeros(self._nrows, dtype=akbool) for col in self.columns}
             # identify the indexes in both
             rows_self, rows_val = intersect(self.index.index, values.index.index, unique=True)
 
