@@ -2386,7 +2386,7 @@ def mean(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    return parse_single_value(generic_msg(cmd="mean", args={"x": pda}))
+    return parse_single_value(generic_msg(cmd=f"stats{pda.ndim}", args={"x": pda, "comp": "mean"}))
 
 
 @typechecked
@@ -2433,7 +2433,11 @@ def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
     """
     if ddof >= pda.size:
         raise ValueError("var: ddof must be less than number of values")
-    return parse_single_value(generic_msg(cmd="var", args={"x": pda, "ddof": ddof}))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "var", "ddof": ddof}
+        )
+    )
 
 
 @typechecked
@@ -2484,7 +2488,11 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
     """
     if ddof < 0:
         raise ValueError("ddof must be an integer 0 or greater")
-    return parse_single_value(generic_msg(cmd="std", args={"x": pda, "ddof": ddof}))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"std{pda.ndim}D", args={"x": pda, "comp": "std", "ddof": ddof, "nAxes": 0, "axis": []}
+        )
+    )
 
 
 @typechecked

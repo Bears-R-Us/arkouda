@@ -25,7 +25,9 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
 
 
 # Note: the function name is different here
-def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[int] = 0) -> Array:
+def concat(
+    arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[int] = 0
+) -> Array:
     """
     Array API compatible wrapper for :py:func:`np.concatenate <numpy.concatenate>`.
 
@@ -69,7 +71,9 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
 
 
 # Note: the optional argument is called 'shape', not 'newshape'
-def reshape(x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None) -> Array:
+def reshape(
+    x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None
+) -> Array:
     """
     Array API compatible wrapper for :py:func:`np.reshape <numpy.reshape>`.
 

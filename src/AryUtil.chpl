@@ -108,6 +108,20 @@ module AryUtil
     }
 
     /*
+      Determines if the passed array is sorted
+      along the specified axis.
+    */
+    proc isSortedOver(A:[?D], slice: domain): bool {
+      var sorted = true;
+      forall i in slice with (&& reduce sorted) {
+        if i > slice.low {
+          sorted &&= (A[i-1] <= A[i]);
+        }
+      }
+      return sorted;
+    }
+
+    /*
       Returns stats on a given array in form (int,int,real,real,real).
 
       :arg a: array to produce statistics on

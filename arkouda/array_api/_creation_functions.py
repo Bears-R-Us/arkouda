@@ -110,16 +110,20 @@ def empty(
         for s in tshape:
             size *= s
         return Array._new(
-            pdarray("__empty__", akdtype(dtype), size, len(tshape), tshape, 0, None), empty=True
+            pdarray("__empty__", akdtype(dtype), size, len(tshape), tshape, 0, None),
+            empty=True,
         )
     else:
         vshape = cast(int, shape)
         return Array._new(
-            pdarray("__empty__", akdtype(dtype), vshape, 1, (vshape,), 0, None), empty=True
+            pdarray("__empty__", akdtype(dtype), vshape, 1, (vshape,), 0, None),
+            empty=True,
         )
 
 
-def empty_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
+def empty_like(
+    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
+) -> Array:
     from ._array_object import Array
 
     if device not in ["cpu", None]:
@@ -259,7 +263,9 @@ def ones(
     return a
 
 
-def ones_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
+def ones_like(
+    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
+) -> Array:
     return ones(x.shape, dtype=dtype, device=device)
 
 
@@ -325,5 +331,7 @@ def zeros(
     return Array._new(create_pdarray(repMsg))
 
 
-def zeros_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
+def zeros_like(
+    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
+) -> Array:
     return zeros(x.shape, dtype=dtype, device=device)
