@@ -4,7 +4,7 @@ import numpy as np
 from scipy.stats import power_divergence as scipy_power_divergence
 
 import arkouda as ak
-from arkouda.akstats import power_divergence as ak_power_divergence
+from arkouda.akscipy import power_divergence as ak_power_divergence
 
 
 class TestStats:
@@ -53,7 +53,7 @@ class TestStats:
     def test_chisquare(self):
         from scipy.stats import chisquare as scipy_chisquare
 
-        from arkouda.akstats import chisquare as ak_chisquare
+        from arkouda.akscipy import chisquare as ak_chisquare
 
         pairs = self.create_stat_test_pairs()
 
