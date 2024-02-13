@@ -34,10 +34,10 @@ module Cast {
   }
 
   proc castGenSymEntryToBigInt(gse: borrowed GenSymEntry, st: borrowed SymTab,
-                               param nd: int, type fromType): (bool, string) throws {
+                               type fromType, param nd: int): (bool, string) throws {
     const before = toSymEntry(gse, fromType, nd);
     const name = st.nextName();
-    var tmp = makeDistArray(before.tupShape, bigint);
+    var tmp = makeDistArray((...before.tupShape), bigint);
     try {
       if fromType == bigint {
         tmp = before.a;

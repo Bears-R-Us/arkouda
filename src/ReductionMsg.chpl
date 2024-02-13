@@ -21,6 +21,7 @@ module ReductionMsg
     use RadixSortLSD;
     use ArkoudaMathCompat;
     use ArkoudaBlockCompat;
+    use ArkoudaAryUtilCompat;
 
     private config const lBins = 2**25 * numLocales;
 
@@ -48,29 +49,31 @@ module ReductionMsg
             axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
             rname = st.nextName();
 
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+
       if !basicReductionOps.contains(op) {
         const errorMsg = notImplementedError(pn,op,gEnt.dtype);
         rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
       }
 
-      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
-
       proc computeReduction(type t): MsgTuple throws {
         const eIn = toSymEntry(gEnt, t, nd);
 
-        if nd == 0 || nAxes == 0 {
+        type opType = if t == bool then int else t;
+
+        if nd == 1 || nAxes == 0 {
           var s: t;
           select op {
-            when "sum" do s = + reduce eIn.a;
-            when "prod" do s = * reduce eIn.a;
+            when "sum" do s = (+ reduce eIn.a:opType):t;
+            when "prod" do s = (* reduce eIn.a:opType):t;
             when "min" do s = min reduce eIn.a;
             when "max" do s = max reduce eIn.a;
             otherwise halt("unreachable");
           }
 
-          const scalarValue = "%s %s".doFormat(dtype2str(t), type2fmt(t)).doFormat(s);
-          sLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
+          const scalarValue = "%s %s".doFormat(type2str(t), type2fmt(t)).doFormat(s);
+          rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
           const (valid, axes) = validateNegativeAxes(axesRaw, nd);
@@ -83,13 +86,13 @@ module ReductionMsg
             var eOut = st.addEntry(rname, outShape, t);
 
             forall sliceIdx in domOffAxis(eIn.a.domain, axes) {
-              const sliceDom = domOnAxis(eIn.a.domain, axes, sliceIdx);
+              const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
               var s: t;
               select op {
-                when "sum" do s = sum(eIn.a, sliceDom);
-                when "prod" do s = prod(eIn.a, sliceDom);
-                when "min" do s = min(eIn.a, sliceDom);
-                when "max" do s = max(eIn.a, sliceDom);
+                when "sum" do s = sum(eIn.a, sliceDom, opType);
+                when "prod" do s = prod(eIn.a, sliceDom, opType);
+                when "min" do s = getMin(eIn.a, sliceDom);
+                when "max" do s = getMax(eIn.a, sliceDom);
                 otherwise halt("unreachable");
               }
               eOut.a[sliceIdx] = s;
@@ -131,6 +134,8 @@ module ReductionMsg
             axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
             rname = st.nextName();
 
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+
       if !boolReductionOps.contains(op) {
         const errorMsg = notImplementedError(pn,op,gEnt.dtype);
         rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -144,28 +149,26 @@ module ReductionMsg
         return new MsgTuple(errorMsg, MsgType.ERROR);
       }
 
-      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
-
       proc computeReduction(type t): MsgTuple throws {
         const eIn = toSymEntry(gEnt, bool, nd);
 
-        if nd == 0 || nAxes == 0 {
+        if nd == 1 || nAxes == 0 {
           var s: bool;
           select op {
             when "any" do s = (+ reduce (eIn.a != 0)) != 0;
             when "all" do s = (+ reduce (eIn.a != 0)) == 0;
             when "is_sorted" do s = isSorted(eIn.a);
             when "is_locally_sorted" {
-              coforall loc in Locales with (&& reduce s) on loc {
+              coforall loc in Locales with (&& reduce s) do on loc {
                 ref aLocal = eIn.a[eIn.a.localSubdomain()];
                 s = isSorted(aLocal);
               }
-            };
+            }
             otherwise halt("unreachable");
           }
 
           const scalarValue = "bool %s".doFormat(s);
-          sLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
+          rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
           const (valid, axes) = validateNegativeAxes(axesRaw, nd);
@@ -178,7 +181,7 @@ module ReductionMsg
             var eOut = st.addEntry(rname, outShape, bool);
 
             forall sliceIdx in domOffAxis(eIn.a.domain, axes) {
-              const sliceDom = domOnAxis(eIn.a.domain, axes, sliceIdx);
+              const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
               var s: bool;
               select op {
                 when "any" do s = any(eIn.a, sliceDom);
@@ -232,24 +235,24 @@ module ReductionMsg
             axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
             rname = st.nextName();
 
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+
       if !idxReductionOps.contains(op) {
         const errorMsg = notImplementedError(pn,op,gEnt.dtype);
         rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
       }
 
-      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
-
       proc computeReduction(type t): MsgTuple throws {
         const eIn = toSymEntry(gEnt, int, nd);
 
-        if nd == 0 || nAxes == 0 {
+        if nd == 1 || nAxes == 0 {
           var s: bool;
           select op {
             when "argmin" {
               const (minVal, minLoc) = minloc reduce zip(eIn.a, eIn.a.domain);
               s = minLoc;
-            };
+            }
             when "argmax" {
               const (maxVal, maxLoc) = maxloc reduce zip(eIn.a, eIn.a.domain);
               s = maxLoc;
@@ -258,7 +261,7 @@ module ReductionMsg
           }
 
           const scalarValue = "int %i".doFormat(s);
-          sLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
+          rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
           const (valid, axes) = validateNegativeAxes(axesRaw, nd);
@@ -271,7 +274,7 @@ module ReductionMsg
             var eOut = st.addEntry(rname, outShape, int);
 
             forall sliceIdx in domOffAxis(eIn.a.domain, axes) {
-              const sliceDom = domOnAxis(eIn.a.domain, axes, sliceIdx);
+              const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
               var s: t;
               select op {
                 when "argmin" do s = argmin(eIn.a, sliceDom);
@@ -318,25 +321,25 @@ module ReductionMsg
         return sum == a.size;
       }
 
-      proc sum(ref a: [] ?t, slice: domain): t {
-        var sum = 0:t;
-        forall i in slice with (+ reduce sum) do sum += a[i];
-        return sum;
+      proc sum(ref a: [] ?t, slice: domain, type opType): t {
+        var sum = 0:opType;
+        forall i in slice with (+ reduce sum) do sum += a[i]:opType;
+        return sum:t;
       }
 
-      proc prod(ref a: [] ?t, slice: domain): t {
+      proc prod(ref a: [] ?t, slice: domain, type opType): t {
         var prod = 1.0; // always use real(64) to avoid int overflow
-        forall i in slice with (* reduce prod) do prod *= a[i];
+        forall i in slice with (* reduce prod) do prod *= a[i]:opType;
         return prod:t;
       }
 
-      proc min(ref a: [] ?t, slice: domain): t {
+      proc getMin(ref a: [] ?t, slice: domain, type opType): t {
         var minVal = max(t);
         forall i in slice with (min reduce minVal) do minVal reduce= a[i];
         return minVal;
       }
 
-      proc max(ref a: [] ?t, slice: domain): t {
+      proc getMax(ref a: [] ?t, slice: domain): t {
         var maxVal = min(t);
         forall i in slice with (max reduce maxVal) do maxVal reduce= a[i];
         return maxVal;
@@ -1506,11 +1509,7 @@ module ReductionMsg
       return res;
     }
 
-    proc reductionMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-      return reductionMsg(cmd, msgArgs, st, 1);
-
     use CommandMap;
     registerFunction("segmentedReduction", segmentedReductionMsg, getModuleName());
-    registerFunction("reduction", reductionMsg1D, getModuleName());
     registerFunction("countReduction", countReductionMsg, getModuleName());
 }

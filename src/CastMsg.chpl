@@ -372,6 +372,5 @@ module CastMsg {
   }
 
   use CommandMap;
-  registerFunction("cast", castMsg, getModuleName());
   registerFunction("transmuteFloat", transmuteFloatMsg, getModuleName());
 }

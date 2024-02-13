@@ -121,6 +121,32 @@ module AryUtil
       return sorted;
     }
 
+    proc validateNegativeAxes(axes: [?d] int, param nd: int): (bool, [d] int) {
+      var ret: [d] int;
+      if axes.size > nd then return (false, ret);
+      for (i, a) in zip(d, axes) {
+        if a >= 0 && a < nd {
+          ret[i] = a;
+        } else if a < 0 && a >= -nd {
+          ret[i] = nd + a;
+        } else {
+          return (false, ret);
+        }
+      }
+      return (true, ret);
+    }
+
+    proc reducedShape(shape: ?N*int, axes: [] int): N*int {
+      var ret: N*int,
+          f: int = 0;
+      for param i in 0..<N {
+        if axes.find(i, f)
+          then ret[i] = 1;
+          else ret[i] = shape[i];
+      }
+      return ret;
+    }
+
     /*
       Returns stats on a given array in form (int,int,real,real,real).
 

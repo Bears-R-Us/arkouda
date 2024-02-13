@@ -28,7 +28,7 @@ module ArkoudaAryUtilCompat {
 
   proc domOnAxis(D: domain(?), idx: D.rank*int, axes: [?aD] int): domain throws {
     if axes.size >= D.rank then
-      throw new Error("Cannot create a " + axes.size + "-dimensional slice from a " + D.rank + "-dimensional domain");
+      throw new Error("Cannot create a " + axes.size:string + "-dimensional slice from a " + D.rank:string + "-dimensional domain");
 
     var outDims: D.rank*range;
     label ranks for i in 0..<D.rank {
@@ -68,21 +68,21 @@ module ArkoudaAryUtilCompat {
     }
     return D[{(...outDims)}];
   }
-}
 
-proc domOffAxis(D: domain(?), idx: D.rank*int, axes: [?aD] int): domain throws {
-  if axes.size >= D.rank then
-    throw new Error("Cannot create a " + axes.size + "-dimensional slice from a " + D.rank + "-dimensional domain");
+  proc domOffAxis(D: domain(?), axes: [?aD] int): domain throws {
+    if axes.size >= D.rank then
+      throw new Error("Cannot create a " + axes.size:string + "-dimensional slice from a " + D.rank:string + "-dimensional domain");
 
-  var outDims: D.rank*range;
-  label ranks for i in 0..<D.rank {
-    for j in 0..<axes.size {
-      if i == axes[j] {
-        outDims[i] = 0..0;
-        continue ranks;
+    var outDims: D.rank*range;
+    label ranks for i in 0..<D.rank {
+      for j in 0..<axes.size {
+        if i == axes[j] {
+          outDims[i] = 0..0;
+          continue ranks;
+        }
       }
+      outDims[i] = D.dim(i);
     }
-    outDims[i] = idx[i]..idx[i];
+    return D[{(...outDims)}];
   }
-  return D[{(...outDims)}];
 }

@@ -1,6 +1,7 @@
 module StatsMsg {
     use ServerConfig;
 
+    use AryUtil;
     use Reflection;
     use ServerErrors;
     use Logging;
@@ -43,10 +44,10 @@ module StatsMsg {
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
 
-        proc computeStd(type tIn, type tOut): MsgTuple throws {
+        proc computeStat(type tIn, type tOut): MsgTuple throws {
             const eIn = toSymEntry(gEnt, tIn, nd);
 
-            if nd == 0 || nAxes == 0 {
+            if nd == 1 || nAxes == 0 {
                 var s: tOut;
                 select comp {
                     when "mean" do s = mean(eIn.a);
@@ -88,10 +89,10 @@ module StatsMsg {
         }
 
         select gEnt.dtype {
-            when DType.Int64 do return computeStd(int, real);
-            when DType.UInt64 do return computeStd(uint, real);
-            when DType.Float64 do return computeStd(real, real);
-            when DType.Bool do return computeStd(bool, real);
+            when DType.Int64 do return computeStat(int, real);
+            when DType.UInt64 do return computeStat(uint, real);
+            when DType.Float64 do return computeStat(real, real);
+            when DType.Bool do return computeStat(bool, real);
             otherwise {
                 var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
                 sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -99,33 +100,6 @@ module StatsMsg {
             }
         }
 
-    }
-
-    // TODO: move this to a shared module (maybe AryUtil) for use in ManipulationMsg as well
-    private proc validateNegativeAxes(axes: [?d] int, param nd: int): (bool, [d] int) {
-        var ret: [d] int;
-        if axes.size > nd then return (false, ret);
-        for (i, a) in zip(d, axes) {
-            if a >= 0 && a < nd {
-                ret[i] = a;
-            } else if a < 0 && a >= -nd {
-                ret[i] = nd + a;
-            } else {
-                return (false, ret);
-            }
-        }
-        return (true, ret);
-    }
-
-    private proc reducedShape(shape: ?N*int, axes: [d] int): N*int {
-        var ret: N*int,
-            f: int = 0;
-        for param i in 0..<N {
-            if axes.find(i, f)
-                then ret[i] = 1
-                else ret[i] = shape[i];
-        }
-        return ret;
     }
 
     proc covMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
