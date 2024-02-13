@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from ._array_object import Array
 
-from typing import List, Optional, Tuple, Union
-
-import arkouda as ak
-from arkouda.pdarrayclass import broadcast_to_shape
+from typing import List, Optional, Tuple, Union, cast
+from arkouda.client import generic_msg
+from arkouda.pdarrayclass import create_pdarray
+from arkouda.util import broadcast_dims
 
 
 def broadcast_arrays(*arrays: Array) -> List[Array]:
@@ -14,26 +14,67 @@ def broadcast_arrays(*arrays: Array) -> List[Array]:
 
     See its docstring for more information.
     """
-    raise ValueError("broadcast_arrays not implemented")
+
+    shapes = [a.shape for a in arrays]
+    bcShape = shapes[0]
+    for shape in shapes[1:]:
+        bcShape = broadcast_dims(bcShape, shape)
+
+    return [broadcast_to(a, shape=bcShape) for a in arrays]
 
 
 def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
     """
     Broadcast the array to the specified shape.
     """
-    return Array._new(broadcast_to_shape(x._array, shape))
+
+    try:
+        return Array._new(
+            create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"broadcastTo{x.ndim}Dx{len(shape)}D",
+                        args={
+                            "name": x._array,
+                            "shape": shape,
+                        },
+                    ),
+                )
+            )
+        )
+    except RuntimeError as e:
+        raise ValueError(f"Failed to broadcast array: {e}")
 
 
 # Note: the function name is different here
-def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[int] = 0) -> Array:
+def concat(
+    arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[int] = 0
+) -> Array:
     """
     Array API compatible wrapper for :py:func:`np.concatenate <numpy.concatenate>`.
 
     See its docstring for more information.
     """
-    # Note: Casting rules here are different from the np.concatenate default
-    # (no for scalars with axis=None, no cross-kind casting)
-    return Array._new(ak.concatenate(arrays))
+    # TODO: type promotion across input arrays
+
+    return Array._new(
+        create_pdarray(
+            cast(
+                str,
+                generic_msg(
+                    cmd=f"concat{arrays[0].ndim}D"
+                    if axis is not None
+                    else f"concatFlat{arrays[0].ndim}D",
+                    args={
+                        "n": len(arrays),
+                        "names": [a._array for a in arrays],
+                        "axis": axis,
+                    },
+                ),
+            )
+        )
+    )
 
 
 def expand_dims(x: Array, /, *, axis: int) -> Array:
@@ -42,8 +83,23 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
 
     See its docstring for more information.
     """
-    # return Array._new(np.expand_dims(x._array, axis))
-    raise ValueError("expand_dims not implemented")
+    try:
+        return Array._new(
+            create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"expandDims{x.ndim}D",
+                        args={
+                            "name": x._array,
+                            "axis": axis,
+                        },
+                    ),
+                )
+            )
+        )
+    except RuntimeError as e:
+        raise (IndexError(f"Failed to expand array dimensions: {e}"))
 
 
 def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Array:
@@ -52,41 +108,81 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
 
     See its docstring for more information.
     """
-    # return Array._new(np.flip(x._array, axis=axis))
-    raise ValueError("flip not implemented")
+    axisList = []
+    if axis is not None:
+        axisList = list(axis) if isinstance(axis, tuple) else [axis]
+    try:
+        return Array._new(
+            create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"flipAll{x.ndim}D" if axis is None else f"flip{x.ndim}D",
+                        args={
+                            "name": x._array,
+                            "nAxes": len(axisList),
+                            "axis": axisList,
+                        },
+                    ),
+                )
+            )
+        )
+    except RuntimeError as e:
+        raise IndexError(f"Failed to flip array: {e}")
 
 
-# Note: The function name is different here (see also matrix_transpose).
-# Unlike transpose(), the axes argument is required.
 def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
     """
     Array API compatible wrapper for :py:func:`np.transpose <numpy.transpose>`.
 
     See its docstring for more information.
     """
-    # return Array._new(ak.transpose(x._array, axes))
-    raise ValueError("permute_dims not implemented")
+    try:
+        return Array._new(
+            create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"permuteDims{x.ndim}D",
+                        args={
+                            "name": x._array,
+                            "axes": axes,
+                        },
+                    ),
+                )
+            )
+        )
+    except RuntimeError as e:
+        raise IndexError(f"Failed to permute array dimensions: {e}")
 
 
-# Note: the optional argument is called 'shape', not 'newshape'
-def reshape(x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None) -> Array:
+def reshape(
+    x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None
+) -> Array:
     """
     Array API compatible wrapper for :py:func:`np.reshape <numpy.reshape>`.
 
     See its docstring for more information.
     """
 
-    # data = x._array
-    # if copy:
-    #     data = ak.copy(data)
-
-    # reshaped = ak.reshape(data, shape)
-
-    # if copy is False and not ak.shares_memory(data, reshaped):
-    #     raise AttributeError("Incompatible shape for in-place modification.")
-
-    # return Array._new(reshaped)
-    raise ValueError("reshape not implemented")
+    # TODO: figure out copying semantics (currently always creates a copy)
+    try:
+        return Array._new(
+            create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"reshape{x.ndim}Dx{len(shape)}D",
+                        args={
+                            "name": x._array,
+                            "shape": shape,
+                        },
+                    ),
+                )
+            )
+        )
+    except RuntimeError as e:
+        raise ValueError(f"Failed to reshape array: {e}")
 
 
 def roll(
@@ -101,8 +197,33 @@ def roll(
 
     See its docstring for more information.
     """
-    # return Array._new(np.roll(x._array, shift, axis=axis))
-    raise ValueError("roll not implemented")
+    axisList = []
+    if axis is not None:
+        axisList = list(axis) if isinstance(axis, tuple) else [axis]
+    try:
+        return Array._new(
+            create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"rollFlattened{x.ndim}D"
+                        if axis is None
+                        else f"roll{x.ndim}D",
+                        args={
+                            "name": x._array,
+                            "nShifts": len(shift) if isinstance(shift, tuple) else 1,
+                            "shift": list(shift)
+                            if isinstance(shift, tuple)
+                            else [shift],
+                            "nAxes": len(axisList),
+                            "axis": axisList,
+                        },
+                    ),
+                )
+            )
+        )
+    except RuntimeError as e:
+        raise IndexError(f"Failed to roll array: {e}")
 
 
 def squeeze(x: Array, /, axis: Union[int, Tuple[int, ...]]) -> Array:
@@ -111,8 +232,25 @@ def squeeze(x: Array, /, axis: Union[int, Tuple[int, ...]]) -> Array:
 
     See its docstring for more information.
     """
-    # return Array._new(np.squeeze(x._array, axis=axis))
-    raise ValueError("squeeze not implemented")
+    nAxes = len(axis) if isinstance(axis, tuple) else 1
+    try:
+        return Array._new(
+            create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"squeeze{x.ndim}Dx{x.ndim - nAxes}D",
+                        args={
+                            "name": x._array,
+                            "nAxes": nAxes,
+                            "axes": list(axis) if isinstance(axis, tuple) else [axis],
+                        },
+                    ),
+                )
+            )
+        )
+    except RuntimeError as e:
+        raise ValueError(f"Failed to squeeze array: {e}")
 
 
 def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) -> Array:
@@ -121,8 +259,19 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
 
     See its docstring for more information.
     """
-    # # Call result type here just to raise on disallowed type combinations
-    # result_type(*arrays)
-    # arrays = tuple(a._array for a in arrays)
-    # return Array._new(np.stack(arrays, axis=axis))
-    raise ValueError("stack not implemented")
+    # TODO: type promotion across input arrays
+    return Array._new(
+        create_pdarray(
+            cast(
+                str,
+                generic_msg(
+                    cmd=f"stack{arrays[0].ndim}D",
+                    args={
+                        "names": [a._array for a in arrays],
+                        "n": len(arrays),
+                        "axis": axis,
+                    },
+                ),
+            )
+        )
+    )

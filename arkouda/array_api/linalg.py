@@ -11,7 +11,9 @@ def matmul(x1: Array, x2: Array, /) -> Array:
     from ._array_object import Array
 
     if x1._array.ndim < 2 and x2._array.ndim < 2:
-        raise ValueError("matmul requires at least one array argument to have more than two dimensions")
+        raise ValueError(
+            "matmul requires at least one array argument to have more than two dimensions"
+        )
 
     x1b, x2b, tmp_x1, tmp_x2 = broadcast_if_needed(x1._array, x2._array)
 
@@ -42,7 +44,9 @@ def matrix_transpose(x: Array) -> Array:
     from ._array_object import Array
 
     if x._array.ndim < 2:
-        raise ValueError("matrix_transpose requires the array to have more than two dimensions")
+        raise ValueError(
+            "matrix_transpose requires the array to have more than two dimensions"
+        )
 
     repMsg = generic_msg(
         cmd=f"transpose{x._array.ndim}D",
