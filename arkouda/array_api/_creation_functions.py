@@ -88,9 +88,9 @@ def arange(
         raise ValueError(f"Unsupported device {device!r}")
 
     if stop is None:
-        return Array._new(ak.arange(0, start, step, dtype))
+        return Array._new(ak.arange(0, start, step, dtype=dtype))
     else:
-        return Array._new(ak.arange(start, stop, step, dtype))
+        return Array._new(ak.arange(start, stop, step, dtype=dtype))
 
 
 def empty(

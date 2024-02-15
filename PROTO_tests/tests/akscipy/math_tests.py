@@ -4,7 +4,7 @@ import numpy as np
 
 import arkouda as ak
 from arkouda.pdarrayclass import pdarray
-from arkouda.scipy.special import xlogy
+from arkouda.akscipy.special import xlogy
 
 
 class TestStats:

@@ -158,6 +158,26 @@ module Message {
         }
 
         /*
+        * Return the value as a positive int64
+        * If the value is negative, return 'value + max + 1', otherwise return the value
+        * This is useful for implementing Python's negative indexing rules
+        *
+        * Returns int
+        */
+        proc getPositiveIntValue(max: int): int throws {
+            var x = this.getIntValue();
+            if x >= 0 && x < max then return x;
+            if x < 0 && x >= -max then return x + max;
+            else throw new ErrorWithContext(
+                "Parameter cannot be cast as a positive int in the range: [%?, %?)".doFormat(-max, max),
+                getLineNumber(),
+                getRoutineName(),
+                getModuleName(),
+                "ValueError"
+            );
+        }
+
+        /*
         * Return the value as uint64
         * Returns uint
         */
@@ -272,6 +292,28 @@ module Message {
                                     "TypeError");
             }
             return jsonToPdArray(this.val, size);
+        }
+
+        proc getListAs(type t, size: int) throws {
+            if this.objType != ObjectType.LIST {
+                throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".doFormat(this.key),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
+            try {
+                const vals = jsonToPdArray(this.val, size);
+                var ret: [0..<size] t;
+                forall (idx, v) in zip(0..<size, vals) do ret[idx] = v:t;
+                return ret;
+            } catch {
+                throw new owned ErrorWithContext("Parameter cannot be cast as an array of %?. Attempting to cast %s as ([0..<%?] %?) failed".doFormat(t:string, this.val, size, t:string),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
         }
 
         /*

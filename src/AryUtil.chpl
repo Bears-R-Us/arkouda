@@ -553,7 +553,7 @@ module AryUtil
       'N' must be equal to 'A's rank minus the number of degenerate ranks;
       halts if this condition isn't met.
 
-      Analogous to matlab's 'squeeze': https://www.mathworks.com/help/matlab/ref/squeeze.html
+      See also: 'ManipulationMsg.squeezeMsg'
     */
     proc removeDegenRanks(A: [?D] ?t, param N: int) throws
       where N <= D.rank

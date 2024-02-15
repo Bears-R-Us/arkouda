@@ -302,7 +302,10 @@ class Array:
         raise ValueError("Not implemented")
 
     def __eq__(self: object, other: object, /) -> bool:
-        raise ValueError("Not implemented")
+        if isinstance(other, Array) and isinstance(self, Array):
+            return self._array == other._array
+        else:
+            raise ValueError("Not implemented")
 
     def __float__(self: Array, /) -> float:
         # TODO: retrieve the value from a 0D array as a float
@@ -321,9 +324,9 @@ class Array:
     ) -> Array:
         if isinstance(key, Array):
             # TODO: hack for testing
-            return self._array[key._array]
+            return Array._new(self._array[key._array])
         else:
-            return self._array[key]
+            return Array._new(self._array[key])
 
     def __gt__(self: Array, other: Union[int, float, Array], /) -> Array:
         return self
