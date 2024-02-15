@@ -33,6 +33,10 @@ module ReductionMsg
     // it should always be overriden by the pdarray's max_bits attribute
     var class_lvl_max_bits = -1;
 
+    const basicReductionOps = {"sum", "prod", "min", "max"},
+          boolReductionOps = {"any", "all", "is_sorted", "is_locally_sorted"},
+          idxReductionOps = {"argmin", "argmax"};
+
     /*
       Compute an array reduction along one or more axes
       (where the result has the same data type as the input array)
@@ -305,53 +309,50 @@ module ReductionMsg
     }
 
     private module SliceReductionOps {
-      const basicReductionOps = {"sum", "prod", "min", "max"},
-            boolReductionOps = {"any", "all", "is_sorted", "is_locally_sorted"},
-            idxReductionOps = {"argmin", "argmax"};
 
-      proc any(ref a: [] ?t, slice: domain): bool {
+      proc any(ref a: [] ?t, slice): bool {
         var sum = 0:t;
         forall i in slice with (+ reduce sum) do sum += (a[i] != 0);
         return sum != 0;
       }
 
-      proc all(ref a: [] ?t, slice: domain): bool {
+      proc all(ref a: [] ?t, slice): bool {
         var sum = 0:t;
         forall i in slice with (+ reduce sum) do sum += (a[i] != 0);
         return sum == a.size;
       }
 
-      proc sum(ref a: [] ?t, slice: domain, type opType): t {
+      proc sum(ref a: [] ?t, slice, type opType): t {
         var sum = 0:opType;
         forall i in slice with (+ reduce sum) do sum += a[i]:opType;
         return sum:t;
       }
 
-      proc prod(ref a: [] ?t, slice: domain, type opType): t {
+      proc prod(ref a: [] ?t, slice, type opType): t {
         var prod = 1.0; // always use real(64) to avoid int overflow
         forall i in slice with (* reduce prod) do prod *= a[i]:opType;
         return prod:t;
       }
 
-      proc getMin(ref a: [] ?t, slice: domain, type opType): t {
+      proc getMin(ref a: [] ?t, slice, type opType): t {
         var minVal = max(t);
         forall i in slice with (min reduce minVal) do minVal reduce= a[i];
         return minVal;
       }
 
-      proc getMax(ref a: [] ?t, slice: domain): t {
+      proc getMax(ref a: [] ?t, slice): t {
         var maxVal = min(t);
         forall i in slice with (max reduce maxVal) do maxVal reduce= a[i];
         return maxVal;
       }
 
-      proc argmin(ref a: [?d] ?t, slice: domain): d.idxType {
+      proc argmin(ref a: [?d] ?t, slice): d.idxType {
         var minValLoc = (max(t), d.low);
         forall i in slice with (minloc reduce minValLoc) do minValLoc reduce= (a[i], i);
         return minValLoc[1];
       }
 
-      proc argmax(ref a: [?d] ?t, slice: domain): d.idxType {
+      proc argmax(ref a: [?d] ?t, slice): d.idxType {
         var maxValLoc = (min(t), d.low);
         forall i in slice with (maxloc reduce maxValLoc) do maxValLoc reduce= (a[i], i);
         return maxValLoc[1];

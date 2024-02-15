@@ -24,20 +24,20 @@ module Stats {
         return cov(ar1, ar2) / (std(ar1, 1) * std(ar2, 1));
     }
 
-    proc meanOver(ref ar: [], d: domain): real throws {
+    proc meanOver(ref ar: [], slice): real throws {
         var sum = 0.0;
-        forall i in d with (+ reduce sum) do sum += ar[i]:real;
-        return sum / d.size;
+        forall i in slice with (+ reduce sum) do sum += ar[i]:real;
+        return sum / slice.size;
     }
 
-    proc varianceOver(ref ar: [], d: domain, ddof: int): real throws {
-        const mean = meanOver(ar, d);
+    proc varianceOver(ref ar: [], slice, ddof: int): real throws {
+        const mean = meanOver(ar, slice);
         var sum = 0.0;
-        forall i in d with (+ reduce sum) do sum += (ar[i]:real - mean) ** 2;
-        return sum / (d.size - ddof):real;
+        forall i in slice with (+ reduce sum) do sum += (ar[i]:real - mean) ** 2;
+        return sum / (slice.size - ddof):real;
     }
 
-    proc stdOver(ref ar: [], d: domain, ddof: int): real throws {
-        return sqrt(varianceOver(ar, d, ddof));
+    proc stdOver(ref ar: [], slice, ddof: int): real throws {
+        return sqrt(varianceOver(ar, slice, ddof));
     }
 }
