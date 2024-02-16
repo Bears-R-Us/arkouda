@@ -16,7 +16,7 @@ module Security {
             "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
             ];
 
-        return ''.join(try! sample(alphanum, len, withReplacement=true));
+        return ''.join(try! sample(alphanum, len-1, withReplacement=true));
     }
 
     proc getArkoudaToken(tokensPath : string) : string throws {
