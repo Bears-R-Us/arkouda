@@ -167,7 +167,7 @@ def in1d(
 
     Notes
     ------
-        Only works for pdarrays of int64 dtype, Strings, or Categorical
+        Only works for pdarrays of int64 dtype, float64, Strings, or Categorical
     """
     from arkouda.alignment import NonUniqueError
     from arkouda.categorical import Categorical as Categorical_
