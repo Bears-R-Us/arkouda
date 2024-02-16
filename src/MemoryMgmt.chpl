@@ -107,8 +107,7 @@ module MemoryMgmt {
                                            "UnsupportedOSError");
         }
 
-        var aFile = open('/proc/meminfo', ioMode.r);
-        var lines = aFile.reader().lines();
+        var lines = openReader('/proc/meminfo').lines();
         var line : string;
 
         var memAvail:uint(64);
@@ -133,8 +132,7 @@ module MemoryMgmt {
                                            "UnsupportedOSError");
         }
 
-        var aFile = open('/proc/meminfo', ioMode.r);
-        var lines = aFile.reader().lines();
+        var lines = openReader('/proc/meminfo').lines();
         var line : string;
 
         var totalMem:uint(64);

@@ -1,20 +1,20 @@
 module ArkoudaIOCompat {
   use IO, JSON, Set;
-  
+
   proc formatString(input) throws {
     return "%?".format(input);
   }
 
   proc formatJson(input): string throws {
     var f = openMemFile();
-    f.writer(serializer = new jsonSerializer()).write(input);
-    return f.reader().readAll(string);
+    f.writer(serializer = new jsonSerializer(), locking=false).write(input);
+    return f.reader(locking=false).readAll(string);
   }
 
   proc formatJson(input:string, vals...?): string throws {
     var f = openMemFile();
-    f.writer(serializer = new jsonSerializer()).writef(input, (...vals));
-    return f.reader().readAll(string);
+    f.writer(serializer = new jsonSerializer(), locking=false).writef(input, (...vals));
+    return f.reader(locking=false).readAll(string);
   }
 
   proc string.doFormat(vals...?): string throws {
@@ -23,10 +23,10 @@ module ArkoudaIOCompat {
 
   proc jsonToTupleCompat(json: string, type t) throws {
     var f = openMemFile();
-    var w = f.writer();
+    var w = f.writer(locking=false);
     w.write(json);
     w.close();
-    var r = f.reader(deserializer=new jsonDeserializer());
+    var r = f.reader(deserializer=new jsonDeserializer(), locking=false);
     var tup: t;
     r.readf("%?", tup);
     r.close();
@@ -35,10 +35,10 @@ module ArkoudaIOCompat {
 
   proc jsonToPdArrayCompat(json: string, size: int) throws {
     var f = openMemFile();
-    var w = f.writer();
+    var w = f.writer(locking=false);
     w.write(json);
     w.close();
-    var r = f.reader(deserializer=new jsonDeserializer());
+    var r = f.reader(deserializer=new jsonDeserializer(), locking=false);
     var array: [0..#size] string;
     r.readf("%?", array);
     r.close();
@@ -50,7 +50,7 @@ module ArkoudaIOCompat {
   }
 
   proc readfCompat(f: file, str: string, ref obj) throws {
-    var nreader = f.reader(deserializer=new jsonDeserializer());
+    var nreader = f.reader(deserializer=new jsonDeserializer(), locking=false);
     nreader.readf("%?", obj);
   }
 
@@ -58,13 +58,13 @@ module ArkoudaIOCompat {
     use IO;
     var writeVal = 1, readVal = 0;
     var tmpf = openMemFile();
-    tmpf.writer(serializer = new binarySerializer(endian=endianness.big)).write(writeVal);
-    tmpf.reader(deserializer=new binaryDeserializer(endian=endianness.native)).read(readVal);
+    tmpf.writer(serializer = new binarySerializer(endian=endianness.big), locking=false).write(writeVal);
+    tmpf.reader(deserializer=new binaryDeserializer(endian=endianness.native), locking=false).read(readVal);
     return if writeVal == readVal then "big" else "little";
   }
 
   proc fileIOReaderCompat(infile) throws {
-    return infile.reader(deserializer=new binarySerializer(endian=endianness.native));
+    return infile.reader(deserializer=new binarySerializer(endian=endianness.native), locking=false);
   }
 
   proc binaryCheckCompat(reader) throws {
