@@ -41,6 +41,29 @@ extern "C" {
 #define ZSTD_COMP 4
 #define LZ4_COMP 5
 
+  typedef struct {
+    uint32_t len;
+    const uint8_t* ptr;
+  } MyByteArray;
+
+  void c_openFile(const char* filename, int64_t idx);
+  void cpp_openFile(const char* filename, int64_t idx);
+
+  void c_createRowGroupReader(int64_t rowGroup, int64_t readerIdx);
+  void cpp_createRowGroupReader(int64_t rowGroup, int64_t readerIdx);
+
+  void c_createColumnReader(const char* colname, int64_t readerIdx);
+  void cpp_createColumnReader(const char* colname, int64_t readerIdx);
+
+  void* c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems, int64_t readerIdx, int64_t* numRead);
+  void* cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems, int64_t readerIdx, int64_t* numRead);
+
+  int c_getNumRowGroups(int64_t readerIdx);
+  int cpp_getNumRowGroups(int64_t readerIdx);
+  
+  void c_free(void* arr);
+  void cpp_free(void* arr);
+  
   // Each C++ function contains the actual implementation of the
   // functionality, and there is a corresponding C function that
   // Chapel can call into through C interoperability, since there
@@ -158,5 +181,8 @@ extern "C" {
   void cpp_free_string(void* ptr);
   
 #ifdef __cplusplus
+  std::map<int, std::shared_ptr<parquet::ParquetFileReader>> globalFiles;
+  std::map<int, std::shared_ptr<parquet::RowGroupReader>> globalRowGroupReaders;
+  std::map<int, std::shared_ptr<parquet::ColumnReader>> globalColumnReaders;
 }
 #endif
