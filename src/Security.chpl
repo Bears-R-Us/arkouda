@@ -16,18 +16,7 @@ module Security {
             "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
             ];
 
-        var upper_bound = alphanum.size;
-        var indices : [0..upper_bound-1] int;
-        for i in 0..upper_bound-1 do
-            indices[i] = i;
-
-        var ret : [0..len-1] string;
-        var r = new randomStream(int);
-        var rindices = try! r.choice(indices, len);
-
-        for i in 1..len-1 do
-            ret[i] = alphanum[rindices[i]];
-        return ''.join(ret);
+        return ''.join(try! sample(alphanum, len-1, withReplacement=true));
     }
 
     proc getArkoudaToken(tokensPath : string) : string throws {
