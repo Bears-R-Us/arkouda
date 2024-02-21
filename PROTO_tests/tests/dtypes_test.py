@@ -27,7 +27,7 @@ class TestDTypes:
     def test_check_np_dtype(self, dtype):
         dtypes.check_np_dtype(np.dtype(dtype))
 
-    @pytest.mark.parametrize("dtype", [np.dtype(np.int16), "np.str", ak.bigint])
+    @pytest.mark.parametrize("dtype", ["np.str", ak.bigint])
     def test_check_np_dtype_errors(self, dtype):
         with pytest.raises(TypeError):
             dtypes.check_np_dtype(dtype)
@@ -69,8 +69,8 @@ class TestDTypes:
             assert "str" == dtypes.resolve_scalar_dtype(s)
         assert "<class 'list'>" == dtypes.resolve_scalar_dtype([1])
 
-        assert "uint64" == dtypes.resolve_scalar_dtype(2 ** 63 + 1)
-        assert "bigint" == dtypes.resolve_scalar_dtype(2 ** 64)
+        assert "uint64" == dtypes.resolve_scalar_dtype(2**63 + 1)
+        assert "bigint" == dtypes.resolve_scalar_dtype(2**64)
 
     def test_pdarrays_datatypes(self):
         assert dtypes.dtype("int64") == ak.array(np.arange(10)).dtype
@@ -83,10 +83,10 @@ class TestDTypes:
             [ak.ones(10, dtype=ak.uint64), ak.arange(10, dtype=ak.uint64)]
         ).dtype
         assert dtypes.dtype("bigint") == bi
-        assert dtypes.dtype("bigint") == ak.arange(2 ** 200, 2 ** 200 + 10).dtype
+        assert dtypes.dtype("bigint") == ak.arange(2**200, 2**200 + 10).dtype
 
     def test_isSupportedInt(self):
-        for supported in -10, 1, np.int64(1), np.int64(1.0), np.uint32(1), 2 ** 63 + 1, 2 ** 200:
+        for supported in -10, 1, np.int64(1), np.int64(1.0), np.uint32(1), 2**63 + 1, 2**200:
             assert dtypes.isSupportedInt(supported)
         for unsupported in 1.0, "1":
             assert not dtypes.isSupportedInt(unsupported)
@@ -99,19 +99,56 @@ class TestDTypes:
 
     def test_DtypeEnum(self):
         assert "bool" == str(dtypes.DType.BOOL)
-        assert "float" == str(dtypes.DType.FLOAT)
+        assert "float32" == str(dtypes.DType.FLOAT32)
         assert "float64" == str(dtypes.DType.FLOAT64)
-        assert "int" == str(dtypes.DType.INT)
+        assert "float" == str(dtypes.DType.FLOAT)
+        assert "complex64" == str(dtypes.DType.COMPLEX64)
+        assert "complex128" == str(dtypes.DType.COMPLEX128)
+        assert "int8" == str(dtypes.DType.INT8)
+        assert "int16" == str(dtypes.DType.INT16)
+        assert "int32" == str(dtypes.DType.INT32)
         assert "int64" == str(dtypes.DType.INT64)
-        assert "str" == str(dtypes.DType.STR)
+        assert "int" == str(dtypes.DType.INT)
         assert "uint8" == str(dtypes.DType.UINT8)
+        assert "uint16" == str(dtypes.DType.UINT16)
+        assert "uint32" == str(dtypes.DType.UINT32)
+        assert "uint64" == str(dtypes.DType.UINT64)
+        assert "uint" == str(dtypes.DType.UINT)
+        assert "str" == str(dtypes.DType.STR)
         assert "bigint" == str(dtypes.DType.BIGINT)
 
-        enum_vals = frozenset(
-            {"float", "float64", "bool", "uint8", "int", "int64", "str", "uint64", "bigint"}
+        assert (
+            frozenset(
+                {
+                    "float32",
+                    "float64",
+                    "float",
+                    "complex64",
+                    "complex128",
+                    "int8",
+                    "int16",
+                    "int32",
+                    "int64",
+                    "int",
+                    "uint8",
+                    "uint16",
+                    "uint32",
+                    "uint64",
+                    "uint",
+                    "bool",
+                    "str",
+                    "bigint",
+                }
+            )
+            == ak.DTypes
         )
-        assert enum_vals == ak.DTypes
-        assert enum_vals == ak.ARKOUDA_SUPPORTED_DTYPES
+
+        assert (
+            frozenset(
+                {"bool", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"}
+            )
+            == ak.ARKOUDA_SUPPORTED_DTYPES
+        )
 
     def test_NumericDTypes(self):
         num_types = frozenset(["bool", "float", "float64", "int", "int64", "uint64", "bigint"])
@@ -132,23 +169,26 @@ class TestDTypes:
 
     def test_scalars(self):
         assert "typing.Union[bool, numpy.bool_]" == str(ak.bool_scalars)
-        assert "typing.Union[float, numpy.float64]" == str(ak.float_scalars)
+        assert "typing.Union[float, numpy.float64, numpy.float32]" == str(ak.float_scalars)
         assert (
             "typing.Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, "
             + "numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]"
         ) == str(ak.int_scalars)
+
         assert (
-            "typing.Union[float, numpy.float64, int, numpy.int8, numpy.int16, numpy.int32, "
+            "typing.Union[float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, "
             + "numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]"
         ) == str(ak.numeric_scalars)
-        assert "typing.Union[str, numpy.str_]", str(ak.str_scalars)
+
+        assert "typing.Union[str, numpy.str_]" == str(ak.str_scalars)
         assert (
-            "typing.Union[numpy.float64, numpy.int8, numpy.int16, numpy.int32, "
+            "typing.Union[numpy.float64, numpy.float32, numpy.int8, numpy.int16, numpy.int32, "
             + "numpy.int64, numpy.bool_, numpy.str_, numpy.uint8, numpy.uint16, numpy.uint32, "
             + "numpy.uint64]"
         ) == str(ak.numpy_scalars)
+
         assert (
-            "typing.Union[bool, numpy.bool_, float, numpy.float64, int, numpy.int8, "
+            "typing.Union[bool, numpy.bool_, float, numpy.float64, numpy.float32, int, numpy.int8, "
             + "numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32,"
             + " numpy.uint64, numpy.str_, str]"
         ) == str(ak.all_scalars)
