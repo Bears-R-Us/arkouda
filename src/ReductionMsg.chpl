@@ -168,7 +168,7 @@ module ReductionMsg
             when "all" {
               s = if t == bool
                 then & reduce eIn.a
-                else (+ reduce (eIn.a != 0)) == 0;
+                else (+ reduce (eIn.a != 0)) == eIn.a.size;
             }
             when "is_sorted" do s = isSorted(eIn.a);
             when "is_locally_sorted" {
