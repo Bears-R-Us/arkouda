@@ -2154,7 +2154,7 @@ def any(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "any", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce->bool{pda.ndim}D", args={"op": "any", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2180,7 +2180,7 @@ def all(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "all", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce->bool{pda.ndim}D", args={"op": "all", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2206,7 +2206,7 @@ def is_sorted(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "is_sorted", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce->bool{pda.ndim}D", args={"op": "is_sorted", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2232,7 +2232,7 @@ def sum(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "sum", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "sum", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2259,7 +2259,7 @@ def prod(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "prod", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "prod", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2284,7 +2284,7 @@ def min(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "min", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "min", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2310,7 +2310,7 @@ def max(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "max", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "max", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2336,7 +2336,7 @@ def argmin(pda: pdarray) -> Union[np.int64, np.uint64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "argmin", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce->idx{pda.ndim}D", args={"op": "argmin", "x": pda, "hasAxis": False, "axis": 0})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2362,7 +2362,7 @@ def argmax(pda: pdarray) -> Union[np.int64, np.uint64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "argmax", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce->idx{pda.ndim}D", args={"op": "argmax", "x": pda, "hasAxis": False, "axis": 0})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2388,7 +2388,7 @@ def mean(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    return parse_single_value(generic_msg(cmd=f"stats{pda.ndim}", args={"x": pda, "comp": "mean"}))
+    return parse_single_value(generic_msg(cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "mean", "nAxes": 0, "axis": [], "ddof": 0}))
 
 
 @typechecked
@@ -2437,7 +2437,7 @@ def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
         raise ValueError("var: ddof must be less than number of values")
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "var", "ddof": ddof}
+            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "var", "ddof": ddof, "nAxes": 0, "axis": []}
         )
     )
 

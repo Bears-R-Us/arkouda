@@ -107,6 +107,40 @@ module AryUtil
         return sorted;
     }
 
+    /*
+      Determines if the passed array is sorted along a given axis,
+      within a slice domain.
+
+      :arg A: array to check
+      :arg slice: a slice domain (only the indices in this domain are checked)
+      :arg axisIdx: the axis to check
+    */
+    proc isSortedOver(A: [?D] ?t, slice, axisIdx: int) {
+        var sorted = true;
+        forall i in slice with (&& reduce sorted, var im1: D.rank*int) {
+            if i[axisIdx] > slice.dim(axisIdx).low {
+                im1 = i;
+                im1[axisIdx] -= 1;
+                sorted &&= (A[im1] <= A[i]);
+            }
+        }
+        return sorted;
+    }
+
+    /*
+      Modifies an array of (potentially negative) axis arguments to be
+      positive and within the range of the number of dimensions, while
+      confirming that the axes are valid.
+
+      A negative axis 'a' is converted to 'nd + a', where 'nd' is the
+      number of dimensions in the array.
+
+      :arg axes: array of axis arguments
+      :arg nd: number of dimensions in the array
+
+      :returns: a tuple of a boolean indicating whether the axes are valid,
+                and the array of modified axes
+    */
     proc validateNegativeAxes(axes: [?d] int, param nd: int): (bool, [d] int) {
       var ret: [d] int;
       if axes.size > nd then return (false, ret);
@@ -122,6 +156,14 @@ module AryUtil
       return (true, ret);
     }
 
+    /*
+      Modify an array shape by making the specified axes degenerate.
+
+      :arg shape: array shape as a tuple of sizes
+      :arg axes: array of axis arguments
+
+      :returns: a tuple of sizes where the specified axes have a size of 1
+    */
     proc reducedShape(shape: ?N*int, axes: [] int): N*int {
       var ret: N*int,
           f: int = 0;
@@ -130,6 +172,12 @@ module AryUtil
           then ret[i] = 1;
           else ret[i] = shape[i];
       }
+      return ret;
+    }
+
+    proc reducedShape(shape: ?N*int, axis: int): N*int {
+      var ret = shape;
+      ret[axis] = 1;
       return ret;
     }
 

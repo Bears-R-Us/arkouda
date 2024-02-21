@@ -10,7 +10,7 @@ module ArkoudaAryUtilCompat {
     Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25..25}
     (i.e., the 25th matrix)
   */
-  proc domOnAxis(D: domain(?), idx: D.rank*int, axes: int ...?NA): domain
+  proc domOnAxis(D: domain(?), idx: D.rank*int, axes: int ...?NA): domain(?)
     where NA < D.rank
   {
     var outDims: D.rank*range;

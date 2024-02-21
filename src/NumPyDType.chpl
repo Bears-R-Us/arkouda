@@ -166,15 +166,24 @@ module NumPyDType
       if t == int(16) then return "%i";
       if t == int(32) then return "%i";
       if t == int then return "%i";
-      if t == real(32) then return "%.17f";
-      if t == real then return "%.17f";
-      if t == complex(64) then return "%.17f%";
-      if t == complex(128) then return "%.17f%";
+      if t == real(32) then return "%.17r";
+      if t == real then return "%.17r";
+      if t == complex(64) then return "%.17z%";
+      if t == complex(128) then return "%.17z%";
       if t == bool then return "%s";
       if t == bigint then return "%s";
       if t == string then return "%s";
       return "undef";
     }
+
+    proc bool2str(b: bool): string {
+      if b then return "True";
+      else return "False";
+    }
+
+    proc bool2str(b: ?t): t
+      where t != bool
+        do return b;
 
     /*
       Return the dtype that can store the result of

@@ -63,20 +63,21 @@ module ReductionMsg
 
       proc computeReduction(type t): MsgTuple throws {
         const eIn = toSymEntry(gEnt, t, nd);
-
         type opType = if t == bool then int else t;
 
         if nd == 1 || nAxes == 0 {
-          var s: t;
+          var s: opType;
           select op {
-            when "sum" do s = (+ reduce eIn.a:opType):t;
-            when "prod" do s = (* reduce eIn.a:opType):t;
+            when "sum" do s = (+ reduce eIn.a:opType):opType;
+            when "prod" do s = (* reduce eIn.a:opType):opType;
             when "min" do s = min reduce eIn.a;
             when "max" do s = max reduce eIn.a;
             otherwise halt("unreachable");
           }
 
-          const scalarValue = "%s %s".doFormat(type2str(t), type2fmt(t)).doFormat(s);
+          const scalarValue = if (t == bool && (op == "min" || op == "max"))
+            then "bool " + bool2str(if s == 1 then true else false)
+            else "%s %s".doFormat(type2str(opType), type2fmt(opType)).doFormat(bool2str(s));
           rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
@@ -87,11 +88,11 @@ module ReductionMsg
             return new MsgTuple(errorMsg,MsgType.ERROR);
           } else {
             const outShape = reducedShape(eIn.a.shape, axes);
-            var eOut = st.addEntry(rname, outShape, t);
+            var eOut = st.addEntry(rname, outShape, opType);
 
             forall sliceIdx in domOffAxis(eIn.a.domain, axes) {
               const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
-              var s: t;
+              var s: opType;
               select op {
                 when "sum" do s = sum(eIn.a, sliceDom, opType);
                 when "prod" do s = prod(eIn.a, sliceDom, opType);
@@ -154,24 +155,32 @@ module ReductionMsg
       }
 
       proc computeReduction(type t): MsgTuple throws {
-        const eIn = toSymEntry(gEnt, bool, nd);
+        const eIn = toSymEntry(gEnt, t, nd);
 
         if nd == 1 || nAxes == 0 {
           var s: bool;
           select op {
-            when "any" do s = (+ reduce (eIn.a != 0)) != 0;
-            when "all" do s = (+ reduce (eIn.a != 0)) == 0;
+            when "any" {
+              s = if t == bool
+                then | reduce eIn.a
+                else (+ reduce (eIn.a != 0)) != 0;
+            }
+            when "all" {
+              s = if t == bool
+                then & reduce eIn.a
+                else (+ reduce (eIn.a != 0)) == 0;
+            }
             when "is_sorted" do s = isSorted(eIn.a);
             when "is_locally_sorted" {
               coforall loc in Locales with (&& reduce s) do on loc {
                 ref aLocal = eIn.a[eIn.a.localSubdomain()];
-                s = isSorted(aLocal);
+                s &&= isSorted(aLocal);
               }
             }
             otherwise halt("unreachable");
           }
 
-          const scalarValue = "bool %s".doFormat(s);
+          const scalarValue = "bool " + bool2str(s);
           rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
@@ -186,18 +195,23 @@ module ReductionMsg
 
             forall sliceIdx in domOffAxis(eIn.a.domain, axes) {
               const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
-              var s: bool;
+              var s: bool = true;
               select op {
                 when "any" do s = any(eIn.a, sliceDom);
                 when "all" do s = all(eIn.a, sliceDom);
-                // when "is_sorted" do s = isSortedOver(eIn.a, sliceDom, axes[0]);
-                // when "is_locally_sorted" {
-                //   coforall loc in Locales with (&& reduce s) on loc {
-                //     const localSliceDom = sliceDom[eIn.a.localSubdomain()];
-                //     ref aLocal = eIn.a[localSliceDom];
-                //     s = isSortedOver(aLocal, localSliceDom, axes[0]);
-                //   }
-                // }
+                when "is_sorted" {
+                  // TODO: maybe it's better to fold this loop outside of the
+                  // domOffAxis loop (check one dimension at a time globally).
+                  for axisIdx in axes do
+                    s &&= isSortedOver(eIn.a, sliceDom, axisIdx);
+                }
+                when "is_locally_sorted" {
+                  coforall loc in Locales with (&& reduce s) do on loc {
+                    const localSliceDom = sliceDom[eIn.a.localSubdomain()];
+                    for axisIdx in axes do
+                      s &&= isSortedOver(eIn.a, localSliceDom, axisIdx);
+                  }
+                }
                 otherwise halt("unreachable");
               }
               eOut.a[sliceIdx] = s;
@@ -235,8 +249,8 @@ module ReductionMsg
       param pn = Reflection.getRoutineName();
       const x = msgArgs.getValueOf("x"),
             op = msgArgs.getValueOf("op"),
-            nAxes = msgArgs.get("nAxes").getIntValue(),
-            axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+            hasAxis = msgArgs.get("hasAxis").getBoolValue(),
+            axis = msgArgs.get("axis").getPositiveIntValue(nd),
             rname = st.nextName();
 
       var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
@@ -248,10 +262,12 @@ module ReductionMsg
       }
 
       proc computeReduction(type t): MsgTuple throws {
-        const eIn = toSymEntry(gEnt, int, nd);
+        const eIn = toSymEntry(gEnt, t, nd);
 
-        if nd == 1 || nAxes == 0 {
-          var s: bool;
+        if nd == 1 {
+          if hasAxis then halt("hasAxis must be false for 1D arrays in ", pn, ". ",
+                               "ND arrays should be flattened before calling this function without an axis argument");
+          var s: int;
           select op {
             when "argmin" {
               const (minVal, minLoc) = minloc reduce zip(eIn.a, eIn.a.domain);
@@ -268,30 +284,23 @@ module ReductionMsg
           rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
-          const (valid, axes) = validateNegativeAxes(axesRaw, nd);
-          if !valid {
-            var errorMsg = "Invalid axis value(s) '%?' in slicing reduction".doFormat(axesRaw);
-            rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg,MsgType.ERROR);
-          } else {
-            const outShape = reducedShape(eIn.a.shape, axes);
-            var eOut = st.addEntry(rname, outShape, int);
+          const outShape = reducedShape(eIn.a.shape, axis);
+          var eOut = st.addEntry(rname, outShape, int);
 
-            forall sliceIdx in domOffAxis(eIn.a.domain, axes) {
-              const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
-              var s: t;
-              select op {
-                when "argmin" do s = argmin(eIn.a, sliceDom);
-                when "argmax" do s = argmax(eIn.a, sliceDom);
-                otherwise halt("unreachable");
-              }
-              eOut.a[sliceIdx] = s;
+          forall sliceIdx in domOffAxis(eIn.a.domain, axis) {
+            const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axis);
+            var s: int;
+            select op {
+              when "argmin" do s = argmin(eIn.a, sliceDom, axis);
+              when "argmax" do s = argmax(eIn.a, sliceDom, axis);
+              otherwise halt("unreachable");
             }
-
-            const repMsg = "created " + st.attrib(rname);
-            rmLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
+            eOut.a[sliceIdx] = s;
           }
+
+          const repMsg = "created " + st.attrib(rname);
+          rmLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+          return new MsgTuple(repMsg, MsgType.NORMAL);
         }
       }
 
@@ -309,32 +318,43 @@ module ReductionMsg
     }
 
     private module SliceReductionOps {
+      proc any(ref a: [] bool, slice): bool {
+        var hasAny = false;
+        forall i in slice with (|| reduce hasAny) do hasAny ||= a[i];
+        return hasAny;
+      }
 
       proc any(ref a: [] ?t, slice): bool {
         var sum = 0:t;
-        forall i in slice with (+ reduce sum) do sum += (a[i] != 0);
+        forall i in slice with (+ reduce sum) do sum += (a[i] != 0):int;
         return sum != 0;
+      }
+
+      proc all(ref a: [] bool, slice): bool {
+        var hasAll = true;
+        forall i in slice with (&& reduce hasAll) do hasAll &&= a[i];
+        return hasAll;
       }
 
       proc all(ref a: [] ?t, slice): bool {
         var sum = 0:t;
-        forall i in slice with (+ reduce sum) do sum += (a[i] != 0);
+        forall i in slice with (+ reduce sum) do sum += (a[i] != 0):int;
         return sum == a.size;
       }
 
-      proc sum(ref a: [] ?t, slice, type opType): t {
+      proc sum(ref a: [] ?t, slice, type opType): opType {
         var sum = 0:opType;
         forall i in slice with (+ reduce sum) do sum += a[i]:opType;
-        return sum:t;
+        return sum;
       }
 
-      proc prod(ref a: [] ?t, slice, type opType): t {
+      proc prod(ref a: [] ?t, slice, type opType): opType {
         var prod = 1.0; // always use real(64) to avoid int overflow
         forall i in slice with (* reduce prod) do prod *= a[i]:opType;
-        return prod:t;
+        return prod: opType;
       }
 
-      proc getMin(ref a: [] ?t, slice, type opType): t {
+      proc getMin(ref a: [] ?t, slice): t {
         var minVal = max(t);
         forall i in slice with (min reduce minVal) do minVal reduce= a[i];
         return minVal;
@@ -346,16 +366,16 @@ module ReductionMsg
         return maxVal;
       }
 
-      proc argmin(ref a: [?d] ?t, slice): d.idxType {
+      proc argmin(ref a: [?d] ?t, slice, axis: int): d.idxType {
         var minValLoc = (max(t), d.low);
         forall i in slice with (minloc reduce minValLoc) do minValLoc reduce= (a[i], i);
-        return minValLoc[1];
+        return minValLoc[1][axis];
       }
 
-      proc argmax(ref a: [?d] ?t, slice): d.idxType {
+      proc argmax(ref a: [?d] ?t, slice, axis: int): d.idxType {
         var maxValLoc = (min(t), d.low);
         forall i in slice with (maxloc reduce maxValLoc) do maxValLoc reduce= (a[i], i);
-        return maxValLoc[1];
+        return maxValLoc[1][axis];
       }
     }
 

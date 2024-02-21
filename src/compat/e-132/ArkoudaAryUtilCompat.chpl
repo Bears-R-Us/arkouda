@@ -53,7 +53,7 @@ module ArkoudaAryUtilCompat {
     Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
     (i.e., a set of indices for the 1000 matrices)
   */
-  proc domOffAxis(D: domain, axes: int ...?NA): domain
+  proc domOffAxis(D: domain, axes: int ...?NA): domain(?)
     where NA < D.rank
   {
     var outDims: D.rank*range;
