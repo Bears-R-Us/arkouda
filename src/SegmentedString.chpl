@@ -470,6 +470,14 @@ module SegmentedString {
     }
 
     /*
+      Returns list of bools where index i indicates whether the string i of the SegString is a decimal
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is a decimal
+    */
+    proc isDecimal() throws {
+      return computeOnSegments(offsets.a, values.a, SegFunction.StringIsDigit, bool);
+    }
+    
+    /*
       Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
       and the remaining characters replaced with their lowercase equivalent
       :returns: Strings – Substrings with first characters replaced with uppercase equivalent and remaining characters replaced with
@@ -1483,6 +1491,10 @@ module SegmentedString {
 
   inline proc stringSearch(ref values, rng, myRegex) throws {
     return myRegex.search(interpretAsString(values, rng, borrow=true)).matched;
+  }
+
+  inline proc stringIsDecimal(ref values, rng) throws {
+    return interpretAsString(values, rng, borrow=true).isDecmial();
   }
 
   /*

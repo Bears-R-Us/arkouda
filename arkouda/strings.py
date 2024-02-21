@@ -590,6 +590,43 @@ class Strings:
         return Strings.from_return_msg(cast(str, rep_msg))
 
     @typechecked
+    def isdecimal(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i of the
+        Strings has all decimal characters.
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are decimals, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.isdigit
+
+        Examples
+        --------
+        >>> not_decimal = ak.array([f'Strings {i}' for i in range(3)])
+        >>> decimal = ak.array([f'12{i}' for i in range(3)])
+        >>> strings = ak.concatenate([not_decimal, decimal])
+        >>> strings
+        array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
+        >>> strings.isdecimal()
+        array([False False False True True True])
+        """
+        return create_pdarray(
+            generic_msg(
+                cmd="checkChars",
+                args={"subcmd": "isDecimal", "objType": self.objType, "obj": self.entry},
+            )
+        )
+
+    @typechecked
     def capitalize(self) -> Strings:
         """
         Returns a new Strings from the original replaced with the first letter capitilzed

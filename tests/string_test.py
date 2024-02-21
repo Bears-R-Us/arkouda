@@ -626,10 +626,10 @@ class StringTest(ArkoudaTest):
 
         self.assertListEqual(example2.isalpha().to_list(), expected)
 
-    def test_string_isdigit(self):
-        not_digit = ak.array([f"Strings {i}" for i in range(3)])
-        digit = ak.array([f"12{i}" for i in range(3)])
-        example = ak.concatenate([not_digit, digit])
+    def test_string_isdecimal(self):
+        not_decimal = ak.array([f"Strings {i}" for i in range(3)])
+        decimal = ak.array([f"12{i}" for i in range(3)])
+        example = ak.concatenate([not_decimal, decimal])
         self.assertListEqual(example.isdigit().to_list(), [False, False, False, True, True, True])
 
         example2 = ak.array(
@@ -664,11 +664,11 @@ class StringTest(ArkoudaTest):
 
         self.assertListEqual(example2.isdigit().to_list(), expected)
 
-    def test_string_empty(self):
-        not_empty = ak.array([f"Strings {i}" for i in range(3)])
-        empty = ak.array(["" for i in range(3)])
-        example = ak.concatenate([not_empty, empty])
-        self.assertListEqual(example.isempty().to_list(), [False, False, False, True, True, True])
+    def test_string_isdigit(self):
+        not_digit = ak.array([f"Strings {i}" for i in range(3)])
+        digit = ak.array([f"12{i}" for i in range(3)])
+        example = ak.concatenate([not_digit, digit])
+        self.assertListEqual(example.isdecimal().to_list(), [False, False, False, True, True, True])
 
         example2 = ak.array(
             [
@@ -681,29 +681,29 @@ class StringTest(ArkoudaTest):
                 " ",
                 "\n",
                 "3.14",
-                "\u0030",
+                "\u0030",  # Unicode for zero
                 "\u00B2",
             ]
         )
 
         expected = [
+            False,
+            False,
+            False,
+            False,
             True,
             False,
             False,
             False,
             False,
-            False,
-            False,
-            False,
-            False,
-            False,
+            True,
             False,
         ]
 
-        self.assertListEqual(example2.isempty().to_list(), expected)
+        self.assertListEqual(example2.isdecimal().to_list(), expected)
 
     def test_string_empty(self):
-        not_empty = ak.array([f"%Strings {i}" for i in range(3)])
+        not_empty = ak.array([f"Strings {i}" for i in range(3)])
         empty = ak.array(["" for i in range(3)])
         example = ak.concatenate([not_empty, empty])
         self.assertListEqual(example.isempty().to_list(), [False, False, False, True, True, True])
