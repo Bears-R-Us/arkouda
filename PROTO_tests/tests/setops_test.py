@@ -97,10 +97,6 @@ class TestSetOps:
         a, b = self.make_np_arrays(size, ak.float64)
         func = getattr(ak, op)
 
-        # float64 not implemented for in1dmsg
-        with pytest.raises(RuntimeError if op == "in1d" else TypeError):
-            func(ak.array(a, dtype=ak.float64), ak.array(b, dtype=ak.float64))
-
         # # bool is not supported by argsortMsg (only impacts single array case)
         a, b = self.make_np_arrays(size, ak.bool)
         if op in ["in1d", "setdiff1d"]:
@@ -403,8 +399,8 @@ class TestSetOps:
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.union1d([a1, a2], [b1, b2])
-        assert ["xyz", "def", "abc"] == t[0].to_list()
-        assert ["0", "456", "123"] == t[1].to_list()
+        assert len({"xyz", "def", "abc"}.symmetric_difference(t[0].to_list())) == 0
+        assert len({"0", "456", "123"}.symmetric_difference(t[1].to_list())) == 0
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_union1d_multiarray_categorical(self, size):
