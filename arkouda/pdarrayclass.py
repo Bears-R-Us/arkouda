@@ -2154,8 +2154,11 @@ def any(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce->bool{pda.ndim}D", args={"op": "any", "x": pda, "nAxes": 0, "axis": []})
-    return parse_single_value(cast(str, repMsg))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"reduce->bool{pda.ndim}D", args={"op": "any", "x": pda, "nAxes": 0, "axis": []}
+        )
+    )
 
 
 @typechecked
@@ -2180,8 +2183,11 @@ def all(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce->bool{pda.ndim}D", args={"op": "all", "x": pda, "nAxes": 0, "axis": []})
-    return parse_single_value(cast(str, repMsg))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"reduce->bool{pda.ndim}D", args={"op": "all", "x": pda, "nAxes": 0, "axis": []}
+        )
+    )
 
 
 @typechecked
@@ -2206,8 +2212,11 @@ def is_sorted(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce->bool{pda.ndim}D", args={"op": "is_sorted", "x": pda, "nAxes": 0, "axis": []})
-    return parse_single_value(cast(str, repMsg))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"reduce->bool{pda.ndim}D", args={"op": "is_sorted", "x": pda, "nAxes": 0, "axis": []}
+        )
+    )
 
 
 @typechecked
@@ -2336,8 +2345,11 @@ def argmin(pda: pdarray) -> Union[np.int64, np.uint64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce->idx{pda.ndim}D", args={"op": "argmin", "x": pda, "hasAxis": False, "axis": 0})
-    return parse_single_value(cast(str, repMsg))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"reduce->idx{pda.ndim}D", args={"op": "argmin", "x": pda, "hasAxis": False, "axis": 0}
+        )
+    )
 
 
 @typechecked
@@ -2362,8 +2374,11 @@ def argmax(pda: pdarray) -> Union[np.int64, np.uint64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce->idx{pda.ndim}D", args={"op": "argmax", "x": pda, "hasAxis": False, "axis": 0})
-    return parse_single_value(cast(str, repMsg))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"reduce->idx{pda.ndim}D", args={"op": "argmax", "x": pda, "hasAxis": False, "axis": 0}
+        )
+    )
 
 
 @typechecked
@@ -2388,7 +2403,11 @@ def mean(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    return parse_single_value(generic_msg(cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "mean", "nAxes": 0, "axis": [], "ddof": 0}))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "mean", "nAxes": 0, "axis": [], "ddof": 0}
+        )
+    )
 
 
 @typechecked
