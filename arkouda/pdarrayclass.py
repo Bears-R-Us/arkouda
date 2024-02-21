@@ -2511,7 +2511,7 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
         raise ValueError("ddof must be an integer 0 or greater")
     return parse_single_value(
         generic_msg(
-            cmd=f"std{pda.ndim}D", args={"x": pda, "comp": "std", "ddof": ddof, "nAxes": 0, "axis": []}
+            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "std", "ddof": ddof, "nAxes": 0, "axis": []}
         )
     )
 
