@@ -205,6 +205,22 @@ class NumericTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             ak.abs([range(0, 10)])
 
+    def test_dot(self):
+        numericdtypes = [ak.int64, ak.float64, ak.uint64]
+        for num_type1 in numericdtypes:
+            for num_type2 in numericdtypes:
+                if (num_type1 == ak.uint64 and num_type2 == ak.int64) or (
+                    num_type1 == ak.int64 and num_type2 == ak.uint64
+                ):
+                    continue
+                na1 = np.random.randint(0, 10, 10).astype(num_type1)
+                na2 = np.random.randint(0, 10, 10).astype(num_type2)
+                pda1 = ak.array(na1)
+                pda2 = ak.array(na2)
+                self.assertTrue(np.allclose(np.dot(na1, na2), ak.dot(pda1, pda2)))
+                self.assertTrue(np.allclose(np.dot(na1[0], na2), ak.dot(pda1[0], pda2).to_ndarray()))
+                self.assertTrue(np.allclose(np.dot(na1, na2[0]), ak.dot(pda1, pda2[0]).to_ndarray()))
+
     def testCumSum(self):
         na = np.linspace(1, 10)
         pda = ak.array(na)
