@@ -710,6 +710,57 @@ module ParquetMsg {
     }
   }
 
+  proc getRowGroupNums(ref distFiles, ref numRowGroups) {
+    coforall loc in distFiles.targetLocales() with (ref numRowGroups) do on loc {
+      var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
+      var readerIdx = 0;
+      for i in locFiles.domain {
+        c_openFile(c_ptrTo(locFiles[i]), readerIdx);
+        numRowGroups[i] = c_getNumRowGroups(readerIdx);
+        readerIdx+=1;
+        for j in 2..numRowGroups[i] {
+          c_openFile(c_ptrTo(locFiles[i]), readerIdx);
+          readerIdx+=1;
+        }
+      }
+    }
+    var maxRowGroups = 0;
+    for val in numRowGroups do if maxRowGroups < val then maxRowGroups = val;
+    return maxRowGroups;
+  }
+  
+  proc fillSegmentsAndPersistData(distFiles, entrySeg, externalData, valsRead, dsetname, sizes, len, numRowGroups) {
+    var totalBytes = 0;
+    var (subdoms, length) = getSubdomains(sizes);
+    coforall loc in distFiles.targetLocales() with (ref externalData, ref valsRead, + reduce totalBytes) do on loc {
+      var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
+      var readerIdx = 0;
+      var locDsetname = dsetname;
+      var locSubdoms = subdoms;
+
+      for i in locFiles.domain {
+        var fname = locFiles[i];
+        var startIdx = locSubdoms[i].low;
+        for rg in 0..#numRowGroups[i] {
+          c_createRowGroupReader(rg, readerIdx);
+          c_createColumnReader(c_ptrTo(locDsetname), readerIdx);
+
+          var numRead = 0;
+          externalData[i][rg] = c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, readerIdx, c_ptrTo(numRead)): c_ptr(MyByteArray);
+          for (id, j) in zip(0..#numRead, startIdx..#numRead) {
+            ref curr = externalData[i][rg][id];
+            entrySeg.a[j] = curr.len + 1;
+            totalBytes += entrySeg.a[j];
+          }
+          valsRead[i][rg] = numRead;
+          startIdx += numRead;
+          readerIdx+=1;
+        }
+      }
+    }
+    return totalBytes;
+  }
+
   proc readAllParquetMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var repMsg: string;
     var tagData: bool = msgArgs.get("tag_data").getBoolValue();
@@ -853,14 +904,10 @@ module ParquetMsg {
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.stringArr {
           /*
-            1. get number of row groups from all files with this dsetname
-            2. open 1 file per row group, assigning index
-            
-            1. read file
-            2. use values read to get sizes
-            3. construct uint(8) array with sizes
-            4. copy into uint(8) array
-            5. free data (and clear C++ map)
+            1. create a block distributed files array (locale owner reads file)
+            2. get number of row groups so we know how much data we have to store
+            3. create array to store data (2D array with same distribution dist files)
+            4. go distributed and create readers for each file
           */
           extern proc c_getNumRowGroups(readerIdx): c_int;
           extern proc c_openFile(filename, idx);
@@ -868,25 +915,59 @@ module ParquetMsg {
           extern proc c_createColumnReader(colname, readerIdx);
           extern proc c_readParquetColumnChunks(filename, batchSize,
                                       numElems, readerIdx, numRead): c_ptr(void);
-          var entrySeg = createSymEntry(len, int);
-          var numRowGroups: [filenames.domain] int;
 
-          // get number of row groups from all files,
-          // so we know how many row group readers we
-          // need to create
-          var readerIdx = 0;
-          for i in filenames.domain {
-            var fname = filenames[i];
-            c_openFile(c_ptrTo(fname), readerIdx);
-            readerIdx+=1;
-            numRowGroups[i] = c_getNumRowGroups(i);
-            // open an additional file for additional row groups
-            for j in 2..numRowGroups[i] {
-              c_openFile(c_ptrTo(fname), readerIdx);
-              readerIdx+=1;
-            }
-          }           
+          var entrySeg = createSymEntry(len, int);
           
+          var distFiles = makeDistArray(filenames);
+          var numRowGroups: [distFiles.domain] int;
+
+          var maxRowGroups = getRowGroupNums(distFiles, numRowGroups);
+          
+          var externalData: [distFiles.domain] [0..#maxRowGroups] c_ptr(MyByteArray);
+          var valsRead: [distFiles.domain] [0..#maxRowGroups] int;
+
+          var totalBytes = fillSegmentsAndPersistData(distFiles, entrySeg, externalData, valsRead, dsetname, sizes, len, numRowGroups);
+          entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
+          
+          var entryVal = createSymEntry(byteSizes, uint(8));
+
+          coforall loc in distFiles.targetLocales() do on loc {
+            var locValsRead = valsRead[valsRead.localSubdomain()];
+            var locNumRowGroups = numRowGroups[numRowGroups.localSubdomain()];
+            var entryIdx = 0;
+            for i in locValsRead.domain {
+              var numRgs = locNumRowGroups[i];
+              for rg in 0..#numRgs {
+                ref currRg = externalData[i][rg];
+                for j in 0..#locValsRead[i][rg] {
+                  ref curr = currRg[j];
+                  for idx in 0..#curr.len {
+                    entryVal.a[entryIdx] = curr.ptr[idx];
+                    entryIdx +=1;
+                  }
+                  entryIdx+=1;
+                }
+              }
+            }
+          }
+          
+          /*var entryIdx = 0;
+          valsIdx = 0;
+          t.start();
+          for numRead in valsRead {
+            for i in 0..#numRead {
+              ref curr = tempVals[valsIdx][i];
+              for j in 0..#curr.len {
+                entryVal.a[entryIdx] = curr.ptr[j];
+                entryIdx+=1;
+              }
+              entryIdx+=1; // null terminator
+            }
+            valsIdx+=1;
+            }*/
+          writeln(totalBytes);
+          
+          /*
           var tempVals: [0..#(+ reduce numRowGroups)] c_ptr(MyByteArray);
           var valsRead: [0..#(+ reduce numRowGroups)] int;
 
@@ -894,10 +975,7 @@ module ParquetMsg {
           var numCopied = 0;
           var byteSizes = 0;
           readerIdx = 0;
-
-          use Time;
-          var t: stopwatch;
-          t.start();
+          
           for i in filenames.domain {
             var fname = filenames[i];
             for rg in 0..#numRowGroups[i] {
@@ -940,7 +1018,7 @@ module ParquetMsg {
           }
           t.stop();
           writeln("fill entry val took ", t.elapsed());
-          // TODO: fill entryval
+          */
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.pushBack((dsetname, ObjType.STRINGS, "%s+%?".doFormat(stringsEntry.name, stringsEntry.nBytes)));
         } else if ty == ArrowTypes.double || ty == ArrowTypes.float {
