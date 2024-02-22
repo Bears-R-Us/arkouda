@@ -73,39 +73,22 @@ Classes
 
       
 
-   .. py:method:: to_ndarray() -> numpy.ndarray
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
 
-      Convert the ArrayView to a np.ndarray, transferring array data from the
-      Arkouda server to client-side Python. Note: if the ArrayView size exceeds
-      client.maxTransferBytes, a RuntimeError is raised.
+      Save the current ArrayView object to hdf5 file
 
-      :returns: A numpy ndarray with the same attributes and data as the ArrayView
-      :rtype: np.ndarray
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the ArrayView size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :obj:`array`, :obj:`to_list`
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(6).reshape(2,3)
-      >>> a.to_ndarray()
-      array([[0, 1, 2],
-             [3, 4, 5]])
-      >>> type(a.to_ndarray())
-      numpy.ndarray
+      :param prefix_path: Path to the file to write the dataset to
+      :type prefix_path: str
+      :param dataset: Name of the dataset to write
+      :type dataset: str
+      :param mode: Default: truncate
+                   Mode to write the dataset in. Truncate will overwrite any existing files.
+                   Append will add the dataset to an existing file.
+      :type mode: str (truncate | append)
+      :param file_type: Default: distribute
+                        Indicates the format to save the file. Single will store in a single file.
+                        Distribute will store the date in a file per locale.
+      :type file_type: str (single|distribute)
 
 
    .. py:method:: to_list() -> list
@@ -142,22 +125,39 @@ Classes
       list
 
 
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
+   .. py:method:: to_ndarray() -> numpy.ndarray
 
-      Save the current ArrayView object to hdf5 file
+      Convert the ArrayView to a np.ndarray, transferring array data from the
+      Arkouda server to client-side Python. Note: if the ArrayView size exceeds
+      client.maxTransferBytes, a RuntimeError is raised.
 
-      :param prefix_path: Path to the file to write the dataset to
-      :type prefix_path: str
-      :param dataset: Name of the dataset to write
-      :type dataset: str
-      :param mode: Default: truncate
-                   Mode to write the dataset in. Truncate will overwrite any existing files.
-                   Append will add the dataset to an existing file.
-      :type mode: str (truncate | append)
-      :param file_type: Default: distribute
-                        Indicates the format to save the file. Single will store in a single file.
-                        Distribute will store the date in a file per locale.
-      :type file_type: str (single|distribute)
+      :returns: A numpy ndarray with the same attributes and data as the ArrayView
+      :rtype: np.ndarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown, if the ArrayView size
+          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+          received does not match expected number of bytes
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`, :obj:`to_list`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(6).reshape(2,3)
+      >>> a.to_ndarray()
+      array([[0, 1, 2],
+             [3, 4, 5]])
+      >>> type(a.to_ndarray())
+      numpy.ndarray
 
 
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'ArrayView', repack: bool = True)

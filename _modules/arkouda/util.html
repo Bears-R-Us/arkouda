@@ -1,0 +1,741 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>arkouda.util - arkouda documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">arkouda  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/CSV.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/arrayview.html">ArrayView in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/akscipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.akscipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/akscipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy.special</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/history/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.history</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/io_util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/join/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarraysetops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraysetops</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/plotting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/row/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.row</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/security/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.security</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/segarray/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.segarray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/series/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.series</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/sorting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.sorting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/strings/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.strings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/timeclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.timeclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.util</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for arkouda.util</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+
+<span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">get_config</span><span class="p">,</span> <span class="n">get_mem_used</span>
+<span class="kn">from</span> <span class="nn">arkouda.client_dtypes</span> <span class="kn">import</span> <span class="n">BitVector</span><span class="p">,</span> <span class="n">BitVectorizer</span><span class="p">,</span> <span class="n">IPv4</span>
+<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span>
+<span class="kn">from</span> <span class="nn">arkouda.infoclass</span> <span class="kn">import</span> <span class="n">list_registry</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">unique</span>
+<span class="kn">from</span> <span class="nn">arkouda.segarray</span> <span class="kn">import</span> <span class="n">SegArray</span>
+<span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">coargsort</span>
+<span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span> <span class="nn">arkouda.timeclass</span> <span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
+
+
+<div class="viewcode-block" id="identity">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.identity">[docs]</a>
+<span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span></div>
+
+
+
+<div class="viewcode-block" id="get_callback">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.get_callback">[docs]</a>
+<span class="k">def</span> <span class="nf">get_callback</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">}:</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;_cast&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">_cast</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">BitVector</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">BitVectorizer</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">reverse</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">identity</span></div>
+
+
+
+<div class="viewcode-block" id="concatenate">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.concatenate">[docs]</a>
+<span class="k">def</span> <span class="nf">concatenate</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;This function is deprecated and will be removed in a later version of Arkouda.&quot;</span>
+        <span class="s2">&quot; Use arkouda.util.generic_concat(items, ordered) instead.&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">generic_concat</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="n">ordered</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="generic_concat">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.generic_concat">[docs]</a>
+<span class="k">def</span> <span class="nf">generic_concat</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="c1"># this version can be called with Dataframe and Series (which have Class.concat methods)</span>
+    <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">concatenate</span> <span class="k">as</span> <span class="n">pdarrayconcatenate</span>
+
+    <span class="n">types</span> <span class="o">=</span> <span class="p">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">items</span><span class="p">}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Items must all have same type: </span><span class="si">{</span><span class="n">types</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="n">ordered</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;concat&quot;</span><span class="p">)</span>
+        <span class="k">else</span> <span class="n">pdarrayconcatenate</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="n">ordered</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="report_mem">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.report_mem">[docs]</a>
+<span class="k">def</span> <span class="nf">report_mem</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+    <span class="n">used</span> <span class="o">=</span> <span class="n">get_mem_used</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;numLocales&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;physicalMemory&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pre</span><span class="si">}</span><span class="s2"> mem use: </span><span class="si">{</span><span class="n">get_mem_used</span><span class="p">()</span><span class="o">/</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2f</span><span class="si">}</span><span class="s2"> TB (</span><span class="si">{</span><span class="n">used</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="enrich_inplace">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.enrich_inplace">[docs]</a>
+<span class="k">def</span> <span class="nf">enrich_inplace</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">keynames</span><span class="p">,</span> <span class="n">aggregations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;This function is deprecated and will be removed in a later version of Arkouda.&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># TO DO: validate reductions and values</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">keynames</span><span class="p">]</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keynames</span><span class="p">]</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">resname</span><span class="p">,</span> <span class="p">(</span><span class="n">reduction</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span> <span class="ow">in</span> <span class="n">aggregations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">values</span><span class="p">]</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span>
+            <span class="n">pergroupval</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">count</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pergroupval</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">reduction</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">resname</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">pergroupval</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="expand">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.expand">[docs]</a>
+<span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">segs</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expand an array with values placed into the indicated segments.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size : ak.pdarray</span>
+<span class="sd">        The size of the array to be expanded</span>
+<span class="sd">    segs : ak.pdarray</span>
+<span class="sd">        The indices where the values should be placed</span>
+<span class="sd">    vals : ak.pdarray</span>
+<span class="sd">        The values to be placed in each segment</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        The expanded array.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function (with different order of arguments) is now in arkouda</span>
+<span class="sd">    proper as ak.broadcast. It is retained here for backwards compatibility.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;This function is deprecated and will be removed in a later version of Arkouda.&quot;</span>
+        <span class="s2">&quot; Use arkouda.broadcast(segments, values, size) instead.&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">segs</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="invert_permutation">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.invert_permutation">[docs]</a>
+<span class="k">def</span> <span class="nf">invert_permutation</span><span class="p">(</span><span class="n">perm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the inverse of a permutation array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    perm : ak.pdarray</span>
+<span class="sd">        The permutation array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ak.array</span>
+<span class="sd">        The inverse of the permutation array.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">unique</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">perm</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The array is not a permutation.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coargsort</span><span class="p">([</span><span class="n">perm</span><span class="p">,</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">perm</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span></div>
+
+
+
+<div class="viewcode-block" id="most_common">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.most_common">[docs]</a>
+<span class="k">def</span> <span class="nf">most_common</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;This function is deprecated and will be removed in a later version of Arkouda.&quot;</span>
+        <span class="s2">&quot; Use arkouda.GroupBy.most_common(values) instead.&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="convert_if_categorical">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.convert_if_categorical">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_if_categorical</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a Categorical array to Strings for display</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+
+<div class="viewcode-block" id="register">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.register">[docs]</a>
+<span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Register an arkouda object with a user-specified name. Backwards compatible</span>
+<span class="sd">    with earlier arkouda versions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="attach">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.attach">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">arkouda.dataframe</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">pdarray</span>
+    <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
+    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
+
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;attach&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})))</span>
+    <span class="n">rtn_obj</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">pdarray</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">Strings</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">special_objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">Datetime</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">]))</span>
+    <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">Timedelta</span><span class="o">.</span><span class="n">special_objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">Timedelta</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">]))</span>
+    <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">IPv4</span><span class="o">.</span><span class="n">special_objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">IPv4</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">]))</span>
+    <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">SegArray</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">SegArray</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">GroupBy</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">Index</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="ow">or</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="p">):</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">Index</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">Series</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">Series</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">BitVector</span><span class="o">.</span><span class="n">special_objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">BitVector</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">rtn_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rtn_obj</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">return</span> <span class="n">rtn_obj</span></div>
+
+
+
+<div class="viewcode-block" id="unregister">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.unregister">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;unregister&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}))</span>
+
+    <span class="k">return</span> <span class="n">rep_msg</span></div>
+
+
+
+<div class="viewcode-block" id="is_registered">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_registered">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">as_component</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine if the name provided is associated with a registered Object</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name: str</span>
+<span class="sd">        The name to check for in the registry</span>
+<span class="sd">    as_component: bool</span>
+<span class="sd">        Default: False</span>
+<span class="sd">        When True, the name will be checked to determine if it is registered as a component of</span>
+<span class="sd">        a registered object</span>
+
+<span class="sd">    Return</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">list_registry</span><span class="p">()[</span><span class="s2">&quot;Components&quot;</span> <span class="k">if</span> <span class="n">as_component</span> <span class="k">else</span> <span class="s2">&quot;Objects&quot;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="register_all">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.register_all">[docs]</a>
+<span class="k">def</span> <span class="nf">register_all</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Register all objects in the provided dictionary</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    data: dict</span>
+<span class="sd">        Maps name to register the object to the object. For example, {&quot;MyArray&quot;: ak.array([0, 1, 2])</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">reg_name</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">register</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">reg_name</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="unregister_all">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.unregister_all">[docs]</a>
+<span class="k">def</span> <span class="nf">unregister_all</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unregister all names provided</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    names : list</span>
+<span class="sd">        List of names used to register objects to be unregistered</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="n">unregister</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="attach_all">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.attach_all">[docs]</a>
+<span class="k">def</span> <span class="nf">attach_all</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attach to all objects registered with the names provide</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    names: list</span>
+<span class="sd">        List of names to attach to</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">attach</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="sparse_sum_help">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.sparse_sum_help">[docs]</a>
+<span class="k">def</span> <span class="nf">sparse_sum_help</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">,</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper for summing two sparse matrices together</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    idx1: pdarray</span>
+<span class="sd">        indices for the first sparse matrix</span>
+<span class="sd">    idx2: pdarray</span>
+<span class="sd">        indices for the second sparse matrix</span>
+<span class="sd">    val1: pdarray</span>
+<span class="sd">        values for the first sparse matrix</span>
+<span class="sd">    val2: pdarray</span>
+<span class="sd">        values for the second sparse matrix</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    (pdarray, pdarray)</span>
+<span class="sd">        indices and values for the summed sparse matrix</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; idx1 = ak.array([0, 1, 3, 4, 7, 9])</span>
+<span class="sd">    &gt;&gt;&gt; idx2 = ak.array([0, 1, 3, 6, 9])</span>
+<span class="sd">    &gt;&gt;&gt; vals1 = idx1</span>
+<span class="sd">    &gt;&gt;&gt; vals2 = ak.array([10, 11, 13, 16, 19])</span>
+<span class="sd">    &gt;&gt;&gt; ak.util.sparse_sum_help(idx1, inds2, vals1, vals2)</span>
+<span class="sd">    (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))</span>
+
+<span class="sd">    &gt;&gt;&gt; ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((vals1, vals2)))</span>
+<span class="sd">    (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sparseSumHelp&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;idx1&quot;</span><span class="p">:</span> <span class="n">idx1</span><span class="p">,</span> <span class="s2">&quot;idx2&quot;</span><span class="p">:</span> <span class="n">idx2</span><span class="p">,</span> <span class="s2">&quot;val1&quot;</span><span class="p">:</span> <span class="n">val1</span><span class="p">,</span> <span class="s2">&quot;val2&quot;</span><span class="p">:</span> <span class="n">val2</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">inds</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">inds</span><span class="p">),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="broadcast_dims">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.broadcast_dims">[docs]</a>
+<span class="k">def</span> <span class="nf">broadcast_dims</span><span class="p">(</span><span class="n">sa</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">sb</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Algorithm to determine shape of broadcasted PD array given two array shapes</span>
+
+<span class="sd">    see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Na</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
+    <span class="n">Nb</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sb</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">Na</span><span class="p">,</span> <span class="n">Nb</span><span class="p">)</span>
+    <span class="n">shapeOut</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">n1</span> <span class="o">=</span> <span class="n">Na</span> <span class="o">-</span> <span class="n">N</span> <span class="o">+</span> <span class="n">i</span>
+        <span class="n">n2</span> <span class="o">=</span> <span class="n">Nb</span> <span class="o">-</span> <span class="n">N</span> <span class="o">+</span> <span class="n">i</span>
+
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">sa</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span> <span class="k">if</span> <span class="n">n1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">sb</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span> <span class="k">if</span> <span class="n">n2</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">d1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">shapeOut</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d2</span>
+        <span class="k">elif</span> <span class="n">d2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">shapeOut</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span>
+        <span class="k">elif</span> <span class="n">d1</span> <span class="o">==</span> <span class="n">d2</span><span class="p">:</span>
+            <span class="n">shapeOut</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incompatible dimensions for broadcasting&quot;</span><span class="p">)</span>
+
+        <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shapeOut</span><span class="p">)</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

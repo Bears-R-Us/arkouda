@@ -20,34 +20,6 @@ Classes
 .. py:class:: Match(matched: arkouda.pdarrayclass.pdarray, starts: arkouda.pdarrayclass.pdarray, lengths: arkouda.pdarrayclass.pdarray, indices: arkouda.pdarrayclass.pdarray, parent_entry_name: str, match_type: MatchType, pattern: str)
 
 
-   .. py:method:: matched() -> arkouda.pdarrayclass.pdarray
-
-      Returns a boolean array indiciating whether each element matched
-
-      :returns: True for elements that match, False otherwise
-      :rtype: pdarray, bool
-
-      .. rubric:: Examples
-
-      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
-      >>> strings.search('_+').matched()
-      array([True True False True False])
-
-
-   .. py:method:: start() -> arkouda.pdarrayclass.pdarray
-
-      Returns the starts of matches
-
-      :returns: The start positions of matches
-      :rtype: pdarray, int64
-
-      .. rubric:: Examples
-
-      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
-      >>> strings.search('_+').start()
-      array([1 0 0])
-
-
    .. py:method:: end() -> arkouda.pdarrayclass.pdarray
 
       Returns the ends of matches
@@ -60,20 +32,6 @@ Classes
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.search('_+').end()
       array([2 4 2])
-
-
-   .. py:method:: match_type() -> str
-
-      Returns the type of the Match object
-
-      :returns: MatchType of the Match object
-      :rtype: str
-
-      .. rubric:: Examples
-
-      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
-      >>> strings.search('_+').match_type()
-      'SEARCH'
 
 
    .. py:method:: find_matches(return_match_origins: bool = False)
@@ -120,6 +78,48 @@ Classes
       array(['Isaac', 'Gottfried'])
       >>> m.group(2, return_group_origins=True)
       (array(['Newton', 'Leibniz']), array([0 2]))
+
+
+   .. py:method:: match_type() -> str
+
+      Returns the type of the Match object
+
+      :returns: MatchType of the Match object
+      :rtype: str
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.search('_+').match_type()
+      'SEARCH'
+
+
+   .. py:method:: matched() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean array indiciating whether each element matched
+
+      :returns: True for elements that match, False otherwise
+      :rtype: pdarray, bool
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.search('_+').matched()
+      array([True True False True False])
+
+
+   .. py:method:: start() -> arkouda.pdarrayclass.pdarray
+
+      Returns the starts of matches
+
+      :returns: The start positions of matches
+      :rtype: pdarray, int64
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.search('_+').start()
+      array([1 0 0])
 
 
 

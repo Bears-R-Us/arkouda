@@ -13,67 +13,14 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.pdarraysetops.concatenate
    arkouda.pdarraysetops.in1d
    arkouda.pdarraysetops.indexof1d
-   arkouda.pdarraysetops.concatenate
-   arkouda.pdarraysetops.union1d
    arkouda.pdarraysetops.intersect1d
    arkouda.pdarraysetops.setdiff1d
    arkouda.pdarraysetops.setxor1d
+   arkouda.pdarraysetops.union1d
 
-
-
-.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
-
-   Test whether each element of a 1-D array is also present in a second array.
-
-   Returns a boolean array the same length as `pda1` that is True
-   where an element of `pda1` is in `pda2` and False otherwise.
-
-   Support multi-level -- test membership of rows of a in the set of rows of b.
-
-   :param a: Rows are elements for which to test membership in b
-   :type a: list of pdarrays, pdarray, Strings, or Categorical
-   :param b: Rows are elements of the set in which to test membership
-   :type b: list of pdarrays, pdarray, Strings, or Categorical
-   :param assume_unique: If true, assume rows of a and b are each unique and sorted.
-                         By default, sort and unique them explicitly.
-   :type assume_unique: bool
-   :param symmetric: Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.
-   :type symmetric: bool
-   :param invert: If True, the values in the returned array are inverted (that is,
-                  False where an element of `pda1` is in `pda2` and True otherwise).
-                  Default is False. ``ak.in1d(a, b, invert=True)`` is equivalent
-                  to (but is faster than) ``~ak.in1d(a, b)``.
-   :type invert: bool, optional
-
-   :rtype: True for each row in a that is contained in b
-
-   Return Type
-   ------------
-       pdarray, bool
-
-   .. rubric:: Notes
-
-   Only works for pdarrays of int64 dtype, Strings, or Categorical
-
-
-.. py:function:: indexof1d(keys: arkouda.groupbyclass.groupable, arr: arkouda.groupbyclass.groupable) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
-
-   Returns an integer array of the index values where the values of the first
-   array appear in the second.
-
-   :param keys: Input array of values to find the indices of in `arr`.
-   :type keys: pdarray or Strings or Categorical
-   :param arr: The values to search.
-   :type arr: pdarray or Strings or Categorical
-
-   :returns: The indices of the values of `keys` in `arr`.
-   :rtype: pdarray, int
-
-   :raises TypeError: Raised if either `keys` or `arr` is not a pdarray, Strings, or
-       Categorical object
-   :raises RuntimeError: Raised if the dtype of either array is not supported
 
 
 .. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
@@ -112,45 +59,57 @@ Functions
    array(['one', 'two', 'three', 'four', 'five'])
 
 
-.. py:function:: union1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
 
-   Find the union of two arrays/List of Arrays.
+   Test whether each element of a 1-D array is also present in a second array.
 
-   Return the unique, sorted array of values that are in either
-   of the two input arrays.
+   Returns a boolean array the same length as `pda1` that is True
+   where an element of `pda1` is in `pda2` and False otherwise.
 
-   :param pda1: Input array/Sequence of groupable objects
-   :type pda1: pdarray/Sequence[pdarray, Strings, Categorical]
-   :param pda2: Input array/sequence of groupable objects
-   :type pda2: pdarray/List
+   Support multi-level -- test membership of rows of a in the set of rows of b.
 
-   :returns: Unique, sorted union of the input arrays.
-   :rtype: pdarray/groupable
+   :param a: Rows are elements for which to test membership in b
+   :type a: list of pdarrays, pdarray, Strings, or Categorical
+   :param b: Rows are elements of the set in which to test membership
+   :type b: list of pdarrays, pdarray, Strings, or Categorical
+   :param assume_unique: If true, assume rows of a and b are each unique and sorted.
+                         By default, sort and unique them explicitly.
+   :type assume_unique: bool
+   :param symmetric: Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.
+   :type symmetric: bool
+   :param invert: If True, the values in the returned array are inverted (that is,
+                  False where an element of `pda1` is in `pda2` and True otherwise).
+                  Default is False. ``ak.in1d(a, b, invert=True)`` is equivalent
+                  to (but is faster than) ``~ak.in1d(a, b)``.
+   :type invert: bool, optional
 
-   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
-   :raises RuntimeError: Raised if the dtype of either array is not supported
+   :rtype: True for each row in a that is contained in b
 
-   .. seealso:: :obj:`intersect1d`, :obj:`arkouda.groupbyclass.unique`
+   Return Type
+   ------------
+       pdarray, bool
 
    .. rubric:: Notes
 
-   ak.union1d is not supported for bool or float64 pdarrays
+   Only works for pdarrays of int64 dtype, float64, Strings, or Categorical
 
-   .. rubric:: Examples
 
-   >>>
-   # 1D Example
-   >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
-   array([-2, -1, 0, 1, 2])
-   #Multi-Array Example
-   >>> a = ak.arange(1, 6)
-   >>> b = ak.array([1, 5, 3, 4, 2])
-   >>> c = ak.array([1, 4, 3, 2, 5])
-   >>> d = ak.array([1, 2, 3, 5, 4])
-   >>> multia = [a, a, a]
-   >>> multib = [b, c, d]
-   >>> ak.union1d(multia, multib)
-   [array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 5, 4, 2, 5]]
+.. py:function:: indexof1d(keys: arkouda.groupbyclass.groupable, arr: arkouda.groupbyclass.groupable) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+
+   Returns an integer array of the index values where the values of the first
+   array appear in the second.
+
+   :param keys: Input array of values to find the indices of in `arr`.
+   :type keys: pdarray or Strings or Categorical
+   :param arr: The values to search.
+   :type arr: pdarray or Strings or Categorical
+
+   :returns: The indices of the values of `keys` in `arr`.
+   :rtype: pdarray, int
+
+   :raises TypeError: Raised if either `keys` or `arr` is not a pdarray, Strings, or
+       Categorical object
+   :raises RuntimeError: Raised if the dtype of either array is not supported
 
 
 .. py:function:: intersect1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
@@ -280,5 +239,46 @@ Functions
    >>> multib = [b, c, d]
    >>> ak.setxor1d(multia, multib)
    [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]
+
+
+.. py:function:: union1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+
+   Find the union of two arrays/List of Arrays.
+
+   Return the unique, sorted array of values that are in either
+   of the two input arrays.
+
+   :param pda1: Input array/Sequence of groupable objects
+   :type pda1: pdarray/Sequence[pdarray, Strings, Categorical]
+   :param pda2: Input array/sequence of groupable objects
+   :type pda2: pdarray/List
+
+   :returns: Unique, sorted union of the input arrays.
+   :rtype: pdarray/groupable
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
+   :raises RuntimeError: Raised if the dtype of either array is not supported
+
+   .. seealso:: :obj:`intersect1d`, :obj:`arkouda.groupbyclass.unique`
+
+   .. rubric:: Notes
+
+   ak.union1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>>
+   # 1D Example
+   >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
+   array([-2, -1, 0, 1, 2])
+   #Multi-Array Example
+   >>> a = ak.arange(1, 6)
+   >>> b = ak.array([1, 5, 3, 4, 2])
+   >>> c = ak.array([1, 4, 3, 2, 5])
+   >>> d = ak.array([1, 2, 3, 5, 4])
+   >>> multia = [a, a, a]
+   >>> multib = [b, c, d]
+   >>> ak.union1d(multia, multib)
+   [array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 5, 4, 2, 5]]
 
 

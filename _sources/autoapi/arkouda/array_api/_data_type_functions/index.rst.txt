@@ -49,6 +49,11 @@ Functions
 
       
 
+   .. py:attribute:: dtype
+      :type: arkouda.array_api._typing.Dtype
+
+      
+
    .. py:attribute:: eps
       :type: float
 
@@ -69,17 +74,17 @@ Functions
 
       
 
-   .. py:attribute:: dtype
-      :type: arkouda.array_api._typing.Dtype
-
-      
-
 
 .. py:class:: iinfo_object
 
 
    .. py:attribute:: bits
       :type: int
+
+      
+
+   .. py:attribute:: dtype
+      :type: arkouda.array_api._typing.Dtype
 
       
 
@@ -90,11 +95,6 @@ Functions
 
    .. py:attribute:: min
       :type: int
-
-      
-
-   .. py:attribute:: dtype
-      :type: arkouda.array_api._typing.Dtype
 
       
 

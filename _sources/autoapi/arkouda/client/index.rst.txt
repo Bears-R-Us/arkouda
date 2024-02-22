@@ -15,15 +15,15 @@ Functions
 
    arkouda.client.connect
    arkouda.client.disconnect
-   arkouda.client.shutdown
+   arkouda.client.generate_history
    arkouda.client.get_config
-   arkouda.client.get_mem_used
    arkouda.client.get_mem_avail
    arkouda.client.get_mem_status
+   arkouda.client.get_mem_used
    arkouda.client.get_server_commands
    arkouda.client.print_server_commands
    arkouda.client.ruok
-   arkouda.client.generate_history
+   arkouda.client.shutdown
 
 
 
@@ -69,19 +69,32 @@ Functions
    :raises ConnectionError: Raised if there's an error disconnecting from the Arkouda server
 
 
-.. py:function:: shutdown() -> None
+.. py:function:: generate_history(num_commands: Optional[int] = None, command_filter: Optional[str] = None) -> List[str]
 
-   Sends a shutdown message to the Arkouda server that does the
-   following:
+   Generates list of commands executed within the the Python shell, Jupyter notebook,
+   or IPython notebook, with an optional cmd_filter and number of commands to return.
 
-   1. Delete all objects in the SymTable
-   2. Shuts down the Arkouda server
-   3. Disconnects the client from the stopped Arkouda Server
+   :param num_commands: The number of commands from history to retrieve
+   :type num_commands: int
+   :param command_filter: String containing characters used to select a subset of commands.
+   :type command_filter: str
 
-   :rtype: None
+   :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
+   :rtype: List[str]
 
-   :raises RuntimeError: Raised if the client is not connected to the Arkouda server or
-       there is an error in disconnecting from the server
+   .. rubric:: Examples
+
+   >>> ak.connect()
+   connected to arkouda server tcp://*:5555
+   >>> ak.get_config()
+   >>> ak.ones(10000)
+   array([1 1 1 ... 1 1 1])
+   >>> nums = ak.randint(0,500,10000)
+   >>> ak.argsort(nums)
+   array([105 457 647 ... 9362 9602 9683])
+   >>> ak.generate_history(num_commands=5, command_filter='ak.')
+   ['ak.connect()', 'ak.get_config()', 'ak.ones(10000)', 'nums = ak.randint(0,500,10000)',
+   'ak.argsort(nums)']
 
 
 .. py:function:: get_config() -> Mapping[str, Union[str, int, float]]
@@ -97,31 +110,6 @@ Functions
    :rtype: Mapping[str, Union[str, int, float]]
 
    :raises RuntimeError: Raised if the client is not connected to a server
-
-
-.. py:function:: get_mem_used(unit: str = 'b', as_percent: bool = False) -> int
-
-   Compute the amount of memory used by objects in the server's symbol table.
-
-   Parameters
-    ----------
-    unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
-        unit of return ('b' by default)
-    as_percent : bool
-        If True, return the percent (as an int) of the available memory that's been used
-        False by default
-
-    Returns
-    -------
-    int
-        Indicates the amount of memory allocated to symbol table objects.
-
-    Raises
-    ------
-    RuntimeError
-        Raised if there is a server-side error in getting memory used
-    ValueError
-        Raised if the returned value is not an int-formatted string
 
 
 .. py:function:: get_mem_avail(unit: str = 'b', as_percent: bool = False) -> int
@@ -170,6 +158,31 @@ Functions
         memory status information
 
 
+.. py:function:: get_mem_used(unit: str = 'b', as_percent: bool = False) -> int
+
+   Compute the amount of memory used by objects in the server's symbol table.
+
+   Parameters
+    ----------
+    unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+        unit of return ('b' by default)
+    as_percent : bool
+        If True, return the percent (as an int) of the available memory that's been used
+        False by default
+
+    Returns
+    -------
+    int
+        Indicates the amount of memory allocated to symbol table objects.
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting memory used
+    ValueError
+        Raised if the returned value is not an int-formatted string
+
+
 .. py:function:: get_server_commands() -> Mapping[str, str]
 
    Return a dictionary of available server commands and the functions they map to
@@ -201,31 +214,18 @@ Functions
    :rtype: str
 
 
-.. py:function:: generate_history(num_commands: Optional[int] = None, command_filter: Optional[str] = None) -> List[str]
+.. py:function:: shutdown() -> None
 
-   Generates list of commands executed within the the Python shell, Jupyter notebook,
-   or IPython notebook, with an optional cmd_filter and number of commands to return.
+   Sends a shutdown message to the Arkouda server that does the
+   following:
 
-   :param num_commands: The number of commands from history to retrieve
-   :type num_commands: int
-   :param command_filter: String containing characters used to select a subset of commands.
-   :type command_filter: str
+   1. Delete all objects in the SymTable
+   2. Shuts down the Arkouda server
+   3. Disconnects the client from the stopped Arkouda Server
 
-   :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
-   :rtype: List[str]
+   :rtype: None
 
-   .. rubric:: Examples
-
-   >>> ak.connect()
-   connected to arkouda server tcp://*:5555
-   >>> ak.get_config()
-   >>> ak.ones(10000)
-   array([1 1 1 ... 1 1 1])
-   >>> nums = ak.randint(0,500,10000)
-   >>> ak.argsort(nums)
-   array([105 457 647 ... 9362 9602 9683])
-   >>> ak.generate_history(num_commands=5, command_filter='ak.')
-   ['ak.connect()', 'ak.get_config()', 'ak.ones(10000)', 'nums = ak.randint(0,500,10000)',
-   'ak.argsort(nums)']
+   :raises RuntimeError: Raised if the client is not connected to the Arkouda server or
+       there is an error in disconnecting from the server
 
 

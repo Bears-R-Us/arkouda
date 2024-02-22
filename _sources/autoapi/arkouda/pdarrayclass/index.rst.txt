@@ -21,40 +21,526 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.pdarrayclass.clear
-   arkouda.pdarrayclass.any
    arkouda.pdarrayclass.all
-   arkouda.pdarrayclass.is_sorted
-   arkouda.pdarrayclass.sum
-   arkouda.pdarrayclass.prod
-   arkouda.pdarrayclass.min
-   arkouda.pdarrayclass.max
-   arkouda.pdarrayclass.argmin
+   arkouda.pdarrayclass.any
    arkouda.pdarrayclass.argmax
-   arkouda.pdarrayclass.mean
-   arkouda.pdarrayclass.var
-   arkouda.pdarrayclass.std
-   arkouda.pdarrayclass.cov
-   arkouda.pdarrayclass.corr
-   arkouda.pdarrayclass.divmod
-   arkouda.pdarrayclass.mink
-   arkouda.pdarrayclass.maxk
-   arkouda.pdarrayclass.argmink
    arkouda.pdarrayclass.argmaxk
-   arkouda.pdarrayclass.popcount
-   arkouda.pdarrayclass.parity
+   arkouda.pdarrayclass.argmin
+   arkouda.pdarrayclass.argmink
+   arkouda.pdarrayclass.attach_pdarray
+   arkouda.pdarrayclass.broadcast_to_shape
+   arkouda.pdarrayclass.clear
    arkouda.pdarrayclass.clz
+   arkouda.pdarrayclass.corr
+   arkouda.pdarrayclass.cov
    arkouda.pdarrayclass.ctz
+   arkouda.pdarrayclass.divmod
+   arkouda.pdarrayclass.fmod
+   arkouda.pdarrayclass.is_sorted
+   arkouda.pdarrayclass.max
+   arkouda.pdarrayclass.maxk
+   arkouda.pdarrayclass.mean
+   arkouda.pdarrayclass.min
+   arkouda.pdarrayclass.mink
+   arkouda.pdarrayclass.mod
+   arkouda.pdarrayclass.parity
+   arkouda.pdarrayclass.popcount
+   arkouda.pdarrayclass.power
+   arkouda.pdarrayclass.prod
    arkouda.pdarrayclass.rotl
    arkouda.pdarrayclass.rotr
-   arkouda.pdarrayclass.power
    arkouda.pdarrayclass.sqrt
-   arkouda.pdarrayclass.mod
-   arkouda.pdarrayclass.fmod
-   arkouda.pdarrayclass.broadcast_to_shape
-   arkouda.pdarrayclass.attach_pdarray
+   arkouda.pdarrayclass.std
+   arkouda.pdarrayclass.sum
    arkouda.pdarrayclass.unregister_pdarray_by_name
+   arkouda.pdarrayclass.var
 
+
+
+.. py:exception:: RegistrationError
+
+
+   Bases: :py:obj:`Exception`
+
+   Error/Exception used when the Arkouda Server cannot register an object
+
+
+.. py:function:: all(pda: pdarray) -> numpy.bool_
+
+   Return True iff all elements of the array evaluate to True.
+
+   :param pda: The pdarray instance to be evaluated
+   :type pda: pdarray
+
+   :returns: Indicates if all pdarray elements evaluate to True
+   :rtype: bool
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: any(pda: pdarray) -> numpy.bool_
+
+   Return True iff any element of the array evaluates to True.
+
+   :param pda: The pdarray instance to be evaluated
+   :type pda: pdarray
+
+   :returns: Indicates if 1..n pdarray elements evaluate to True
+   :rtype: bool
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: argmax(pda: pdarray) -> Union[numpy.int64, numpy.uint64]
+
+   Return the index of the first occurrence of the array max value.
+
+   :param pda: Values for which to calculate the argmax
+   :type pda: pdarray
+
+   :returns: The index of the argmax calculated from the pda
+   :rtype: Union[np.int64, np.uint64]
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: argmaxk(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
+
+   Find the indices corresponding to the `k` maximum values of an array.
+
+   Returns the largest `k` values of an array, sorted
+
+   :param pda: Input array.
+   :type pda: pdarray
+   :param k: The desired count of indices corresponding to maxmum array values
+   :type k: int_scalars
+
+   :returns: The indices of the maximum `k` values from the pda, sorted
+   :rtype: pdarray, int
+
+   :raises TypeError: Raised if pda is not a pdarray or k is not an integer
+   :raises ValueError: Raised if the pda is empty or k < 1
+
+   .. rubric:: Notes
+
+   This call is equivalent in value to:
+
+       ak.argsort(a)[k:]
+
+   and generally outperforms this operation.
+
+   This reduction will see a significant drop in performance as `k` grows
+   beyond a certain value. This value is system dependent, but generally
+   about a `k` of 5 million is where performance degradation has been observed.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([10,5,1,3,7,2,9,0])
+   >>> ak.argmaxk(A, 3)
+   array([4, 6, 0])
+   >>> ak.argmaxk(A, 4)
+   array([1, 4, 6, 0])
+
+
+.. py:function:: argmin(pda: pdarray) -> Union[numpy.int64, numpy.uint64]
+
+   Return the index of the first occurrence of the array min value.
+
+   :param pda: Values for which to calculate the argmin
+   :type pda: pdarray
+
+   :returns: The index of the argmin calculated from the pda
+   :rtype: Union[np.int64, np.uint64]
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: argmink(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
+
+   Finds the indices corresponding to the `k` minimum values of an array.
+
+   :param pda: Input array.
+   :type pda: pdarray
+   :param k: The desired count of indices corresponding to minimum array values
+   :type k: int_scalars
+
+   :returns: The indices of the minimum `k` values from the pda, sorted
+   :rtype: pdarray, int
+
+   :raises TypeError: Raised if pda is not a pdarray or k is not an integer
+   :raises ValueError: Raised if the pda is empty or k < 1
+
+   .. rubric:: Notes
+
+   This call is equivalent in value to:
+
+       ak.argsort(a)[:k]
+
+   and generally outperforms this operation.
+
+   This reduction will see a significant drop in performance as `k` grows
+   beyond a certain value. This value is system dependent, but generally
+   about a `k` of 5 million is where performance degradation has been observed.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([10,5,1,3,7,2,9,0])
+   >>> ak.argmink(A, 3)
+   array([7, 2, 5])
+   >>> ak.argmink(A, 4)
+   array([7, 2, 5, 3])
+
+
+.. py:function:: attach_pdarray(user_defined_name: str) -> pdarray
+
+   class method to return a pdarray attached to the registered name in the arkouda
+   server which was registered using register()
+
+   :param user_defined_name: user defined name which array was registered under
+   :type user_defined_name: str
+
+   :returns: pdarray which is bound to the corresponding server side component which was registered
+             with user_defined_name
+   :rtype: pdarray
+
+   :raises TypeError: Raised if user_defined_name is not a str
+
+   .. seealso:: :obj:`attach`, :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
+
+   .. rubric:: Notes
+
+   Registered names/pdarrays in the server are immune to deletion
+   until they are unregistered.
+
+   .. rubric:: Examples
+
+   >>> a = zeros(100)
+   >>> a.register("my_zeros")
+   >>> # potentially disconnect from server and reconnect to server
+   >>> b = ak.attach_pdarray("my_zeros")
+   >>> # ...other work...
+   >>> b.unregister()
+
+
+.. py:function:: broadcast_to_shape(pda: pdarray, shape: Tuple[int, Ellipsis]) -> pdarray
+
+   expand an array's rank to the specified shape using broadcasting
+
+
+.. py:function:: clear() -> None
+
+   Send a clear message to clear all unregistered data from the server symbol table
+
+   :rtype: None
+
+   :raises RuntimeError: Raised if there is a server-side error in executing clear request
+
+
+.. py:function:: clz(pda: pdarray) -> pdarray
+
+   Count leading zeros for each integer in an array.
+
+   :param pda: Input array (must be integral).
+   :type pda: pdarray, int64, uint64, bigint
+
+   :returns: **lz** -- The number of leading zeros of each element.
+   :rtype: pdarray
+
+   :raises TypeError: If input array is not int64, uint64, or bigint
+
+   .. rubric:: Examples
+
+   >>> A = ak.arange(10)
+   >>> ak.clz(A)
+   array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
+
+
+.. py:function:: corr(x: pdarray, y: pdarray) -> numpy.float64
+
+   Return the correlation between x and y
+
+   :param x: One of the pdarrays used to calculate correlation
+   :type x: pdarray
+   :param y: One of the pdarrays used to calculate correlation
+   :type y: pdarray
+
+   :returns: The scalar correlation of the two pdarrays
+   :rtype: np.float64
+
+   :raises TypeError: Raised if x or y is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+   .. seealso:: :obj:`std`, :obj:`cov`
+
+   .. rubric:: Notes
+
+   The correlation is calculated by
+   cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
+
+
+.. py:function:: cov(x: pdarray, y: pdarray) -> numpy.float64
+
+   Return the covariance of x and y
+
+   :param x: One of the pdarrays used to calculate covariance
+   :type x: pdarray
+   :param y: One of the pdarrays used to calculate covariance
+   :type y: pdarray
+
+   :returns: The scalar covariance of the two pdarrays
+   :rtype: np.float64
+
+   :raises TypeError: Raised if x or y is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+   .. seealso:: :obj:`mean`, :obj:`var`
+
+   .. rubric:: Notes
+
+   The covariance is calculated by
+   ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
+
+
+.. py:function:: ctz(pda: pdarray) -> pdarray
+
+   Count trailing zeros for each integer in an array.
+
+   :param pda: Input array (must be integral).
+   :type pda: pdarray, int64, uint64, bigint
+
+   :returns: **lz** -- The number of trailing zeros of each element.
+   :rtype: pdarray
+
+   .. rubric:: Notes
+
+   ctz(0) is defined to be zero.
+
+   :raises TypeError: If input array is not int64, uint64, or bigint
+
+   .. rubric:: Examples
+
+   >>> A = ak.arange(10)
+   >>> ak.ctz(A)
+   array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
+
+
+.. py:function:: divmod(x: Union[arkouda.dtypes.numeric_scalars, pdarray], y: Union[arkouda.dtypes.numeric_scalars, pdarray], where: Union[bool, pdarray] = True) -> Tuple[pdarray, pdarray]
+
+   :param x: The dividend array, the values that will be the numerator of the floordivision and will be
+             acted on by the bases for modular division.
+   :type x: numeric_scalars(float_scalars, int_scalars) or pdarray
+   :param y: The divisor array, the values that will be the denominator of the division and will be the
+             bases for the modular division.
+   :type y: numeric_scalars(float_scalars, int_scalars) or pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True, the
+                 corresponding value will be divided using floor and modular division. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
+
+   :returns: Returns a tuple that contains quotient and remainder of the division
+   :rtype: (pdarray, pdarray)
+
+   :raises TypeError: At least one entry must be a pdarray
+   :raises ValueError: If both inputs are both pdarrays, their size must match
+   :raises ZeroDivisionError: No entry in y is allowed to be 0, to prevent division by zero
+
+   .. rubric:: Notes
+
+   The div is calculated by x // y
+   The mod is calculated by x % y
+
+   .. rubric:: Examples
+
+   >>> x = ak.arange(5, 10)
+   >>> y = ak.array([2, 1, 4, 5, 8])
+   >>> ak.divmod(x,y)
+   (array([2 6 1 1 1]), array([1 0 3 3 1]))
+   >>> ak.divmod(x,y, x % 2 == 0)
+   (array([5 6 7 1 9]), array([5 0 7 3 9]))
+
+
+.. py:function:: fmod(dividend: Union[pdarray, arkouda.dtypes.numeric_scalars], divisor: Union[pdarray, arkouda.dtypes.numeric_scalars]) -> pdarray
+
+   Returns the element-wise remainder of division.
+
+   It is equivalent to np.fmod, the remainder has the same sign as the dividend.
+
+   :param dividend: The array being acted on by the bases for the modular division.
+   :type dividend: numeric scalars or pdarray
+   :param divisor: The array that will be the bases for the modular division.
+   :type divisor: numeric scalars or pdarray
+
+   :returns: Returns an array that contains the element-wise remainder of division.
+   :rtype: pdarray
+
+
+.. py:function:: is_sorted(pda: pdarray) -> numpy.bool_
+
+   Return True iff the array is monotonically non-decreasing.
+
+   :param pda: The pdarray instance to be evaluated
+   :type pda: pdarray
+
+   :returns: Indicates if the array is monotonically non-decreasing
+   :rtype: bool
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: max(pda: pdarray) -> arkouda.dtypes.numpy_scalars
+
+   Return the maximum value of the array.
+
+   :param pda: Values for which to calculate the max
+   :type pda: pdarray
+
+   :returns: The max calculated from the pda
+   :rtype: numpy_scalars
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: maxk(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
+
+   Find the `k` maximum values of an array.
+
+   Returns the largest `k` values of an array, sorted
+
+   :param pda: Input array.
+   :type pda: pdarray
+   :param k: The desired count of maximum values to be returned by the output.
+   :type k: int_scalars
+
+   :returns: The maximum `k` values from pda, sorted
+   :rtype: pdarray, int
+
+   :raises TypeError: Raised if pda is not a pdarray or k is not an integer
+   :raises ValueError: Raised if the pda is empty or k < 1
+
+   .. rubric:: Notes
+
+   This call is equivalent in value to:
+
+       a[ak.argsort(a)[k:]]
+
+   and generally outperforms this operation.
+
+   This reduction will see a significant drop in performance as `k` grows
+   beyond a certain value. This value is system dependent, but generally
+   about a `k` of 5 million is where performance degredation has been observed.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([10,5,1,3,7,2,9,0])
+   >>> ak.maxk(A, 3)
+   array([7, 9, 10])
+   >>> ak.maxk(A, 4)
+   array([5, 7, 9, 10])
+
+
+.. py:function:: mean(pda: pdarray) -> numpy.float64
+
+   Return the mean of the array.
+
+   :param pda: Values for which to calculate the mean
+   :type pda: pdarray
+
+   :returns: The mean calculated from the pda sum and size
+   :rtype: np.float64
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: min(pda: pdarray) -> arkouda.dtypes.numpy_scalars
+
+   Return the minimum value of the array.
+
+   :param pda: Values for which to calculate the min
+   :type pda: pdarray
+
+   :returns: The min calculated from the pda
+   :rtype: numpy_scalars
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: mink(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
+
+   Find the `k` minimum values of an array.
+
+   Returns the smallest `k` values of an array, sorted
+
+   :param pda: Input array.
+   :type pda: pdarray
+   :param k: The desired count of minimum values to be returned by the output.
+   :type k: int_scalars
+
+   :returns: The minimum `k` values from pda, sorted
+   :rtype: pdarray
+
+   :raises TypeError: Raised if pda is not a pdarray
+   :raises ValueError: Raised if the pda is empty or k < 1
+
+   .. rubric:: Notes
+
+   This call is equivalent in value to:
+
+       a[ak.argsort(a)[:k]]
+
+   and generally outperforms this operation.
+
+   This reduction will see a significant drop in performance as `k` grows
+   beyond a certain value. This value is system dependent, but generally
+   about a `k` of 5 million is where performance degredation has been observed.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([10,5,1,3,7,2,9,0])
+   >>> ak.mink(A, 3)
+   array([0, 1, 2])
+   >>> ak.mink(A, 4)
+   array([0, 1, 2, 3])
+
+
+.. py:function:: mod(dividend, divisor) -> pdarray
+
+   Returns the element-wise remainder of division.
+
+   Computes the remainder complementary to the floor_divide function.
+   It is equivalent to np.mod, the remainder has the same sign as the divisor.
+
+   :param dividend: The array being acted on by the bases for the modular division.
+   :param divisor: The array that will be the bases for the modular division.
+
+   :returns: Returns an array that contains the element-wise remainder of division.
+   :rtype: pdarray
+
+
+.. py:function:: parity(pda: pdarray) -> pdarray
+
+   Find the bit parity (XOR of all bits) for each integer in an array.
+
+   :param pda: Input array (must be integral).
+   :type pda: pdarray, int64, uint64, bigint
+
+   :returns: **parity** -- The parity of each element: 0 if even number of bits set, 1 if odd.
+   :rtype: pdarray
+
+   :raises TypeError: If input array is not int64, uint64, or bigint
+
+   .. rubric:: Examples
+
+   >>> A = ak.arange(10)
+   >>> ak.parity(A)
+   array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
 
 
 .. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars, max_bits: Optional[int] = None)
@@ -119,58 +605,9 @@ Functions
 
       
 
-   .. py:method:: format_other(other) -> str
+   .. py:method:: all() -> numpy.bool_
 
-      Attempt to cast scalar other to the element dtype of this pdarray,
-      and print the resulting value to a string (e.g. for sending to a
-      server command). The user should not call this function directly.
-
-      :param other: The scalar to be cast to the pdarray.dtype
-      :type other: object
-
-      :rtype: string representation of np.dtype corresponding to the other parameter
-
-      :raises TypeError: Raised if the other parameter cannot be converted to
-          Numpy dtype
-
-
-   .. py:method:: transfer(hostname: str, port: arkouda.dtypes.int_scalars)
-
-      Sends a pdarray to a different Arkouda server
-
-      :param hostname: The hostname where the Arkouda server intended to
-                       receive the pdarray is running.
-      :type hostname: str
-      :param port: The port to send the array over. This needs to be an
-                   open port (i.e., not one that the Arkouda server is
-                   running on). This will open up `numLocales` ports,
-                   each of which in succession, so will use ports of the
-                   range {port..(port+numLocales)} (e.g., running an
-                   Arkouda server of 4 nodes, port 1234 is passed as
-                   `port`, Arkouda will use ports 1234, 1235, 1236,
-                   and 1237 to send the array data).
-                   This port much match the port passed to the call to
-                   `ak.receive_array()`.
-      :type port: int_scalars
-
-      :rtype: A message indicating a complete transfer
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: opeq(other, op)
-
-
-   .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
-
-      Fill the array (in place) with a constant value.
-
-      :param value:
-      :type value: numeric_scalars
-
-      :raises TypeError: Raised if value is not an int, int64, float, or float64
+      Return True iff all elements of the array evaluate to True.
 
 
    .. py:method:: any() -> numpy.bool_
@@ -178,190 +615,9 @@ Functions
       Return True iff any element of the array evaluates to True.
 
 
-   .. py:method:: all() -> numpy.bool_
-
-      Return True iff all elements of the array evaluate to True.
-
-
-   .. py:method:: is_registered() -> numpy.bool_
-
-      Return True iff the object is contained in the registry
-
-      :param None:
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: bool
-
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-      .. note::
-
-         This will return True if the object is registered itself or as a component
-         of another object
-
-
-   .. py:method:: info() -> str
-
-      Returns a JSON formatted string containing information about all components of self
-
-      :param None:
-
-      :returns: JSON string containing information about all components of self
-      :rtype: str
-
-
-   .. py:method:: pretty_print_info() -> None
-
-      Prints information about all components of self in a human readable format
-
-      :param None:
-
-      :rtype: None
-
-
-   .. py:method:: is_sorted() -> numpy.bool_
-
-      Return True iff the array is monotonically non-decreasing.
-
-      :param None:
-
-      :returns: Indicates if the array is monotonically non-decreasing
-      :rtype: bool
-
-      :raises TypeError: Raised if pda is not a pdarray instance
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: sum() -> arkouda.dtypes.numeric_and_bool_scalars
-
-      Return the sum of all elements in the array.
-
-
-   .. py:method:: prod() -> numpy.float64
-
-      Return the product of all elements in the array. Return value is
-      always a np.float64 or np.int64.
-
-
-   .. py:method:: min() -> arkouda.dtypes.numpy_scalars
-
-      Return the minimum value of the array.
-
-
-   .. py:method:: max() -> arkouda.dtypes.numpy_scalars
-
-      Return the maximum value of the array.
-
-
-   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
-
-      Return the index of the first occurrence of the array min value
-
-
    .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
 
       Return the index of the first occurrence of the array max value.
-
-
-   .. py:method:: mean() -> numpy.float64
-
-      Return the mean of the array.
-
-
-   .. py:method:: var(ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
-
-      Compute the variance. See ``arkouda.var`` for details.
-
-      :param ddof: "Delta Degrees of Freedom" used in calculating var
-      :type ddof: int_scalars
-
-      :returns: The scalar variance of the array
-      :rtype: np.float64
-
-      :raises TypeError: Raised if pda is not a pdarray instance
-      :raises ValueError: Raised if the ddof >= pdarray size
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: std(ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
-
-      Compute the standard deviation. See ``arkouda.std`` for details.
-
-      :param ddof: "Delta Degrees of Freedom" used in calculating std
-      :type ddof: int_scalars
-
-      :returns: The scalar standard deviation of the array
-      :rtype: np.float64
-
-      :raises TypeError: Raised if pda is not a pdarray instance
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: cov(y: pdarray) -> numpy.float64
-
-      Compute the covariance between self and y.
-
-      :param y: Other pdarray used to calculate covariance
-      :type y: pdarray
-
-      :returns: The scalar covariance of the two arrays
-      :rtype: np.float64
-
-      :raises TypeError: Raised if y is not a pdarray instance
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: corr(y: pdarray) -> numpy.float64
-
-      Compute the correlation between self and y using pearson correlation coefficient.
-
-      :param y: Other pdarray used to calculate correlation
-      :type y: pdarray
-
-      :returns: The scalar correlation of the two arrays
-      :rtype: np.float64
-
-      :raises TypeError: Raised if y is not a pdarray instance
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: mink(k: arkouda.dtypes.int_scalars) -> pdarray
-
-      Compute the minimum "k" values.
-
-      :param k: The desired count of maximum values to be returned by the output.
-      :type k: int_scalars
-
-      :returns: The maximum `k` values from pda
-      :rtype: pdarray, int
-
-      :raises TypeError: Raised if pda is not a pdarray
-
-
-   .. py:method:: maxk(k: arkouda.dtypes.int_scalars) -> pdarray
-
-      Compute the maximum "k" values.
-
-      :param k: The desired count of maximum values to be returned by the output.
-      :type k: int_scalars
-
-      :returns: The maximum `k` values from pda
-      :rtype: pdarray, int
-
-      :raises TypeError: Raised if pda is not a pdarray
-
-
-   .. py:method:: argmink(k: arkouda.dtypes.int_scalars) -> pdarray
-
-      Compute the minimum "k" values.
-
-      :param k: The desired count of maximum values to be returned by the output.
-      :type k: int_scalars
-
-      :returns: Indices corresponding to the maximum `k` values from pda
-      :rtype: pdarray, int
-
-      :raises TypeError: Raised if pda is not a pdarray
 
 
    .. py:method:: argmaxk(k: arkouda.dtypes.int_scalars) -> pdarray
@@ -377,47 +633,22 @@ Functions
       :raises TypeError: Raised if pda is not a pdarray
 
 
-   .. py:method:: popcount() -> pdarray
+   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
 
-      Find the population (number of bits set) in each element. See `ak.popcount`.
-
-
-   .. py:method:: parity() -> pdarray
-
-      Find the parity (XOR of all bits) in each element. See `ak.parity`.
+      Return the index of the first occurrence of the array min value
 
 
-   .. py:method:: clz() -> pdarray
+   .. py:method:: argmink(k: arkouda.dtypes.int_scalars) -> pdarray
 
-      Count the number of leading zeros in each element. See `ak.clz`.
+      Compute the minimum "k" values.
 
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
 
-   .. py:method:: ctz() -> pdarray
+      :returns: Indices corresponding to the maximum `k` values from pda
+      :rtype: pdarray, int
 
-      Count the number of trailing zeros in each element. See `ak.ctz`.
-
-
-   .. py:method:: rotl(other) -> pdarray
-
-      Rotate bits left by <other>.
-
-
-   .. py:method:: rotr(other) -> pdarray
-
-      Rotate bits right by <other>.
-
-
-   .. py:method:: value_counts()
-
-      Count the occurrences of the unique values of self.
-
-      :returns: * **unique_values** (*pdarray*) -- The unique values, sorted in ascending order
-                * **counts** (*pdarray, int64*) -- The number of times the corresponding unique value occurs
-
-      .. rubric:: Examples
-
-      >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
-      (array([0, 2, 4]), array([3, 2, 1]))
+      :raises TypeError: Raised if pda is not a pdarray
 
 
    .. py:method:: astype(dtype) -> pdarray
@@ -435,32 +666,36 @@ Functions
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
 
-   .. py:method:: slice_bits(low, high) -> pdarray
+   .. py:method:: attach(user_defined_name: str) -> pdarray
+      :staticmethod:
 
-      Returns a pdarray containing only bits from low to high of self.
+      class method to return a pdarray attached to the registered name in the arkouda
+      server which was registered using register()
 
-      This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
-      pda.slice_bits(0, 63)
+      :param user_defined_name: user defined name which array was registered under
+      :type user_defined_name: str
 
-      :param low: The lowest bit included in the slice (inclusive)
-                  zero indexed, so the first bit is 0
-      :type low: int
-      :param high: The highest bit included in the slice (inclusive)
-      :type high: int
-
-      :returns: A new pdarray containing the bits of self from low to high
+      :returns: pdarray which is bound to the corresponding server side component which was registered
+                with user_defined_name
       :rtype: pdarray
 
-      :raises RuntimeError: Raised if there is a server-side error thrown
+      :raises TypeError: Raised if user_defined_name is not a str
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
+
+      .. rubric:: Notes
+
+      Registered names/pdarrays in the server are immune to deletion
+      until they are unregistered.
 
       .. rubric:: Examples
 
-      >>> p = ak.array([2**65 + (2**64 - 1)])
-      >>> bin(p[0])
-      '0b101111111111111111111111111111111111111111111111111111111111111111'
-
-      >>> bin(p.slice_bits(64, 65)[0])
-      '0b10'
+      >>> a = zeros(100)
+      >>> a.register("my_zeros")
+      >>> # potentially disconnect from server and reconnect to server
+      >>> b = ak.pdarray.attach("my_zeros")
+      >>> # ...other work...
+      >>> b.unregister()
 
 
    .. py:method:: bigint_to_uint_arrays() -> List[pdarray]
@@ -489,6 +724,217 @@ Functions
       [array([1 1 1 1 1]), array([0 1 2 3 4])]
 
 
+   .. py:method:: clz() -> pdarray
+
+      Count the number of leading zeros in each element. See `ak.clz`.
+
+
+   .. py:method:: corr(y: pdarray) -> numpy.float64
+
+      Compute the correlation between self and y using pearson correlation coefficient.
+
+      :param y: Other pdarray used to calculate correlation
+      :type y: pdarray
+
+      :returns: The scalar correlation of the two arrays
+      :rtype: np.float64
+
+      :raises TypeError: Raised if y is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. py:method:: cov(y: pdarray) -> numpy.float64
+
+      Compute the covariance between self and y.
+
+      :param y: Other pdarray used to calculate covariance
+      :type y: pdarray
+
+      :returns: The scalar covariance of the two arrays
+      :rtype: np.float64
+
+      :raises TypeError: Raised if y is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. py:method:: ctz() -> pdarray
+
+      Count the number of trailing zeros in each element. See `ak.ctz`.
+
+
+   .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
+
+      Fill the array (in place) with a constant value.
+
+      :param value:
+      :type value: numeric_scalars
+
+      :raises TypeError: Raised if value is not an int, int64, float, or float64
+
+
+   .. py:method:: format_other(other) -> str
+
+      Attempt to cast scalar other to the element dtype of this pdarray,
+      and print the resulting value to a string (e.g. for sending to a
+      server command). The user should not call this function directly.
+
+      :param other: The scalar to be cast to the pdarray.dtype
+      :type other: object
+
+      :rtype: string representation of np.dtype corresponding to the other parameter
+
+      :raises TypeError: Raised if the other parameter cannot be converted to
+          Numpy dtype
+
+
+   .. py:method:: info() -> str
+
+      Returns a JSON formatted string containing information about all components of self
+
+      :param None:
+
+      :returns: JSON string containing information about all components of self
+      :rtype: str
+
+
+   .. py:method:: is_registered() -> numpy.bool_
+
+      Return True iff the object is contained in the registry
+
+      :param None:
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+      .. note::
+
+         This will return True if the object is registered itself or as a component
+         of another object
+
+
+   .. py:method:: is_sorted() -> numpy.bool_
+
+      Return True iff the array is monotonically non-decreasing.
+
+      :param None:
+
+      :returns: Indicates if the array is monotonically non-decreasing
+      :rtype: bool
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. py:method:: max() -> arkouda.dtypes.numpy_scalars
+
+      Return the maximum value of the array.
+
+
+   .. py:method:: maxk(k: arkouda.dtypes.int_scalars) -> pdarray
+
+      Compute the maximum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: The maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. py:method:: mean() -> numpy.float64
+
+      Return the mean of the array.
+
+
+   .. py:method:: min() -> arkouda.dtypes.numpy_scalars
+
+      Return the minimum value of the array.
+
+
+   .. py:method:: mink(k: arkouda.dtypes.int_scalars) -> pdarray
+
+      Compute the minimum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: The maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. py:method:: opeq(other, op)
+
+
+   .. py:method:: parity() -> pdarray
+
+      Find the parity (XOR of all bits) in each element. See `ak.parity`.
+
+
+   .. py:method:: popcount() -> pdarray
+
+      Find the population (number of bits set) in each element. See `ak.popcount`.
+
+
+   .. py:method:: pretty_print_info() -> None
+
+      Prints information about all components of self in a human readable format
+
+      :param None:
+
+      :rtype: None
+
+
+   .. py:method:: prod() -> numpy.float64
+
+      Return the product of all elements in the array. Return value is
+      always a np.float64 or np.int64.
+
+
+   .. py:method:: register(user_defined_name: str) -> pdarray
+
+      Register this pdarray with a user defined name in the arkouda server
+      so it can be attached to later using pdarray.attach()
+      This is an in-place operation, registering a pdarray more than once will
+      update the name in the registry and remove the previously registered name.
+      A name can only be registered to one pdarray at a time.
+
+      :param user_defined_name: user defined name array is to be registered under
+      :type user_defined_name: str
+
+      :returns: The same pdarray which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support a
+                fluid programming style.
+                Please note you cannot register two different pdarrays with the same name.
+      :rtype: pdarray
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the pdarray with the user_defined_name
+          If the user is attempting to register more than one pdarray with the same name,
+          the former should be unregistered first to free up the registration name.
+
+      .. seealso:: :obj:`attach`, :obj:`unregister`, :obj:`is_registered`, :obj:`list_registry`, :obj:`unregister_pdarray_by_name`
+
+      .. rubric:: Notes
+
+      Registered names/pdarrays in the server are immune to deletion
+      until they are unregistered.
+
+      .. rubric:: Examples
+
+      >>> a = zeros(100)
+      >>> a.register("my_zeros")
+      >>> # potentially disconnect from server and reconnect to server
+      >>> b = ak.pdarray.attach("my_zeros")
+      >>> # ...other work...
+      >>> b.unregister()
+
+
    .. py:method:: reshape(*shape, order='row_major')
 
       Gives a new shape to an array without changing its data.
@@ -506,280 +952,14 @@ Functions
       :rtype: ArrayView
 
 
-   .. py:method:: to_ndarray() -> numpy.ndarray
+   .. py:method:: rotl(other) -> pdarray
 
-      Convert the array to a np.ndarray, transferring array data from the
-      Arkouda server to client-side Python. Note: if the pdarray size exceeds
-      client.maxTransferBytes, a RuntimeError is raised.
+      Rotate bits left by <other>.
 
-      :returns: A numpy ndarray with the same attributes and data as the pdarray
-      :rtype: np.ndarray
 
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
+   .. py:method:: rotr(other) -> pdarray
 
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :obj:`array`, :obj:`to_list`
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(0, 5, 1)
-      >>> a.to_ndarray()
-      array([0, 1, 2, 3, 4])
-
-      >>> type(a.to_ndarray())
-      numpy.ndarray
-
-
-   .. py:method:: to_list() -> List
-
-      Convert the array to a list, transferring array data from the
-      Arkouda server to client-side Python. Note: if the pdarray size exceeds
-      client.maxTransferBytes, a RuntimeError is raised.
-
-      :returns: A list with the same data as the pdarray
-      :rtype: list
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :obj:`to_ndarray`
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(0, 5, 1)
-      >>> a.to_list()
-      [0, 1, 2, 3, 4]
-
-      >>> type(a.to_list())
-      list
-
-
-   .. py:method:: to_cuda()
-
-      Convert the array to a Numba DeviceND array, transferring array data from the
-      arkouda server to Python via ndarray. If the array exceeds a builtin size limit,
-      a RuntimeError is raised.
-
-      :returns: A Numba ndarray with the same attributes and data as the pdarray; on GPU
-      :rtype: numba.DeviceNDArray
-
-      :raises ImportError: Raised if CUDA is not available
-      :raises ModuleNotFoundError: Raised if Numba is either not installed or not enabled
-      :raises RuntimeError: Raised if there is a server-side error thrown in the course of retrieving
-          the pdarray.
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :obj:`array`
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(0, 5, 1)
-      >>> a.to_cuda()
-      array([0, 1, 2, 3, 4])
-
-      >>> type(a.to_cuda())
-      numpy.devicendarray
-
-
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
-
-      Save the pdarray to Parquet. The result is a collection of files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path. Each locale saves its chunk of the array to its
-      corresponding file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Sets the compression type used with Parquet files
-      :type compression: str (Optional)
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-
-      .. rubric:: Notes
-
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`.
-      - 'append' write mode is supported, but is not efficient.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(25)
-      >>> # Saving without an extension
-      >>> a.to_parquet('path/prefix', dataset='array')
-      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
-      >>> # Saving with an extension (HDF5)
-      >>> a.to_parqet('path/prefix.parquet', dataset='array')
-      Saves the array to numLocales HDF5 files with the name
-      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
-
-
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
-
-      Save the pdarray to HDF5.
-      The object can be saved to a collection of files or single file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-
-      .. rubric:: Notes
-
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(25)
-      >>> # Saving without an extension
-      >>> a.to_hdf('path/prefix', dataset='array')
-      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
-      >>> # Saving with an extension (HDF5)
-      >>> a.to_hdf('path/prefix.h5', dataset='array')
-      Saves the array to numLocales HDF5 files with the name
-      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
-      >>> # Saving to a single file
-      >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
-      Saves the array in to single hdf5 file on the root node.
-      ``cwd/path/name_prefix.hdf5``
-
-
-   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
-
-      Overwrite the dataset with the name provided with this pdarray. If
-      the dataset does not exist it is added
-
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files
-      :type dataset: str
-      :param repack: Default: True
-                     HDF5 does not release memory on delete. When True, the inaccessible
-                     data (that was overwritten) is removed. When False, the data remains, but is
-                     inaccessible. Setting to false will yield better performance, but will cause
-                     file sizes to expand.
-      :type repack: bool
-
-      :rtype: str - success message if successful
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-
-      .. rubric:: Notes
-
-      - If file does not contain File_Format attribute to indicate how it was saved,
-        the file name is checked for _LOCALE#### to determine if it is distributed.
-      - If the dataset provided does not exist, it will be added
-
-
-   .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
-
-              Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
-              All CSV Files written by Arkouda include a header denoting data types of the columns.
-
-              Parameters
-              -----------
-              prefix_path: str
-                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-                  when they are written to disk.
-              dataset: str
-                  Column name to save the pdarray under. Defaults to "array".
-              col_delim: str
-                  Defaults to ",". Value to be used to separate columns within the file.
-                  Please be sure that the value used DOES NOT appear in your dataset.
-              overwrite: bool
-                  Defaults to False. If True, any existing files matching your provided prefix_path will
-                  be overwritten. If False, an error will be returned if existing files are found.
-
-              Returns
-              --------
-              str reponse message
-
-              Raises
-              ------
-              ValueError
-                  Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist
-              RuntimeError
-                  Raised if one or more of the specified files cannot be opened.
-                  If `allow_errors` is true this may be raised if no values are returned
-                  from the server.
-              TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server
-
-              Notes
-              ------
-              - CSV format is not currently supported by load/load_all operations
-              - The column delimiter is expected to be the same for column names and data
-              - Be sure that column delimiters are not found within your data.
-              - All CSV files must delimit rows using newline (`
-      `) at this time.
-
+      Rotate bits right by <other>.
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -852,43 +1032,326 @@ Functions
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
-   .. py:method:: register(user_defined_name: str) -> pdarray
+   .. py:method:: slice_bits(low, high) -> pdarray
 
-      Register this pdarray with a user defined name in the arkouda server
-      so it can be attached to later using pdarray.attach()
-      This is an in-place operation, registering a pdarray more than once will
-      update the name in the registry and remove the previously registered name.
-      A name can only be registered to one pdarray at a time.
+      Returns a pdarray containing only bits from low to high of self.
 
-      :param user_defined_name: user defined name array is to be registered under
-      :type user_defined_name: str
+      This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
+      pda.slice_bits(0, 63)
 
-      :returns: The same pdarray which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support a
-                fluid programming style.
-                Please note you cannot register two different pdarrays with the same name.
+      :param low: The lowest bit included in the slice (inclusive)
+                  zero indexed, so the first bit is 0
+      :type low: int
+      :param high: The highest bit included in the slice (inclusive)
+      :type high: int
+
+      :returns: A new pdarray containing the bits of self from low to high
       :rtype: pdarray
 
-      :raises TypeError: Raised if user_defined_name is not a str
-      :raises RegistrationError: If the server was unable to register the pdarray with the user_defined_name
-          If the user is attempting to register more than one pdarray with the same name,
-          the former should be unregistered first to free up the registration name.
-
-      .. seealso:: :obj:`attach`, :obj:`unregister`, :obj:`is_registered`, :obj:`list_registry`, :obj:`unregister_pdarray_by_name`
-
-      .. rubric:: Notes
-
-      Registered names/pdarrays in the server are immune to deletion
-      until they are unregistered.
+      :raises RuntimeError: Raised if there is a server-side error thrown
 
       .. rubric:: Examples
 
-      >>> a = zeros(100)
-      >>> a.register("my_zeros")
-      >>> # potentially disconnect from server and reconnect to server
-      >>> b = ak.pdarray.attach("my_zeros")
-      >>> # ...other work...
-      >>> b.unregister()
+      >>> p = ak.array([2**65 + (2**64 - 1)])
+      >>> bin(p[0])
+      '0b101111111111111111111111111111111111111111111111111111111111111111'
+
+      >>> bin(p.slice_bits(64, 65)[0])
+      '0b10'
+
+
+   .. py:method:: std(ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+
+      Compute the standard deviation. See ``arkouda.std`` for details.
+
+      :param ddof: "Delta Degrees of Freedom" used in calculating std
+      :type ddof: int_scalars
+
+      :returns: The scalar standard deviation of the array
+      :rtype: np.float64
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. py:method:: sum() -> arkouda.dtypes.numeric_and_bool_scalars
+
+      Return the sum of all elements in the array.
+
+
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
+
+              Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the pdarray under. Defaults to "array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
+
+
+   .. py:method:: to_cuda()
+
+      Convert the array to a Numba DeviceND array, transferring array data from the
+      arkouda server to Python via ndarray. If the array exceeds a builtin size limit,
+      a RuntimeError is raised.
+
+      :returns: A Numba ndarray with the same attributes and data as the pdarray; on GPU
+      :rtype: numba.DeviceNDArray
+
+      :raises ImportError: Raised if CUDA is not available
+      :raises ModuleNotFoundError: Raised if Numba is either not installed or not enabled
+      :raises RuntimeError: Raised if there is a server-side error thrown in the course of retrieving
+          the pdarray.
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.to_cuda()
+      array([0, 1, 2, 3, 4])
+
+      >>> type(a.to_cuda())
+      numpy.devicendarray
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+      Save the pdarray to HDF5.
+      The object can be saved to a collection of files or single file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+      the file name will be `prefix_path`.
+      - If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      - Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(25)
+      >>> # Saving without an extension
+      >>> a.to_hdf('path/prefix', dataset='array')
+      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
+      >>> # Saving with an extension (HDF5)
+      >>> a.to_hdf('path/prefix.h5', dataset='array')
+      Saves the array to numLocales HDF5 files with the name
+      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
+      >>> # Saving to a single file
+      >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
+      Saves the array in to single hdf5 file on the root node.
+      ``cwd/path/name_prefix.hdf5``
+
+
+   .. py:method:: to_list() -> List
+
+      Convert the array to a list, transferring array data from the
+      Arkouda server to client-side Python. Note: if the pdarray size exceeds
+      client.maxTransferBytes, a RuntimeError is raised.
+
+      :returns: A list with the same data as the pdarray
+      :rtype: list
+
+      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
+          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+          received does not match expected number of bytes
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`to_ndarray`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.to_list()
+      [0, 1, 2, 3, 4]
+
+      >>> type(a.to_list())
+      list
+
+
+   .. py:method:: to_ndarray() -> numpy.ndarray
+
+      Convert the array to a np.ndarray, transferring array data from the
+      Arkouda server to client-side Python. Note: if the pdarray size exceeds
+      client.maxTransferBytes, a RuntimeError is raised.
+
+      :returns: A numpy ndarray with the same attributes and data as the pdarray
+      :rtype: np.ndarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
+          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+          received does not match expected number of bytes
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`, :obj:`to_list`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.to_ndarray()
+      array([0, 1, 2, 3, 4])
+
+      >>> type(a.to_ndarray())
+      numpy.ndarray
+
+
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
+
+      Save the pdarray to Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales`` for `file_type='distribute'`.
+      - 'append' write mode is supported, but is not efficient.
+      - If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      - Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(25)
+      >>> # Saving without an extension
+      >>> a.to_parquet('path/prefix', dataset='array')
+      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
+      >>> # Saving with an extension (HDF5)
+      >>> a.to_parqet('path/prefix.parquet', dataset='array')
+      Saves the array to numLocales HDF5 files with the name
+      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
+
+
+   .. py:method:: transfer(hostname: str, port: arkouda.dtypes.int_scalars)
+
+      Sends a pdarray to a different Arkouda server
+
+      :param hostname: The hostname where the Arkouda server intended to
+                       receive the pdarray is running.
+      :type hostname: str
+      :param port: The port to send the array over. This needs to be an
+                   open port (i.e., not one that the Arkouda server is
+                   running on). This will open up `numLocales` ports,
+                   each of which in succession, so will use ports of the
+                   range {port..(port+numLocales)} (e.g., running an
+                   Arkouda server of 4 nodes, port 1234 is passed as
+                   `port`, Arkouda will use ports 1234, 1235, 1236,
+                   and 1237 to send the array data).
+                   This port much match the port passed to the call to
+                   `ak.receive_array()`.
+      :type port: int_scalars
+
+      :rtype: A message indicating a complete transfer
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
 
 
    .. py:method:: unregister() -> None
@@ -918,484 +1381,60 @@ Functions
       >>> b.unregister()
 
 
-   .. py:method:: attach(user_defined_name: str) -> pdarray
-      :staticmethod:
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
 
-      class method to return a pdarray attached to the registered name in the arkouda
-      server which was registered using register()
+      Overwrite the dataset with the name provided with this pdarray. If
+      the dataset does not exist it is added
 
-      :param user_defined_name: user defined name which array was registered under
-      :type user_defined_name: str
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
 
-      :returns: pdarray which is bound to the corresponding server side component which was registered
-                with user_defined_name
-      :rtype: pdarray
+      :rtype: str - success message if successful
 
-      :raises TypeError: Raised if user_defined_name is not a str
-
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
 
       .. rubric:: Notes
 
-      Registered names/pdarrays in the server are immune to deletion
-      until they are unregistered.
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
+   .. py:method:: value_counts()
+
+      Count the occurrences of the unique values of self.
+
+      :returns: * **unique_values** (*pdarray*) -- The unique values, sorted in ascending order
+                * **counts** (*pdarray, int64*) -- The number of times the corresponding unique value occurs
 
       .. rubric:: Examples
 
-      >>> a = zeros(100)
-      >>> a.register("my_zeros")
-      >>> # potentially disconnect from server and reconnect to server
-      >>> b = ak.pdarray.attach("my_zeros")
-      >>> # ...other work...
-      >>> b.unregister()
+      >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
+      (array([0, 2, 4]), array([3, 2, 1]))
 
 
+   .. py:method:: var(ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
 
-.. py:function:: clear() -> None
+      Compute the variance. See ``arkouda.var`` for details.
 
-   Send a clear message to clear all unregistered data from the server symbol table
+      :param ddof: "Delta Degrees of Freedom" used in calculating var
+      :type ddof: int_scalars
 
-   :rtype: None
+      :returns: The scalar variance of the array
+      :rtype: np.float64
 
-   :raises RuntimeError: Raised if there is a server-side error in executing clear request
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises ValueError: Raised if the ddof >= pdarray size
+      :raises RuntimeError: Raised if there's a server-side error thrown
 
-
-.. py:function:: any(pda: pdarray) -> numpy.bool_
-
-   Return True iff any element of the array evaluates to True.
-
-   :param pda: The pdarray instance to be evaluated
-   :type pda: pdarray
-
-   :returns: Indicates if 1..n pdarray elements evaluate to True
-   :rtype: bool
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: all(pda: pdarray) -> numpy.bool_
-
-   Return True iff all elements of the array evaluate to True.
-
-   :param pda: The pdarray instance to be evaluated
-   :type pda: pdarray
-
-   :returns: Indicates if all pdarray elements evaluate to True
-   :rtype: bool
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: is_sorted(pda: pdarray) -> numpy.bool_
-
-   Return True iff the array is monotonically non-decreasing.
-
-   :param pda: The pdarray instance to be evaluated
-   :type pda: pdarray
-
-   :returns: Indicates if the array is monotonically non-decreasing
-   :rtype: bool
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: sum(pda: pdarray) -> numpy.float64
-
-   Return the sum of all elements in the array.
-
-   :param pda: Values for which to calculate the sum
-   :type pda: pdarray
-
-   :returns: The sum of all elements in the array
-   :rtype: np.float64
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: prod(pda: pdarray) -> numpy.float64
-
-   Return the product of all elements in the array. Return value is
-   always a np.float64 or np.int64
-
-   :param pda: Values for which to calculate the product
-   :type pda: pdarray
-
-   :returns: The product calculated from the pda
-   :rtype: numpy_scalars
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: min(pda: pdarray) -> arkouda.dtypes.numpy_scalars
-
-   Return the minimum value of the array.
-
-   :param pda: Values for which to calculate the min
-   :type pda: pdarray
-
-   :returns: The min calculated from the pda
-   :rtype: numpy_scalars
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: max(pda: pdarray) -> arkouda.dtypes.numpy_scalars
-
-   Return the maximum value of the array.
-
-   :param pda: Values for which to calculate the max
-   :type pda: pdarray
-
-   :returns: The max calculated from the pda
-   :rtype: numpy_scalars
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: argmin(pda: pdarray) -> Union[numpy.int64, numpy.uint64]
-
-   Return the index of the first occurrence of the array min value.
-
-   :param pda: Values for which to calculate the argmin
-   :type pda: pdarray
-
-   :returns: The index of the argmin calculated from the pda
-   :rtype: Union[np.int64, np.uint64]
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: argmax(pda: pdarray) -> Union[numpy.int64, numpy.uint64]
-
-   Return the index of the first occurrence of the array max value.
-
-   :param pda: Values for which to calculate the argmax
-   :type pda: pdarray
-
-   :returns: The index of the argmax calculated from the pda
-   :rtype: Union[np.int64, np.uint64]
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: mean(pda: pdarray) -> numpy.float64
-
-   Return the mean of the array.
-
-   :param pda: Values for which to calculate the mean
-   :type pda: pdarray
-
-   :returns: The mean calculated from the pda sum and size
-   :rtype: np.float64
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: var(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
-
-   Return the variance of values in the array.
-
-   :param pda: Values for which to calculate the variance
-   :type pda: pdarray
-   :param ddof: "Delta Degrees of Freedom" used in calculating var
-   :type ddof: int_scalars
-
-   :returns: The scalar variance of the array
-   :rtype: np.float64
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises ValueError: Raised if the ddof >= pdarray size
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-   .. seealso:: :obj:`mean`, :obj:`std`
-
-   .. rubric:: Notes
-
-   The variance is the average of the squared deviations from the mean,
-   i.e.,  ``var = mean((x - x.mean())**2)``.
-
-   The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
-   If, however, `ddof` is specified, the divisor ``N - ddof`` is used
-   instead.  In standard statistical practice, ``ddof=1`` provides an
-   unbiased estimator of the variance of a hypothetical infinite population.
-   ``ddof=0`` provides a maximum likelihood estimate of the variance for
-   normally distributed variables.
-
-
-.. py:function:: std(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
-
-   Return the standard deviation of values in the array. The standard
-   deviation is implemented as the square root of the variance.
-
-   :param pda: values for which to calculate the standard deviation
-   :type pda: pdarray
-   :param ddof: "Delta Degrees of Freedom" used in calculating std
-   :type ddof: int_scalars
-
-   :returns: The scalar standard deviation of the array
-   :rtype: np.float64
-
-   :raises TypeError: Raised if pda is not a pdarray instance or ddof is not an integer
-   :raises ValueError: Raised if ddof is an integer < 0
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-   .. seealso:: :obj:`mean`, :obj:`var`
-
-   .. rubric:: Notes
-
-   The standard deviation is the square root of the average of the squared
-   deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
-
-   The average squared deviation is normally calculated as
-   ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
-   the divisor ``N - ddof`` is used instead. In standard statistical
-   practice, ``ddof=1`` provides an unbiased estimator of the variance
-   of the infinite population. ``ddof=0`` provides a maximum likelihood
-   estimate of the variance for normally distributed variables. The
-   standard deviation computed in this function is the square root of
-   the estimated variance, so even with ``ddof=1``, it will not be an
-   unbiased estimate of the standard deviation per se.
-
-
-.. py:function:: cov(x: pdarray, y: pdarray) -> numpy.float64
-
-   Return the covariance of x and y
-
-   :param x: One of the pdarrays used to calculate covariance
-   :type x: pdarray
-   :param y: One of the pdarrays used to calculate covariance
-   :type y: pdarray
-
-   :returns: The scalar covariance of the two pdarrays
-   :rtype: np.float64
-
-   :raises TypeError: Raised if x or y is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-   .. seealso:: :obj:`mean`, :obj:`var`
-
-   .. rubric:: Notes
-
-   The covariance is calculated by
-   ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
-
-
-.. py:function:: corr(x: pdarray, y: pdarray) -> numpy.float64
-
-   Return the correlation between x and y
-
-   :param x: One of the pdarrays used to calculate correlation
-   :type x: pdarray
-   :param y: One of the pdarrays used to calculate correlation
-   :type y: pdarray
-
-   :returns: The scalar correlation of the two pdarrays
-   :rtype: np.float64
-
-   :raises TypeError: Raised if x or y is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-   .. seealso:: :obj:`std`, :obj:`cov`
-
-   .. rubric:: Notes
-
-   The correlation is calculated by
-   cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
-
-
-.. py:function:: divmod(x: Union[arkouda.dtypes.numeric_scalars, pdarray], y: Union[arkouda.dtypes.numeric_scalars, pdarray], where: Union[bool, pdarray] = True) -> Tuple[pdarray, pdarray]
-
-   :param x: The dividend array, the values that will be the numerator of the floordivision and will be
-             acted on by the bases for modular division.
-   :type x: numeric_scalars(float_scalars, int_scalars) or pdarray
-   :param y: The divisor array, the values that will be the denominator of the division and will be the
-             bases for the modular division.
-   :type y: numeric_scalars(float_scalars, int_scalars) or pdarray
-   :param where: This condition is broadcast over the input. At locations where the condition is True, the
-                 corresponding value will be divided using floor and modular division. Elsewhere, it will retain
-                 its original value. Default set to True.
-   :type where: Boolean or pdarray
-
-   :returns: Returns a tuple that contains quotient and remainder of the division
-   :rtype: (pdarray, pdarray)
-
-   :raises TypeError: At least one entry must be a pdarray
-   :raises ValueError: If both inputs are both pdarrays, their size must match
-   :raises ZeroDivisionError: No entry in y is allowed to be 0, to prevent division by zero
-
-   .. rubric:: Notes
-
-   The div is calculated by x // y
-   The mod is calculated by x % y
-
-   .. rubric:: Examples
-
-   >>> x = ak.arange(5, 10)
-   >>> y = ak.array([2, 1, 4, 5, 8])
-   >>> ak.divmod(x,y)
-   (array([2 6 1 1 1]), array([1 0 3 3 1]))
-   >>> ak.divmod(x,y, x % 2 == 0)
-   (array([5 6 7 1 9]), array([5 0 7 3 9]))
-
-
-.. py:function:: mink(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
-
-   Find the `k` minimum values of an array.
-
-   Returns the smallest `k` values of an array, sorted
-
-   :param pda: Input array.
-   :type pda: pdarray
-   :param k: The desired count of minimum values to be returned by the output.
-   :type k: int_scalars
-
-   :returns: The minimum `k` values from pda, sorted
-   :rtype: pdarray
-
-   :raises TypeError: Raised if pda is not a pdarray
-   :raises ValueError: Raised if the pda is empty or k < 1
-
-   .. rubric:: Notes
-
-   This call is equivalent in value to:
-
-       a[ak.argsort(a)[:k]]
-
-   and generally outperforms this operation.
-
-   This reduction will see a significant drop in performance as `k` grows
-   beyond a certain value. This value is system dependent, but generally
-   about a `k` of 5 million is where performance degredation has been observed.
-
-   .. rubric:: Examples
-
-   >>> A = ak.array([10,5,1,3,7,2,9,0])
-   >>> ak.mink(A, 3)
-   array([0, 1, 2])
-   >>> ak.mink(A, 4)
-   array([0, 1, 2, 3])
-
-
-.. py:function:: maxk(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
-
-   Find the `k` maximum values of an array.
-
-   Returns the largest `k` values of an array, sorted
-
-   :param pda: Input array.
-   :type pda: pdarray
-   :param k: The desired count of maximum values to be returned by the output.
-   :type k: int_scalars
-
-   :returns: The maximum `k` values from pda, sorted
-   :rtype: pdarray, int
-
-   :raises TypeError: Raised if pda is not a pdarray or k is not an integer
-   :raises ValueError: Raised if the pda is empty or k < 1
-
-   .. rubric:: Notes
-
-   This call is equivalent in value to:
-
-       a[ak.argsort(a)[k:]]
-
-   and generally outperforms this operation.
-
-   This reduction will see a significant drop in performance as `k` grows
-   beyond a certain value. This value is system dependent, but generally
-   about a `k` of 5 million is where performance degredation has been observed.
-
-   .. rubric:: Examples
-
-   >>> A = ak.array([10,5,1,3,7,2,9,0])
-   >>> ak.maxk(A, 3)
-   array([7, 9, 10])
-   >>> ak.maxk(A, 4)
-   array([5, 7, 9, 10])
-
-
-.. py:function:: argmink(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
-
-   Finds the indices corresponding to the `k` minimum values of an array.
-
-   :param pda: Input array.
-   :type pda: pdarray
-   :param k: The desired count of indices corresponding to minimum array values
-   :type k: int_scalars
-
-   :returns: The indices of the minimum `k` values from the pda, sorted
-   :rtype: pdarray, int
-
-   :raises TypeError: Raised if pda is not a pdarray or k is not an integer
-   :raises ValueError: Raised if the pda is empty or k < 1
-
-   .. rubric:: Notes
-
-   This call is equivalent in value to:
-
-       ak.argsort(a)[:k]
-
-   and generally outperforms this operation.
-
-   This reduction will see a significant drop in performance as `k` grows
-   beyond a certain value. This value is system dependent, but generally
-   about a `k` of 5 million is where performance degradation has been observed.
-
-   .. rubric:: Examples
-
-   >>> A = ak.array([10,5,1,3,7,2,9,0])
-   >>> ak.argmink(A, 3)
-   array([7, 2, 5])
-   >>> ak.argmink(A, 4)
-   array([7, 2, 5, 3])
-
-
-.. py:function:: argmaxk(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
-
-   Find the indices corresponding to the `k` maximum values of an array.
-
-   Returns the largest `k` values of an array, sorted
-
-   :param pda: Input array.
-   :type pda: pdarray
-   :param k: The desired count of indices corresponding to maxmum array values
-   :type k: int_scalars
-
-   :returns: The indices of the maximum `k` values from the pda, sorted
-   :rtype: pdarray, int
-
-   :raises TypeError: Raised if pda is not a pdarray or k is not an integer
-   :raises ValueError: Raised if the pda is empty or k < 1
-
-   .. rubric:: Notes
-
-   This call is equivalent in value to:
-
-       ak.argsort(a)[k:]
-
-   and generally outperforms this operation.
-
-   This reduction will see a significant drop in performance as `k` grows
-   beyond a certain value. This value is system dependent, but generally
-   about a `k` of 5 million is where performance degradation has been observed.
-
-   .. rubric:: Examples
-
-   >>> A = ak.array([10,5,1,3,7,2,9,0])
-   >>> ak.argmaxk(A, 3)
-   array([4, 6, 0])
-   >>> ak.argmaxk(A, 4)
-   array([1, 4, 6, 0])
 
 
 .. py:function:: popcount(pda: pdarray) -> pdarray
@@ -1417,65 +1456,51 @@ Functions
    array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
 
 
-.. py:function:: parity(pda: pdarray) -> pdarray
+.. py:function:: power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdarray] = True) -> pdarray
 
-   Find the bit parity (XOR of all bits) for each integer in an array.
+   Raises an array to a power. If where is given, the operation will only take place in the positions
+   where the where condition is True.
 
-   :param pda: Input array (must be integral).
-   :type pda: pdarray, int64, uint64, bigint
+   Note:
+   Our implementation of the where argument deviates from numpy. The difference in behavior occurs
+   at positions where the where argument contains a False. In numpy, these position will have
+   uninitialized memory (which can contain anything and will vary between runs). We have chosen to
+   instead return the value of the original array in these positions.
 
-   :returns: **parity** -- The parity of each element: 0 if even number of bits set, 1 if odd.
-   :rtype: pdarray
+   :param pda: A pdarray of values that will be raised to a power (pwr)
+   :type pda: pdarray
+   :param pwr: The power(s) that pda is raised to
+   :type pwr: integer, float, or pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True, the
+                 corresponding value will be raised to the respective power. Elsewhere, it will retain its
+                 original value. Default set to True.
+   :type where: Boolean or pdarray
 
-   :raises TypeError: If input array is not int64, uint64, or bigint
-
-   .. rubric:: Examples
-
-   >>> A = ak.arange(10)
-   >>> ak.parity(A)
-   array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
-
-
-.. py:function:: clz(pda: pdarray) -> pdarray
-
-   Count leading zeros for each integer in an array.
-
-   :param pda: Input array (must be integral).
-   :type pda: pdarray, int64, uint64, bigint
-
-   :returns: **lz** -- The number of leading zeros of each element.
-   :rtype: pdarray
-
-   :raises TypeError: If input array is not int64, uint64, or bigint
+   :returns: * *pdarray*
+             * *Returns a pdarray of values raised to a power, under the boolean where condition.*
 
    .. rubric:: Examples
 
-   >>> A = ak.arange(10)
-   >>> ak.clz(A)
-   array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
+   >>> a = ak.arange(5)
+   >>> ak.power(a, 3)
+   array([0, 1, 8, 27, 64])
+   >>> ak.power(a), 3, a % 2 == 0)
+   array([0, 1, 8, 3, 64])
 
 
-.. py:function:: ctz(pda: pdarray) -> pdarray
+.. py:function:: prod(pda: pdarray) -> numpy.float64
 
-   Count trailing zeros for each integer in an array.
+   Return the product of all elements in the array. Return value is
+   always a np.float64 or np.int64
 
-   :param pda: Input array (must be integral).
-   :type pda: pdarray, int64, uint64, bigint
+   :param pda: Values for which to calculate the product
+   :type pda: pdarray
 
-   :returns: **lz** -- The number of trailing zeros of each element.
-   :rtype: pdarray
+   :returns: The product calculated from the pda
+   :rtype: numpy_scalars
 
-   .. rubric:: Notes
-
-   ctz(0) is defined to be zero.
-
-   :raises TypeError: If input array is not int64, uint64, or bigint
-
-   .. rubric:: Examples
-
-   >>> A = ak.arange(10)
-   >>> ak.ctz(A)
-   array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. py:function:: rotl(x, rot) -> pdarray
@@ -1520,38 +1545,6 @@ Functions
    array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
 
 
-.. py:function:: power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdarray] = True) -> pdarray
-
-   Raises an array to a power. If where is given, the operation will only take place in the positions
-   where the where condition is True.
-
-   Note:
-   Our implementation of the where argument deviates from numpy. The difference in behavior occurs
-   at positions where the where argument contains a False. In numpy, these position will have
-   uninitialized memory (which can contain anything and will vary between runs). We have chosen to
-   instead return the value of the original array in these positions.
-
-   :param pda: A pdarray of values that will be raised to a power (pwr)
-   :type pda: pdarray
-   :param pwr: The power(s) that pda is raised to
-   :type pwr: integer, float, or pdarray
-   :param where: This condition is broadcast over the input. At locations where the condition is True, the
-                 corresponding value will be raised to the respective power. Elsewhere, it will retain its
-                 original value. Default set to True.
-   :type where: Boolean or pdarray
-
-   :returns: * *pdarray*
-             * *Returns a pdarray of values raised to a power, under the boolean where condition.*
-
-   .. rubric:: Examples
-
-   >>> a = ak.arange(5)
-   >>> ak.power(a, 3)
-   array([0, 1, 8, 27, 64])
-   >>> ak.power(a), 3, a % 2 == 0)
-   array([0, 1, 8, 3, 64])
-
-
 .. py:function:: sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray
 
    Takes the square root of array. If where is given, the operation will only take place in
@@ -1575,69 +1568,53 @@ Functions
    array([0, 1, 2, 3, 2])
 
 
-.. py:function:: mod(dividend, divisor) -> pdarray
+.. py:function:: std(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
 
-   Returns the element-wise remainder of division.
+   Return the standard deviation of values in the array. The standard
+   deviation is implemented as the square root of the variance.
 
-   Computes the remainder complementary to the floor_divide function.
-   It is equivalent to np.mod, the remainder has the same sign as the divisor.
+   :param pda: values for which to calculate the standard deviation
+   :type pda: pdarray
+   :param ddof: "Delta Degrees of Freedom" used in calculating std
+   :type ddof: int_scalars
 
-   :param dividend: The array being acted on by the bases for the modular division.
-   :param divisor: The array that will be the bases for the modular division.
+   :returns: The scalar standard deviation of the array
+   :rtype: np.float64
 
-   :returns: Returns an array that contains the element-wise remainder of division.
-   :rtype: pdarray
+   :raises TypeError: Raised if pda is not a pdarray instance or ddof is not an integer
+   :raises ValueError: Raised if ddof is an integer < 0
+   :raises RuntimeError: Raised if there's a server-side error thrown
 
-
-.. py:function:: fmod(dividend: Union[pdarray, arkouda.dtypes.numeric_scalars], divisor: Union[pdarray, arkouda.dtypes.numeric_scalars]) -> pdarray
-
-   Returns the element-wise remainder of division.
-
-   It is equivalent to np.fmod, the remainder has the same sign as the dividend.
-
-   :param dividend: The array being acted on by the bases for the modular division.
-   :type dividend: numeric scalars or pdarray
-   :param divisor: The array that will be the bases for the modular division.
-   :type divisor: numeric scalars or pdarray
-
-   :returns: Returns an array that contains the element-wise remainder of division.
-   :rtype: pdarray
-
-
-.. py:function:: broadcast_to_shape(pda: pdarray, shape: Tuple[int, Ellipsis]) -> pdarray
-
-   expand an array's rank to the specified shape using broadcasting
-
-
-.. py:function:: attach_pdarray(user_defined_name: str) -> pdarray
-
-   class method to return a pdarray attached to the registered name in the arkouda
-   server which was registered using register()
-
-   :param user_defined_name: user defined name which array was registered under
-   :type user_defined_name: str
-
-   :returns: pdarray which is bound to the corresponding server side component which was registered
-             with user_defined_name
-   :rtype: pdarray
-
-   :raises TypeError: Raised if user_defined_name is not a str
-
-   .. seealso:: :obj:`attach`, :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
+   .. seealso:: :obj:`mean`, :obj:`var`
 
    .. rubric:: Notes
 
-   Registered names/pdarrays in the server are immune to deletion
-   until they are unregistered.
+   The standard deviation is the square root of the average of the squared
+   deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
 
-   .. rubric:: Examples
+   The average squared deviation is normally calculated as
+   ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
+   the divisor ``N - ddof`` is used instead. In standard statistical
+   practice, ``ddof=1`` provides an unbiased estimator of the variance
+   of the infinite population. ``ddof=0`` provides a maximum likelihood
+   estimate of the variance for normally distributed variables. The
+   standard deviation computed in this function is the square root of
+   the estimated variance, so even with ``ddof=1``, it will not be an
+   unbiased estimate of the standard deviation per se.
 
-   >>> a = zeros(100)
-   >>> a.register("my_zeros")
-   >>> # potentially disconnect from server and reconnect to server
-   >>> b = ak.attach_pdarray("my_zeros")
-   >>> # ...other work...
-   >>> b.unregister()
+
+.. py:function:: sum(pda: pdarray) -> numpy.float64
+
+   Return the sum of all elements in the array.
+
+   :param pda: Values for which to calculate the sum
+   :type pda: pdarray
+
+   :returns: The sum of all elements in the array
+   :rtype: np.float64
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. py:function:: unregister_pdarray_by_name(user_defined_name: str) -> None
@@ -1669,11 +1646,34 @@ Functions
    >>> ak.unregister_pdarray_by_name(b)
 
 
-.. py:exception:: RegistrationError
+.. py:function:: var(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
 
+   Return the variance of values in the array.
 
-   Bases: :py:obj:`Exception`
+   :param pda: Values for which to calculate the variance
+   :type pda: pdarray
+   :param ddof: "Delta Degrees of Freedom" used in calculating var
+   :type ddof: int_scalars
 
-   Error/Exception used when the Arkouda Server cannot register an object
+   :returns: The scalar variance of the array
+   :rtype: np.float64
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises ValueError: Raised if the ddof >= pdarray size
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+   .. seealso:: :obj:`mean`, :obj:`std`
+
+   .. rubric:: Notes
+
+   The variance is the average of the squared deviations from the mean,
+   i.e.,  ``var = mean((x - x.mean())**2)``.
+
+   The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
+   If, however, `ddof` is specified, the divisor ``N - ddof`` is used
+   instead.  In standard statistical practice, ``ddof=1`` provides an
+   unbiased estimator of the variance of a hypothetical infinite population.
+   ``ddof=0`` provides a maximum likelihood estimate of the variance for
+   normally distributed variables.
 
 

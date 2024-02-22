@@ -195,9 +195,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../akmath/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akmath</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../akstats/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akstats</span></code></a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../akscipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.akscipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../akscipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy.special</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
 </ul>
 </li>
@@ -238,7 +240,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -291,20 +293,20 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.identity" title="arkouda.util.identity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identity</span></code></a>(x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.attach" title="arkouda.util.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>(name)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.get_callback" title="arkouda.util.get_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_callback</span></code></a>(x)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.attach_all" title="arkouda.util.attach_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_all</span></code></a>(names)</p></td>
+<td><p>Attach to all objects registered with the names provide</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.broadcast_dims" title="arkouda.util.broadcast_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_dims</span></code></a>(→ Tuple[int, Ellipsis])</p></td>
+<td><p>Algorithm to determine shape of broadcasted PD array given two array shapes</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.concatenate" title="arkouda.util.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concatenate</span></code></a>(items[, ordered])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.concatenate" title="arkouda.util.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concatenate</span></code></a>(items[, ordered])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.generic_concat" title="arkouda.util.generic_concat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic_concat</span></code></a>(items[, ordered])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>([pre])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.convert_if_categorical" title="arkouda.util.convert_if_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_if_categorical</span></code></a>(values)</p></td>
+<td><p>Convert a Categorical array to Strings for display</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.enrich_inplace" title="arkouda.util.enrich_inplace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enrich_inplace</span></code></a>(data, keynames, aggregations, **kwargs)</p></td>
 <td><p></p></td>
@@ -312,75 +314,90 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.expand" title="arkouda.util.expand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand</span></code></a>(size, segs, vals)</p></td>
 <td><p>Expand an array with values placed into the indicated segments.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.invert_permutation" title="arkouda.util.invert_permutation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">invert_permutation</span></code></a>(perm)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.generic_concat" title="arkouda.util.generic_concat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic_concat</span></code></a>(items[, ordered])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.get_callback" title="arkouda.util.get_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_callback</span></code></a>(x)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.identity" title="arkouda.util.identity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identity</span></code></a>(x)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.invert_permutation" title="arkouda.util.invert_permutation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">invert_permutation</span></code></a>(perm)</p></td>
 <td><p>Find the inverse of a permutation array.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.most_common" title="arkouda.util.most_common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">most_common</span></code></a>(g, values)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.convert_if_categorical" title="arkouda.util.convert_if_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_if_categorical</span></code></a>(values)</p></td>
-<td><p>Convert a Categorical array to Strings for display</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register" title="arkouda.util.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>(obj, name)</p></td>
-<td><p>Register an arkouda object with a user-specified name. Backwards compatible</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.attach" title="arkouda.util.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>(name)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.unregister" title="arkouda.util.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(name)</p></td>
-<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.is_registered" title="arkouda.util.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>(→ bool)</p></td>
 <td><p>Determine if the name provided is associated with a registered Object</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.most_common" title="arkouda.util.most_common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">most_common</span></code></a>(g, values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.register" title="arkouda.util.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>(obj, name)</p></td>
+<td><p>Register an arkouda object with a user-specified name. Backwards compatible</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register_all" title="arkouda.util.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data)</p></td>
 <td><p>Register all objects in the provided dictionary</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.unregister_all" title="arkouda.util.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>([pre])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.sparse_sum_help" title="arkouda.util.sparse_sum_help"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_sum_help</span></code></a>(idx1, idx2, val1, val2)</p></td>
+<td><p>Helper for summing two sparse matrices together</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.unregister" title="arkouda.util.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.unregister_all" title="arkouda.util.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
 <td><p>Unregister all names provided</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.attach_all" title="arkouda.util.attach_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_all</span></code></a>(names)</p></td>
-<td><p>Attach to all objects registered with the names provide</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.broadcast_dims" title="arkouda.util.broadcast_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_dims</span></code></a>(→ Tuple[int, Ellipsis])</p></td>
-<td><p>Algorithm to determine shape of broadcasted PD array given two array shapes</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.identity">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">identity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.identity" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="arkouda.util.attach">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#attach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.attach" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.get_callback">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">get_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.get_callback" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="arkouda.util.attach_all">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#attach_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.attach_all" title="Link to this definition">#</a></dt>
+<dd><p>Attach to all objects registered with the names provide</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>list</em>) – List of names to attach to</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.broadcast_dims">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">broadcast_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/util.html#broadcast_dims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.broadcast_dims" title="Link to this definition">#</a></dt>
+<dd><p>Algorithm to determine shape of broadcasted PD array given two array shapes</p>
+<p>see: <a class="reference external" href="https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm">https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm</a></p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.concatenate">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">concatenate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.concatenate" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">concatenate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#concatenate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.concatenate" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.generic_concat">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">generic_concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.generic_concat" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.report_mem">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">report_mem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pre</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.report_mem" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="arkouda.util.convert_if_categorical">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">convert_if_categorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#convert_if_categorical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.convert_if_categorical" title="Link to this definition">#</a></dt>
+<dd><p>Convert a Categorical array to Strings for display</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.enrich_inplace">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">enrich_inplace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keynames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggregations</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.enrich_inplace" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">enrich_inplace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keynames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggregations</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#enrich_inplace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.enrich_inplace" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.expand">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.expand" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.expand" title="Link to this definition">#</a></dt>
 <dd><p>Expand an array with values placed into the indicated segments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -403,8 +420,23 @@ proper as ak.broadcast. It is retained here for backwards compatibility.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.generic_concat">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">generic_concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#generic_concat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.generic_concat" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.get_callback">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">get_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#get_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.get_callback" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.identity">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">identity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#identity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.identity" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.invert_permutation">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">invert_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.invert_permutation" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">invert_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#invert_permutation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.invert_permutation" title="Link to this definition">#</a></dt>
 <dd><p>Find the inverse of a permutation array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -420,36 +452,8 @@ proper as ak.broadcast. It is retained here for backwards compatibility.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.most_common">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">most_common</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.most_common" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.convert_if_categorical">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">convert_if_categorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.convert_if_categorical" title="Link to this definition">#</a></dt>
-<dd><p>Convert a Categorical array to Strings for display</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.register">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.register" title="Link to this definition">#</a></dt>
-<dd><p>Register an arkouda object with a user-specified name. Backwards compatible
-with earlier arkouda versions.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.attach">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.attach" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.unregister">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.unregister" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.is_registered">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#arkouda.util.is_registered" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/util.html#is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.is_registered" title="Link to this definition">#</a></dt>
 <dd><p>Determine if the name provided is associated with a registered Object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -467,8 +471,20 @@ a registered object</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.most_common">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">most_common</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#most_common"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.most_common" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.register">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.register" title="Link to this definition">#</a></dt>
+<dd><p>Register an arkouda object with a user-specified name. Backwards compatible
+with earlier arkouda versions.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.register_all">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">register_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.register_all" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">register_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#register_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.register_all" title="Link to this definition">#</a></dt>
 <dd><p>Register all objects in the provided dictionary</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -481,8 +497,53 @@ a registered object</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.report_mem">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">report_mem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pre</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#report_mem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.report_mem" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.sparse_sum_help">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">sparse_sum_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#sparse_sum_help"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.sparse_sum_help" title="Link to this definition">#</a></dt>
+<dd><p>Helper for summing two sparse matrices together</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idx1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – indices for the first sparse matrix</p></li>
+<li><p><strong>idx2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – indices for the second sparse matrix</p></li>
+<li><p><strong>val1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for the first sparse matrix</p></li>
+<li><p><strong>val2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for the second sparse matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>indices and values for the summed sparse matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">idx1</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vals1</span> <span class="o">=</span> <span class="n">idx1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vals2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">19</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">sparse_sum_help</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">inds2</span><span class="p">,</span> <span class="n">vals1</span><span class="p">,</span> <span class="n">vals2</span><span class="p">)</span>
+<span class="go">(array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">]))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">vals1</span><span class="p">,</span> <span class="n">vals2</span><span class="p">)))</span>
+<span class="go">(array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.unregister">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.unregister" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.unregister_all">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">unregister_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.unregister_all" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">unregister_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#unregister_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.unregister_all" title="Link to this definition">#</a></dt>
 <dd><p>Unregister all names provided</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -492,27 +553,6 @@ a registered object</p></li>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.attach_all">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.attach_all" title="Link to this definition">#</a></dt>
-<dd><p>Attach to all objects registered with the names provide</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>names</strong> (<em>list</em>) – List of names to attach to</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.broadcast_dims">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">broadcast_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.util.broadcast_dims" title="Link to this definition">#</a></dt>
-<dd><p>Algorithm to determine shape of broadcasted PD array given two array shapes</p>
-<p>see: <a class="reference external" href="https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm">https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm</a></p>
 </dd></dl>
 
 </section>
@@ -577,24 +617,25 @@ a registered object</p></li>
 <li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.util</span></code></a><ul>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a><ul>
-<li><a class="reference internal" href="#arkouda.util.identity"><code class="docutils literal notranslate"><span class="pre">identity()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.get_callback"><code class="docutils literal notranslate"><span class="pre">get_callback()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.concatenate"><code class="docutils literal notranslate"><span class="pre">concatenate()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.generic_concat"><code class="docutils literal notranslate"><span class="pre">generic_concat()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.report_mem"><code class="docutils literal notranslate"><span class="pre">report_mem()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.enrich_inplace"><code class="docutils literal notranslate"><span class="pre">enrich_inplace()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.expand"><code class="docutils literal notranslate"><span class="pre">expand()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.invert_permutation"><code class="docutils literal notranslate"><span class="pre">invert_permutation()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.most_common"><code class="docutils literal notranslate"><span class="pre">most_common()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.convert_if_categorical"><code class="docutils literal notranslate"><span class="pre">convert_if_categorical()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.register"><code class="docutils literal notranslate"><span class="pre">register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.attach"><code class="docutils literal notranslate"><span class="pre">attach()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.unregister"><code class="docutils literal notranslate"><span class="pre">unregister()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.is_registered"><code class="docutils literal notranslate"><span class="pre">is_registered()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.register_all"><code class="docutils literal notranslate"><span class="pre">register_all()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.unregister_all"><code class="docutils literal notranslate"><span class="pre">unregister_all()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.attach_all"><code class="docutils literal notranslate"><span class="pre">attach_all()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.broadcast_dims"><code class="docutils literal notranslate"><span class="pre">broadcast_dims()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.concatenate"><code class="docutils literal notranslate"><span class="pre">concatenate()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.convert_if_categorical"><code class="docutils literal notranslate"><span class="pre">convert_if_categorical()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.enrich_inplace"><code class="docutils literal notranslate"><span class="pre">enrich_inplace()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.expand"><code class="docutils literal notranslate"><span class="pre">expand()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.generic_concat"><code class="docutils literal notranslate"><span class="pre">generic_concat()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.get_callback"><code class="docutils literal notranslate"><span class="pre">get_callback()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.identity"><code class="docutils literal notranslate"><span class="pre">identity()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.invert_permutation"><code class="docutils literal notranslate"><span class="pre">invert_permutation()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.is_registered"><code class="docutils literal notranslate"><span class="pre">is_registered()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.most_common"><code class="docutils literal notranslate"><span class="pre">most_common()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.register"><code class="docutils literal notranslate"><span class="pre">register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.register_all"><code class="docutils literal notranslate"><span class="pre">register_all()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.report_mem"><code class="docutils literal notranslate"><span class="pre">report_mem()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.sparse_sum_help"><code class="docutils literal notranslate"><span class="pre">sparse_sum_help()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.unregister"><code class="docutils literal notranslate"><span class="pre">unregister()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.unregister_all"><code class="docutils literal notranslate"><span class="pre">unregister_all()</span></code></a></li>
 </ul>
 </li>
 </ul>

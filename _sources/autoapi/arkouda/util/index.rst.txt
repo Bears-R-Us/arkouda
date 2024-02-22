@@ -13,40 +13,54 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.util.identity
-   arkouda.util.get_callback
-   arkouda.util.concatenate
-   arkouda.util.generic_concat
-   arkouda.util.report_mem
-   arkouda.util.enrich_inplace
-   arkouda.util.expand
-   arkouda.util.invert_permutation
-   arkouda.util.most_common
-   arkouda.util.convert_if_categorical
-   arkouda.util.register
    arkouda.util.attach
-   arkouda.util.unregister
-   arkouda.util.is_registered
-   arkouda.util.register_all
-   arkouda.util.unregister_all
    arkouda.util.attach_all
    arkouda.util.broadcast_dims
+   arkouda.util.concatenate
+   arkouda.util.convert_if_categorical
+   arkouda.util.enrich_inplace
+   arkouda.util.expand
+   arkouda.util.generic_concat
+   arkouda.util.get_callback
+   arkouda.util.identity
+   arkouda.util.invert_permutation
+   arkouda.util.is_registered
+   arkouda.util.most_common
+   arkouda.util.register
+   arkouda.util.register_all
+   arkouda.util.report_mem
+   arkouda.util.sparse_sum_help
+   arkouda.util.unregister
+   arkouda.util.unregister_all
 
 
 
-.. py:function:: identity(x)
+.. py:function:: attach(name: str)
 
 
-.. py:function:: get_callback(x)
+.. py:function:: attach_all(names: list)
+
+   Attach to all objects registered with the names provide
+
+   :param names: List of names to attach to
+   :type names: list
+
+   :rtype: dict
+
+
+.. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, Ellipsis]
+
+   Algorithm to determine shape of broadcasted PD array given two array shapes
+
+   see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
 
 
 .. py:function:: concatenate(items, ordered=True)
 
 
-.. py:function:: generic_concat(items, ordered=True)
+.. py:function:: convert_if_categorical(values)
 
-
-.. py:function:: report_mem(pre='')
+   Convert a Categorical array to Strings for display
 
 
 .. py:function:: enrich_inplace(data, keynames, aggregations, **kwargs)
@@ -72,6 +86,15 @@ Functions
    proper as ak.broadcast. It is retained here for backwards compatibility.
 
 
+.. py:function:: generic_concat(items, ordered=True)
+
+
+.. py:function:: get_callback(x)
+
+
+.. py:function:: identity(x)
+
+
 .. py:function:: invert_permutation(perm)
 
    Find the inverse of a permutation array.
@@ -81,26 +104,6 @@ Functions
 
    :returns: The inverse of the permutation array.
    :rtype: ak.array
-
-
-.. py:function:: most_common(g, values)
-
-
-.. py:function:: convert_if_categorical(values)
-
-   Convert a Categorical array to Strings for display
-
-
-.. py:function:: register(obj, name)
-
-   Register an arkouda object with a user-specified name. Backwards compatible
-   with earlier arkouda versions.
-
-
-.. py:function:: attach(name: str)
-
-
-.. py:function:: unregister(name: str)
 
 
 .. py:function:: is_registered(name: str, as_component: bool = False) -> bool
@@ -117,6 +120,15 @@ Functions
    :rtype: bool
 
 
+.. py:function:: most_common(g, values)
+
+
+.. py:function:: register(obj, name)
+
+   Register an arkouda object with a user-specified name. Backwards compatible
+   with earlier arkouda versions.
+
+
 .. py:function:: register_all(data: dict)
 
    Register all objects in the provided dictionary
@@ -127,6 +139,41 @@ Functions
    :rtype: None
 
 
+.. py:function:: report_mem(pre='')
+
+
+.. py:function:: sparse_sum_help(idx1, idx2, val1, val2)
+
+   Helper for summing two sparse matrices together
+
+   :param idx1: indices for the first sparse matrix
+   :type idx1: pdarray
+   :param idx2: indices for the second sparse matrix
+   :type idx2: pdarray
+   :param val1: values for the first sparse matrix
+   :type val1: pdarray
+   :param val2: values for the second sparse matrix
+   :type val2: pdarray
+
+   :returns: indices and values for the summed sparse matrix
+   :rtype: (pdarray, pdarray)
+
+   .. rubric:: Examples
+
+   >>> idx1 = ak.array([0, 1, 3, 4, 7, 9])
+   >>> idx2 = ak.array([0, 1, 3, 6, 9])
+   >>> vals1 = idx1
+   >>> vals2 = ak.array([10, 11, 13, 16, 19])
+   >>> ak.util.sparse_sum_help(idx1, inds2, vals1, vals2)
+   (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
+
+   >>> ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((vals1, vals2)))
+   (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
+
+
+.. py:function:: unregister(name: str)
+
+
 .. py:function:: unregister_all(names: list)
 
    Unregister all names provided
@@ -135,22 +182,5 @@ Functions
    :type names: list
 
    :rtype: None
-
-
-.. py:function:: attach_all(names: list)
-
-   Attach to all objects registered with the names provide
-
-   :param names: List of names to attach to
-   :type names: list
-
-   :rtype: dict
-
-
-.. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, Ellipsis]
-
-   Algorithm to determine shape of broadcasted PD array given two array shapes
-
-   see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
 
 

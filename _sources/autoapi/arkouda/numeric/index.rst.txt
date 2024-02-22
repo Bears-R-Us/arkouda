@@ -21,46 +21,46 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.numeric.cast
    arkouda.numeric.abs
+   arkouda.numeric.arccos
+   arkouda.numeric.arccosh
+   arkouda.numeric.arcsin
+   arkouda.numeric.arcsinh
+   arkouda.numeric.arctan
+   arkouda.numeric.arctan2
+   arkouda.numeric.arctanh
+   arkouda.numeric.cast
    arkouda.numeric.ceil
+   arkouda.numeric.cos
+   arkouda.numeric.cosh
+   arkouda.numeric.cumprod
+   arkouda.numeric.cumsum
+   arkouda.numeric.deg2rad
+   arkouda.numeric.exp
+   arkouda.numeric.expm1
    arkouda.numeric.floor
-   arkouda.numeric.round
-   arkouda.numeric.trunc
-   arkouda.numeric.sign
+   arkouda.numeric.hash
+   arkouda.numeric.histogram
+   arkouda.numeric.histogram2d
+   arkouda.numeric.histogramdd
    arkouda.numeric.isfinite
    arkouda.numeric.isinf
    arkouda.numeric.isnan
    arkouda.numeric.log
    arkouda.numeric.log10
-   arkouda.numeric.log2
    arkouda.numeric.log1p
-   arkouda.numeric.exp
-   arkouda.numeric.expm1
-   arkouda.numeric.square
-   arkouda.numeric.cumsum
-   arkouda.numeric.cumprod
-   arkouda.numeric.sin
-   arkouda.numeric.cos
-   arkouda.numeric.tan
-   arkouda.numeric.arcsin
-   arkouda.numeric.arccos
-   arkouda.numeric.arctan
-   arkouda.numeric.arctan2
-   arkouda.numeric.sinh
-   arkouda.numeric.cosh
-   arkouda.numeric.tanh
-   arkouda.numeric.arcsinh
-   arkouda.numeric.arccosh
-   arkouda.numeric.arctanh
+   arkouda.numeric.log2
    arkouda.numeric.rad2deg
-   arkouda.numeric.deg2rad
-   arkouda.numeric.hash
-   arkouda.numeric.where
-   arkouda.numeric.histogram
-   arkouda.numeric.histogram2d
-   arkouda.numeric.histogramdd
+   arkouda.numeric.round
+   arkouda.numeric.sign
+   arkouda.numeric.sin
+   arkouda.numeric.sinh
+   arkouda.numeric.square
+   arkouda.numeric.tan
+   arkouda.numeric.tanh
+   arkouda.numeric.trunc
    arkouda.numeric.value_counts
+   arkouda.numeric.where
 
 
 
@@ -73,11 +73,6 @@ Functions
 
    Derive from this class to define new enumerations.
 
-   .. py:attribute:: strict
-      :value: 'strict'
-
-      
-
    .. py:attribute:: ignore
       :value: 'ignore'
 
@@ -88,49 +83,10 @@ Functions
 
       
 
+   .. py:attribute:: strict
+      :value: 'strict'
 
-.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
-
-   Cast an array to another dtype.
-
-   :param pda: The array of values to cast
-   :type pda: pdarray or Strings
-   :param dt: The target dtype to cast values to
-   :type dt: np.dtype, type, or str
-   :param errors: Controls how errors are handled when casting strings to a numeric type
-                  (ignored for casts from numeric types).
-                      - strict: raise RuntimeError if *any* string cannot be converted
-                      - ignore: never raise an error. Uninterpretable strings get
-                          converted to NaN (float64), -2**63 (int64), zero (uint64 and
-                          uint8), or False (bool)
-                      - return_validity: in addition to returning the same output as
-                        "ignore", also return a bool array indicating where the cast
-                        was successful.
-   :type errors: {strict, ignore, return_validity}
-
-   :returns: * *pdarray or Strings* -- Array of values cast to desired dtype
-             * **[validity** (*pdarray(bool)]*) -- If errors="return_validity" and input is Strings, a second array is
-               returned with True where the cast succeeded and False where it failed.
-
-   .. rubric:: Notes
-
-   The cast is performed according to Chapel's casting rules and is NOT safe
-   from overflows or underflows. The user must ensure that the target dtype
-   has the precision and capacity to hold the desired result.
-
-   .. rubric:: Examples
-
-   >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
-   array([1, 2, 3, 4, 5])
-
-   >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
-   dtype('float64')
-
-   >>> ak.cast(ak.arange(0,5), dt=ak.bool)
-   array([False, True, True, True, True])
-
-   >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
-   array([False, True, True, True, True])
+      
 
 
 .. py:function:: abs(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
@@ -154,385 +110,36 @@ Functions
    array([5, 4, 3, 2, 1])
 
 
-.. py:function:: ceil(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arccos(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
-   Return the element-wise ceiling of the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing ceiling values of the input array elements
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.ceil(ak.linspace(1.1,5.5,5))
-   array([2, 3, 4, 5, 6])
-
-
-.. py:function:: floor(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise floor of the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing floor values of the input array elements
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.floor(ak.linspace(1.1,5.5,5))
-   array([1, 2, 3, 4, 5])
-
-
-.. py:function:: round(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise rounding of the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing input array elements rounded to the nearest integer
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
-   array([1, 3, 3])
-
-
-.. py:function:: trunc(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise truncation of the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing input array elements truncated to the nearest integer
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
-   array([1, 2, 3])
-
-
-.. py:function:: sign(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise sign of the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing sign values of the input array elements
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
-   array([-1, -1, 0, 1, 1])
-
-
-.. py:function:: isfinite(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise isfinite check applied to the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing boolean values indicating whether the
-             input array elements are finite
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-   :raises RuntimeError: if the underlying pdarray is not float-based
-
-   .. rubric:: Examples
-
-   >>> ak.isfinite(ak.array[1.0, 2.0, ak.inf])
-   array([True, True, False])
-
-
-.. py:function:: isinf(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise isinf check applied to the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing boolean values indicating whether the
-             input array elements are infinite
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-   :raises RuntimeError: if the underlying pdarray is not float-based
-
-   .. rubric:: Examples
-
-   >>> ak.isinf(ak.array[1.0, 2.0, ak.inf])
-   array([False, False, True])
-
-
-.. py:function:: isnan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise isnan check applied to the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing boolean values indicating whether the
-             input array elements are NaN
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-   :raises RuntimeError: if the underlying pdarray is not float-based
-
-   .. rubric:: Examples
-
-   >>> ak.isnan(ak.array[1.0, 2.0, 1.0 / 0.0])
-   array([False, False, True])
-
-
-.. py:function:: log(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise natural log of the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing natural log values of the input
-             array elements
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Notes
-
-   Logarithms with other bases can be computed as follows:
-
-   .. rubric:: Examples
-
-   >>> A = ak.array([1, 10, 100])
-   # Natural log
-   >>> ak.log(A)
-   array([0, 2.3025850929940459, 4.6051701859880918])
-   # Log base 10
-   >>> ak.log(A) / np.log(10)
-   array([0, 1, 2])
-   # Log base 2
-   >>> ak.log(A) / np.log(2)
-   array([0, 3.3219280948873626, 6.6438561897747253])
-
-
-.. py:function:: log10(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise base 10 log of the array.
-
-   :param x: array to compute on
-   :type x: pdarray
-
-   :rtype: pdarray contain values of the base 10 log
-
-
-.. py:function:: log2(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise base 2 log of the array.
-
-   :param x: array to compute on
-   :type x: pdarray
-
-   :rtype: pdarray contain values of the base 2 log
-
-
-.. py:function:: log1p(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise natural log of one plus the array.
-
-   :param x: array to compute on
-   :type x: pdarray
-
-   :rtype: pdarray contain values of the natural log of one plus the array
-
-
-.. py:function:: exp(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise exponential of the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing exponential values of the input
-             array elements
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.exp(ak.arange(1,5))
-   array([2.7182818284590451, 7.3890560989306504, 20.085536923187668, 54.598150033144236])
-
-   >>> ak.exp(ak.uniform(5,1.0,5.0))
-   array([11.84010843172504, 46.454368507659211, 5.5571769623557188,
-          33.494295836924771, 13.478894913238722])
-
-
-.. py:function:: expm1(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise exponential of the array minus one.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing exponential values of the input
-             array elements minus one
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.exp1m(ak.arange(1,5))
-   array([1.7182818284590451, 6.3890560989306504, 19.085536923187668, 53.598150033144236])
-
-   >>> ak.exp1m(ak.uniform(5,1.0,5.0))
-   array([10.84010843172504, 45.454368507659211, 4.5571769623557188,
-          32.494295836924771, 12.478894913238722])
-
-
-.. py:function:: square(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise square of the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing square values of the input
-             array elements
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.square(ak.arange(1,5))
-   array([1, 4, 9, 16])
-
-
-.. py:function:: cumsum(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the cumulative sum over the array.
-
-   The sum is inclusive, such that the ``i`` th element of the
-   result is the sum of elements up to and including ``i``.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing cumulative sums for each element
-             of the original pdarray
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.cumsum(ak.arange([1,5]))
-   array([1, 3, 6])
-
-   >>> ak.cumsum(ak.uniform(5,1.0,5.0))
-   array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,
-          12.710615785506533, 13.945880905466208])
-
-   >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
-   array([0, 1, 1, 2, 3])
-
-
-.. py:function:: cumprod(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the cumulative product over the array.
-
-   The product is inclusive, such that the ``i`` th element of the
-   result is the product of elements up to and including ``i``.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing cumulative products for each element
-             of the original pdarray
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.cumprod(ak.arange(1,5))
-   array([1, 2, 6, 24]))
-
-   >>> ak.cumprod(ak.uniform(5,1.0,5.0))
-   array([1.5728783400481925, 7.0472855509390593, 33.78523998586553,
-          134.05309592737584, 450.21589865655358])
-
-
-.. py:function:: sin(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise sine of the array.
+   Return the element-wise inverse cosine of the array. The result is between 0 and pi.
 
    :param pda:
    :type pda: pdarray
    :param where: This condition is broadcast over the input. At locations where the condition is True,
-                 the sine will be applied to the corresponding value. Elsewhere, it will retain
+                 the inverse cosine will be applied to the corresponding value. Elsewhere, it will retain
                  its original value. Default set to True.
    :type where: Boolean or pdarray
 
-   :returns: A pdarray containing sin for each element
+   :returns: A pdarray containing inverse cosine for each element
              of the original pdarray
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: cos(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arccosh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
-   Return the element-wise cosine of the array.
-
-   :param pda:
-   :type pda: pdarray
-   :param where: This condition is broadcast over the input. At locations where the condition is True,
-                 the cosine will be applied to the corresponding value. Elsewhere, it will retain
-                 its original value. Default set to True.
-   :type where: Boolean or pdarray
-
-   :returns: A pdarray containing cosine for each element
-             of the original pdarray
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-
-.. py:function:: tan(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise tangent of the array.
+   Return the element-wise inverse hyperbolic cosine of the array.
 
    :param pda:
    :type pda: pdarray
    :param where: This condition is broadcast over the input. At locations where the condition is True,
-                 the tangent will be applied to the corresponding value. Elsewhere, it will retain
-                 its original value. Default set to True.
+                 the inverse hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will
+                 retain its original value. Default set to True.
    :type where: Boolean or pdarray
 
-   :returns: A pdarray containing tangent for each element
+   :returns: A pdarray containing inverse hyperbolic cosine for each element
              of the original pdarray
    :rtype: pdarray
 
@@ -557,18 +164,18 @@ Functions
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: arccos(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arcsinh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
-   Return the element-wise inverse cosine of the array. The result is between 0 and pi.
+   Return the element-wise inverse hyperbolic sine of the array.
 
    :param pda:
    :type pda: pdarray
    :param where: This condition is broadcast over the input. At locations where the condition is True,
-                 the inverse cosine will be applied to the corresponding value. Elsewhere, it will retain
+                 the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
                  its original value. Default set to True.
    :type where: Boolean or pdarray
 
-   :returns: A pdarray containing inverse cosine for each element
+   :returns: A pdarray containing inverse hyperbolic sine for each element
              of the original pdarray
    :rtype: pdarray
 
@@ -617,18 +224,98 @@ Functions
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: sinh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arctanh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
-   Return the element-wise hyperbolic sine of the array.
+   Return the element-wise inverse hyperbolic tangent of the array.
 
    :param pda:
    :type pda: pdarray
    :param where: This condition is broadcast over the input. At locations where the condition is True,
-                 the hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
+                 the inverse hyperbolic tangent will be applied to the corresponding value. Elsewhere,
+                 it will retain its original value. Default set to True.
+   :type where: Boolean or pdarray
+
+   :returns: A pdarray containing inverse hyperbolic tangent for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameters are not a pdarray or numeric scalar.
+
+
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+
+   Cast an array to another dtype.
+
+   :param pda: The array of values to cast
+   :type pda: pdarray or Strings
+   :param dt: The target dtype to cast values to
+   :type dt: np.dtype, type, or str
+   :param errors: Controls how errors are handled when casting strings to a numeric type
+                  (ignored for casts from numeric types).
+                      - strict: raise RuntimeError if *any* string cannot be converted
+                      - ignore: never raise an error. Uninterpretable strings get
+                          converted to NaN (float64), -2**63 (int64), zero (uint64 and
+                          uint8), or False (bool)
+                      - return_validity: in addition to returning the same output as
+                        "ignore", also return a bool array indicating where the cast
+                        was successful.
+   :type errors: {strict, ignore, return_validity}
+
+   :returns: * *pdarray or Strings* -- Array of values cast to desired dtype
+             * **[validity** (*pdarray(bool)]*) -- If errors="return_validity" and input is Strings, a second array is
+               returned with True where the cast succeeded and False where it failed.
+
+   .. rubric:: Notes
+
+   The cast is performed according to Chapel's casting rules and is NOT safe
+   from overflows or underflows. The user must ensure that the target dtype
+   has the precision and capacity to hold the desired result.
+
+   .. rubric:: Examples
+
+   >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
+   array([1, 2, 3, 4, 5])
+
+   >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
+   dtype('float64')
+
+   >>> ak.cast(ak.arange(0,5), dt=ak.bool)
+   array([False, True, True, True, True])
+
+   >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
+   array([False, True, True, True, True])
+
+
+.. py:function:: ceil(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise ceiling of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing ceiling values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.ceil(ak.linspace(1.1,5.5,5))
+   array([2, 3, 4, 5, 6])
+
+
+.. py:function:: cos(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise cosine of the array.
+
+   :param pda:
+   :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the cosine will be applied to the corresponding value. Elsewhere, it will retain
                  its original value. Default set to True.
    :type where: Boolean or pdarray
 
-   :returns: A pdarray containing hyperbolic sine for each element
+   :returns: A pdarray containing cosine for each element
              of the original pdarray
    :rtype: pdarray
 
@@ -653,94 +340,59 @@ Functions
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: tanh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+.. py:function:: cumprod(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
-   Return the element-wise hyperbolic tangent of the array.
+   Return the cumulative product over the array.
+
+   The product is inclusive, such that the ``i`` th element of the
+   result is the product of elements up to and including ``i``.
 
    :param pda:
    :type pda: pdarray
-   :param where: This condition is broadcast over the input. At locations where the condition is True,
-                 the hyperbolic tangent will be applied to the corresponding value. Elsewhere, it will retain
-                 its original value. Default set to True.
-   :type where: Boolean or pdarray
 
-   :returns: A pdarray containing hyperbolic tangent for each element
+   :returns: A pdarray containing cumulative products for each element
              of the original pdarray
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
 
-.. py:function:: arcsinh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+   >>> ak.cumprod(ak.arange(1,5))
+   array([1, 2, 6, 24]))
 
-   Return the element-wise inverse hyperbolic sine of the array.
+   >>> ak.cumprod(ak.uniform(5,1.0,5.0))
+   array([1.5728783400481925, 7.0472855509390593, 33.78523998586553,
+          134.05309592737584, 450.21589865655358])
+
+
+.. py:function:: cumsum(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the cumulative sum over the array.
+
+   The sum is inclusive, such that the ``i`` th element of the
+   result is the sum of elements up to and including ``i``.
 
    :param pda:
    :type pda: pdarray
-   :param where: This condition is broadcast over the input. At locations where the condition is True,
-                 the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
-                 its original value. Default set to True.
-   :type where: Boolean or pdarray
 
-   :returns: A pdarray containing inverse hyperbolic sine for each element
+   :returns: A pdarray containing cumulative sums for each element
              of the original pdarray
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
 
-.. py:function:: arccosh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+   >>> ak.cumsum(ak.arange([1,5]))
+   array([1, 3, 6])
 
-   Return the element-wise inverse hyperbolic cosine of the array.
+   >>> ak.cumsum(ak.uniform(5,1.0,5.0))
+   array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,
+          12.710615785506533, 13.945880905466208])
 
-   :param pda:
-   :type pda: pdarray
-   :param where: This condition is broadcast over the input. At locations where the condition is True,
-                 the inverse hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will
-                 retain its original value. Default set to True.
-   :type where: Boolean or pdarray
-
-   :returns: A pdarray containing inverse hyperbolic cosine for each element
-             of the original pdarray
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-
-.. py:function:: arctanh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
-
-   Return the element-wise inverse hyperbolic tangent of the array.
-
-   :param pda:
-   :type pda: pdarray
-   :param where: This condition is broadcast over the input. At locations where the condition is True,
-                 the inverse hyperbolic tangent will be applied to the corresponding value. Elsewhere,
-                 it will retain its original value. Default set to True.
-   :type where: Boolean or pdarray
-
-   :returns: A pdarray containing inverse hyperbolic tangent for each element
-             of the original pdarray
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameters are not a pdarray or numeric scalar.
-
-
-.. py:function:: rad2deg(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
-
-   Converts angles element-wise from radians to degrees.
-
-   :param pda:
-   :type pda: pdarray
-   :param where: This condition is broadcast over the input. At locations where the condition is True, the
-                 corresponding value will be converted from radians to degrees. Elsewhere, it will retain its
-                 original value. Default set to True.
-   :type where: Boolean or pdarray
-
-   :returns: A pdarray containing an angle converted to degrees, from radians, for each element
-             of the original pdarray
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
+   >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
+   array([0, 1, 1, 2, 3])
 
 
 .. py:function:: deg2rad(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
@@ -759,6 +411,70 @@ Functions
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
+
+
+.. py:function:: exp(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise exponential of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing exponential values of the input
+             array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.exp(ak.arange(1,5))
+   array([2.7182818284590451, 7.3890560989306504, 20.085536923187668, 54.598150033144236])
+
+   >>> ak.exp(ak.uniform(5,1.0,5.0))
+   array([11.84010843172504, 46.454368507659211, 5.5571769623557188,
+          33.494295836924771, 13.478894913238722])
+
+
+.. py:function:: expm1(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise exponential of the array minus one.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing exponential values of the input
+             array elements minus one
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.exp1m(ak.arange(1,5))
+   array([1.7182818284590451, 6.3890560989306504, 19.085536923187668, 53.598150033144236])
+
+   >>> ak.exp1m(ak.uniform(5,1.0,5.0))
+   array([10.84010843172504, 45.454368507659211, 4.5571769623557188,
+          32.494295836924771, 12.478894913238722])
+
+
+.. py:function:: floor(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise floor of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing floor values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.floor(ak.linspace(1.1,5.5,5))
+   array([1, 2, 3, 4, 5])
 
 
 .. py:function:: hash(pda: Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, SegArray, Categorical], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, SegArray, Categorical]]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
@@ -802,70 +518,6 @@ Functions
    array since hashes of subsequent arrays cannot be simply XORed
    because equivalent values will cancel each other out, hence we
    do a rotation by the ordinal of the array.
-
-
-.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]
-
-   Returns an array with elements chosen from A and B based upon a
-   conditioning array. As is the case with numpy.where, the return array
-   consists of values from the first array (A) where the conditioning array
-   elements are True and from the second array (B) where the conditioning
-   array elements are False.
-
-   :param condition: Used to choose values from A or B
-   :type condition: pdarray
-   :param A: Value(s) used when condition is True
-   :type A: Union[numeric_scalars, str, pdarray, Strings, Categorical]
-   :param B: Value(s) used when condition is False
-   :type B: Union[numeric_scalars, str, pdarray, Strings, Categorical]
-
-   :returns: Values chosen from A where the condition is True and B where
-             the condition is False
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the condition object is not a pdarray, if A or B is not
-       an int, np.int64, float, np.float64, pdarray, str, Strings, Categorical
-       if pdarray dtypes are not supported or do not match, or multiple
-       condition clauses (see Notes section) are applied
-   :raises ValueError: Raised if the shapes of the condition, A, and B pdarrays are unequal
-
-   .. rubric:: Examples
-
-   >>> a1 = ak.arange(1,10)
-   >>> a2 = ak.ones(9, dtype=np.int64)
-   >>> cond = a1 < 5
-   >>> ak.where(cond,a1,a2)
-   array([1, 2, 3, 4, 1, 1, 1, 1, 1])
-
-   >>> a1 = ak.arange(1,10)
-   >>> a2 = ak.ones(9, dtype=np.int64)
-   >>> cond = a1 == 5
-   >>> ak.where(cond,a1,a2)
-   array([1, 1, 1, 1, 5, 1, 1, 1, 1])
-
-   >>> a1 = ak.arange(1,10)
-   >>> a2 = 10
-   >>> cond = a1 < 5
-   >>> ak.where(cond,a1,a2)
-   array([1, 2, 3, 4, 10, 10, 10, 10, 10])
-
-   >>> s1 = ak.array([f'str {i}' for i in range(10)])
-   >>> s2 = 'str 21'
-   >>> cond = (ak.arange(10) % 2 == 0)
-   >>> ak.where(cond,s1,s2)
-   array(['str 0', 'str 21', 'str 2', 'str 21', 'str 4', 'str 21', 'str 6', 'str 21', 'str 8','str 21'])
-
-   >>> c1 = ak.Categorical(ak.array([f'str {i}' for i in range(10)]))
-   >>> c2 = ak.Categorical(ak.array([f'str {i}' for i in range(9, -1, -1)]))
-   >>> cond = (ak.arange(10) % 2 == 0)
-   >>> ak.where(cond,c1,c2)
-   array(['str 0', 'str 8', 'str 2', 'str 6', 'str 4', 'str 4', 'str 6', 'str 2', 'str 8', 'str 0'])
-
-   .. rubric:: Notes
-
-   A and B must have the same dtype and only one conditional clause
-   is supported e.g., n < 5, n > 1, which is supported in numpy
-   is not currently supported in Arkouda
 
 
 .. py:function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: arkouda.dtypes.int_scalars = 10) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
@@ -998,6 +650,290 @@ Functions
     array([0.0 1.6 3.2 4.8 6.4 8.0])]
 
 
+.. py:function:: isfinite(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise isfinite check applied to the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing boolean values indicating whether the
+             input array elements are finite
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises RuntimeError: if the underlying pdarray is not float-based
+
+   .. rubric:: Examples
+
+   >>> ak.isfinite(ak.array[1.0, 2.0, ak.inf])
+   array([True, True, False])
+
+
+.. py:function:: isinf(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise isinf check applied to the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing boolean values indicating whether the
+             input array elements are infinite
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises RuntimeError: if the underlying pdarray is not float-based
+
+   .. rubric:: Examples
+
+   >>> ak.isinf(ak.array[1.0, 2.0, ak.inf])
+   array([False, False, True])
+
+
+.. py:function:: isnan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise isnan check applied to the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing boolean values indicating whether the
+             input array elements are NaN
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises RuntimeError: if the underlying pdarray is not float-based
+
+   .. rubric:: Examples
+
+   >>> ak.isnan(ak.array[1.0, 2.0, 1.0 / 0.0])
+   array([False, False, True])
+
+
+.. py:function:: log(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise natural log of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing natural log values of the input
+             array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Notes
+
+   Logarithms with other bases can be computed as follows:
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([1, 10, 100])
+   # Natural log
+   >>> ak.log(A)
+   array([0, 2.3025850929940459, 4.6051701859880918])
+   # Log base 10
+   >>> ak.log(A) / np.log(10)
+   array([0, 1, 2])
+   # Log base 2
+   >>> ak.log(A) / np.log(2)
+   array([0, 3.3219280948873626, 6.6438561897747253])
+
+
+.. py:function:: log10(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise base 10 log of the array.
+
+   :param x: array to compute on
+   :type x: pdarray
+
+   :rtype: pdarray contain values of the base 10 log
+
+
+.. py:function:: log1p(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise natural log of one plus the array.
+
+   :param x: array to compute on
+   :type x: pdarray
+
+   :rtype: pdarray contain values of the natural log of one plus the array
+
+
+.. py:function:: log2(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise base 2 log of the array.
+
+   :param x: array to compute on
+   :type x: pdarray
+
+   :rtype: pdarray contain values of the base 2 log
+
+
+.. py:function:: rad2deg(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+
+   Converts angles element-wise from radians to degrees.
+
+   :param pda:
+   :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True, the
+                 corresponding value will be converted from radians to degrees. Elsewhere, it will retain its
+                 original value. Default set to True.
+   :type where: Boolean or pdarray
+
+   :returns: A pdarray containing an angle converted to degrees, from radians, for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+
+.. py:function:: round(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise rounding of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing input array elements rounded to the nearest integer
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
+   array([1, 3, 3])
+
+
+.. py:function:: sign(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise sign of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing sign values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
+   array([-1, -1, 0, 1, 1])
+
+
+.. py:function:: sin(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise sine of the array.
+
+   :param pda:
+   :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the sine will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
+
+   :returns: A pdarray containing sin for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+
+.. py:function:: sinh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise hyperbolic sine of the array.
+
+   :param pda:
+   :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
+
+   :returns: A pdarray containing hyperbolic sine for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+
+.. py:function:: square(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise square of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing square values of the input
+             array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.square(ak.arange(1,5))
+   array([1, 4, 9, 16])
+
+
+.. py:function:: tan(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise tangent of the array.
+
+   :param pda:
+   :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the tangent will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
+
+   :returns: A pdarray containing tangent for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+
+.. py:function:: tanh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise hyperbolic tangent of the array.
+
+   :param pda:
+   :type pda: pdarray
+   :param where: This condition is broadcast over the input. At locations where the condition is True,
+                 the hyperbolic tangent will be applied to the corresponding value. Elsewhere, it will retain
+                 its original value. Default set to True.
+   :type where: Boolean or pdarray
+
+   :returns: A pdarray containing hyperbolic tangent for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+
+.. py:function:: trunc(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise truncation of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing input array elements truncated to the nearest integer
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
+   array([1, 2, 3])
+
+
 .. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[Categorical, Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Optional[arkouda.pdarrayclass.pdarray]]]
 
    Count the occurrences of the unique values of an array.
@@ -1024,5 +960,69 @@ Functions
    >>> A = ak.array([2, 0, 2, 4, 0, 0])
    >>> ak.value_counts(A)
    (array([0, 2, 4]), array([3, 2, 1]))
+
+
+.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]
+
+   Returns an array with elements chosen from A and B based upon a
+   conditioning array. As is the case with numpy.where, the return array
+   consists of values from the first array (A) where the conditioning array
+   elements are True and from the second array (B) where the conditioning
+   array elements are False.
+
+   :param condition: Used to choose values from A or B
+   :type condition: pdarray
+   :param A: Value(s) used when condition is True
+   :type A: Union[numeric_scalars, str, pdarray, Strings, Categorical]
+   :param B: Value(s) used when condition is False
+   :type B: Union[numeric_scalars, str, pdarray, Strings, Categorical]
+
+   :returns: Values chosen from A where the condition is True and B where
+             the condition is False
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the condition object is not a pdarray, if A or B is not
+       an int, np.int64, float, np.float64, pdarray, str, Strings, Categorical
+       if pdarray dtypes are not supported or do not match, or multiple
+       condition clauses (see Notes section) are applied
+   :raises ValueError: Raised if the shapes of the condition, A, and B pdarrays are unequal
+
+   .. rubric:: Examples
+
+   >>> a1 = ak.arange(1,10)
+   >>> a2 = ak.ones(9, dtype=np.int64)
+   >>> cond = a1 < 5
+   >>> ak.where(cond,a1,a2)
+   array([1, 2, 3, 4, 1, 1, 1, 1, 1])
+
+   >>> a1 = ak.arange(1,10)
+   >>> a2 = ak.ones(9, dtype=np.int64)
+   >>> cond = a1 == 5
+   >>> ak.where(cond,a1,a2)
+   array([1, 1, 1, 1, 5, 1, 1, 1, 1])
+
+   >>> a1 = ak.arange(1,10)
+   >>> a2 = 10
+   >>> cond = a1 < 5
+   >>> ak.where(cond,a1,a2)
+   array([1, 2, 3, 4, 10, 10, 10, 10, 10])
+
+   >>> s1 = ak.array([f'str {i}' for i in range(10)])
+   >>> s2 = 'str 21'
+   >>> cond = (ak.arange(10) % 2 == 0)
+   >>> ak.where(cond,s1,s2)
+   array(['str 0', 'str 21', 'str 2', 'str 21', 'str 4', 'str 21', 'str 6', 'str 21', 'str 8','str 21'])
+
+   >>> c1 = ak.Categorical(ak.array([f'str {i}' for i in range(10)]))
+   >>> c2 = ak.Categorical(ak.array([f'str {i}' for i in range(9, -1, -1)]))
+   >>> cond = (ak.arange(10) % 2 == 0)
+   >>> ak.where(cond,c1,c2)
+   array(['str 0', 'str 8', 'str 2', 'str 6', 'str 4', 'str 4', 'str 6', 'str 2', 'str 8', 'str 0'])
+
+   .. rubric:: Notes
+
+   A and B must have the same dtype and only one conditional clause
+   is supported e.g., n < 5, n > 1, which is supported in numpy
+   is not currently supported in Arkouda
 
 

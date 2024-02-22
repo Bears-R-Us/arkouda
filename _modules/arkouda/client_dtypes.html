@@ -1,0 +1,1218 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>arkouda.client_dtypes - arkouda documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">arkouda  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/CSV.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/arrayview.html">ArrayView in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/akscipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.akscipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/akscipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy.special</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/history/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.history</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/io_util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/join/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarraysetops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraysetops</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/plotting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/row/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.row</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/security/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.security</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/segarray/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.segarray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/series/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.series</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/sorting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.sorting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/strings/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.strings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/timeclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.timeclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.util</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for arkouda.client_dtypes</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">ipaddress</span> <span class="kn">import</span> <span class="n">ip_address</span> <span class="k">as</span> <span class="n">_ip_address</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">bitType</span><span class="p">,</span> <span class="n">intTypes</span><span class="p">,</span> <span class="n">isSupportedInt</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
+<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span>
+<span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+<span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">where</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">RegistrationError</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">zeros</span>
+<span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
+
+
+<div class="viewcode-block" id="BitVectorizer">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVectorizer">[docs]</a>
+<span class="k">def</span> <span class="nf">BitVectorizer</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a callback (i.e. function) that can be called on an</span>
+<span class="sd">    array to create a BitVector.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    width : int</span>
+<span class="sd">        The number of bit fields in the vector</span>
+<span class="sd">    reverse : bool</span>
+<span class="sd">        If True, display bits from least significant (left) to most</span>
+<span class="sd">        significant (right). By default, the most significant bit</span>
+<span class="sd">        is the left-most bit.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bitvectorizer : callable</span>
+<span class="sd">        A function that takes an array and returns a BitVector instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">BitVector</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="BitVector">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector">[docs]</a>
+<span class="k">class</span> <span class="nc">BitVector</span><span class="p">(</span><span class="n">pdarray</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represent integers as bit vectors, e.g. a set of flags.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    values : pdarray, int64</span>
+<span class="sd">        The integers to represent as bit vectors</span>
+<span class="sd">    width : int</span>
+<span class="sd">        The number of bit fields in the vector</span>
+<span class="sd">    reverse : bool</span>
+<span class="sd">        If True, display bits from least significant (left) to most</span>
+<span class="sd">        significant (right). By default, the most significant bit</span>
+<span class="sd">        is the left-most bit.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bitvectors : BitVector</span>
+<span class="sd">        The array of binary vectors</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class is a thin wrapper around pdarray that mostly affects</span>
+<span class="sd">    how values are displayed to the user. Operators and methods will</span>
+<span class="sd">    typically treat this class like a uint64 pdarray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">conserves</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&lt;&quot;</span><span class="p">))</span>
+    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;BitVector&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># This is needed to silence warnings of missing name during failed creation</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Argument must be integer pdarray&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span> <span class="o">=</span> <span class="n">reverse</span>
+        <span class="c1"># If values is already bitType, this will make a copy</span>
+        <span class="c1"># A copy should be made in order to get a new server-side name,</span>
+        <span class="c1"># to avoid undefinedSymbol errors if/when values gets deleted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">bitType</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">itemsize</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="BitVector.format">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.format">[docs]</a>
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format a single binary vector as a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Start with a fixed-width, zero-padded binary value,</span>
+        <span class="c1"># and replace 0/1 with ./| for better visibility</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;{{:0</span><span class="si">{}</span><span class="s2">b}}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fmt</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fmt</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">pdarrayIterThresh</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span>
+        <span class="c1"># Print values as a single, aligned column for easier viewing</span>
+        <span class="c1"># Also show &quot;width&quot; and &quot;reverse&quot; parameters</span>
+        <span class="n">spaces</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">([</span><span class="si">{}</span><span class="s2">],</span><span class="se">\n</span><span class="si">{}</span><span class="s2">width=</span><span class="si">{}</span><span class="s2">, reverse=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spaces</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">),</span> <span class="n">spaces</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BitVector.to_ndarray">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.to_ndarray">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export data to a numpy array of string-formatted bit vectors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()])</span></div>
+
+
+<div class="viewcode-block" id="BitVector.to_list">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.to_list">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export data to a list of string-formatted bit vectors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_cast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="c1"># Return single value as a formatted string</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Forward all other indexing ops to integer array</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="c1"># Set a slice or selection of values directly</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">elif</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="c1"># Set a single value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="nf">_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="c1"># Based on other type, select which data to pass</span>
+        <span class="c1"># to _binop of pdarray</span>
+        <span class="k">if</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="c1"># Some operators return a BitVector, but others don&#39;t</span>
+        <span class="k">if</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conserves</span><span class="p">:</span>
+            <span class="c1"># These ops are defined as a class attribute</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_r_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="c1"># Cases where left operand is BitVector are handled above by _binop</span>
+        <span class="c1"># Only two cases to handle here: scalar int and int64 pdarray</span>
+        <span class="k">if</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conserves</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
+            <span class="c1"># Some operators return a BitVector, but others don&#39;t</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conserves</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cast</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">op</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+<div class="viewcode-block" id="BitVector.opeq">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.opeq">[docs]</a>
+    <span class="k">def</span> <span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="c1"># Based on other type, select data to pass to pdarray opeq</span>
+        <span class="k">if</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">opeq</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BitVector.register">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.register">[docs]</a>
+    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register this BitVector object and underlying components with the Arkouda server</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        user_defined_name : str</span>
+<span class="sd">            user defined name the BitVector is to be registered under,</span>
+<span class="sd">            this will be the root name for underlying components</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        BitVector</span>
+<span class="sd">            The same BitVector which is now registered with the arkouda server and has an updated name.</span>
+<span class="sd">            This is an in-place modification, the original is returned to support</span>
+<span class="sd">            a fluid programming style.</span>
+<span class="sd">            Please note you cannot register two different BitVectors with the same name.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if user_defined_name is not a str</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            If the server was unable to register the BitVector with the user_defined_name</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        unregister, attach, is_registered</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
+                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+                <span class="s2">&quot;reverse&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">user_defined_name</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="BitVector.from_return_msg">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.from_return_msg">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">json</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">create_pdarray</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]),</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span>
+            <span class="n">reverse</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;reverse&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Fields">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.Fields">[docs]</a>
+<span class="k">class</span> <span class="nc">Fields</span><span class="p">(</span><span class="n">BitVector</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An integer-backed representation of a set of named binary fields, e.g. flags.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    values : pdarray or Strings</span>
+<span class="sd">        The array of field values. If (u)int64, the values are used as-is for the</span>
+<span class="sd">        binary representation of fields. If Strings, the values are converted</span>
+<span class="sd">        to binary according to the mapping defined by the names and MSB_left</span>
+<span class="sd">        arguments.</span>
+<span class="sd">    names : str or sequence of str</span>
+<span class="sd">        The names of the fields, in order. A string will be treated as a list</span>
+<span class="sd">        of single-character field names. Multi-character field names are allowed,</span>
+<span class="sd">        but must be passed as a list or tuple and user must specify a separator.</span>
+<span class="sd">    MSB_left : bool</span>
+<span class="sd">        Controls how field names are mapped to binary values. If True (default),</span>
+<span class="sd">        the left-most field name corresponds to the most significant bit in the</span>
+<span class="sd">        binary representation. If False, the left-most field name corresponds to</span>
+<span class="sd">        the least significant bit.</span>
+<span class="sd">    pad : str</span>
+<span class="sd">        Character to display when field is not present. Use empty string if no</span>
+<span class="sd">        padding is desired.</span>
+<span class="sd">    separator : str</span>
+<span class="sd">        Substring that separates fields. Used to parse input values (if ak.Strings)</span>
+<span class="sd">        and to display output.</span>
+<span class="sd">    show_int : bool</span>
+<span class="sd">        If True (default), display the integer value of the binary fields in output.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fields : Fields</span>
+<span class="sd">        The array of field values</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class is a thin wrapper around pdarray that mostly affects</span>
+<span class="sd">    how values are displayed to the user. Operators and methods will</span>
+<span class="sd">    typically treat this class like an int64 pdarray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">MSB_left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">show_int</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># Argument validation</span>
+        <span class="c1"># Normalize names, which can be string or sequence</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># This is needed to silence warnings of missing name during failed creation</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">63</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot represent more than 63 fields&quot;</span><span class="p">)</span>
+        <span class="c1"># Ensure no duplicate names</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Field names must be unique&quot;</span><span class="p">)</span>
+        <span class="c1"># Ensure no empty names</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Names cannot be empty strings&quot;</span><span class="p">)</span>
+        <span class="c1"># If separator is non-empty, it cannot be a field name</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">separator</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">separator</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Separator cannot be a field name&quot;</span><span class="p">)</span>
+        <span class="c1"># Field names can have multiple characters, but if so, there must be a separator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">namewidth</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namewidth</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">separator</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;A non-empty separator must be specified when field names have more than one character&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pad</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pad must be single character or empty string&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">padchar</span> <span class="o">=</span> <span class="n">pad</span>
+        <span class="c1"># string to display when a field is not set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namewidth</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">padchar</span>
+        <span class="c1"># separator to display between fields</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">separator</span> <span class="o">=</span> <span class="n">separator</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="c1"># whether the left-most field name corresponds to the most significant bit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MSB_left</span> <span class="o">=</span> <span class="n">MSB_left</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">MSB_left</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+        <span class="c1"># whether to display the integer value of the field bit vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_int</span> <span class="o">=</span> <span class="n">show_int</span>
+        <span class="c1"># values arg can be either int64 or Strings. If Strings, convert to binary</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_strings</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="c1"># super init will type-check values and make copy</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="ow">not</span> <span class="n">MSB_left</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_convert_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert string field names to binary vectors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize to zero</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bitType</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">separator</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="c1"># When separator is empty, field names are guaranteed to be single characters</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">shift</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span><span class="p">):</span>
+                <span class="c1"># Check if name exists in each string</span>
+                <span class="n">bit</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">values</span> <span class="o">|</span> <span class="n">akcast</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">bit</span><span class="p">,</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">bitType</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># When separator is non-empty, split on it</span>
+            <span class="n">sf</span><span class="p">,</span> <span class="n">segs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">separator</span><span class="p">,</span> <span class="n">return_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Create a grouping to map split fields back to originating string</span>
+            <span class="n">orig</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">segs</span><span class="p">,</span> <span class="n">arange</span><span class="p">(</span><span class="n">segs</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">sf</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">shift</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span><span class="p">):</span>
+                <span class="c1"># Check if name matches one of the split fields from originating string</span>
+                <span class="n">bit</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">sf</span> <span class="o">==</span> <span class="n">name</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">values</span> <span class="o">|</span> <span class="n">akcast</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">bit</span><span class="p">,</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">bitType</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="k">def</span> <span class="nf">_parse_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a string of named fields to a binary value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">separator</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="c1"># Arg validation guarantees single-character field names if here</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">shift</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">|=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">shift</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">|=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+<div class="viewcode-block" id="Fields.format">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.Fields.format">[docs]</a>
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format a single binary value as a string of named fields.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Start with a fixed-width, zero-padded binary value,</span>
+        <span class="c1"># and replace 0/1 with ./| for better visibility</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">shift</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shifts</span><span class="p">):</span>
+            <span class="n">bitset</span> <span class="o">=</span> <span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">shift</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">bitset</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;{{:^</span><span class="si">{}</span><span class="s2">s}}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namewidth</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">separator</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_int</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot; (</span><span class="si">{:n}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_scalar</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_cast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">MSB_left</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MSB_left</span><span class="p">,</span>
+            <span class="n">pad</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">padchar</span><span class="p">,</span>
+            <span class="n">separator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">separator</span><span class="p">,</span>
+            <span class="n">show_int</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show_int</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_r_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Fields.opeq">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.Fields.opeq">[docs]</a>
+    <span class="k">def</span> <span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">opeq</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">opeq</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ip_address">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.ip_address">[docs]</a>
+<span class="k">def</span> <span class="nf">ip_address</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert values to an Arkouda array of IP addresses.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    values : list-like, integer pdarray, or IPv4</span>
+<span class="sd">        The integer IP addresses or IPv4 object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    IPv4</span>
+<span class="sd">        The same IP addresses as an Arkouda array</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This helper is intended to help future proof changes made to</span>
+<span class="sd">    accomodate IPv6 and to prevent errors if a user inadvertently</span>
+<span class="sd">    casts a IPv4 instead of a int64 pdarray. It can also be used</span>
+<span class="sd">    for importing Python lists of IP addresses into Arkouda.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">IPv4</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Strings to IP address not yet implemented&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Assume values is a python sequence of IP addresses in some format</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">IPv4</span><span class="p">(</span><span class="n">array</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">_ip_address</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]))</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Error converting non-arkouda object to list of IP addresses&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
+
+
+
+<div class="viewcode-block" id="IPv4">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4">[docs]</a>
+<span class="k">class</span> <span class="nc">IPv4</span><span class="p">(</span><span class="n">pdarray</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represent integers as IPv4 addresses.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    values : pdarray, int64</span>
+<span class="sd">        The integer IP addresses</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    IPv4</span>
+<span class="sd">        The same IP addresses</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class is a thin wrapper around pdarray that mostly affects</span>
+<span class="sd">    how values are displayed to the user. Operators and methods will</span>
+<span class="sd">    typically treat this class like an int64 pdarray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;IPv4&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># This is needed to silence warnings of missing name during failed creation</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Argument must be int64 pdarray&quot;</span><span class="p">)</span>
+        <span class="c1"># Casting always creates a copy with new server-side name,</span>
+        <span class="c1"># which will avoid unknown symbol errors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">bitType</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">itemsize</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="IPv4.export_uint">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.export_uint">[docs]</a>
+    <span class="k">def</span> <span class="nf">export_uint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">akcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IPv4.format">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.format">[docs]</a>
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format a single integer IP address as a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Argument must be an integer scalar&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">_ip_address</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="IPv4.normalize">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.normalize">[docs]</a>
+    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Take in an IP address as a string, integer, or IPAddress object,</span>
+<span class="sd">        and convert it to an integer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_ip_address</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not an IP address: </span><span class="si">{</span><span class="n">_ip_address</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_is_supported_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">pdarrayIterThresh</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span>
+        <span class="c1"># Display values as single, aligned column for ease of viewing</span>
+        <span class="n">spaces</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">([</span><span class="si">{}</span><span class="s2">],</span><span class="se">\n</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spaces</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">),</span> <span class="n">spaces</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="IPv4.to_ndarray">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.to_ndarray">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export array as a numpy array of integers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()])</span></div>
+
+
+<div class="viewcode-block" id="IPv4.to_list">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.to_list">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export array as a list of integers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="c1"># Display single item as string</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Forward other accesses to pdarray class</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># If scalar, convert to integer and set</span>
+        <span class="n">isscalar</span><span class="p">,</span> <span class="n">scalarval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_supported_scalar</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isscalar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">scalarval</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="nf">_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="c1"># Based on other type, select data to pass to pdarray _binop</span>
+        <span class="n">isscalar</span><span class="p">,</span> <span class="n">scalarval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_supported_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isscalar</span><span class="p">:</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">scalarval</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_r_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="c1"># _binop handles everything except left types: scalar and pdarray int64</span>
+        <span class="n">isscalar</span><span class="p">,</span> <span class="n">scalarval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_supported_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isscalar</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">scalarval</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+<div class="viewcode-block" id="IPv4.opeq">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.opeq">[docs]</a>
+    <span class="k">def</span> <span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="c1"># Based on other type, select data to pass to pdarray opeq</span>
+        <span class="n">isscalar</span><span class="p">,</span> <span class="n">scalarval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_supported_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isscalar</span><span class="p">:</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">scalarval</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">opeq</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IPv4.register">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.register">[docs]</a>
+    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register this IPv4 object and underlying components with the Arkouda server</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        user_defined_name : str</span>
+<span class="sd">            user defined name the IPv4 is to be registered under,</span>
+<span class="sd">            this will be the root name for underlying components</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        IPv4</span>
+<span class="sd">            The same IPv4 which is now registered with the arkouda server and has an updated name.</span>
+<span class="sd">            This is an in-place modification, the original is returned to support</span>
+<span class="sd">            a fluid programming style.</span>
+<span class="sd">            Please note you cannot register two different IPv4s with the same name.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if user_defined_name is not a str</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            If the server was unable to register the IPv4 with the user_defined_name</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        unregister, attach, is_registered</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
+                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">user_defined_name</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="IPv4.to_hdf">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.to_hdf">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_hdf</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+        <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override of the pdarray to_hdf to store the special object type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">typecast</span>
+
+        <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_mode_str_to_int</span>
+
+        <span class="k">return</span> <span class="n">typecast</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+                    <span class="s2">&quot;dset&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
+                    <span class="s2">&quot;write_mode&quot;</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span>
+                    <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
+                    <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                    <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                    <span class="s2">&quot;file_format&quot;</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IPv4.update_hdf">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.update_hdf">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override the pdarray implementation so that the special object type will be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="p">(</span>
+            <span class="n">_file_type_to_int</span><span class="p">,</span>
+            <span class="n">_get_hdf_filetype</span><span class="p">,</span>
+            <span class="n">_mode_str_to_int</span><span class="p">,</span>
+            <span class="n">_repack_hdf</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># determine the format (single/distribute) that the file was saved in</span>
+        <span class="n">file_type</span> <span class="o">=</span> <span class="n">_get_hdf_filetype</span><span class="p">(</span><span class="n">prefix_path</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
+
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+                <span class="s2">&quot;dset&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
+                <span class="s2">&quot;write_mode&quot;</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="s2">&quot;append&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                <span class="s2">&quot;file_format&quot;</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
+                <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">repack</span><span class="p">:</span>
+            <span class="n">_repack_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="is_ipv4">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.is_ipv4">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">is_ipv4</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">],</span> <span class="n">ip2</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Indicate which values are ipv4 when passed data containing IPv4 and IPv6 values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ip: pdarray (int64) or ak.IPv4</span>
+<span class="sd">    IPv4 value. High Bits of IPv6 if IPv6 is passed in.</span>
+<span class="sd">    ip2: pdarray (int64), Optional</span>
+<span class="sd">    Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray of bools indicating which indexes are IPv4.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    ak.is_ipv6</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># grab the ipv4 pdarray of values</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">):</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="k">if</span> <span class="n">ip</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">intTypes</span> <span class="ow">or</span> <span class="p">(</span><span class="n">ip2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ip2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;ip and ip2 must be int64 pdarrays. ip2 is Optional.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ip2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ip</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">ip2</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;When supplying a value for ip2, ip and ip2 must be the same size.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ip2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ans</span> <span class="o">=</span> <span class="n">ip</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span>
+        <span class="n">ans2</span> <span class="o">=</span> <span class="n">ip2</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">ans</span> <span class="o">&amp;</span> <span class="n">ans2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ip</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span></div>
+
+
+
+<div class="viewcode-block" id="is_ipv6">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.is_ipv6">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">is_ipv6</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">],</span> <span class="n">ip2</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Indicate which values are ipv6 when passed data containing IPv4 and IPv6 values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ip: pdarray (int64) or ak.IPv4</span>
+<span class="sd">    High Bits of IPv6.</span>
+<span class="sd">    ip2: pdarray (int64), Optional</span>
+<span class="sd">    Low Bits of IPv6</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray of bools indicating which indexes are IPv6.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    ak.is_ipv4</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># grab the ipv4 pdarray of values</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">):</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">values</span>
+    <span class="k">if</span> <span class="n">ip</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">intTypes</span> <span class="ow">or</span> <span class="p">(</span><span class="n">ip2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ip2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;ip and ip2 must be int64 pdarrays. ip2 is Optional.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ip2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ip</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">ip2</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;When supplying a value for ip2, ip and ip2 must be the same size.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ip2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ans</span> <span class="o">=</span> <span class="n">ip</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span>
+        <span class="n">ans2</span> <span class="o">=</span> <span class="n">ip2</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">ans</span> <span class="o">|</span> <span class="n">ans2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ip</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

@@ -1,0 +1,1628 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>arkouda.client - arkouda documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">arkouda  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/CSV.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/arrayview.html">ArrayView in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/akscipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.akscipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/akscipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy.special</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/history/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.history</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/io_util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/join/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarraysetops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraysetops</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/plotting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/row/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.row</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/security/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.security</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/segarray/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.segarray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/series/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.series</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/sorting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.sorting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/strings/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.strings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/timeclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.timeclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.util</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for arkouda.client</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span> <span class="nn">pyfiglet</span>  <span class="c1"># type: ignore</span>
+
+<span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">io_util</span><span class="p">,</span> <span class="n">security</span>
+<span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span><span class="p">,</span> <span class="n">LogLevel</span>
+<span class="kn">from</span> <span class="nn">arkouda.message</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MessageFormat</span><span class="p">,</span>
+    <span class="n">MessageType</span><span class="p">,</span>
+    <span class="n">ParameterObject</span><span class="p">,</span>
+    <span class="n">ReplyMessage</span><span class="p">,</span>
+    <span class="n">RequestMessage</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;connect&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;disconnect&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_config&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_mem_used&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_mem_avail&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_mem_status&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_server_commands&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;print_server_commands&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;generate_history&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ruok&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">username</span> <span class="o">=</span> <span class="n">security</span><span class="o">.</span><span class="n">get_username</span><span class="p">()</span>
+<span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">serverConfig</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="c1"># verbose flag for arkouda module</span>
+<span class="n">verboseDefVal</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">verbose</span> <span class="o">=</span> <span class="n">verboseDefVal</span>
+<span class="c1"># threshold for __iter__() to limit comms to arkouda_server</span>
+<span class="n">pdarrayIterThreshDefVal</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">pdarrayIterThresh</span> <span class="o">=</span> <span class="n">pdarrayIterThreshDefVal</span>
+<span class="n">maxTransferBytesDefVal</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">30</span>
+<span class="n">maxTransferBytes</span> <span class="o">=</span> <span class="n">maxTransferBytesDefVal</span>
+<span class="c1"># maximum number of capture group for regex</span>
+<span class="n">regexMaxCaptures</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="c1"># unit conversion for get_mem_used</span>
+<span class="n">_memunit2normunit</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;bytes&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kilobytes&quot;</span><span class="p">:</span> <span class="s2">&quot;kb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;megabytes&quot;</span><span class="p">:</span> <span class="s2">&quot;mb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gigabytes&quot;</span><span class="p">:</span> <span class="s2">&quot;gb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;terabytes&quot;</span><span class="p">:</span> <span class="s2">&quot;tb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;petabytes&quot;</span><span class="p">:</span> <span class="s2">&quot;pb&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_memunit2factor</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;kb&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;mb&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;gb&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;tb&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">12</span><span class="p">,</span>
+    <span class="s2">&quot;pb&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">15</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_mem_get_factor</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">_memunit2factor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_memunit2factor</span><span class="p">[</span><span class="n">unit</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">normunit</span> <span class="ow">in</span> <span class="n">_memunit2normunit</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">unit</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">_memunit2factor</span><span class="p">[</span><span class="n">normunit</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Argument must be one of </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">_memunit2factor</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">_memunit2normunit</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Arkouda Client&quot;</span><span class="p">,</span> <span class="n">logLevel</span><span class="o">=</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">clientLogger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Arkouda User Logger&quot;</span><span class="p">,</span> <span class="n">logFormat</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ClientMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ClientMode enum provides controlled vocabulary indicating whether the</span>
+<span class="sd">    Arkouda client is in UI mode or API mode. If in API mode, it is assumed the</span>
+<span class="sd">    Arkouda client is being used via an API call instead of a Python shell or notebook.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">UI</span> <span class="o">=</span> <span class="s2">&quot;UI&quot;</span>
+    <span class="n">API</span> <span class="o">=</span> <span class="s2">&quot;API&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden method returns value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden method returns value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+
+<span class="k">class</span> <span class="nc">ShellMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ShellMode Enum indicates whether the Python shell corresponds</span>
+<span class="sd">    to a REPL shell, Jupyter notebook, or IPython shell.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">IPYTHON_NOTEBOOK</span> <span class="o">=</span> <span class="s2">&quot;TerminalInteractiveShell&quot;</span>
+    <span class="n">JUPYTER_NOTEBOOK</span> <span class="o">=</span> <span class="s2">&quot;ZMQInteractiveShell&quot;</span>
+    <span class="n">REPL_SHELL</span> <span class="o">=</span> <span class="s2">&quot;REPL_SHELL&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden method returns value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden method returns value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+
+<span class="k">class</span> <span class="nc">RequestMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The RequestMode Enum indicates whether the Arkouda client-server</span>
+<span class="sd">    communication pattern will be synchronous or asynchronous.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">SYNCHRONOUS</span> <span class="o">=</span> <span class="s2">&quot;SYNCHRONOUS&quot;</span>
+    <span class="n">ASYNCHRONOUS</span> <span class="o">=</span> <span class="s2">&quot;ASYNCHRONOUS&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden method returns value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden method returns value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+
+<span class="k">class</span> <span class="nc">RequestStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The RequestStatus Enum indicates whether an asynchronous method</span>
+<span class="sd">    invocation has completed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">PENDING</span> <span class="o">=</span> <span class="s2">&quot;PENDING&quot;</span>
+    <span class="n">RUNNING</span> <span class="o">=</span> <span class="s2">&quot;RUNNING&quot;</span>
+    <span class="n">COMPLETE</span> <span class="o">=</span> <span class="s2">&quot;COMPLETE&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden method returns value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden method returns value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+
+<span class="k">def</span> <span class="nf">get_shell_mode</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the Python shell type and returns the corresponding</span>
+<span class="sd">    ShellMode enum.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ShellMode</span>
+<span class="sd">        The shell mode corresponding to a Python shell, Jupyter notebook,</span>
+<span class="sd">        or IPython notebook</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shell_mode</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">shell_mode</span> <span class="o">=</span> <span class="n">ShellMode</span><span class="p">(</span><span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+        <span class="n">shell_mode</span> <span class="o">=</span> <span class="n">ShellMode</span><span class="o">.</span><span class="n">REPL_SHELL</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">shell_mode</span>
+
+
+<span class="c1"># Get ClientMode, defaulting to UI</span>
+<span class="n">mode</span> <span class="o">=</span> <span class="n">ClientMode</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ARKOUDA_CLIENT_MODE&quot;</span><span class="p">,</span> <span class="s2">&quot;UI&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+
+<span class="c1"># Print splash message if in UI mode</span>
+<span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">ClientMode</span><span class="o">.</span><span class="n">UI</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pyfiglet</span><span class="o">.</span><span class="n">figlet_format</span><span class="p">(</span><span class="s2">&quot;Arkouda&quot;</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client Version: </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+
+<span class="c1"># reset settings to default values</span>
+<span class="k">def</span> <span class="nf">set_defaults</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets client variables including verbose, maxTransferBytes and</span>
+<span class="sd">    pdarrayIterThresh to default values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">maxTransferBytes</span><span class="p">,</span> <span class="n">pdarrayIterThresh</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="n">verboseDefVal</span>
+    <span class="n">pdarrayIterThresh</span> <span class="o">=</span> <span class="n">pdarrayIterThreshDefVal</span>
+    <span class="n">maxTransferBytes</span> <span class="o">=</span> <span class="n">maxTransferBytesDefVal</span>
+
+
+<span class="k">class</span> <span class="nc">ChannelType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ChannelType Enum specifies which Channel implementation is</span>
+<span class="sd">    to be used for an Arkouda client deployment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ZMQ</span> <span class="o">=</span> <span class="s2">&quot;ZMQ&quot;</span>
+    <span class="n">GRPC</span> <span class="o">=</span> <span class="s2">&quot;GRPC&quot;</span>
+    <span class="n">ASYNC_GRPC</span> <span class="o">=</span> <span class="s2">&quot;ASYNC_GRPC&quot;</span>
+    <span class="n">STREAMING_GRPC</span> <span class="o">=</span> <span class="s2">&quot;STREAMING_GRPC&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden method returns value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden method returns value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+
+<span class="k">class</span> <span class="nc">Channel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Channel class defines methods for connecting to and communicating with</span>
+<span class="sd">    the Arkouda server.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    url : str</span>
+<span class="sd">        Channel url used to connect to the Arkouda server which is either set</span>
+<span class="sd">        to the connect_url or generated from supplied server and port values</span>
+<span class="sd">    user : str</span>
+<span class="sd">        Arkouda user who will use the Channel to connect to the arkouda_server</span>
+<span class="sd">    token : str, optional</span>
+<span class="sd">        Token used to connect to the arkouda_server if authentication is enabled</span>
+<span class="sd">    logger : ArkoudaLogger</span>
+<span class="sd">        ArkoudaLogger used for logging</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="s2">&quot;logger&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5555</span><span class="p">,</span>
+        <span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">connect_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        user : str</span>
+<span class="sd">            Arkouda user who will use the Channel to connect to the arkouda_server</span>
+<span class="sd">        server : str, optional</span>
+<span class="sd">            The hostname of the server (must be visible to the current machine).</span>
+<span class="sd">            Defaults to `localhost`.</span>
+<span class="sd">        port : int, optional</span>
+<span class="sd">            The port of the server. Defaults to 5555.</span>
+<span class="sd">        token : str, optional</span>
+<span class="sd">            Token used to connect to the arkouda_server if authentication is enabled</span>
+<span class="sd">        connect_url : str, optional</span>
+<span class="sd">            The complete url in the format of tcp://server:port?token=&lt;token_value&gt;</span>
+<span class="sd">            where the token is optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_url</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">connect_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_access_token</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Arkouda Client&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">connect_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the connect_url is None, generates and sets the Channel url per the</span>
+<span class="sd">        Channel protocol as well as host and port. Otherwise, sets the Channel url</span>
+<span class="sd">        to the supplied connect_url value.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        server : str</span>
+<span class="sd">            Arkouda server hostname, ip address, or service name</span>
+<span class="sd">        port : int</span>
+<span class="sd">            Arkouda server host port</span>
+<span class="sd">        connect_url : str, optional</span>
+<span class="sd">            The complete url in the format of tcp://server:port?token=&lt;token_value&gt;</span>
+<span class="sd">            where the token is optional</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">connect_url</span> <span class="k">if</span> <span class="n">connect_url</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;tcp://</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_set_access_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the token for the Channel by doing the following:</span>
+
+<span class="sd">        1. retrieves the token configured for the connect_string from the</span>
+<span class="sd">           .arkouda/tokens.txt file, if any</span>
+<span class="sd">        2. if token is None, returns the retrieved token</span>
+<span class="sd">        3. if token is not None, replaces retrieved token with the token to account</span>
+<span class="sd">           for situations where the token can change for a url (for example,</span>
+<span class="sd">           the arkouda_server is restarted and a corresponding new token is generated).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        server : str</span>
+<span class="sd">            The hostname of the server (must be visible to the current machine)</span>
+<span class="sd">        port : int</span>
+<span class="sd">            The port of the server</span>
+<span class="sd">        username : str</span>
+<span class="sd">            The username retrieved from the user&#39;s home directory</span>
+<span class="sd">        token : str, optional</span>
+<span class="sd">            The token supplied by the user, which is required if authentication</span>
+<span class="sd">            is enabled, defaults to None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IOError</span>
+<span class="sd">            If there&#39;s an error writing host:port -&gt; access_token mapping to</span>
+<span class="sd">            the user&#39;s tokens.txt file or retrieving the user&#39;s tokens</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">security</span><span class="o">.</span><span class="n">get_arkouda_client_directory</span><span class="p">()</span><span class="si">}</span><span class="s2">/tokens.txt&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="n">io_util</span><span class="o">.</span><span class="n">delimited_file_to_dict</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span><span class="p">}:</span>
+            <span class="n">saved_token</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">saved_token</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">saved_token</span> <span class="o">!=</span> <span class="n">token</span><span class="p">:</span>
+                <span class="n">tokens</span><span class="p">[</span><span class="n">url</span><span class="p">]</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">io_util</span><span class="o">.</span><span class="n">dict_to_delimited_file</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">tokens</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tokens</span> <span class="o">=</span> <span class="n">io_util</span><span class="o">.</span><span class="n">delimited_file_to_dict</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">send_string_message</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">recv_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a RequestMessage encapsulating command and requesting</span>
+<span class="sd">        user information, sends it to the Arkouda server, and returns</span>
+<span class="sd">        either a string or binary depending upon the message format.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cmd : str</span>
+<span class="sd">            The name of the command to be executed by the Arkouda server</span>
+<span class="sd">        recv_binary : bool, defaults to False</span>
+<span class="sd">            Indicates if the return message will be a string or binary data</span>
+<span class="sd">        args : str, defaults to None</span>
+<span class="sd">            A delimited string containing 1..n command arguments</span>
+<span class="sd">        size : int</span>
+<span class="sd">            Default -1</span>
+<span class="sd">            Number of parameters contained in args. Only set if args is json.</span>
+<span class="sd">        request_id: str, defaults to None</span>
+<span class="sd">            Specifies an identifier for each request submitted to Arkouda</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[str,memoryview]</span>
+<span class="sd">            The response string or binary data sent back from the Arkouda server</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if the return message contains the word &quot;Error&quot;, indicating</span>
+<span class="sd">            a server-side error was thrown</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            Raised if the return message is malformed JSON or is missing 1..n</span>
+<span class="sd">            expected fields</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        s- Size is not yet utilized. It is being provided in preparation for further development.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;send_string_message must be implemented in derived class&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">send_binary_message</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">payload</span><span class="p">:</span> <span class="nb">memoryview</span><span class="p">,</span>
+        <span class="n">recv_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a RequestMessage encapsulating command and requesting user information,</span>
+<span class="sd">        information prepends the binary payload, sends the binary request to the Arkouda</span>
+<span class="sd">        server, and returns either a string or binary depending upon the message format.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cmd : str</span>
+<span class="sd">            The name of the command to be executed by the Arkouda server</span>
+<span class="sd">        payload : memoryview</span>
+<span class="sd">            The binary data to be converted to a pdarray, Strings, or Categorical</span>
+<span class="sd">            object on the Arkouda server</span>
+<span class="sd">        recv_binary : bool, defaults to False</span>
+<span class="sd">            Indicates if the return message will be a string or binary data</span>
+<span class="sd">        args : str</span>
+<span class="sd">            A delimited string containing 1..n command arguments</span>
+<span class="sd">        request_id: str, defaults to None</span>
+<span class="sd">            Specifies an identifier for each request submitted to Arkouda</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[str,memoryview]</span>
+<span class="sd">            The response string or binary data sent back from the Arkouda server</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if the return message contains the word &quot;Error&quot;, indicating</span>
+<span class="sd">            a server-side error was thrown</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            Raised if the return message is malformed JSON or is missing 1..n</span>
+<span class="sd">            expected fields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;send_binary_message must be implemented in derived class&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Establishes a connection to the Arkouda server</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        timeout : int</span>
+<span class="sd">            Connection timeout</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if the return message contains the word &quot;Error&quot;, indicating</span>
+<span class="sd">            a server-side error was thrown</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;connect must be implemented in derived class&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Disconnects from the Arkouda server</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if the return message contains the word &quot;Error&quot;, indicating</span>
+<span class="sd">            a server-side error was thrown</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;connect must be implemented in derived class&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ZmqChannel</span><span class="p">(</span><span class="n">Channel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ZmqChannel class implements the Channel methods for ZMQ request/reply communication</span>
+<span class="sd">    patterns, which is the Arkouda-Chapel default</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;socket&quot;</span>
+
+    <span class="k">def</span> <span class="nf">send_string_message</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">recv_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">RequestMessage</span><span class="p">(</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">MessageFormat</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span>
+        <span class="p">)</span>
+        <span class="c1"># Note - Size is a placeholder here because Binary msg not yet support json args and</span>
+        <span class="c1"># request_id is a noop for now</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sending message </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">asdict</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">send_string</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">asdict</span><span class="p">()))</span>
+
+        <span class="k">if</span> <span class="n">recv_binary</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">view</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">buffer</span>
+            <span class="c1"># raise errors sent back from the server</span>
+            <span class="k">if</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">view</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Error:&quot;</span><span class="p">)])</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;Error:&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">view</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">raw_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">recv_string</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">return_message</span> <span class="o">=</span> <span class="n">ReplyMessage</span><span class="o">.</span><span class="n">fromdict</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_message</span><span class="p">))</span>
+
+                <span class="c1"># raise errors or warnings sent back from the server</span>
+                <span class="k">if</span> <span class="n">return_message</span><span class="o">.</span><span class="n">msgType</span> <span class="o">==</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">return_message</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">return_message</span><span class="o">.</span><span class="n">msgType</span> <span class="o">==</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">return_message</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">return_message</span><span class="o">.</span><span class="n">msg</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Return message is missing the </span><span class="si">{</span><span class="n">ke</span><span class="si">}</span><span class="s2"> field&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Return message is not valid JSON: </span><span class="si">{</span><span class="n">raw_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">send_binary_message</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">payload</span><span class="p">:</span> <span class="nb">memoryview</span><span class="p">,</span>
+        <span class="n">recv_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
+        <span class="c1"># Note - Size is a placeholder here because Binary msg not yet support json args and</span>
+        <span class="c1"># request_id is a noop for now</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">RequestMessage</span><span class="p">(</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">MessageFormat</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span>
+        <span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">zmq</span>  <span class="c1"># type: ignore</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sending message </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">asdict</span><span class="p">())</span><span class="si">}</span><span class="s2">BINARY_PAYLOAD&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">flags</span><span class="o">=</span><span class="n">zmq</span><span class="o">.</span><span class="n">SNDMORE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">recv_binary</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">view</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">buffer</span>
+            <span class="c1"># raise errors sent back from the server</span>
+            <span class="k">if</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">view</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Error:&quot;</span><span class="p">)])</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;Error:&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">view</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">raw_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">recv_string</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">return_message</span> <span class="o">=</span> <span class="n">ReplyMessage</span><span class="o">.</span><span class="n">fromdict</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_message</span><span class="p">))</span>
+
+                <span class="c1"># raise errors or warnings sent back from the server</span>
+                <span class="k">if</span> <span class="n">return_message</span><span class="o">.</span><span class="n">msgType</span> <span class="o">==</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">return_message</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">return_message</span><span class="o">.</span><span class="n">msgType</span> <span class="o">==</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">return_message</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">return_message</span><span class="o">.</span><span class="n">msg</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Return message is missing the </span><span class="si">{</span><span class="n">ke</span><span class="si">}</span><span class="s2"> field&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">raw_message</span><span class="si">}</span><span class="s2"> is not valid JSON, may be server-side error&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># create and configure socket for connections to arkouda server</span>
+        <span class="kn">import</span> <span class="nn">zmq</span>  <span class="c1"># type: ignore</span>
+
+        <span class="n">context</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">REQ</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ZMQ version: </span><span class="si">{</span><span class="n">zmq</span><span class="o">.</span><span class="n">zmq_version</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># if timeout is specified, set send and receive timeout params</span>
+        <span class="k">if</span> <span class="n">timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">SNDTIMEO</span><span class="p">,</span> <span class="n">timeout</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">RCVTIMEO</span><span class="p">,</span> <span class="n">timeout</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+
+        <span class="c1"># connect to arkouda server</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+
+<span class="c1"># Global Channel object reference</span>
+<span class="n">channel</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="c1"># Get ChannelType, defaulting to ZMQ</span>
+<span class="n">channelType</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ARKOUDA_CHANNEL_TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;ZMQ&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+
+
+<span class="k">def</span> <span class="nf">get_channel</span><span class="p">(</span>
+    <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5555</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">connect_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Channel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the configured Channel implementation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    server : str</span>
+<span class="sd">        The hostname of the server (must be visible to the current</span>
+<span class="sd">        machine). Defaults to `localhost`.</span>
+<span class="sd">    port : int</span>
+<span class="sd">        The port of the server. Defaults to 5555.</span>
+<span class="sd">    access_token : str, optional</span>
+<span class="sd">        The token used to connect to an existing socket to enable access to</span>
+<span class="sd">        an Arkouda server where authentication is enabled. Defaults to None.</span>
+<span class="sd">    connect_url : str, optional</span>
+<span class="sd">        The complete url in the format of tcp://server:port?token=&lt;token_value&gt;</span>
+<span class="sd">        where the token is optional</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Channel</span>
+<span class="sd">        The Channel implementation configured with the ARKOUDA_CHANNEL_TYPE</span>
+<span class="sd">        env variable</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    EnvironmentError</span>
+<span class="sd">        Raised if the ARKOUDA_CHANNEL_TYPE references an invalid ChannelType</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">channelType</span> <span class="o">==</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">ZMQ</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ZmqChannel</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="n">server</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">connect_url</span><span class="o">=</span><span class="n">connect_url</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid channelType </span><span class="si">{</span><span class="n">channelType</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="connect">
+<a class="viewcode-back" href="../../usage/startup.html#arkouda.client.connect">[docs]</a>
+<span class="k">def</span> <span class="nf">connect</span><span class="p">(</span>
+    <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5555</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">connect_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">access_channel</span><span class="p">:</span> <span class="n">Channel</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Connect to a running arkouda server.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    server : str, optional</span>
+<span class="sd">        The hostname of the server (must be visible to the current</span>
+<span class="sd">        machine). Defaults to `localhost`.</span>
+<span class="sd">    port : int, optional</span>
+<span class="sd">        The port of the server. Defaults to 5555.</span>
+<span class="sd">    timeout : int, optional</span>
+<span class="sd">        The timeout in seconds for client send and receive operations.</span>
+<span class="sd">        Defaults to 0 seconds, whicn is interpreted as no timeout.</span>
+<span class="sd">    access_token : str, optional</span>
+<span class="sd">        The token used to connect to an existing socket to enable access to</span>
+<span class="sd">        an Arkouda server where authentication is enabled. Defaults to None.</span>
+<span class="sd">    connect_url : str, optional</span>
+<span class="sd">        The complete url in the format of tcp://server:port?token=&lt;token_value&gt;</span>
+<span class="sd">        where the token is optional</span>
+<span class="sd">    access_channel : Channel, optional</span>
+<span class="sd">        The desired Channel implementation that differs from the default ZmqChannel</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ConnectionError</span>
+<span class="sd">        Raised if there&#39;s an error in connecting to the Arkouda server</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if there&#39;s an error in parsing the connect_url parameter</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if there is a server-side error</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    On success, prints the connected address, as seen by the server. If called</span>
+<span class="sd">    with an existing connection, the socket will be re-initialized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">regexMaxCaptures</span><span class="p">,</span> <span class="n">channel</span>
+
+    <span class="c1"># send the connect message</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;connect&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Python] Sending request: </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If access-channel is not None, set global channel to access_channel. If not,</span>
+<span class="sd">    set the global channel object via the get_channel factory method</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">access_channel</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">access_channel</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">get_channel</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="n">server</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">access_token</span><span class="p">,</span> <span class="n">connect_url</span><span class="o">=</span><span class="n">connect_url</span><span class="p">)</span>
+
+    <span class="c1"># connect via the channel</span>
+    <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+
+    <span class="c1"># send connect request to server and get the response confirming if</span>
+    <span class="c1"># the connect request succeeded and, if not not, the error message</span>
+    <span class="n">return_message</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">send_string_message</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Python] Received response: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">return_message</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">connected</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">serverConfig</span> <span class="o">=</span> <span class="n">_get_config_msg</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">serverConfig</span><span class="p">[</span><span class="s2">&quot;arkoudaVersion&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">__version__</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Version mismatch between client (</span><span class="si">{}</span><span class="s2">) and server (</span><span class="si">{}</span><span class="s2">); &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;this may cause some commands to fail or behave &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;incorrectly! Updating arkouda is strongly recommended.&quot;</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="n">serverConfig</span><span class="p">[</span><span class="s2">&quot;arkoudaVersion&quot;</span><span class="p">]),</span>
+            <span class="ne">RuntimeWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">regexMaxCaptures</span> <span class="o">=</span> <span class="n">serverConfig</span><span class="p">[</span><span class="s2">&quot;regexMaxCaptures&quot;</span><span class="p">]</span>  <span class="c1"># type:ignore</span>
+    <span class="n">clientLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">return_message</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_parse_url</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses the url in the following format if authentication enabled:</span>
+
+<span class="sd">    tcp://&lt;hostname/url&gt;:&lt;port&gt;?token=&lt;token&gt;</span>
+
+<span class="sd">    If authentication is not enabled, the url is expected to be in the format:</span>
+
+<span class="sd">    tcp://&lt;hostname/url&gt;:&lt;port&gt;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    url : str</span>
+<span class="sd">        The url string</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tuple[str,int,Optional[str]]</span>
+<span class="sd">        A tuple containing the host, port, and token, the latter of which is None</span>
+<span class="sd">        if authentication is not enabled for the Arkouda server being accessed</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        if the url does not match one of the above formats, if the port is not an</span>
+<span class="sd">        integer, or if there&#39;s a general string parse error raised in the parsing</span>
+<span class="sd">        of the url parameter</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># split on tcp:// and if missing or malformmed, raise ValueError</span>
+        <span class="n">no_protocol_stub</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;tcp://&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">no_protocol_stub</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;url must be in form tcp://&lt;hostname/url&gt;:&lt;port&gt; or &quot;</span>
+                <span class="s2">&quot;tcp://&lt;hostname/url&gt;:&lt;port&gt;?token=&lt;token&gt;&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># split on : to separate host from port or port?token=&lt;token&gt;</span>
+        <span class="n">host_stub</span> <span class="o">=</span> <span class="n">no_protocol_stub</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">host_stub</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;url must be in form tcp://&lt;hostname/url&gt;:&lt;port&gt; or &quot;</span>
+                <span class="s2">&quot;tcp://&lt;hostname/url&gt;:&lt;port&gt;?token=&lt;token&gt;&quot;</span>
+            <span class="p">)</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="n">host_stub</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">port_stub</span> <span class="o">=</span> <span class="n">host_stub</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;?token=&quot;</span> <span class="ow">in</span> <span class="n">port_stub</span><span class="p">:</span>
+            <span class="n">port_token_stub</span> <span class="o">=</span> <span class="n">port_stub</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?token=&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">port_token_stub</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">port_token_stub</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">port_stub</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_start_tunnel</span><span class="p">(</span><span class="n">addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tunnel_server</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Starts ssh tunnel</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tunnel_server : str</span>
+<span class="sd">        The ssh server url</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The new tunneled-version of connect string</span>
+<span class="sd">    object</span>
+<span class="sd">        The ssh tunnel object</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ConnectionError</span>
+<span class="sd">        If the ssh tunnel could not be created given the tunnel_server</span>
+<span class="sd">        url and credentials (either password or key file)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">zmq</span> <span class="kn">import</span> <span class="n">ssh</span>
+
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="n">addr</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">:</span> <span class="n">tunnel_server</span><span class="p">}</span>
+    <span class="n">keyfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ARKOUDA_KEY_FILE&quot;</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ARKOUDA_PASSWORD&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">keyfile</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;keyfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keyfile</span>
+    <span class="k">if</span> <span class="n">password</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">password</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ssh</span><span class="o">.</span><span class="n">tunnel</span><span class="o">.</span><span class="n">open_tunnel</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+
+<span class="c1"># message arkouda server the client is disconnecting from the server</span>
+<div class="viewcode-block" id="disconnect">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.disconnect">[docs]</a>
+<span class="k">def</span> <span class="nf">disconnect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Disconnects the client from the Arkouda server</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ConnectionError</span>
+<span class="sd">        Raised if there&#39;s an error disconnecting from the Arkouda server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span><span class="p">,</span> <span class="n">verbose</span>
+
+    <span class="k">if</span> <span class="n">connected</span><span class="p">:</span>
+        <span class="c1"># send disconnect message to server</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;disconnect&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Python] Sending request: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">return_message</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">Channel</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">send_string_message</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Python] Received response: </span><span class="si">{</span><span class="n">return_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cast</span><span class="p">(</span><span class="n">Channel</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">serverConfig</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">clientLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">return_message</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">clientLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;not connected; cannot disconnect&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="shutdown">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.shutdown">[docs]</a>
+<span class="k">def</span> <span class="nf">shutdown</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sends a shutdown message to the Arkouda server that does the</span>
+<span class="sd">    following:</span>
+
+<span class="sd">    1. Delete all objects in the SymTable</span>
+<span class="sd">    2. Shuts down the Arkouda server</span>
+<span class="sd">    3. Disconnects the client from the stopped Arkouda Server</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if the client is not connected to the Arkouda server or</span>
+<span class="sd">        there is an error in disconnecting from the server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">socket</span><span class="p">,</span> <span class="n">pspStr</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span><span class="p">,</span> <span class="n">verbose</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">connected</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;not connected, cannot shutdown server&quot;</span><span class="p">)</span>
+    <span class="c1"># send shutdown message to server</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;shutdown&quot;</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Python] Sending request: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">return_message</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">Channel</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">send_string_message</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Python] Received response: </span><span class="si">{</span><span class="n">return_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cast</span><span class="p">(</span><span class="n">Channel</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">serverConfig</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_json_args_to_str</span><span class="p">(</span><span class="n">json_obj</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Python Dictionary into a JSON formatted string that can be parsed by the msg</span>
+<span class="sd">    processing system on the Arkouda Server</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    json_obj : dict</span>
+<span class="sd">        Python dictionary of key:val representing command arguments</span>
+
+<span class="sd">    Return</span>
+<span class="sd">    ------</span>
+<span class="sd">    Tuple - the number of parameters found and the json formatted string</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        - Keys are a type other than str</span>
+<span class="sd">        - Any value is a dictionary.</span>
+<span class="sd">        - A list contains values of multiple types.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Nested dictionaries are not yet supported, but are planned for future support.</span>
+<span class="sd">    - Support for lists of pdarray or Strings objects does not yet exist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">j</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">json_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># early return when none</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">json_obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Argument keys are required to be str. Found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">param</span> <span class="o">=</span> <span class="n">ParameterObject</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="n">j</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">dict</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">generic_msg</span><span class="p">(</span>
+    <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">payload</span><span class="p">:</span> <span class="nb">memoryview</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">send_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">recv_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sends a binary or string message composed of a command and corresponding</span>
+<span class="sd">    arguments to the arkouda_server, returning the response sent by the server.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cmd : str</span>
+<span class="sd">        The server-side command to be executed</span>
+<span class="sd">    args : str</span>
+<span class="sd">        A space-delimited list of command arguments</span>
+<span class="sd">    payload : memoryview</span>
+<span class="sd">        The payload when sending binary data</span>
+<span class="sd">    send_binary : bool</span>
+<span class="sd">        Indicates if the message to be sent is a string or binary</span>
+<span class="sd">    recv_binary : bool</span>
+<span class="sd">        Indicates if the return message will be a string or binary</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Union[str, memoryview]</span>
+<span class="sd">        The string or binary return message</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    KeyboardInterrupt</span>
+<span class="sd">        Raised if the user interrupts during command execution</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if the client is not connected to the server or if</span>
+<span class="sd">        there is a server-side error thrown</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If the server response is a string, the string corresponds to a success</span>
+<span class="sd">    confirmation, warn message, or error message. A memoryview response</span>
+<span class="sd">    corresponds to an Arkouda array output as a numpy array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">socket</span><span class="p">,</span> <span class="n">pspStr</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">verbose</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">connected</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;client is not connected to a server&quot;</span><span class="p">)</span>
+
+    <span class="n">size</span><span class="p">,</span> <span class="n">msg_args</span> <span class="o">=</span> <span class="n">_json_args_to_str</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">send_binary</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">payload</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Channel</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">send_binary_message</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">recv_binary</span><span class="o">=</span><span class="n">recv_binary</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">msg_args</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">payload</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Channel</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">send_string_message</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">msg_args</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">recv_binary</span><span class="o">=</span><span class="n">recv_binary</span>
+            <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># if the user interrupts during command execution, the socket gets out</span>
+        <span class="c1"># of sync reset the socket before raising the interrupt exception</span>
+        <span class="n">cast</span><span class="p">(</span><span class="n">Channel</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">e</span>
+
+
+<div class="viewcode-block" id="get_config">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.get_config">[docs]</a>
+<span class="k">def</span> <span class="nf">get_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get runtime information about the server.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Mapping[str, Union[str, int, float]]</span>
+<span class="sd">        serverHostname</span>
+<span class="sd">        serverPort</span>
+<span class="sd">        numLocales</span>
+<span class="sd">        numPUs (number of processor units per locale)</span>
+<span class="sd">        maxTaskPar (maximum number of tasks per locale)</span>
+<span class="sd">        physicalMemory</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if the client is not connected to a server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">serverConfig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;client is not connected to a server&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">serverConfig</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_get_config_msg</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get runtime information about the server.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if there is a server-side error in getting memory used</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if there&#39;s an error in parsing the JSON-formatted server config</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">raw_message</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getconfig&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_message</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Returned config is not valid JSON: </span><span class="si">{</span><span class="n">raw_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> in retrieving Arkouda server config&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_mem_used">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.get_mem_used">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mem_used</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">as_percent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the amount of memory used by objects in the server&#39;s symbol table.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">     ----------</span>
+<span class="sd">     unit : str {&#39;b&#39;, &#39;kb&#39;, &#39;mb&#39;, &#39;gb&#39;, &#39;tb&#39;, &#39;pb&#39;}</span>
+<span class="sd">         unit of return (&#39;b&#39; by default)</span>
+<span class="sd">     as_percent : bool</span>
+<span class="sd">         If True, return the percent (as an int) of the available memory that&#39;s been used</span>
+<span class="sd">         False by default</span>
+
+<span class="sd">     Returns</span>
+<span class="sd">     -------</span>
+<span class="sd">     int</span>
+<span class="sd">         Indicates the amount of memory allocated to symbol table objects.</span>
+
+<span class="sd">     Raises</span>
+<span class="sd">     ------</span>
+<span class="sd">     RuntimeError</span>
+<span class="sd">         Raised if there is a server-side error in getting memory used</span>
+<span class="sd">     ValueError</span>
+<span class="sd">         Raised if the returned value is not an int-formatted string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mem_used_message</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+        <span class="nb">str</span><span class="p">,</span>
+        <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getmemused&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;factor&quot;</span><span class="p">:</span> <span class="n">_mem_get_factor</span><span class="p">(</span><span class="n">unit</span><span class="p">),</span> <span class="s2">&quot;as_percent&quot;</span><span class="p">:</span> <span class="n">as_percent</span><span class="p">}),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">mem_used_message</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_mem_avail">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.get_mem_avail">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mem_avail</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">as_percent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the amount of memory available to be used.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">     ----------</span>
+<span class="sd">     unit : str {&#39;b&#39;, &#39;kb&#39;, &#39;mb&#39;, &#39;gb&#39;, &#39;tb&#39;, &#39;pb&#39;}</span>
+<span class="sd">         unit of return (&#39;b&#39; by default)</span>
+<span class="sd">     as_percent : bool</span>
+<span class="sd">         If True, return the percent (as an int) of the memory that&#39;s available to be used</span>
+<span class="sd">         False by default</span>
+
+<span class="sd">     Returns</span>
+<span class="sd">     -------</span>
+<span class="sd">     int</span>
+<span class="sd">         Indicates the amount of memory available to be used.</span>
+
+<span class="sd">     Raises</span>
+<span class="sd">     ------</span>
+<span class="sd">     RuntimeError</span>
+<span class="sd">         Raised if there is a server-side error in getting memory available</span>
+<span class="sd">     ValueError</span>
+<span class="sd">         Raised if the returned value is not an int-formatted string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mem_avail_message</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+        <span class="nb">str</span><span class="p">,</span>
+        <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getavailmem&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;factor&quot;</span><span class="p">:</span> <span class="n">_mem_get_factor</span><span class="p">(</span><span class="n">unit</span><span class="p">),</span> <span class="s2">&quot;as_percent&quot;</span><span class="p">:</span> <span class="n">as_percent</span><span class="p">}),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">mem_avail_message</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_mem_status">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.get_mem_status">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mem_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the memory status for each locale</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">     -------</span>
+<span class="sd">     List[Mapping[str, Union[str, int, float]]]</span>
+<span class="sd">         total_mem: total physical memory on locale host</span>
+<span class="sd">         avail_mem: current available memory on locale host</span>
+<span class="sd">         arkouda_mem_alloc: memory allocated to Arkouda chapel process on locale host</span>
+<span class="sd">         pct_avail_mem: percentage of physical memory currently available on locale host</span>
+<span class="sd">         locale_id: locale id which is between 0 and numLocales-1</span>
+<span class="sd">         locale_hostname: host name of locale host</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">     ------</span>
+<span class="sd">     RuntimeError</span>
+<span class="sd">         Raised if there is a server-side error in getting per-locale</span>
+<span class="sd">         memory status information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">raw_message</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getmemstatus&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_message</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Returned memory status is not valid JSON: </span><span class="si">{</span><span class="n">raw_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> in retrieving Arkouda server config&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_server_commands">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.get_server_commands">[docs]</a>
+<span class="k">def</span> <span class="nf">get_server_commands</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a dictionary of available server commands and the functions they map to</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        String to String mapping of available server commands to functions</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if there is a server-side error in retrieving and formatting the CommandMap</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if there&#39;s an error in parsing the JSON-formatted server string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">raw_message</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCmdMap&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_message</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Returned config is not valid JSON: </span><span class="si">{</span><span class="n">raw_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> in retrieving Arkouda server config&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="print_server_commands">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.print_server_commands">[docs]</a>
+<span class="k">def</span> <span class="nf">print_server_commands</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print the list of the available Server commands</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cmdMap</span> <span class="o">=</span> <span class="n">get_server_commands</span><span class="p">()</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cmdMap</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total available server commands: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cmds</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_no_op</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Send a no-op message just to gather round trip time</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The noop command result</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if there is a server-side error in executing noop request</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;noop&quot;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="ruok">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.ruok">[docs]</a>
+<span class="k">def</span> <span class="nf">ruok</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simply sends an &quot;ruok&quot; message to the server and, if the return message is</span>
+<span class="sd">    &quot;imok&quot;, this means the arkouda_server is up and operating normally. A return</span>
+<span class="sd">    message of &quot;imnotok&quot; indicates an error occurred or the connection timed out.</span>
+
+<span class="sd">    This method is basically a way to do a quick healthcheck in a way that does</span>
+<span class="sd">    not require error handling.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        A string indicating if the server is operating normally (imok), if there&#39;s</span>
+<span class="sd">        an error server-side, or if ruok did not return a response (imnotok) in</span>
+<span class="sd">        both of the latter cases</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;ruok&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">==</span> <span class="s2">&quot;imok&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;imok&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;imnotok because: </span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ruok did not return response: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="generate_history">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.generate_history">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_history</span><span class="p">(</span>
+    <span class="n">num_commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">command_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates list of commands executed within the the Python shell, Jupyter notebook,</span>
+<span class="sd">    or IPython notebook, with an optional cmd_filter and number of commands to return.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num_commands : int</span>
+<span class="sd">        The number of commands from history to retrieve</span>
+<span class="sd">    command_filter : str</span>
+<span class="sd">        String containing characters used to select a subset of commands.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    List[str]</span>
+<span class="sd">        A list of commands from the Python shell, Jupyter notebook, or IPython notebook</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">    connected to arkouda server tcp://*:5555</span>
+<span class="sd">    &gt;&gt;&gt; ak.get_config()</span>
+<span class="sd">    &gt;&gt;&gt; ak.ones(10000)</span>
+<span class="sd">    array([1 1 1 ... 1 1 1])</span>
+<span class="sd">    &gt;&gt;&gt; nums = ak.randint(0,500,10000)</span>
+<span class="sd">    &gt;&gt;&gt; ak.argsort(nums)</span>
+<span class="sd">    array([105 457 647 ... 9362 9602 9683])</span>
+<span class="sd">    &gt;&gt;&gt; ak.generate_history(num_commands=5, command_filter=&#39;ak.&#39;)</span>
+<span class="sd">    [&#39;ak.connect()&#39;, &#39;ak.get_config()&#39;, &#39;ak.ones(10000)&#39;, &#39;nums = ak.randint(0,500,10000)&#39;,</span>
+<span class="sd">    &#39;ak.argsort(nums)&#39;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shell_mode</span> <span class="o">=</span> <span class="n">get_shell_mode</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">shell_mode</span> <span class="o">==</span> <span class="n">ShellMode</span><span class="o">.</span><span class="n">REPL_SHELL</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">arkouda.history</span> <span class="kn">import</span> <span class="n">ShellHistoryRetriever</span>
+
+        <span class="k">return</span> <span class="n">ShellHistoryRetriever</span><span class="p">()</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">command_filter</span><span class="p">,</span> <span class="n">num_commands</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">arkouda.history</span> <span class="kn">import</span> <span class="n">NotebookHistoryRetriever</span>
+
+        <span class="k">return</span> <span class="n">NotebookHistoryRetriever</span><span class="p">()</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">command_filter</span><span class="p">,</span> <span class="n">num_commands</span><span class="p">)</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

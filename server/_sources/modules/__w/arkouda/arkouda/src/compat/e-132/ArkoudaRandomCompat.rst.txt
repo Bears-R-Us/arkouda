@@ -1,0 +1,29 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaRandomCompat
+
+ArkoudaRandomCompat
+===================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaRandomCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaRandomCompat;
+
+.. record:: randomStream
+
+   .. attribute:: type eltType = int
+
+   .. method:: proc init(type t)
+
+   .. method:: proc init(type t, seed)
+
+.. function:: proc sample(arr: [?d] ?t, n: int, withReplacement: bool): [] t throws
+

@@ -1,0 +1,55 @@
+.. default-domain:: chpl
+
+.. module:: SegmentedComputation
+
+SegmentedComputation
+====================
+**Usage**
+
+.. code-block:: chapel
+
+   use SegmentedComputation;
+
+
+or
+
+.. code-block:: chapel
+
+   import SegmentedComputation;
+
+.. function:: proc computeSegmentOwnership(segments: [?D] int, vD) throws
+
+.. enum:: enum SegFunction { SipHash128, StringToNumericStrict, StringToNumericIgnore, StringToNumericReturnValidity, StringCompareLiteralEq, StringCompareLiteralNeq, StringSearch, StringIsLower, StringIsUpper, StringIsTitle, StringIsAlphaNumeric, StringIsAlphabetic, StringIsDigit, StringIsEmpty, StringIsSpace }
+
+   .. enumconstant:: enum constant SipHash128
+
+   .. enumconstant:: enum constant StringToNumericStrict
+
+   .. enumconstant:: enum constant StringToNumericIgnore
+
+   .. enumconstant:: enum constant StringToNumericReturnValidity
+
+   .. enumconstant:: enum constant StringCompareLiteralEq
+
+   .. enumconstant:: enum constant StringCompareLiteralNeq
+
+   .. enumconstant:: enum constant StringSearch
+
+   .. enumconstant:: enum constant StringIsLower
+
+   .. enumconstant:: enum constant StringIsUpper
+
+   .. enumconstant:: enum constant StringIsTitle
+
+   .. enumconstant:: enum constant StringIsAlphaNumeric
+
+   .. enumconstant:: enum constant StringIsAlphabetic
+
+   .. enumconstant:: enum constant StringIsDigit
+
+   .. enumconstant:: enum constant StringIsEmpty
+
+   .. enumconstant:: enum constant StringIsSpace
+
+.. function:: proc computeOnSegments(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws
+

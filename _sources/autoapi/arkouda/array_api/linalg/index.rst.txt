@@ -14,8 +14,8 @@ Functions
 .. autoapisummary::
 
    arkouda.array_api.linalg.matmul
-   arkouda.array_api.linalg.tensordot
    arkouda.array_api.linalg.matrix_transpose
+   arkouda.array_api.linalg.tensordot
    arkouda.array_api.linalg.vecdot
 
 
@@ -25,12 +25,12 @@ Functions
    Matrix product of two arrays.
 
 
-.. py:function:: tensordot()
-
-
 .. py:function:: matrix_transpose(x: arkouda.array_api._array_object.Array) -> arkouda.array_api._array_object.Array
 
    Matrix product of two arrays.
+
+
+.. py:function:: tensordot()
 
 
 .. py:function:: vecdot(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /, *, axis: int = -1) -> arkouda.array_api._array_object.Array

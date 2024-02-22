@@ -14,10 +14,10 @@ Functions
 .. autoapisummary::
 
    arkouda.security.generate_token
-   arkouda.security.get_home_directory
-   arkouda.security.get_arkouda_client_directory
-   arkouda.security.get_username
    arkouda.security.generate_username_token_json
+   arkouda.security.get_arkouda_client_directory
+   arkouda.security.get_home_directory
+   arkouda.security.get_username
 
 
 
@@ -28,10 +28,6 @@ Attributes
 
    arkouda.security.username_tokenizer
 
-
-.. py:data:: username_tokenizer
-
-   
 
 .. py:function:: generate_token(length: int = 32) -> str
 
@@ -49,18 +45,17 @@ Attributes
    This method uses the Python secrets.token_hex method
 
 
-.. py:function:: get_home_directory() -> str
+.. py:function:: generate_username_token_json(token: str) -> str
 
-   A platform-independent means of finding path to
-   the current user's home directory
+   Generates a JSON object encapsulating the user's username
+   and token for connecting to an arkouda server with basic
+   authentication enabled
 
-   :returns: The user's home directory path
+   :param token: The token to be used to access arkouda server
+   :type token: string
+
+   :returns: The JSON-formatted string encapsulating username and token
    :rtype: str
-
-   .. rubric:: Notes
-
-   This method uses the Python os.path.expanduser method
-   to retrieve the user's home directory
 
 
 .. py:function:: get_arkouda_client_directory() -> pathlib.Path
@@ -81,6 +76,20 @@ Attributes
    as the server's token directory as the file format is different.
 
 
+.. py:function:: get_home_directory() -> str
+
+   A platform-independent means of finding path to
+   the current user's home directory
+
+   :returns: The user's home directory path
+   :rtype: str
+
+   .. rubric:: Notes
+
+   This method uses the Python os.path.expanduser method
+   to retrieve the user's home directory
+
+
 .. py:function:: get_username() -> str
 
    A platform-independent means of retrieving the current
@@ -97,16 +106,7 @@ Attributes
    and MacOS AKA Darwin
 
 
-.. py:function:: generate_username_token_json(token: str) -> str
+.. py:data:: username_tokenizer
 
-   Generates a JSON object encapsulating the user's username
-   and token for connecting to an arkouda server with basic
-   authentication enabled
-
-   :param token: The token to be used to access arkouda server
-   :type token: string
-
-   :returns: The JSON-formatted string encapsulating username and token
-   :rtype: str
-
+   
 

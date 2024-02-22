@@ -37,7 +37,7 @@ Functions
 
    Bases: :py:obj:`NamedTuple`
 
-   .. py:attribute:: values
+   .. py:attribute:: counts
       :type: arkouda.array_api._array_object.Array
 
       
@@ -52,7 +52,7 @@ Functions
 
       
 
-   .. py:attribute:: counts
+   .. py:attribute:: values
       :type: arkouda.array_api._array_object.Array
 
       
@@ -63,12 +63,12 @@ Functions
 
    Bases: :py:obj:`NamedTuple`
 
-   .. py:attribute:: values
+   .. py:attribute:: counts
       :type: arkouda.array_api._array_object.Array
 
       
 
-   .. py:attribute:: counts
+   .. py:attribute:: values
       :type: arkouda.array_api._array_object.Array
 
       
@@ -79,12 +79,12 @@ Functions
 
    Bases: :py:obj:`NamedTuple`
 
-   .. py:attribute:: values
+   .. py:attribute:: inverse_indices
       :type: arkouda.array_api._array_object.Array
 
       
 
-   .. py:attribute:: inverse_indices
+   .. py:attribute:: values
       :type: arkouda.array_api._array_object.Array
 
       

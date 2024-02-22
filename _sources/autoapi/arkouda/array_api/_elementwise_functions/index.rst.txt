@@ -25,8 +25,8 @@ Functions
    arkouda.array_api._elementwise_functions.atan2
    arkouda.array_api._elementwise_functions.atanh
    arkouda.array_api._elementwise_functions.bitwise_and
-   arkouda.array_api._elementwise_functions.bitwise_left_shift
    arkouda.array_api._elementwise_functions.bitwise_invert
+   arkouda.array_api._elementwise_functions.bitwise_left_shift
    arkouda.array_api._elementwise_functions.bitwise_or
    arkouda.array_api._elementwise_functions.bitwise_right_shift
    arkouda.array_api._elementwise_functions.bitwise_xor
@@ -49,9 +49,9 @@ Functions
    arkouda.array_api._elementwise_functions.less
    arkouda.array_api._elementwise_functions.less_equal
    arkouda.array_api._elementwise_functions.log
+   arkouda.array_api._elementwise_functions.log10
    arkouda.array_api._elementwise_functions.log1p
    arkouda.array_api._elementwise_functions.log2
-   arkouda.array_api._elementwise_functions.log10
    arkouda.array_api._elementwise_functions.logaddexp
    arkouda.array_api._elementwise_functions.logical_and
    arkouda.array_api._elementwise_functions.logical_not
@@ -68,8 +68,8 @@ Functions
    arkouda.array_api._elementwise_functions.sign
    arkouda.array_api._elementwise_functions.sin
    arkouda.array_api._elementwise_functions.sinh
-   arkouda.array_api._elementwise_functions.square
    arkouda.array_api._elementwise_functions.sqrt
+   arkouda.array_api._elementwise_functions.square
    arkouda.array_api._elementwise_functions.subtract
    arkouda.array_api._elementwise_functions.tan
    arkouda.array_api._elementwise_functions.tanh
@@ -147,16 +147,16 @@ Functions
    See its docstring for more information.
 
 
-.. py:function:: bitwise_left_shift(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+.. py:function:: bitwise_invert(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
 
-   Array API compatible wrapper for :py:func:`np.left_shift <numpy.left_shift>`.
+   Array API compatible wrapper for :py:func:`np.invert <numpy.invert>`.
 
    See its docstring for more information.
 
 
-.. py:function:: bitwise_invert(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+.. py:function:: bitwise_left_shift(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
 
-   Array API compatible wrapper for :py:func:`np.invert <numpy.invert>`.
+   Array API compatible wrapper for :py:func:`np.left_shift <numpy.left_shift>`.
 
    See its docstring for more information.
 
@@ -315,6 +315,13 @@ Functions
    See its docstring for more information.
 
 
+.. py:function:: log10(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.log10 <numpy.log10>`.
+
+   See its docstring for more information.
+
+
 .. py:function:: log1p(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
 
    Array API compatible wrapper for :py:func:`np.log1p <numpy.log1p>`.
@@ -325,13 +332,6 @@ Functions
 .. py:function:: log2(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
 
    Array API compatible wrapper for :py:func:`np.log2 <numpy.log2>`.
-
-   See its docstring for more information.
-
-
-.. py:function:: log10(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
-
-   Array API compatible wrapper for :py:func:`np.log10 <numpy.log10>`.
 
    See its docstring for more information.
 
@@ -448,16 +448,16 @@ Functions
    See its docstring for more information.
 
 
-.. py:function:: square(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+.. py:function:: sqrt(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
 
-   Array API compatible wrapper for :py:func:`np.square <numpy.square>`.
+   Array API compatible wrapper for :py:func:`np.sqrt <numpy.sqrt>`.
 
    See its docstring for more information.
 
 
-.. py:function:: sqrt(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+.. py:function:: square(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
 
-   Array API compatible wrapper for :py:func:`np.sqrt <numpy.sqrt>`.
+   Array API compatible wrapper for :py:func:`np.square <numpy.square>`.
 
    See its docstring for more information.
 

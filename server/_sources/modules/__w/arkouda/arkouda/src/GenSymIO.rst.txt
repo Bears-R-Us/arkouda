@@ -1,0 +1,67 @@
+.. default-domain:: chpl
+
+.. module:: GenSymIO
+
+GenSymIO
+========
+**Usage**
+
+.. code-block:: chapel
+
+   use GenSymIO;
+
+
+or
+
+.. code-block:: chapel
+
+   import GenSymIO;
+
+.. data:: const gsLogger = new Logger(logLevel, logChannel)
+
+.. data:: config const NULL_STRINGS_VALUE = 0: uint(8)
+
+.. function:: proc arrayMsg(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab): MsgTuple throws
+
+   
+   * Creates a pdarray server-side and returns the SymTab name used to
+   * retrieve the pdarray from the SymTab.
+   
+
+.. function:: proc segmentedCalcOffsets(values: [] uint(8), valuesDom): [] int throws
+
+   *
+   * For creating the Strings/SegString object we can calculate the offsets array on the server
+   * by finding the null terminators given the values/bytes array which should have already been
+   * converted to uint8
+   
+
+.. function:: proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): bytes throws
+
+   
+   * Outputs the pdarray as a Numpy ndarray in the form of a 
+   * Chapel Bytes object
+   
+
+.. function:: proc checkCast(c: string, type toType): bool
+
+   
+   * Utility proc to test casting a string to a specified type
+   * :arg c: String to cast
+   * :type c: string
+   * 
+   * :arg toType: the type to cast into
+   * :type toType: type
+   *
+   * :returns: bool true if the cast was successful, false otherwise
+   
+
+.. function:: proc buildReadAllMsgJson(rnames: list((string, ObjType, string)), allowErrors: bool, fileErrorCount: int, fileErrors: list(string), st: borrowed SymTab): string throws
+
+.. function:: proc jsonToMap(json: string): map(string, string) throws
+
+   
+   * Simple JSON parser to allow creating a map(string, string) for properly formatted JSON string.
+   * REQUIRES THAT DATA DOES NOT CONTAIN : or ". This will only work on JSON that is not nested.
+   
+

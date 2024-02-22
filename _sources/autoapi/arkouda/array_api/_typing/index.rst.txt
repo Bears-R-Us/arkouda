@@ -36,8 +36,8 @@ Attributes
 
    arkouda.array_api._typing.Device
    arkouda.array_api._typing.Dtype
-   arkouda.array_api._typing.SupportsBufferProtocol
    arkouda.array_api._typing.PyCapsule
+   arkouda.array_api._typing.SupportsBufferProtocol
 
 
 .. py:class:: Array
@@ -56,12 +56,16 @@ Attributes
    functions, such as asarray().
 
 
-   .. py:property:: dtype
-      :type: arkouda.array_api._typing.Dtype
+   .. py:property:: T
+      :type: Array
 
 
    .. py:property:: device
       :type: arkouda.array_api._typing.Device
+
+
+   .. py:property:: dtype
+      :type: arkouda.array_api._typing.Dtype
 
 
    .. py:property:: mT
@@ -80,13 +84,7 @@ Attributes
       :type: int
 
 
-   .. py:property:: T
-      :type: Array
-
-
-   .. py:method:: tolist()
-
-      Convert the array to a Python list or nested lists
+   .. py:method:: to_device(device: arkouda.array_api._typing.Device, /, stream: None = None) -> Array
 
 
    .. py:method:: to_ndarray()
@@ -94,7 +92,9 @@ Attributes
       Convert the array to a numpy ndarray
 
 
-   .. py:method:: to_device(device: arkouda.array_api._typing.Device, /, stream: None = None) -> Array
+   .. py:method:: tolist()
+
+      Convert the array to a Python list or nested lists
 
 
 
@@ -106,11 +106,11 @@ Attributes
 
    
 
-.. py:data:: SupportsBufferProtocol
+.. py:data:: PyCapsule
 
    
 
-.. py:data:: PyCapsule
+.. py:data:: SupportsBufferProtocol
 
    
 

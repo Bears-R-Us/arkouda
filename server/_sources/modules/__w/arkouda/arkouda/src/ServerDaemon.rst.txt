@@ -1,0 +1,248 @@
+.. default-domain:: chpl
+
+.. module:: ServerDaemon
+
+ServerDaemon
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use ServerDaemon;
+
+
+or
+
+.. code-block:: chapel
+
+   import ServerDaemon;
+
+.. enum:: enum ServerDaemonType { DEFAULT, INTEGRATION, METRICS, STATUS }
+
+   .. enumconstant:: enum constant DEFAULT
+
+   .. enumconstant:: enum constant INTEGRATION
+
+   .. enumconstant:: enum constant METRICS
+
+   .. enumconstant:: enum constant STATUS
+
+.. data:: const sdLogger = new Logger(logLevel, logChannel)
+
+.. data:: var serverDaemonTypes = try! getDaemonTypes()
+
+.. function:: proc getDaemonTypes() throws
+
+   *
+   * Retrieves a list of 1..n ServerDaemonType objects generated 
+   * from the comma-delimited list of ServerDaemonType strings
+   * provided in the daemonTypes command-line parameter
+   
+
+.. function:: proc metricsEnabled()
+
+   *
+   * Returns a boolean indicating if Arkouda is configured to generate and
+   * make available metrics via a dedicated metrics socket
+   
+
+.. function:: proc integrationEnabled()
+
+   *
+   * Returns a boolean indicating whether Arkouda is configured to 
+   * register/deregister with an external system such as Kubernetes.
+   
+
+.. function:: proc multipleServerDaemons()
+
+   *
+   * Returns a boolean indicating if there are multiple ServerDaemons
+   
+
+.. function:: proc register(endpoint: ServiceEndpoint) throws
+
+   *
+   * Generates the Kubernetes app name for Arkouda, which varies based
+   * upon which pod corresponds to Locale 0.
+   
+
+.. class:: ArkoudaServerDaemon
+
+   *
+   * The ArkoudaServerDaemon class defines the run and shutdown 
+   * functions all derived classes must override
+   
+
+   .. attribute:: var st = new owned SymTab()
+
+   .. attribute:: var shutdownDaemon = false
+
+   .. attribute:: var port: int
+
+   .. method:: proc run() throws
+
+   .. method:: proc requestShutdown(user: string) throws
+
+      *
+      * Prompts the ArkoudaServerDaemon to initiate a shutdown, triggering
+      * a change in state which will cause the derived ArkoudaServerDaemon
+      * to (1) exit the daemon loop within the run function and (2) execute 
+      * the shutdown function.
+      
+
+   .. method:: proc extractRequest(request: string): RequestMsg throws
+
+      
+      * Converts the incoming request JSON string into RequestMsg object.
+      
+
+   .. method:: proc shutdown() throws
+
+      *
+      * Encapsulates logic that is to be invoked once a ArkoduaSeverDaemon
+      * has exited the daemon loop.
+      
+
+.. class:: DefaultServerDaemon : ArkoudaServerDaemon
+
+   *
+   * The DefaultServerDaemon class serves as the default Arkouda server
+   * daemon which is run within the arkouda_server driver
+   
+
+   .. attribute:: var serverToken: string
+
+   .. attribute:: var arkDirectory: string
+
+   .. attribute:: var connectUrl: string
+
+   .. attribute:: var reqCount: int = 0
+
+   .. attribute:: var repCount: int = 0
+
+   .. attribute:: var context: ZMQ.Context
+
+   .. attribute:: var socket: ZMQ.Socket
+
+   .. method:: proc init()
+
+   .. method:: proc getConnectUrl(token: string) throws
+
+   .. method:: proc printServerSplashMessage(token: string, arkDirectory: string) throws
+
+   .. method:: proc createServerConnectionInfo() throws
+
+      
+      Creates the serverConnectionInfo file on arkouda_server startup
+      
+
+   .. method:: proc deleteServerConnectionInfo() throws
+
+      
+      Deletes the serverConnetionFile on arkouda_server shutdown
+      
+
+   .. method:: proc sendRepMsg(repMsg: ?t) throws where t == string || t == bytes
+
+      
+      Following processing of incoming message, sends a message back to the client.
+      
+      :arg repMsg: either a string or bytes to be sent
+      
+
+   .. method:: proc authenticateUser(token: string) throws
+
+      
+      Compares the token submitted by the user with the arkouda_server token. If the
+      tokens do not match, or the user did not submit a token, an ErrorWithMsg is thrown.    
+      
+      :arg token: the submitted token string
+      
+
+   .. method:: override proc requestShutdown(user: string) throws
+
+      
+      Sets the shutdownDaemon boolean to true and sends the shutdown command to socket,
+      which stops the arkouda_server listener thread and closes socket.
+      
+
+   .. method:: proc registerServerCommands()
+
+      *
+      * Register our server commands in the CommandMap
+      * There are 3 general types
+      * 1. Standard, required commands which adhere to the standard Message signature
+      * 2. Specialized, required commands which do not adhere to the standard Message signature
+      * 3. "Optional" modules which are included at compilation time via ServerModules.cfg
+      
+
+   .. method:: proc initArkoudaDirectory() throws
+
+   .. method:: override proc shutdown() throws
+
+      *
+      * The overridden shutdown function calls exit(0) if there are multiple 
+      * ServerDaemons configured for this Arkouda instance.
+      
+
+   .. method:: proc processMetrics(user: string, cmd: string, args: MessageArgs, elapsedTime: real, memUsed: uint) throws
+
+   .. method:: override proc run() throws
+
+.. class:: MetricsServerDaemon : ArkoudaServerDaemon
+
+   *
+   * The MetricsServerDaemon provides a separate endpoint for gathering user, request, 
+   * locale, and server-scoped metrics. The separate port lessens the possibility of
+   * metrics requests being blocked by command requests.
+   
+
+   .. attribute:: var context: ZMQ.Context
+
+   .. attribute:: var socket: ZMQ.Socket
+
+   .. method:: proc init()
+
+   .. method:: override proc run() throws
+
+.. class:: ExternalIntegrationServerDaemon : DefaultServerDaemon
+
+   *
+   * The ExternalIntegrationServerDaemon class registers Arkouda with the
+   * configured external system and then invokes ArkoudaServerDeamon.run()
+   
+
+   .. method:: override proc run() throws
+
+      *
+      * Overridden run function registers the ServerDaemon with an 
+      * external system and then invokes the parent run function.
+      
+
+   .. method:: override proc shutdown() throws
+
+      *
+      * Overridden shutdown function deregisters Arkouda from an external
+      * system and then invokes the parent shutdown() function.
+      
+
+.. class:: ServerStatusDaemon : ArkoudaServerDaemon
+
+   *
+   * The ServerStatusDaemon provides a non-blocking endpoint for retrieving 
+   * server status via a separate, dedicated port to lessen the chances of 
+   * blocking incoming status requests with command requests.
+   
+
+   .. attribute:: var context: ZMQ.Context
+
+   .. attribute:: var socket: ZMQ.Socket
+
+   .. method:: proc init()
+
+   .. method:: override proc run() throws
+
+.. function:: proc getServerDaemon(daemonType: ServerDaemonType): shared ArkoudaServerDaemon throws
+
+.. function:: proc getServerDaemons() throws
+

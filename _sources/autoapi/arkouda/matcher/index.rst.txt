@@ -29,6 +29,11 @@ Classes
       Populates Matcher object by finding the positions of matches
 
 
+   .. py:method:: findall(return_match_origins: bool = False)
+
+      Return all non-overlapping matches of pattern in Strings as a new Strings object
+
+
    .. py:method:: get_match(match_type: arkouda.match.MatchType, parent: object = None) -> arkouda.match.Match
 
       Create a Match object of type match_type
@@ -37,11 +42,6 @@ Classes
    .. py:method:: split(maxsplit: int = 0, return_segments: bool = False)
 
       Split string by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
-
-
-   .. py:method:: findall(return_match_origins: bool = False)
-
-      Return all non-overlapping matches of pattern in Strings as a new Strings object
 
 
    .. py:method:: sub(repl: str, count: int = 0, return_num_subs: bool = False)

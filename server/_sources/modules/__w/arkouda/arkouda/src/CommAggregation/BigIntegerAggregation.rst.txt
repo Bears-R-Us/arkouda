@@ -1,0 +1,89 @@
+.. default-domain:: chpl
+
+.. module:: BigIntegerAggregation
+
+BigIntegerAggregation
+=====================
+**Usage**
+
+.. code-block:: chapel
+
+   use CommAggregation.BigIntegerAggregation;
+
+
+or
+
+.. code-block:: chapel
+
+   import CommAggregation.BigIntegerAggregation;
+
+.. method:: proc bigint.serializedSize()
+
+.. method:: proc bigint.serializeInto(x: c_ptr(uint(8)))
+
+.. method:: proc ref bigint.deserializeFrom(x: c_ptr(uint(8)))
+
+.. record:: DstAggregatorBigint
+
+   .. attribute:: type aggType = uint(8)
+
+   .. attribute:: const bufferSize = dstBuffSize * (c_sizeof(c_ptr(bigint)) + c_sizeof(mp_size_t) + c_sizeof(mp_limb_t)): int
+
+   .. attribute:: const myLocaleSpace = 0..<numLocales
+
+   .. attribute:: var lastLocale: int
+
+   .. attribute:: var opsUntilYield = yieldFrequency
+
+   .. attribute:: var lBuffers: c_ptr(c_ptr(aggType))
+
+   .. attribute:: var rBuffers: [myLocaleSpace] remoteBuffer(aggType)
+
+   .. attribute:: var bufferIdxs: c_ptr(int)
+
+   .. method:: proc ref postinit()
+
+   .. method:: proc ref deinit()
+
+   .. method:: proc ref flush()
+
+   .. method:: proc ref copy(ref dst: bigint, const ref src: bigint)
+
+   .. method:: proc ref flushBuffer(loc: int, ref bufferIdx, freeData)
+
+.. record:: SrcAggregatorBigint
+
+   .. attribute:: type aggType = c_ptr(bigint)
+
+   .. attribute:: const bufferSize = srcBuffSize
+
+   .. attribute:: const uintBufferSize = srcBuffSize * (c_sizeof(mp_size_t) + c_sizeof(mp_limb_t)): int
+
+   .. attribute:: const myLocaleSpace = 0..<numLocales
+
+   .. attribute:: var lastLocale: int
+
+   .. attribute:: var opsUntilYield = yieldFrequency
+
+   .. attribute:: var dstAddrs: c_ptr(c_ptr(aggType))
+
+   .. attribute:: var lSrcAddrs: c_ptr(c_ptr(aggType))
+
+   .. attribute:: var lSrcVals: [myLocaleSpace] [0..#uintBufferSize] uint(8)
+
+   .. attribute:: var rSrcAddrs: [myLocaleSpace] remoteBuffer(aggType)
+
+   .. attribute:: var rSrcVals: [myLocaleSpace] remoteBuffer(uint(8))
+
+   .. attribute:: var bufferIdxs: c_ptr(int)
+
+   .. method:: proc ref postinit()
+
+   .. method:: proc ref deinit()
+
+   .. method:: proc ref flush()
+
+   .. method:: proc ref copy(ref dst: bigint, const ref src: bigint)
+
+   .. method:: proc ref flushBuffer(loc: int, ref bufferIdx, freeData)
+

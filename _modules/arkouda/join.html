@@ -1,0 +1,651 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>arkouda.join - arkouda documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">arkouda  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/CSV.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/arrayview.html">ArrayView in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/akscipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.akscipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/akscipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy.special</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/history/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.history</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/io_util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/join/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarraysetops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraysetops</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/plotting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/row/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.row</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/security/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.security</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/segarray/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.segarray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/series/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.series</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/sorting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.sorting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/strings/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.strings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/timeclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.timeclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.util</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for arkouda.join</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+
+<span class="kn">from</span> <span class="nn">arkouda.alignment</span> <span class="kn">import</span> <span class="n">right_align</span>
+<span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">NUMBER_FORMAT_STRINGS</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">resolve_scalar_dtype</span>
+<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span>
+<span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cumsum</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">in1d</span>
+<span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;join_on_eq_with_dt&quot;</span><span class="p">,</span> <span class="s2">&quot;gen_ranges&quot;</span><span class="p">,</span> <span class="s2">&quot;compute_join_size&quot;</span><span class="p">]</span>
+
+<span class="n">predicates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;true_dt&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;abs_dt&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;pos_dt&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="join_on_eq_with_dt">
+<a class="viewcode-back" href="../../autoapi/arkouda/join/index.html#arkouda.join.join_on_eq_with_dt">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">join_on_eq_with_dt</span><span class="p">(</span>
+    <span class="n">a1</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">a2</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">t1</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">t2</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">],</span>
+    <span class="n">pred</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">result_limit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs an inner-join on equality between two integer arrays where</span>
+<span class="sd">    the time-window predicate is also true</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a1 : pdarray, int64</span>
+<span class="sd">        pdarray to be joined</span>
+<span class="sd">    a2 : pdarray, int64</span>
+<span class="sd">        pdarray to be joined</span>
+<span class="sd">    t1 : pdarray</span>
+<span class="sd">        timestamps in millis corresponding to the a1 pdarray</span>
+<span class="sd">    t2 : pdarray</span>
+<span class="sd">        timestamps in millis corresponding to the a2 pdarray</span>
+<span class="sd">    dt : Union[int,np.int64]</span>
+<span class="sd">        time delta</span>
+<span class="sd">    pred : str</span>
+<span class="sd">        time window predicate</span>
+<span class="sd">    result_limit : Union[int,np.int64]</span>
+<span class="sd">        size limit for returned result</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result_array_one : pdarray, int64</span>
+<span class="sd">        a1 indices where a1 == a2</span>
+<span class="sd">    result_array_one : pdarray, int64</span>
+<span class="sd">        a2 indices where a2 == a1</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if a1, a2, t1, or t2 is not a pdarray, or if dt or</span>
+<span class="sd">        result_limit is not an int</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        if a1, a2, t1, or t2 dtype is not int64, pred is not</span>
+<span class="sd">        &#39;true_dt&#39;, &#39;abs_dt&#39;, or &#39;pos_dt&#39;, or result_limit is &lt; 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">a1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;a1 must be int64 dtype&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">a2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;a2 must be int64 dtype&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t1 must be int64 dtype&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">t2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t2 must be int64 dtype&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">pred</span> <span class="ow">in</span> <span class="n">predicates</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pred must be one of </span><span class="si">{</span><span class="n">predicates</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">result_limit</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;the result_limit must 0 or greater&quot;</span><span class="p">)</span>
+
+    <span class="c1"># format numbers for request message</span>
+    <span class="n">dttype</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">dtstr</span> <span class="o">=</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">[</span><span class="n">dttype</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">predtype</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">predicates</span><span class="p">[</span><span class="n">pred</span><span class="p">])</span>
+    <span class="n">predstr</span> <span class="o">=</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">[</span><span class="n">predtype</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">predicates</span><span class="p">[</span><span class="n">pred</span><span class="p">])</span>
+    <span class="n">result_limittype</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">result_limit</span><span class="p">)</span>
+    <span class="n">result_limitstr</span> <span class="o">=</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">[</span><span class="n">result_limittype</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result_limit</span><span class="p">)</span>
+    <span class="c1"># groupby on a2</span>
+    <span class="n">g2</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">a2</span><span class="p">)</span>
+    <span class="c1"># pass result into server joinEqWithDT operation</span>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;joinEqWithDT&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;a1&quot;</span><span class="p">:</span> <span class="n">a1</span><span class="p">,</span>
+            <span class="s2">&quot;g2seg&quot;</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">segments</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="s2">&quot;g2keys&quot;</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="s2">&quot;g2perm&quot;</span><span class="p">:</span> <span class="n">g2</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span>
+            <span class="s2">&quot;t1&quot;</span><span class="p">:</span> <span class="n">t1</span><span class="p">,</span>
+            <span class="s2">&quot;t2&quot;</span><span class="p">:</span> <span class="n">t2</span><span class="p">,</span>
+            <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dtstr</span><span class="p">,</span>
+            <span class="s2">&quot;pred&quot;</span><span class="p">:</span> <span class="n">predstr</span><span class="p">,</span>
+            <span class="s2">&quot;resLimit&quot;</span><span class="p">:</span> <span class="n">result_limitstr</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="c1"># create pdarrays for results</span>
+    <span class="n">resIAttr</span><span class="p">,</span> <span class="n">resJAttr</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+    <span class="n">resI</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">resIAttr</span><span class="p">)</span>
+    <span class="n">resJ</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">resJAttr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resI</span><span class="p">,</span> <span class="n">resJ</span></div>
+
+
+
+<div class="viewcode-block" id="gen_ranges">
+<a class="viewcode-back" href="../../autoapi/arkouda/join/index.html#arkouda.join.gen_ranges">[docs]</a>
+<span class="k">def</span> <span class="nf">gen_ranges</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a segmented array of variable-length, contiguous ranges between pairs of</span>
+<span class="sd">    start- and end-points.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    starts : pdarray, int64</span>
+<span class="sd">        The start value of each range</span>
+<span class="sd">    ends : pdarray, int64</span>
+<span class="sd">        The end value (exclusive) of each range</span>
+<span class="sd">    stride: int</span>
+<span class="sd">        Difference between successive elements of each range</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    segments : pdarray, int64</span>
+<span class="sd">        The starting index of each range in the resulting array</span>
+<span class="sd">    ranges : pdarray, int64</span>
+<span class="sd">        The actual ranges, flattened into a single array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">starts</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">ends</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;starts and ends must be same length&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">starts</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">),</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">)</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="p">(</span><span class="n">ends</span> <span class="o">-</span> <span class="n">starts</span><span class="p">)</span> <span class="o">//</span> <span class="n">stride</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">lengths</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all ends must be greater than or equal to starts&quot;</span><span class="p">)</span>
+    <span class="n">non_empty</span> <span class="o">=</span> <span class="n">lengths</span> <span class="o">!=</span> <span class="mi">0</span>
+    <span class="n">segs</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">-</span> <span class="n">lengths</span>
+    <span class="n">totlen</span> <span class="o">=</span> <span class="n">lengths</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">totlen</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">)</span>
+    <span class="n">non_empty_starts</span> <span class="o">=</span> <span class="n">starts</span><span class="p">[</span><span class="n">non_empty</span><span class="p">]</span>
+    <span class="n">non_empty_lengths</span> <span class="o">=</span> <span class="n">lengths</span><span class="p">[</span><span class="n">non_empty</span><span class="p">]</span>
+    <span class="n">diffs</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">array</span><span class="p">([</span><span class="n">non_empty_starts</span><span class="p">[</span><span class="mi">0</span><span class="p">]]),</span>
+            <span class="n">non_empty_starts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">non_empty_starts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">non_empty_lengths</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">stride</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">slices</span><span class="p">[</span><span class="n">segs</span><span class="p">[</span><span class="n">non_empty</span><span class="p">]]</span> <span class="o">=</span> <span class="n">diffs</span>
+    <span class="k">return</span> <span class="n">segs</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">(</span><span class="n">slices</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compute_join_size">
+<a class="viewcode-back" href="../../autoapi/arkouda/join/index.html#arkouda.join.compute_join_size">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">compute_join_size</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the internal size of a hypothetical join between a and b. Returns</span>
+<span class="sd">    both the number of elements and number of bytes required for the join.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bya</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">ua</span><span class="p">,</span> <span class="n">asize</span> <span class="o">=</span> <span class="n">bya</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">byb</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">ub</span><span class="p">,</span> <span class="n">bsize</span> <span class="o">=</span> <span class="n">byb</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">afact</span> <span class="o">=</span> <span class="n">asize</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">ua</span><span class="p">,</span> <span class="n">ub</span><span class="p">)]</span>
+    <span class="n">bfact</span> <span class="o">=</span> <span class="n">bsize</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">ub</span><span class="p">,</span> <span class="n">ua</span><span class="p">)]</span>
+    <span class="n">nelem</span> <span class="o">=</span> <span class="p">(</span><span class="n">afact</span> <span class="o">*</span> <span class="n">bfact</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">nbytes</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">nelem</span>
+    <span class="k">return</span> <span class="n">nelem</span><span class="p">,</span> <span class="n">nbytes</span></div>
+
+
+
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">inner_join</span><span class="p">(</span>
+    <span class="n">left</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span>
+    <span class="n">right</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span>
+    <span class="n">wherefunc</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">whereargs</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span>
+        <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span>
+        <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform inner join on values in &lt;left&gt; and &lt;right&gt;,</span>
+<span class="sd">    using conditions defined by &lt;wherefunc&gt; evaluated on</span>
+<span class="sd">    &lt;whereargs&gt;, returning indices of left-right pairs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    left : pdarray(int64), Strings, Categorical, or Sequence of pdarray</span>
+<span class="sd">        The left values to join</span>
+<span class="sd">    right : pdarray(int64), Strings, Categorical, or Sequence of pdarray</span>
+<span class="sd">        The right values to join</span>
+<span class="sd">    wherefunc : function, optional</span>
+<span class="sd">        Function that takes two pdarray arguments and returns</span>
+<span class="sd">        a pdarray(bool) used to filter the join. Results for</span>
+<span class="sd">        which wherefunc is False will be dropped.</span>
+<span class="sd">    whereargs : 2-tuple of pdarray, Strings, Categorical, or Sequence of pdarray</span>
+<span class="sd">        The two arguments for wherefunc</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    leftInds : pdarray(int64)</span>
+<span class="sd">        The left indices of pairs that meet the join condition</span>
+<span class="sd">    rightInds : pdarray(int64)</span>
+<span class="sd">        The right indices of pairs that meet the join condition</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The return values satisfy the following assertions</span>
+
+<span class="sd">    `assert (left[leftInds] == right[rightInds]).all()`</span>
+<span class="sd">    `assert wherefunc(whereargs[0][leftInds], whereargs[1][rightInds]).all()`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
+
+    <span class="n">is_sequence</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span>
+
+    <span class="c1"># Reduce processing to codes to prevent groupby on entire Categorical</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+        <span class="n">l</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">standardize_categories</span><span class="p">([</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">])</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">codes</span>
+
+    <span class="k">if</span> <span class="n">is_sequence</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Left must have same num arrays as right&quot;</span><span class="p">)</span>
+        <span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span> <span class="o">=</span> <span class="n">left</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">right</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">lf</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">left_size</span> <span class="k">for</span> <span class="n">lf</span> <span class="ow">in</span> <span class="n">left</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="n">rt</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">right_size</span> <span class="k">for</span> <span class="n">rt</span> <span class="ow">in</span> <span class="n">right</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multi-array arguments must have equal-length arrays&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">right</span><span class="o">.</span><span class="n">size</span>  <span class="c1"># type: ignore</span>
+
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">wherefunc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">wherefunc</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wherefunc must be a function that accepts exactly two arguments&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">whereargs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">whereargs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;whereargs must be a 2-tuple with left and right arg arrays&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_sequence</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Left must have same num arrays as right&quot;</span><span class="p">)</span>
+            <span class="n">first_wa_size</span><span class="p">,</span> <span class="n">second_wa_size</span> <span class="o">=</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">wa</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">first_wa_size</span> <span class="k">for</span> <span class="n">wa</span> <span class="ow">in</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="n">wa</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">second_wa_size</span> <span class="k">for</span> <span class="n">wa</span> <span class="ow">in</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multi-array arguments must have equal-length arrays&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">first_wa_size</span><span class="p">,</span> <span class="n">second_wa_size</span> <span class="o">=</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">first_wa_size</span> <span class="o">!=</span> <span class="n">left_size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Left whereargs must be same size as left join values&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">second_wa_size</span> <span class="o">!=</span> <span class="n">right_size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Right whereargs must be same size as right join values&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">wherefunc</span><span class="p">(</span><span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="n">sample</span><span class="p">],</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="n">sample</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error evaluating wherefunc&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="c1"># Need dense 0-up right index, to filter out left not in right</span>
+    <span class="n">keep</span><span class="p">,</span> <span class="p">(</span><span class="n">denseLeft</span><span class="p">,</span> <span class="n">denseRight</span><span class="p">)</span> <span class="o">=</span> <span class="n">right_align</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">keep</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Intersection is empty</span>
+        <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">),</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">)</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">keep</span><span class="o">.</span><span class="n">size</span><span class="p">)[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="c1"># GroupBy right</span>
+    <span class="n">byRight</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">denseRight</span><span class="p">)</span>
+    <span class="c1"># Get segment boundaries (starts, ends) of right for each left item</span>
+    <span class="n">rightSegs</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">byRight</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">denseRight</span><span class="o">.</span><span class="n">size</span><span class="p">])))</span>
+    <span class="n">starts</span> <span class="o">=</span> <span class="n">rightSegs</span><span class="p">[</span><span class="n">denseLeft</span><span class="p">]</span>
+    <span class="n">ends</span> <span class="o">=</span> <span class="n">rightSegs</span><span class="p">[</span><span class="n">denseLeft</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># gen_ranges for gather of right items</span>
+    <span class="n">fullSegs</span><span class="p">,</span> <span class="n">ranges</span> <span class="o">=</span> <span class="n">gen_ranges</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">)</span>
+    <span class="c1"># Evaluate where clause</span>
+    <span class="k">if</span> <span class="n">wherefunc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">filtRanges</span> <span class="o">=</span> <span class="n">ranges</span>
+        <span class="n">filtSegs</span> <span class="o">=</span> <span class="n">fullSegs</span>
+        <span class="n">keep12</span> <span class="o">=</span> <span class="n">keep</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">whereargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_sequence</span><span class="p">:</span>
+                <span class="c1"># Gather right whereargs</span>
+                <span class="n">rightWhere</span> <span class="o">=</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">byRight</span><span class="o">.</span><span class="n">permutation</span><span class="p">][</span><span class="n">ranges</span><span class="p">]</span>
+                <span class="c1"># Expand left whereargs</span>
+                <span class="n">keep_where</span> <span class="o">=</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">keep</span><span class="p">]</span>
+                <span class="n">keep_where</span> <span class="o">=</span> <span class="n">keep_where</span><span class="o">.</span><span class="n">codes</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keep_where</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="k">else</span> <span class="n">keep_where</span>
+                <span class="n">leftWhere</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">fullSegs</span><span class="p">,</span> <span class="n">keep_where</span><span class="p">,</span> <span class="n">ranges</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Gather right whereargs</span>
+                <span class="n">rightWhere</span> <span class="o">=</span> <span class="p">[</span><span class="n">wa</span><span class="p">[</span><span class="n">byRight</span><span class="o">.</span><span class="n">permutation</span><span class="p">][</span><span class="n">ranges</span><span class="p">]</span> <span class="k">for</span> <span class="n">wa</span> <span class="ow">in</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="c1"># Expand left whereargs</span>
+                <span class="n">keep_where</span> <span class="o">=</span> <span class="p">[</span><span class="n">wa</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span> <span class="k">for</span> <span class="n">wa</span> <span class="ow">in</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="n">leftWhere</span> <span class="o">=</span> <span class="p">[</span><span class="n">broadcast</span><span class="p">(</span><span class="n">fullSegs</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">ranges</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">keep_where</span><span class="p">]</span>
+            <span class="c1"># Evaluate wherefunc and filter ranges, recompute segments</span>
+            <span class="n">whereSatisfied</span> <span class="o">=</span> <span class="n">wherefunc</span><span class="p">(</span><span class="n">leftWhere</span><span class="p">,</span> <span class="n">rightWhere</span><span class="p">)</span>
+            <span class="n">filtRanges</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[</span><span class="n">whereSatisfied</span><span class="p">]</span>
+            <span class="n">scan</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">(</span><span class="n">whereSatisfied</span><span class="p">)</span> <span class="o">-</span> <span class="n">whereSatisfied</span>
+            <span class="n">filtSegsWithZeros</span> <span class="o">=</span> <span class="n">scan</span><span class="p">[</span><span class="n">fullSegs</span><span class="p">]</span>
+            <span class="n">filtSegSizes</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">filtSegsWithZeros</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">filtSegsWithZeros</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">array</span><span class="p">([</span><span class="n">whereSatisfied</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">filtSegsWithZeros</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">keep2</span> <span class="o">=</span> <span class="n">filtSegSizes</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="n">filtSegs</span> <span class="o">=</span> <span class="n">filtSegsWithZeros</span><span class="p">[</span><span class="n">keep2</span><span class="p">]</span>
+            <span class="n">keep12</span> <span class="o">=</span> <span class="n">keep</span><span class="p">[</span><span class="n">keep2</span><span class="p">]</span>
+    <span class="c1"># Gather right inds and expand left inds</span>
+    <span class="n">rightInds</span> <span class="o">=</span> <span class="n">byRight</span><span class="o">.</span><span class="n">permutation</span><span class="p">[</span><span class="n">filtRanges</span><span class="p">]</span>
+    <span class="n">leftInds</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">filtSegs</span><span class="p">,</span> <span class="n">arange</span><span class="p">(</span><span class="n">left_size</span><span class="p">)[</span><span class="n">keep12</span><span class="p">],</span> <span class="n">filtRanges</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">leftInds</span><span class="p">,</span> <span class="n">rightInds</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

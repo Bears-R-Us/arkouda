@@ -21,8 +21,8 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.logger.enableVerbose
    arkouda.logger.disableVerbose
+   arkouda.logger.enableVerbose
    arkouda.logger.write_log
 
 
@@ -36,13 +36,18 @@ Functions
 
    Derive from this class to define new enumerations.
 
+   .. py:attribute:: CRITICAL
+      :value: 'CRITICAL'
+
+      
+
    .. py:attribute:: DEBUG
       :value: 'DEBUG'
 
       
 
-   .. py:attribute:: CRITICAL
-      :value: 'CRITICAL'
+   .. py:attribute:: ERROR
+      :value: 'ERROR'
 
       
 
@@ -56,16 +61,6 @@ Functions
 
       
 
-   .. py:attribute:: ERROR
-      :value: 'ERROR'
-
-      
-
-
-.. py:function:: enableVerbose() -> None
-
-   Enables verbose logging (DEBUG log level) for all ArkoudaLoggers
-
 
 .. py:function:: disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None
 
@@ -76,6 +71,11 @@ Functions
    :type logLevel: LogLevel
 
    :raises TypeError: Raised if logLevel is not a LogLevel enum
+
+
+.. py:function:: enableVerbose() -> None
+
+   Enables verbose logging (DEBUG log level) for all ArkoudaLoggers
 
 
 .. py:function:: write_log(log_msg: str, tag: str = 'ClientGeneratedLog', log_lvl: LogLevel = LogLevel.INFO)

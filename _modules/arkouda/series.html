@@ -1,0 +1,1519 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>arkouda.series - arkouda documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">arkouda  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/CSV.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/arrayview.html">ArrayView in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/akscipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.akscipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/akscipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy.special</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/history/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.history</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/io_util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/join/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarraysetops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraysetops</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/plotting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/row/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.row</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/security/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.security</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/segarray/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.segarray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/series/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.series</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/sorting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.sorting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/strings/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.strings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/timeclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.timeclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.util</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for arkouda.series</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># type: ignore</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">pandas._config</span> <span class="kn">import</span> <span class="n">get_option</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+
+<span class="kn">import</span> <span class="nn">arkouda.dataframe</span>
+<span class="kn">from</span> <span class="nn">arkouda.accessor</span> <span class="kn">import</span> <span class="n">CachedAccessor</span><span class="p">,</span> <span class="n">DatetimeAccessor</span><span class="p">,</span> <span class="n">StringAccessor</span>
+<span class="kn">from</span> <span class="nn">arkouda.alignment</span> <span class="kn">import</span> <span class="n">lookup</span>
+<span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int64</span>
+<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">groupable_element_type</span>
+<span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
+<span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+<span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">value_counts</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RegistrationError</span><span class="p">,</span>
+    <span class="nb">any</span><span class="p">,</span>
+    <span class="n">argmaxk</span><span class="p">,</span>
+    <span class="n">create_pdarray</span><span class="p">,</span>
+    <span class="n">pdarray</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">zeros</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">in1d</span><span class="p">,</span> <span class="n">indexof1d</span>
+<span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">convert_if_categorical</span><span class="p">,</span> <span class="n">get_callback</span>
+
+<span class="c1"># pd.set_option(&quot;display.max_colwidth&quot;, 65) is being called in DataFrame.py. This will resolve BitVector</span>
+<span class="c1"># truncation issues. If issues arise, that&#39;s where to look for it.</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Series&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">operator</span>
+
+<span class="n">supported_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">is_supported_scalar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">natural_binary_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">op</span> <span class="ow">in</span> <span class="p">{</span>
+        <span class="s2">&quot;__add__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">,</span>
+        <span class="s2">&quot;__sub__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">sub</span><span class="p">,</span>
+        <span class="s2">&quot;__mul__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span>
+        <span class="s2">&quot;__truediv__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">truediv</span><span class="p">,</span>
+        <span class="s2">&quot;__floordiv__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">floordiv</span><span class="p">,</span>
+        <span class="s2">&quot;__and__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">and_</span><span class="p">,</span>
+        <span class="s2">&quot;__or__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">or_</span><span class="p">,</span>
+        <span class="s2">&quot;__xor__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">xor</span><span class="p">,</span>
+        <span class="s2">&quot;__eq__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">eq</span><span class="p">,</span>
+        <span class="s2">&quot;__ge__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span>
+        <span class="s2">&quot;__gt__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">gt</span><span class="p">,</span>
+        <span class="s2">&quot;__le__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">le</span><span class="p">,</span>
+        <span class="s2">&quot;__lshift__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">lshift</span><span class="p">,</span>
+        <span class="s2">&quot;__lt__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">lt</span><span class="p">,</span>
+        <span class="s2">&quot;__mod__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span>
+        <span class="s2">&quot;__ne__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">ne</span><span class="p">,</span>
+        <span class="s2">&quot;__rshift__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">rshift</span><span class="p">,</span>
+        <span class="s2">&quot;__pow__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">pow</span><span class="p">,</span>
+    <span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_binop</span><span class="p">(</span><span class="n">op</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="bp">cls</span>
+
+
+<span class="k">def</span> <span class="nf">unary_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">op</span> <span class="ow">in</span> <span class="p">{</span>
+        <span class="s2">&quot;__invert__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">invert</span><span class="p">,</span>
+        <span class="s2">&quot;__neg__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">neg</span><span class="p">,</span>
+    <span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_unaryop</span><span class="p">(</span><span class="n">op</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="bp">cls</span>
+
+
+<span class="k">def</span> <span class="nf">aggregation_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="s2">&quot;argmax&quot;</span><span class="p">,</span> <span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;prod&quot;</span><span class="p">]:</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_aggop</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+    <span class="k">return</span> <span class="bp">cls</span>
+
+
+<div class="viewcode-block" id="Series">
+<a class="viewcode-back" href="../../usage/series.html#arkouda.Series">[docs]</a>
+<span class="nd">@unary_operators</span>
+<span class="nd">@aggregation_operators</span>
+<span class="nd">@natural_binary_operators</span>
+<span class="k">class</span> <span class="nc">Series</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    One-dimensional arkouda array with axis labels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    index : pdarray, Strings</span>
+<span class="sd">        an array of indices associated with the data array.</span>
+<span class="sd">        If empty, it will default to a range of ints whose size match the size of the data.</span>
+<span class="sd">        optional</span>
+<span class="sd">    data : Tuple, List, groupable_element_type</span>
+<span class="sd">        a 1D array. Must not be None.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if index is not a pdarray or Strings object</span>
+<span class="sd">        Raised if data is not a pdarray, Strings, or Categorical object</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if the index size does not match data size</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Series class accepts either positional arguments or keyword arguments.</span>
+<span class="sd">    If entering positional arguments,</span>
+<span class="sd">        2 arguments entered:</span>
+<span class="sd">            argument 1 - data</span>
+<span class="sd">            argument 2 - index</span>
+<span class="sd">        1 argument entered:</span>
+<span class="sd">            argument 1 - data</span>
+<span class="sd">    If entering 1 positional argument, it is assumed that this is the data argument.</span>
+<span class="sd">    If only &#39;data&#39; argument is passed in, Index will automatically be generated.</span>
+<span class="sd">    If entering keywords,</span>
+<span class="sd">        &#39;data&#39; (see Parameters)</span>
+<span class="sd">        &#39;index&#39; (optional) must match size of &#39;data&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;Series&quot;</span>
+
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">groupable_element_type</span><span class="p">],</span>
+        <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Index</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># handles the previous `ar_tuple` case</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Index</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;indices must be a pdarray, Strings, Categorical, List, or Tuple&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;values must be a pdarray, Strings, or Categorical&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">Index</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="k">if</span> <span class="n">index</span> <span class="k">else</span> <span class="n">Index</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># When only 1 positional argument it will be treated as data and not index</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">))</span> <span class="k">else</span> <span class="n">data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">Index</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Index</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Index size does not match data size&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return ascii-formatted version of the series.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Series([ -- ][ 0 values : 0 B])&quot;</span>
+
+        <span class="n">maxrows</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;display.max_rows&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">maxrows</span><span class="p">:</span>
+            <span class="n">prt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+            <span class="n">length_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prt</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">maxrows</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="n">maxrows</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(),</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">length_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">prt</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">prt</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">min_rows</span><span class="o">=</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;display.min_rows&quot;</span><span class="p">),</span>
+                <span class="n">max_rows</span><span class="o">=</span><span class="n">maxrows</span><span class="p">,</span>
+                <span class="n">length</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="n">length_str</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Series.validate_key">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.validate_key">[docs]</a>
+    <span class="k">def</span> <span class="nf">validate_key</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Series</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">supported_scalars</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">supported_scalars</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates type requirements for keys when reading or writing the Series.</span>
+<span class="sd">        Also converts list and tuple arguments into pdarrays.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: Series, pdarray, Strings, Categorical, List, supported_scalars</span>
+<span class="sd">            The key or container of keys that might be used to index into the Series.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The validated key(s), with lists and tuples converted to pdarrays</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if keys are not boolean values or the type of the labels</span>
+<span class="sd">            Raised if key is not one of the supported types</span>
+<span class="sd">        KeyError</span>
+<span class="sd">            Raised if container of keys has keys not present in the Series</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            Raised if the length of a boolean key array is different</span>
+<span class="sd">            from the Series</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_key</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Series does not support tuple keys&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
+            <span class="c1"># @TODO align the series indexes</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_key</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+            <span class="k">if</span> <span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Unexpected key type. Received </span><span class="si">{}</span><span class="s2"> but expected </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dtype</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Unexpected key type. Received Strings but expected </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="o">~</span><span class="n">in1d</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> not in index&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="o">~</span><span class="n">in1d</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)]))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="o">~</span><span class="n">in1d</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)):</span>
+                    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> not in index&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="o">~</span><span class="n">in1d</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)]))</span>
+            <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                        <span class="s2">&quot;Boolean index has wrong length: </span><span class="si">{}</span><span class="s2"> instead of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Unexpected key type. Received </span><span class="si">{}</span><span class="s2"> but expected </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Series [] only supports indexing by scalars, lists of scalars, and arrays of scalars.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">key</span></div>
+
+
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">supported_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">List</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets values from Series.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: pdarray, Strings, Series, list, supported_scalars</span>
+<span class="sd">            The key or container of keys to get entries for.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Series with all entries with matching labels. If only one entry in the</span>
+<span class="sd">        Series is accessed, returns a scalar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_key</span><span class="p">(</span><span class="n">_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">array</span><span class="p">([</span><span class="n">key</span><span class="p">])]</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="c1"># boolean array indexes without sorting</span>
+            <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">indexof1d</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Series.validate_val">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.validate_val">[docs]</a>
+    <span class="k">def</span> <span class="nf">validate_val</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">supported_scalars</span><span class="p">,</span> <span class="n">List</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">supported_scalars</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates type requirements for values being written into the Series.</span>
+<span class="sd">        Also converts list and tuple arguments into pdarrays.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        val: pdarray, Strings, list, supported_scalars</span>
+<span class="sd">            The value or container of values that might be assigned into the Series.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The validated value, with lists converted to pdarrays</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if val is not the same type or a container with elements</span>
+<span class="sd">              of the same time as the Series</span>
+<span class="sd">            Raised if val is a string or Strings type.</span>
+<span class="sd">            Raised if val is not one of the supported types</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+            <span class="k">if</span> <span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Unexpected value type. Received </span><span class="si">{}</span><span class="s2"> but expected </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot modify string type dataframes&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot modify string type dataframes&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Unexpected value type. Received </span><span class="si">{}</span><span class="s2"> but expected </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;cannot set with unsupported value type: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">val</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets or adds entries in a Series by label.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: pdarray, Strings, Series, list, supported_scalars</span>
+<span class="sd">            The key or container of keys to set entries for.</span>
+
+<span class="sd">        val: pdarray, list, supported_scalars</span>
+<span class="sd">            The values to set/add to the Series.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            Raised when setting multiple values to a Series with repeated labels</span>
+<span class="sd">            Raised when number of values provided does not match the number of</span>
+<span class="sd">            entries to set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_val</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_repeat_labels</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot set with multiple keys for Series with repeated labels.&quot;</span><span class="p">)</span>
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">key</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">in1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">tf</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">update_count</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">update_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># adding a new entry</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot set. Too many values provided&quot;</span><span class="p">)</span>
+            <span class="n">new_index_values</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">key</span><span class="p">])])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">Index</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">new_index_values</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">val</span><span class="p">])])</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">update_count</span> <span class="o">!=</span> <span class="n">val</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cannot set using a list-like indexer with a different length from the value&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">return</span>
+
+<div class="viewcode-block" id="Series.has_repeat_labels">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.has_repeat_labels">[docs]</a>
+    <span class="k">def</span> <span class="nf">has_repeat_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns whether the Series has any labels that appear more than once</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tf</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">counts</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">loc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_LocIndexer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accesses entries of a Series by label</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: pdarray, Strings, Series, list, supported_scalars</span>
+<span class="sd">            The key or container of keys to access entries for</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_LocIndexer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">at</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_LocIndexer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accesses entries of a Series by label</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: pdarray, Strings, Series, list, supported_scalars</span>
+<span class="sd">            The key or container of keys to access entries for</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_LocIndexer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">iloc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_iLocIndexer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accesses entries of a Series by position</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: int</span>
+<span class="sd">            The positions or container of positions to access entries for</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_iLocIndexer</span><span class="p">(</span><span class="s2">&quot;iloc&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">iat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_iLocIndexer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accesses entries of a Series by position</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: int</span>
+<span class="sd">            The positions or container of positions to access entries for</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_iLocIndexer</span><span class="p">(</span><span class="s2">&quot;iat&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">CachedAccessor</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="n">DatetimeAccessor</span><span class="p">)</span>
+    <span class="n">str_acc</span> <span class="o">=</span> <span class="n">CachedAccessor</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="n">StringAccessor</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># mimic the pandas return of series shape property</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="Series.isin">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.isin">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">isin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">List</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find series elements whose values are in the specified list</span>
+
+<span class="sd">        Input</span>
+<span class="sd">        -----</span>
+<span class="sd">        Either a python list or an arkouda array.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Arkouda boolean which is true for elements that are in the list and false otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">lst</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+
+        <span class="n">boolean</span> <span class="o">=</span> <span class="n">in1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">lst</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">boolean</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Series.locate">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.locate">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">locate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Index</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lookup values by index label</span>
+
+<span class="sd">        The input can be a scalar, a list of scalers, or a list of lists (if the series has a</span>
+<span class="sd">        MultiIndex). As a special case, if a Series is used as the key, the series labels are</span>
+<span class="sd">        preserved with its values use as the key.</span>
+
+<span class="sd">        Keys will be turned into arkouda arrays as needed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A Series containing the values corresponding to the key.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
+            <span class="c1"># special case, keep the index values of the Series, and lookup the values</span>
+            <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">key</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">lookup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Index</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">key0</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key0</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key0</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="c1"># nested list. check if already arkouda arrays</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pdarray</span><span class="p">):</span>
+                    <span class="c1"># convert list of lists to list of pdarrays</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="p">[</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
+
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key0</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+                <span class="c1"># a list of scalers, convert into arkouda array</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="n">val</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;&#39;key&#39; parameter must be convertible to pdarray&quot;</span><span class="p">)</span>
+
+            <span class="c1"># else already list if arkouda array, use as is</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># scalar value</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">key</span>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span></div>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_make_binop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">_check_aligned</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="bp">cls</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">operator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+                    <span class="n">a</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">cls</span><span class="p">((</span><span class="n">idx</span><span class="p">,</span> <span class="n">operator</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">cls</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">operator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">other</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">binop</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_make_unaryop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">unaryop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">operator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">unaryop</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_make_aggop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">aggop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="p">)()</span>
+
+        <span class="k">return</span> <span class="n">aggop</span>
+
+<div class="viewcode-block" id="Series.add">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.add">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">values</span><span class="p">],</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">idx</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">vals</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Series.topn">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.topn">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">topn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the top values of the series</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n: Number of values to return</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A new Series with the top values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">argmaxk</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span> <span class="o">-</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_reindex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">):</span>
+            <span class="n">new_index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">Index</span><span class="p">):</span>
+            <span class="n">new_index</span> <span class="o">=</span> <span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_index</span> <span class="o">=</span> <span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">new_index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Series.sort_index">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.sort_index">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">sort_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort the series by its index</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ascending : bool</span>
+<span class="sd">            Sort values in ascending (default) or descending order.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A new Series sorted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reindex</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Series.sort_values">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.sort_values">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">sort_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort the series numerically</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ascending : bool</span>
+<span class="sd">            Sort values in ascending (default) or descending order.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A new Series sorted smallest to largest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ascending</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">int64</span><span class="p">,</span>
+                <span class="n">float64</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="c1"># For numeric values, negation reverses sort order</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># For non-numeric values, need the descending arange because reverse slicing</span>
+                <span class="c1"># is not supported</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)[</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reindex</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Series.tail">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.tail">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the last n values of the series&quot;&quot;&quot;</span>
+
+        <span class="n">idx_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">idx_series</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">:])</span></div>
+
+
+<div class="viewcode-block" id="Series.head">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.head">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the first n values of the series&quot;&quot;&quot;</span>
+
+        <span class="n">idx_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">idx_series</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Series.to_pandas">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.to_pandas">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the series to a local PANDAS series&quot;&quot;&quot;</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">convert_if_categorical</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Series.to_list">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.to_list">[docs]</a>
+    <span class="nd">@typechecked</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Series.value_counts">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.value_counts">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sort</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Series containing counts of unique values.</span>
+
+<span class="sd">        The resulting object will be in descending order so that the</span>
+<span class="sd">        first element is the most frequently-occurring element.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sort : Boolean. Whether or not to sort the results.  Default is true.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">get_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">idx</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">vals</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sort</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">set_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="Series.diff">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.diff">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Diffs consecutive values of the series.</span>
+
+<span class="sd">        Returns a new series with the same index and length.  First value is set to NaN.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+            <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+            <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Diff not supported on Series built from Categorical.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Series.to_dataframe">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.to_dataframe">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">index_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">value_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">arkouda</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts series to an arkouda data frame</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index_labels:  column names(s) to label the index.</span>
+<span class="sd">        value_label:  column name to label values.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        An arkouda dataframe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">list_value_label</span> <span class="o">=</span> <span class="p">[</span><span class="n">value_label</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value_label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">value_label</span>
+
+        <span class="k">return</span> <span class="n">Series</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">index_labels</span><span class="o">=</span><span class="n">index_labels</span><span class="p">,</span> <span class="n">value_labels</span><span class="o">=</span><span class="n">list_value_label</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Series.register">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.register">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register this Series object and underlying components with the Arkouda server</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        user_defined_name : str</span>
+<span class="sd">            user defined name the Series is to be registered under,</span>
+<span class="sd">            this will be the root name for underlying components</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Series</span>
+<span class="sd">            The same Series which is now registered with the arkouda server and has an updated name.</span>
+<span class="sd">            This is an in-place modification, the original is returned to support</span>
+<span class="sd">            a fluid programming style.</span>
+<span class="sd">            Please note you cannot register two different Series with the same name.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if user_defined_name is not a str</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            If the server was unable to register the Series with the user_defined_name</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        unregister, attach, is_registered</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
+                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
+                <span class="s2">&quot;num_idxs&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;idx_names&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="o">**</span><span class="p">(</span>
+                                <span class="p">{</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                                <span class="k">else</span> <span class="p">{}</span>
+                            <span class="p">),</span>
+                            <span class="o">**</span><span class="p">(</span>
+                                <span class="p">{</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                                <span class="k">else</span> <span class="p">{}</span>
+                            <span class="p">),</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;idx_types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">objType</span><span class="p">],</span>
+                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="o">**</span><span class="p">(</span>
+                            <span class="p">{</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                            <span class="k">else</span> <span class="p">{}</span>
+                        <span class="p">),</span>
+                        <span class="o">**</span><span class="p">(</span>
+                            <span class="p">{</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                            <span class="k">else</span> <span class="p">{}</span>
+                        <span class="p">),</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;val_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">user_defined_name</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Series.unregister">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.unregister">[docs]</a>
+    <span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unregister this Series object in the arkouda server which was previously</span>
+<span class="sd">        registered using register() and/or attached to using attach()</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            If the object is already unregistered or if there is a server error</span>
+<span class="sd">            when attempting to unregister</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        register, attach, is_registered</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">unregister</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">&quot;This object is not registered&quot;</span><span class="p">)</span>
+        <span class="n">unregister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Series.attach">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.attach">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nkeys</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        DEPRECATED</span>
+<span class="sd">        Retrieve a series registered with arkouda</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        label: name used to register the series</span>
+<span class="sd">        nkeys: number of keys, if a multi-index was registerd</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+
+        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">attach</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;ak.Series.attach() is deprecated. Please use ak.attach() instead.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">attach</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Series.is_registered">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.is_registered">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Return True iff the object is contained in the registry or is a component of a</span>
+<span class="sd">         registered object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.bool</span>
+<span class="sd">            Indicates if the object is contained in the registry</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            Raised if there&#39;s a server-side error or a mis-match of registered components</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        register, attach, unregister</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">is_registered</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Series.from_return_msg">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.from_return_msg">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a Series instance pointing to components created by the arkouda server.</span>
+<span class="sd">        The user should not call this function directly.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        repMsg : str</span>
+<span class="sd">            + delimited string containing the values and indexes</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Series</span>
+<span class="sd">            A Series representing a set of pdarray components on the server</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if a server-side error is thrown in the process of creating</span>
+<span class="sd">            the Series instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="n">val_comps</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+|+&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">val_comps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+        <span class="k">elif</span> <span class="n">val_comps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">Strings</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+
+        <span class="n">index</span> <span class="o">=</span> <span class="n">Index</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">_all_aligned</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Is an array of Series indexed aligned?&quot;&quot;&quot;</span>
+
+        <span class="n">itor</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">itor</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+        <span class="k">for</span> <span class="n">a2</span> <span class="ow">in</span> <span class="n">itor</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a1</span><span class="o">.</span><span class="n">_check_aligned</span><span class="p">(</span><span class="n">a2</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="Series.concat">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.concat">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span>
+        <span class="n">arrays</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">index_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">arkouda</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Series</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or</span>
+<span class="sd">        vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each</span>
+<span class="sd">        grouping is a 2-tuple with the first item being the key(s) and the second being the value.</span>
+<span class="sd">        If horizontal, each series or grouping must have the same length and the same index. The index</span>
+<span class="sd">        of the series is converted to a column in the dataframe.  If it is a multi-index,each level is</span>
+<span class="sd">        converted to a column.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        arrays:  The list of series/groupings to concat.</span>
+<span class="sd">        axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation</span>
+<span class="sd">        index_labels:  column names(s) to label the index.</span>
+<span class="sd">        value_labels:  column names to label values of each series.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        axis=0: an arkouda series.</span>
+<span class="sd">        axis=1: an arkouda dataframe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Array length must be non-zero&quot;</span><span class="p">)</span>
+
+        <span class="n">types</span> <span class="o">=</span> <span class="p">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Items must all have same type: </span><span class="si">{</span><span class="n">types</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">Series</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Horizontal concat</span>
+            <span class="k">if</span> <span class="n">value_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">value_labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;val_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">))]</span>
+
+            <span class="k">if</span> <span class="n">Series</span><span class="o">.</span><span class="n">_all_aligned</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">arrays</span><span class="p">))</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">index_labels</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">value_labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Expect value_labels to always be not None; were doing the check for mypy</span>
+                    <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">value_labels</span><span class="p">):</span>
+                        <span class="n">data</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)]</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aitor</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">aitor</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">_merge_all</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">aitor</span><span class="p">])</span>
+
+                <span class="n">data</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">index_labels</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">value_labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Expect value_labels to always be not None; were doing the check for mypy</span>
+                    <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">value_labels</span><span class="p">):</span>
+                        <span class="n">data</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)]</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">idx</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">arkouda</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Verticle concat</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">v</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span><span class="p">],</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">v</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Series.pdconcat">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.pdconcat">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">pdconcat</span><span class="p">(</span><span class="n">arrays</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Strings</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.</span>
+
+<span class="sd">        If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping</span>
+<span class="sd">        is a 2-tuple with the first item being the key(s) and the second being the value.</span>
+
+<span class="sd">        If horizontal, each series or grouping must have the same length and the same index. The index of</span>
+<span class="sd">        the series is converted to a column in the dataframe.  If it is a multi-index,each level is</span>
+<span class="sd">        converted to a column.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        arrays:  The list of series/groupings to concat.</span>
+<span class="sd">        axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation</span>
+<span class="sd">        labels:  names to give the columns of the data frame.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        axis=0: a local PANDAS series</span>
+<span class="sd">        axis=1: a local PANDAS dataframe</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Array length must be non-zero&quot;</span><span class="p">)</span>
+
+        <span class="n">types</span> <span class="o">=</span> <span class="p">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Items must all have same type: </span><span class="si">{</span><span class="n">types</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">Series</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+
+            <span class="n">cols</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
+                <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">col</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">))</span>
+            <span class="n">retval</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">retval</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">retval</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">retval</span></div>
+</div>
+
+
+
+<span class="k">class</span> <span class="nc">_LocIndexer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">series</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+
+<span class="k">class</span> <span class="nc">_iLocIndexer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">method_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">series</span>
+
+    <span class="k">def</span> <span class="nf">validate_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;.</span><span class="si">{}</span><span class="s2"> does not support tuple arguments&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot index using 0-length iterables.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">int64</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;.</span><span class="si">{}</span><span class="s2"> requires integer keys&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="s2">&quot;Boolean index has wrong length: </span><span class="si">{}</span><span class="s2"> instead of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="n">key</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> cannot enlarge its target object.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> cannot enlarge its target object.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;.</span><span class="si">{}</span><span class="s2"> requires integer keys&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+    <span class="k">def</span> <span class="nf">validate_val</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">supported_scalars</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">validate_val</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_val</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">int64</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;cannot set using a list-like indexer with a different length than the value&quot;</span>
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

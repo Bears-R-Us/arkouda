@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NumPyDType &mdash; chpldoc 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="RadixSortLSD" href="RadixSortLSD.html" />
+    <link rel="prev" title="MultiTypeSymbolTable" href="MultiTypeSymbolTable.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">chpldoc documentation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BigIntMsg.html">BigIntMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cast.html">Cast</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommAggregation/BigIntegerAggregation.html">BigIntegerAggregation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MemoryMgmt.html">MemoryMgmt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Message.html">Message</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MetricsMsg.html">MetricsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeRegEntry.html">MultiTypeRegEntry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">NumPyDType</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Registry.html">Registry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedComputation.html">SegmentedComputation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedString.html">SegmentedString</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerDaemon.html">ServerDaemon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerErrors.html">ServerErrors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StatusMsg.html">StatusMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaAggCompat.html">ArkoudaAggCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaAryUtilCompat.html">ArkoudaAryUtilCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaMathCompat.html">ArkoudaMathCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaRandomCompat.html">ArkoudaRandomCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaSortCompat.html">ArkoudaSortCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaSymEntryCompat.html">ArkoudaSymEntryCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/SymArrayDmapCompat.html">SymArrayDmapCompat</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">chpldoc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>NumPyDType</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/NumPyDType.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="module-NumPyDType"></span><div class="section" id="numpydtype">
+<h1>NumPyDType<a class="headerlink" href="#numpydtype" title="Permalink to this headline">¶</a></h1>
+<p><strong>Usage</strong></p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">NumPyDType</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">NumPyDType</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="NumPyDType.DType">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">DType</span></span> <span class="pre">{</span> <span class="pre">UInt8,</span> <span class="pre">UInt16,</span> <span class="pre">UInt32,</span> <span class="pre">UInt64,</span> <span class="pre">Int8,</span> <span class="pre">Int16,</span> <span class="pre">Int32,</span> <span class="pre">Int64,</span> <span class="pre">Float32,</span> <span class="pre">Float64,</span> <span class="pre">Complex64,</span> <span class="pre">Complex128,</span> <span class="pre">Bool,</span> <span class="pre">BigInt,</span> <span class="pre">Strings,</span> <span class="pre">UNDEF</span> <span class="pre">}</span><a class="headerlink" href="#NumPyDType.DType" title="Permalink to this definition">¶</a></dt>
+<dd><p>In chapel the types int and real default to int(64) and real(64).
+We also need other types like float32, int32, etc</p>
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.UInt8">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt8</span></span><a class="headerlink" href="#NumPyDType.DType.UInt8" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.UInt16">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt16</span></span><a class="headerlink" href="#NumPyDType.DType.UInt16" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.UInt32">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt32</span></span><a class="headerlink" href="#NumPyDType.DType.UInt32" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.UInt64">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt64</span></span><a class="headerlink" href="#NumPyDType.DType.UInt64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.Int8">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int8</span></span><a class="headerlink" href="#NumPyDType.DType.Int8" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.Int16">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int16</span></span><a class="headerlink" href="#NumPyDType.DType.Int16" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.Int32">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int32</span></span><a class="headerlink" href="#NumPyDType.DType.Int32" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.Int64">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int64</span></span><a class="headerlink" href="#NumPyDType.DType.Int64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.Float32">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Float32</span></span><a class="headerlink" href="#NumPyDType.DType.Float32" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.Float64">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Float64</span></span><a class="headerlink" href="#NumPyDType.DType.Float64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.Complex64">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Complex64</span></span><a class="headerlink" href="#NumPyDType.DType.Complex64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.Complex128">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Complex128</span></span><a class="headerlink" href="#NumPyDType.DType.Complex128" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.Bool">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Bool</span></span><a class="headerlink" href="#NumPyDType.DType.Bool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.BigInt">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">BigInt</span></span><a class="headerlink" href="#NumPyDType.DType.BigInt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.Strings">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Strings</span></span><a class="headerlink" href="#NumPyDType.DType.Strings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DType.UNDEF">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UNDEF</span></span><a class="headerlink" href="#NumPyDType.DType.UNDEF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="NumPyDType.whichDtype">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">whichDtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span> <span class="pre">param:</span> <span class="pre">DType</span><a class="headerlink" href="#NumPyDType.whichDtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a chapel type and return the matching DType</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>etype</strong> – chapel type</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="NumPyDType.dtypeSize">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dtypeSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#NumPyDType.dtypeSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the size in bytes of a DType</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>dt</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">DType</span></code></span> – (pythonic) DType</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="NumPyDType.str2dtype">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">str2dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dstr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">DType</span><a class="headerlink" href="#NumPyDType.str2dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns a dtype string in pythonland into a DType</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>dstr</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – pythonic dtype to be converted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="NumPyDType.dtype2str">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dtype2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#NumPyDType.dtype2str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns a DType into a dtype string in pythonland</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>dtype</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">DType</span></code></span> – DType to convert to string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="NumPyDType.commonDType">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">commonDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">DType</span><a class="headerlink" href="#NumPyDType.commonDType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dtype that can store the result of
+an operation between two dtypes for the following
+operations: <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">**</span></code>, <code class="docutils literal notranslate"><span class="pre">//</span></code>, <code class="docutils literal notranslate"><span class="pre">%</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">|</span></code>, <code class="docutils literal notranslate"><span class="pre">^</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code></p>
+<p>follows Numpy’s rules for type promotion
+(of which the array-api promotion rules are a subset)</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="NumPyDType.divDType">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">divDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">DType</span><a class="headerlink" href="#NumPyDType.divDType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dtype that can store the result of
+a division operation between two dtypes
+(following Numpy’s rules for type promotion)</p>
+</dd></dl>
+
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="NumPyDType.DTK">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">DTK</span></span> <span class="pre">{</span> <span class="pre">Integer,</span> <span class="pre">Float,</span> <span class="pre">Complex,</span> <span class="pre">Bool,</span> <span class="pre">Other</span> <span class="pre">}</span><a class="headerlink" href="#NumPyDType.DTK" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DTK.Integer">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Integer</span></span><a class="headerlink" href="#NumPyDType.DTK.Integer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DTK.Float">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Float</span></span><a class="headerlink" href="#NumPyDType.DTK.Float" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DTK.Complex">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Complex</span></span><a class="headerlink" href="#NumPyDType.DTK.Complex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DTK.Bool">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Bool</span></span><a class="headerlink" href="#NumPyDType.DTK.Bool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="NumPyDType.DTK.Other">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Other</span></span><a class="headerlink" href="#NumPyDType.DTK.Other" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="MultiTypeSymbolTable.html" class="btn btn-neutral float-left" title="MultiTypeSymbolTable" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="RadixSortLSD.html" class="btn btn-neutral float-right" title="RadixSortLSD" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ 
+
+
+
+</body>
+</html>

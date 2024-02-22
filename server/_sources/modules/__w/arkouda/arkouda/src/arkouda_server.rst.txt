@@ -1,0 +1,28 @@
+.. default-domain:: chpl
+
+.. module:: arkouda_server
+
+arkouda_server
+==============
+**Usage**
+
+.. code-block:: chapel
+
+   use arkouda_server;
+
+
+or
+
+.. code-block:: chapel
+
+   import arkouda_server;
+
+.. data:: const asLogger = new Logger(logLevel, logChannel)
+
+.. function:: proc main()
+
+   *
+   * The main method serves as the Arkouda driver that invokes the run 
+   * method on the configured list of ArkoudaServerDaemon objects
+   
+

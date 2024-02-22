@@ -48,14 +48,6 @@ Classes
        'data' (see Parameters)
        'index' (optional) must match size of 'data'
 
-   .. py:property:: loc
-      :type: _LocIndexer
-
-      Accesses entries of a Series by label
-
-      :param key: The key or container of keys to access entries for
-      :type key: pdarray, Strings, Series, list, supported_scalars
-
    .. py:property:: at
       :type: _LocIndexer
 
@@ -63,14 +55,6 @@ Classes
 
       :param key: The key or container of keys to access entries for
       :type key: pdarray, Strings, Series, list, supported_scalars
-
-   .. py:property:: iloc
-      :type: _iLocIndexer
-
-      Accesses entries of a Series by position
-
-      :param key: The positions or container of positions to access entries for
-      :type key: int
 
    .. py:property:: iat
       :type: _iLocIndexer
@@ -80,21 +64,270 @@ Classes
       :param key: The positions or container of positions to access entries for
       :type key: int
 
+   .. py:property:: iloc
+      :type: _iLocIndexer
+
+      Accesses entries of a Series by position
+
+      :param key: The positions or container of positions to access entries for
+      :type key: int
+
+   .. py:property:: loc
+      :type: _LocIndexer
+
+      Accesses entries of a Series by label
+
+      :param key: The key or container of keys to access entries for
+      :type key: pdarray, Strings, Series, list, supported_scalars
+
    .. py:property:: shape
 
+
+   .. py:attribute:: dt
+
+      
 
    .. py:attribute:: objType
       :value: 'Series'
 
       
 
-   .. py:attribute:: dt
-
-      
-
    .. py:attribute:: str_acc
 
       
+
+   .. py:method:: add(b: Series) -> Series
+
+
+   .. py:method:: attach(label: str, nkeys: int = 1) -> Series
+      :staticmethod:
+
+      DEPRECATED
+      Retrieve a series registered with arkouda
+
+      :param label:
+      :type label: name used to register the series
+      :param nkeys:
+      :type nkeys: number of keys, if a multi-index was registerd
+
+
+   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: List[str] = None, value_labels: List[str] = None) -> Union[arkouda.dataframe.DataFrame, Series]
+      :staticmethod:
+
+      Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
+      vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
+      grouping is a 2-tuple with the first item being the key(s) and the second being the value.
+      If horizontal, each series or grouping must have the same length and the same index. The index
+      of the series is converted to a column in the dataframe.  If it is a multi-index,each level is
+      converted to a column.
+
+      :param arrays:
+      :type arrays: The list of series/groupings to concat.
+      :param axis:
+      :type axis: Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
+      :param index_labels:
+      :type index_labels: column names(s) to label the index.
+      :param value_labels:
+      :type value_labels: column names to label values of each series.
+
+      :returns: * **axis=0** (*an arkouda series.*)
+                * **axis=1** (*an arkouda dataframe.*)
+
+
+   .. py:method:: diff() -> Series
+
+      Diffs consecutive values of the series.
+
+      Returns a new series with the same index and length.  First value is set to NaN.
+
+
+   .. py:method:: from_return_msg(repMsg: str) -> Series
+      :classmethod:
+
+      Return a Series instance pointing to components created by the arkouda server.
+      The user should not call this function directly.
+
+      :param repMsg:
+                     + delimited string containing the values and indexes
+      :type repMsg: str
+
+      :returns: A Series representing a set of pdarray components on the server
+      :rtype: Series
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the Series instance
+
+
+   .. py:method:: has_repeat_labels() -> bool
+
+      Returns whether the Series has any labels that appear more than once
+
+
+   .. py:method:: head(n: int = 10) -> Series
+
+      Return the first n values of the series
+
+
+   .. py:method:: is_registered() -> bool
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: isin(lst: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, List]) -> Series
+
+      Find series elements whose values are in the specified list
+
+      Input
+      -----
+      Either a python list or an arkouda array.
+
+      :rtype: Arkouda boolean which is true for elements that are in the list and false otherwise.
+
+
+   .. py:method:: locate(key: Union[int, arkouda.pdarrayclass.pdarray, arkouda.index.Index, Series, List, Tuple]) -> Series
+
+      Lookup values by index label
+
+      The input can be a scalar, a list of scalers, or a list of lists (if the series has a
+      MultiIndex). As a special case, if a Series is used as the key, the series labels are
+      preserved with its values use as the key.
+
+      Keys will be turned into arkouda arrays as needed.
+
+      :rtype: A Series containing the values corresponding to the key.
+
+
+   .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: arkouda.strings.Strings = None) -> Union[pandas.Series, pandas.DataFrame]
+      :staticmethod:
+
+      Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
+
+      If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping
+      is a 2-tuple with the first item being the key(s) and the second being the value.
+
+      If horizontal, each series or grouping must have the same length and the same index. The index of
+      the series is converted to a column in the dataframe.  If it is a multi-index,each level is
+      converted to a column.
+
+      :param arrays:
+      :type arrays: The list of series/groupings to concat.
+      :param axis:
+      :type axis: Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
+      :param labels:
+      :type labels: names to give the columns of the data frame.
+
+      :returns: * **axis=0** (*a local PANDAS series*)
+                * **axis=1** (*a local PANDAS dataframe*)
+
+
+   .. py:method:: register(user_defined_name: str)
+
+      Register this Series object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the Series is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same Series which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different Series with the same name.
+      :rtype: Series
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the Series with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: sort_index(ascending: bool = True) -> Series
+
+      Sort the series by its index
+
+      :param ascending: Sort values in ascending (default) or descending order.
+      :type ascending: bool
+
+      :rtype: A new Series sorted.
+
+
+   .. py:method:: sort_values(ascending: bool = True) -> Series
+
+      Sort the series numerically
+
+      :param ascending: Sort values in ascending (default) or descending order.
+      :type ascending: bool
+
+      :rtype: A new Series sorted smallest to largest
+
+
+   .. py:method:: tail(n: int = 10) -> Series
+
+      Return the last n values of the series
+
+
+   .. py:method:: to_dataframe(index_labels: List[str] = None, value_label: str = None) -> arkouda.dataframe.DataFrame
+
+      Converts series to an arkouda data frame
+
+      :param index_labels:
+      :type index_labels: column names(s) to label the index.
+      :param value_label:
+      :type value_label: column name to label values.
+
+      :rtype: An arkouda dataframe.
+
+
+   .. py:method:: to_list() -> list
+
+
+   .. py:method:: to_pandas() -> pandas.Series
+
+      Convert the series to a local PANDAS series
+
+
+   .. py:method:: topn(n: int = 10) -> Series
+
+      Return the top values of the series
+
+      :param n:
+      :type n: Number of values to return
+
+      :rtype: A new Series with the top values
+
+
+   .. py:method:: unregister()
+
+      Unregister this Series object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
 
    .. py:method:: validate_key(key: Union[Series, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, List, supported_scalars]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, supported_scalars]
 
@@ -129,86 +362,6 @@ Classes
           Raised if val is not one of the supported types
 
 
-   .. py:method:: has_repeat_labels() -> bool
-
-      Returns whether the Series has any labels that appear more than once
-
-
-   .. py:method:: isin(lst: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, List]) -> Series
-
-      Find series elements whose values are in the specified list
-
-      Input
-      -----
-      Either a python list or an arkouda array.
-
-      :rtype: Arkouda boolean which is true for elements that are in the list and false otherwise.
-
-
-   .. py:method:: locate(key: Union[int, arkouda.pdarrayclass.pdarray, arkouda.index.Index, Series, List, Tuple]) -> Series
-
-      Lookup values by index label
-
-      The input can be a scalar, a list of scalers, or a list of lists (if the series has a
-      MultiIndex). As a special case, if a Series is used as the key, the series labels are
-      preserved with its values use as the key.
-
-      Keys will be turned into arkouda arrays as needed.
-
-      :rtype: A Series containing the values corresponding to the key.
-
-
-   .. py:method:: add(b: Series) -> Series
-
-
-   .. py:method:: topn(n: int = 10) -> Series
-
-      Return the top values of the series
-
-      :param n:
-      :type n: Number of values to return
-
-      :rtype: A new Series with the top values
-
-
-   .. py:method:: sort_index(ascending: bool = True) -> Series
-
-      Sort the series by its index
-
-      :param ascending: Sort values in ascending (default) or descending order.
-      :type ascending: bool
-
-      :rtype: A new Series sorted.
-
-
-   .. py:method:: sort_values(ascending: bool = True) -> Series
-
-      Sort the series numerically
-
-      :param ascending: Sort values in ascending (default) or descending order.
-      :type ascending: bool
-
-      :rtype: A new Series sorted smallest to largest
-
-
-   .. py:method:: tail(n: int = 10) -> Series
-
-      Return the last n values of the series
-
-
-   .. py:method:: head(n: int = 10) -> Series
-
-      Return the first n values of the series
-
-
-   .. py:method:: to_pandas() -> pandas.Series
-
-      Convert the series to a local PANDAS series
-
-
-   .. py:method:: to_list() -> list
-
-
    .. py:method:: value_counts(sort: bool = True) -> Series
 
       Return a Series containing counts of unique values.
@@ -218,159 +371,6 @@ Classes
 
       :param sort:
       :type sort: Boolean. Whether or not to sort the results.  Default is true.
-
-
-   .. py:method:: diff() -> Series
-
-      Diffs consecutive values of the series.
-
-      Returns a new series with the same index and length.  First value is set to NaN.
-
-
-   .. py:method:: to_dataframe(index_labels: List[str] = None, value_label: str = None) -> arkouda.dataframe.DataFrame
-
-      Converts series to an arkouda data frame
-
-      :param index_labels:
-      :type index_labels: column names(s) to label the index.
-      :param value_label:
-      :type value_label: column name to label values.
-
-      :rtype: An arkouda dataframe.
-
-
-   .. py:method:: register(user_defined_name: str)
-
-      Register this Series object and underlying components with the Arkouda server
-
-      :param user_defined_name: user defined name the Series is to be registered under,
-                                this will be the root name for underlying components
-      :type user_defined_name: str
-
-      :returns: The same Series which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support
-                a fluid programming style.
-                Please note you cannot register two different Series with the same name.
-      :rtype: Series
-
-      :raises TypeError: Raised if user_defined_name is not a str
-      :raises RegistrationError: If the server was unable to register the Series with the user_defined_name
-
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: unregister()
-
-      Unregister this Series object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
-
-      :raises RegistrationError: If the object is already unregistered or if there is a server error
-          when attempting to unregister
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: attach(label: str, nkeys: int = 1) -> Series
-      :staticmethod:
-
-      DEPRECATED
-      Retrieve a series registered with arkouda
-
-      :param label:
-      :type label: name used to register the series
-      :param nkeys:
-      :type nkeys: number of keys, if a multi-index was registerd
-
-
-   .. py:method:: is_registered() -> bool
-
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: numpy.bool
-
-      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: from_return_msg(repMsg: str) -> Series
-      :classmethod:
-
-      Return a Series instance pointing to components created by the arkouda server.
-      The user should not call this function directly.
-
-      :param repMsg:
-                     + delimited string containing the values and indexes
-      :type repMsg: str
-
-      :returns: A Series representing a set of pdarray components on the server
-      :rtype: Series
-
-      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-          the Series instance
-
-
-   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: List[str] = None, value_labels: List[str] = None) -> Union[arkouda.dataframe.DataFrame, Series]
-      :staticmethod:
-
-      Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
-      vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
-      grouping is a 2-tuple with the first item being the key(s) and the second being the value.
-      If horizontal, each series or grouping must have the same length and the same index. The index
-      of the series is converted to a column in the dataframe.  If it is a multi-index,each level is
-      converted to a column.
-
-      :param arrays:
-      :type arrays: The list of series/groupings to concat.
-      :param axis:
-      :type axis: Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
-      :param index_labels:
-      :type index_labels: column names(s) to label the index.
-      :param value_labels:
-      :type value_labels: column names to label values of each series.
-
-      :returns: * **axis=0** (*an arkouda series.*)
-                * **axis=1** (*an arkouda dataframe.*)
-
-
-   .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: arkouda.strings.Strings = None) -> Union[pandas.Series, pandas.DataFrame]
-      :staticmethod:
-
-      Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
-
-      If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping
-      is a 2-tuple with the first item being the key(s) and the second being the value.
-
-      If horizontal, each series or grouping must have the same length and the same index. The index of
-      the series is converted to a column in the dataframe.  If it is a multi-index,each level is
-      converted to a column.
-
-      :param arrays:
-      :type arrays: The list of series/groupings to concat.
-      :param axis:
-      :type axis: Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
-      :param labels:
-      :type labels: names to give the columns of the data frame.
-
-      :returns: * **axis=0** (*a local PANDAS series*)
-                * **axis=1** (*a local PANDAS dataframe*)
 
 
 

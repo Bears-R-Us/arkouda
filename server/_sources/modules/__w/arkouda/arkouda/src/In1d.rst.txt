@@ -1,0 +1,53 @@
+.. default-domain:: chpl
+
+.. module:: In1d
+
+In1d
+====
+**Usage**
+
+.. code-block:: chapel
+
+   use In1d;
+
+
+or
+
+.. code-block:: chapel
+
+   import In1d;
+
+.. function:: proc in1d(ar1: [?aD1] ?t, ref ar2: [?aD2] t, invert: bool = false): [aD1] bool throws
+
+   For each value in the first array, check membership in the second array.
+   
+   :arg ar1: array to broadcast in parallel over ar2
+   :type ar1: [] int
+   
+   :arg ar2: array to be broadcast over in parallel
+   :type ar2: [] int
+   
+   :arg invert: should the result be inverted (not in1d)
+   :type invert: bool
+   
+   :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
+   :type truth: [] bool
+   
+
+.. function:: proc in1dAr2PerLocAssoc(ar1: [?aD1] ?t, ref ar2: [?aD2] t) throws
+
+   in1d that uses a per-locale set/associative-domain. Each locale will
+   * localize ar2 and put it in the set, so only appropriate in terms of
+   * size and space when ar2 is "small".
+   
+
+.. function:: proc in1dSort(ar1: [?aD1] ?t, ar2: [?aD2] t) throws
+
+   in1d that uses a sorting strategy. At a high level it uniques both
+   * arrays, finds the intersecting values, then maps back to the original
+   * domain of ar1. Scales well with time/size, but sort has non-trivial
+   * overhead so typically used when ar2 is "large".
+   
+
+.. function:: proc indexof1d(keys: ?t, arr: t) throws
+

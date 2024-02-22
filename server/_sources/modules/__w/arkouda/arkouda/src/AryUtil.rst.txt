@@ -1,0 +1,188 @@
+.. default-domain:: chpl
+
+.. module:: AryUtil
+
+AryUtil
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use AryUtil;
+
+
+or
+
+.. code-block:: chapel
+
+   import AryUtil;
+
+.. data:: param bitsPerDigit = RSLSD_bitsPerDigit
+
+.. data:: const auLogger = new Logger(logLevel, logChannel)
+
+.. data:: var printThresh = 30
+
+   
+   Threshold for the amount of data that will be printed.
+   Arrays larger than printThresh will print less data.
+   
+
+.. function:: proc formatAry(A: [?d]): string throws
+
+   
+   Prints the passed array.
+   
+   :arg name: name of the array
+   :arg A: array to be printed
+   
+
+.. function:: proc printAry(name: string, A)
+
+.. function:: proc printOwnership(x)
+
+   1.18 version print out localSubdomains
+   
+   :arg x: array
+   :type x: []
+   
+
+.. function:: proc isSorted(A: [?D] ?t): bool
+
+   
+   Determines if the passed array is sorted.
+   
+   :arg A: array to check
+   
+   
+
+.. function:: proc aStats(a: [?D] int): (int, int, real, real, real)
+
+   
+   Returns stats on a given array in form (int,int,real,real,real).
+   
+   :arg a: array to produce statistics on
+   :type a: [] int
+   
+   :returns: a_min, a_max, a_mean, a_variation, a_stdDeviation
+   
+
+.. function:: proc fillUniform(A: [?D] int, a_min: int, a_max: int, seed: int = 241)
+
+.. function:: proc concatArrays(a: [?aD] ?t, b: [?bD] t) throws
+
+   
+   Concatenate 2 arrays and return the result.
+   
+
+.. iterfunction:: iter offset(ind) where isRange(ind) || isDomain(ind)
+
+   
+   Iterate over indices (range/domain) ``ind`` but in an offset manner based
+   on the locale id. Can be used to avoid doing communication in lockstep.
+   
+
+.. function:: proc contiguousIndices(A: []) param
+
+   
+   Determines if the passed array array maps contiguous indices to
+   contiguous memory.
+   
+   :arg A: array to check
+   
+
+.. function:: proc validateArraysSameLength(n: int, names: [] string, types: [] string, st: borrowed SymTab) throws
+
+   
+   * Takes a variable number of array names from a command message and
+   * validates them, checking that they all exist and are the same length
+   * and returning metadata about them.
+   *
+   * :arg n: number of arrays
+   * :arg fields: the fields derived from the command message
+   * :arg st: symbol table
+   *
+   * :returns: (length, hasStr, names, objtypes)
+   
+
+.. function:: proc getBitWidth(a: [?aD] int): (int, bool)
+
+.. function:: proc getBitWidth(a: [?aD] uint): (int, bool)
+
+.. function:: proc getBitWidth(a: [?aD] real): (int, bool)
+
+.. function:: proc getBitWidth(a: [?aD] bool): (int, bool)
+
+.. function:: proc getBitWidth(a: [?aD] (uint, uint)): (int, bool)
+
+.. function:: proc getBitWidth(a: [?aD] ?t): (int, bool) where isHomogeneousTuple(t) && t == t.size * uint(bitsPerDigit)
+
+.. function:: proc getDigit(key: int, rshift: int, last: bool, negs: bool): int
+
+.. function:: proc getDigit(key: uint, rshift: int, last: bool, negs: bool): int
+
+.. function:: proc getDigit(in key: real, rshift: int, last: bool, negs: bool): int
+
+.. function:: proc getDigit(key: 2*(uint), rshift: int, last: bool, negs: bool): int
+
+.. function:: proc getDigit(key: _tuple, rshift: int, last: bool, negs: bool): int where isHomogeneousTuple(key) && key.type == key.size * uint(bitsPerDigit)
+
+.. function:: proc getNumDigitsNumericArrays(names, st: borrowed SymTab) throws
+
+.. function:: proc mergeNumericArrays(param numDigits, size, totalDigits, bitWidths, negs, names, st) throws
+
+.. record:: lowLevelLocalizingSlice
+
+   
+   A localized "slice" of an array. This is meant to be a low-level
+   alternative to array slice assignment with better performance (fewer
+   allocations, especially when the region is local). When the region being
+   sliced is local, a borrowed pointer is stored and `isOwned` is set to
+   false. When the region is remote or non-contiguous, memory is copied to
+   a local buffer and `isOwned` is true.
+   
+
+   .. attribute:: type t
+
+   .. attribute:: var ptr: c_ptr(t) = nil
+
+      Pointer to localized memory 
+
+   .. attribute:: var isOwned: bool = false
+
+      Do we own the memory? 
+
+   .. method:: proc init(ref A: [] ?t, region: range())
+
+   .. method:: proc deinit()
+
+.. function:: proc removeDegenRanks(A: [?D] ?t, param N: int) throws where N <= D.rank
+
+   
+   Create a rank 'N' array by removing the degenerate ranks from
+   'A' and copying it's contents into the new array
+   
+   'N' must be equal to 'A's rank minus the number of degenerate ranks;
+   halts if this condition isn't met.
+   
+   See also: 'ManipulationMsg.squeezeMsg'
+   
+
+.. function:: proc broadcastShape(sa: ?Na*int, sb: ?Nb*int, param N: int): N*int throws
+
+   
+   Algorithm to determine shape of broadcasted PD array given two array shapes
+   
+   see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
+   
+
+.. function:: proc broadcastShape(sa: ?N1*int, sb: ?N2*int): N1*int throws where N1 >= N2
+
+.. function:: proc broadcastShape(sa: ?N1*int, sb: ?N2*int): N2*int throws where N1 < N2
+
+.. function:: proc removeAxis(shape: ?N*int, axis: int): (N-1)*int
+
+.. function:: proc appendAxis(shape: ?N*int, axis: int, param value: int): (N+1)*int throws
+
+.. function:: proc appendAxis(shape: int, axis: int, param value: int): 2*(int) throws
+

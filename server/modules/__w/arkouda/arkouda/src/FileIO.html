@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FileIO &mdash; chpldoc 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="GenSymIO" href="GenSymIO.html" />
+    <link rel="prev" title="ExternalIntegration" href="ExternalIntegration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">chpldoc documentation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BigIntMsg.html">BigIntMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cast.html">Cast</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommAggregation/BigIntegerAggregation.html">BigIntegerAggregation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">FileIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MemoryMgmt.html">MemoryMgmt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Message.html">Message</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MetricsMsg.html">MetricsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeRegEntry.html">MultiTypeRegEntry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Registry.html">Registry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedComputation.html">SegmentedComputation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedString.html">SegmentedString</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerDaemon.html">ServerDaemon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerErrors.html">ServerErrors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StatusMsg.html">StatusMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaAggCompat.html">ArkoudaAggCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaAryUtilCompat.html">ArkoudaAryUtilCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaBigIntCompat.html">ArkoudaBigIntCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaBlockCompat.html">ArkoudaBlockCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaCTypesCompat.html">ArkoudaCTypesCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaFileCompat.html">ArkoudaFileCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaMapCompat.html">ArkoudaMapCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaMathCompat.html">ArkoudaMathCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaMemDiagnosticsCompat.html">ArkoudaMemDiagnosticsCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaPOSIXCompat.html">ArkoudaPOSIXCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaRandomCompat.html">ArkoudaRandomCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaRangeCompat.html">ArkoudaRangeCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaRegexCompat.html">ArkoudaRegexCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaSortCompat.html">ArkoudaSortCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaSymEntryCompat.html">ArkoudaSymEntryCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat/e-132/SymArrayDmapCompat.html">SymArrayDmapCompat</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">chpldoc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>FileIO</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/FileIO.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="module-FileIO"></span><div class="section" id="fileio">
+<h1>FileIO<a class="headerlink" href="#fileio" title="Permalink to this headline">¶</a></h1>
+<p><strong>Usage</strong></p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">FileIO</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">FileIO</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="FileIO.fioLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">fioLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span><a class="headerlink" href="#FileIO.fioLogger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="FileIO.FileType">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">FileType</span></span> <span class="pre">{</span> <span class="pre">HDF5,</span> <span class="pre">ARROW,</span> <span class="pre">PARQUET,</span> <span class="pre">CSV,</span> <span class="pre">UNKNOWN</span> <span class="pre">}</span><a class="headerlink" href="#FileIO.FileType" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="FileIO.FileType.HDF5">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">HDF5</span></span><a class="headerlink" href="#FileIO.FileType.HDF5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="FileIO.FileType.ARROW">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ARROW</span></span><a class="headerlink" href="#FileIO.FileType.ARROW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="FileIO.FileType.PARQUET">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PARQUET</span></span><a class="headerlink" href="#FileIO.FileType.PARQUET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="FileIO.FileType.CSV">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CSV</span></span><a class="headerlink" href="#FileIO.FileType.CSV" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="FileIO.FileType.UNKNOWN">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UNKNOWN</span></span><a class="headerlink" href="#FileIO.FileType.UNKNOWN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.appendFile">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.appendFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.writeToFile">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.writeToFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.writeLinesToFile">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeLinesToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lines:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.writeLinesToFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.getLineFromFile">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLineFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineIndex:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.getLineFromFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLineFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">match:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.delimitedFileToMap">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">delimitedFileToMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">delimiter:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;</span></em>, <em class="sig-param"><span class="pre">&quot;</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">map</span><a class="headerlink" href="#FileIO.delimitedFileToMap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.initDirectory">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">initDirectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.initDirectory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.ensureClose">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">ensureClose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tmpf:</span> <span class="pre">file</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span><a class="headerlink" href="#FileIO.ensureClose" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Ensure the file is closed, disregard errors</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.isGlobPattern">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isGlobPattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.isGlobPattern" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Indicates whether the filename represents a glob expression as opposed to</p></li>
+<li><p>an specific filename</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.generateFilenames">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">targetLocalesSize:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.generateFilenames" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Generates a list of filenames to be written to based upon a file prefix,</p></li>
+<li><p>extension, and number of locales.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.generateFilename">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateFilename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.generateFilename" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Generates a file name composed of a prefix, which is a filename provided by</p></li>
+<li><p>the user along with a file index and extension.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.getMatchingFilenames">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMatchingFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.getMatchingFilenames" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Generates an array of filenames to be matched in APPEND mode and to be</p></li>
+<li><p>checked in TRUNCATE mode that will warn the user that 1..n files are</p></li>
+<li><p>being overwritten.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.getFileMetadata">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FileIO.getFileMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Returns a tuple composed of a file prefix and extension to be used to</p></li>
+<li><p>generate locale-specific filenames to be written to.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="FileIO.MAGIC_PARQUET">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_PARQUET</span></span><span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">=</span> <span class="pre">b&quot;PAR1&quot;</span><a class="headerlink" href="#FileIO.MAGIC_PARQUET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="FileIO.MAGIC_HDF5">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_HDF5</span></span><span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">=</span> <span class="pre">b&quot;\x89HDF\r\n\x1A\n&quot;</span><a class="headerlink" href="#FileIO.MAGIC_HDF5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="FileIO.MAGIC_ARROW">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_ARROW</span></span><span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">=</span> <span class="pre">b&quot;ARROW1\x00\x00&quot;</span><a class="headerlink" href="#FileIO.MAGIC_ARROW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="FileIO.MAGIC_CSV">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_CSV</span></span><span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">=</span> <span class="pre">b&quot;**HEADER&quot;</span><a class="headerlink" href="#FileIO.MAGIC_CSV" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.getFileTypeByMagic">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileTypeByMagic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">header:</span> <span class="pre">bytes</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">FileType</span><a class="headerlink" href="#FileIO.getFileTypeByMagic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine FileType based on public File Magic for supported types
+:arg header: file header
+:type header: bytes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>FileType from enum.FileType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.domain_intersection">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domain_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d1:</span> <span class="pre">domain(1)</span></em>, <em class="sig-param"><span class="pre">d2:</span> <span class="pre">domain(1)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FileIO.domain_intersection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.getFirstEightBytesFromFile">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFirstEightBytesFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.getFirstEightBytesFromFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.getFileType">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.getFileType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.getFileTypeMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileTypeMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.getFileTypeMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.lsAnyMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">lsAnyMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.lsAnyMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.globExpansionMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">globExpansionMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.globExpansionMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ExternalIntegration.html" class="btn btn-neutral float-left" title="ExternalIntegration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="GenSymIO.html" class="btn btn-neutral float-right" title="GenSymIO" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ 
+
+
+
+</body>
+</html>

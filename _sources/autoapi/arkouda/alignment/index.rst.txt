@@ -13,32 +13,26 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.alignment.align
+   arkouda.alignment.find
+   arkouda.alignment.in1d_intervals
+   arkouda.alignment.interval_lookup
+   arkouda.alignment.is_cosorted
+   arkouda.alignment.left_align
+   arkouda.alignment.lookup
+   arkouda.alignment.right_align
+   arkouda.alignment.search_intervals
    arkouda.alignment.unsqueeze
    arkouda.alignment.zero_up
-   arkouda.alignment.align
-   arkouda.alignment.right_align
-   arkouda.alignment.left_align
-   arkouda.alignment.find
-   arkouda.alignment.lookup
-   arkouda.alignment.in1d_intervals
-   arkouda.alignment.search_intervals
-   arkouda.alignment.is_cosorted
-   arkouda.alignment.interval_lookup
 
 
 
-.. py:function:: unsqueeze(p)
+.. py:exception:: NonUniqueError
 
 
-.. py:function:: zero_up(vals)
+   Bases: :py:obj:`ValueError`
 
-   Map an array of sparse values to 0-up indices.
-
-   :param vals: Array to map to dense index
-   :type vals: pdarray
-
-   :returns: **aligned** -- Array with values replaced by 0-up indices
-   :rtype: pdarray
+   Inappropriate argument value (of correct type).
 
 
 .. py:function:: align(*args)
@@ -52,34 +46,6 @@ Functions
    :rtype: list of pdarrays
 
 
-.. py:function:: right_align(left, right)
-
-   Map two arrays of sparse values to the 0-up index set implied by the right array,
-   discarding values from left that do not appear in right.
-
-   :param left: Left-hand identifiers
-   :type left: pdarray or a sequence of pdarrays
-   :param right: Right-hand identifiers that define the index
-   :type right: pdarray or a sequence of pdarrays
-
-   :returns: * **keep** (*pdarray, bool*) -- Logical index of left-hand values that survived
-             * **aligned** (*(pdarray, pdarray)*) -- Left and right arrays with values replaced by 0-up indices
-
-
-.. py:function:: left_align(left, right)
-
-   Map two arrays of sparse identifiers to the 0-up index set implied by the left array,
-   discarding values from right that do not appear in left.
-
-
-.. py:exception:: NonUniqueError
-
-
-   Bases: :py:obj:`ValueError`
-
-   Inappropriate argument value (of correct type).
-
-
 .. py:function:: find(query, space)
 
    Return indices of query items in a search list of items (-1 if not found).
@@ -91,6 +57,87 @@ Functions
 
    :returns: **indices** -- For each item in query, its index in space or -1 if not found.
    :rtype: pdarray, int64
+
+
+.. py:function:: in1d_intervals(vals, intervals, symmetric=False)
+
+   Test each value for membership in *any* of a set of half-open (pythonic)
+   intervals.
+
+   :param vals: Values to test for membership in intervals
+   :type vals: pdarray(int, float)
+   :param intervals: Non-overlapping, half-open intervals, as a tuple of
+                     (lower_bounds_inclusive, upper_bounds_exclusive)
+   :type intervals: 2-tuple of pdarrays
+   :param symmetric: If True, also return boolean pdarray indicating which intervals
+                     contained one or more query values.
+   :type symmetric: bool
+
+   :returns: * *pdarray(bool)* -- Array of same length as <vals>, True if corresponding value is
+               included in any of the ranges defined by (low[i], high[i]) inclusive.
+             * *pdarray(bool) (if symmetric=True)* -- Array of same length as number of intervals, True if corresponding
+               interval contains any of the values in <vals>.
+
+   .. rubric:: Notes
+
+   First return array is equivalent to the following:
+       ((vals >= intervals[0][0]) & (vals < intervals[1][0])) |
+       ((vals >= intervals[0][1]) & (vals < intervals[1][1])) |
+       ...
+       ((vals >= intervals[0][-1]) & (vals < intervals[1][-1]))
+   But much faster when testing many ranges.
+
+   Second (optional) return array is equivalent to:
+       ((intervals[0] <= vals[0]) & (intervals[1] > vals[0])) |
+       ((intervals[0] <= vals[1]) & (intervals[1] > vals[1])) |
+       ...
+       ((intervals[0] <= vals[-1]) & (intervals[1] > vals[-1]))
+   But much faster when vals is non-trivial size.
+
+
+.. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None, hierarchical=False)
+
+   Apply a function defined over intervals to an array of arguments.
+
+   :param keys: Tuple of closed intervals expressed as (lower_bounds_inclusive, upper_bounds_inclusive).
+                Must have same dtype(s) as vals.
+   :type keys: 2-tuple of (sequences of) pdarrays
+   :param values: Function value to return for each entry in keys.
+   :type values: pdarray
+   :param arguments: Values to search for in intervals. If multiple arrays, each "row" is an item.
+   :type arguments: (sequences of) pdarray
+   :param fillvalue: Default value to return when argument is not in any interval.
+   :type fillvalue: scalar
+   :param tiebreak: When an argument is present in more than one key interval, the interval with the
+                    lowest tiebreak value will be chosen. If no tiebreak is given, the
+                    first valid key interval will be chosen.
+   :type tiebreak: (optional) pdarray, numeric
+
+   :returns: Value of function corresponding to the keys interval
+             containing each argument, or fillvalue if argument not
+             in any interval.
+   :rtype: pdarray
+
+
+.. py:function:: is_cosorted(arrays)
+
+   Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table
+   then the rows are sorted.
+
+   :param arrays: Arrays to check for cosortedness
+   :type arrays: list-like of pdarrays
+
+   :returns: True iff arrays are cosorted.
+   :rtype: bool
+
+   :raises ValueError: Raised if arrays are not the same length
+   :raises TypeError: Raised if arrays is not a list-like of pdarrays
+
+
+.. py:function:: left_align(left, right)
+
+   Map two arrays of sparse identifiers to the 0-up index set implied by the left array,
+   discarding values from right that do not appear in left.
 
 
 .. py:function:: lookup(keys, values, arguments, fillvalue=-1)
@@ -138,40 +185,18 @@ Functions
    array(['four', 'one', 'two']))
 
 
-.. py:function:: in1d_intervals(vals, intervals, symmetric=False)
+.. py:function:: right_align(left, right)
 
-   Test each value for membership in *any* of a set of half-open (pythonic)
-   intervals.
+   Map two arrays of sparse values to the 0-up index set implied by the right array,
+   discarding values from left that do not appear in right.
 
-   :param vals: Values to test for membership in intervals
-   :type vals: pdarray(int, float)
-   :param intervals: Non-overlapping, half-open intervals, as a tuple of
-                     (lower_bounds_inclusive, upper_bounds_exclusive)
-   :type intervals: 2-tuple of pdarrays
-   :param symmetric: If True, also return boolean pdarray indicating which intervals
-                     contained one or more query values.
-   :type symmetric: bool
+   :param left: Left-hand identifiers
+   :type left: pdarray or a sequence of pdarrays
+   :param right: Right-hand identifiers that define the index
+   :type right: pdarray or a sequence of pdarrays
 
-   :returns: * *pdarray(bool)* -- Array of same length as <vals>, True if corresponding value is
-               included in any of the ranges defined by (low[i], high[i]) inclusive.
-             * *pdarray(bool) (if symmetric=True)* -- Array of same length as number of intervals, True if corresponding
-               interval contains any of the values in <vals>.
-
-   .. rubric:: Notes
-
-   First return array is equivalent to the following:
-       ((vals >= intervals[0][0]) & (vals < intervals[1][0])) |
-       ((vals >= intervals[0][1]) & (vals < intervals[1][1])) |
-       ...
-       ((vals >= intervals[0][-1]) & (vals < intervals[1][-1]))
-   But much faster when testing many ranges.
-
-   Second (optional) return array is equivalent to:
-       ((intervals[0] <= vals[0]) & (intervals[1] > vals[0])) |
-       ((intervals[0] <= vals[1]) & (intervals[1] > vals[1])) |
-       ...
-       ((intervals[0] <= vals[-1]) & (intervals[1] > vals[-1]))
-   But much faster when vals is non-trivial size.
+   :returns: * **keep** (*pdarray, bool*) -- Logical index of left-hand values that survived
+             * **aligned** (*(pdarray, pdarray)*) -- Left and right arrays with values replaced by 0-up indices
 
 
 .. py:function:: search_intervals(vals, intervals, tiebreak=None, hierarchical=True)
@@ -226,42 +251,17 @@ Functions
    array([0 0 0 0 1 1 1 -1])
 
 
-.. py:function:: is_cosorted(arrays)
-
-   Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table
-   then the rows are sorted.
-
-   :param arrays: Arrays to check for cosortedness
-   :type arrays: list-like of pdarrays
-
-   :returns: True iff arrays are cosorted.
-   :rtype: bool
-
-   :raises ValueError: Raised if arrays are not the same length
-   :raises TypeError: Raised if arrays is not a list-like of pdarrays
+.. py:function:: unsqueeze(p)
 
 
-.. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None, hierarchical=False)
+.. py:function:: zero_up(vals)
 
-   Apply a function defined over intervals to an array of arguments.
+   Map an array of sparse values to 0-up indices.
 
-   :param keys: Tuple of closed intervals expressed as (lower_bounds_inclusive, upper_bounds_inclusive).
-                Must have same dtype(s) as vals.
-   :type keys: 2-tuple of (sequences of) pdarrays
-   :param values: Function value to return for each entry in keys.
-   :type values: pdarray
-   :param arguments: Values to search for in intervals. If multiple arrays, each "row" is an item.
-   :type arguments: (sequences of) pdarray
-   :param fillvalue: Default value to return when argument is not in any interval.
-   :type fillvalue: scalar
-   :param tiebreak: When an argument is present in more than one key interval, the interval with the
-                    lowest tiebreak value will be chosen. If no tiebreak is given, the
-                    first valid key interval will be chosen.
-   :type tiebreak: (optional) pdarray, numeric
+   :param vals: Array to map to dense index
+   :type vals: pdarray
 
-   :returns: Value of function corresponding to the keys interval
-             containing each argument, or fillvalue if argument not
-             in any interval.
+   :returns: **aligned** -- Array with values replaced by 0-up indices
    :rtype: pdarray
 
 

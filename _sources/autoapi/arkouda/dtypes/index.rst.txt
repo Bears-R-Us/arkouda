@@ -13,13 +13,13 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.dtypes.dtype
-   arkouda.dtypes.isSupportedNumber
    arkouda.dtypes.check_np_dtype
-   arkouda.dtypes.translate_np_dtype
-   arkouda.dtypes.resolve_scalar_dtype
+   arkouda.dtypes.dtype
    arkouda.dtypes.get_byteorder
    arkouda.dtypes.get_server_byteorder
+   arkouda.dtypes.isSupportedNumber
+   arkouda.dtypes.resolve_scalar_dtype
+   arkouda.dtypes.translate_np_dtype
 
 
 
@@ -28,58 +28,113 @@ Attributes
 
 .. autoapisummary::
 
-   arkouda.dtypes.uint8
-   arkouda.dtypes.uint16
-   arkouda.dtypes.uint32
-   arkouda.dtypes.uint64
-   arkouda.dtypes.int8
+   arkouda.dtypes.ARKOUDA_SUPPORTED_DTYPES
+   arkouda.dtypes.DTypeObjects
+   arkouda.dtypes.DTypes
+   arkouda.dtypes.ScalarDTypes
+   arkouda.dtypes.all_scalars
+   arkouda.dtypes.bigint
+   arkouda.dtypes.bitType
+   arkouda.dtypes.bool
+   arkouda.dtypes.bool_scalars
+   arkouda.dtypes.complex128
+   arkouda.dtypes.complex64
+   arkouda.dtypes.float32
+   arkouda.dtypes.float64
+   arkouda.dtypes.float_scalars
    arkouda.dtypes.int16
    arkouda.dtypes.int32
    arkouda.dtypes.int64
-   arkouda.dtypes.float32
-   arkouda.dtypes.float64
-   arkouda.dtypes.complex64
-   arkouda.dtypes.complex128
-   arkouda.dtypes.bool
-   arkouda.dtypes.str_
-   arkouda.dtypes.bigint
+   arkouda.dtypes.int8
    arkouda.dtypes.intTypes
-   arkouda.dtypes.bitType
-   arkouda.dtypes.bool_scalars
-   arkouda.dtypes.float_scalars
    arkouda.dtypes.int_scalars
    arkouda.dtypes.numeric_scalars
    arkouda.dtypes.numpy_scalars
+   arkouda.dtypes.str_
    arkouda.dtypes.str_scalars
-   arkouda.dtypes.all_scalars
-   arkouda.dtypes.ARKOUDA_SUPPORTED_DTYPES
-   arkouda.dtypes.DTypes
-   arkouda.dtypes.DTypeObjects
-   arkouda.dtypes.ScalarDTypes
+   arkouda.dtypes.uint16
+   arkouda.dtypes.uint32
+   arkouda.dtypes.uint64
+   arkouda.dtypes.uint8
 
+
+.. py:data:: ARKOUDA_SUPPORTED_DTYPES
+
+   
+
+.. py:data:: DTypeObjects
+
+   
+
+.. py:data:: DTypes
+
+   
+
+.. py:data:: ScalarDTypes
+
+   
+
+.. py:data:: all_scalars
+
+   The DType enum defines the supported Arkouda data types in string form.
+
+.. py:data:: bigint
+
+   
+
+.. py:data:: bitType
+
+   
+
+.. py:data:: bool
+
+   
+
+.. py:data:: bool_scalars
+
+   
+
+.. py:function:: check_np_dtype(dt: numpy.dtype) -> None
+
+   Assert that numpy dtype dt is one of the dtypes supported
+   by arkouda, otherwise raise TypeError.
+
+   :raises TypeError: Raised if the dtype is not in supported dtypes or if
+       dt is not a np.dtype
+
+
+.. py:data:: complex128
+
+   
+
+.. py:data:: complex64
+
+   
 
 .. py:function:: dtype(x)
 
 
-.. py:data:: uint8
+.. py:data:: float32
 
    
 
-.. py:data:: uint16
+.. py:data:: float64
 
    
 
-.. py:data:: uint32
+.. py:data:: float_scalars
 
    
 
-.. py:data:: uint64
+.. py:function:: get_byteorder(dt: numpy.dtype) -> str
 
-   
+   Get a concrete byteorder (turns '=' into '<' or '>')
 
-.. py:data:: int8
 
-   
+.. py:function:: get_server_byteorder() -> str
+
+   Get the server's byteorder
+
 
 .. py:data:: int16
 
@@ -93,31 +148,7 @@ Attributes
 
    
 
-.. py:data:: float32
-
-   
-
-.. py:data:: float64
-
-   
-
-.. py:data:: complex64
-
-   
-
-.. py:data:: complex128
-
-   
-
-.. py:data:: bool
-
-   
-
-.. py:data:: str_
-
-   
-
-.. py:data:: bigint
+.. py:data:: int8
 
    
 
@@ -125,21 +156,12 @@ Attributes
 
    
 
-.. py:data:: bitType
-
-   
-
-.. py:data:: bool_scalars
-
-   
-
-.. py:data:: float_scalars
-
-   
-
 .. py:data:: int_scalars
 
    
+
+.. py:function:: isSupportedNumber(num)
+
 
 .. py:data:: numeric_scalars
 
@@ -149,41 +171,18 @@ Attributes
 
    
 
+.. py:function:: resolve_scalar_dtype(val: object) -> str
+
+   Try to infer what dtype arkouda_server should treat val as.
+
+
+.. py:data:: str_
+
+   
+
 .. py:data:: str_scalars
 
    
-
-.. py:data:: all_scalars
-
-   The DType enum defines the supported Arkouda data types in string form.
-
-.. py:data:: ARKOUDA_SUPPORTED_DTYPES
-
-   
-
-.. py:data:: DTypes
-
-   
-
-.. py:data:: DTypeObjects
-
-   
-
-.. py:data:: ScalarDTypes
-
-   
-
-.. py:function:: isSupportedNumber(num)
-
-
-.. py:function:: check_np_dtype(dt: numpy.dtype) -> None
-
-   Assert that numpy dtype dt is one of the dtypes supported
-   by arkouda, otherwise raise TypeError.
-
-   :raises TypeError: Raised if the dtype is not in supported dtypes or if
-       dt is not a np.dtype
-
 
 .. py:function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[str, int]
 
@@ -194,18 +193,19 @@ Attributes
        dt is not a np.dtype
 
 
-.. py:function:: resolve_scalar_dtype(val: object) -> str
+.. py:data:: uint16
 
-   Try to infer what dtype arkouda_server should treat val as.
+   
 
+.. py:data:: uint32
 
-.. py:function:: get_byteorder(dt: numpy.dtype) -> str
+   
 
-   Get a concrete byteorder (turns '=' into '<' or '>')
+.. py:data:: uint64
 
+   
 
-.. py:function:: get_server_byteorder() -> str
+.. py:data:: uint8
 
-   Get the server's byteorder
-
+   
 

@@ -30,22 +30,6 @@ Functions
 
 
 
-.. py:function:: BitVectorizer(width=64, reverse=False)
-
-   Make a callback (i.e. function) that can be called on an
-   array to create a BitVector.
-
-   :param width: The number of bit fields in the vector
-   :type width: int
-   :param reverse: If True, display bits from least significant (left) to most
-                   significant (right). By default, the most significant bit
-                   is the left-most bit.
-   :type reverse: bool
-
-   :returns: **bitvectorizer** -- A function that takes an array and returns a BitVector instance
-   :rtype: callable
-
-
 .. py:class:: BitVector(values, width=64, reverse=False)
 
 
@@ -85,14 +69,8 @@ Functions
       Format a single binary vector as a string.
 
 
-   .. py:method:: to_ndarray()
-
-      Export data to a numpy array of string-formatted bit vectors.
-
-
-   .. py:method:: to_list()
-
-      Export data to a list of string-formatted bit vectors.
+   .. py:method:: from_return_msg(rep_msg)
+      :classmethod:
 
 
    .. py:method:: opeq(other, op)
@@ -123,9 +101,31 @@ Functions
       they are unregistered.
 
 
-   .. py:method:: from_return_msg(rep_msg)
-      :classmethod:
+   .. py:method:: to_list()
 
+      Export data to a list of string-formatted bit vectors.
+
+
+   .. py:method:: to_ndarray()
+
+      Export data to a numpy array of string-formatted bit vectors.
+
+
+
+.. py:function:: BitVectorizer(width=64, reverse=False)
+
+   Make a callback (i.e. function) that can be called on an
+   array to create a BitVector.
+
+   :param width: The number of bit fields in the vector
+   :type width: int
+   :param reverse: If True, display bits from least significant (left) to most
+                   significant (right). By default, the most significant bit
+                   is the left-most bit.
+   :type reverse: bool
+
+   :returns: **bitvectorizer** -- A function that takes an array and returns a BitVector instance
+   :rtype: callable
 
 
 .. py:class:: Fields(values, names, MSB_left=True, pad='-', separator='', show_int=True)
@@ -176,24 +176,6 @@ Functions
 
 
 
-.. py:function:: ip_address(values)
-
-   Convert values to an Arkouda array of IP addresses.
-
-   :param values: The integer IP addresses or IPv4 object.
-   :type values: list-like, integer pdarray, or IPv4
-
-   :returns: The same IP addresses as an Arkouda array
-   :rtype: IPv4
-
-   .. rubric:: Notes
-
-   This helper is intended to help future proof changes made to
-   accomodate IPv6 and to prevent errors if a user inadvertently
-   casts a IPv4 instead of a int64 pdarray. It can also be used
-   for importing Python lists of IP addresses into Arkouda.
-
-
 .. py:class:: IPv4(values)
 
 
@@ -232,16 +214,6 @@ Functions
       and convert it to an integer.
 
 
-   .. py:method:: to_ndarray()
-
-      Export array as a numpy array of integers.
-
-
-   .. py:method:: to_list()
-
-      Export array as a list of integers.
-
-
    .. py:method:: opeq(other, op)
 
 
@@ -275,10 +247,38 @@ Functions
       Override of the pdarray to_hdf to store the special object type
 
 
+   .. py:method:: to_list()
+
+      Export array as a list of integers.
+
+
+   .. py:method:: to_ndarray()
+
+      Export array as a numpy array of integers.
+
+
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
 
       Override the pdarray implementation so that the special object type will be used.
 
+
+
+.. py:function:: ip_address(values)
+
+   Convert values to an Arkouda array of IP addresses.
+
+   :param values: The integer IP addresses or IPv4 object.
+   :type values: list-like, integer pdarray, or IPv4
+
+   :returns: The same IP addresses as an Arkouda array
+   :rtype: IPv4
+
+   .. rubric:: Notes
+
+   This helper is intended to help future proof changes made to
+   accomodate IPv6 and to prevent errors if a user inadvertently
+   casts a IPv4 instead of a int64 pdarray. It can also be used
+   for importing Python lists of IP addresses into Arkouda.
 
 
 .. py:function:: is_ipv4(ip: Union[arkouda.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.pdarrayclass.pdarray] = None) -> arkouda.pdarrayclass.pdarray

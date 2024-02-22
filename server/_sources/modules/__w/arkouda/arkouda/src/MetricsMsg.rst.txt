@@ -1,0 +1,317 @@
+.. default-domain:: chpl
+
+.. module:: MetricsMsg
+
+MetricsMsg
+==========
+**Usage**
+
+.. code-block:: chapel
+
+   use MetricsMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import MetricsMsg;
+
+.. enum:: enum MetricCategory { ALL, NUM_REQUESTS, RESPONSE_TIME, AVG_RESPONSE_TIME, TOTAL_RESPONSE_TIME, TOTAL_MEMORY_USED, SYSTEM, SERVER, SERVER_INFO }
+
+   .. enumconstant:: enum constant ALL
+
+   .. enumconstant:: enum constant NUM_REQUESTS
+
+   .. enumconstant:: enum constant RESPONSE_TIME
+
+   .. enumconstant:: enum constant AVG_RESPONSE_TIME
+
+   .. enumconstant:: enum constant TOTAL_RESPONSE_TIME
+
+   .. enumconstant:: enum constant TOTAL_MEMORY_USED
+
+   .. enumconstant:: enum constant SYSTEM
+
+   .. enumconstant:: enum constant SERVER
+
+   .. enumconstant:: enum constant SERVER_INFO
+
+.. enum:: enum MetricScope { GLOBAL, LOCALE, REQUEST, USER }
+
+   .. enumconstant:: enum constant GLOBAL
+
+   .. enumconstant:: enum constant LOCALE
+
+   .. enumconstant:: enum constant REQUEST
+
+   .. enumconstant:: enum constant USER
+
+.. enum:: enum MetricDataType { INT, REAL }
+
+   .. enumconstant:: enum constant INT
+
+   .. enumconstant:: enum constant REAL
+
+.. data:: const mLogger = new Logger(logLevel, logChannel)
+
+.. data:: var metricScope = try! ServerConfig.getEnv(name = "METRIC_SCOPE", default = "MetricScope.REQUEST")
+
+.. data:: var serverMetrics = new CounterTable()
+
+.. data:: var requestMetrics = new CounterTable()
+
+.. data:: var avgResponseTimeMetrics = new AverageMeasurementTable()
+
+.. data:: var responseTimeMetrics = new MeasurementTable()
+
+.. data:: var totalResponseTimeMetrics = new MeasurementTable()
+
+.. data:: var totalMemoryUsedMetrics = new MeasurementTable()
+
+.. data:: var users = new Users()
+
+.. data:: var userMetrics = new UserMetrics()
+
+.. record:: User
+
+   .. attribute:: var name: string
+
+.. class:: Users
+
+   .. attribute:: var users = new map(string, User)
+
+   .. method:: proc getUser(name: string)
+
+   .. method:: proc getUserNames()
+
+   .. method:: proc getUsers()
+
+.. class:: MetricValue
+
+   .. attribute:: var realValue: real
+
+   .. attribute:: var intValue: int(64)
+
+   .. attribute:: var dataType: MetricDataType
+
+   .. method:: proc init(realValue: real)
+
+   .. method:: proc init(intValue: int(64))
+
+   .. method:: proc update(val)
+
+.. class:: AvgMetricValue : MetricValue
+
+   .. attribute:: var numValues: int
+
+   .. attribute:: var intTotal: int(64)
+
+   .. attribute:: var realTotal: real
+
+   .. method:: proc update(val)
+
+.. class:: UserMetrics
+
+   .. attribute:: var metrics = new map(keyType = User, valType = shared CounterTable)
+
+   .. attribute:: var users = new Users()
+
+   .. method:: proc getUserMetrics(user: User): borrowed CounterTable
+
+   .. method:: proc incrementPerUserRequestMetrics(userName: string, metricName: string, increment: int = 1)
+
+   .. method:: proc getPerUserNumRequestsPerCommandMetrics(userName: string)
+
+   .. method:: proc getPerUserNumRequestsPerCommandForAllUsersMetrics()
+
+   .. method:: proc incrementNumRequestsPerCommand(userName: string, cmd: string, increment: int = 1)
+
+   .. method:: proc incrementTotalNumRequests(userName: string, increment: int = 1)
+
+.. class:: MeasurementTable
+
+   
+   * The MeasurementTable encapsulates real measurements
+   
+
+   .. attribute:: var measurements = new map(string, real)
+
+   .. method:: proc get(metric: string): real throws
+
+      
+      * Returns the measurement corresponding to the metric name If the
+      * metric does not exist, the metric value is set to 0.0 and is returned.
+      
+
+   .. method:: proc set(metric: string, measurement: real) throws
+
+       
+      * Sets the metrics value
+      
+
+   .. method:: proc size()
+
+      
+      * Returns the number of measurements in the MeasurementTable.s
+      
+
+   .. method:: proc add(metric: string, measurement: real) throws
+
+       
+      * Adds a measurement to an existing measurement corresponding to the 
+      * metric name, setting the value if the metric does not exist.
+      
+
+   .. itermethod:: iter items()
+
+.. class:: AverageMeasurementTable : MeasurementTable
+
+    
+   * The AverageMeasurementTable extends the MeasurementTable by generating
+   * values that are averages of incoming values for each metric.
+   
+
+   .. attribute:: var numMeasurements = new map(string, int(64))
+
+   .. attribute:: var measurementTotals = new map(string, real)
+
+   .. method:: proc getNumMeasurements(metric: string) throws
+
+      
+      * Returns the number of measurements corresponding to a metric.
+      
+
+   .. method:: proc getMeasurementTotal(metric: string): real throws
+
+      
+      * Returns the sum of all measurements corresponding to a metric. Note:
+      * this function is designed to invoked internally in order to 
+      * calculate the avg measurement value corresponding to the metric.
+      
+
+   .. method:: override proc add(metric: string, measurement: real) throws
+
+      
+      * The overridden add method updates the measurement value by doing the following:
+      *
+      * 1. adds the measurement to a running total measurement for the metric
+      * 2. increments the number of measurements for the metric
+      * 3. divides the updated total measurement by the number of measurements to
+      *    to calculate the avg measurement
+      
+
+.. class:: CounterTable
+
+   .. attribute:: var counts = new map(string, int)
+
+   .. method:: proc get(metric: string): int
+
+   .. method:: proc set(metric: string, count: int)
+
+   .. method:: proc increment(metric: string, increment: int = 1)
+
+   .. method:: proc decrement(metric: string, increment: int = 1)
+
+   .. itermethod:: iter items()
+
+   .. method:: proc size()
+
+   .. method:: proc total()
+
+.. function:: proc exportAllMetrics() throws
+
+.. function:: proc getUserRequestMetrics(userName: string) throws
+
+.. function:: proc getAllUserRequestMetrics() throws
+
+.. function:: proc getServerMetrics() throws
+
+.. function:: proc getNumRequestMetrics() throws
+
+.. function:: proc getPerUserNumRequestMetrics() throws
+
+.. function:: proc getResponseTimeMetrics() throws
+
+.. function:: proc getAvgResponseTimeMetrics() throws
+
+.. function:: proc getTotalResponseTimeMetrics() throws
+
+.. function:: proc getTotalMemoryUsedMetrics() throws
+
+.. function:: proc getMaxLocaleMemory(loc) throws
+
+.. function:: proc getSystemMetrics() throws
+
+.. function:: proc getServerInfo() throws
+
+.. class:: Metric
+
+   .. attribute:: var name: string
+
+   .. attribute:: var category: MetricCategory
+
+   .. attribute:: var scope: MetricScope
+
+   .. attribute:: var timestamp: dateTime
+
+   .. attribute:: var value: real
+
+   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.GLOBAL, timestamp: dateTime = dateTime.now(), value: real)
+
+.. class:: UserMetric : Metric
+
+   .. attribute:: var user: string
+
+   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.USER, timestamp: dateTime = dateTime.now(), value: real, user: string)
+
+.. class:: ArrayMetric : Metric
+
+   .. attribute:: var cmd: string
+
+   .. attribute:: var dType: DType
+
+   .. attribute:: var size: int
+
+   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.GLOBAL, timestamp: dateTime = dateTime.now(), value: real, cmd: string, dType: DType, size: int)
+
+.. class:: LocaleInfo
+
+   .. attribute:: var name: string
+
+   .. attribute:: var id: string
+
+   .. attribute:: var hostname: string
+
+   .. attribute:: var number_of_processing_units: int
+
+   .. attribute:: var physical_memory: int
+
+   .. attribute:: var max_number_of_tasks: int
+
+.. class:: ServerInfo
+
+   .. attribute:: var hostname: string
+
+   .. attribute:: var version: string
+
+   .. attribute:: var server_port: int
+
+   .. attribute:: var locales: [0..numLocales-1] owned LocaleInfo?
+
+   .. attribute:: var number_of_locales: int
+
+   .. method:: proc init(hostname: string, version: string, server_port: int, locales)
+
+.. class:: LocaleMetric : Metric
+
+   .. attribute:: var locale_num: int
+
+   .. attribute:: var locale_name: string
+
+   .. attribute:: var locale_hostname: string
+
+   .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.LOCALE, timestamp: dateTime = dateTime.now(), value: real, locale_num: int, locale_name: string, locale_hostname: string)
+
+.. function:: proc metricsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+

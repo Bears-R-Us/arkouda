@@ -61,7 +61,28 @@ Functions
 
    The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
-   .. py:property:: nanosecond
+   .. py:property:: date
+
+
+   .. py:property:: day
+
+
+   .. py:property:: day_of_week
+
+
+   .. py:property:: day_of_year
+
+
+   .. py:property:: dayofweek
+
+
+   .. py:property:: dayofyear
+
+
+   .. py:property:: hour
+
+
+   .. py:property:: is_leap_year
 
 
    .. py:property:: microsecond
@@ -70,64 +91,32 @@ Functions
    .. py:property:: millisecond
 
 
-   .. py:property:: second
-
-
    .. py:property:: minute
-
-
-   .. py:property:: hour
-
-
-   .. py:property:: day
 
 
    .. py:property:: month
 
 
-   .. py:property:: year
+   .. py:property:: nanosecond
 
 
-   .. py:property:: day_of_year
-
-
-   .. py:property:: dayofyear
-
-
-   .. py:property:: day_of_week
-
-
-   .. py:property:: dayofweek
-
-
-   .. py:property:: weekday
+   .. py:property:: second
 
 
    .. py:property:: week
 
 
+   .. py:property:: weekday
+
+
    .. py:property:: weekofyear
 
 
-   .. py:property:: date
+   .. py:property:: year
 
 
-   .. py:property:: is_leap_year
-
-
-   .. py:attribute:: supported_with_datetime
-
-      
-
-   .. py:attribute:: supported_with_r_datetime
-
-      
-
-   .. py:attribute:: supported_with_timedelta
-
-      
-
-   .. py:attribute:: supported_with_r_timedelta
+   .. py:attribute:: special_objType
+      :value: 'Datetime'
 
       
 
@@ -135,7 +124,15 @@ Functions
 
       
 
+   .. py:attribute:: supported_with_datetime
+
+      
+
    .. py:attribute:: supported_with_pdarray
+
+      
+
+   .. py:attribute:: supported_with_r_datetime
 
       
 
@@ -143,25 +140,33 @@ Functions
 
       
 
-   .. py:attribute:: special_objType
-      :value: 'Datetime'
+   .. py:attribute:: supported_with_r_timedelta
 
       
 
+   .. py:attribute:: supported_with_timedelta
+
+      
+
+   .. py:method:: is_registered() -> numpy.bool_
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
    .. py:method:: isocalendar()
-
-
-   .. py:method:: to_pandas()
-
-      Convert array to a pandas DatetimeIndex. Note: if the array size
-      exceeds client.maxTransferBytes, a RuntimeError is raised.
-
-      .. seealso:: :obj:`to_ndarray`
-
-
-   .. py:method:: sum()
-
-      Return the sum of all elements in the array.
 
 
    .. py:method:: register(user_defined_name)
@@ -189,6 +194,19 @@ Functions
       they are unregistered.
 
 
+   .. py:method:: sum()
+
+      Return the sum of all elements in the array.
+
+
+   .. py:method:: to_pandas()
+
+      Convert array to a pandas DatetimeIndex. Note: if the array size
+      exceeds client.maxTransferBytes, a RuntimeError is raised.
+
+      .. seealso:: :obj:`to_ndarray`
+
+
    .. py:method:: unregister()
 
       Unregister this Datetime object in the arkouda server which was previously
@@ -198,24 +216,6 @@ Functions
           when attempting to unregister
 
       .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: is_registered() -> numpy.bool_
-
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: numpy.bool
-
-      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
 
       .. rubric:: Notes
 
@@ -257,34 +257,23 @@ Functions
 
    The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
-   .. py:property:: nanoseconds
-
-
-   .. py:property:: microseconds
-
-
-   .. py:property:: seconds
+   .. py:property:: components
 
 
    .. py:property:: days
 
 
-   .. py:property:: components
+   .. py:property:: microseconds
 
 
-   .. py:attribute:: supported_with_datetime
+   .. py:property:: nanoseconds
 
-      
 
-   .. py:attribute:: supported_with_r_datetime
+   .. py:property:: seconds
 
-      
 
-   .. py:attribute:: supported_with_timedelta
-
-      
-
-   .. py:attribute:: supported_with_r_timedelta
+   .. py:attribute:: special_objType
+      :value: 'Timedelta'
 
       
 
@@ -292,7 +281,15 @@ Functions
 
       
 
+   .. py:attribute:: supported_with_datetime
+
+      
+
    .. py:attribute:: supported_with_pdarray
+
+      
+
+   .. py:attribute:: supported_with_r_datetime
 
       
 
@@ -300,35 +297,35 @@ Functions
 
       
 
-   .. py:attribute:: special_objType
-      :value: 'Timedelta'
+   .. py:attribute:: supported_with_r_timedelta
 
       
 
-   .. py:method:: total_seconds()
+   .. py:attribute:: supported_with_timedelta
 
-
-   .. py:method:: to_pandas()
-
-      Convert array to a pandas TimedeltaIndex. Note: if the array size
-      exceeds client.maxTransferBytes, a RuntimeError is raised.
-
-      .. seealso:: :obj:`to_ndarray`
-
-
-   .. py:method:: std(ddof: arkouda.dtypes.int_scalars = 0)
-
-      Returns the standard deviation as a pd.Timedelta object
-
-
-   .. py:method:: sum()
-
-      Return the sum of all elements in the array.
-
+      
 
    .. py:method:: abs()
 
       Absolute value of time interval.
+
+
+   .. py:method:: is_registered() -> numpy.bool_
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
    .. py:method:: register(user_defined_name)
@@ -356,6 +353,27 @@ Functions
       they are unregistered.
 
 
+   .. py:method:: std(ddof: arkouda.dtypes.int_scalars = 0)
+
+      Returns the standard deviation as a pd.Timedelta object
+
+
+   .. py:method:: sum()
+
+      Return the sum of all elements in the array.
+
+
+   .. py:method:: to_pandas()
+
+      Convert array to a pandas TimedeltaIndex. Note: if the array size
+      exceeds client.maxTransferBytes, a RuntimeError is raised.
+
+      .. seealso:: :obj:`to_ndarray`
+
+
+   .. py:method:: total_seconds()
+
+
    .. py:method:: unregister()
 
       Unregister this timedelta object in the arkouda server which was previously
@@ -365,24 +383,6 @@ Functions
           when attempting to unregister
 
       .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: is_registered() -> numpy.bool_
-
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: numpy.bool
-
-      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
 
       .. rubric:: Notes
 

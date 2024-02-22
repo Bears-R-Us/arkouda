@@ -1,0 +1,21 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaRegexCompat
+
+ArkoudaRegexCompat
+==================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaRegexCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaRegexCompat;
+
+.. function:: proc compile(const pattern) throws
+

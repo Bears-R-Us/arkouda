@@ -1,0 +1,21 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaFileCompat
+
+ArkoudaFileCompat
+=================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaFileCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaFileCompat;
+
+.. method:: proc fileReader.bytesRead(ref a, b) throws
+

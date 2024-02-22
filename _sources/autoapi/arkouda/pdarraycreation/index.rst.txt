@@ -13,82 +13,75 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.pdarraycreation.from_series
+   arkouda.pdarraycreation.arange
    arkouda.pdarraycreation.array
    arkouda.pdarraycreation.bigint_from_uint_arrays
-   arkouda.pdarraycreation.zeros
-   arkouda.pdarraycreation.ones
+   arkouda.pdarraycreation.from_series
    arkouda.pdarraycreation.full
-   arkouda.pdarraycreation.zeros_like
-   arkouda.pdarraycreation.ones_like
    arkouda.pdarraycreation.full_like
-   arkouda.pdarraycreation.arange
    arkouda.pdarraycreation.linspace
+   arkouda.pdarraycreation.ones
+   arkouda.pdarraycreation.ones_like
    arkouda.pdarraycreation.randint
-   arkouda.pdarraycreation.uniform
-   arkouda.pdarraycreation.standard_normal
-   arkouda.pdarraycreation.random_strings_uniform
    arkouda.pdarraycreation.random_strings_lognormal
+   arkouda.pdarraycreation.random_strings_uniform
+   arkouda.pdarraycreation.standard_normal
+   arkouda.pdarraycreation.uniform
+   arkouda.pdarraycreation.zeros
+   arkouda.pdarraycreation.zeros_like
 
 
 
-.. py:function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
 
-   Converts a Pandas Series to an Arkouda pdarray or Strings object. If
-   dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
-   the dtype parameter is set if the dtype of the Pandas Series is to be
-   overridden or is  unknown (for example, in situations where the Series
-   dtype is object).
+   arange([start,] stop[, stride,] dtype=int64)
 
-   :param series: The Pandas Series with a dtype of bool, float64, int64, or string
-   :type series: Pandas Series
-   :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
-   :type dtype: Optional[type]
+   Create a pdarray of consecutive integers within the interval [start, stop).
+   If only one arg is given then arg is the stop parameter. If two args are
+   given, then the first arg is start and second is stop. If three args are
+   given, then the first arg is start, second is stop, third is stride.
 
-   :rtype: Union[pdarray,Strings]
+   The return value is cast to type dtype
 
-   :raises TypeError: Raised if series is not a Pandas Series object
-   :raises ValueError: Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta
+   :param start: Starting value (inclusive)
+   :type start: int_scalars, optional
+   :param stop: Stopping value (exclusive)
+   :type stop: int_scalars
+   :param stride: The difference between consecutive elements, the default stride is 1,
+                  if stride is specified then start must also be specified.
+   :type stride: int_scalars, optional
+   :param dtype: The target dtype to cast values to
+   :type dtype: np.dtype, type, or str
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
 
-   .. rubric:: Examples
+   :returns: Integers from start (inclusive) to stop (exclusive) by stride
+   :rtype: pdarray, dtype
 
-   >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
-   array([9, 0, 4, 7, 9])
+   :raises TypeError: Raised if start, stop, or stride is not an int object
+   :raises ZeroDivisionError: Raised if stride == 0
 
-   >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']),dtype=np.int64)
-   array([1, 2, 3, 4, 5])
-
-   >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
-   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
-
-   >>> ak.from_series(pd.Series(['0.57600036956445599', '0.41619265571741659',
-                      '0.6615356693784662']), dtype=np.float64)
-   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
-
-   >>> ak.from_series(pd.Series(np.random.choice([True, False],size=5)))
-   array([True, False, True, True, True])
-
-   >>> ak.from_series(pd.Series(['True', 'False', 'False', 'True', 'True']), dtype=np.bool)
-   array([True, True, True, True, True])
-
-   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
-   array(['a', 'b', 'c', 'd', 'e'])
-
-   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']),dtype=np.str)
-   array(['a', 'b', 'c', 'd', 'e'])
-
-   >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
-   array([1514764800000000000, 1514764800000000000])
+   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
 
    .. rubric:: Notes
 
-   The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
-   data type is either inferred from the the Series or is set via the dtype parameter.
+   Negative strides result in decreasing values. Currently, only int64
+   pdarrays can be created with this method. For float64 arrays, use
+   the linspace method.
 
-   Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
+   .. rubric:: Examples
 
-   A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
-   contains strings and sets the dtype to str
+   >>> ak.arange(0, 5, 1)
+   array([0, 1, 2, 3, 4])
+
+   >>> ak.arange(5, 0, -1)
+   array([5, 4, 3, 2, 1])
+
+   >>> ak.arange(0, 10, 2)
+   array([0, 2, 4, 6, 8])
+
+   >>> ak.arange(-5, -10, -1)
+   array([-5, -6, -7, -8, -9])
 
 
 .. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
@@ -179,66 +172,63 @@ Functions
    True
 
 
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
-   Create a pdarray filled with zeros.
+   Converts a Pandas Series to an Arkouda pdarray or Strings object. If
+   dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
+   the dtype parameter is set if the dtype of the Pandas Series is to be
+   overridden or is  unknown (for example, in situations where the Series
+   dtype is object).
 
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
-   :param dtype: Type of resulting array, default float64
-   :type dtype: all_scalars
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
+   :param series: The Pandas Series with a dtype of bool, float64, int64, or string
+   :type series: Pandas Series
+   :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
+   :type dtype: Optional[type]
 
-   :returns: Zeros of the requested size and dtype
-   :rtype: pdarray
+   :rtype: Union[pdarray,Strings]
 
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`ones`, :obj:`zeros_like`
-
-   .. rubric:: Examples
-
-   >>> ak.zeros(5, dtype=ak.int64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.float64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.bool)
-   array([False, False, False, False, False])
-
-
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with ones.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
-   :param dtype: Resulting array type, default float64
-   :type dtype: Union[float64, int64, bool]
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Ones of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`zeros`, :obj:`ones_like`
+   :raises TypeError: Raised if series is not a Pandas Series object
+   :raises ValueError: Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta
 
    .. rubric:: Examples
 
-   >>> ak.ones(5, dtype=ak.int64)
-   array([1, 1, 1, 1, 1])
+   >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
+   array([9, 0, 4, 7, 9])
 
-   >>> ak.ones(5, dtype=ak.float64)
-   array([1, 1, 1, 1, 1])
+   >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']),dtype=np.int64)
+   array([1, 2, 3, 4, 5])
 
-   >>> ak.ones(5, dtype=ak.bool)
+   >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
+   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+
+   >>> ak.from_series(pd.Series(['0.57600036956445599', '0.41619265571741659',
+                      '0.6615356693784662']), dtype=np.float64)
+   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+
+   >>> ak.from_series(pd.Series(np.random.choice([True, False],size=5)))
+   array([True, False, True, True, True])
+
+   >>> ak.from_series(pd.Series(['True', 'False', 'False', 'True', 'True']), dtype=np.bool)
    array([True, True, True, True, True])
+
+   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
+   array(['a', 'b', 'c', 'd', 'e'])
+
+   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']),dtype=np.str)
+   array(['a', 'b', 'c', 'd', 'e'])
+
+   >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
+   array([1514764800000000000, 1514764800000000000])
+
+   .. rubric:: Notes
+
+   The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
+   data type is either inferred from the the Series or is set via the dtype parameter.
+
+   Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
+
+   A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
+   contains strings and sets the dtype to str
 
 
 .. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: Union[arkouda.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
@@ -271,71 +261,6 @@ Functions
    array([9, 9, 9, 9, 9])
 
    >>> ak.full(5, 5, dtype=ak.bool)
-   array([True, True, True, True, True])
-
-
-.. py:function:: zeros_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Create a zero-filled pdarray of the same size and dtype as an existing
-   pdarray.
-
-   :param pda: Array to use for size and dtype
-   :type pda: pdarray
-
-   :returns: Equivalent to ak.zeros(pda.size, pda.dtype)
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the pda parameter is not a pdarray.
-
-   .. seealso:: :obj:`zeros`, :obj:`ones_like`
-
-   .. rubric:: Examples
-
-   >>> zeros = ak.zeros(5, dtype=ak.int64)
-   >>> ak.zeros_like(zeros)
-   array([0, 0, 0, 0, 0])
-
-   >>> zeros = ak.zeros(5, dtype=ak.float64)
-   >>> ak.zeros_like(zeros)
-   array([0, 0, 0, 0, 0])
-
-   >>> zeros = ak.zeros(5, dtype=ak.bool)
-   >>> ak.zeros_like(zeros)
-   array([False, False, False, False, False])
-
-
-.. py:function:: ones_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Create a one-filled pdarray of the same size and dtype as an existing
-   pdarray.
-
-   :param pda: Array to use for size and dtype
-   :type pda: pdarray
-
-   :returns: Equivalent to ak.ones(pda.size, pda.dtype)
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the pda parameter is not a pdarray.
-
-   .. seealso:: :obj:`ones`, :obj:`zeros_like`
-
-   .. rubric:: Notes
-
-   Logic for generating the pdarray is delegated to the ak.ones method.
-   Accordingly, the supported dtypes match are defined by the ak.ones method.
-
-   .. rubric:: Examples
-
-   >>> ones = ak.ones(5, dtype=ak.int64)
-    >>> ak.ones_like(ones)
-   array([1, 1, 1, 1, 1])
-
-   >>> ones = ak.ones(5, dtype=ak.float64)
-   >>> ak.ones_like(ones)
-   array([1, 1, 1, 1, 1])
-
-   >>> ones = ak.ones(5, dtype=ak.bool)
-   >>> ak.ones_like(ones)
    array([True, True, True, True, True])
 
 
@@ -376,58 +301,6 @@ Functions
    array([True, True, True, True, True])
 
 
-.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
-
-   arange([start,] stop[, stride,] dtype=int64)
-
-   Create a pdarray of consecutive integers within the interval [start, stop).
-   If only one arg is given then arg is the stop parameter. If two args are
-   given, then the first arg is start and second is stop. If three args are
-   given, then the first arg is start, second is stop, third is stride.
-
-   The return value is cast to type dtype
-
-   :param start: Starting value (inclusive)
-   :type start: int_scalars, optional
-   :param stop: Stopping value (exclusive)
-   :type stop: int_scalars
-   :param stride: The difference between consecutive elements, the default stride is 1,
-                  if stride is specified then start must also be specified.
-   :type stride: int_scalars, optional
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Integers from start (inclusive) to stop (exclusive) by stride
-   :rtype: pdarray, dtype
-
-   :raises TypeError: Raised if start, stop, or stride is not an int object
-   :raises ZeroDivisionError: Raised if stride == 0
-
-   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
-
-   .. rubric:: Notes
-
-   Negative strides result in decreasing values. Currently, only int64
-   pdarrays can be created with this method. For float64 arrays, use
-   the linspace method.
-
-   .. rubric:: Examples
-
-   >>> ak.arange(0, 5, 1)
-   array([0, 1, 2, 3, 4])
-
-   >>> ak.arange(5, 0, -1)
-   array([5, 4, 3, 2, 1])
-
-   >>> ak.arange(0, 10, 2)
-   array([0, 2, 4, 6, 8])
-
-   >>> ak.arange(-5, -10, -1)
-   array([-5, -6, -7, -8, -9])
-
-
 .. py:function:: linspace(start: arkouda.dtypes.numeric_scalars, stop: arkouda.dtypes.numeric_scalars, length: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray of linearly-spaced floats in a closed interval.
@@ -461,6 +334,72 @@ Functions
 
    >>> ak.linspace(start=-5, stop=0, length=5)
    array([-5, -3.75, -2.5, -1.25, 0])
+
+
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+
+   Create a pdarray filled with ones.
+
+   :param size: Size of the array (only rank-1 arrays supported)
+   :type size: int_scalars
+   :param dtype: Resulting array type, default float64
+   :type dtype: Union[float64, int64, bool]
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
+
+   :returns: Ones of the requested size and dtype
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the supplied dtype is not supported or if the size
+       parameter is neither an int nor a str that is parseable to an int.
+
+   .. seealso:: :obj:`zeros`, :obj:`ones_like`
+
+   .. rubric:: Examples
+
+   >>> ak.ones(5, dtype=ak.int64)
+   array([1, 1, 1, 1, 1])
+
+   >>> ak.ones(5, dtype=ak.float64)
+   array([1, 1, 1, 1, 1])
+
+   >>> ak.ones(5, dtype=ak.bool)
+   array([True, True, True, True, True])
+
+
+.. py:function:: ones_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Create a one-filled pdarray of the same size and dtype as an existing
+   pdarray.
+
+   :param pda: Array to use for size and dtype
+   :type pda: pdarray
+
+   :returns: Equivalent to ak.ones(pda.size, pda.dtype)
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the pda parameter is not a pdarray.
+
+   .. seealso:: :obj:`ones`, :obj:`zeros_like`
+
+   .. rubric:: Notes
+
+   Logic for generating the pdarray is delegated to the ak.ones method.
+   Accordingly, the supported dtypes match are defined by the ak.ones method.
+
+   .. rubric:: Examples
+
+   >>> ones = ak.ones(5, dtype=ak.int64)
+    >>> ak.ones_like(ones)
+   array([1, 1, 1, 1, 1])
+
+   >>> ones = ak.ones(5, dtype=ak.float64)
+   >>> ak.ones_like(ones)
+   array([1, 1, 1, 1, 1])
+
+   >>> ones = ak.ones(5, dtype=ak.bool)
+   >>> ak.ones_like(ones)
+   array([True, True, True, True, True])
 
 
 .. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: arkouda.dtypes.int_scalars = None) -> arkouda.pdarrayclass.pdarray
@@ -515,103 +454,6 @@ Functions
    array([False, True, True, True, True, False, True, True, True, True])
 
 
-.. py:function:: uniform(size: arkouda.dtypes.int_scalars, low: arkouda.dtypes.numeric_scalars = float(0.0), high: arkouda.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
-
-   Generate a pdarray with uniformly distributed random float values
-   in a specified range.
-
-   :param low: The low value (inclusive) of the range, defaults to 0.0
-   :type low: float_scalars
-   :param high: The high value (inclusive) of the range, defaults to 1.0
-   :type high: float_scalars
-   :param size: The length of the returned array
-   :type size: int_scalars
-   :param seed: Value used to initialize the random number generator
-   :type seed: int_scalars, optional
-
-   :returns: Values drawn uniformly from the specified range
-   :rtype: pdarray, float64
-
-   :raises TypeError: Raised if dtype.name not in DTypes, size is not an int, or if
-       either low or high is not an int or float
-   :raises ValueError: Raised if size < 0 or if high < low
-
-   .. rubric:: Notes
-
-   The logic for uniform is delegated to the ak.randint method which
-   is invoked with a dtype of float64
-
-   .. rubric:: Examples
-
-   >>> ak.uniform(3)
-   array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
-
-   >>> ak.uniform(size=3,low=0,high=5,seed=0)
-   array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
-
-
-.. py:function:: standard_normal(size: arkouda.dtypes.int_scalars, seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
-
-   Draw real numbers from the standard normal distribution.
-
-   :param size: The number of samples to draw (size of the returned array)
-   :type size: int_scalars
-   :param seed: Value used to initialize the random number generator
-   :type seed: int_scalars
-
-   :returns: The array of random numbers
-   :rtype: pdarray, float64
-
-   :raises TypeError: Raised if size is not an int
-   :raises ValueError: Raised if size < 0
-
-   .. seealso:: :obj:`randint`
-
-   .. rubric:: Notes
-
-   For random samples from :math:`N(\mu, \sigma^2)`, use:
-
-   ``(sigma * standard_normal(size)) + mu``
-
-   .. rubric:: Examples
-
-   >>> ak.standard_normal(3,1)
-   array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
-
-
-.. py:function:: random_strings_uniform(minlen: arkouda.dtypes.int_scalars, maxlen: arkouda.dtypes.int_scalars, size: arkouda.dtypes.int_scalars, characters: str = 'uppercase', seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.strings.Strings
-
-   Generate random strings with lengths uniformly distributed between
-   minlen and maxlen, and with characters drawn from a specified set.
-
-   :param minlen: The minimum allowed length of string
-   :type minlen: int_scalars
-   :param maxlen: The maximum allowed length of string
-   :type maxlen: int_scalars
-   :param size: The number of strings to generate
-   :type size: int_scalars
-   :param characters: The set of characters to draw from
-   :type characters: (uppercase, lowercase, numeric, printable, binary)
-   :param seed: Value used to initialize the random number generator
-   :type seed: Union[None, int_scalars], optional
-
-   :returns: The array of random strings
-   :rtype: Strings
-
-   :raises ValueError: Raised if minlen < 0, maxlen < minlen, or size < 0
-
-   .. seealso:: :obj:`random_strings_lognormal`, :obj:`randint`
-
-   .. rubric:: Examples
-
-   >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5)
-   array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U'])
-
-   >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5,
-   ... characters='printable')
-   array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
-
-
 .. py:function:: random_strings_lognormal(logmean: arkouda.dtypes.numeric_scalars, logstd: arkouda.dtypes.numeric_scalars, size: arkouda.dtypes.int_scalars, characters: str = 'uppercase', seed: Optional[arkouda.dtypes.int_scalars] = None) -> arkouda.strings.Strings
 
    Generate random strings with log-normally distributed lengths and
@@ -651,5 +493,163 @@ Functions
 
    >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1, characters='printable')
    array(['+5"fp-', ']3Q4kC~HF', '=F=`,IE!', 'DjkBa'9(', '5oZ1)='])
+
+
+.. py:function:: random_strings_uniform(minlen: arkouda.dtypes.int_scalars, maxlen: arkouda.dtypes.int_scalars, size: arkouda.dtypes.int_scalars, characters: str = 'uppercase', seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.strings.Strings
+
+   Generate random strings with lengths uniformly distributed between
+   minlen and maxlen, and with characters drawn from a specified set.
+
+   :param minlen: The minimum allowed length of string
+   :type minlen: int_scalars
+   :param maxlen: The maximum allowed length of string
+   :type maxlen: int_scalars
+   :param size: The number of strings to generate
+   :type size: int_scalars
+   :param characters: The set of characters to draw from
+   :type characters: (uppercase, lowercase, numeric, printable, binary)
+   :param seed: Value used to initialize the random number generator
+   :type seed: Union[None, int_scalars], optional
+
+   :returns: The array of random strings
+   :rtype: Strings
+
+   :raises ValueError: Raised if minlen < 0, maxlen < minlen, or size < 0
+
+   .. seealso:: :obj:`random_strings_lognormal`, :obj:`randint`
+
+   .. rubric:: Examples
+
+   >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5)
+   array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U'])
+
+   >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5,
+   ... characters='printable')
+   array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
+
+
+.. py:function:: standard_normal(size: arkouda.dtypes.int_scalars, seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
+
+   Draw real numbers from the standard normal distribution.
+
+   :param size: The number of samples to draw (size of the returned array)
+   :type size: int_scalars
+   :param seed: Value used to initialize the random number generator
+   :type seed: int_scalars
+
+   :returns: The array of random numbers
+   :rtype: pdarray, float64
+
+   :raises TypeError: Raised if size is not an int
+   :raises ValueError: Raised if size < 0
+
+   .. seealso:: :obj:`randint`
+
+   .. rubric:: Notes
+
+   For random samples from :math:`N(\mu, \sigma^2)`, use:
+
+   ``(sigma * standard_normal(size)) + mu``
+
+   .. rubric:: Examples
+
+   >>> ak.standard_normal(3,1)
+   array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
+
+
+.. py:function:: uniform(size: arkouda.dtypes.int_scalars, low: arkouda.dtypes.numeric_scalars = float(0.0), high: arkouda.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
+
+   Generate a pdarray with uniformly distributed random float values
+   in a specified range.
+
+   :param low: The low value (inclusive) of the range, defaults to 0.0
+   :type low: float_scalars
+   :param high: The high value (inclusive) of the range, defaults to 1.0
+   :type high: float_scalars
+   :param size: The length of the returned array
+   :type size: int_scalars
+   :param seed: Value used to initialize the random number generator
+   :type seed: int_scalars, optional
+
+   :returns: Values drawn uniformly from the specified range
+   :rtype: pdarray, float64
+
+   :raises TypeError: Raised if dtype.name not in DTypes, size is not an int, or if
+       either low or high is not an int or float
+   :raises ValueError: Raised if size < 0 or if high < low
+
+   .. rubric:: Notes
+
+   The logic for uniform is delegated to the ak.randint method which
+   is invoked with a dtype of float64
+
+   .. rubric:: Examples
+
+   >>> ak.uniform(3)
+   array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
+
+   >>> ak.uniform(size=3,low=0,high=5,seed=0)
+   array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
+
+
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+
+   Create a pdarray filled with zeros.
+
+   :param size: Size of the array (only rank-1 arrays supported)
+   :type size: int_scalars
+   :param dtype: Type of resulting array, default float64
+   :type dtype: all_scalars
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
+
+   :returns: Zeros of the requested size and dtype
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the supplied dtype is not supported or if the size
+       parameter is neither an int nor a str that is parseable to an int.
+
+   .. seealso:: :obj:`ones`, :obj:`zeros_like`
+
+   .. rubric:: Examples
+
+   >>> ak.zeros(5, dtype=ak.int64)
+   array([0, 0, 0, 0, 0])
+
+   >>> ak.zeros(5, dtype=ak.float64)
+   array([0, 0, 0, 0, 0])
+
+   >>> ak.zeros(5, dtype=ak.bool)
+   array([False, False, False, False, False])
+
+
+.. py:function:: zeros_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Create a zero-filled pdarray of the same size and dtype as an existing
+   pdarray.
+
+   :param pda: Array to use for size and dtype
+   :type pda: pdarray
+
+   :returns: Equivalent to ak.zeros(pda.size, pda.dtype)
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the pda parameter is not a pdarray.
+
+   .. seealso:: :obj:`zeros`, :obj:`ones_like`
+
+   .. rubric:: Examples
+
+   >>> zeros = ak.zeros(5, dtype=ak.int64)
+   >>> ak.zeros_like(zeros)
+   array([0, 0, 0, 0, 0])
+
+   >>> zeros = ak.zeros(5, dtype=ak.float64)
+   >>> ak.zeros_like(zeros)
+   array([0, 0, 0, 0, 0])
+
+   >>> zeros = ak.zeros(5, dtype=ak.bool)
+   >>> ak.zeros_like(zeros)
+   array([False, False, False, False, False])
 
 

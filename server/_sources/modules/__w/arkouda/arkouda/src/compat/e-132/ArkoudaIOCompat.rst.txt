@@ -1,0 +1,43 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaIOCompat
+
+ArkoudaIOCompat
+===============
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaIOCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaIOCompat;
+
+.. function:: proc formatString(input) throws
+
+.. function:: proc formatJson(input): string throws
+
+.. function:: proc formatJson(input: string, vals ...?): string throws
+
+.. method:: proc string.doFormat(vals ...?): string throws
+
+.. function:: proc jsonToTupleCompat(json: string, type t) throws
+
+.. function:: proc jsonToPdArrayCompat(json: string, size: int) throws
+
+.. function:: proc writefCompat(fmt: ?t, const args ...?k) where isStringType(t) || isBytesType(t)
+
+.. function:: proc readfCompat(f: file, str: string, ref obj) throws
+
+.. function:: proc getByteOrderCompat() throws
+
+.. function:: proc fileIOReaderCompat(infile) throws
+
+.. function:: proc binaryCheckCompat(reader) throws
+
+.. function:: proc writeUsedModulesJson(ref mods: set(string))
+

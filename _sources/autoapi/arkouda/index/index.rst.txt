@@ -25,18 +25,24 @@ Classes
 
       This is maintained to support older code
 
-   .. py:property:: shape
-
-
    .. py:property:: is_unique
 
       Property indicating if all values in the index are unique
       :rtype: bool - True if all values are unique, False otherwise.
 
+   .. py:property:: shape
+
+
    .. py:attribute:: objType
       :value: 'Index'
 
       
+
+   .. py:method:: argsort(ascending=True)
+
+
+   .. py:method:: concat(other)
+
 
    .. py:method:: factory(index)
       :staticmethod:
@@ -46,20 +52,25 @@ Classes
       :classmethod:
 
 
-   .. py:method:: to_pandas()
+   .. py:method:: is_registered()
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
-   .. py:method:: to_ndarray()
-
-
-   .. py:method:: to_list()
-
-
-   .. py:method:: set_dtype(dtype)
-
-      Change the data type of the index
-
-      Currently only aku.ip_address and ak.array are supported.
+   .. py:method:: lookup(key)
 
 
    .. py:method:: register(user_defined_name)
@@ -85,198 +96,6 @@ Classes
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
-
-
-   .. py:method:: unregister()
-
-      Unregister this Index object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
-
-      :raises RegistrationError: If the object is already unregistered or if there is a server error
-          when attempting to unregister
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: is_registered()
-
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: numpy.bool
-
-      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: to_dict(label)
-
-
-   .. py:method:: argsort(ascending=True)
-
-
-   .. py:method:: concat(other)
-
-
-   .. py:method:: lookup(key)
-
-
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
-
-      Save the Index to HDF5.
-      The object can be saved to a collection of files or single file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-
-      .. rubric:: Notes
-
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-
-   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'index', repack: bool = True)
-
-      Overwrite the dataset with the name provided with this Index object. If
-      the dataset does not exist it is added.
-
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files
-      :type dataset: str
-      :param repack: Default: True
-                     HDF5 does not release memory on delete. When True, the inaccessible
-                     data (that was overwritten) is removed. When False, the data remains, but is
-                     inaccessible. Setting to false will yield better performance, but will cause
-                     file sizes to expand.
-      :type repack: bool
-
-      :rtype: str - success message if successful
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the index
-
-      .. rubric:: Notes
-
-      - If file does not contain File_Format attribute to indicate how it was saved,
-        the file name is checked for _LOCALE#### to determine if it is distributed.
-      - If the dataset provided does not exist, it will be added
-      - Because HDF5 deletes do not release memory, this will create a copy of the
-        file with the new data
-
-
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None)
-
-      Save the Index to Parquet. The result is a collection of files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path. Each locale saves its chunk of the array to its
-      corresponding file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Sets the compression type used with Parquet files
-      :type compression: str (Optional)
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-
-      .. rubric:: Notes
-
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`.
-      - 'append' write mode is supported, but is not efficient.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-
-   .. py:method:: to_csv(prefix_path: str, dataset: str = 'index', col_delim: str = ',', overwrite: bool = False)
-
-              Write Index to CSV file(s). File will contain a single column with the pdarray data.
-              All CSV Files written by Arkouda include a header denoting data types of the columns.
-
-              Parameters
-              -----------
-              prefix_path: str
-                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-                  when they are written to disk.
-              dataset: str
-                  Column name to save the pdarray under. Defaults to "array".
-              col_delim: str
-                  Defaults to ",". Value to be used to separate columns within the file.
-                  Please be sure that the value used DOES NOT appear in your dataset.
-              overwrite: bool
-                  Defaults to False. If True, any existing files matching your provided prefix_path will
-                  be overwritten. If False, an error will be returned if existing files are found.
-
-              Returns
-              --------
-              str reponse message
-
-              Raises
-              ------
-              ValueError
-                  Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist
-              RuntimeError
-                  Raised if one or more of the specified files cannot be opened.
-                  If `allow_errors` is true this may be raised if no values are returned
-                  from the server.
-              TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server
-
-              Notes
-              ------
-              - CSV format is not currently supported by load/load_all operations
-              - The column delimiter is expected to be the same for column names and data
-              - Be sure that column delimiters are not found within your data.
-              - All CSV files must delimit rows using newline (`
-      `) at this time.
-
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -333,24 +152,6 @@ Classes
       file format.
 
 
-
-.. py:class:: MultiIndex(values, name=None, names=None)
-
-
-   Bases: :py:obj:`Index`
-
-   .. py:property:: index
-
-      This is maintained to support older code
-
-   .. py:attribute:: objType
-      :value: 'MultiIndex'
-
-      
-
-   .. py:method:: to_pandas()
-
-
    .. py:method:: set_dtype(dtype)
 
       Change the data type of the index
@@ -358,81 +159,52 @@ Classes
       Currently only aku.ip_address and ak.array are supported.
 
 
-   .. py:method:: to_ndarray()
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'index', col_delim: str = ',', overwrite: bool = False)
+
+              Write Index to CSV file(s). File will contain a single column with the pdarray data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the pdarray under. Defaults to "array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
 
 
-   .. py:method:: to_list()
 
-
-   .. py:method:: register(user_defined_name)
-
-      Register this Index object and underlying components with the Arkouda server
-
-      :param user_defined_name: user defined name the Index is to be registered under,
-                                this will be the root name for underlying components
-      :type user_defined_name: str
-
-      :returns: The same Index which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support
-                a fluid programming style.
-                Please note you cannot register two different Indexes with the same name.
-      :rtype: MultiIndex
-
-      :raises TypeError: Raised if user_defined_name is not a str
-      :raises RegistrationError: If the server was unable to register the Index with the user_defined_name
-
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: unregister()
-
-      Unregister this Index object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
-
-      :raises RegistrationError: If the object is already unregistered or if there is a server error
-          when attempting to unregister
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: is_registered()
-
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: numpy.bool
-
-      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: to_dict(labels)
-
-
-   .. py:method:: argsort(ascending=True)
-
-
-   .. py:method:: concat(other)
-
-
-   .. py:method:: lookup(key)
+   .. py:method:: to_dict(label)
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -469,6 +241,234 @@ Classes
       dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
       determine the file format.
+
+
+   .. py:method:: to_list()
+
+
+   .. py:method:: to_ndarray()
+
+
+   .. py:method:: to_pandas()
+
+
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None)
+
+      Save the Index to Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales`` for `file_type='distribute'`.
+      - 'append' write mode is supported, but is not efficient.
+      - If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      - Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+
+   .. py:method:: unregister()
+
+      Unregister this Index object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'index', repack: bool = True)
+
+      Overwrite the dataset with the name provided with this Index object. If
+      the dataset does not exist it is added.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the index
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+      - Because HDF5 deletes do not release memory, this will create a copy of the
+        file with the new data
+
+
+
+.. py:class:: MultiIndex(values, name=None, names=None)
+
+
+   Bases: :py:obj:`Index`
+
+   .. py:property:: index
+
+      This is maintained to support older code
+
+   .. py:attribute:: objType
+      :value: 'MultiIndex'
+
+      
+
+   .. py:method:: argsort(ascending=True)
+
+
+   .. py:method:: concat(other)
+
+
+   .. py:method:: is_registered()
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: lookup(key)
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this Index object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the Index is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same Index which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different Indexes with the same name.
+      :rtype: MultiIndex
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the Index with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: set_dtype(dtype)
+
+      Change the data type of the index
+
+      Currently only aku.ip_address and ak.array are supported.
+
+
+   .. py:method:: to_dict(labels)
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+      Save the Index to HDF5.
+      The object can be saved to a collection of files or single file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+      the file name will be `prefix_path`.
+      - If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      - Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+
+   .. py:method:: to_list()
+
+
+   .. py:method:: to_ndarray()
+
+
+   .. py:method:: to_pandas()
+
+
+   .. py:method:: unregister()
+
+      Unregister this Index object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
 
 
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'index', repack: bool = True)

@@ -51,12 +51,16 @@ Classes
    functions, such as asarray().
 
 
-   .. py:property:: dtype
-      :type: arkouda.array_api._typing.Dtype
+   .. py:property:: T
+      :type: Array
 
 
    .. py:property:: device
       :type: arkouda.array_api._typing.Device
+
+
+   .. py:property:: dtype
+      :type: arkouda.array_api._typing.Dtype
 
 
    .. py:property:: mT
@@ -75,13 +79,7 @@ Classes
       :type: int
 
 
-   .. py:property:: T
-      :type: Array
-
-
-   .. py:method:: tolist()
-
-      Convert the array to a Python list or nested lists
+   .. py:method:: to_device(device: arkouda.array_api._typing.Device, /, stream: None = None) -> Array
 
 
    .. py:method:: to_ndarray()
@@ -89,7 +87,9 @@ Classes
       Convert the array to a numpy ndarray
 
 
-   .. py:method:: to_device(device: arkouda.array_api._typing.Device, /, stream: None = None) -> Array
+   .. py:method:: tolist()
+
+      Convert the array to a Python list or nested lists
 
 
 

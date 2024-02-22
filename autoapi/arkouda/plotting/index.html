@@ -195,9 +195,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../akmath/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akmath</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../akstats/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akstats</span></code></a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../akscipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.akscipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../akscipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.akscipy.special</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../array_api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
 </ul>
 </li>
@@ -238,7 +240,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -291,18 +293,45 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.plotting.plot_dist" title="arkouda.plotting.plot_dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_dist</span></code></a>(b, h[, log, xlabel, newfig])</p></td>
-<td><p>Plot the distribution and cumulative distribution of histogram Data</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.plotting.hist_all" title="arkouda.plotting.hist_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hist_all</span></code></a>(ak_df[, cols])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.plotting.hist_all" title="arkouda.plotting.hist_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hist_all</span></code></a>(ak_df[, cols])</p></td>
 <td><p>Create a grid plot histogramming all numeric columns in ak dataframe</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.plotting.plot_dist" title="arkouda.plotting.plot_dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_dist</span></code></a>(b, h[, log, xlabel, newfig])</p></td>
+<td><p>Plot the distribution and cumulative distribution of histogram Data</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.plotting.hist_all">
+<span class="sig-prename descclassname"><span class="pre">arkouda.plotting.</span></span><span class="sig-name descname"><span class="pre">hist_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ak_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">arkouda.dataframe.DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/plotting.html#hist_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.plotting.hist_all" title="Link to this definition">#</a></dt>
+<dd><p>Create a grid plot histogramming all numeric columns in ak dataframe</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ak_df</strong> (<em>ak.DataFrame</em>) – Full Arkouda DataFrame containing data to be visualized</p></li>
+<li><p><strong>cols</strong> (<em>list</em>) – (Optional) A specified list of columns to be plotted</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function displays the plot.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">arkouda.plotting</span> <span class="kn">import</span> <span class="n">hist_all</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">)),</span>
+<span class="go">                          &quot;b&quot;: ak.array(np.random.randn(100)),</span>
+<span class="go">                          &quot;c&quot;: ak.array(np.random.randn(100)),</span>
+<span class="go">                          &quot;d&quot;: ak.array(np.random.randn(100))</span>
+<span class="go">                          })</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist_all</span><span class="p">(</span><span class="n">ak_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.plotting.plot_dist">
-<span class="sig-prename descclassname"><span class="pre">arkouda.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newfig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.plotting.plot_dist" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newfig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/plotting.html#plot_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.plotting.plot_dist" title="Link to this definition">#</a></dt>
 <dd><p>Plot the distribution and cumulative distribution of histogram Data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -327,33 +356,6 @@ See Examples Below.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">plot_dist</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># to show the plot</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.plotting.hist_all">
-<span class="sig-prename descclassname"><span class="pre">arkouda.plotting.</span></span><span class="sig-name descname"><span class="pre">hist_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ak_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">arkouda.dataframe.DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.plotting.hist_all" title="Link to this definition">#</a></dt>
-<dd><p>Create a grid plot histogramming all numeric columns in ak dataframe</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ak_df</strong> (<em>ak.DataFrame</em>) – Full Arkouda DataFrame containing data to be visualized</p></li>
-<li><p><strong>cols</strong> (<em>list</em>) – (Optional) A specified list of columns to be plotted</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This function displays the plot.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">arkouda.plotting</span> <span class="kn">import</span> <span class="n">hist_all</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">)),</span>
-<span class="go">                          &quot;b&quot;: ak.array(np.random.randn(100)),</span>
-<span class="go">                          &quot;c&quot;: ak.array(np.random.randn(100)),</span>
-<span class="go">                          &quot;d&quot;: ak.array(np.random.randn(100))</span>
-<span class="go">                          })</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hist_all</span><span class="p">(</span><span class="n">ak_df</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -420,8 +422,8 @@ See Examples Below.</p>
 <li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a><ul>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a><ul>
-<li><a class="reference internal" href="#arkouda.plotting.plot_dist"><code class="docutils literal notranslate"><span class="pre">plot_dist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.hist_all"><code class="docutils literal notranslate"><span class="pre">hist_all()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.plotting.plot_dist"><code class="docutils literal notranslate"><span class="pre">plot_dist()</span></code></a></li>
 </ul>
 </li>
 </ul>
