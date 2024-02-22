@@ -54,11 +54,7 @@ def max(
         arr = Array._new(resp)
 
         if keepdims:
-            # TODO: eventually, when broadcasting / handling of singleton dimensions
-            # is implemented more efficiently, this broadcast call won't be necessary
-
-            # see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html
-            return broadcast_to(arr, shape=x.shape)
+            return arr
         else:
             return squeeze(arr, axis)
 
@@ -93,8 +89,7 @@ def mean(
         arr = Array._new(resp)
 
         if keepdims:
-            # TODO: eventually remove 'broadcast_to'. See note in max() function
-            return broadcast_to(arr, shape=x.shape)
+            return arr
         else:
             return squeeze(arr, axis)
 
@@ -129,8 +124,7 @@ def min(
         arr = Array._new(resp)
 
         if keepdims:
-            # TODO: eventually remove 'broadcast_to'. See note in max() function
-            return broadcast_to(arr, shape=x.shape)
+            return arr
         else:
             return squeeze(arr, axis)
 
@@ -173,8 +167,7 @@ def prod(
         arr = Array._new(resp)
 
         if keepdims:
-            # TODO: eventually remove 'broadcast_to'. See note in max() function
-            return broadcast_to(arr, shape=x.shape)
+            return arr
         else:
             return squeeze(arr, axis)
 
@@ -213,8 +206,7 @@ def std(
         arr = Array._new(resp)
 
         if keepdims:
-            # TODO: eventually remove 'broadcast_to'. See note in max() function
-            return broadcast_to(arr, shape=x.shape)
+            return arr
         else:
             return squeeze(arr, axis)
 
@@ -257,8 +249,7 @@ def sum(
         arr = Array._new(resp)
 
         if keepdims:
-            # TODO: eventually remove 'broadcast_to'. See note in max() function
-            return broadcast_to(arr, shape=x.shape)
+            return arr
         else:
             return squeeze(arr, axis)
 
@@ -298,8 +289,7 @@ def var(
         arr = Array._new(resp)
 
         if keepdims:
-            # TODO: eventually remove 'broadcast_to'. See note in max() function
-            return broadcast_to(arr, shape=x.shape)
+            return arr
         else:
             return squeeze(arr, axis)
 

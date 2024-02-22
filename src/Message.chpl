@@ -265,12 +265,13 @@ module Message {
                                     getModuleName(),
                                     "TypeError");
             }
-            
+
             try {
-                return this.val:t; 
+                if t == bool then return this.val.toLower():bool;
+                             else return this.val:t;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as %?. Attempting to cast %s as type %? failed".doFormat(t, this.val, t),
+                throw new owned ErrorWithContext("Parameter cannot be cast as %?. Attempting to cast %s as type %? failed".doFormat(t:string, this.val, t:string),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),

@@ -385,7 +385,11 @@ class Array:
         value: Union[int, float, bool, Array],
         /,
     ) -> None:
-        raise ValueError("Not implemented")
+        if isinstance(key, Array):
+            # TODO: hack for testing
+            self._array[key._array] = value
+        else:
+            self._array[key] = value
 
     def __sub__(self: Array, other: Union[int, float, Array], /) -> Array:
         if isinstance(other, (int, float)):

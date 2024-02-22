@@ -189,7 +189,7 @@ module IndexingMsg
                 idxParam.setVal(idx:string);
                 idxParam.setDType("int");
                 var subArgs = new MessageArgs(new list([arrParam, msgArgs.get("value"), msgArgs.get("dtype"), idxParam]));
-                return setIntIndexToValueMsg(cmd, subArgs, st);
+                return setSliceIndexToValue1DFast(cmd, subArgs, st);
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
@@ -197,7 +197,7 @@ module IndexingMsg
                 idxParam.setVal(idx:string);
                 idxParam.setDType("uint");
                 var subArgs = new MessageArgs(new list([arrParam, msgArgs.get("value"), msgArgs.get("dtype"), idxParam]));
-                return setIntIndexToValueMsg(cmd, subArgs, st);
+                return setIntIndexToValueMsg(cmd, subArgs, st, 1);
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
@@ -565,157 +565,80 @@ module IndexingMsg
     }
 
     /* setIntIndexToValue "a[int] = value" response to __setitem__(int, value) */
-    proc setIntIndexToValueMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND(cmd_prefix="[int]=val-")
+    proc setIntIndexToValueMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        const name = msgArgs.getValueOf("array");
-        const idx = msgArgs.get("idx").getIntValue();
-        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
-        var valueArg = msgArgs.get("value");
-        
+        const name = msgArgs.getValueOf("array"),
+              idx = msgArgs.get("idx").getTuple(nd),
+              dtype = str2dtype(msgArgs.getValueOf("dtype")),
+              valueArg = msgArgs.get("value");
+
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               "%s %s %i %s %s".doFormat(cmd, name, idx, dtype2str(dtype), valueArg.getValue()));
+                               "%s %s %? %s %s".doFormat(cmd, name, idx, dtype2str(dtype), valueArg.getValue()));
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
+        proc setValue(type arrType, type valType): MsgTuple throws {
+            var e = toSymEntry(gEnt, arrType, nd);
+            const val = valueArg.getValueAsType(valType);
+            e.a[(...idx)] = val:arrType;
+
+            const repMsg = "%s success".doFormat(pn);
+            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        proc setBigintValue(type valType): MsgTuple throws {
+            var e = toSymEntry(gEnt, bigint, nd),
+                val = valueArg.getValueAsType(valType):bigint;
+            if e.max_bits != -1 {
+                var max_size = 1:bigint;
+                max_size <<= e.max_bits;
+                max_size -= 1;
+                val &= max_size;
+            }
+            e.a[(...idx)] = val;
+
+            const repMsg = "%s success".doFormat(pn);
+            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
         select (gEnt.dtype, dtype) {
-             when (DType.Int64, DType.Int64) {
-                var e = toSymEntry(gEnt,int);
-                var val = valueArg.getIntValue();
-                e.a[idx] = val;
-             }
-             when (DType.Int64, DType.UInt64) {
-                var e = toSymEntry(gEnt,int);
-                var val = valueArg.getUIntValue();
-                e.a[idx] = val:int;
-             }
-             when (DType.Int64, DType.Float64) {
-                var e = toSymEntry(gEnt,int);
-                var val = valueArg.getRealValue();
-                e.a[idx] = val:int;
-             }
-             when (DType.Int64, DType.Bool) {
-                var e = toSymEntry(gEnt,int);
-                var val = valueArg.getBoolValue();
-                e.a[idx] = val:int;
-             }
-             when (DType.UInt64, DType.Int64) {
-                var e = toSymEntry(gEnt,uint);
-                var val = valueArg.getIntValue();
-                e.a[idx] = val:uint;
-             }
-             when (DType.UInt64, DType.UInt64) {
-                var e = toSymEntry(gEnt,uint);
-                var val = valueArg.getUIntValue();
-                e.a[idx] = val;
-             }
-             when (DType.UInt64, DType.Float64) {
-                var e = toSymEntry(gEnt,uint);
-                var val = valueArg.getRealValue();
-                e.a[idx] = val:uint;
-             }
-             when (DType.UInt64, DType.Bool) {
-                var e = toSymEntry(gEnt,uint);
-                var val = valueArg.getBoolValue();
-                e.a[idx] = val:uint;
-             }
-             when (DType.Float64, DType.Int64) {
-                var e = toSymEntry(gEnt,real);
-                var val = valueArg.getIntValue();
-                e.a[idx] = val;
-             }
-             when (DType.Float64, DType.UInt64) {
-                var e = toSymEntry(gEnt,real);
-                var val = valueArg.getUIntValue();
-                e.a[idx] = val:real;
-             }
-             when (DType.Float64, DType.Float64) {
-                var e = toSymEntry(gEnt,real);
-                var val = valueArg.getRealValue();
-                e.a[idx] = val;
-             }
-             when (DType.Float64, DType.Bool) {
-                var e = toSymEntry(gEnt,real);
-                var b = valueArg.getBoolValue();
-                var val:real;
-                if b {val = 1.0;} else {val = 0.0;}
-                e.a[idx] = val;
-             }
-             when (DType.Bool, DType.Int64) {
-                var e = toSymEntry(gEnt,bool);
-                var val = valueArg.getIntValue();
-                e.a[idx] = val:bool;
-             }
-             when (DType.Bool, DType.UInt64) {
-                var e = toSymEntry(gEnt,bool);
-                var val = valueArg.getUIntValue();
-                e.a[idx] = val:bool;
-             }
-             when (DType.Bool, DType.Float64) {
-                var e = toSymEntry(gEnt,bool);
-                var val = valueArg.getRealValue();
-                e.a[idx] = val:bool;
-             }
-             when (DType.Bool, DType.Bool) {
-                var e = toSymEntry(gEnt,bool);
-                var val = valueArg.getBoolValue();
-                e.a[idx] = val;
-             }
-            when (DType.BigInt, DType.BigInt) {
-                var e = toSymEntry(gEnt,bigint);
-                var val = valueArg.getBigIntValue();
-                if e.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= e.max_bits;
-                    max_size -= 1;
-                    val &= max_size;
-                }
-                e.a[idx] = val;
-             }
-            when (DType.BigInt, DType.Int64) {
-                var e = toSymEntry(gEnt,bigint);
-                var val = valueArg.getIntValue():bigint;
-                if e.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= e.max_bits;
-                    max_size -= 1;
-                    val &= max_size;
-                }
-                e.a[idx] = val;
-             }
-            when (DType.BigInt, DType.UInt64) {
-                var e = toSymEntry(gEnt,bigint);
-                var val = valueArg.getUIntValue():bigint;
-                if e.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= e.max_bits;
-                    max_size -= 1;
-                    val &= max_size;
-                }
-                e.a[idx] = val;
-             }
-            when (DType.BigInt, DType.Bool) {
-                var e = toSymEntry(gEnt,bigint);
-                var val = valueArg.getBoolValue():bigint;
-                if e.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= e.max_bits;
-                    max_size -= 1;
-                    val &= max_size;
-                }
-                e.a[idx] = val;
-             }
-             otherwise {
-                var errorMsg = notImplementedError(pn,
+            when (DType.Int64, DType.Int64) do return setValue(int, int);
+            when (DType.Int64, DType.UInt64) do return setValue(int, uint);
+            when (DType.Int64, DType.Float64) do return setValue(int, real);
+            when (DType.Int64, DType.Bool) do return setValue(int, bool);
+            when (DType.UInt64, DType.Int64) do return setValue(uint, int);
+            when (DType.UInt64, DType.UInt64) do return setValue(uint, uint);
+            when (DType.UInt64, DType.Float64) do return setValue(uint, real);
+            when (DType.UInt64, DType.Bool) do return setValue(uint, bool);
+            when (DType.Float64, DType.Int64) do return setValue(real, int);
+            when (DType.Float64, DType.UInt64) do return setValue(real, uint);
+            when (DType.Float64, DType.Float64) do return setValue(real, real);
+            when (DType.Float64, DType.Bool) {
+                var e = toSymEntry(gEnt,real, nd);
+                e.a[(...idx)] = if valueArg.getBoolValue() then 1.0 else 0.0;
+
+                const repMsg = "%s success".doFormat(pn);
+                imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+                return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            when (DType.Bool, DType.Int64) do return setValue(bool, int);
+            when (DType.Bool, DType.UInt64) do return setValue(bool, uint);
+            when (DType.Bool, DType.Float64) do return setValue(bool, real);
+            when (DType.Bool, DType.Bool) do return setValue(bool, bool);
+            when (DType.BigInt, DType.BigInt) do return setBigintValue(bigint);
+            when (DType.BigInt, DType.Int64) do return setBigintValue(int);
+            when (DType.BigInt, DType.UInt64) do return setBigintValue(uint);
+            when (DType.BigInt, DType.Bool) do return setBigintValue(bool);
+            otherwise {
+                const errorMsg = notImplementedError(pn,
                                     "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
-             }
+            }
         }
-
-        repMsg = "%s success".doFormat(pn);
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
 
     /* setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value) */
@@ -1115,7 +1038,93 @@ module IndexingMsg
     }
 
     /* setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value) */
-    proc setSliceIndexToValueMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND(cmd_prefix="[slice]=val-")
+    proc setSliceIndexToValueMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        if nd == 1 then return setSliceIndexToValue1DFast(cmd, msgArgs, st);
+
+        param pn = Reflection.getRoutineName();
+        const name = msgArgs.getValueOf("array"),
+              starts = msgArgs.get("starts").getTuple(nd),
+              stops = msgArgs.get("stops").getTuple(nd),
+              strides = msgArgs.get("strides").getTuple(nd),
+              dtype = str2dtype(msgArgs.getValueOf("dtype")),
+              valueArg = msgArgs.get("value");
+
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "%s %s %? %? %? %s %s".doFormat(cmd, name, starts, stops, strides,
+                                  dtype2str(dtype), valueArg.getValue()));
+
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+        var sliceRanges: nd * stridableRange;
+        for param dim in 0..<nd do
+            sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
+        const sliceDom = {(...sliceRanges)};
+
+        proc sliceAssign(type arrType, type valType): MsgTuple throws {
+            var e = toSymEntry(gEnt, arrType, nd);
+            const value = valueArg.getValueAsType(valType);
+            e.a[sliceDom] = value:arrType;
+
+            const repMsg = "%s success".doFormat(pn);
+            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        proc sliceAssignBigint(type valType): MsgTuple throws {
+            var e = toSymEntry(gEnt, bigint, nd),
+                value = valueArg.getValueAsType(valType):bigint;
+            if e.max_bits != -1 {
+                var max_size = 1:bigint;
+                max_size <<= e.max_bits;
+                max_size -= 1;
+                value &= max_size;
+            }
+            e.a[sliceDom] = value;
+
+            const repMsg = "%s success".doFormat(pn);
+            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select (gEnt.dtype, dtype) {
+            when (DType.Int64, DType.Int64) do return sliceAssign(int, int);
+            when (DType.Int64, DType.UInt64) do return sliceAssign(int, uint);
+            when (DType.Int64, DType.Float64) do return sliceAssign(int, real);
+            when (DType.Int64, DType.Bool) do return sliceAssign(int, bool);
+            when (DType.UInt64, DType.Int64) do return sliceAssign(uint, int);
+            when (DType.UInt64, DType.UInt64) do return sliceAssign(uint, uint);
+            when (DType.UInt64, DType.Float64) do return sliceAssign(uint, real);
+            when (DType.UInt64, DType.Bool) do return sliceAssign(uint, bool);
+            when (DType.Float64, DType.Int64) do return sliceAssign(real, int);
+            when (DType.Float64, DType.UInt64) do return sliceAssign(real, uint);
+            when (DType.Float64, DType.Float64) do return sliceAssign(real, real);
+            when (DType.Float64, DType.Bool) {
+                var e = toSymEntry(gEnt,real, nd);
+                e.a[sliceDom] = if valueArg.getBoolValue() then 1.0 else 0.0;
+
+                const repMsg = "%s success".doFormat(pn);
+                imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+                return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            when (DType.Bool, DType.Int64) do return sliceAssign(bool, int);
+            when (DType.Bool, DType.UInt64) do return sliceAssign(bool, uint);
+            when (DType.Bool, DType.Float64) do return sliceAssign(bool, real);
+            when (DType.Bool, DType.Bool) do return sliceAssign(bool, bool);
+            when (DType.BigInt, DType.BigInt) do return sliceAssignBigint(bigint);
+            when (DType.BigInt, DType.Int64) do return sliceAssignBigint(int);
+            when (DType.BigInt, DType.UInt64) do return sliceAssignBigint(uint);
+            when (DType.BigInt, DType.Bool) do return sliceAssignBigint(bool);
+            otherwise {
+                const errorMsg = notImplementedError(pn,
+                                        "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
+                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
+    proc setSliceIndexToValue1DFast(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         const name = msgArgs.getValueOf("array");
@@ -1542,9 +1551,7 @@ module IndexingMsg
     registerFunction("arrayViewMixedIndex", arrayViewMixedIndexMsg, getModuleName());
     registerFunction("arrayViewIntIndexAssign", arrayViewIntIndexAssignMsg, getModuleName());
     registerFunction("[pdarray]", pdarrayIndexMsg, getModuleName());
-    registerFunction("[int]=val", setIntIndexToValueMsg, getModuleName());
     registerFunction("[pdarray]=val", setPdarrayIndexToValueMsg, getModuleName());
     registerFunction("[pdarray]=pdarray", setPdarrayIndexToPdarrayMsg, getModuleName());
-    registerFunction("[slice]=val", setSliceIndexToValueMsg, getModuleName());
     registerFunction("[slice]=pdarray", setSliceIndexToPdarrayMsg, getModuleName());
 }
