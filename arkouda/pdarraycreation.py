@@ -954,36 +954,9 @@ def randint(
     >>> ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
     array([False, True, True, True, True, False, True, True, True, True])
     """
-    shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
-    if isinstance(size, tuple):
-        shape = cast(Tuple, size)
-        full_size = 1
-        for s in cast(Tuple, shape):
-            full_size *= s
-        ndim = len(shape)
-    else:
-        full_size = cast(int, size)
-        shape = full_size
-        ndim = 1
+    from arkouda.random import randint
 
-    if full_size < 0 or ndim < 1 or high < low:
-        raise ValueError("size must be >= 0, ndim >= 1, and high >= low")
-    dtype = akdtype(dtype)  # normalize dtype
-    # check dtype for error
-    if dtype.name not in DTypes:
-        raise TypeError(f"unsupported dtype {dtype}")
-
-    repMsg = generic_msg(
-        cmd=f"randint{ndim}D",
-        args={
-            "shape": shape,
-            "dtype": dtype.name,
-            "low": NUMBER_FORMAT_STRINGS[dtype.name].format(low),
-            "high": NUMBER_FORMAT_STRINGS[dtype.name].format(high),
-            "seed": seed,
-        },
-    )
-    return create_pdarray(repMsg)
+    return randint(low=low, high=high, size=size, dtype=dtype, seed=seed)
 
 
 @typechecked
@@ -1076,13 +1049,9 @@ def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) ->
     >>> ak.standard_normal(3,1)
     array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
     """
-    if size < 0:
-        raise ValueError("The size parameter must be > 0")
-    return create_pdarray(
-        generic_msg(
-            cmd="randomNormal", args={"size": NUMBER_FORMAT_STRINGS["int64"].format(size), "seed": seed}
-        )
-    )
+    from arkouda.random import standard_normal
+
+    return standard_normal(size=size, seed=seed)
 
 
 @typechecked
