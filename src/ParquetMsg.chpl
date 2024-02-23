@@ -929,27 +929,30 @@ module ParquetMsg {
           var totalBytes = fillSegmentsAndPersistData(distFiles, entrySeg, externalData, valsRead, dsetname, sizes, len, numRowGroups);
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
           
-          var entryVal = createSymEntry(byteSizes, uint(8));
+          var entryVal = createSymEntry(totalBytes, uint(8));
 
-          coforall loc in distFiles.targetLocales() do on loc {
-            var locValsRead = valsRead[valsRead.localSubdomain()];
-            var locNumRowGroups = numRowGroups[numRowGroups.localSubdomain()];
+          coforall loc in distFiles.targetLocales() with (ref externalData) do on loc {
+            var locValsRead: [valsRead.localSubdomain()] [0..#maxRowGroups] int = valsRead[valsRead.localSubdomain()];
+            var locNumRowGroups: [numRowGroups.localSubdomain()] int = numRowGroups[numRowGroups.localSubdomain()];
+            // TODO: This corresponds to nothing, needs to be start of the file 
             var entryIdx = 0;
-            for i in locValsRead.domain {
+            for i in locNumRowGroups.domain {
               var numRgs = locNumRowGroups[i];
               for rg in 0..#numRgs {
-                ref currRg = externalData[i][rg];
-                for j in 0..#locValsRead[i][rg] {
-                  ref curr = currRg[j];
-                  for idx in 0..#curr.len {
-                    entryVal.a[entryIdx] = curr.ptr[idx];
-                    entryIdx +=1;
+                var numRead = locValsRead[i][rg];
+                for idx in 0..#numRead {
+                  ref curr = externalData[i][rg][idx];
+                  for j in 0..#curr.len {
+                    entryVal.a[entryIdx] = curr.ptr[j];
+                    entryIdx+=1;
                   }
                   entryIdx+=1;
+                  writeln(curr.len);
                 }
               }
             }
           }
+          // TODO: Need to free c++ memory for the maps and malloced stuff
           
           /*var entryIdx = 0;
           valsIdx = 0;
@@ -965,7 +968,6 @@ module ParquetMsg {
             }
             valsIdx+=1;
             }*/
-          writeln(totalBytes);
           
           /*
           var tempVals: [0..#(+ reduce numRowGroups)] c_ptr(MyByteArray);
