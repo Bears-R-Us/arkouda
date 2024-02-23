@@ -188,7 +188,8 @@ module NumPyDType
     /*
       Return the dtype that can store the result of
       an operation between two dtypes for the following
-      operations: +, -, *, **, //, %, &, |, ^, <<, >>,
+      operations: ``+``, ``-``, ``*``, ``**``, ``//``, ``%``,
+      ``&``, ``|``, ``^``, ``<<``, ``>>``
 
       follows Numpy's rules for type promotion
       (of which the array-api promotion rules are a subset)

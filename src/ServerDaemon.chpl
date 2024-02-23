@@ -271,7 +271,7 @@ module ServerDaemon {
                 sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                'writing serverConnectionInfo to %?'.doFormat(serverConnectionInfo));
                 try! {
-                    var w = open(serverConnectionInfo, ioMode.cw).writer();
+                    var w = open(serverConnectionInfo, ioMode.cw).writer(locking=false);
                     w.writef("%s %i %s\n",serverHostname,ServerPort,this.connectUrl);
                 }
             }

@@ -193,6 +193,7 @@ ARKOUDA_SUPPORTED_NUMBERS = (
     np.int32,
     np.int64,
     float,
+    np.float32,
     np.float64,
     np.uint8,
     np.uint16,

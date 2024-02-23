@@ -458,7 +458,7 @@ module Message {
     proc parseParameter(payload:string) throws {
         var p: ParameterObj;
         var newmem = openMemFile();
-        newmem.writer().write(payload);
+        newmem.writer(locking=false).write(payload);
         try {
           readfCompat(newmem, "%?", p);
         } catch bfe : BadFormatError {
@@ -492,8 +492,8 @@ module Message {
      */
     proc deserialize(ref msg: RequestMsg, request: string) throws {
         var newmem = openMemFile();
-        newmem.writer().write(request);
-        var nreader = newmem.reader();
+        newmem.writer(locking=false).write(request);
+        var nreader = newmem.reader(locking=false);
         try {
             readfCompat(newmem, "%?", msg);
         } catch bfe : BadFormatError {
@@ -526,10 +526,10 @@ module Message {
     */
     proc parseJsonTuple(json: string, param size: int): size*int throws {
         var f = openMemFile();
-        var w = f.writer();
+        var w = f.writer(locking=false);
         w.write(json);
         w.close();
-        var r = f.reader(),
+        var r = f.reader(locking=false),
             t: size*int,
             first = true;
 

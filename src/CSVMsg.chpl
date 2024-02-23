@@ -66,8 +66,7 @@ module CSVMsg {
 
         // open file and determine if header exists.
         var idx = 0;
-        var csvFile = open(filename, ioMode.r);
-        var reader = csvFile.reader();
+        var reader = openReader(filename);
         var lines = reader.lines().strip();
         if lines[0] == CSV_HEADER_OPEN {
             idx = 3; // set to first line after header
@@ -75,8 +74,6 @@ module CSVMsg {
 
         var col_delim: string = msgArgs.getValueOf("col_delim");
         var column_names = lines[idx].split(col_delim);
-        reader.close();
-        csvFile.close();
         return new MsgTuple(formatJson(column_names), MsgType.NORMAL);
 
     }
@@ -202,7 +199,7 @@ module CSVMsg {
             
             // create the file to write to
             var csvFile = open(localeFilename, ioMode.cw);
-            var writer = csvFile.writer();
+            var writer = csvFile.writer(locking=false);
 
             // write the header
             writer.write(CSV_HEADER_OPEN + LINE_DELIM);
@@ -274,8 +271,7 @@ module CSVMsg {
                            errorClass="FileNotFoundError");
         }
 
-        var csvFile = open(filename, ioMode.r);
-        var reader = csvFile.reader();
+        var reader = openReader(filename);
         var lines = reader.lines();
         var hasHeader = false;
         var dtype_idx = 0;
@@ -300,7 +296,6 @@ module CSVMsg {
         var row_ct: int = lines.size - data_start_offset;
 
         reader.close();
-        csvFile.close();
 
         var dtypes: [0..#datasets.size] string;
         forall (i, dset) in zip(0..#datasets.size, datasets) {
@@ -336,9 +331,7 @@ module CSVMsg {
                              "File %s does not contain data for this dataset, skipping".doFormat(filename));
                     continue;
                 } else {
-                    var csvFile = open(filename, ioMode.r);
-                    var reader = csvFile.reader();
-                    var lines = reader.lines().strip();
+                    var lines = openReader(filename).lines().strip();
                     var data_offset = 1;
                     if hasHeaders {
                         data_offset  = 4;
@@ -373,8 +366,6 @@ module CSVMsg {
                             }
                         }
                     }
-                    reader.close();
-                    csvFile.close();
                 }
             }
         }
