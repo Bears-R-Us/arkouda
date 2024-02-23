@@ -2028,9 +2028,12 @@ int cpp_getNumRowGroups(int64_t readerIdx) {
   return file_metadata->num_row_groups();
 }
 
-void cpp_copyStringArr(void* chpl_arr, void* string_values, int64_t numElems, int64_t startIdx) {
-  auto chpl_ptr = (unsigned char*)chpl_arr;
-  auto string_vals = (parquet::ByteArray*)string_values;
+void cpp_freeMapValues(void* row) {
+  auto curr = static_cast<parquet::ByteArray*>(row);
+  delete curr;
+  globalColumnReaders.clear();
+  globalRowGroupReaders.clear();
+  globalFiles.clear();
 }
 
 /*
@@ -2170,5 +2173,9 @@ extern "C" {
 
   int c_getNumRowGroups(int64_t readerIdx) {
     return cpp_getNumRowGroups(readerIdx);
+  }
+
+  void c_freeMapValues(void* row) {
+    cpp_freeMapValues(row);
   }
 }

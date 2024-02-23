@@ -794,7 +794,6 @@ module ParquetMsg {
               entryIdx+=1;
             }
             entryIdx+=1;
-            writeln(curr.len);
           }
         }
       }
@@ -953,6 +952,7 @@ module ParquetMsg {
           extern proc c_openFile(filename, idx);
           extern proc c_createRowGroupReader(rowGroup, readerIdx);
           extern proc c_createColumnReader(colname, readerIdx);
+          extern proc c_freeMapValues(rowToFree);
           extern proc c_readParquetColumnChunks(filename, batchSize,
                                       numElems, readerIdx, numRead): c_ptr(void);
 
@@ -975,6 +975,13 @@ module ParquetMsg {
           var entryVal = createSymEntry(totalBytes, uint(8));
 
           copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups);
+
+          for i in externalData.domain {
+            for j in externalData[i].domain {
+              if valsRead[i][j] > 0 then
+                c_freeMapValues(externalData[i][j]);
+            }
+          }
           // TODO: Need to free c++ memory for the maps and malloced stuff
           
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
