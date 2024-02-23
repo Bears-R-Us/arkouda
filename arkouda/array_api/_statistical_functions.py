@@ -12,7 +12,7 @@ from ._dtypes import (
     # complex128,
 )
 from ._array_object import Array
-from ._manipulation_functions import broadcast_to, squeeze
+from ._manipulation_functions import squeeze
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union
 
@@ -21,7 +21,8 @@ if TYPE_CHECKING:
 
 from arkouda.numeric import cast as akcast
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import parse_single_value
+from arkouda.pdarrayclass import parse_single_value, create_pdarray
+from arkouda.pdarraycreation import scalar_array
 
 
 def max(
@@ -49,9 +50,9 @@ def max(
     )
 
     if axis is None:
-        return Array._new(parse_single_value(resp))
+        return Array._new(scalar_array(parse_single_value(resp)))
     else:
-        arr = Array._new(resp)
+        arr = Array._new(create_pdarray(resp))
 
         if keepdims:
             return arr
@@ -80,13 +81,14 @@ def mean(
             "comp": "mean",
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "ddof": 0,
         },
     )
 
     if axis is None:
-        return Array._new(parse_single_value(resp))
+        return Array._new(scalar_array(parse_single_value(resp)))
     else:
-        arr = Array._new(resp)
+        arr = Array._new(create_pdarray(resp))
 
         if keepdims:
             return arr
@@ -112,16 +114,16 @@ def min(
         cmd=f"reduce{x.ndim}D",
         args={
             "x": x._array,
-            "op": "max",
+            "op": "min",
             "nAxes": len(axis_list),
             "axis": axis_list,
         },
     )
 
     if axis is None:
-        return Array._new(parse_single_value(resp))
+        return Array._new(scalar_array(parse_single_value(resp)))
     else:
-        arr = Array._new(resp)
+        arr = Array._new(create_pdarray(resp))
 
         if keepdims:
             return arr
@@ -155,16 +157,16 @@ def prod(
         cmd=f"reduce{x.ndim}D",
         args={
             "x": x_op,
-            "op": "max",
+            "op": "prod",
             "nAxes": len(axis_list),
             "axis": axis_list,
         },
     )
 
     if axis is None:
-        return Array._new(parse_single_value(resp))
+        return Array._new(scalar_array(parse_single_value(resp)))
     else:
-        arr = Array._new(resp)
+        arr = Array._new(create_pdarray(resp))
 
         if keepdims:
             return arr
@@ -201,9 +203,9 @@ def std(
     )
 
     if axis is None:
-        return Array._new(parse_single_value(resp))
+        return Array._new(scalar_array(parse_single_value(resp)))
     else:
-        arr = Array._new(resp)
+        arr = Array._new(create_pdarray(resp))
 
         if keepdims:
             return arr
@@ -244,9 +246,9 @@ def sum(
     )
 
     if axis is None:
-        return Array._new(parse_single_value(resp))
+        return Array._new(scalar_array(parse_single_value(resp)))
     else:
-        arr = Array._new(resp)
+        arr = Array._new(create_pdarray(resp))
 
         if keepdims:
             return arr
@@ -284,9 +286,9 @@ def var(
     )
 
     if axis is None:
-        return Array._new(parse_single_value(resp))
+        return Array._new(scalar_array(parse_single_value(resp)))
     else:
-        arr = Array._new(resp)
+        arr = Array._new(create_pdarray(resp))
 
         if keepdims:
             return arr

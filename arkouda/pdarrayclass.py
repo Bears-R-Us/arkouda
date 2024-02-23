@@ -744,7 +744,9 @@ class pdarray:
                     raise IndexError(f"index {orig_key} is out of bounds with size {self.size}")
             elif isinstance(key, pdarray):
                 if isinstance(value, pdarray):
-                    generic_msg(cmd="[pdarray]=pdarray", args={"array": self, "idx": key, "value": value})
+                    generic_msg(
+                        cmd="[pdarray]=pdarray", args={"array": self, "idx": key, "value": value}
+                    )
                 else:
                     generic_msg(
                         cmd="[pdarray]=val",
@@ -802,7 +804,8 @@ class pdarray:
                             k += int(self.shape[dim])
                         if k < 0 or k >= int(self.shape[dim]):
                             raise IndexError(
-                                f"index {k} is out of bounds in dimension {dim} with size {self.shape[dim]}"
+                                f"index {k} is out of bounds in dimension" +
+                                f"{dim} with size {self.shape[dim]}"
                             )
                         else:
                             # treat this as a single element slice
@@ -834,8 +837,9 @@ class pdarray:
                         },
                     )
             else:
-                raise TypeError(f"Unhandled key type for ND arrays: {key} ({type(key)})")
-
+                raise TypeError(
+                    f"Unhandled key type for ND arrays: {key} ({type(key)})"
+                )
 
     @typechecked
     def fill(self, value: numeric_scalars) -> None:

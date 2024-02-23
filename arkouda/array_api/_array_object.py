@@ -37,6 +37,8 @@ if TYPE_CHECKING:
 import arkouda as ak
 import numpy as np
 
+from arkouda.pdarraycreation import scalar_array
+
 from arkouda import array_api
 
 
@@ -304,12 +306,18 @@ class Array:
     def __eq__(self: object, other: object, /) -> bool:
         if isinstance(other, Array) and isinstance(self, Array):
             return self._array == other._array
+        elif isinstance(self, Array) and self._has_single_elem():
+            print(self._array)
+            print(type(self._array))
+            return self._array[0] == other
         else:
             raise ValueError("Not implemented")
 
     def __float__(self: Array, /) -> float:
-        # TODO: retrieve the value from a 0D array as a float
-        return 1.0
+        if self._has_single_elem():
+            return float(self._array[0])
+        else:
+            raise ValueError("cannot convert non-scalar array to float")
 
     def __floordiv__(self: Array, other: Union[int, float, Array], /) -> Array:
         return self
@@ -322,17 +330,22 @@ class Array:
         key: Union[int, slice, Tuple[Union[int, slice], ...], Array],
         /,
     ) -> Array:
-        if isinstance(key, Array):
-            # TODO: hack for testing
-            return Array._new(self._array[key._array])
+        k = key._array if isinstance(key, Array) else key
+
+        a = self._array[k]
+        if isinstance(a, ak.pdarray):
+            return Array._new(a)
         else:
-            return Array._new(self._array[key])
+            return Array._new(scalar_array(a))
 
     def __gt__(self: Array, other: Union[int, float, Array], /) -> Array:
         return self
 
     def __int__(self: Array, /) -> int:
-        return 0
+        if self._has_single_elem():
+            return int(self._array[0])
+        else:
+            raise ValueError("cannot convert non-scalar array to int")
 
     def __index__(self: Array, /) -> int:
         return 0
@@ -488,6 +501,9 @@ class Array:
 
     def to_device(self: Array, device: Device, /, stream: None = None) -> Array:
         raise ValueError("Not implemented")
+
+    def _has_single_elem(self: Array, /) -> bool:
+        return self._array.shape == [] or self._array.size == 1
 
     @property
     def dtype(self) -> Dtype:

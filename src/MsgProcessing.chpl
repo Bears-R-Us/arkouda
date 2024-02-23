@@ -68,6 +68,7 @@ module MsgProcessing
     // used for "zero-dimensional" array api scalars
     proc createMsg0D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const dtype = str2dtype(msgArgs.getValueOf("dtype")),
+              valueArg = msgArgs.get("value"),
               rname = st.nextName();
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -81,6 +82,22 @@ module MsgProcessing
         e.shape = "[]";
         e.ndim = 1; // this is 1 rather than 0 s.t. calls to other message handlers treat it as a 1D
                     // array (e.g., we should call 'set1D', not 'set0D' on this array)
+
+        proc setValue(type t) throws do
+            toSymEntry(e, t, 1).a[0] = valueArg.getValueAsType(t);
+
+        select dtype {
+            when DType.Int64 do setValue(int);
+            when DType.UInt64 do setValue(uint);
+            when DType.Float64 do setValue(real);
+            when DType.Bool do setValue(bool);
+            when DType.BigInt do setValue(bigint);
+            otherwise {
+                const errorMsg = unsupportedTypeError(dtype, getRoutineName());
+                mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "created the pdarray %s".doFormat(st.attrib(rname)));

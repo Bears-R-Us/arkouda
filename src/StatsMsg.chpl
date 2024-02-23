@@ -33,7 +33,7 @@ module StatsMsg {
               comp = msgArgs.getValueOf("comp"),
               nAxes = msgArgs.get("nAxes").getIntValue(),
               axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
-              ddof = msgArgs.get("ddof").getIntValue(), // "correction" for std and variance
+              ddof = msgArgs.get("ddof").getRealValue(), // "correction" for std and variance
               rname = st.nextName();
 
         if !computations.contains(comp) {

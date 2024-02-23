@@ -106,7 +106,7 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
 
             if g[0] == "Inc":
                 ndStampPermInc(proc_name, cmd_prefix, modOut, max_dims)
-            if g[0] == "Dec":
+            elif g[0] == "Dec":
                 ndStampPermDec(proc_name, cmd_prefix, modOut, max_dims)
             else:
                 ndStampPermAll(proc_name, cmd_prefix, modOut, max_dims)

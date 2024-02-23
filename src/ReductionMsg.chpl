@@ -77,7 +77,7 @@ module ReductionMsg
 
           const scalarValue = if (t == bool && (op == "min" || op == "max"))
             then "bool " + bool2str(if s == 1 then true else false)
-            else "%s %s".doFormat(type2str(opType), type2fmt(opType)).doFormat(bool2str(s));
+            else "%s %s".doFormat(type2str(opType), type2fmt(opType)).doFormat(s);
           rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
@@ -249,7 +249,6 @@ module ReductionMsg
       param pn = Reflection.getRoutineName();
       const x = msgArgs.getValueOf("x"),
             op = msgArgs.getValueOf("op"),
-            hasAxis = msgArgs.get("hasAxis").getBoolValue(),
             axis = msgArgs.get("axis").getPositiveIntValue(nd),
             rname = st.nextName();
 
@@ -265,8 +264,6 @@ module ReductionMsg
         const eIn = toSymEntry(gEnt, t, nd);
 
         if nd == 1 {
-          if hasAxis then halt("hasAxis must be false for 1D arrays in ", pn, ". ",
-                               "ND arrays should be flattened before calling this function without an axis argument");
           var s: int;
           select op {
             when "argmin" {
