@@ -189,7 +189,7 @@ module IndexingMsg
                 idxParam.setVal(idx:string);
                 idxParam.setDType("int");
                 var subArgs = new MessageArgs(new list([arrParam, msgArgs.get("value"), msgArgs.get("dtype"), idxParam]));
-                return setSliceIndexToValue1DFast(cmd, subArgs, st);
+                return setIntIndexToValueMsg(cmd, subArgs, st, 1);
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
