@@ -725,17 +725,19 @@ module ParquetMsg {
     }
   }
 
+  inline proc getReaderIdx(fileNum: int, rgNum: int) {
+    // we can assume there won't be more than 1000 RGs in a file
+    return (fileNum*1000) + rgNum;
+  }
+
   proc getRowGroupNums(ref distFiles, ref numRowGroups) {
     coforall loc in distFiles.targetLocales() with (ref numRowGroups) do on loc {
       var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
-      var readerIdx = 0;
       for i in locFiles.domain {
-        c_openFile(c_ptrTo(locFiles[i]), readerIdx);
-        numRowGroups[i] = c_getNumRowGroups(readerIdx);
-        readerIdx+=1;
+        c_openFile(c_ptrTo(locFiles[i]), getReaderIdx(i,0));
+        numRowGroups[i] = c_getNumRowGroups(getReaderIdx(i,0));
         for j in 2..numRowGroups[i] {
-          c_openFile(c_ptrTo(locFiles[i]), readerIdx);
-          readerIdx+=1;
+          c_openFile(c_ptrTo(locFiles[i]), getReaderIdx(i,j-1));
         }
       }
     }
@@ -748,20 +750,19 @@ module ParquetMsg {
     var (subdoms, length) = getSubdomains(sizes);
     coforall loc in distFiles.targetLocales() with (ref externalData, ref valsRead, ref bytesPerRG) do on loc {
       var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
-      var readerIdx = 0;
-      var locDsetname = dsetname;
       var locSubdoms = subdoms;
-      var totalBytes = 0;
 
-      for i in locFiles.domain {
+      forall i in locFiles.domain {
         var fname = locFiles[i];
-        var startIdx = locSubdoms[i].low;
+        var locDsetname = dsetname;
         for rg in 0..#numRowGroups[i] {
-          c_createRowGroupReader(rg, readerIdx);
-          c_createColumnReader(c_ptrTo(locDsetname), readerIdx);
+          var startIdx = locSubdoms[i].low;
+          var totalBytes = 0;
+          c_createRowGroupReader(rg, getReaderIdx(i,rg));
+          c_createColumnReader(c_ptrTo(locDsetname), getReaderIdx(i,rg));
 
           var numRead = 0;
-          externalData[i][rg] = c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, readerIdx, c_ptrTo(numRead));
+          externalData[i][rg] = c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead));
           for (id, j) in zip(0..#numRead, startIdx..#numRead) {
             ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[id];
             entrySeg.a[j] = curr.len + 1;
@@ -769,7 +770,6 @@ module ParquetMsg {
           }
           valsRead[i][rg] = numRead;
           startIdx += numRead;
-          readerIdx+=1;
           bytesPerRG[i][rg] = totalBytes;
           totalBytes = 0;
         }
