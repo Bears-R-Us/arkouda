@@ -761,9 +761,9 @@ module ParquetMsg {
           c_createColumnReader(c_ptrTo(locDsetname), readerIdx);
 
           var numRead = 0;
-          externalData[i][rg] = c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, readerIdx, c_ptrTo(numRead)): c_ptr(MyByteArray);
+          externalData[i][rg] = c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, readerIdx, c_ptrTo(numRead));
           for (id, j) in zip(0..#numRead, startIdx..#numRead) {
-            ref curr = externalData[i][rg][id];
+            ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[id];
             entrySeg.a[j] = curr.len + 1;
             totalBytes += entrySeg.a[j];
           }
@@ -788,7 +788,7 @@ module ParquetMsg {
           var entryIdx = bytesPerRG[i][rg].low;
           var numRead = locValsRead[i][rg];
           for idx in 0..#numRead {
-            ref curr = externalData[i][rg][idx];
+            ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[idx];
             for j in 0..#curr.len {
               entryVal.a[entryIdx] = curr.ptr[j];
               entryIdx+=1;
@@ -963,7 +963,7 @@ module ParquetMsg {
 
           var maxRowGroups = getRowGroupNums(distFiles, numRowGroups);
           
-          var externalData: [distFiles.domain] [0..#maxRowGroups] c_ptr(MyByteArray);
+          var externalData: [distFiles.domain] [0..#maxRowGroups] c_ptr(void);
           var valsRead: [distFiles.domain] [0..#maxRowGroups] int;
           var bytesPerRG: [distFiles.domain] [0..#maxRowGroups] int;
 
@@ -979,7 +979,8 @@ module ParquetMsg {
           for i in externalData.domain {
             for j in externalData[i].domain {
               if valsRead[i][j] > 0 then
-                c_freeMapValues(externalData[i][j]);
+                on externalData[i][j] do
+                  c_freeMapValues(externalData[i][j]);
             }
           }
           // TODO: Need to free c++ memory for the maps and malloced stuff

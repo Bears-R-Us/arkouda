@@ -180,6 +180,9 @@ extern "C" {
   void c_free_string(void* ptr);
   void cpp_free_string(void* ptr);
   
+  void c_freeMapValues(void* row);
+  void cpp_freeMapValues(void* row);
+  
 #ifdef __cplusplus
   std::map<int, std::shared_ptr<parquet::ParquetFileReader>> globalFiles;
   std::map<int, std::shared_ptr<parquet::RowGroupReader>> globalRowGroupReaders;
