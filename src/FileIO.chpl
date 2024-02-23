@@ -27,10 +27,10 @@ module FileIO {
         var writer;
         if exists(filePath) {
             var aFile = open(filePath, ioMode.rw);
-            writer = aFile.writer(region=aFile.size..);
+            writer = aFile.writer(region=aFile.size.., locking=false);
         } else {
             var aFile = open(filePath, ioMode.cwr);
-            writer = aFile.writer();
+            writer = aFile.writer(locking=false);
         }
 
         writer.writeln(line);
@@ -39,8 +39,7 @@ module FileIO {
     }
 
     proc writeToFile(filePath : string, line : string) throws {
-        var aFile = open(filePath, ioMode.cwr);
-        var writer = aFile.writer();
+        var writer = openWriter(filePath);
 
         writer.writeln(line);
         writer.flush();
@@ -48,8 +47,7 @@ module FileIO {
     }
     
     proc writeLinesToFile(filePath : string, lines : string) throws {
-        var aFile = open(filePath, ioMode.cwr);
-        var writer = aFile.writer();
+        var writer = openWriter(filePath);
 
         for line in lines {
             writer.writeln(line);
@@ -59,8 +57,7 @@ module FileIO {
     }
 
     proc getLineFromFile(filePath : string, lineIndex : int=-1) : string throws {
-        var aFile = open(filePath, ioMode.rw);
-        var lines = aFile.reader().lines();
+        var lines = openReader(filePath).lines();
         var line : string;
         var returnLine : string;
         var i = 1;
@@ -76,10 +73,9 @@ module FileIO {
 
         return returnLine.strip();
     }
-    
+
     proc getLineFromFile(path: string, match: string) throws {
-        var aFile = open(path, ioMode.r);
-        var reader = aFile.reader();
+        var reader = openReader(path);
         var returnLine: string;
 
         for line in reader.lines() {
@@ -88,8 +84,6 @@ module FileIO {
                 break;
             }
         }
-
-        reader.close();
 
         return returnLine;
     }

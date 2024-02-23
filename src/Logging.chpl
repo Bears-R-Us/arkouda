@@ -63,10 +63,10 @@ module Logging {
             if exists(filePath) {
                 use ArkoudaFileCompat;
                 var aFile = open(filePath, ioMode.rw);
-                writer = aFile.writer(region=aFile.size..);
+                writer = aFile.writer(region=aFile.size.., locking=false);
             } else {
                 var aFile = open(filePath, ioMode.cwr);
-                writer = aFile.writer();
+                writer = aFile.writer(locking=false);
             }
 
             writer.writeln(line);
