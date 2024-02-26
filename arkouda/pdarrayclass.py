@@ -2276,11 +2276,11 @@ def dot(
         not isinstance(pda1, pdarray)
         and not isinstance(pda2, pdarray)
         and (
-            (pda1 == akint64 and pda2 == akuint64)
-            or (pda1 == akuint64 and pda2 == akint64)
+            (type(pda1) == akint64 and type(pda2) == akuint64)
+            or (type(pda1) == akuint64 and type(pda2) == akint64)
         )
     ):
-        raise TypeError(f"incompatible types")
+        raise TypeError(f"incompatible types {type(pda1)}, {type(pda2)}")
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         return sum(pda1 * pda2)
     else:
