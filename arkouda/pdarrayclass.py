@@ -2240,22 +2240,22 @@ def sum(pda: pdarray) -> np.float64:
 
 @typechecked
 def dot(
-    pda1: Union[numeric_and_bool_scalars, pdarray], pda2: Union[numeric_and_bool_scalars, pdarray]
-) -> Union[numeric_and_bool_scalars, pdarray]:
+    pda1: Union[numeric_scalars, pdarray], pda2: Union[numeric_scalars, pdarray]
+) -> Union[numeric_scalars, pdarray]:
     """
     Returns the sum of the product of two arrays of the same size (the dot product) or
     the product of a singleton element and an array.
 
     Parameters
     ----------
-    pda1 : Union[numeric_and_bool_scalars, pdarray]
+    pda1 : Union[numeric_scalars, pdarray]
 
-    pda2 : Union[numeric_and_bool_scalars, pdarray]
+    pda2 : Union[numeric_scalars, pdarray]
 
 
     Returns
     -------
-    Union[numeric_and_bool_scalars, pdarray]
+    Union[numeric_scalars, pdarray]
         The sum of the product pda1 and pda2 or the product of a singleton element and an array.
 
     Raises
@@ -2272,10 +2272,19 @@ def dot(
     >>> ak.dot(x,2)
     array([4 6])
     """
+    if (
+        not isinstance(pda1, pdarray)
+        and not isinstance(pda2, pdarray)
+        and (
+            (pda1 == akint64 and pda2 == akuint64)
+            or (pda1 == akuint64 and pda2 == akint64)
+        )
+    ):
+        raise TypeError(f"incompatible types")
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         return sum(pda1 * pda2)
     else:
-        return pda1 * pda2
+        return pda1 * pda2  # type: ignore
 
 
 @typechecked
