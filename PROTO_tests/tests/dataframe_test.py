@@ -310,7 +310,7 @@ class TestDataFrame:
         pddf_drop = pd_df.drop(labels=["userName"], axis=1)
         assert_frame_equal(pddf_drop, df_drop.to_pandas())
 
-        # Test dropping column_names
+        # Test dropping columns
         df.drop("userName", axis=1, inplace=True)
         pd_df.drop(labels=["userName"], axis=1, inplace=True)
 
@@ -374,10 +374,10 @@ class TestDataFrame:
         # Test out of Place - column
         df_rename = df.rename(rename, axis=1)
 
-        assert "user_id" in df_rename.columns.to_list()
-        assert "name_col" in df_rename.columns.to_list()
-        assert "userName" not in df_rename.columns.to_list()
-        assert "userID" not in df_rename.columns.to_list()
+        assert "user_id" in df_rename.columns.values
+        assert "name_col" in df_rename.columns.values
+        assert "userName" not in df_rename.columns.values
+        assert "userID" not in df_rename.columns.values
         assert "userID" in df.columns.values
         assert "userName" in df.columns.values
         assert "user_id" not in df.columns.values
@@ -955,7 +955,7 @@ class TestDataFrame:
                     pd_merge = pd.merge(l_pd, r_pd, on=on, how=how)
 
                     sorted_column_names = sorted(ak_merge.columns.values)
-                    assert sorted_column_names == sorted(pd_merge.columns.to_list())
+                    assert sorted_column_names == sorted(pd_merge.columns.values)
                     for col in sorted_column_names:
                         from_ak = ak_merge[col].to_ndarray()
                         from_pd = pd_merge[col].to_numpy()

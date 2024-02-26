@@ -737,7 +737,7 @@ class DataFrame(UserDict):
         return Series(data=self[key], index=self.index.index)
 
     def __dir__(self):
-        return dir(DataFrame) + self.columns.values + ["columns", "column_names"]
+        return dir(DataFrame) + self.columns.values + ["columns"]
 
     # delete a column
     def __delitem__(self, key):
