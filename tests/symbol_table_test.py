@@ -299,7 +299,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertEqual(df.registered_name, attach_df.registered_name)
         # need to index the attached to ensure same columns order
         self.assertTrue(
-            assert_frame_equal(df.to_pandas(), attach_df[df.column_names].to_pandas()) is None
+            assert_frame_equal(df.to_pandas(), attach_df[df.columns.values].to_pandas()) is None
         )
         self.assertIsInstance(attach_df, ak.DataFrame)
 
