@@ -51,6 +51,10 @@ def generic_concat(items, ordered=True):
     if len(types) != 1:
         raise TypeError(f"Items must all have same type: {types}")
     t = types.pop()
+
+    if t is list:
+        return [x for lst in items for x in lst]
+
     return (
         t.concat(items, ordered=ordered)
         if hasattr(t, "concat")
@@ -286,45 +290,6 @@ def attach_all(names: list):
     dict
     """
     return {n: attach(n) for n in names}
-
-
-def sparse_sum_help(idx1, idx2, val1, val2):
-    """
-    Helper for summing two sparse matrices together
-
-    Parameters
-    -----------
-    idx1: pdarray
-        indices for the first sparse matrix
-    idx2: pdarray
-        indices for the second sparse matrix
-    val1: pdarray
-        values for the first sparse matrix
-    val2: pdarray
-        values for the second sparse matrix
-
-    Returns
-    --------
-    (pdarray, pdarray)
-        indices and values for the summed sparse matrix
-
-    Examples
-    --------
-    >>> idx1 = ak.array([0, 1, 3, 4, 7, 9])
-    >>> idx2 = ak.array([0, 1, 3, 6, 9])
-    >>> vals1 = idx1
-    >>> vals2 = ak.array([10, 11, 13, 16, 19])
-    >>> ak.util.sparse_sum_help(idx1, inds2, vals1, vals2)
-    (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
-
-    >>> ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((vals1, vals2)))
-    (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
-    """
-    repMsg = generic_msg(
-        cmd="sparseSumHelp", args={"idx1": idx1, "idx2": idx2, "val1": val1, "val2": val2}
-    )
-    inds, vals = repMsg.split("+", maxsplit=1)
-    return create_pdarray(inds), create_pdarray(vals)
 
 
 def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
