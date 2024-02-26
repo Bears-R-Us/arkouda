@@ -5,6 +5,10 @@ import json
 import io
 import math
 
+# TODO: rewrite the nd-stamping portion of this script to use the compiler's frontend python bindings
+# would remove the need for regex parsing, special handling of binary message handlers, problems
+# with multiline proc signatures, etc.
+
 def getModules(config):
     with open(config, 'r') as cfg_file:
         mods = []
@@ -31,6 +35,14 @@ def ndStampBinary(nd_msg_handler_name, cmd_prefix, d):
     f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws\n" + \
     f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n" + \
     f"registerBinaryFunction(\"{cmd_prefix}{d}D\", {msg_proc_name});\n"
+
+def ndStampArrayMsg(d):
+    msg_proc_name = f"arkouda_nd_stamp_arrayMsg{d}D"
+    return \
+    f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab): MsgTuple throws\n" + \
+    f"    do return arrayMsg(cmd, msgArgs, data, st, {d});\n" + \
+    f"registerArrayFunction(\"array{d}D\", {msg_proc_name});\n"
+
 
 def ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2):
     msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d1}Dx{d2}D"
@@ -110,6 +122,13 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
                 ndStampPermDec(proc_name, cmd_prefix, modOut, max_dims)
             else:
                 ndStampPermAll(proc_name, cmd_prefix, modOut, max_dims)
+
+        # special handling for 'arrayMsg'
+        for m in re.finditer(r'\@arkouda.registerArrayMsg', ftext):
+            found_annotation = True
+
+            for d in range(1, max_dims+1):
+                modOut.write(ndStampArrayMsg(d))
 
         # include the source module in the stamp file if any procs were stamped out
         if found_annotation:

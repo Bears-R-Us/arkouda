@@ -26,11 +26,18 @@ module CommandMap {
     return nb;
   }
 
+  proc arrayMsgSign(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab): MsgTuple throws {
+    var rep = new MsgTuple("dummy-msg", MsgType.NORMAL);
+    return rep;
+  }
+
   private var f = akMsgSign;
   private var b = akBinMsgSign;
+  private var a = arrayMsgSign;
 
   var commandMap: map(string, f.type);
   var commandMapBinary: map(string, b.type);
+  var commandMapArray: map(string, a.type);
   var moduleMap: map(string, string);
   use Set;
   var usedModules: set(string);
@@ -82,6 +89,10 @@ module CommandMap {
   proc registerBinaryFunction(cmd: string, fcf: b.type, modName: string) {
     commandMapBinary.add(cmd, fcf);
     moduleMap.add(cmd, modName);
+  }
+
+  proc registerArrayFunction(cmd: string, fcf: a.type) {
+    commandMapArray.add(cmd, fcf);
   }
 
   /**
