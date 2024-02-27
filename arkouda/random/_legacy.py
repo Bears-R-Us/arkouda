@@ -1,20 +1,12 @@
-from typing import Union, Tuple, cast
+from typing import Tuple, Union, cast
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import (
-    NUMBER_FORMAT_STRINGS,
-    DTypes,
-)
+from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes
 from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import (
-    int_scalars,
-    numeric_scalars,
-)
+from arkouda.dtypes import int_scalars, numeric_scalars
 from arkouda.pdarrayclass import create_pdarray, pdarray
 
 
@@ -118,6 +110,54 @@ def randint(
 
 
 @typechecked
+def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) -> pdarray:
+    """
+    Draw real numbers from the standard normal distribution.
+
+    Parameters
+    ----------
+    size : int_scalars
+        The number of samples to draw (size of the returned array)
+    seed : int_scalars
+        Value used to initialize the random number generator
+
+    Returns
+    -------
+    pdarray, float64
+        The array of random numbers
+
+    Raises
+    ------
+    TypeError
+        Raised if size is not an int
+    ValueError
+        Raised if size < 0
+
+    See Also
+    --------
+    randint
+
+    Notes
+    -----
+    For random samples from :math:`N(\\mu, \\sigma^2)`, use:
+
+    ``(sigma * standard_normal(size)) + mu``
+
+    Examples
+    --------
+    >>> ak.standard_normal(3,1)
+    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
+    """
+    if size < 0:
+        raise ValueError("The size parameter must be > 0")
+    return create_pdarray(
+        generic_msg(
+            cmd="randomNormal", args={"size": NUMBER_FORMAT_STRINGS["int64"].format(size), "seed": seed}
+        )
+    )
+
+
+@typechecked
 def uniform(
     size: int_scalars,
     low: numeric_scalars = float(0.0),
@@ -166,51 +206,3 @@ def uniform(
     array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
     """
     return randint(low=low, high=high, size=size, dtype="float64", seed=seed)
-
-
-@typechecked
-def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) -> pdarray:
-    """
-    Draw real numbers from the standard normal distribution.
-
-    Parameters
-    ----------
-    size : int_scalars
-        The number of samples to draw (size of the returned array)
-    seed : int_scalars
-        Value used to initialize the random number generator
-
-    Returns
-    -------
-    pdarray, float64
-        The array of random numbers
-
-    Raises
-    ------
-    TypeError
-        Raised if size is not an int
-    ValueError
-        Raised if size < 0
-
-    See Also
-    --------
-    randint
-
-    Notes
-    -----
-    For random samples from :math:`N(\\mu, \\sigma^2)`, use:
-
-    ``(sigma * standard_normal(size)) + mu``
-
-    Examples
-    --------
-    >>> ak.standard_normal(3,1)
-    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
-    """
-    if size < 0:
-        raise ValueError("The size parameter must be > 0")
-    return create_pdarray(
-        generic_msg(
-            cmd="randomNormal", args={"size": NUMBER_FORMAT_STRINGS["int64"].format(size), "seed": seed}
-        )
-    )

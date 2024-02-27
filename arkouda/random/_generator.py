@@ -1,6 +1,7 @@
 import numpy.random as np_random
-from arkouda.dtypes import int64 as akint64
+
 from arkouda.dtypes import dtype as to_numpy_dtype
+from arkouda.dtypes import int64 as akint64
 
 
 class Generator:
@@ -60,7 +61,8 @@ class Generator:
             Desired dtype of the result. The default value is ak.int64.
 
         endpoint: bool, optional
-            If true, sample from the interval [low, high] instead of the default [low, high). Defaults to False
+            If true, sample from the interval [low, high] instead of the default [low, high).
+            Defaults to False
 
         Returns
         -------
@@ -175,8 +177,8 @@ class Generator:
         Parameters
         ----------
         low: float, optional
-            Lower boundary of the output interval. All values generated will be greater than or equal to low.
-            The default value is 0.
+            Lower boundary of the output interval. All values generated will be greater than or
+            equal to low. The default value is 0.
 
         high: float, optional
             Upper boundary of the output interval. All values generated will be less than high.
