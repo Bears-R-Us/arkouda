@@ -389,6 +389,59 @@ class Series:
             self.values[indices] = val
             return
 
+    def memory_usage(self, index: bool = True, unit="B") -> int:
+        """
+        Return the memory usage of the Series.
+
+        The memory usage can optionally include the contribution of
+        the index.
+
+        Parameters
+        ----------
+        index : bool, default True
+            Specifies whether to include the memory usage of the Series index.
+        unit : str, default = "B"
+            Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+
+        Returns
+        -------
+        int
+            Bytes of memory consumed.
+
+        See Also
+        --------
+        arkouda.pdarrayclass.nbytes
+        arkouda.index.Index.memory_usage
+        arkouda.series.Series.memory_usage
+        arkouda.dataframe.DataFrame.memory_usage
+
+        Examples
+        --------
+        >>> from arkouda.series import Series
+        >>> s = ak.Series(ak.arange(3))
+        >>> s.memory_usage()
+        48
+
+        Not including the index gives the size of the rest of the data, which
+        is necessarily smaller:
+
+        >>> s.memory_usage(index=False)
+        24
+
+        Select the units:
+
+        >>> s = ak.Series(ak.arange(3000))
+        >>> s.memory_usage(unit="KB")
+        46.875
+
+        """
+        from arkouda.util import convert_bytes
+
+        v = convert_bytes(self.values.nbytes, unit=unit)
+        if index:
+            v += self.index.memory_usage(unit=unit)
+        return v
+
     def has_repeat_labels(self) -> bool:
         """
         Returns whether the Series has any labels that appear more than once
@@ -650,6 +703,7 @@ class Series:
     def to_pandas(self) -> pd.Series:
         """Convert the series to a local PANDAS series"""
         import copy
+
         idx = self.index.to_pandas()
         val = convert_if_categorical(self.values)
 

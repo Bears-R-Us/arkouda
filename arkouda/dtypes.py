@@ -205,8 +205,9 @@ ARKOUDA_SUPPORTED_NUMBERS = (
 # TODO: bring supported data types into parity with all numpy dtypes
 # missing full support for: float32, int32, int16, int8, uint32, uint16, complex64, complex128
 # ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])
-ARKOUDA_SUPPORTED_DTYPES = frozenset(["bool", "float", "float64", "int", "int64",
-                                      "uint", "uint64", "uint8", "bigint", "str"])
+ARKOUDA_SUPPORTED_DTYPES = frozenset(
+    ["bool", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"]
+)
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
 DTypeObjects = frozenset([bool, float, float64, int, int64, str, str_, uint8, uint64])

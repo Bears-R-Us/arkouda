@@ -189,3 +189,20 @@ class TestSeries:
         g = df.groupby(["a", "b"])
         series = ak.Series(data=g.sum("c")["c"], index=g.sum("c").index)
         g.broadcast(series)
+
+    def test_memory_usage(self):
+        n = 2000
+        s = ak.Series(ak.arange(n))
+        assert s.memory_usage(unit="GB", index=False) == n * ak.dtypes.int64.itemsize / (
+            1024 * 1024 * 1024
+        )
+        assert s.memory_usage(unit="MB", index=False) == n * ak.dtypes.int64.itemsize / (1024 * 1024)
+        assert s.memory_usage(unit="KB", index=False) == n * ak.dtypes.int64.itemsize / 1024
+        assert s.memory_usage(unit="B", index=False) == n * ak.dtypes.int64.itemsize
+
+        assert s.memory_usage(unit="GB", index=True) == 2 * n * ak.dtypes.int64.itemsize / (
+            1024 * 1024 * 1024
+        )
+        assert s.memory_usage(unit="MB", index=True) == 2 * n * ak.dtypes.int64.itemsize / (1024 * 1024)
+        assert s.memory_usage(unit="KB", index=True) == 2 * n * ak.dtypes.int64.itemsize / 1024
+        assert s.memory_usage(unit="B", index=True) == 2 * n * ak.dtypes.int64.itemsize

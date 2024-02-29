@@ -72,6 +72,24 @@ class TestDTypes:
         assert "uint64" == dtypes.resolve_scalar_dtype(2**63 + 1)
         assert "bigint" == dtypes.resolve_scalar_dtype(2**64)
 
+    def test_nbytes(self):
+        from arkouda.dtypes import BigInt
+
+        a = ak.cast(ak.array([1, 2, 3]), dt="bigint")
+        assert a.nbytes == 3 * BigInt.itemsize
+
+        dtype_list = [
+            ak.dtypes.uint8,
+            ak.dtypes.uint64,
+            ak.dtypes.int64,
+            ak.dtypes.float64,
+            ak.dtypes.bool,
+        ]
+
+        for dt in dtype_list:
+            a = ak.array([1, 2, 3], dtype=dt)
+            assert a.nbytes == 3 * dt.itemsize
+
     def test_pdarrays_datatypes(self):
         assert dtypes.dtype("int64") == ak.array(np.arange(10)).dtype
         assert dtypes.dtype("uint64") == ak.array(np.arange(10), ak.uint64).dtype
@@ -176,8 +194,8 @@ class TestDTypes:
         ) == str(ak.int_scalars)
 
         assert (
-            "typing.Union[float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, "
-            + "numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]"
+            "typing.Union[float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, "
+            + "numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]"
         ) == str(ak.numeric_scalars)
 
         assert "typing.Union[str, numpy.str_]" == str(ak.str_scalars)

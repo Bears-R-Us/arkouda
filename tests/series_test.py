@@ -1,7 +1,7 @@
+import numpy as np
 import pandas as pd
 from base_test import ArkoudaTest
 from context import arkouda as ak
-import numpy as np
 
 
 class SeriesTest(ArkoudaTest):
@@ -497,12 +497,8 @@ class SeriesTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             s1[["A", "Z"]] = 2.0
 
-        s2 = ak.Series(
-            index=ak.array(["A", "C", "DE", "F", "Z"]), data=ak.array(ints)
-        )
-        _s2 = pd.Series(
-            index=pd.array(["A", "C", "DE", "F", "Z"]), data=pd.array(ints)
-        )
+        s2 = ak.Series(index=ak.array(["A", "C", "DE", "F", "Z"]), data=ak.array(ints))
+        _s2 = pd.Series(index=pd.array(["A", "C", "DE", "F", "Z"]), data=pd.array(ints))
         s2[["A", "Z"]] = 2
         _s2[["A", "Z"]] = 2
         self.assertListEqual(s2.values.to_list(), _s2.values.tolist())
@@ -614,3 +610,25 @@ class SeriesTest(ArkoudaTest):
             _s1.iloc[[True, False, True]]
         with self.assertRaises(IndexError):
             s1.iloc[[True, False, True]]
+
+    def test_memory_usage(self):
+        n = 2000
+        s = ak.Series(ak.arange(n))
+        self.assertEqual(
+            s.memory_usage(unit="GB", index=False), n * ak.dtypes.int64.itemsize / (1024 * 1024 * 1024)
+        )
+        self.assertEqual(
+            s.memory_usage(unit="MB", index=False), n * ak.dtypes.int64.itemsize / (1024 * 1024)
+        )
+        self.assertEqual(s.memory_usage(unit="KB", index=False), n * ak.dtypes.int64.itemsize / 1024)
+        self.assertEqual(s.memory_usage(unit="B", index=False), n * ak.dtypes.int64.itemsize)
+
+        self.assertEqual(
+            s.memory_usage(unit="GB", index=True),
+            2 * n * ak.dtypes.int64.itemsize / (1024 * 1024 * 1024),
+        )
+        self.assertEqual(
+            s.memory_usage(unit="MB", index=True), 2 * n * ak.dtypes.int64.itemsize / (1024 * 1024)
+        )
+        self.assertEqual(s.memory_usage(unit="KB", index=True), 2 * n * ak.dtypes.int64.itemsize / 1024)
+        self.assertEqual(s.memory_usage(unit="B", index=True), 2 * n * ak.dtypes.int64.itemsize)

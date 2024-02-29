@@ -363,3 +363,30 @@ def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
         i -= 1
 
     return tuple(shapeOut)
+
+
+def convert_bytes(nbytes, unit="B"):
+    """
+    Convert the number of bytes to KB, MB, or GB.
+
+    Parameters
+    ----------
+    unit : str, default = "B"
+        Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+
+    Returns
+    -------
+    int
+
+    """
+    kb = 1024
+    mb = kb * kb
+    gb = mb * kb
+    if unit == "B":
+        return nbytes
+    elif unit == "KB":
+        return nbytes / kb
+    elif unit == "MB":
+        return nbytes / mb
+    elif unit == "GB":
+        return nbytes / gb

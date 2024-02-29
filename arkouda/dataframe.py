@@ -893,18 +893,18 @@ class DataFrame(UserDict):
         keys = [("'" + key + "'") for key in keys]
         keystr = ", ".join(keys)
 
-        # first call to memory_usage() initializes self._bytes
-        mem = self.memory_usage()
+        # first call to memory_usage_info() initializes self._bytes
+        mem = self.memory_usage_info()
 
         # Get units that make the most sense.
         if self._bytes < 1024:
-            mem = self.memory_usage(unit="B")
+            mem = self.memory_usage_info(unit="B")
         elif self._bytes < 1024**2:
-            mem = self.memory_usage(unit="KB")
+            mem = self.memory_usage_info(unit="KB")
         elif self._bytes < 1024**3:
-            mem = self.memory_usage(unit="MB")
+            mem = self.memory_usage_info(unit="MB")
         else:
-            mem = self.memory_usage(unit="GB")
+            mem = self.memory_usage_info(unit="GB")
         rows = " rows"
         if self._nrows == 1:
             rows = " row"
@@ -1734,18 +1734,18 @@ class DataFrame(UserDict):
         keys = [("'" + key + "'") for key in keys]
         keystr = ", ".join(keys)
 
-        # first call to memory_usage() initializes self._bytes
-        mem = self.memory_usage()
+        # first call to memory_usage_info() initializes self._bytes
+        mem = self.memory_usage_info()
 
         # Get units that make the most sense.
         if self._bytes < 1024:
-            mem = self.memory_usage(unit="B")
+            mem = self.memory_usage_info(unit="B")
         elif self._bytes < 1024**2:
-            mem = self.memory_usage(unit="KB")
+            mem = self.memory_usage_info(unit="KB")
         elif self._bytes < 1024**3:
-            mem = self.memory_usage(unit="MB")
+            mem = self.memory_usage_info(unit="MB")
         else:
-            mem = self.memory_usage(unit="GB")
+            mem = self.memory_usage_info(unit="GB")
         rows = " rows"
         if self._nrows == 1:
             rows = " row"
@@ -2430,9 +2430,121 @@ class DataFrame(UserDict):
             gb = GroupBy(gb, self, gb_key_names=keys, as_index=as_index)
         return gb
 
-    def memory_usage(self, unit="GB"):
+    def memory_usage(self, index=True, unit="B") -> Series:
         """
-        Print the size of this DataFrame.
+        Return the memory usage of each column in bytes.
+
+        The memory usage can optionally include the contribution of
+        the index.
+
+        Parameters
+        ----------
+        index : bool, default True
+            Specifies whether to include the memory usage of the DataFrame's
+            index in returned Series. If ``index=True``, the memory usage of
+            the index is the first item in the output.
+        unit : str, default = "B"
+            Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+
+        Returns
+        -------
+        Series
+            A Series whose index is the original column names and whose values
+            is the memory usage of each column in bytes.
+
+        See Also
+        --------
+        arkouda.pdarrayclass.nbytes
+        arkouda.index.Index.memory_usage
+        arkouda.index.MultiIndex.memory_usage
+        arkouda.series.Series.memory_usage
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> dtypes = [ak.int64, ak.float64,  ak.bool]
+        >>> data = dict([(str(t), ak.ones(5000, dtype=ak.int64).astype(t)) for t in dtypes])
+        >>> df = ak.DataFrame(data)
+        >>> display(df.head())
+
+        +----+---------+-----------+--------+
+        |    |   int64 |   float64 | bool   |
+        +====+=========+===========+========+
+        |  0 |       1 |         1 | True   |
+        +----+---------+-----------+--------+
+        |  1 |       1 |         1 | True   |
+        +----+---------+-----------+--------+
+        |  2 |       1 |         1 | True   |
+        +----+---------+-----------+--------+
+        |  3 |       1 |         1 | True   |
+        +----+---------+-----------+--------+
+        |  4 |       1 |         1 | True   |
+        +----+---------+-----------+--------+
+
+        >>> df.memory_usage()
+
+        +---------+-------+
+        |         |     0 |
+        +=========+=======+
+        | Index   | 40000 |
+        +---------+-------+
+        | int64   | 40000 |
+        +---------+-------+
+        | float64 | 40000 |
+        +---------+-------+
+        | bool    |  5000 |
+        +---------+-------+
+
+        >>> df.memory_usage(index=False)
+
+        +---------+-------+
+        |         |     0 |
+        +=========+=======+
+        | int64   | 40000 |
+        +---------+-------+
+        | float64 | 40000 |
+        +---------+-------+
+        | bool    |  5000 |
+        +---------+-------+
+
+        >>> df.memory_usage(unit="KB")
+
+        +---------+----------+
+        |         |        0 |
+        +=========+==========+
+        | Index   | 39.0625  |
+        +---------+----------+
+        | int64   | 39.0625  |
+        +---------+----------+
+        | float64 | 39.0625  |
+        +---------+----------+
+        | bool    |  4.88281 |
+        +---------+----------+
+
+        To get the approximate total memory usage:
+
+        >>>  df.memory_usage(index=True).sum()
+
+        """
+        from arkouda.util import convert_bytes
+
+        if index:
+            sizes = [self.index.memory_usage(unit=unit)]
+            ret_index = ["Index"]
+        else:
+            sizes = []
+            ret_index = []
+
+        sizes += [convert_bytes(c.nbytes, unit=unit) for col, c in self.items()]
+        ret_index += self.columns.values.copy()
+
+        result = Series(sizes, index=array(ret_index))
+        return result
+
+    def memory_usage_info(self, unit="GB"):
+        """
+        A formatted string representation of the size of this DataFrame.
 
         Parameters
         ----------
@@ -2441,8 +2553,8 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        int
-            The number of bytes used by this DataFrame in [unit]s.
+        str
+            A string representation of the number of bytes used by this DataFrame in [unit]s.
 
         Examples
         --------
@@ -2450,30 +2562,18 @@ class DataFrame(UserDict):
         >>> import arkouda as ak
         >>> ak.connect()
         >>> df = ak.DataFrame({'col1': ak.arange(1000), 'col2': ak.arange(1000)})
-        >>> df.memory_usage()
+        >>> df.memory_usage_info()
         '0.00 GB'
 
-        >>> df.memory_usage(unit="KB")
+        >>> df.memory_usage_info(unit="KB")
         '15 KB'
 
         """
+        from arkouda.util import convert_bytes
 
-        KB = 1024
-        MB = KB * KB
-        GB = MB * KB
-        self._bytes = 0
-        for key, val in self.items():
-            if isinstance(val, pdarray):
-                self._bytes += (val.dtype).itemsize * val.size
-            elif isinstance(val, Strings):
-                self._bytes += val.nbytes
-        if unit == "B":
-            return "{:} B".format(int(self._bytes))
-        elif unit == "MB":
-            return "{:} MB".format(int(self._bytes / MB))
-        elif unit == "KB":
-            return "{:} KB".format(int(self._bytes / KB))
-        return "{:.2f} GB".format(self._bytes / GB)
+        data_size = convert_bytes(self.memory_usage(index=True).sum(), unit=unit)
+
+        return "{:.2f} {}".format(data_size, unit)
 
     def to_pandas(self, datalimit=maxTransferBytes, retain_index=False):
         """
