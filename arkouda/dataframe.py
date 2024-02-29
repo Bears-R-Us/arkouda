@@ -9,6 +9,7 @@ from warnings import warn
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
+from numpy import ndarray
 from typeguard import typechecked
 
 from arkouda.categorical import Categorical
@@ -730,13 +731,13 @@ class DataFrame(UserDict):
             self.update_nrows()
 
     def __getattr__(self, key):
-        if key not in self.columns:
+        if key not in self.columns.values:
             raise AttributeError(f"Attribute {key} not found")
         # Should this be cached?
         return Series(data=self[key], index=self.index.index)
 
     def __dir__(self):
-        return dir(DataFrame) + self.columns
+        return dir(DataFrame) + self.columns.values + ["columns"]
 
     # delete a column
     def __delitem__(self, key):
@@ -1532,12 +1533,12 @@ class DataFrame(UserDict):
     @property
     def columns(self):
         """
-        A list of column names of the dataframe.
+        An Index where the values are the column names of the dataframe.
 
         Returns
         -------
-        list of str
-            A list of column names of the dataframe.
+        arkouda.index.Index
+            The values of the index are the column names of the dataframe.
 
         Examples
         --------
@@ -1556,9 +1557,14 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         >>> df.columns
-        ['col1', 'col2']
+        Index(array(['col1', 'col2']), dtype='<U0')
         """
-        return self._columns
+        if isinstance(self._columns, ndarray):
+            column_names = self._columns.tolist()
+        else:
+            column_names = self._columns
+
+        return Index(column_names, allow_list=True)
 
     @property
     def index(self):
@@ -2713,8 +2719,8 @@ class DataFrame(UserDict):
                     "file_format": _file_type_to_int(file_type),
                     "write_mode": _mode_str_to_int(mode),
                     "objType": self.objType,
-                    "num_cols": len(self.columns),
-                    "column_names": self.columns,
+                    "num_cols": len(self.columns.values),
+                    "column_names": self.columns.values,
                     "column_objTypes": col_objTypes,
                     "column_dtypes": dtypes,
                     "columns": column_data,
@@ -3184,7 +3190,7 @@ class DataFrame(UserDict):
         # columns load backwards
         df = cls(_dict_recombine_segarrays_categoricals(load_all(prefix_path, file_format=filetype)))
         # if parquet, return reversed dataframe to match what was saved
-        return df if filetype == "HDF5" else df[df.columns[::-1]]
+        return df if filetype == "HDF5" else df[df.columns.values[::-1]]
 
     def argsort(self, key, ascending=True):
         """
@@ -3849,10 +3855,10 @@ class DataFrame(UserDict):
             segs = concatenate(
                 [
                     array([0]),
-                    cumsum(array([self.data[col].size for col in self.columns])),
+                    cumsum(array([self.data[col].size for col in self.columns.values])),
                 ]
             )
-            df_def = {col: flat_in1d[segs[i] : segs[i + 1]] for i, col in enumerate(self.columns)}
+            df_def = {col: flat_in1d[segs[i] : segs[i + 1]] for i, col in enumerate(self.columns.values)}
         elif isinstance(values, Dict):
             # key is column name, val is the list of values to check
             df_def = {
@@ -3861,13 +3867,13 @@ class DataFrame(UserDict):
                     if col in values.keys()
                     else zeros(self._nrows, dtype=akbool)
                 )
-                for col in self.columns
+                for col in self.columns.values
             }
         elif isinstance(values, DataFrame) or (
             isinstance(values, Series) and isinstance(values.index, Index)
         ):
             # create the dataframe with all false
-            df_def = {col: zeros(self._nrows, dtype=akbool) for col in self.columns}
+            df_def = {col: zeros(self._nrows, dtype=akbool) for col in self.columns.values}
             # identify the indexes in both
             rows_self, rows_val = intersect(self.index.index, values.index.index, unique=True)
 
@@ -3876,7 +3882,7 @@ class DataFrame(UserDict):
             sort_val = values.index[rows_val].argsort()
             # update values in columns that exist in both. only update the rows whose indexes match
 
-            for col in self.columns:
+            for col in self.columns.values:
                 if isinstance(values, DataFrame) and col in values.columns:
                     df_def[col][rows_self] = (
                         self.data[col][rows_self][sort_self] == values.data[col][rows_val][sort_val]
@@ -3947,13 +3953,13 @@ class DataFrame(UserDict):
             return d if isinstance(d, pdarray) else d.codes
 
         args = {
-            "size": len(self.columns),
-            "columns": self.columns,
-            "data_names": [numeric_help(self[c]) for c in self.columns],
+            "size": len(self.columns.values),
+            "columns": self.columns.values,
+            "data_names": [numeric_help(self[c]) for c in self.columns.values],
         }
 
         ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
-        return DataFrame({c: create_pdarray(ret_dict[c]) for c in self.columns})
+        return DataFrame({c: create_pdarray(ret_dict[c]) for c in self.columns.values})
 
     @typechecked
     def merge(
@@ -4179,8 +4185,8 @@ class DataFrame(UserDict):
                 "name": user_defined_name,
                 "objType": self.objType,
                 "idx": self.index.values.name,
-                "num_cols": len(self.columns),
-                "column_names": self.columns,
+                "num_cols": len(self.columns.values),
+                "column_names": self.columns.values,
                 "columns": column_data,
                 "col_objTypes": col_objTypes,
             },
@@ -4746,7 +4752,7 @@ def _inner_join_merge(
     arkouda.dataframe.DataFrame
         Inner-Joined Arkouda DataFrame
     """
-    left_cols, right_cols = left.columns.copy(), right.columns.copy()
+    left_cols, right_cols = left.columns.values.copy(), right.columns.values.copy()
     if isinstance(on, str):
         left_inds, right_inds = inner_join(left[on], right[on])
         new_dict = {on: left[on][left_inds]}
@@ -4804,7 +4810,7 @@ def _right_join_merge(
         Right-Joined Arkouda DataFrame
     """
     in_left = _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix)
-    in_left_cols, left_cols = in_left.columns.copy(), left.columns.copy()
+    in_left_cols, left_cols = in_left.columns.values.copy(), left.columns.values.copy()
     if isinstance(on, str):
         left_at_on = left[on]
         right_at_on = right[on]
