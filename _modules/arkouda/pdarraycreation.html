@@ -202,6 +202,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/array_api/linalg/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api.linalg</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/random/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.random</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
@@ -1206,7 +1207,7 @@
 
 
 <div class="viewcode-block" id="randint">
-<a class="viewcode-back" href="../../usage/creation.html#arkouda.randint">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarraycreation/index.html#arkouda.randint">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">randint</span><span class="p">(</span>
     <span class="n">low</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span>
@@ -1274,36 +1275,9 @@
 <span class="sd">    &gt;&gt;&gt; ak.randint(1, 5, 10, dtype=ak.bool, seed=2)</span>
 <span class="sd">    array([False, True, True, True, True, False, True, True, True, True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">shape</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Tuple</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
-        <span class="n">full_size</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cast</span><span class="p">(</span><span class="n">Tuple</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
-            <span class="n">full_size</span> <span class="o">*=</span> <span class="n">s</span>
-        <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">full_size</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="n">full_size</span>
-        <span class="n">ndim</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="kn">from</span> <span class="nn">arkouda.random</span> <span class="kn">import</span> <span class="n">randint</span>
 
-    <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">high</span> <span class="o">&lt;</span> <span class="n">low</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;size must be &gt;= 0, ndim &gt;= 1, and high &gt;= low&quot;</span><span class="p">)</span>
-    <span class="n">dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># normalize dtype</span>
-    <span class="c1"># check dtype for error</span>
-    <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DTypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;randint</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span>
-            <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;low&quot;</span><span class="p">:</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">[</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">low</span><span class="p">),</span>
-            <span class="s2">&quot;high&quot;</span><span class="p">:</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">[</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">high</span><span class="p">),</span>
-            <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="n">seed</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
 
 
 
@@ -1402,13 +1376,9 @@
 <span class="sd">    &gt;&gt;&gt; ak.standard_normal(3,1)</span>
 <span class="sd">    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt; 0&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;randomNormal&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="n">seed</span><span class="p">}</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
+    <span class="kn">from</span> <span class="nn">arkouda.random</span> <span class="kn">import</span> <span class="n">standard_normal</span>
+
+    <span class="k">return</span> <span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
 
 
 

@@ -1,0 +1,181 @@
+:orphan:
+
+:py:mod:`arkouda.random._generator`
+===================================
+
+.. py:module:: arkouda.random._generator
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.random._generator.Generator
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.random._generator.default_rng
+
+
+
+.. py:class:: Generator(seed=None)
+
+
+   ``Generator`` exposes a number of methods for generating random
+   numbers drawn from a variety of probability distributions. In addition to
+   the distribution-specific arguments, each method takes a keyword argument
+   `size` that defaults to ``None``. If `size` is ``None``, then a single
+   value is generated and returned. If `size` is an integer, then a 1-D
+   array filled with generated values is returned.
+
+   :param seed: Seed to allow for reproducible random number generation.
+   :type seed: int
+
+   .. seealso::
+
+      :obj:`default_rng`
+          Recommended constructor for `Generator`.
+
+   .. py:method:: integers(low, high=None, size=None, dtype=akint64, endpoint=False)
+
+      Return random integers from low (inclusive) to high (exclusive),
+      or if endpoint=True, low (inclusive) to high (inclusive).
+
+      Return random integers from the “discrete uniform” distribution of the specified dtype.
+      If high is None (the default), then results are from 0 to low.
+
+      :param low: Lowest (signed) integers to be drawn from the distribution (unless high=None,
+                  in which case this parameter is 0 and this value is used for high).
+      :type low: numeric_scalars
+      :param high: If provided, one above the largest (signed) integer to be drawn from the distribution
+                   (see above for behavior if high=None)
+      :type high: numeric_scalars
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars
+      :param dtype: Desired dtype of the result. The default value is ak.int64.
+      :type dtype: dtype, optional
+      :param endpoint: If true, sample from the interval [low, high] instead of the default [low, high).
+                       Defaults to False
+      :type endpoint: bool, optional
+
+      :returns: Values drawn uniformly from the specified range having the desired dtype,
+                or a single such random int if size not provided.
+      :rtype: pdarray, numeric_scalar
+
+      .. rubric:: Examples
+
+      >>> rng = ak.random.default_rng()
+      >>> rng.integers(5, 20, 10)
+      array([15, 13, 10, 8, 5, 18, 16, 14, 7, 13])  # random
+      >>> rng.integers(5, size=10)
+      array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
+
+
+   .. py:method:: random(size=None)
+
+      Return random floats in the half-open interval [0.0, 1.0).
+
+      Results are from the uniform distribution over the stated interval.
+
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars, optional
+
+      :returns: Pdarray of random floats (unless size=None, in which case a single float is returned).
+      :rtype: pdarray
+
+      .. rubric:: Notes
+
+      To sample over `[a,b)`, use uniform or multiply the output of random by `(b - a)` and add `a`:
+
+       ``(b - a) * random() + a``
+
+      .. seealso:: :obj:`uniform`
+
+      .. rubric:: Examples
+
+      >>> rng = ak.random.default_rng()
+      >>> rng.random()
+      0.47108547995356098 # random
+      >>> rng.random(3)
+      array([0.055256829926011691, 0.62511314008006458, 0.16400145561571539]) # random
+
+
+   .. py:method:: standard_normal(size=None)
+
+      Draw samples from a standard Normal distribution (mean=0, stdev=1).
+
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars, optional
+
+      :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
+      :rtype: pdarray
+
+      .. rubric:: Notes
+
+      For random samples from :math:`N(\mu, \sigma^2)`, use:
+
+      ``(sigma * standard_normal(size)) + mu``
+
+      .. rubric:: Examples
+
+      >>> rng = ak.random.default_rng()
+      >>> rng.standard_normal()
+      2.1923875335537315 # random
+      >>> rng.standard_normal(3)
+      array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
+
+
+   .. py:method:: uniform(low=0.0, high=1.0, size=None)
+
+      Draw samples from a uniform distribution.
+
+      Samples are uniformly distributed over the half-open interval [low, high).
+      In other words, any value within the given interval is equally likely to be drawn by uniform.
+
+      :param low: Lower boundary of the output interval. All values generated will be greater than or
+                  equal to low. The default value is 0.
+      :type low: float, optional
+      :param high: Upper boundary of the output interval. All values generated will be less than high.
+                   high must be greater than or equal to low. The default value is 1.0.
+      :type high: float, optional
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars, optional
+
+      :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
+      :rtype: pdarray
+
+      .. seealso:: :obj:`integers`, :obj:`random`
+
+      .. rubric:: Examples
+
+      >>> rng = ak.random.default_rng()
+      >>> rng.uniform(-1, 1, 3)
+      array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
+
+
+
+.. py:function:: default_rng(seed=None)
+
+   Construct a new Generator.
+
+   Right now we only support PCG64, since this is what is available in chapel.
+
+   :param seed: A seed to initialize the `Generator`. If None, then the seed will
+                be generated by chapel in an implementation specific manner based on the current time.
+                This behavior is currently unstable and may change in the future. If an int,
+                then the value must be non-negative. If passed a `Generator`, it will be returned unaltered.
+   :type seed: {None, int, Generator}, optional
+
+   :returns: The initialized generator object.
+   :rtype: Generator
+
+
