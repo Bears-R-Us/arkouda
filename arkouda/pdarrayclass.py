@@ -2240,8 +2240,9 @@ def sum(pda: pdarray) -> np.float64:
 
 @typechecked
 def dot(
-    pda1: Union[numeric_scalars, pdarray], pda2: Union[numeric_scalars, pdarray]
-) -> Union[numeric_scalars, pdarray]:
+    pda1: Union[np.int64, np.float64, np.uint64, pdarray],
+    pda2: Union[np.int64, np.float64, np.uint64, pdarray],
+) -> Union[np.int64, np.float64, np.uint64, pdarray]:
     """
     Returns the sum of the product of two arrays of the same size (the dot product) or
     the product of a singleton element and an array.
@@ -2281,7 +2282,7 @@ def dot(
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         return sum(pda1 * pda2)
     else:
-        return pda1 * pda2  # type: ignore
+        return pda1 * pda2
 
 
 @typechecked
