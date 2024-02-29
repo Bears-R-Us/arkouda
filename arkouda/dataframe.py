@@ -3937,13 +3937,13 @@ class DataFrame(UserDict):
 
         >>> corr = df.corr()
 
-        +----+--------+--------+
-        |    |   col1 |   col2 |
-        +====+========+========+
-        |  0 |      1 |     -1 |
-        +----+--------+--------+
-        |  1 |     -1 |      1 |
-        +----+--------+--------+
+        +------+--------+--------+
+        |      |   col1 |   col2 |
+        +======+========+========+
+        | col1 |      1 |     -1 |
+        +------+--------+--------+
+        | col2 |     -1 |      1 |
+        +------+--------+--------+
 
         """
 
@@ -3959,7 +3959,10 @@ class DataFrame(UserDict):
         }
 
         ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
-        return DataFrame({c: create_pdarray(ret_dict[c]) for c in self.columns.values})
+        return DataFrame(
+            {c: create_pdarray(ret_dict[c]) for c in self.columns.values},
+            index=array(self.columns.values),
+        )
 
     @typechecked
     def merge(
