@@ -4333,7 +4333,7 @@ class DataFrame(UserDict):
 
     @staticmethod
     @typechecked
-    def unregister_dataframe_by_name(user_defined_name: str) -> None:
+    def unregister_dataframe_by_name(user_defined_name: str) -> str:
         """
         Function to unregister DataFrame object by name which was registered
         with the arkouda server via register().
@@ -4368,7 +4368,6 @@ class DataFrame(UserDict):
         >>> df.unregister_dataframe_by_name("my_table_name")
         >>> df.is_registered()
         False
-
 
         """
         import warnings
