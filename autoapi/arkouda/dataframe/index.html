@@ -642,13 +642,13 @@ be strings. Defaults to an stringified integer range.</p></li>
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.columns">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#arkouda.dataframe.DataFrame.columns" title="Link to this definition">#</a></dt>
-<dd><p>A list of column names of the dataframe.</p>
+<dd><p>An Index where the values are the column names of the dataframe.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of column names of the dataframe.</p>
+<dd class="field-odd"><p>The values of the index are the column names of the dataframe.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of str</p>
+<dd class="field-even"><p><a class="reference internal" href="../index/index.html#arkouda.index.Index" title="arkouda.index.Index">arkouda.index.Index</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -679,7 +679,7 @@ be strings. Defaults to an stringified integer range.</p></li>
 </table>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">columns</span>
-<span class="go">[&#39;col1&#39;, &#39;col2&#39;]</span>
+<span class="go">Index(array([&#39;col1&#39;, &#39;col2&#39;]), dtype=&#39;&lt;U0&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>

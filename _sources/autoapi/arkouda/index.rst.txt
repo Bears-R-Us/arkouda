@@ -824,10 +824,10 @@ Attributes
 
    .. py:property:: columns
 
-      A list of column names of the dataframe.
+      An Index where the values are the column names of the dataframe.
 
-      :returns: A list of column names of the dataframe.
-      :rtype: list of str
+      :returns: The values of the index are the column names of the dataframe.
+      :rtype: arkouda.index.Index
 
       .. rubric:: Examples
 
@@ -845,7 +845,7 @@ Attributes
       +----+--------+--------+
 
       >>> df.columns
-      ['col1', 'col2']
+      Index(array(['col1', 'col2']), dtype='<U0')
 
    .. py:property:: dtypes
 
@@ -3066,10 +3066,10 @@ Attributes
 
    .. py:property:: columns
 
-      A list of column names of the dataframe.
+      An Index where the values are the column names of the dataframe.
 
-      :returns: A list of column names of the dataframe.
-      :rtype: list of str
+      :returns: The values of the index are the column names of the dataframe.
+      :rtype: arkouda.index.Index
 
       .. rubric:: Examples
 
@@ -3087,7 +3087,7 @@ Attributes
       +----+--------+--------+
 
       >>> df.columns
-      ['col1', 'col2']
+      Index(array(['col1', 'col2']), dtype='<U0')
 
    .. py:property:: dtypes
 
@@ -10585,7 +10585,7 @@ Attributes
 
 
 
-.. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index], name: Optional[str] = None)
+.. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index], name: Optional[str] = None, allow_list=False, max_list_size=1000)
 
 
    .. py:property:: index
@@ -10603,7 +10603,34 @@ Attributes
    .. py:attribute:: objType
       :value: 'Index'
 
-      
+      Sequence used for indexing and alignment.
+
+      The basic object storing axis labels for all DataFrame objects.
+
+      :param values:
+      :type values: List, pdarray, Strings, Categorical, pandas.Index, or Index
+      :param name: Name to be stored in the index.
+      :type name: str, default=None
+      :param allow_list = False: If False, list values will be converted to a pdarray.
+                                 If True, list values will remain as a list, provided the data length is less than max_list_size.
+      :param : If False, list values will be converted to a pdarray.
+               If True, list values will remain as a list, provided the data length is less than max_list_size.
+      :param max_list_size = 1000: This is the maximum allowed data length for the values to be stored as a list object.
+
+      :raises ValueError: Raised if allow_list=True and the size of values is > max_list_size.
+
+      .. seealso:: :obj:`MultiIndex`
+
+      .. rubric:: Examples
+
+      >>> ak.Index([1, 2, 3])
+      Index(array([1 2 3]), dtype='int64')
+
+      >>> ak.Index(list('abc'))
+      Index(array(['a', 'b', 'c']), dtype='<U0')
+
+      >>> ak.Index([1, 2, 3], allow_list=True)
+      Index([1, 2, 3], dtype='int64')
 
    .. py:method:: argsort(ascending=True)
 
@@ -10699,7 +10726,8 @@ Attributes
           file write location or if the mode parameter is neither truncate
           nor append
       :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
-          is not a string
+          is not a string.
+          Raised if the Index values are a list.
 
       .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`, :obj:`to_parquet`, :obj:`to_hdf`
 
@@ -10753,13 +10781,14 @@ Attributes
               ------
               ValueError
                   Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist
+                  more of the specified files do not exist.
               RuntimeError
                   Raised if one or more of the specified files cannot be opened.
                   If `allow_errors` is true this may be raised if no values are returned
                   from the server.
               TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server
+                  Raised if we receive an unknown arkouda_type returned from the server.
+                  Raised if the Index values are a list.
 
               Notes
               ------
@@ -10794,6 +10823,7 @@ Attributes
       :rtype: string message indicating result of save operation
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises TypeError: Raised if the Index values are a list.
 
       .. rubric:: Notes
 
@@ -10839,6 +10869,7 @@ Attributes
       :rtype: string message indicating result of save operation
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises TypeError: Raised if the Index values are a list.
 
       .. rubric:: Notes
 
@@ -11014,7 +11045,7 @@ Attributes
       Currently only aku.ip_address and ak.array are supported.
 
 
-   .. py:method:: to_dict(labels)
+   .. py:method:: to_dict(labels=None)
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -11036,7 +11067,7 @@ Attributes
 
       :rtype: string message indicating result of save operation
 
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray.
 
       .. rubric:: Notes
 
@@ -11097,6 +11128,7 @@ Attributes
       :rtype: str - success message if successful
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the index
+      :raises TypeError: Raised if the Index values are a list.
 
       .. rubric:: Notes
 

@@ -177,10 +177,10 @@ Functions
 
    .. py:property:: columns
 
-      A list of column names of the dataframe.
+      An Index where the values are the column names of the dataframe.
 
-      :returns: A list of column names of the dataframe.
-      :rtype: list of str
+      :returns: The values of the index are the column names of the dataframe.
+      :rtype: arkouda.index.Index
 
       .. rubric:: Examples
 
@@ -198,7 +198,7 @@ Functions
       +----+--------+--------+
 
       >>> df.columns
-      ['col1', 'col2']
+      Index(array(['col1', 'col2']), dtype='<U0')
 
    .. py:property:: dtypes
 

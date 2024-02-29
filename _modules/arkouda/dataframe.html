@@ -294,6 +294,7 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># type: ignore</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
@@ -1020,13 +1021,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attribute </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
         <span class="c1"># Should this be cached?</span>
         <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">dir</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span>
+        <span class="k">return</span> <span class="nb">dir</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;columns&quot;</span><span class="p">]</span>
 
     <span class="c1"># delete a column</span>
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -1834,12 +1835,12 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A list of column names of the dataframe.</span>
+<span class="sd">        An Index where the values are the column names of the dataframe.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        list of str</span>
-<span class="sd">            A list of column names of the dataframe.</span>
+<span class="sd">        arkouda.index.Index</span>
+<span class="sd">            The values of the index are the column names of the dataframe.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1858,9 +1859,14 @@
 <span class="sd">        +----+--------+--------+</span>
 
 <span class="sd">        &gt;&gt;&gt; df.columns</span>
-<span class="sd">        [&#39;col1&#39;, &#39;col2&#39;]</span>
+<span class="sd">        Index(array([&#39;col1&#39;, &#39;col2&#39;]), dtype=&#39;&lt;U0&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">column_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">column_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span>
+
+        <span class="k">return</span> <span class="n">Index</span><span class="p">(</span><span class="n">column_names</span><span class="p">,</span> <span class="n">allow_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3051,8 +3057,8 @@
                     <span class="s2">&quot;file_format&quot;</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
                     <span class="s2">&quot;write_mode&quot;</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span>
                     <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
-                    <span class="s2">&quot;num_cols&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
-                    <span class="s2">&quot;column_names&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                    <span class="s2">&quot;num_cols&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+                    <span class="s2">&quot;column_names&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
                     <span class="s2">&quot;column_objTypes&quot;</span><span class="p">:</span> <span class="n">col_objTypes</span><span class="p">,</span>
                     <span class="s2">&quot;column_dtypes&quot;</span><span class="p">:</span> <span class="n">dtypes</span><span class="p">,</span>
                     <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="n">column_data</span><span class="p">,</span>
@@ -3539,7 +3545,7 @@
         <span class="c1"># columns load backwards</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">_dict_recombine_segarrays_categoricals</span><span class="p">(</span><span class="n">load_all</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="n">filetype</span><span class="p">)))</span>
         <span class="c1"># if parquet, return reversed dataframe to match what was saved</span>
-        <span class="k">return</span> <span class="n">df</span> <span class="k">if</span> <span class="n">filetype</span> <span class="o">==</span> <span class="s2">&quot;HDF5&quot;</span> <span class="k">else</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span></div>
+        <span class="k">return</span> <span class="n">df</span> <span class="k">if</span> <span class="n">filetype</span> <span class="o">==</span> <span class="s2">&quot;HDF5&quot;</span> <span class="k">else</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span></div>
 
 
 <div class="viewcode-block" id="DataFrame.argsort">
@@ -4231,10 +4237,10 @@
             <span class="n">segs</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span>
-                    <span class="n">cumsum</span><span class="p">(</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">])),</span>
+                    <span class="n">cumsum</span><span class="p">(</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">])),</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-            <span class="n">df_def</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">flat_in1d</span><span class="p">[</span><span class="n">segs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">:</span> <span class="n">segs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)}</span>
+            <span class="n">df_def</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">flat_in1d</span><span class="p">[</span><span class="n">segs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">:</span> <span class="n">segs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">)}</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
             <span class="c1"># key is column name, val is the list of values to check</span>
             <span class="n">df_def</span> <span class="o">=</span> <span class="p">{</span>
@@ -4243,13 +4249,13 @@
                     <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
                     <span class="k">else</span> <span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akbool</span><span class="p">)</span>
                 <span class="p">)</span>
-                <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span>
+                <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span>
             <span class="p">}</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Series</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">Index</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="c1"># create the dataframe with all false</span>
-            <span class="n">df_def</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akbool</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">}</span>
+            <span class="n">df_def</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akbool</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">}</span>
             <span class="c1"># identify the indexes in both</span>
             <span class="n">rows_self</span><span class="p">,</span> <span class="n">rows_val</span> <span class="o">=</span> <span class="n">intersect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -4258,7 +4264,7 @@
             <span class="n">sort_val</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">rows_val</span><span class="p">]</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
             <span class="c1"># update values in columns that exist in both. only update the rows whose indexes match</span>
 
-            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                     <span class="n">df_def</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">rows_self</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">rows_self</span><span class="p">][</span><span class="n">sort_self</span><span class="p">]</span> <span class="o">==</span> <span class="n">values</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">rows_val</span><span class="p">][</span><span class="n">sort_val</span><span class="p">]</span>
@@ -4332,13 +4338,13 @@
             <span class="k">return</span> <span class="n">d</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">d</span><span class="o">.</span><span class="n">codes</span>
 
         <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
-            <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
-            <span class="s2">&quot;data_names&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">numeric_help</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">],</span>
+            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+            <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="s2">&quot;data_names&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">numeric_help</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">],</span>
         <span class="p">}</span>
 
         <span class="n">ret_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;corrMatrix&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">({</span><span class="n">c</span><span class="p">:</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">ret_dict</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">})</span></div>
+        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">({</span><span class="n">c</span><span class="p">:</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">ret_dict</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">})</span></div>
 
 
 <div class="viewcode-block" id="DataFrame.merge">
@@ -4570,8 +4576,8 @@
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
                 <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
                 <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;num_cols&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
-                <span class="s2">&quot;column_names&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                <span class="s2">&quot;num_cols&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+                <span class="s2">&quot;column_names&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
                 <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="n">column_data</span><span class="p">,</span>
                 <span class="s2">&quot;col_objTypes&quot;</span><span class="p">:</span> <span class="n">col_objTypes</span><span class="p">,</span>
             <span class="p">},</span>
@@ -5163,7 +5169,7 @@
 <span class="sd">    arkouda.dataframe.DataFrame</span>
 <span class="sd">        Inner-Joined Arkouda DataFrame</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">left_cols</span><span class="p">,</span> <span class="n">right_cols</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">right</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">left_cols</span><span class="p">,</span> <span class="n">right_cols</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">right</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">on</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">left_inds</span><span class="p">,</span> <span class="n">right_inds</span> <span class="o">=</span> <span class="n">inner_join</span><span class="p">(</span><span class="n">left</span><span class="p">[</span><span class="n">on</span><span class="p">],</span> <span class="n">right</span><span class="p">[</span><span class="n">on</span><span class="p">])</span>
         <span class="n">new_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">on</span><span class="p">:</span> <span class="n">left</span><span class="p">[</span><span class="n">on</span><span class="p">][</span><span class="n">left_inds</span><span class="p">]}</span>
@@ -5221,7 +5227,7 @@
 <span class="sd">        Right-Joined Arkouda DataFrame</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">in_left</span> <span class="o">=</span> <span class="n">_inner_join_merge</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">on</span><span class="p">,</span> <span class="n">col_intersect</span><span class="p">,</span> <span class="n">left_suffix</span><span class="p">,</span> <span class="n">right_suffix</span><span class="p">)</span>
-    <span class="n">in_left_cols</span><span class="p">,</span> <span class="n">left_cols</span> <span class="o">=</span> <span class="n">in_left</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">left</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">in_left_cols</span><span class="p">,</span> <span class="n">left_cols</span> <span class="o">=</span> <span class="n">in_left</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">left</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">on</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">left_at_on</span> <span class="o">=</span> <span class="n">left</span><span class="p">[</span><span class="n">on</span><span class="p">]</span>
         <span class="n">right_at_on</span> <span class="o">=</span> <span class="n">right</span><span class="p">[</span><span class="n">on</span><span class="p">]</span>

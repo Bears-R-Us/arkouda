@@ -1954,13 +1954,13 @@ be strings. Defaults to an stringified integer range.</p></li>
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.DataFrame.columns">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#arkouda.DataFrame.columns" title="Link to this definition">#</a></dt>
-<dd><p>A list of column names of the dataframe.</p>
+<dd><p>An Index where the values are the column names of the dataframe.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of column names of the dataframe.</p>
+<dd class="field-odd"><p>The values of the index are the column names of the dataframe.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of str</p>
+<dd class="field-even"><p><a class="reference internal" href="index/index.html#arkouda.index.Index" title="arkouda.index.Index">arkouda.index.Index</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1991,7 +1991,7 @@ be strings. Defaults to an stringified integer range.</p></li>
 </table>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">columns</span>
-<span class="go">[&#39;col1&#39;, &#39;col2&#39;]</span>
+<span class="go">Index(array([&#39;col1&#39;, &#39;col2&#39;]), dtype=&#39;&lt;U0&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -5739,13 +5739,13 @@ be strings. Defaults to an stringified integer range.</p></li>
 <dl class="py property">
 <dt class="sig sig-object py" id="id1">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#id1" title="Link to this definition">#</a></dt>
-<dd><p>A list of column names of the dataframe.</p>
+<dd><p>An Index where the values are the column names of the dataframe.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of column names of the dataframe.</p>
+<dd class="field-odd"><p>The values of the index are the column names of the dataframe.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of str</p>
+<dd class="field-even"><p><a class="reference internal" href="index/index.html#arkouda.index.Index" title="arkouda.index.Index">arkouda.index.Index</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -5776,7 +5776,7 @@ be strings. Defaults to an stringified integer range.</p></li>
 </table>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">columns</span>
-<span class="go">[&#39;col1&#39;, &#39;col2&#39;]</span>
+<span class="go">Index(array([&#39;col1&#39;, &#39;col2&#39;]), dtype=&#39;&lt;U0&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -16364,7 +16364,7 @@ they are unregistered.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.Index">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#id433" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">arkouda.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><span class="pre">Index</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/index.html#Index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#id433" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">arkouda.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><span class="pre">Index</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_list_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/index.html#Index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index" title="Link to this definition">#</a></dt>
 <dd><dl class="py property">
 <dt class="sig sig-object py" id="arkouda.Index.index">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.Index.index" title="Link to this definition">#</a></dt>
@@ -16386,7 +16386,48 @@ they are unregistered.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.Index.objType">
 <span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Index'</span></em><a class="headerlink" href="#arkouda.Index.objType" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Sequence used for indexing and alignment.</p>
+<p>The basic object storing axis labels for all DataFrame objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>List</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id433" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pandas.Index</em><em>, or </em><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>default=None</em>) – Name to be stored in the index.</p></li>
+<li><p><strong>False</strong> (<em>allow_list =</em>) – If False, list values will be converted to a pdarray.
+If True, list values will remain as a list, provided the data length is less than max_list_size.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>:param<span class="classifier">If False, list values will be converted to a pdarray.</span></dt><dd><p>If True, list values will remain as a list, provided the data length is less than max_list_size.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>1000</strong> (<em>max_list_size =</em>) – This is the maximum allowed data length for the values to be stored as a list object.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if allow_list=True and the size of values is &gt; max_list_size.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.MultiIndex" title="arkouda.MultiIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiIndex</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="go">Index(array([1 2 3]), dtype=&#39;int64&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">))</span>
+<span class="go">Index(array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]), dtype=&#39;&lt;U0&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">allow_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">Index([1, 2, 3], dtype=&#39;int64&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.argsort">
@@ -16514,7 +16555,8 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 file write location or if the mode parameter is neither truncate
 nor append</p></li>
 <li><p><strong>TypeError</strong> – Raised if any one of the prefix_path, dataset, or mode parameters
-is not a string</p></li>
+is not a string.
+Raised if the Index values are a list.</p></li>
 </ul>
 </dd>
 </dl>
@@ -16566,13 +16608,14 @@ be overwritten. If False, an error will be returned if existing files are found.
 <p>str reponse message</p>
 <dl class="simple">
 <dt>ValueError</dt><dd><p>Raised if all datasets are not present in all parquet files or if one or
-more of the specified files do not exist</p>
+more of the specified files do not exist.</p>
 </dd>
 <dt>RuntimeError</dt><dd><p>Raised if one or more of the specified files cannot be opened.
 If <cite>allow_errors</cite> is true this may be raised if no values are returned
 from the server.</p>
 </dd>
-<dt>TypeError</dt><dd><p>Raised if we receive an unknown arkouda_type returned from the server</p>
+<dt>TypeError</dt><dd><p>Raised if we receive an unknown arkouda_type returned from the server.
+Raised if the Index values are a list.</p>
 </dd>
 </dl>
 <ul class="simple">
@@ -16614,7 +16657,10 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 <dd class="field-even"><p>string message indicating result of save operation</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>
+<li><p><strong>TypeError</strong> – Raised if the Index values are a list.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -16672,7 +16718,10 @@ Sets the compression type used with Parquet files</p>
 <dd class="field-even"><p>string message indicating result of save operation</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>
+<li><p><strong>TypeError</strong> – Raised if the Index values are a list.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -16885,7 +16934,7 @@ they are unregistered.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/index.html#MultiIndex.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.to_dict" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/index.html#MultiIndex.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.to_dict" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -16912,7 +16961,7 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 <dd class="field-even"><p>string message indicating result of save operation</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -16987,7 +17036,10 @@ file sizes to expand.</p></li>
 <dd class="field-even"><p>str - success message if successful</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the index</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the index</p></li>
+<li><p><strong>TypeError</strong> – Raised if the Index values are a list.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
