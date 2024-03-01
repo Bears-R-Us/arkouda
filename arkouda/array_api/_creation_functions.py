@@ -73,8 +73,8 @@ def asarray(
         return Array._new(obj)
     elif isinstance(obj, np.ndarray):
         obj_flat = obj.flatten()
-        if obj_flat is None:
-            xdtype = akdtype(resolve_scalar_dtype(obj_flat[0]))
+        if dtype is None:
+            xdtype = akdtype(obj_flat.dtype)
         else:
             xdtype = akdtype(dtype)
 
@@ -91,7 +91,7 @@ def asarray(
                 create_pdarray(
                     generic_msg(
                         cmd="create0D",
-                        args={"dtype": xdtype},
+                        args={"dtype": xdtype, "value": obj.item()},
                     )
                 )
             )
