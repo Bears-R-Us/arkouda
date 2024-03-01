@@ -2280,7 +2280,10 @@ def dot(
     ):
         raise TypeError(f"incompatible types {type(pda1)}, {type(pda2)}")
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        return sum(pda1 * pda2)
+        if pda1.size != pda2.size:
+            raise ValueError(f"Arrays must be same size, {pda1.size}, {pda2.size}")
+        else:
+            return sum(pda1 * pda2)
     else:
         return pda1 * pda2
 
