@@ -2257,7 +2257,8 @@ def dot(
     Returns
     -------
     Union[numeric_scalars, pdarray]
-        The sum of the elementwise product pda1 and pda2 or the product of a singleton element and an array.
+        The sum of the elementwise product pda1 and pda2 or
+        the product of a singleton element and an array.
 
     Raises
     ------
