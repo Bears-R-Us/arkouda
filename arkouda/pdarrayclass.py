@@ -2244,7 +2244,7 @@ def dot(
     pda2: Union[np.int64, np.float64, np.uint64, pdarray],
 ) -> Union[np.int64, np.float64, np.uint64, pdarray]:
     """
-    Returns the sum of the product of two arrays of the same size (the dot product) or
+    Returns the sum of the elementwise product of two arrays of the same size (the dot product) or
     the product of a singleton element and an array.
 
     Parameters
@@ -2257,7 +2257,7 @@ def dot(
     Returns
     -------
     Union[numeric_scalars, pdarray]
-        The sum of the product pda1 and pda2 or the product of a singleton element and an array.
+        The sum of the elementwise product pda1 and pda2 or the product of a singleton element and an array.
 
     Raises
     ------
