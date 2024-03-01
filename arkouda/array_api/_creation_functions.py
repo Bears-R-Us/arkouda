@@ -80,7 +80,7 @@ def asarray(
 
         if obj_flat.nbytes > maxTransferBytes:
             raise RuntimeError(
-                f"Creating Array would require transferring {nbytes} bytes, which exceeds "
+                f"Creating Array would require transferring {obj_flat.nbytes} bytes, which exceeds "
                 f"allowed transfer size. Increase ak.client.maxTransferBytes to force."
             )
 
