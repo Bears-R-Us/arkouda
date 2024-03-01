@@ -13,7 +13,9 @@ from arkouda.client import generic_msg
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import bool as npbool
-from arkouda.dtypes import dtype, get_server_byteorder
+from arkouda.dtypes import dtype
+from arkouda.dtypes import float64 as akfloat64
+from arkouda.dtypes import get_server_byteorder
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import (
     int_scalars,
@@ -27,7 +29,6 @@ from arkouda.dtypes import (
 from arkouda.dtypes import str_ as akstr_
 from arkouda.dtypes import translate_np_dtype
 from arkouda.dtypes import uint64 as akuint64
-from arkouda.dtypes import float64 as akfloat64
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 
@@ -38,6 +39,7 @@ __all__ = [
     "all",
     "is_sorted",
     "sum",
+    "dot",
     "prod",
     "min",
     "max",
@@ -678,7 +680,7 @@ class pdarray:
                         # treat this as a single element slice
                         # TODO: implement rank-reducing slices
                         starts.append(k)
-                        stops.append(k+1)
+                        stops.append(k + 1)
                         strides.append(1)
                 else:
                     raise IndexError(f"Unhandled key type: {k} ({type(k)})")
@@ -2234,6 +2236,57 @@ def sum(pda: pdarray) -> np.float64:
     """
     repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "sum", "array": pda})
     return parse_single_value(cast(str, repMsg))
+
+
+@typechecked
+def dot(
+    pda1: Union[np.int64, np.float64, np.uint64, pdarray],
+    pda2: Union[np.int64, np.float64, np.uint64, pdarray],
+) -> Union[np.int64, np.float64, np.uint64, pdarray]:
+    """
+    Returns the sum of the elementwise product of two arrays of the same size (the dot product) or
+    the product of a singleton element and an array.
+
+    Parameters
+    ----------
+    pda1 : Union[numeric_scalars, pdarray]
+
+    pda2 : Union[numeric_scalars, pdarray]
+
+
+    Returns
+    -------
+    Union[numeric_scalars, pdarray]
+        The sum of the elementwise product pda1 and pda2 or
+        the product of a singleton element and an array.
+
+    Raises
+    ------
+    ValueError
+        Raised if the size of pda1 is not the same as pda2
+
+    Examples
+    --------
+    >>> x = ak.array([2, 3])
+    >>> y = ak.array([4, 5])
+    >>> ak.dot(x,y)
+    23
+    >>> ak.dot(x,2)
+    array([4 6])
+    """
+    if (
+        not isinstance(pda1, pdarray)
+        and not isinstance(pda2, pdarray)
+        and ((pda1 is akuint64 and pda2 is akint64) or (pda1 is akint64 and pda2 is akuint64))
+    ):
+        raise TypeError(f"incompatible types {type(pda1)}, {type(pda2)}")
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size != pda2.size:
+            raise ValueError(f"Arrays must be same size, {pda1.size}, {pda2.size}")
+        else:
+            return sum(pda1 * pda2)
+    else:
+        return pda1 * pda2
 
 
 @typechecked
