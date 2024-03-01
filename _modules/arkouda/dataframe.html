@@ -4323,13 +4323,13 @@
 
 <span class="sd">        &gt;&gt;&gt; corr = df.corr()</span>
 
-<span class="sd">        +----+--------+--------+</span>
-<span class="sd">        |    |   col1 |   col2 |</span>
-<span class="sd">        +====+========+========+</span>
-<span class="sd">        |  0 |      1 |     -1 |</span>
-<span class="sd">        +----+--------+--------+</span>
-<span class="sd">        |  1 |     -1 |      1 |</span>
-<span class="sd">        +----+--------+--------+</span>
+<span class="sd">        +------+--------+--------+</span>
+<span class="sd">        |      |   col1 |   col2 |</span>
+<span class="sd">        +======+========+========+</span>
+<span class="sd">        | col1 |      1 |     -1 |</span>
+<span class="sd">        +------+--------+--------+</span>
+<span class="sd">        | col2 |     -1 |      1 |</span>
+<span class="sd">        +------+--------+--------+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -4345,7 +4345,10 @@
         <span class="p">}</span>
 
         <span class="n">ret_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;corrMatrix&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">({</span><span class="n">c</span><span class="p">:</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">ret_dict</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">})</span></div>
+        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">ret_dict</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">},</span>
+            <span class="n">index</span><span class="o">=</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrame.merge">
