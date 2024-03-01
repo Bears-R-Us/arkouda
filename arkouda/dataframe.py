@@ -1611,7 +1611,7 @@ class DataFrame(UserDict):
             )
 
     @typechecked
-    def reset_index(self, size: bool = False, inplace: bool = False) -> Union[None, DataFrame]:
+    def reset_index(self, size: int = None, inplace: bool = False) -> Union[None, DataFrame]:
         """
         Set the index to an integer range.
 

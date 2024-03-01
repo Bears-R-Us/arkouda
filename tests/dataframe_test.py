@@ -363,6 +363,10 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(df_reset.index.to_list(), [0, 1, 2])
         self.assertListEqual(slice_df.index.to_list(), [1, 3, 5])
 
+        df_reset2 = slice_df.reset_index(size=3)
+        self.assertListEqual(df_reset2.index.to_list(), [0, 1, 2])
+        self.assertListEqual(slice_df.index.to_list(), [1, 3, 5])
+
         slice_df.reset_index(inplace=True)
         self.assertListEqual(slice_df.index.to_list(), [0, 1, 2])
 

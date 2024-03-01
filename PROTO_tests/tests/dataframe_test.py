@@ -363,6 +363,10 @@ class TestDataFrame:
         assert df_reset.index.to_list() == [0, 1, 2]
         assert slice_df.index.to_list(), [1, 3, 5]
 
+        df_reset2 = slice_df.reset_index(size=3)
+        assert df_reset2.index.to_list() == [0, 1, 2]
+        assert slice_df.index.to_list() == [1, 3, 5]
+
         slice_df.reset_index(inplace=True)
         assert slice_df.index.to_list(), [0, 1, 2]
 
@@ -479,7 +483,9 @@ class TestDataFrame:
         s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count(as_series=True)
         pds = pd.Series(
             data=np.ones(4, dtype=np.int64),
-            index=pd.Index(data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7"),name="a"),
+            index=pd.Index(
+                data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7"), name="a"
+            ),
         )
         assert_series_equal(pds, s.to_pandas())
 
@@ -489,7 +495,9 @@ class TestDataFrame:
             .groupby("a")
             .count(as_series=True)
         )
-        pds = pd.Series(data=np.array([3, 1]), index=pd.Index(data=np.array(["a", "b"], dtype="<U7"), name="a"))
+        pds = pd.Series(
+            data=np.array([3, 1]), index=pd.Index(data=np.array(["a", "b"], dtype="<U7"), name="a")
+        )
         assert_series_equal(pds, s.to_pandas())
 
     def test_gb_series(self):
@@ -499,7 +507,7 @@ class TestDataFrame:
 
         c = gb.count(as_series=True)
         assert isinstance(c, ak.Series)
-        assert c.index.to_list() == ['Alice', 'Bob', 'Carol']
+        assert c.index.to_list() == ["Alice", "Bob", "Carol"]
         assert c.values.to_list() == [3, 2, 1]
 
     @pytest.mark.parametrize("agg", ["sum", "first"])
@@ -771,8 +779,6 @@ class TestDataFrame:
             ]
         )
         ak_df["negs"] = -1 * ak_df["int64"]
-
-        pd_df = ak_df.to_pandas()
 
         group_bys = [
             "gb_id",
