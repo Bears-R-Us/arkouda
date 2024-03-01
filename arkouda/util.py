@@ -215,7 +215,7 @@ def attach(name: str):
 
 
 @typechecked
-def unregister(name: str):
+def unregister(name: str) -> str:
     rep_msg = cast(str, generic_msg(cmd="unregister", args={"name": name}))
 
     return rep_msg
