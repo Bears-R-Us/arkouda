@@ -41,3 +41,4 @@ from arkouda.util import (
 )
 from arkouda.akscipy.special import *
 from arkouda.akscipy import *
+from arkouda.random import *

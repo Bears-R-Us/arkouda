@@ -2,6 +2,7 @@ import json
 from typing import List, Optional, Union
 
 import pandas as pd  # type: ignore
+from numpy import array as ndarray
 from typeguard import typechecked
 
 from arkouda import Categorical, Strings
@@ -19,13 +20,53 @@ from arkouda.util import convert_if_categorical, generic_concat, get_callback
 
 class Index:
     objType = "Index"
+    """
+    Sequence used for indexing and alignment.
+
+    The basic object storing axis labels for all DataFrame objects.
+
+    Parameters
+    ----------
+    values: List, pdarray, Strings, Categorical, pandas.Index, or Index
+    name : str, default=None
+        Name to be stored in the index.
+    allow_list = False,
+        If False, list values will be converted to a pdarray.
+        If True, list values will remain as a list, provided the data length is less than max_list_size.
+    max_list_size = 1000
+        This is the maximum allowed data length for the values to be stored as a list object.
+
+    Raises
+    ------
+    ValueError
+        Raised if allow_list=True and the size of values is > max_list_size.
+
+    See Also
+    --------
+    MultiIndex
+
+    Examples
+    --------
+    >>> ak.Index([1, 2, 3])
+    Index(array([1 2 3]), dtype='int64')
+
+    >>> ak.Index(list('abc'))
+    Index(array(['a', 'b', 'c']), dtype='<U0')
+
+    >>> ak.Index([1, 2, 3], allow_list=True)
+    Index([1, 2, 3], dtype='int64')
+
+    """
 
     @typechecked
     def __init__(
         self,
         values: Union[List, pdarray, Strings, Categorical, pd.Index, "Index"],
         name: Optional[str] = None,
+        allow_list=False,
+        max_list_size=1000,
     ):
+        self.max_list_size = max_list_size
         self.registered_name: Optional[str] = None
         if isinstance(values, Index):
             self.values = values.values
@@ -38,10 +79,21 @@ class Index:
             self.dtype = self.values.dtype
             self.name = name if name else values.name
         elif isinstance(values, List):
-            values = array(values)
-            self.values = values
-            self.size = self.values.size
-            self.dtype = self.values.dtype
+            if allow_list is True:
+                if len(values) <= max_list_size:
+                    self.values = values
+                    self.size = len(values)
+                    self.dtype = self._dtype_of_list_values(values)
+                else:
+                    raise ValueError(
+                        f"Cannot create Index because list size {len(values)} "
+                        f"exceeds max_list_size {self.max_list_size}."
+                    )
+            else:
+                values = array(values)
+                self.values = values
+                self.size = self.values.size
+                self.dtype = self.values.dtype
             self.name = name
         elif isinstance(values, (pdarray, Strings, Categorical)):
             self.values = values
@@ -74,6 +126,20 @@ class Index:
             return self.index == v.index
         return self.index == v
 
+    def _dtype_of_list_values(self, lst):
+        from arkouda.dtypes import dtype
+
+        if isinstance(lst, list):
+            d = dtype(type(lst[0]))
+            for item in lst:
+                assert dtype(type(item)) == d, (
+                    f"Values of Index must all be same type.  "
+                    f"Types {d} and {dtype(type(item))} do not match."
+                )
+            return d
+        else:
+            raise TypeError("Index Types must match")
+
     @property
     def index(self):
         """
@@ -93,9 +159,12 @@ class Index:
         -------
             bool - True if all values are unique, False otherwise.
         """
-        g = GroupBy(self.values)
-        key, ct = g.count()
-        return (ct == 1).all()
+        if isinstance(self.values, list):
+            return len(set(self.values)) == self.size
+        else:
+            g = GroupBy(self.values)
+            key, ct = g.count()
+            return (ct == 1).all()
 
     @staticmethod
     def factory(index):
@@ -124,15 +193,24 @@ class Index:
         return cls.factory(idx) if len(idx) > 1 else cls.factory(idx[0])
 
     def to_pandas(self):
-        val = convert_if_categorical(self.values).to_ndarray()
+        if isinstance(self.values, list):
+            val = ndarray(self.values)
+        else:
+            val = convert_if_categorical(self.values).to_ndarray()
         return pd.Index(data=val, dtype=val.dtype, name=self.name)
 
     def to_ndarray(self):
-        val = convert_if_categorical(self.values)
-        return val.to_ndarray()
+        if isinstance(self.values, list):
+            return ndarray(self.values)
+        else:
+            val = convert_if_categorical(self.values)
+            return val.to_ndarray()
 
     def to_list(self):
-        return self.to_ndarray().tolist()
+        if isinstance(self.values, list):
+            return self.values
+        else:
+            return self.to_ndarray().tolist()
 
     def set_dtype(self, dtype):
         """Change the data type of the index
@@ -177,6 +255,9 @@ class Index:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
+        if isinstance(self.values, list):
+            raise TypeError("Index cannot be registered when values are list type.")
+
         from arkouda.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
@@ -319,6 +400,10 @@ class Index:
         return len(other) == length and (self == other.values).sum() == length
 
     def argsort(self, ascending=True):
+        if isinstance(self.values, list):
+            reverse = not ascending
+            return sorted(range(self.size), key=self.values.__getitem__, reverse=reverse)
+
         if not ascending:
             if isinstance(self.values, pdarray) and self.dtype in (akint64, akfloat64):
                 i = argsort(-self.values)
@@ -375,6 +460,8 @@ class Index:
         -------
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
+        TypeError
+            Raised if the Index values are a list.
         Notes
         -----
         - The prefix_path must be visible to the arkouda server and the user must
@@ -394,6 +481,9 @@ class Index:
         from arkouda.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
         from arkouda.io import _file_type_to_int, _mode_str_to_int
+
+        if isinstance(self.values, list):
+            raise TypeError("Unable to write Index to hdf when values are a list.")
 
         index_data = [
             self.values.name
@@ -558,6 +648,8 @@ class Index:
         ------
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
+        TypeError
+            Raised if the Index values are a list.
         Notes
         -----
         - The prefix_path must be visible to the arkouda server and the user must
@@ -572,6 +664,9 @@ class Index:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
+        if isinstance(self.values, list):
+            raise TypeError("Unable to write Index to parquet when values are a list.")
+
         return self.values.to_parquet(prefix_path, dataset=dataset, mode=mode, compression=compression)
 
     @typechecked
@@ -608,13 +703,14 @@ class Index:
         ------
         ValueError
             Raised if all datasets are not present in all parquet files or if one or
-            more of the specified files do not exist
+            more of the specified files do not exist.
         RuntimeError
             Raised if one or more of the specified files cannot be opened.
             If `allow_errors` is true this may be raised if no values are returned
             from the server.
         TypeError
-            Raised if we receive an unknown arkouda_type returned from the server
+            Raised if we receive an unknown arkouda_type returned from the server.
+            Raised if the Index values are a list.
 
         Notes
         ------
@@ -623,6 +719,9 @@ class Index:
         - Be sure that column delimiters are not found within your data.
         - All CSV files must delimit rows using newline (`\n`) at this time.
         """
+        if isinstance(self.values, list):
+            raise TypeError("Unable to write Index to csv when values are a list.")
+
         return self.values.to_csv(prefix_path, dataset=dataset, col_delim=col_delim, overwrite=overwrite)
 
     def save(
@@ -674,7 +773,8 @@ class Index:
             nor append
         TypeError
             Raised if any one of the prefix_path, dataset, or mode parameters
-            is not a string
+            is not a string.
+            Raised if the Index values are a list.
         See Also
         --------
         save_all, load, read, to_parquet, to_hdf
@@ -699,6 +799,10 @@ class Index:
             "ak.Index.save has been deprecated. Please use ak.Index.to_parquet or ak.Index.to_hdf",
             DeprecationWarning,
         )
+
+        if isinstance(self.values, list):
+            raise TypeError("Unable to save Index when values are a list.")
+
         if mode.lower() not in ["append", "truncate"]:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
 
@@ -778,9 +882,7 @@ class MultiIndex(Index):
         return self
 
     def to_ndarray(self):
-        import numpy as np
-
-        return np.array([convert_if_categorical(val).to_ndarray() for val in self.values])
+        return ndarray([convert_if_categorical(val).to_ndarray() for val in self.values])
 
     def to_list(self):
         return self.to_ndarray().tolist()
@@ -865,7 +967,7 @@ class MultiIndex(Index):
             return False
         return is_registered(self.registered_name)
 
-    def to_dict(self, labels):
+    def to_dict(self, labels=None):
         data = {}
         if labels is None:
             labels = [f"idx_{i}" for i in range(len(self.index))]
@@ -938,7 +1040,8 @@ class MultiIndex(Index):
         Raises
         -------
         RuntimeError
-            Raised if a server-side error is thrown saving the pdarray
+            Raised if a server-side error is thrown saving the pdarray.
+
         Notes
         -----
         - The prefix_path must be visible to the arkouda server and the user must
@@ -1022,6 +1125,8 @@ class MultiIndex(Index):
         -------
         RuntimeError
             Raised if a server-side error is thrown saving the index
+        TypeError
+            Raised if the Index values are a list.
 
         Notes
         ------
@@ -1039,6 +1144,9 @@ class MultiIndex(Index):
             _mode_str_to_int,
             _repack_hdf,
         )
+
+        if isinstance(self.values, list):
+            raise TypeError("Unable update hdf when Index values are a list.")
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")

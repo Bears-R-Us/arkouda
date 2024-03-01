@@ -132,7 +132,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
         'numpy>=1.24.1',
-        'pandas>=1.4.0,<2.2.0',
+        'pandas>=1.4.0,!=2.2.0',
         'pyzmq>=20.0.0',
         'typeguard==2.10.0',
         'tabulate',

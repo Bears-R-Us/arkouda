@@ -12,7 +12,7 @@ from context import arkouda as ak
 from pandas.testing import assert_frame_equal, assert_series_equal
 
 from arkouda import io_util
-from arkouda.index import Index, MultiIndex
+from arkouda.index import Index
 
 
 def build_ak_df():
@@ -218,7 +218,7 @@ class DataFrameTest(ArkoudaTest):
         bad_labels2 = good_labels + ["five"]
 
         df = ak.DataFrame(unlabeled_data, columns=good_labels)
-        self.assertListEqual(df.columns, good_labels)
+        self.assertListEqual(df.columns.values, good_labels)
         self.assertEqual(df["one1"][0], 1)
         self.assertEqual(df["three3"][0], "foo")
         self.assertEqual(df["four4"][1], -1.8)
@@ -609,7 +609,7 @@ class DataFrameTest(ArkoudaTest):
         pd_result1 = (
             pd_df.groupby(["key1", "key2"], as_index=False).count().drop(["nums", "key3"], axis=1)
         )
-        ak_result1 = ak_df.groupby(["key1", "key2"]).count(as_series=False)
+        ak_result1 = ak_df.groupby(["key1", "key2"], as_index=False).count()
         assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
         assert isinstance(ak_result1, ak.dataframe.DataFrame)
 
@@ -638,16 +638,14 @@ class DataFrameTest(ArkoudaTest):
 
         for as_index in [True, False]:
             for dropna in [True, False]:
-                for gb_keys in ['key1', 'key2', ['key1', 'key2'], ['count', 'key1', 'key2']]:
+                for gb_keys in ["key1", "key2", ["key1", "key2"], ["count", "key1", "key2"]]:
                     ak_result = ak_df.groupby(gb_keys, as_index=as_index, dropna=dropna).size()
                     pd_result = pd_df.groupby(gb_keys, as_index=as_index, dropna=dropna).size()
 
                     if isinstance(ak_result, ak.dataframe.DataFrame):
-                        assert_frame_equal(ak_result.to_pandas(retain_index=True),
-                                               pd_result)
+                        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
                     else:
-                        assert_series_equal(ak_result.to_pandas(),
-                                            pd_result)
+                        assert_series_equal(ak_result.to_pandas(), pd_result)
 
     def test_gb_size_match_pandas(self):
         ak_df = build_ak_df_with_nans()
@@ -759,20 +757,49 @@ class DataFrameTest(ArkoudaTest):
 
     def test_sort_index(self):
         ak_df = build_ak_df_example_numeric_types()
-        ak_df["string"] = ak.array(["f", "g", "h", "i", "j",
-                                    "k", "l", "m", "n", "o",
-                                    "a", "b", "c", "d", "e",
-                                    "p", "q", "r", "s", "t"])
+        ak_df["string"] = ak.array(
+            [
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n",
+                "o",
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "p",
+                "q",
+                "r",
+                "s",
+                "t",
+            ]
+        )
         ak_df["negs"] = -1 * ak_df["int64"]
 
-        pd_df = ak_df.to_pandas()
-
-        group_bys = ["gb_id", "float64", "int64", "uint64", "bigint", "negs", "string", ["gb_id", "negs"]]
+        group_bys = [
+            "gb_id",
+            "float64",
+            "int64",
+            "uint64",
+            "bigint",
+            "negs",
+            "string",
+            ["gb_id", "negs"],
+        ]
         for group_by in group_bys:
             ak_result = ak_df.groupby(group_by).size()
             pd_result = ak_result.to_pandas()
             if isinstance(ak_result, ak.dataframe.DataFrame):
-                assert_frame_equal(ak_result.sort_index().to_pandas(retain_index=True), pd_result.sort_index())
+                assert_frame_equal(
+                    ak_result.sort_index().to_pandas(retain_index=True), pd_result.sort_index()
+                )
             else:
                 assert_series_equal(ak_result.sort_index().to_pandas(), pd_result.sort_index())
 
@@ -852,7 +879,7 @@ class DataFrameTest(ArkoudaTest):
             akdf.to_parquet(f"{tmp_dirname}/testName")
 
             ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/testName")
-            self.assertTrue(validation_df.equals(ak_loaded[akdf.columns].to_pandas()))
+            self.assertTrue(validation_df.equals(ak_loaded[akdf.columns.values].to_pandas()))
 
             # test save with index true
             akdf.to_parquet(f"{tmp_dirname}/testName_with_index.pq", index=True)
@@ -1002,7 +1029,7 @@ class DataFrameTest(ArkoudaTest):
             }
         )
         df2 = df[["a", "b"]]
-        self.assertListEqual(["a", "b"], df2.columns)
+        self.assertListEqual(["a", "b"], df2.columns.values)
         self.assertListEqual(df.index.to_list(), df2.index.to_list())
         self.assertListEqual(df["a"].to_list(), df2["a"].to_list())
         self.assertListEqual(df["b"].to_list(), df2["b"].to_list())
@@ -1034,7 +1061,7 @@ class DataFrameTest(ArkoudaTest):
 
         ij_merged_df = ak.merge(df1, df2, how="inner", on="key")
 
-        self.assertListEqual(ij_expected_df.columns, ij_merged_df.columns)
+        self.assertListEqual(ij_expected_df.columns.values, ij_merged_df.columns.values)
         self.assertListEqual(ij_expected_df["key"].to_list(), ij_merged_df["key"].to_list())
         self.assertListEqual(ij_expected_df["value1_x"].to_list(), ij_merged_df["value1_x"].to_list())
         self.assertListEqual(ij_expected_df["value1_y"].to_list(), ij_merged_df["value1_y"].to_list())
@@ -1051,7 +1078,7 @@ class DataFrameTest(ArkoudaTest):
 
         rj_merged_df = ak.merge(df1, df2, how="right", on="key")
 
-        self.assertListEqual(rj_expected_df.columns, rj_merged_df.columns)
+        self.assertListEqual(rj_expected_df.columns.values, rj_merged_df.columns.values)
         self.assertListEqual(rj_expected_df["key"].to_list(), rj_merged_df["key"].to_list())
         self.assertListEqual(rj_expected_df["value1_x"].to_list(), rj_merged_df["value1_x"].to_list())
         self.assertListEqual(rj_expected_df["value1_y"].to_list(), rj_merged_df["value1_y"].to_list())
@@ -1068,7 +1095,7 @@ class DataFrameTest(ArkoudaTest):
 
         lj_merged_df = ak.merge(df1, df2, how="left", on="key")
 
-        self.assertListEqual(lj_expected_df.columns, lj_merged_df.columns)
+        self.assertListEqual(lj_expected_df.columns.values, lj_merged_df.columns.values)
         self.assertListEqual(lj_expected_df["key"].to_list(), lj_merged_df["key"].to_list())
         self.assertListEqual(lj_expected_df["value1_x"].to_list(), lj_merged_df["value1_x"].to_list())
         self.assertListEqual(lj_expected_df["value1_y"].to_list(), lj_merged_df["value1_y"].to_list())
