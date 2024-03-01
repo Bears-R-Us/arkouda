@@ -299,7 +299,9 @@
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span> <span class="n">DTypes</span><span class="p">,</span> <span class="n">bigint</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="nb">bool</span> <span class="k">as</span> <span class="n">akbool</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="nb">bool</span> <span class="k">as</span> <span class="n">npbool</span>
-<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">get_server_byteorder</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">get_server_byteorder</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">int_scalars</span><span class="p">,</span>
@@ -313,7 +315,6 @@
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">translate_np_dtype</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
-<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
 <span class="kn">from</span> <span class="nn">arkouda.infoclass</span> <span class="kn">import</span> <span class="n">information</span><span class="p">,</span> <span class="n">pretty_print_information</span>
 <span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
 
@@ -324,6 +325,7 @@
     <span class="s2">&quot;all&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_sorted&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dot&quot;</span><span class="p">,</span>
     <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;min&quot;</span><span class="p">,</span>
     <span class="s2">&quot;max&quot;</span><span class="p">,</span>
@@ -975,7 +977,7 @@
                         <span class="c1"># treat this as a single element slice</span>
                         <span class="c1"># TODO: implement rank-reducing slices</span>
                         <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-                        <span class="n">stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="n">stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                         <span class="n">strides</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled key type: </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
@@ -2681,6 +2683,60 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduction</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="dot">
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.dot">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">dot</span><span class="p">(</span>
+    <span class="n">pda1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
+    <span class="n">pda2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the sum of the elementwise product of two arrays of the same size (the dot product) or</span>
+<span class="sd">    the product of a singleton element and an array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda1 : Union[numeric_scalars, pdarray]</span>
+
+<span class="sd">    pda2 : Union[numeric_scalars, pdarray]</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Union[numeric_scalars, pdarray]</span>
+<span class="sd">        The sum of the elementwise product pda1 and pda2 or</span>
+<span class="sd">        the product of a singleton element and an array.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if the size of pda1 is not the same as pda2</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.array([2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; y = ak.array([4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; ak.dot(x,y)</span>
+<span class="sd">    23</span>
+<span class="sd">    &gt;&gt;&gt; ak.dot(x,2)</span>
+<span class="sd">    array([4 6])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="p">((</span><span class="n">pda1</span> <span class="ow">is</span> <span class="n">akuint64</span> <span class="ow">and</span> <span class="n">pda2</span> <span class="ow">is</span> <span class="n">akint64</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pda1</span> <span class="ow">is</span> <span class="n">akint64</span> <span class="ow">and</span> <span class="n">pda2</span> <span class="ow">is</span> <span class="n">akuint64</span><span class="p">))</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;incompatible types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">pda2</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Arrays must be same size, </span><span class="si">{</span><span class="n">pda1</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">pda2</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pda1</span> <span class="o">*</span> <span class="n">pda2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pda1</span> <span class="o">*</span> <span class="n">pda2</span></div>
 
 
 
