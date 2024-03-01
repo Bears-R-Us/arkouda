@@ -2831,7 +2831,7 @@ Attributes
       False
 
 
-   .. py:method:: unregister_dataframe_by_name(user_defined_name: str) -> None
+   .. py:method:: unregister_dataframe_by_name(user_defined_name: str) -> str
       :staticmethod:
 
       Function to unregister DataFrame object by name which was registered
@@ -5073,7 +5073,7 @@ Attributes
       False
 
 
-   .. py:method:: unregister_dataframe_by_name(user_defined_name: str) -> None
+   .. py:method:: unregister_dataframe_by_name(user_defined_name: str) -> str
       :staticmethod:
 
       Function to unregister DataFrame object by name which was registered
@@ -28836,7 +28836,7 @@ Attributes
    array([1, 2, 3])
 
 
-.. py:function:: unregister(name: str)
+.. py:function:: unregister(name: str) -> str
 
 
 .. py:function:: unregister_all(names: list)

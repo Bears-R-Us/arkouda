@@ -4737,7 +4737,7 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.unregister_dataframe_by_name">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">unregister_dataframe_by_name</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">unregister_dataframe_by_name</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to unregister DataFrame object by name which was registered</span>
 <span class="sd">        with the arkouda server via register().</span>
@@ -4772,7 +4772,6 @@
 <span class="sd">        &gt;&gt;&gt; df.unregister_dataframe_by_name(&quot;my_table_name&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; df.is_registered()</span>
 <span class="sd">        False</span>
-
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">warnings</span>

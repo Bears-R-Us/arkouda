@@ -2177,7 +2177,7 @@ Functions
       False
 
 
-   .. py:method:: unregister_dataframe_by_name(user_defined_name: str) -> None
+   .. py:method:: unregister_dataframe_by_name(user_defined_name: str) -> str
       :staticmethod:
 
       Function to unregister DataFrame object by name which was registered

@@ -539,7 +539,7 @@
 <div class="viewcode-block" id="unregister">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.unregister">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;unregister&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}))</span>
 
     <span class="k">return</span> <span class="n">rep_msg</span></div>
