@@ -1581,7 +1581,7 @@ Functions
       +----+-----+-----+
 
 
-   .. py:method:: reset_index(size: bool = False, inplace: bool = False) -> Union[None, DataFrame]
+   .. py:method:: reset_index(size: int = None, inplace: bool = False) -> Union[None, DataFrame]
 
       Set the index to an integer range.
 
