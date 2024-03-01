@@ -649,10 +649,15 @@ class Series:
     @typechecked
     def to_pandas(self) -> pd.Series:
         """Convert the series to a local PANDAS series"""
-
+        import copy
         idx = self.index.to_pandas()
         val = convert_if_categorical(self.values)
-        return pd.Series(val.to_ndarray(), index=idx)
+
+        if isinstance(self.name, str):
+            name = copy.copy(self.name)
+            return pd.Series(val.to_ndarray(), index=idx, name=name)
+        else:
+            return pd.Series(val.to_ndarray(), index=idx)
 
     @typechecked()
     def to_list(self) -> list:

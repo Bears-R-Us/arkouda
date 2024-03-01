@@ -1,6 +1,6 @@
-from typing import cast, Tuple, Sequence
-from warnings import warn
 import json
+from typing import Sequence, Tuple, cast
+from warnings import warn
 
 from typeguard import typechecked
 
@@ -51,6 +51,10 @@ def generic_concat(items, ordered=True):
     if len(types) != 1:
         raise TypeError(f"Items must all have same type: {types}")
     t = types.pop()
+
+    if t is list:
+        return [x for lst in items for x in lst]
+
     return (
         t.concat(items, ordered=ordered)
         if hasattr(t, "concat")
@@ -171,8 +175,8 @@ def register(obj, name):
 @typechecked
 def attach(name: str):
     from arkouda.dataframe import DataFrame
-    from arkouda.pdarrayclass import pdarray
     from arkouda.index import Index, MultiIndex
+    from arkouda.pdarrayclass import pdarray
     from arkouda.series import Series
 
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
