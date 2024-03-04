@@ -1067,6 +1067,107 @@ class Series:
                 v = concatenate([v, other.values], ordered=True)
             return Series(index=idx.index, data=v)
 
+    def map(self, arg: Union[dict, Series]) -> Series:
+        """
+        Map values of Series according to an input mapping.
+
+        Parameters
+        ----------
+        arg : dict or Series
+            The mapping correspondence.
+
+        Returns
+        -------
+        arkouda.series.Series
+            A new series with the same index as the caller.
+        Raises
+        ------
+        TypeError
+            Raised if arg is not of type dict or arkouda.Series.
+            Raised if arg values not of type pdarray or Strings.
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> s = ak.Series(ak.array([2, 3, 2, 3, 4]))
+        >>> display(s)
+
+        +----+-----+
+        |    | 0   |
+        +====+=====+
+        |  0 | 2   |
+        +----+-----+
+        |  1 | 3   |
+        +----+-----+
+        |  2 | 2   |
+        +----+-----+
+        |  3 | 3   |
+        +----+-----+
+        |  4 | 4   |
+        +----+-----+
+
+        >>> s.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+
+        +----+-----+
+        |    | 0   |
+        +====+=====+
+        |  0 | 30.0|
+        +----+-----+
+        |  1 | 5.0 |
+        +----+-----+
+        |  2 | 30.0|
+        +----+-----+
+        |  3 | 5.0 |
+        +----+-----+
+        |  4 | 25.0|
+        +----+-----+
+
+        >>> s2 = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
+        >>> s.map(s2)
+
+        +----+-----+
+        |    | 0   |
+        +====+=====+
+        |  0 | b   |
+        +----+-----+
+        |  1 | b   |
+        +----+-----+
+        |  2 | d   |
+        +----+-----+
+        |  3 | d   |
+        +----+-----+
+        |  4 | a   |
+        +----+-----+
+
+        """
+        from arkouda import Series, broadcast, full
+
+        keys = self.values
+        gb = GroupBy(keys, dropna=False)
+        gb_keys = gb.unique_keys
+
+        mapping = arg
+        if isinstance(mapping, dict):
+            mapping = Series([array(list(mapping.keys())), array(list(mapping.values()))])
+
+        if isinstance(mapping, Series):
+            xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]
+            if xtra_keys.size > 0:
+                nans = full(xtra_keys.size, np.nan, mapping.values.dtype)
+                xtra_series = Series(nans, index=xtra_keys)
+                mapping = Series.concat([mapping, xtra_series])
+
+            mapping = mapping[gb_keys]
+
+            if isinstance(mapping.values, (pdarray, Strings)):
+                return Series(
+                    broadcast(gb.segments, mapping.values, permutation=gb.permutation), index=self.index
+                )
+            else:
+                raise TypeError("Map values must be castable to pdarray or Strings.")
+        else:
+            raise TypeError("Map must be dict or arkouda.Series.")
+
     @staticmethod
     @typechecked
     def pdconcat(arrays: List, axis: int = 0, labels: Strings = None) -> Union[pd.Series, pd.DataFrame]:
