@@ -21,6 +21,7 @@ module ReductionMsg
     use RadixSortLSD;
     use ArkoudaMathCompat;
     use ArkoudaBlockCompat;
+    use ArkoudaAryUtilCompat;
 
     private config const lBins = 2**25 * numLocales;
 
@@ -32,253 +33,347 @@ module ReductionMsg
     // it should always be overriden by the pdarray's max_bits attribute
     var class_lvl_max_bits = -1;
 
-    // these functions take an array and produce a scalar
-    // parse and respond to reduction message
-    // scalar = reductionop(vector)
-    @arkouda.registerND
-    proc reductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string = ""; // response message
-        const reductionop = msgArgs.getValueOf("op");
-        const name = msgArgs.getValueOf("array");
-        rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "cmd: %s reductionop: %s name: %s".doFormat(cmd,reductionop,name));
+    const basicReductionOps = {"sum", "prod", "min", "max"},
+          boolReductionOps = {"any", "all", "is_sorted", "is_locally_sorted"},
+          idxReductionOps = {"argmin", "argmax"};
 
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-       
-        select (gEnt.dtype) {
-            when (DType.Int64) {
-                var e = toSymEntry(gEnt,int,nd);
-                select reductionop
-                {
-                    when "any" {
-                        var val:string;
-                        var sum = + reduce (e.a != 0);
-                        if sum != 0 {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    when "all" {
-                        var val:string;
-                        var sum = + reduce (e.a != 0);
-                        if sum == e.a.domain.size {val = "True";} else {val = "False";}
-                       repMsg = "bool %s".doFormat(val);
-                    }
-                    when "sum" {
-                        var val = + reduce e.a;
-                        repMsg = "int64 %i".doFormat(val);
-                    }
-                    when "prod" {
-                        // Cast to real to avoid int64 overflow
-                        var val = * reduce e.a:real;
-                        // Return value is always float64 for prod
-                        repMsg = "float64 %.17r".doFormat(val);
-                    }
-                    when "min" {
-                      var val = min reduce e.a;
-                      repMsg = "int64 %i".doFormat(val);
-                    }
-                    when "max" {
-                        var val = max reduce e.a;
-                        repMsg = "int64 %i".doFormat(val);
-                    }
-                    when "argmin" {
-                        var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".doFormat(minLoc);
-                    }
-                    when "argmax" {
-                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".doFormat(maxLoc);
-                    }
-                    when "is_sorted" {
-                        ref ea = e.a;
-                        var sorted = isSorted(ea);
-                        var val: string;
-                        if sorted {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    when "is_locally_sorted" {
-                      var locSorted: [LocaleSpace] bool;
-                      coforall loc in Locales with (ref locSorted) {
-                        on loc {
-                          ref myA = e.a[e.a.localSubdomain()];
-                          locSorted[here.id] = isSorted(myA);
-                        }
-                      }
+    /*
+      Compute an array reduction along one or more axes
+      (where the result has the same data type as the input array)
 
-                      var val: string;
-                      if (& reduce locSorted) {val = "True";} else {val = "False";}
+      Supports: 'sum', 'prod', 'min', 'max'
+    */
+    @arkouda.registerND(cmd_prefix="reduce")
+    proc argTypeReductionMessage(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+      use SliceReductionOps;
+      param pn = Reflection.getRoutineName();
+      const x = msgArgs.getValueOf("x"),
+            op = msgArgs.getValueOf("op"),
+            nAxes = msgArgs.get("nAxes").getIntValue(),
+            axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+            rname = st.nextName();
 
-                      repMsg = "bool %s".doFormat(val);
-                      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                      return new MsgTuple(repMsg, MsgType.NORMAL); 
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
-                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                      
-                    }
-                }
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+
+      if !basicReductionOps.contains(op) {
+        const errorMsg = notImplementedError(pn,op,gEnt.dtype);
+        rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+
+      proc computeReduction(type t): MsgTuple throws {
+        const eIn = toSymEntry(gEnt, t, nd);
+        type opType = if t == bool then int else t;
+
+        if nd == 1 || nAxes == 0 {
+          var s: opType;
+          select op {
+            when "sum" do s = (+ reduce eIn.a:opType):opType;
+            when "prod" do s = (* reduce eIn.a:opType):opType;
+            when "min" do s = min reduce eIn.a;
+            when "max" do s = max reduce eIn.a;
+            otherwise halt("unreachable");
+          }
+
+          const scalarValue = if (t == bool && (op == "min" || op == "max"))
+            then "bool " + bool2str(if s == 1 then true else false)
+            else "%s %s".doFormat(type2str(opType), type2fmt(opType)).doFormat(s);
+          rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
+          return new MsgTuple(scalarValue, MsgType.NORMAL);
+        } else {
+          const (valid, axes) = validateNegativeAxes(axesRaw, nd);
+          if !valid {
+            var errorMsg = "Invalid axis value(s) '%?' in slicing reduction".doFormat(axesRaw);
+            rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg,MsgType.ERROR);
+          } else {
+            const outShape = reducedShape(eIn.a.shape, axes);
+            var eOut = st.addEntry(rname, outShape, opType);
+
+            forall sliceIdx in domOffAxis(eIn.a.domain, axes) {
+              const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
+              var s: opType;
+              select op {
+                when "sum" do s = sum(eIn.a, sliceDom, opType);
+                when "prod" do s = prod(eIn.a, sliceDom, opType);
+                when "min" do s = getMin(eIn.a, sliceDom);
+                when "max" do s = getMax(eIn.a, sliceDom);
+                otherwise halt("unreachable");
+              }
+              eOut.a[sliceIdx] = s;
             }
-            when (DType.UInt64) {
-                var e = toSymEntry(gEnt,uint,nd);
-                select reductionop
-                {
-                    when "sum" {
-                        var val = + reduce e.a;
-                        repMsg = "uint64 %i".doFormat(val);
-                    }
-                    when "prod" {
-                        // Cast to real to avoid int64 overflow
-                        var val = * reduce e.a:real;
-                        // Return value is always float64 for prod
-                        repMsg = "float64 %.17r".doFormat(val);
-                    }
-                    when "min" {
-                      var val = min reduce e.a;
-                      repMsg = "uint64 %i".doFormat(val);
-                    }
-                    when "max" {
-                        var val = max reduce e.a;
-                        repMsg = "uint64 %i".doFormat(val);
-                    }
-                    when "argmin" {
-                        var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
-                        repMsg = "uint64 %i".doFormat(minLoc);
-                    }
-                    when "argmax" {
-                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
-                        repMsg = "uint64 %i".doFormat(maxLoc);
-                    }
-                    when "is_sorted" {
-                        ref ea = e.a;
-                        var sorted = isSorted(ea);
-                        var val: string;
-                        if sorted {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
-                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.Float64) {
-                var e = toSymEntry(gEnt,real,nd);
-                select reductionop
-                {
-                    when "any" {
-                        var val:string;
-                        var sum = + reduce (e.a != 0.0);
-                        if sum != 0.0 {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    when "all" {
-                        var val:string;
-                        var sum = + reduce (e.a != 0.0);
-                        if sum == e.a.domain.size {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    when "sum" {
-                        var val = + reduce e.a;
-                        repMsg = "float64 %.17r".doFormat(val);
-                    }
-                    when "prod" {
-                        var val = * reduce e.a;
-                        repMsg =  "float64 %.17r".doFormat(val);
-                    }
-                    when "min" {
-                        var val = min reduce e.a;
-                        repMsg = "float64 %.17r".doFormat(val);
-                    }
-                    when "max" {
-                        var val = max reduce e.a;
-                        repMsg = "float64 %.17r".doFormat(val);
-                    }
-                    when "argmin" {
-                        var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".doFormat(minLoc);
-                    }
-                    when "argmax" {
-                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".doFormat(maxLoc);
-                    }
-                    when "is_sorted" {
-                        var sorted = isSorted(e.a);
-                        var val:string;
-                        if sorted {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
-                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                    
-                    }
-                }
-            }
-            when (DType.Bool) {
-                var e = toSymEntry(gEnt, bool, nd);
-                select reductionop
-                {
-                    when "any" {
-                        var val:string;
-                        var any = | reduce e.a;
-                        if any {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    when "all" {
-                        var val:string;
-                        var all = & reduce e.a;
-                        if all {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    when "sum" {
-                        var val = + reduce e.a:int;
-                        repMsg = "int64 %i".doFormat(val);
-                    }
-                    when "prod" {
-                        var val = * reduce e.a:int;
-                        repMsg = "int64 %i".doFormat(val);
-                    }
-                    when "min" {
-                        var val:string;
-                        if (& reduce e.a) { val = "True"; } else { val = "False"; }
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    when "max" {
-                        var val:string;
-                        if (| reduce e.a) { val = "True"; } else { val = "False"; }
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    when "argmax" {
-                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".doFormat(maxLoc);
-                    }
-                    when "argmin" {
-                        var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
-                        repMsg = "int64 %i".doFormat(minLoc);
-                    }
-                    when "is_sorted" {
-                        var sorted = isSorted(e.a);
-                        var val:string;
-                        if sorted {val = "True";} else {val = "False";}
-                        repMsg = "bool %s".doFormat(val);
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
-                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                        
-                    }
-                }
-            }
-            otherwise {
-                var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
-                rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);       
-                return new MsgTuple(errorMsg, MsgType.ERROR);       
-            }
+
+            const repMsg = "created " + st.attrib(rname);
+            rmLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+          }
         }
-        rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       
-        return new MsgTuple(repMsg, MsgType.NORMAL);          
+      }
+
+      select gEnt.dtype {
+        when DType.Int64 do return computeReduction(int);
+        when DType.UInt64 do return computeReduction(uint);
+        when DType.Float64 do return computeReduction(real);
+        when DType.Bool do return computeReduction(bool);
+        otherwise {
+          var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+          rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg,MsgType.ERROR);
+        }
+      }
+    }
+
+    /*
+      Compute an array reduction along one or more axes.
+      (where the result has a bool data type)
+
+      Supports: 'any', 'all', is_sorted, is_locally_sorted
+    */
+    @arkouda.registerND(cmd_prefix="reduce->bool")
+    proc boolReductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+      use SliceReductionOps;
+      param pn = Reflection.getRoutineName();
+      const x = msgArgs.getValueOf("x"),
+            op = msgArgs.getValueOf("op"),
+            nAxes = msgArgs.get("nAxes").getIntValue(),
+            axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+            rname = st.nextName();
+
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+
+      if !boolReductionOps.contains(op) {
+        const errorMsg = notImplementedError(pn,op,gEnt.dtype);
+        rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+
+      if nd > 1 && (op == "is_sorted" || op == "is_locally_sorted") {
+        // TODO: support this for any case where nAxes == 1)
+        const errorMsg = "is_sorted checks are only supported for 1D arrays";
+        rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+
+      proc computeReduction(type t): MsgTuple throws {
+        const eIn = toSymEntry(gEnt, t, nd);
+
+        if nd == 1 || nAxes == 0 {
+          var s: bool;
+          select op {
+            when "any" {
+              s = if t == bool
+                then | reduce eIn.a
+                else (+ reduce (eIn.a != 0)) != 0;
+            }
+            when "all" {
+              s = if t == bool
+                then & reduce eIn.a
+                else (+ reduce (eIn.a != 0)) == eIn.a.size;
+            }
+            when "is_sorted" do s = isSorted(eIn.a);
+            when "is_locally_sorted" {
+              coforall loc in Locales with (&& reduce s) do on loc {
+                ref aLocal = eIn.a[eIn.a.localSubdomain()];
+                s &&= isSorted(aLocal);
+              }
+            }
+            otherwise halt("unreachable");
+          }
+
+          const scalarValue = "bool " + bool2str(s);
+          rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
+          return new MsgTuple(scalarValue, MsgType.NORMAL);
+        } else {
+          const (valid, axes) = validateNegativeAxes(axesRaw, nd);
+          if !valid {
+            var errorMsg = "Invalid axis value(s) '%?' in slicing reduction".doFormat(axesRaw);
+            rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg,MsgType.ERROR);
+          } else {
+            const outShape = reducedShape(eIn.a.shape, axes);
+            var eOut = st.addEntry(rname, outShape, bool);
+
+            forall sliceIdx in domOffAxis(eIn.a.domain, axes) {
+              const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
+              var s: bool = true;
+              select op {
+                when "any" do s = any(eIn.a, sliceDom);
+                when "all" do s = all(eIn.a, sliceDom);
+                when "is_sorted" {
+                  // TODO: maybe it's better to fold this loop outside of the
+                  // domOffAxis loop (check one dimension at a time globally).
+                  for axisIdx in axes do
+                    s &&= isSortedOver(eIn.a, sliceDom, axisIdx);
+                }
+                when "is_locally_sorted" {
+                  coforall loc in Locales with (&& reduce s) do on loc {
+                    const localSliceDom = sliceDom[eIn.a.localSubdomain()];
+                    for axisIdx in axes do
+                      s &&= isSortedOver(eIn.a, localSliceDom, axisIdx);
+                  }
+                }
+                otherwise halt("unreachable");
+              }
+              eOut.a[sliceIdx] = s;
+            }
+
+            const repMsg = "created " + st.attrib(rname);
+            rmLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+          }
+        }
+      }
+
+      select gEnt.dtype {
+        when DType.Int64 do return computeReduction(int);
+        when DType.UInt64 do return computeReduction(uint);
+        when DType.Float64 do return computeReduction(real);
+        when DType.Bool do return computeReduction(bool);
+        otherwise {
+          var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+          rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg,MsgType.ERROR);
+        }
+      }
+    }
+
+    /*
+      Compute an array reduction along one or more axes.
+      (where the result has an integer data type)
+
+      Supports: 'argmin', 'argmax'
+    */
+    @arkouda.registerND(cmd_prefix="reduce->idx")
+    proc idxReductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+      use SliceReductionOps;
+      param pn = Reflection.getRoutineName();
+      const x = msgArgs.getValueOf("x"),
+            op = msgArgs.getValueOf("op"),
+            axis = msgArgs.get("axis").getPositiveIntValue(nd),
+            rname = st.nextName();
+
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+
+      if !idxReductionOps.contains(op) {
+        const errorMsg = notImplementedError(pn,op,gEnt.dtype);
+        rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+
+      proc computeReduction(type t): MsgTuple throws {
+        const eIn = toSymEntry(gEnt, t, nd);
+
+        if nd == 1 {
+          var s: int;
+          select op {
+            when "argmin" {
+              const (minVal, minLoc) = minloc reduce zip(eIn.a, eIn.a.domain);
+              s = minLoc;
+            }
+            when "argmax" {
+              const (maxVal, maxLoc) = maxloc reduce zip(eIn.a, eIn.a.domain);
+              s = maxLoc;
+            }
+            otherwise halt("unreachable");
+          }
+
+          const scalarValue = "int %i".doFormat(s);
+          rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
+          return new MsgTuple(scalarValue, MsgType.NORMAL);
+        } else {
+          const outShape = reducedShape(eIn.a.shape, axis);
+          var eOut = st.addEntry(rname, outShape, int);
+
+          forall sliceIdx in domOffAxis(eIn.a.domain, axis) {
+            const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axis);
+            var s: int;
+            select op {
+              when "argmin" do s = argmin(eIn.a, sliceDom, axis);
+              when "argmax" do s = argmax(eIn.a, sliceDom, axis);
+              otherwise halt("unreachable");
+            }
+            eOut.a[sliceIdx] = s;
+          }
+
+          const repMsg = "created " + st.attrib(rname);
+          rmLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+          return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+      }
+
+      select gEnt.dtype {
+        when DType.Int64 do return computeReduction(int);
+        when DType.UInt64 do return computeReduction(uint);
+        when DType.Float64 do return computeReduction(real);
+        when DType.Bool do return computeReduction(bool);
+        otherwise {
+          var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+          rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg,MsgType.ERROR);
+        }
+      }
+    }
+
+    private module SliceReductionOps {
+      proc any(ref a: [] bool, slice): bool {
+        var hasAny = false;
+        forall i in slice with (|| reduce hasAny) do hasAny ||= a[i];
+        return hasAny;
+      }
+
+      proc any(ref a: [] ?t, slice): bool {
+        var sum = 0:t;
+        forall i in slice with (+ reduce sum) do sum += (a[i] != 0):int;
+        return sum != 0;
+      }
+
+      proc all(ref a: [] bool, slice): bool {
+        var hasAll = true;
+        forall i in slice with (&& reduce hasAll) do hasAll &&= a[i];
+        return hasAll;
+      }
+
+      proc all(ref a: [] ?t, slice): bool {
+        var sum = 0:t;
+        forall i in slice with (+ reduce sum) do sum += (a[i] != 0):int;
+        return sum == a.size;
+      }
+
+      proc sum(ref a: [] ?t, slice, type opType): opType {
+        var sum = 0:opType;
+        forall i in slice with (+ reduce sum) do sum += a[i]:opType;
+        return sum;
+      }
+
+      proc prod(ref a: [] ?t, slice, type opType): opType {
+        var prod = 1.0; // always use real(64) to avoid int overflow
+        forall i in slice with (* reduce prod) do prod *= a[i]:opType;
+        return prod: opType;
+      }
+
+      proc getMin(ref a: [] ?t, slice): t {
+        var minVal = max(t);
+        forall i in slice with (min reduce minVal) do minVal reduce= a[i];
+        return minVal;
+      }
+
+      proc getMax(ref a: [] ?t, slice): t {
+        var maxVal = min(t);
+        forall i in slice with (max reduce maxVal) do maxVal reduce= a[i];
+        return maxVal;
+      }
+
+      proc argmin(ref a: [?d] ?t, slice, axis: int): d.idxType {
+        var minValLoc = (max(t), d.low);
+        forall i in slice with (minloc reduce minValLoc) do minValLoc reduce= (a[i], i);
+        return minValLoc[1][axis];
+      }
+
+      proc argmax(ref a: [?d] ?t, slice, axis: int): d.idxType {
+        var maxValLoc = (min(t), d.low);
+        forall i in slice with (maxloc reduce maxValLoc) do maxValLoc reduce= (a[i], i);
+        return maxValLoc[1][axis];
+      }
     }
 
     proc countReductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -1432,11 +1527,7 @@ module ReductionMsg
       return res;
     }
 
-    proc reductionMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-      return reductionMsg(cmd, msgArgs, st, 1);
-
     use CommandMap;
     registerFunction("segmentedReduction", segmentedReductionMsg, getModuleName());
-    registerFunction("reduction", reductionMsg1D, getModuleName());
     registerFunction("countReduction", countReductionMsg, getModuleName());
 }

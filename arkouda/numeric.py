@@ -149,7 +149,7 @@ def cast(
     # typechecked decorator guarantees no other case
 
     dt = _as_dtype(dt)
-    cmd = "cast"
+    cmd = f"cast{pda.ndim}D"
     repMsg = generic_msg(
         cmd=cmd,
         args={

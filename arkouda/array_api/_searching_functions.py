@@ -4,7 +4,12 @@ from ._array_object import Array
 from ._dtypes import _real_numeric_dtypes
 
 from typing import Optional, Tuple
-import arkouda as ak
+
+from ._manipulation_functions import squeeze, reshape
+
+from arkouda.client import generic_msg
+from arkouda.pdarrayclass import parse_single_value, create_pdarray
+from arkouda.pdarraycreation import scalar_array
 
 
 def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
@@ -15,7 +20,32 @@ def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
     """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in argmax")
-    return Array._new(ak.argmax(x._array))
+
+    if x.ndim > 1 and axis is None:
+        # must flatten ND arrays to 1D without an axis argument
+        x_op = reshape(x, shape=(-1,))
+    else:
+        x_op = x
+
+    resp = generic_msg(
+        cmd=f"reduce->idx{x_op.ndim}D",
+        args={
+            "x": x_op._array,
+            "op": "argmax",
+            "hasAxis": axis is not None,
+            "axis": axis if axis is not None else 0,
+        },
+    )
+
+    if axis is None:
+        return Array._new(scalar_array(parse_single_value(resp)))
+    else:
+        arr = Array._new(create_pdarray(resp))
+
+        if keepdims:
+            return arr
+        else:
+            return squeeze(arr, axis)
 
 
 def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
@@ -25,8 +55,33 @@ def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
     See its docstring for more information.
     """
     if x.dtype not in _real_numeric_dtypes:
-        raise TypeError("Only real numeric dtypes are allowed in argmin")
-    return Array._new(ak.argmin(x._array))
+        raise TypeError("Only real numeric dtypes are allowed in argmax")
+
+    if x.ndim > 1 and axis is None:
+        # must flatten ND arrays to 1D without an axis argument
+        x_op = reshape(x, shape=(-1,))
+    else:
+        x_op = x
+
+    resp = generic_msg(
+        cmd=f"reduce->idx{x_op.ndim}D",
+        args={
+            "x": x_op._array,
+            "op": "argmin",
+            "hasAxis": axis is not None,
+            "axis": axis if axis is not None else 0,
+        },
+    )
+
+    if axis is None:
+        return Array._new(scalar_array(parse_single_value(resp)))
+    else:
+        arr = Array._new(create_pdarray(resp))
+
+        if keepdims:
+            return arr
+        else:
+            return squeeze(arr, axis)
 
 
 def nonzero(x: Array, /) -> Tuple[Array, ...]:

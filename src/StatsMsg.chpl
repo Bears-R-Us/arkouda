@@ -1,6 +1,7 @@
 module StatsMsg {
     use ServerConfig;
 
+    use AryUtil;
     use Reflection;
     use ServerErrors;
     use Logging;
@@ -12,98 +13,93 @@ module StatsMsg {
 
     use Map;
     use ArkoudaIOCompat;
+    use ArkoudaAryUtilCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const sLogger = new Logger(logLevel, logChannel);
 
-    proc meanMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @chpldoc.nodoc
+    const computations = {"mean", "var", "std"};
+
+    /*
+        Compute the mean, variance, or standard deviation of an array along one or more axes.
+    */
+    @arkouda.registerND
+    proc statsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var repMsg: string;
 
-        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
+        const x = msgArgs.getValueOf("x"),
+              comp = msgArgs.getValueOf("comp"),
+              nAxes = msgArgs.get("nAxes").getIntValue(),
+              axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+              ddof = msgArgs.get("ddof").getRealValue(), // "correction" for std and variance
+              rname = st.nextName();
 
-        select (x.dtype) {
-            when (DType.Int64) {
-                repMsg = "float64 %.17r".doFormat(mean(toSymEntry(x,int).a));
-            }
-            when (DType.Float64) {
-                repMsg = "float64 %.17r".doFormat(mean(toSymEntry(x,real).a));
-            }
-            when (DType.Bool) {
-                repMsg = "float64 %.17r".doFormat(mean(toSymEntry(x,bool).a));
-            }
-            when (DType.UInt64) {
-                repMsg = "float64 %.17r".doFormat(mean(toSymEntry(x,uint).a));
-            }
-            otherwise {
-                var errorMsg = unrecognizedTypeError(pn, dtype2str(x.dtype));
-                sLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
+        if !computations.contains(comp) {
+            var errorMsg = "Unrecognized stats computation: %s".doFormat(comp);
+            sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg,MsgType.ERROR);
+        }
+
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+
+        proc computeStat(type tIn, type tOut): MsgTuple throws {
+            const eIn = toSymEntry(gEnt, tIn, nd);
+
+            if nd == 1 || nAxes == 0 {
+                var s: tOut;
+                select comp {
+                    when "mean" do s = mean(eIn.a);
+                    when "var" do s = variance(eIn.a, ddof);
+                    when "std" do s = std(eIn.a, ddof);
+                    otherwise halt("unreachable");
+                }
+
+                const scalarValue = "float64 %.17r".doFormat(s);
+                sLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
+                return new MsgTuple(scalarValue, MsgType.NORMAL);
+            } else {
+                const (valid, axes) = validateNegativeAxes(axesRaw, nd);
+                if !valid {
+                    const errMsg = "Unable to compute 'std' on array with shape %? using axes %?".doFormat(eIn.tupShape, axesRaw);
+                    sLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+                    return new MsgTuple(errMsg,MsgType.ERROR);
+                } else {
+                    const outShape = reducedShape(eIn.tupShape, axes);
+                    var eOut = st.addEntry(rname, outShape, tOut);
+
+                    forall sliceIdx in domOffAxis(eIn.a.domain, axes) {
+                        const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
+                        var s: tOut;
+                        select comp {
+                            when "mean" do s = meanOver(eIn.a, sliceDom);
+                            when "var" do s = varianceOver(eIn.a, sliceDom, ddof);
+                            when "std" do s = stdOver(eIn.a, sliceDom, ddof);
+                            otherwise halt("unreachable");
+                        }
+                        eOut.a[sliceIdx] = s;
+                    }
+
+                    const repMsg = "created " + st.attrib(rname);
+                    sLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+                    return new MsgTuple(repMsg, MsgType.NORMAL);
+                }
             }
         }
-        sLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
 
-    proc varMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string;
-
-        var ddof = msgArgs.get("ddof").getIntValue();
-        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
-
-        select (x.dtype) {
-            when (DType.Int64) {
-                repMsg = "float64 %.17r".doFormat(variance(toSymEntry(x,int).a, ddof));
-            }
-            when (DType.Float64) {
-                repMsg = "float64 %.17r".doFormat(variance(toSymEntry(x,real).a, ddof));
-            }
-            when (DType.Bool) {
-                repMsg = "float64 %.17r".doFormat(variance(toSymEntry(x,bool).a, ddof));
-            }
-            when (DType.UInt64) {
-                repMsg = "float64 %.17r".doFormat(variance(toSymEntry(x,uint).a, ddof));
-            }
+        select gEnt.dtype {
+            when DType.Int64 do return computeStat(int, real);
+            when DType.UInt64 do return computeStat(uint, real);
+            when DType.Float64 do return computeStat(real, real);
+            when DType.Bool do return computeStat(bool, real);
             otherwise {
-                var errorMsg = unrecognizedTypeError(pn, dtype2str(x.dtype));
-                sLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
+                var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+                sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg,MsgType.ERROR);
             }
         }
-        sLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
 
-    proc stdMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string;
-
-        var ddof = msgArgs.get("ddof").getIntValue();
-        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
-
-        select (x.dtype) {
-            when (DType.Int64) {
-                repMsg = "float64 %.17r".doFormat(std(toSymEntry(x,int).a, ddof));
-            }
-            when (DType.Float64) {
-                repMsg = "float64 %.17r".doFormat(std(toSymEntry(x,real).a, ddof));
-            }
-            when (DType.Bool) {
-                repMsg = "float64 %.17r".doFormat(std(toSymEntry(x,bool).a, ddof));
-            }
-            when (DType.UInt64) {
-                repMsg = "float64 %.17r".doFormat(std(toSymEntry(x,uint).a, ddof));
-            }
-            otherwise {
-                var errorMsg = unrecognizedTypeError(pn, dtype2str(x.dtype));
-                sLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
-        sLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     proc covMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -301,9 +297,6 @@ module StatsMsg {
 
 
     use CommandMap;
-    registerFunction("mean", meanMsg, getModuleName());
-    registerFunction("var", varMsg, getModuleName());
-    registerFunction("std", stdMsg, getModuleName());
     registerFunction("cov", covMsg, getModuleName());
     registerFunction("corr",  corrMsg, getModuleName());
     registerFunction("corrMatrix",  corrMatrixMsg, getModuleName());

@@ -564,6 +564,33 @@ def full(
 
 
 @typechecked
+def scalar_array(value: numeric_scalars):
+    """
+    Create a pdarray from a single scalar value.
+
+    Parameters
+    ----------
+    value: numeric_scalars
+        Value to create pdarray from
+
+    Returns
+    -------
+    pdarray
+        pdarray with a single element
+    """
+
+    return create_pdarray(
+        generic_msg(
+            cmd="create0D",
+            args={
+                "dtype": resolve_scalar_dtype(value),
+                "value": value,
+            },
+        )
+    )
+
+
+@typechecked
 def _full_string(
     size: Union[int_scalars, str],
     fill_value: str,

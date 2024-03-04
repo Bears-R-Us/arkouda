@@ -26,6 +26,23 @@ module ArkoudaAryUtilCompat {
     return D[{(...outDims)}];
   }
 
+  proc domOnAxis(D: domain, idx: D.rank*int, axes: [?aD] int): domain throws {
+    if axes.size >= D.rank then
+      throw new Error("Cannot create a " + axes.size:string + "-dimensional slice from a " + D.rank:string + "-dimensional domain");
+
+    var outDims: D.rank*range;
+    label ranks for i in 0..<D.rank {
+      for j in 0..<axes.size {
+        if i == axes[j] {
+          outDims[i] = D.dim(i);
+          continue ranks;
+        }
+      }
+      outDims[i] = idx[i]..idx[i];
+    }
+    return D[{(...outDims)}];
+  }
+
   /*
     Get a domain over the set of indices orthogonal to the specified axes
 
@@ -36,12 +53,29 @@ module ArkoudaAryUtilCompat {
     Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
     (i.e., a set of indices for the 1000 matrices)
   */
-  proc domOffAxis(D: domain(?), axes: int ...?NA): domain
+  proc domOffAxis(D: domain(?), axes: int ...?NA): domain(?)
     where NA < D.rank
   {
     var outDims: D.rank*range;
     label ranks for i in 0..<D.rank {
       for param j in 0..<NA {
+        if i == axes[j] {
+          outDims[i] = 0..0;
+          continue ranks;
+        }
+      }
+      outDims[i] = D.dim(i);
+    }
+    return D[{(...outDims)}];
+  }
+
+  proc domOffAxis(D: domain, axes: [?aD] int): domain throws {
+    if axes.size >= D.rank then
+      throw new Error("Cannot create a " + axes.size:string + "-dimensional slice from a " + D.rank:string + "-dimensional domain");
+
+    var outDims: D.rank*range;
+    label ranks for i in 0..<D.rank {
+      for j in 0..<axes.size {
         if i == axes[j] {
           outDims[i] = 0..0;
           continue ranks;

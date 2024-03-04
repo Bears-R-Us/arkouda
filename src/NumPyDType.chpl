@@ -138,6 +138,53 @@ module NumPyDType
       }
     }
 
+    proc type2str(type t): string {
+      if t == uint(8) then return "uint8";
+      if t == uint(16) then return "uint16";
+      if t == uint(32) then return "uint32";
+      if t == uint then return "uint64";
+      if t == int(8) then return "int8";
+      if t == int(16) then return "int16";
+      if t == int(32) then return "int32";
+      if t == int then return "int64";
+      if t == real(32) then return "float32";
+      if t == real then return "float64";
+      if t == complex(64) then return "complex64";
+      if t == complex(128) then return "complex128";
+      if t == bool then return "bool";
+      if t == bigint then return "bigint";
+      if t == string then return "str";
+      return "undef";
+    }
+
+    proc type2fmt(type t): string {
+      if t == uint(8) then return "%i";
+      if t == uint(16) then return "%i";
+      if t == uint(32) then return "%i";
+      if t == uint then return "%i";
+      if t == int(8) then return "%i";
+      if t == int(16) then return "%i";
+      if t == int(32) then return "%i";
+      if t == int then return "%i";
+      if t == real(32) then return "%.17r";
+      if t == real then return "%.17r";
+      if t == complex(64) then return "%.17z%";
+      if t == complex(128) then return "%.17z%";
+      if t == bool then return "%s";
+      if t == bigint then return "%s";
+      if t == string then return "%s";
+      return "undef";
+    }
+
+    proc bool2str(b: bool): string {
+      if b then return "True";
+      else return "False";
+    }
+
+    proc bool2str(b: ?t): t
+      where t != bool
+        do return b;
+
     /*
       Return the dtype that can store the result of
       an operation between two dtypes for the following

@@ -15,7 +15,8 @@ module CastMsg {
   private config const logChannel = ServerConfig.logChannel;
   const castLogger = new Logger(logLevel, logChannel);
 
-  proc castMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+  @arkouda.registerND
+  proc castMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
           objtype = msgArgs.getValueOf("objType").toUpper(): ObjType,
@@ -32,7 +33,7 @@ module CastMsg {
         proc doScalarCast(type from, type to): MsgTuple throws
           where isSupportedType(from) && isSupportedType(to)
         {
-          const (success, msg) = castGenSymEntry(gse, st, from, to);
+          const (success, msg) = castGenSymEntry(gse, st, from, to, nd);
           return new MsgTuple(msg, if success then MsgType.NORMAL else MsgType.ERROR);
         }
 
@@ -47,7 +48,7 @@ module CastMsg {
         proc doBigintCast(type from): MsgTuple throws
           where isSupportedType(from)
         {
-          const (success, msg) = castGenSymEntryToBigInt(gse, st, from);
+          const (success, msg) = castGenSymEntryToBigInt(gse, st, from, nd);
           return new MsgTuple(msg, if success then MsgType.NORMAL else MsgType.ERROR);
         }
 
@@ -60,16 +61,16 @@ module CastMsg {
         }
 
         proc doStringCast(type from): MsgTuple throws
-          where isSupportedType(from)
+          where isSupportedType(from) && nd == 1
         {
           const (success, msg) = castGenSymEntryToString(gse, st, from);
           return new MsgTuple(msg, if success then MsgType.NORMAL else MsgType.ERROR);
         }
 
         proc doStringCast(type from): MsgTuple throws
-          where !isSupportedType(from)
+          where !isSupportedType(from) || nd > 1
         {
-          const errorMsg = unsupportedTypeError(from, pn);
+          const errorMsg = unsupportedTypeError(from, pn) + ". note: currently only 1D arrays can be cast to strings";
           castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
@@ -371,6 +372,5 @@ module CastMsg {
   }
 
   use CommandMap;
-  registerFunction("cast", castMsg, getModuleName());
   registerFunction("transmuteFloat", transmuteFloatMsg, getModuleName());
 }

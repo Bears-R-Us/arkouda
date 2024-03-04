@@ -706,7 +706,6 @@ class pdarray:
                         "strides": tuple(strides),
                     },
                 )
-                print(repMsg)
                 return create_pdarray(repMsg)
 
         if isinstance(key, pdarray) and self.ndim == 1:
@@ -727,64 +726,122 @@ class pdarray:
             raise TypeError(f"Unhandled key type: {key} ({type(key)})")
 
     def __setitem__(self, key, value):
-        if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
-            orig_key = key
-            if key < 0:
-                # Interpret negative key as offset from end of array
-                key += self.size
-            if key >= 0 and key < self.size:
-                generic_msg(
-                    cmd="[int]=val",
-                    args={
-                        "array": self,
-                        "idx": key,
-                        "dtype": self.dtype,
-                        "value": self.format_other(value),
-                    },
-                )
+        if self.ndim == 1:
+            if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
+                orig_key = key
+                if key < 0:
+                    # Interpret negative key as offset from end of array
+                    key += self.size
+                if key >= 0 and key < self.size:
+                    generic_msg(
+                        cmd="[int]=val-1D",
+                        args={
+                            "array": self,
+                            "idx": key,
+                            "dtype": self.dtype,
+                            "value": self.format_other(value),
+                        },
+                    )
+                else:
+                    raise IndexError(f"index {orig_key} is out of bounds with size {self.size}")
+            elif isinstance(key, pdarray):
+                if isinstance(value, pdarray):
+                    generic_msg(
+                        cmd="[pdarray]=pdarray", args={"array": self, "idx": key, "value": value}
+                    )
+                else:
+                    generic_msg(
+                        cmd="[pdarray]=val",
+                        args={
+                            "array": self,
+                            "idx": key,
+                            "dtype": self.dtype,
+                            "value": self.format_other(value),
+                        },
+                    )
+            elif isinstance(key, slice):
+                (start, stop, stride) = key.indices(self.size)
+                logger.debug(f"start: {start} stop: {stop} stride: {stride}")
+                if isinstance(value, pdarray):
+                    generic_msg(
+                        cmd="[slice]=pdarray",
+                        args={
+                            "array": self,
+                            "start": start,
+                            "stop": stop,
+                            "stride": stride,
+                            "value": value,
+                        },
+                    )
+                else:
+                    generic_msg(
+                        cmd="[slice]=val-1D",
+                        args={
+                            "array": self,
+                            "start": start,
+                            "stop": stop,
+                            "stride": stride,
+                            "dtype": self.dtype,
+                            "value": self.format_other(value),
+                        },
+                    )
             else:
-                raise IndexError(f"index {orig_key} is out of bounds with size {self.size}")
-        elif isinstance(key, pdarray):
-            if isinstance(value, pdarray):
-                generic_msg(cmd="[pdarray]=pdarray", args={"array": self, "idx": key, "value": value})
-            else:
-                generic_msg(
-                    cmd="[pdarray]=val",
-                    args={
-                        "array": self,
-                        "idx": key,
-                        "dtype": self.dtype,
-                        "value": self.format_other(value),
-                    },
-                )
-        elif isinstance(key, slice):
-            (start, stop, stride) = key.indices(self.size)
-            logger.debug(f"start: {start} stop: {stop} stride: {stride}")
-            if isinstance(value, pdarray):
-                generic_msg(
-                    cmd="[slice]=pdarray",
-                    args={
-                        "array": self,
-                        "start": start,
-                        "stop": stop,
-                        "stride": stride,
-                        "value": value,
-                    },
-                )
-            else:
-                generic_msg(
-                    cmd="[slice]=val",
-                    args={
-                        "array": self,
-                        "start": start,
-                        "stop": stop,
-                        "stride": stride,
-                        "dtype": self.dtype,
-                        "value": self.format_other(value),
-                    },
-                )
+                raise TypeError(f"Unhandled key type: {key} ({type(key)})")
         else:
-            raise TypeError(f"Unhandled key type: {key} ({type(key)})")
+            if isinstance(key, tuple) and not isinstance(value, pdarray):
+                allScalar = True
+                starts = []
+                stops = []
+                strides = []
+                for dim, k in enumerate(key):
+                    if isinstance(k, slice):
+                        allScalar = False
+                        (start, stop, stride) = k.indices(self.shape[dim])
+                        starts.append(start)
+                        stops.append(stop)
+                        strides.append(stride)
+                    elif np.isscalar(k) and (resolve_scalar_dtype(k) in ["int64", "uint64"]):
+                        if k < 0:
+                            # Interpret negative key as offset from end of array
+                            k += int(self.shape[dim])
+                        if k < 0 or k >= int(self.shape[dim]):
+                            raise IndexError(
+                                f"index {k} is out of bounds in dimension" +
+                                f"{dim} with size {self.shape[dim]}"
+                            )
+                        else:
+                            # treat this as a single element slice
+                            starts.append(k)
+                            stops.append(k+1)
+                            strides.append(1)
+
+                if allScalar:
+                    # use simpler indexing if we got a tuple of only scalars
+                    generic_msg(
+                        cmd=f"[int]=val-{self.ndim}D",
+                        args={
+                            "array": self,
+                            "idx": key,
+                            "dtype": self.dtype,
+                            "value": self.format_other(value),
+                        },
+                    )
+                else:
+                    generic_msg(
+                        cmd=f"[slice]=val-{self.ndim}D",
+                        args={
+                            "array": self,
+                            "starts": tuple(starts),
+                            "stops": tuple(stops),
+                            "strides": tuple(strides),
+                            "dtype": self.dtype,
+                            "value": self.format_other(value),
+                        },
+                    )
+            else:
+                raise TypeError(
+                    f"Unhandled key type for ND arrays: {key} ({type(key)})"
+                )
 
     @typechecked
     def fill(self, value: numeric_scalars) -> None:
@@ -2156,8 +2213,11 @@ def any(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "any", "array": pda})
-    return parse_single_value(cast(str, repMsg))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"reduce->bool{pda.ndim}D", args={"op": "any", "x": pda, "nAxes": 0, "axis": []}
+        )
+    )
 
 
 @typechecked
@@ -2182,8 +2242,11 @@ def all(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "all", "array": pda})
-    return parse_single_value(cast(str, repMsg))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"reduce->bool{pda.ndim}D", args={"op": "all", "x": pda, "nAxes": 0, "axis": []}
+        )
+    )
 
 
 @typechecked
@@ -2208,8 +2271,11 @@ def is_sorted(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "is_sorted", "array": pda})
-    return parse_single_value(cast(str, repMsg))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"reduce->bool{pda.ndim}D", args={"op": "is_sorted", "x": pda, "nAxes": 0, "axis": []}
+        )
+    )
 
 
 @typechecked
@@ -2234,7 +2300,7 @@ def sum(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "sum", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "sum", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2312,7 +2378,7 @@ def prod(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "prod", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "prod", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2337,7 +2403,7 @@ def min(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "min", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "min", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2363,7 +2429,7 @@ def max(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "max", "array": pda})
+    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "max", "x": pda, "nAxes": 0, "axis": []})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2389,8 +2455,11 @@ def argmin(pda: pdarray) -> Union[np.int64, np.uint64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "argmin", "array": pda})
-    return parse_single_value(cast(str, repMsg))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"reduce->idx{pda.ndim}D", args={"op": "argmin", "x": pda, "hasAxis": False, "axis": 0}
+        )
+    )
 
 
 @typechecked
@@ -2415,8 +2484,11 @@ def argmax(pda: pdarray) -> Union[np.int64, np.uint64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduction{pda.ndim}D", args={"op": "argmax", "array": pda})
-    return parse_single_value(cast(str, repMsg))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"reduce->idx{pda.ndim}D", args={"op": "argmax", "x": pda, "hasAxis": False, "axis": 0}
+        )
+    )
 
 
 @typechecked
@@ -2441,7 +2513,11 @@ def mean(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    return parse_single_value(generic_msg(cmd="mean", args={"x": pda}))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "mean", "nAxes": 0, "axis": [], "ddof": 0}
+        )
+    )
 
 
 @typechecked
@@ -2488,7 +2564,11 @@ def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
     """
     if ddof >= pda.size:
         raise ValueError("var: ddof must be less than number of values")
-    return parse_single_value(generic_msg(cmd="var", args={"x": pda, "ddof": ddof}))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "var", "ddof": ddof, "nAxes": 0, "axis": []}
+        )
+    )
 
 
 @typechecked
@@ -2539,7 +2619,11 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
     """
     if ddof < 0:
         raise ValueError("ddof must be an integer 0 or greater")
-    return parse_single_value(generic_msg(cmd="std", args={"x": pda, "ddof": ddof}))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "std", "ddof": ddof, "nAxes": 0, "axis": []}
+        )
+    )
 
 
 @typechecked

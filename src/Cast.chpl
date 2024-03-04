@@ -15,10 +15,10 @@ module Cast {
   const castLogger = new Logger(logLevel);
 
   proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType,
-                                             type toType): (bool, string) throws {
-    const before = toSymEntry(gse, fromType);
+                       type toType, param nd: int): (bool, string) throws {
+    const before = toSymEntry(gse, fromType, nd);
     const name = st.nextName();
-    var after = st.addEntry(name, before.size, toType);
+    var after = st.addEntry(name, (...before.tupShape), toType);
     try {
       after.a = before.a : toType;
     } catch e: IllegalArgumentError {
@@ -33,10 +33,11 @@ module Cast {
     return (true, returnMsg);
   }
 
-  proc castGenSymEntryToBigInt(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType): (bool, string) throws {
-    const before = toSymEntry(gse, fromType);
+  proc castGenSymEntryToBigInt(gse: borrowed GenSymEntry, st: borrowed SymTab,
+                               type fromType, param nd: int): (bool, string) throws {
+    const before = toSymEntry(gse, fromType, nd);
     const name = st.nextName();
-    var tmp = makeDistArray(before.size, bigint);
+    var tmp = makeDistArray((...before.tupShape), bigint);
     try {
       if fromType == bigint {
         tmp = before.a;
