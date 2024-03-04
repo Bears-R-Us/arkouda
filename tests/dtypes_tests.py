@@ -132,6 +132,10 @@ class DtypesTest(ArkoudaTest):
             a = ak.array([1, 2, 3], dtype=dt)
             self.assertEqual(a.nbytes, 3 * dt.itemsize)
 
+        a = ak.array(["a", "b", "c"])
+        c = ak.Categorical(a)
+        self.assertEqual(c.nbytes, 82)
+
     def test_pdarrays_datatypes(self):
         self.assertEqual(dtypes.dtype("float64"), ak.ones(10).dtype)
         self.assertEqual(

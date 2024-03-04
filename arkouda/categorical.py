@@ -138,6 +138,38 @@ class Categorical:
         self.dtype = str_
         self.registered_name: Optional[str] = None
 
+    @property
+    def nbytes(self):
+        """
+        The size of the Categorical in bytes.
+
+        Returns
+        -------
+        int
+            The size of the Categorical in bytes.
+
+        """
+        nbytes = 0
+        if self.categories is not None:
+            nbytes += self.categories.nbytes
+
+        if isinstance(self.codes, pdarray):
+            nbytes += self.codes.nbytes
+        elif isinstance(self.codes, akint64):
+            nbytes += 1
+
+        if isinstance(self.permutation, pdarray):
+            nbytes += self.permutation.nbytes
+        elif isinstance(self.permutation, akint64):
+            nbytes += 1
+
+        if isinstance(self.segments, pdarray):
+            nbytes += self.segments.nbytes
+        elif isinstance(self.segments, akint64):
+            nbytes += 1
+
+        return nbytes
+
     @classmethod
     @typechecked
     def from_codes(

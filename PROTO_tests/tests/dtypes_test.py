@@ -90,6 +90,10 @@ class TestDTypes:
             a = ak.array([1, 2, 3], dtype=dt)
             assert a.nbytes == 3 * dt.itemsize
 
+        a = ak.array(["a", "b", "c"])
+        c = ak.Categorical(a)
+        assert c.nbytes == 82
+
     def test_pdarrays_datatypes(self):
         assert dtypes.dtype("int64") == ak.array(np.arange(10)).dtype
         assert dtypes.dtype("uint64") == ak.array(np.arange(10), ak.uint64).dtype
