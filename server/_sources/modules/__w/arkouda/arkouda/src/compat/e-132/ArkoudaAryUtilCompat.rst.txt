@@ -31,7 +31,9 @@ or
    (i.e., the 25th matrix)
    
 
-.. function:: proc domOffAxis(D: domain(?), axes: int ...?NA): domain where NA < D.rank
+.. function:: proc domOnAxis(D: domain, idx: D.rank*int, axes: [?aD] int): domain throws
+
+.. function:: proc domOffAxis(D: domain(?), axes: int ...?NA): domain(?) where NA < D.rank
 
    
    Get a domain over the set of indices orthogonal to the specified axes
@@ -43,4 +45,6 @@ or
    Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
    (i.e., a set of indices for the 1000 matrices)
    
+
+.. function:: proc domOffAxis(D: domain, axes: [?aD] int): domain throws
 

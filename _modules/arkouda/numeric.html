@@ -440,7 +440,7 @@
     <span class="c1"># typechecked decorator guarantees no other case</span>
 
     <span class="n">dt</span> <span class="o">=</span> <span class="n">_as_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;cast&quot;</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;cast</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>

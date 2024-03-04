@@ -150,8 +150,13 @@ Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25
 </dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="ArkoudaAryUtilCompat.domOffAxis">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#ArkoudaAryUtilCompat.domOffAxis" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain(?)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#ArkoudaAryUtilCompat.domOffAxis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a domain over the set of indices orthogonal to the specified axes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -165,6 +170,11 @@ Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25
 Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
 (i.e., a set of indices for the 1000 matrices)</p>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
 
 </div>
 

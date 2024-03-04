@@ -94,6 +94,14 @@ or
    :returns: (string)
    
 
+.. function:: proc type2str(type t): string
+
+.. function:: proc type2fmt(type t): string
+
+.. function:: proc bool2str(b: bool): string
+
+.. function:: proc bool2str(b: ?t): t where t != bool
+
 .. function:: proc commonDType(a: DType, b: DType): DType
 
    

@@ -275,6 +275,26 @@ We also need other types like float32, int32, etc</p>
 </dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl" id="NumPyDType.type2str">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">type2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#NumPyDType.type2str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="NumPyDType.type2fmt">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">type2fmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#NumPyDType.type2fmt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="NumPyDType.bool2str">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bool2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">b:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#NumPyDType.bool2str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bool2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">b:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">t</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">!=</span> <span class="pre">bool</span></em></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.commonDType">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">commonDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">DType</span><a class="headerlink" href="#NumPyDType.commonDType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dtype that can store the result of

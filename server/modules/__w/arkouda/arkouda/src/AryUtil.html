@@ -190,6 +190,66 @@ Arrays larger than printThresh will print less data.</p>
 </dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.isSortedOver">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSortedOver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">slice</span></em>, <em class="sig-param"><span class="pre">axisIdx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.isSortedOver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if the passed array is sorted along a given axis,
+within a slice domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – array to check</p></li>
+<li><p><strong>slice</strong> – a slice domain (only the indices in this domain are checked)</p></li>
+<li><p><strong>axisIdx</strong> – the axis to check</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.validateNegativeAxes">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateNegativeAxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?d]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(bool,</span> <span class="pre">[d]</span> <span class="pre">int)</span><a class="headerlink" href="#AryUtil.validateNegativeAxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifies an array of (potentially negative) axis arguments to be
+positive and within the range of the number of dimensions, while
+confirming that the axes are valid.</p>
+<p>A negative axis ‘a’ is converted to ‘nd + a’, where ‘nd’ is the
+number of dimensions in the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axes</strong> – array of axis arguments</p></li>
+<li><p><strong>nd</strong> – number of dimensions in the array</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tuple of a boolean indicating whether the axes are valid,
+and the array of modified axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.reducedShape">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reducedShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">N*int</span><a class="headerlink" href="#AryUtil.reducedShape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify an array shape by making the specified axes degenerate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> – array shape as a tuple of sizes</p></li>
+<li><p><strong>axes</strong> – array of axis arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tuple of sizes where the specified axes have a size of 1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reducedShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">N*int</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.aStats">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">aStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">int,</span> <span class="pre">real,</span> <span class="pre">real,</span> <span class="pre">real)</span><a class="headerlink" href="#AryUtil.aStats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns stats on a given array in form (int,int,real,real,real).</p>

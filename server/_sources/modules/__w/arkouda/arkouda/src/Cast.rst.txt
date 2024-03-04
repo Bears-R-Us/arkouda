@@ -19,9 +19,9 @@ or
 
 .. data:: const castLogger = new Logger(logLevel)
 
-.. function:: proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType, type toType): (bool, string) throws
+.. function:: proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType, type toType, param nd: int): (bool, string) throws
 
-.. function:: proc castGenSymEntryToBigInt(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType): (bool, string) throws
+.. function:: proc castGenSymEntryToBigInt(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType, param nd: int): (bool, string) throws
 
 .. function:: proc castGenSymEntryToString(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType): (bool, string) throws
 
