@@ -19,6 +19,7 @@ module GenSymIO {
     use Map;
     use CTypes;
     use ArkoudaMapCompat;
+    use CommAggregation;
 
     use ArkoudaCTypesCompat;
     use ArkoudaIOCompat;
@@ -31,54 +32,47 @@ module GenSymIO {
     /*
      * Creates a pdarray server-side and returns the SymTab name used to
      * retrieve the pdarray from the SymTab.
-     */
-    proc arrayMsg(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab): MsgTuple throws {
-        // Set up our return items
-        var msgType = MsgType.NORMAL;
-        var msg:string = "";
-        var rname:string = "";
-        var dtype = DType.UNDEF;
-        var size:int;
-        var asSegStr = false;
-        
-        try {
-            dtype = str2dtype(msgArgs.getValueOf("dtype"));
-            size = msgArgs.get("size").getIntValue();
-            asSegStr = msgArgs.get("seg_string").getBoolValue();
-        } catch {
-            var errorMsg = "Error parsing/decoding either dtypeBytes or size";
-            gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
+    */
+    @arkouda.registerArrayMsg
+    proc arrayMsg(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        const dtype = str2dtype(msgArgs.getValueOf("dtype")),
+              shape = msgArgs.get("shape").getTuple(nd),
+              asSegStr = msgArgs.get("seg_string").getBoolValue(),
+              rname = st.nextName();
 
-        overMemLimit(2*size);
+        var size = 1;
+        for s in shape do size *= s;
+        overMemLimit(2*size*dtypeSize(dtype));
 
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                          "dtype: %? size: %i".doFormat(dtype,size));
+                       "dtype: %? shape: %? size: %i".doFormat(dtype,shape,size));
 
-        proc bytesToSymEntry(size:int, type t, st: borrowed SymTab, ref data:bytes): string throws {
-            var entry = createSymEntry(size, t);
-            var localA = makeArrayFromPtr(data.c_str():c_ptr_void:c_ptr(t), size:uint);
-            entry.a = localA;
-            var name = st.nextName();
-            st.addEntry(name, entry);
-            return name;
+        proc bytesToSymEntry(type t) throws {
+            var entry = createSymEntry((...shape), t);
+            var localA = makeArrayFromPtr(data.c_str():c_ptr_void:c_ptr(t), num_elts=size:uint);
+            if nd == 1 {
+                entry.a = localA;
+            } else {
+                forall (i, a) in zip(localA.domain, localA) with (var agg = newDstAggregator(t)) do
+                    agg.copy(entry.a[entry.a.domain.orderToIndex(i)], a);
+            }
+            st.addEntry(rname, entry);
         }
 
         if dtype == DType.Int64 {
-            rname = bytesToSymEntry(size, int, st, data);
+            bytesToSymEntry(int);
         } else if dtype == DType.UInt64 {
-            rname = bytesToSymEntry(size, uint, st, data);
+            bytesToSymEntry(uint);
         } else if dtype == DType.Float64 {
-            rname = bytesToSymEntry(size, real, st, data);
+            bytesToSymEntry(real);
         } else if dtype == DType.Bool {
-            rname = bytesToSymEntry(size, bool, st, data);
+            bytesToSymEntry(bool);
         } else if dtype == DType.UInt8 {
-            rname = bytesToSymEntry(size, uint(8), st, data);
+            bytesToSymEntry(uint(8));
         } else {
-            msg = "Unhandled data type %s".doFormat(msgArgs.getValueOf("dtype"));
-            msgType = MsgType.ERROR;
+            const msg = "Unhandled data type %s".doFormat(msgArgs.getValueOf("dtype"));
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
+            return new MsgTuple(msg, MsgType.ERROR);
         }
 
         if asSegStr {
@@ -91,27 +85,22 @@ module GenSymIO {
                     var oname = st.nextName();
                     var offsetsEntry = createSymEntry(offsets);
                     st.addEntry(oname, offsetsEntry);
-                    msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
+                    const msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
+                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
+                    return new MsgTuple(msg, MsgType.NORMAL);
                 } else {
                     throw new Error("Unsupported Type %s".doFormat(g.entryType));
                 }
-
             } catch e: Error {
-                msg = "Error creating offsets for SegString";
-                msgType = MsgType.ERROR;
+                const msg = "Error creating offsets for SegString";
                 gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
+                return new MsgTuple(msg, MsgType.ERROR);
             }
         }
 
-        if (MsgType.ERROR != msgType) {  // success condition
-            // Set up return message indicating SymTab name corresponding to new pdarray
-            // If we made a SegString or we encountered an error, the msg will already be populated
-            if (msg.isEmpty()) {
-                msg = "created " + st.attrib(rname);
-            }
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
-        }
-        return new MsgTuple(msg, msgType);
+        const msg = "created " + st.attrib(rname);
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
+        return new MsgTuple(msg, MsgType.NORMAL);
     }
 
     /**
@@ -149,15 +138,12 @@ module GenSymIO {
         proc distArrToBytes(A: [?D] ?eltType) {
             var ptr = allocate(eltType, D.size);
             var localA = makeArrayFromPtr(ptr, D.size:uint);
-            if nd == 1
-                then localA = A;
-                else {
-                    var i = 0;
-                    for x in A {
-                        localA[i] = x;
-                        i += 1;
-                    };
-                }
+            if nd == 1 {
+                localA = A;
+            } else {
+                forall (i, a) in zip(localA.domain, localA) with (var agg = newSrcAggregator(eltType)) do
+                    agg.copy(localA[i], A[D.orderToIndex(i)]);
+            }
             const size = D.size*c_sizeof(eltType):int;
             return bytes.createAdoptingBuffer(ptr:c_ptr(uint(8)), size, size);
         }

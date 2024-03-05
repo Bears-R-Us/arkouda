@@ -279,8 +279,8 @@ module MultiTypeSymEntry
         }
     }
 
-    inline proc createSymEntry(len: int, type etype) throws {
-      var a = makeDistArray(len, etype);
+    inline proc createSymEntry(shape: int ..., type etype) throws {
+      var a = makeDistArray((...shape), etype);
       return new shared SymEntry(a);
     }
 

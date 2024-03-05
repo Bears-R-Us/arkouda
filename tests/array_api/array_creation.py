@@ -30,3 +30,14 @@ class ArrayCreationTests(ArkoudaTest):
                 self.assertEqual(a.shape, shape)
                 self.assertEqual(a.dtype, dtype)
                 self.assertEqual(a.tolist(), np.ones(shape, dtype=dtype).tolist())
+
+    def test_from_numpy(self):
+        #TODO: support 0D (scalar) arrays
+        # (need changes to the create0D command from #2967)
+        for shape in SHAPES[1:]:
+            a = np.random.randint(0, 10, size=shape, dtype=np.int64)
+            b = Array.asarray(a)
+            self.assertEqual(b.size, a.size)
+            self.assertEqual(b.ndim, a.ndim)
+            self.assertEqual(b.shape, a.shape)
+            self.assertEqual(b.tolist(), a.tolist())

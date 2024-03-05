@@ -623,8 +623,7 @@ module ServerDaemon {
                  * Note: Our specialized commands have been added to the commandMap with dummy signatures so they show
                  *  up in the client.print_server_commands() function, but we need to intercept & process them as appropriate
                  */
-                select cmd {
-                    when "array"   { repTuple = arrayMsg(cmd, msgArgs, payload, st); }
+                 select cmd {
                     when "connect" {
                         if authenticate {
                             repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".doFormat(
@@ -647,8 +646,10 @@ module ServerDaemon {
                     when "ruok" {
                         repTuple = new MsgTuple("imok", MsgType.NORMAL);
                     }
-                    otherwise { // Look up in CommandMap or Binary CommandMap
-                        if commandMap.contains(cmd) {
+                    otherwise { // Look up in CommandMap or Binary CommandMap (or array CommandMap for special handling)
+                        if commandMapArray.contains(cmd) {
+                            repTuple = commandMapArray[cmd](cmd, msgArgs, payload, st);
+                        } else if commandMap.contains(cmd) {
                             if moduleMap.contains(cmd) then
                                 usedModules.add(moduleMap[cmd]);
                             repTuple = commandMap[cmd](cmd, msgArgs, st);

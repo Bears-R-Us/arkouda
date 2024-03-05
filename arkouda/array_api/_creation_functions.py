@@ -6,8 +6,10 @@ from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
 from arkouda.client import generic_msg
 import numpy as np
 from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.pdarraycreation import _array_memview
 from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import resolve_scalar_dtype
+from arkouda.client import maxTransferBytes
 
 if TYPE_CHECKING:
     from ._typing import (
@@ -60,7 +62,7 @@ def asarray(
         or isinstance(obj, complex)
     ):
         if dtype is None:
-            xdtype = resolve_scalar_dtype(obj)
+            xdtype = akdtype(resolve_scalar_dtype(obj))
         else:
             xdtype = akdtype(dtype)
         res = ak.full(1, obj, xdtype)
@@ -69,6 +71,41 @@ def asarray(
         return Array._new(ak.array(obj._array))
     elif isinstance(obj, ak.pdarray):
         return Array._new(obj)
+    elif isinstance(obj, np.ndarray):
+        obj_flat = obj.flatten()
+        if dtype is None:
+            xdtype = akdtype(obj_flat.dtype)
+        else:
+            xdtype = akdtype(dtype)
+
+        if obj_flat.nbytes > maxTransferBytes:
+            raise RuntimeError(
+                f"Creating Array would require transferring {obj_flat.nbytes} bytes, which exceeds "
+                f"allowed transfer size. Increase ak.client.maxTransferBytes to force."
+            )
+
+        print(f"making array, shape: {np.shape(obj)},  dtype: {xdtype}")
+
+        if obj.shape == ():
+            return Array._new(
+                create_pdarray(
+                    generic_msg(
+                        cmd="create0D",
+                        args={"dtype": xdtype, "value": obj.item()},
+                    )
+                )
+            )
+        else:
+            return Array._new(
+                create_pdarray(
+                    generic_msg(
+                        cmd=f"array{obj.ndim}D",
+                        args={"dtype": xdtype, "shape": np.shape(obj) , "seg_string": False},
+                        payload=_array_memview(obj_flat),
+                        send_binary=True,
+                    )
+                )
+            )
     else:
         raise ValueError("asarray not implemented for 'NestedSequence'")
 
