@@ -292,8 +292,10 @@
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">_array_memview</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">resolve_scalar_dtype</span>
+<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">maxTransferBytes</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">._typing</span> <span class="kn">import</span> <span class="p">(</span>
@@ -348,7 +350,7 @@
         <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">xdtype</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">xdtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">xdtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">xdtype</span><span class="p">)</span>
@@ -357,6 +359,41 @@
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">obj_flat</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">xdtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">obj_flat</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xdtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">obj_flat</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">&gt;</span> <span class="n">maxTransferBytes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Creating Array would require transferring </span><span class="si">{</span><span class="n">obj_flat</span><span class="o">.</span><span class="n">nbytes</span><span class="si">}</span><span class="s2"> bytes, which exceeds &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;allowed transfer size. Increase ak.client.maxTransferBytes to force.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;making array, shape: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="si">}</span><span class="s2">,  dtype: </span><span class="si">{</span><span class="n">xdtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+            <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
+                <span class="n">create_pdarray</span><span class="p">(</span>
+                    <span class="n">generic_msg</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;create0D&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">xdtype</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">item</span><span class="p">()},</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
+                <span class="n">create_pdarray</span><span class="p">(</span>
+                    <span class="n">generic_msg</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;array</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">xdtype</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="p">,</span> <span class="s2">&quot;seg_string&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                        <span class="n">payload</span><span class="o">=</span><span class="n">_array_memview</span><span class="p">(</span><span class="n">obj_flat</span><span class="p">),</span>
+                        <span class="n">send_binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;asarray not implemented for &#39;NestedSequence&#39;&quot;</span><span class="p">)</span></div>
 

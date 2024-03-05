@@ -153,6 +153,11 @@
 </ul>
 </dd></dl>
 
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="CommandMap.arrayMsgSign">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arrayMsgSign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">data:</span> <span class="pre">bytes</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#CommandMap.arrayMsgSign" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="CommandMap.commandMap">
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">commandMap</span></span><span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">f.type)</span><a class="headerlink" href="#CommandMap.commandMap" title="Permalink to this definition">¶</a></dt>
@@ -161,6 +166,11 @@
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="CommandMap.commandMapBinary">
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">commandMapBinary</span></span><span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">b.type)</span><a class="headerlink" href="#CommandMap.commandMapBinary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="CommandMap.commandMapArray">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">commandMapArray</span></span><span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">a.type)</span><a class="headerlink" href="#CommandMap.commandMapArray" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
@@ -208,6 +218,11 @@
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerBinaryFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">fcf:</span> <span class="pre">b.type</span></em>, <em class="sig-param"><span class="pre">modName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="CommandMap.registerArrayFunction">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerArrayFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">fcf:</span> <span class="pre">a.type</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommandMap.registerArrayFunction" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

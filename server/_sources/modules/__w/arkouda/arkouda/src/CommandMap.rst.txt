@@ -33,9 +33,13 @@ or
    * require a different signature
    
 
+.. function:: proc arrayMsgSign(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab): MsgTuple throws
+
 .. data:: var commandMap: map(string, f.type)
 
 .. data:: var commandMapBinary: map(string, b.type)
+
+.. data:: var commandMapArray: map(string, a.type)
 
 .. data:: var moduleMap: map(string, string)
 
@@ -62,6 +66,8 @@ or
    
 
 .. function:: proc registerBinaryFunction(cmd: string, fcf: b.type, modName: string)
+
+.. function:: proc registerArrayFunction(cmd: string, fcf: a.type)
 
 .. function:: proc dumpCommandMap(): string throws
 

@@ -254,7 +254,7 @@ or
           :returns: s (string) containing the array data
       
 
-.. function:: proc createSymEntry(len: int, type etype) throws
+.. function:: proc createSymEntry(shape: int ..., type etype) throws
 
 .. function:: proc createSymEntry(in a: [?D] ?etype, max_bits = -1) throws
 
