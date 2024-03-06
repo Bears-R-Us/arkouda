@@ -1080,6 +1080,9 @@ class Series:
         -------
         arkouda.series.Series
             A new series with the same index as the caller.
+            When the input Series has Categorical values,
+            the return Series will have Strings values.
+            Otherwise, the return type will match the input type.
         Raises
         ------
         TypeError
@@ -1152,12 +1155,23 @@ class Series:
 
         if isinstance(mapping, Series):
             xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]
+
             if xtra_keys.size > 0:
-                nans = full(xtra_keys.size, np.nan, mapping.values.dtype)
+                if not isinstance(mapping.values, (Strings, Categorical)):
+                    nans = full(xtra_keys.size, np.nan, mapping.values.dtype)
+                else:
+                    nans = full(xtra_keys.size, "null")
+
+                if isinstance(xtra_keys, Categorical):
+                    xtra_keys = xtra_keys.to_strings()
+
                 xtra_series = Series(nans, index=xtra_keys)
                 mapping = Series.concat([mapping, xtra_series])
 
-            mapping = mapping[gb_keys]
+            if isinstance(gb_keys, Categorical):
+                mapping = mapping[gb_keys.to_strings()]
+            else:
+                mapping = mapping[gb_keys]
 
             if isinstance(mapping.values, (pdarray, Strings)):
                 return Series(
