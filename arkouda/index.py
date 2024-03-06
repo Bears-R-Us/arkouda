@@ -198,7 +198,7 @@ class Index:
 
         Parameters
         ----------
-        unit : str, default = "GB"
+        unit : str, default = "B"
             Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
 
         Returns
