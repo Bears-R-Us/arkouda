@@ -72,11 +72,12 @@ class TestDTypes:
         assert "uint64" == dtypes.resolve_scalar_dtype(2**63 + 1)
         assert "bigint" == dtypes.resolve_scalar_dtype(2**64)
 
-    def test_nbytes(self):
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_nbytes(self, size):
         from arkouda.dtypes import BigInt
 
-        a = ak.cast(ak.array([1, 2, 3]), dt="bigint")
-        assert a.nbytes == 3 * BigInt.itemsize
+        a = ak.cast(ak.arange(size), dt="bigint")
+        assert a.nbytes == size * BigInt.itemsize
 
         dtype_list = [
             ak.dtypes.uint8,
@@ -87,8 +88,8 @@ class TestDTypes:
         ]
 
         for dt in dtype_list:
-            a = ak.array([1, 2, 3], dtype=dt)
-            assert a.nbytes == 3 * dt.itemsize
+            a = ak.array(ak.arange(size), dtype=dt)
+            assert a.nbytes == size * dt.itemsize
 
         a = ak.array(["a", "b", "c"])
         c = ak.Categorical(a)
