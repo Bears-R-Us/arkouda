@@ -752,14 +752,21 @@ module ParquetMsg {
       var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
       var locSubdoms = subdoms;
 
+      for i in locFiles.domain {
+        var fname = locFiles[i];
+        var locDsetname = dsetname;
+        for rg in 0..#numRowGroups[i] {
+          c_createRowGroupReader(rg, getReaderIdx(i,rg));
+          c_createColumnReader(c_ptrTo(locDsetname), getReaderIdx(i,rg));
+        }
+      }
+
       forall i in locFiles.domain {
         var fname = locFiles[i];
         var locDsetname = dsetname;
         for rg in 0..#numRowGroups[i] {
           var startIdx = locSubdoms[i].low;
           var totalBytes = 0;
-          c_createRowGroupReader(rg, getReaderIdx(i,rg));
-          c_createColumnReader(c_ptrTo(locDsetname), getReaderIdx(i,rg));
 
           var numRead = 0;
           externalData[i][rg] = c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead));
@@ -956,6 +963,7 @@ module ParquetMsg {
           extern proc c_readParquetColumnChunks(filename, batchSize,
                                       numElems, readerIdx, numRead): c_ptr(void);
 
+          writeln('here');
           var entrySeg = createSymEntry(len, int);
           
           var distFiles = makeDistArray(filenames);
@@ -967,15 +975,20 @@ module ParquetMsg {
           var valsRead: [distFiles.domain] [0..#maxRowGroups] int;
           var bytesPerRG: [distFiles.domain] [0..#maxRowGroups] int;
 
+          writeln('before fill');
           fillSegmentsAndPersistData(distFiles, entrySeg, externalData, valsRead, dsetname, sizes, len, numRowGroups, bytesPerRG);
+          writeln('after fill');
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
 
           var (rgSubdomains, totalBytes) = getRGSubdomains(bytesPerRG, maxRowGroups);
           
           var entryVal = createSymEntry(totalBytes, uint(8));
 
+          writeln('before copy');
           copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups);
+          writeln('after copy');
 
+          writeln('before free');
           for i in externalData.domain {
             for j in externalData[i].domain {
               if valsRead[i][j] > 0 then
@@ -983,6 +996,7 @@ module ParquetMsg {
                   c_freeMapValues(externalData[i][j]);
             }
           }
+          writeln('after free');
           // TODO: Need to free c++ memory for the maps and malloced stuff
           
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
