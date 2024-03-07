@@ -948,13 +948,13 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(test_df["col_B"].to_list(), [False, False])
 
     def test_corr(self):
-        df = ak.DataFrame({'col1': [1, 2], 'col2': [-1, -2]})
+        df = ak.DataFrame({"col1": [1, 2], "col2": [-1, -2]})
         corr = df.corr()
         pd_corr = df.to_pandas().corr()
         assert_frame_equal(corr.to_pandas(retain_index=True), pd_corr)
 
         for i in range(5):
-            df = ak.DataFrame({'col1': ak.randint(0, 10, 10), 'col2': ak.randint(0, 10, 10)})
+            df = ak.DataFrame({"col1": ak.randint(0, 10, 10), "col2": ak.randint(0, 10, 10)})
             corr = df.corr()
             pd_corr = df.to_pandas().corr()
             assert_frame_equal(corr.to_pandas(retain_index=True), pd_corr)
@@ -1055,6 +1055,7 @@ class DataFrameTest(ArkoudaTest):
             {
                 "key": ak.arange(4),
                 "value1": ak.array(["A", "B", "C", "D"]),
+                "value3": ak.arange(4, dtype=ak.int64),
             }
         )
 
@@ -1063,6 +1064,7 @@ class DataFrameTest(ArkoudaTest):
                 "key": ak.arange(2, 6, 1),
                 "value1": ak.array(["A", "B", "D", "F"]),
                 "value2": ak.array(["apple", "banana", "cherry", "date"]),
+                "value3": ak.ones(4, dtype=ak.int64),
             }
         )
 
@@ -1070,8 +1072,10 @@ class DataFrameTest(ArkoudaTest):
             {
                 "key": ak.array([2, 3]),
                 "value1_x": ak.array(["C", "D"]),
+                "value3_x": ak.array([2, 3]),
                 "value1_y": ak.array(["A", "B"]),
                 "value2": ak.array(["apple", "banana"]),
+                "value3_y": ak.array([1, 1]),
             }
         )
 
@@ -1082,40 +1086,248 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(ij_expected_df["value1_x"].to_list(), ij_merged_df["value1_x"].to_list())
         self.assertListEqual(ij_expected_df["value1_y"].to_list(), ij_merged_df["value1_y"].to_list())
         self.assertListEqual(ij_expected_df["value2"].to_list(), ij_merged_df["value2"].to_list())
+        self.assertTrue(
+            np.allclose(
+                ij_expected_df["value3_x"].to_ndarray(),
+                ij_merged_df["value3_x"].to_ndarray(),
+                equal_nan=True,
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                ij_expected_df["value3_y"].to_ndarray(),
+                ij_merged_df["value3_y"].to_ndarray(),
+                equal_nan=True,
+            )
+        )
 
         rj_expected_df = ak.DataFrame(
             {
                 "key": ak.array([2, 3, 4, 5]),
                 "value1_x": ak.array(["C", "D", "nan", "nan"]),
+                "value3_x": ak.array([2.0, 3.0, np.nan, np.nan]),
                 "value1_y": ak.array(["A", "B", "D", "F"]),
                 "value2": ak.array(["apple", "banana", "cherry", "date"]),
+                "value3_y": ak.array([1, 1, 1, 1]),
             }
         )
 
         rj_merged_df = ak.merge(df1, df2, how="right", on="key")
+
+        self.assertTrue(
+            rj_merged_df.dtypes
+            == {
+                "key": "int64",
+                "value1_x": "str",
+                "value3_x": "float64",
+                "value1_y": "str",
+                "value2": "str",
+                "value3_y": "int64",
+            }
+        )
 
         self.assertListEqual(rj_expected_df.columns.values, rj_merged_df.columns.values)
         self.assertListEqual(rj_expected_df["key"].to_list(), rj_merged_df["key"].to_list())
         self.assertListEqual(rj_expected_df["value1_x"].to_list(), rj_merged_df["value1_x"].to_list())
         self.assertListEqual(rj_expected_df["value1_y"].to_list(), rj_merged_df["value1_y"].to_list())
         self.assertListEqual(rj_expected_df["value2"].to_list(), rj_merged_df["value2"].to_list())
+        self.assertTrue(
+            np.allclose(
+                rj_expected_df["value3_x"].to_ndarray(),
+                rj_merged_df["value3_x"].to_ndarray(),
+                equal_nan=True,
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                rj_expected_df["value3_y"].to_ndarray(),
+                rj_merged_df["value3_y"].to_ndarray(),
+                equal_nan=True,
+            )
+        )
+
+        rj_merged_df2 = ak.merge(df1, df2, how="right", on="key", convert_ints=False)
+
+        self.assertTrue(
+            rj_merged_df2.dtypes
+            == {
+                "key": "int64",
+                "value1_x": "str",
+                "value3_x": "int64",
+                "value1_y": "str",
+                "value2": "str",
+                "value3_y": "int64",
+            }
+        )
 
         lj_expected_df = ak.DataFrame(
             {
-                "key": ak.array([2, 3, 0, 1]),
-                "value1_y": ak.array(["A", "B", "nan", "nan"]),
-                "value2": ak.array(["apple", "banana", "nan", "nan"]),
-                "value1_x": ak.array(["C", "D", "A", "B"]),
+                "key": ak.array(
+                    [
+                        0,
+                        1,
+                        2,
+                        3,
+                    ]
+                ),
+                "value1_y": ak.array(
+                    [
+                        "nan",
+                        "nan",
+                        "A",
+                        "B",
+                    ]
+                ),
+                "value2": ak.array(
+                    [
+                        "nan",
+                        "nan",
+                        "apple",
+                        "banana",
+                    ]
+                ),
+                "value3_y": ak.array(
+                    [
+                        np.nan,
+                        np.nan,
+                        1.0,
+                        1.0,
+                    ]
+                ),
+                "value1_x": ak.array(
+                    [
+                        "A",
+                        "B",
+                        "C",
+                        "D",
+                    ]
+                ),
+                "value3_x": ak.array(
+                    [
+                        0,
+                        1,
+                        2,
+                        3,
+                    ]
+                ),
             }
         )
 
         lj_merged_df = ak.merge(df1, df2, how="left", on="key")
+
+        self.assertTrue(
+            lj_merged_df.dtypes
+            == {
+                "key": "int64",
+                "value1_y": "str",
+                "value2": "str",
+                "value3_y": "float64",
+                "value1_x": "str",
+                "value3_x": "int64",
+            }
+        )
 
         self.assertListEqual(lj_expected_df.columns.values, lj_merged_df.columns.values)
         self.assertListEqual(lj_expected_df["key"].to_list(), lj_merged_df["key"].to_list())
         self.assertListEqual(lj_expected_df["value1_x"].to_list(), lj_merged_df["value1_x"].to_list())
         self.assertListEqual(lj_expected_df["value1_y"].to_list(), lj_merged_df["value1_y"].to_list())
         self.assertListEqual(lj_expected_df["value2"].to_list(), lj_merged_df["value2"].to_list())
+        self.assertTrue(
+            np.allclose(
+                lj_expected_df["value3_x"].to_ndarray(),
+                lj_merged_df["value3_x"].to_ndarray(),
+                equal_nan=True,
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                lj_expected_df["value3_y"].to_ndarray(),
+                lj_merged_df["value3_y"].to_ndarray(),
+                equal_nan=True,
+            )
+        )
+
+        lj_merged_df2 = ak.merge(df1, df2, how="left", on="key", convert_ints=False)
+
+        self.assertTrue(
+            lj_merged_df2.dtypes
+            == {
+                "key": "int64",
+                "value1_y": "str",
+                "value2": "str",
+                "value3_y": "int64",
+                "value1_x": "str",
+                "value3_x": "int64",
+            }
+        )
+
+        oj_expected_df = ak.DataFrame(
+            {
+                "key": ak.array([0, 1, 2, 3, 4, 5]),
+                "value1_y": ak.array(["nan", "nan", "A", "B", "D", "F"]),
+                "value2": ak.array(["nan", "nan", "apple", "banana", "cherry", "date"]),
+                "value3_y": ak.array([np.nan, np.nan, 1.0, 1.0, 1.0, 1.0]),
+                "value1_x": ak.array(
+                    [
+                        "A",
+                        "B",
+                        "C",
+                        "D",
+                        "nan",
+                        "nan",
+                    ]
+                ),
+                "value3_x": ak.array([0.0, 1.0, 2.0, 3.0, np.nan, np.nan]),
+            }
+        )
+
+        oj_merged_df = ak.merge(df1, df2, how="outer", on="key")
+
+        self.assertTrue(
+            oj_merged_df.dtypes
+            == {
+                "key": "int64",
+                "value1_y": "str",
+                "value2": "str",
+                "value3_y": "float64",
+                "value1_x": "str",
+                "value3_x": "float64",
+            }
+        )
+
+        self.assertListEqual(oj_expected_df.columns.values, oj_merged_df.columns.values)
+        self.assertListEqual(oj_expected_df["key"].to_list(), oj_merged_df["key"].to_list())
+        self.assertListEqual(oj_expected_df["value1_x"].to_list(), oj_merged_df["value1_x"].to_list())
+        self.assertListEqual(oj_expected_df["value1_y"].to_list(), oj_merged_df["value1_y"].to_list())
+        self.assertListEqual(oj_expected_df["value2"].to_list(), oj_merged_df["value2"].to_list())
+        self.assertTrue(
+            np.allclose(
+                oj_expected_df["value3_x"].to_ndarray(),
+                oj_merged_df["value3_x"].to_ndarray(),
+                equal_nan=True,
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                oj_expected_df["value3_y"].to_ndarray(),
+                oj_merged_df["value3_y"].to_ndarray(),
+                equal_nan=True,
+            )
+        )
+
+        oj_merged_df2 = ak.merge(df1, df2, how="outer", on="key", convert_ints=False)
+
+        self.assertTrue(
+            oj_merged_df2.dtypes
+            == {
+                "key": "int64",
+                "value1_y": "str",
+                "value2": "str",
+                "value3_y": "int64",
+                "value1_x": "str",
+                "value3_x": "int64",
+            }
+        )
 
     def test_multi_col_merge(self):
         size = 1000
@@ -1133,7 +1345,7 @@ class DataFrameTest(ArkoudaTest):
             right_df = ak.DataFrame({k: v for k, v in zip(["first", "second", "third"], right_arrs)})
             l_pd, r_pd = left_df.to_pandas(), right_df.to_pandas()
 
-            for how in "inner", "left", "right":
+            for how in "inner", "left", "right", "outer":
                 for on in "first", "second", "third", ["first", "third"], ["second", "third"], None:
                     ak_merge = ak.merge(left_df, right_df, on=on, how=how)
                     pd_merge = pd.merge(l_pd, r_pd, on=on, how=how)

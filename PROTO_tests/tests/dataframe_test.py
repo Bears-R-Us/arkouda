@@ -879,13 +879,13 @@ class TestDataFrame:
         assert test_df["col_B"].to_list() == [False, False]
 
     def test_corr(self):
-        df = ak.DataFrame({'col1': [1, 2], 'col2': [-1, -2]})
+        df = ak.DataFrame({"col1": [1, 2], "col2": [-1, -2]})
         corr = df.corr()
         pd_corr = df.to_pandas().corr()
         assert_frame_equal(corr.to_pandas(retain_index=True), pd_corr)
 
         for i in range(5):
-            df = ak.DataFrame({'col1': ak.randint(0, 10, 10), 'col2': ak.randint(0, 10, 10)})
+            df = ak.DataFrame({"col1": ak.randint(0, 10, 10), "col2": ak.randint(0, 10, 10)})
             corr = df.corr()
             pd_corr = df.to_pandas().corr()
             assert_frame_equal(corr.to_pandas(retain_index=True), pd_corr)
