@@ -1996,12 +1996,8 @@ void cpp_createColumnReader(const char* colname, int64_t readerIdx) {
   std::shared_ptr<parquet::FileMetaData> file_metadata = globalFiles[readerIdx]->metadata();
   auto idx = file_metadata -> schema() -> ColumnIndex(colname);
 
-  auto start = std::chrono::high_resolution_clock::now();
   std::shared_ptr<parquet::ColumnReader> column_reader;
   column_reader = globalRowGroupReaders[readerIdx]->Column(idx);
-  auto finish = std::chrono::high_resolution_clock::now();
-  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
-  std::cout << microseconds.count()/1000 << "ms\n";
   globalColumnReaders[readerIdx] = column_reader;
 }
 
@@ -2018,7 +2014,6 @@ void* cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64
     (void)reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values + total_read, &values_read);
     total_read += values_read;
   }
-  std::cout << total_read << std::endl;
   *numRead = total_read;
   return (void*)string_values;
 }

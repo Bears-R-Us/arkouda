@@ -773,7 +773,6 @@ module ParquetMsg {
           for (id, j) in zip(0..#numRead, startIdx..#numRead) {
             ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[id];
             entrySeg.a[j] = curr.len + 1;
-            writeln(j, " ", curr.len + 1);
             totalBytes += entrySeg.a[j];
           }
           valsRead[i][rg] = numRead;
@@ -983,9 +982,6 @@ module ParquetMsg {
           var entryVal = createSymEntry(totalBytes, uint(8));
 
           copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups);
-
-          writeln(entryVal.a);
-          writeln(entrySeg.a);
 
           for i in externalData.domain {
             for j in externalData[i].domain {
