@@ -42,7 +42,7 @@ module ParquetMsg {
   config const TRUNCATE: int = 0;
   config const APPEND: int = 1;
   
-  private config const ROWGROUPS = 512*1024*1024 / numBytes(int); // 512 mb of int64
+  private config const ROWGROUPS = 10;//512*1024*1024 / numBytes(int); // 512 mb of int64
   // Undocumented for now, just for internal experiments
   private config const batchSize = getEnvInt("ARKOUDA_SERVER_PARQUET_BATCH_SIZE", 8192);
 
@@ -761,11 +761,11 @@ module ParquetMsg {
         }
       }
 
-      forall i in locFiles.domain {
+      for i in locFiles.domain {
         var fname = locFiles[i];
         var locDsetname = dsetname;
+        var startIdx = locSubdoms[i].low;
         for rg in 0..#numRowGroups[i] {
-          var startIdx = locSubdoms[i].low;
           var totalBytes = 0;
 
           var numRead = 0;
@@ -773,6 +773,7 @@ module ParquetMsg {
           for (id, j) in zip(0..#numRead, startIdx..#numRead) {
             ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[id];
             entrySeg.a[j] = curr.len + 1;
+            writeln(j, " ", curr.len + 1);
             totalBytes += entrySeg.a[j];
           }
           valsRead[i][rg] = numRead;
@@ -788,7 +789,7 @@ module ParquetMsg {
     coforall loc in distFiles.targetLocales() with (ref externalData) do on loc {
       var locValsRead: [valsRead.localSubdomain()] [0..#maxRowGroups] int = valsRead[valsRead.localSubdomain()];
       var locNumRowGroups: [numRowGroups.localSubdomain()] int = numRowGroups[numRowGroups.localSubdomain()];
-      // TODO: This corresponds to nothing, needs to be start of the file 
+      // TODO: This corresponds to nothing, needs to be start of the file
       for i in locNumRowGroups.domain {
         var numRgs = locNumRowGroups[i];
         for rg in 0..#numRgs {
@@ -963,7 +964,6 @@ module ParquetMsg {
           extern proc c_readParquetColumnChunks(filename, batchSize,
                                       numElems, readerIdx, numRead): c_ptr(void);
 
-          writeln('here');
           var entrySeg = createSymEntry(len, int);
           
           var distFiles = makeDistArray(filenames);
@@ -975,20 +975,18 @@ module ParquetMsg {
           var valsRead: [distFiles.domain] [0..#maxRowGroups] int;
           var bytesPerRG: [distFiles.domain] [0..#maxRowGroups] int;
 
-          writeln('before fill');
           fillSegmentsAndPersistData(distFiles, entrySeg, externalData, valsRead, dsetname, sizes, len, numRowGroups, bytesPerRG);
-          writeln('after fill');
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
 
           var (rgSubdomains, totalBytes) = getRGSubdomains(bytesPerRG, maxRowGroups);
           
           var entryVal = createSymEntry(totalBytes, uint(8));
 
-          writeln('before copy');
           copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups);
-          writeln('after copy');
 
-          writeln('before free');
+          writeln(entryVal.a);
+          writeln(entrySeg.a);
+
           for i in externalData.domain {
             for j in externalData[i].domain {
               if valsRead[i][j] > 0 then
@@ -996,7 +994,6 @@ module ParquetMsg {
                   c_freeMapValues(externalData[i][j]);
             }
           }
-          writeln('after free');
           // TODO: Need to free c++ memory for the maps and malloced stuff
           
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
