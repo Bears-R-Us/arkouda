@@ -117,7 +117,7 @@ def join_on_eq_with_dt(
     return resI, resJ
 
 
-def gen_ranges(starts, ends, stride=1):
+def gen_ranges(starts, ends, stride=1, return_lengths=False):
     """
     Generate a segmented array of variable-length, contiguous ranges between pairs of
     start- and end-points.
@@ -130,6 +130,8 @@ def gen_ranges(starts, ends, stride=1):
         The end value (exclusive) of each range
     stride: int
         Difference between successive elements of each range
+    return_lengths: bool, optional
+        Whether or not to return the lengths of each segment. Default False.
 
     Returns
     -------
@@ -137,6 +139,8 @@ def gen_ranges(starts, ends, stride=1):
         The starting index of each range in the resulting array
     ranges : pdarray, int64
         The actual ranges, flattened into a single array
+    lengths : pdarray, int64
+        The lengths of each segment. Only returned if return_lengths=True.
     """
     if starts.size != ends.size:
         raise ValueError("starts and ends must be same length")
@@ -158,7 +162,12 @@ def gen_ranges(starts, ends, stride=1):
         )
     )
     slices[segs[non_empty]] = diffs
-    return segs, cumsum(slices)
+
+    sums = cumsum(slices)
+    if return_lengths:
+        return segs, sums, lengths
+    else:
+        return segs, sums
 
 
 @typechecked
