@@ -2681,6 +2681,66 @@ class DataFrame(UserDict):
         else:
             return pd.DataFrame(data=pandas_data)
 
+    def to_markdown(self, mode="wt", index=True, tablefmt="grid", storage_options=None, **kwargs):
+        r"""
+        Print Series in Markdown-friendly format.
+
+        Parameters
+        ----------
+        mode : str, optional
+            Mode in which file is opened, "wt" by default.
+        index : bool, optional, default True
+            Add index (row) labels.
+        tablefmt: str = "grid"
+            Table format to call from tablulate:
+            https://pypi.org/project/tabulate/
+        storage_options: dict, optional
+            Extra options that make sense for a particular storage connection,
+            e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,
+            e.g., starting “s3://”, “gcs://”.
+            An error will be raised if providing this argument with a non-fsspec URL.
+            See the fsspec and backend storage implementation docs for the set
+            of allowed keys and values.
+        **kwargs
+            These parameters will be passed to tabulate.
+
+        Note
+        ----
+        This function calls pandas.DataFrame.to_markdown:
+        https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> df = ak.DataFrame({"animal_1": ["elk", "pig"], "animal_2": ["dog", "quetzal"]})
+        >>> print(df.to_markdown())
+        +----+------------+------------+
+        |    | animal_1   | animal_2   |
+        +====+============+============+
+        |  0 | elk        | dog        |
+        +----+------------+------------+
+        |  1 | pig        | quetzal    |
+        +----+------------+------------+
+
+
+        Suppress the index:
+
+        >>> print(df.to_markdown(index = False))
+        +------------+------------+
+        | animal_1   | animal_2   |
+        +============+============+
+        | elk        | dog        |
+        +------------+------------+
+        | pig        | quetzal    |
+        +------------+------------+
+
+        """
+        return self.to_pandas().to_markdown(
+            mode=mode, index=index, tablefmt=tablefmt, storage_options=storage_options, **kwargs
+        )
+
     def _prep_data(self, index=False, columns=None):
         # if no columns are stored, we will save all columns
         if columns is None:

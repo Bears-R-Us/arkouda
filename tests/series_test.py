@@ -101,6 +101,58 @@ class SeriesTest(ArkoudaTest):
         (l,) = s.shape
         self.assertEqual(l, 3)
 
+    def test_to_markdown(self):
+        s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
+        self.assertEqual(
+            s.to_markdown(),
+            "+----+----------+\n"
+            "|    | animal   |\n"
+            "+====+==========+\n"
+            "|  0 | elk      |\n"
+            "+----+----------+\n"
+            "|  1 | pig      |\n"
+            "+----+----------+\n"
+            "|  2 | dog      |\n"
+            "+----+----------+\n"
+            "|  3 | quetzal  |\n"
+            "+----+----------+",
+        )
+        self.assertEqual(
+            s.to_markdown(index=False),
+            "+----------+\n"
+            "| animal   |\n"
+            "+==========+\n"
+            "| elk      |\n"
+            "+----------+\n"
+            "| pig      |\n"
+            "+----------+\n"
+            "| dog      |\n"
+            "+----------+\n"
+            "| quetzal  |\n"
+            "+----------+",
+        )
+        self.assertEqual(
+            s.to_markdown(tablefmt="grid"),
+            "+----+----------+\n"
+            "|    | animal   |\n"
+            "+====+==========+\n"
+            "|  0 | elk      |\n"
+            "+----+----------+\n"
+            "|  1 | pig      |\n"
+            "+----+----------+\n"
+            "|  2 | dog      |\n"
+            "+----+----------+\n"
+            "|  3 | quetzal  |\n"
+            "+----+----------+",
+        )
+
+        self.assertEqual(s.to_markdown(tablefmt="grid"), s.to_pandas().to_markdown(tablefmt="grid"))
+        self.assertEqual(
+            s.to_markdown(tablefmt="grid", index=False),
+            s.to_pandas().to_markdown(tablefmt="grid", index=False),
+        )
+        self.assertEqual(s.to_markdown(tablefmt="jira"), s.to_pandas().to_markdown(tablefmt="jira"))
+
     def test_add(self):
         i = ak.arange(3)
         v = ak.arange(3, 6, 1)
