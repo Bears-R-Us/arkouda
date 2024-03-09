@@ -292,9 +292,12 @@ def attach_all(names: list):
     return {n: attach(n) for n in names}
 
 
-def sparse_sum_help(idx1, idx2, val1, val2):
+def sparse_sum_help(idx1, idx2, val1, val2, merge=True):
     """
     Helper for summing two sparse matrices together
+
+    Return is equivalent to
+    ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))
 
     Parameters
     -----------
@@ -306,6 +309,9 @@ def sparse_sum_help(idx1, idx2, val1, val2):
         values for the first sparse matrix
     val2: pdarray
         values for the second sparse matrix
+    merge: bool
+        If true the indices are combined using a merge based workflow,
+        otherwise they are combine using a sort based workflow.
 
     Returns
     --------
@@ -325,7 +331,14 @@ def sparse_sum_help(idx1, idx2, val1, val2):
     (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
     """
     repMsg = generic_msg(
-        cmd="sparseSumHelp", args={"idx1": idx1, "idx2": idx2, "val1": val1, "val2": val2}
+        cmd="sparseSumHelp",
+        args={
+            "idx1": idx1,
+            "idx2": idx2,
+            "val1": val1,
+            "val2": val2,
+            "merge": merge,
+        },
     )
     inds, vals = repMsg.split("+", maxsplit=1)
     return create_pdarray(inds), create_pdarray(vals)

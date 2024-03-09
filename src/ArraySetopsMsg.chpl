@@ -266,6 +266,7 @@ module ArraySetopsMsg
       const gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("idx2"), st);
       const gEnt3: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("val1"), st);
       const gEnt4: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("val2"), st);
+      const doMerge = msgArgs.get("merge").getBoolValue();
 
       const gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
       const gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
@@ -283,7 +284,7 @@ module ArraySetopsMsg
           const ref ga = g.a;
           const ref ha = h.a;
 
-          const (retIdx, retVals) = sparseSumHelper(ea, fa, ga, ha);
+          const (retIdx, retVals) = sparseSumHelper(ea, fa, ga, ha, doMerge);
           st.addEntry(iname, createSymEntry(retIdx));
           st.addEntry(vname, createSymEntry(retVals));
 
@@ -301,7 +302,7 @@ module ArraySetopsMsg
           const ref ga = g.a;
           const ref ha = h.a;
 
-          const (retIdx, retVals) = sparseSumHelper(ea, fa, ga, ha);
+          const (retIdx, retVals) = sparseSumHelper(ea, fa, ga, ha, doMerge);
           st.addEntry(iname, createSymEntry(retIdx));
           st.addEntry(vname, createSymEntry(retVals));
 
