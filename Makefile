@@ -327,6 +327,10 @@ ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-20
 endif
 
+ifeq ($(shell expr $(CHPL_MINOR) \= 34),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-134
+endif
+
 ifeq ($(shell expr $(CHPL_MINOR) \= 33),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-133
 endif
