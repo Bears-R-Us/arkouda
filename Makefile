@@ -323,8 +323,8 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-ifeq ($(shell expr $(CHPL_MINOR) \> 33),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-134
+ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-20
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \= 33),1)
