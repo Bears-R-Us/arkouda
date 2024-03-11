@@ -53,7 +53,6 @@ def time_ak_df_display(N_per_locale, trials, seed):
     timings = {op: [] for op in OPS}
     results = {}
     for i in range(trials):
-        timings = {op: [] for op in OPS}
         for op in timings.keys():
             fxn = getattr(df, op)
             start = time.time()
