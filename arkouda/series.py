@@ -739,8 +739,8 @@ class Series:
 
         Note
         ----
-        This function calls pandas.Series.to_markdown:
-        https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html
+        This function should only be called on small Series as it calls pandas.Series.to_markdown:
+        https://pandas.pydata.org/docs/reference/api/pandas.Series.to_markdown.html
 
         Examples
         --------

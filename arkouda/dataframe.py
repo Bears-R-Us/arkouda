@@ -2683,7 +2683,7 @@ class DataFrame(UserDict):
 
     def to_markdown(self, mode="wt", index=True, tablefmt="grid", storage_options=None, **kwargs):
         r"""
-        Print Series in Markdown-friendly format.
+        Print DataFrame in Markdown-friendly format.
 
         Parameters
         ----------
@@ -2706,7 +2706,7 @@ class DataFrame(UserDict):
 
         Note
         ----
-        This function calls pandas.DataFrame.to_markdown:
+        This function should only be called on small DataFrames as it calls pandas.DataFrame.to_markdown:
         https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html
 
         Examples
