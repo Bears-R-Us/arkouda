@@ -53,49 +53,6 @@ class TestRandom:
     def test_uniform(self):
         # verify same seed gives different but reproducible arrays
         rng = ak.random.default_rng(18)
-        first = rng.integers(-(2**32), 2**32, 10)
-        second = rng.integers(-(2**32), 2**32, 10)
-        assert first.to_list() != second.to_list()
-
-        rng = ak.random.default_rng(18)
-        same_seed_first = rng.integers(-(2**32), 2**32, 10)
-        same_seed_second = rng.integers(-(2**32), 2**32, 10)
-        assert first.to_list() == same_seed_first.to_list()
-        assert second.to_list() == same_seed_second.to_list()
-
-        # test endpoint
-        rng = ak.random.default_rng()
-        all_zero = rng.integers(0, 1, 20)
-        assert all(all_zero.to_ndarray() == 0)
-
-        not_all_zero = rng.integers(0, 1, 20, endpoint=True)
-        assert any(not_all_zero.to_ndarray() != 0)
-
-        # verify that switching dtype and function from seed is still reproducible
-        rng = ak.random.default_rng(74)
-        uint_arr = rng.integers(2**32, size=10, dtype="uint")
-        float_arr = rng.uniform(-1.0, 1.0, size=5)
-        bool_arr = rng.integers(0, 1, size=20, dtype="int")
-        int_arr = rng.integers(-(2**32), 2**32, size=10, dtype="int")
-
-        rng = ak.random.default_rng(74)
-        same_seed_uint_arr = rng.integers(2**32, size=10, dtype="uint")
-        same_seed_float_arr = rng.uniform(-1.0, 1.0, size=5)
-        same_seed_bool_arr = rng.integers(0, 1, size=20, dtype="int")
-        same_seed_int_arr = rng.integers(-(2**32), 2**32, size=10, dtype="int")
-
-        assert uint_arr.to_list() == same_seed_uint_arr.to_list()
-        assert float_arr.to_list() == same_seed_float_arr.to_list()
-        assert bool_arr.to_list() == same_seed_bool_arr.to_list()
-        assert int_arr.to_list() == same_seed_int_arr.to_list()
-
-        # verify within bounds (lower inclusive and upper exclusive)
-        rng = ak.random.default_rng()
-        bounded_arr = rng.integers(-5, 5, 1000)
-        assert all(bounded_arr.to_ndarray() >= -5)
-        assert all(bounded_arr.to_ndarray() < 5)
-        # verify same seed gives different but reproducible arrays
-        rng = ak.random.default_rng(18)
         first = rng.uniform(-(2**32), 2**32, 10)
         second = rng.uniform(-(2**32), 2**32, 10)
         assert first.to_list() != second.to_list()

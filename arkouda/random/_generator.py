@@ -23,6 +23,16 @@ class Generator:
     seed : int
         Seed to allow for reproducible random number generation.
 
+    name_dict: dict
+        Dictionary mapping the server side names associated with
+        the generators for each dtype.
+
+    state: int
+        The current state we are in the random number generation stream.
+        This information makes it so calls to any dtype generator
+        function affects the stream of random numbers for the other generators.
+        This mimics the behavior we see in numpy
+
     See Also
     --------
     default_rng : Recommended constructor for `Generator`.
