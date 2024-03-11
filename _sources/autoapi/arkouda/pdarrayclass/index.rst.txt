@@ -619,6 +619,13 @@ Functions
    .. py:property:: max_bits
 
 
+   .. py:property:: nbytes
+
+      The size of the pdarray in bytes.
+
+      :returns: The size of the pdarray in bytes.
+      :rtype: int
+
    .. py:attribute:: BinOps
 
       

@@ -78,6 +78,13 @@ Classes
 
       :type: tuple
 
+   .. py:property:: nbytes
+
+      The size of the Categorical in bytes.
+
+      :returns: The size of the Categorical in bytes.
+      :rtype: int
+
    .. py:attribute:: BinOps
 
       

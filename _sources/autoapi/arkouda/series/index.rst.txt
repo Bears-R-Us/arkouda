@@ -210,6 +210,43 @@ Classes
       :rtype: A Series containing the values corresponding to the key.
 
 
+   .. py:method:: memory_usage(index: bool = True, unit='B') -> int
+
+      Return the memory usage of the Series.
+
+      The memory usage can optionally include the contribution of
+      the index.
+
+      :param index: Specifies whether to include the memory usage of the Series index.
+      :type index: bool, default True
+      :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+      :type unit: str, default = "B"
+
+      :returns: Bytes of memory consumed.
+      :rtype: int
+
+      .. seealso:: :obj:`arkouda.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
+
+      .. rubric:: Examples
+
+      >>> from arkouda.series import Series
+      >>> s = ak.Series(ak.arange(3))
+      >>> s.memory_usage()
+      48
+
+      Not including the index gives the size of the rest of the data, which
+      is necessarily smaller:
+
+      >>> s.memory_usage(index=False)
+      24
+
+      Select the units:
+
+      >>> s = ak.Series(ak.arange(3000))
+      >>> s.memory_usage(unit="KB")
+      46.875
+
+
    .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: arkouda.strings.Strings = None) -> Union[pandas.Series, pandas.DataFrame]
       :staticmethod:
 

@@ -706,6 +706,36 @@
 
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shapeOut</span><span class="p">)</span></div>
 
+
+
+<div class="viewcode-block" id="convert_bytes">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.convert_bytes">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_bytes</span><span class="p">(</span><span class="n">nbytes</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert the number of bytes to KB, MB, or GB.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    unit : str, default = &quot;B&quot;</span>
+<span class="sd">        Unit to return. One of {&#39;B&#39;, &#39;KB&#39;, &#39;MB&#39;, &#39;GB&#39;}.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kb</span> <span class="o">=</span> <span class="mi">1024</span>
+    <span class="n">mb</span> <span class="o">=</span> <span class="n">kb</span> <span class="o">*</span> <span class="n">kb</span>
+    <span class="n">gb</span> <span class="o">=</span> <span class="n">mb</span> <span class="o">*</span> <span class="n">kb</span>
+    <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nbytes</span>
+    <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;KB&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nbytes</span> <span class="o">/</span> <span class="n">kb</span>
+    <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;MB&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nbytes</span> <span class="o">/</span> <span class="n">mb</span>
+    <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;GB&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nbytes</span> <span class="o">/</span> <span class="n">gb</span></div>
+
 </pre></div>
         </article>
       </div>

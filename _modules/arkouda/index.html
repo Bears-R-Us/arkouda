@@ -486,6 +486,44 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 
+<div class="viewcode-block" id="Index.memory_usage">
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.memory_usage">[docs]</a>
+    <span class="k">def</span> <span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the memory usage of the Index values.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        unit : str, default = &quot;B&quot;</span>
+<span class="sd">            Unit to return. One of {&#39;B&#39;, &#39;KB&#39;, &#39;MB&#39;, &#39;GB&#39;}.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            Bytes of memory consumed.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        arkouda.pdarrayclass.nbytes</span>
+<span class="sd">        arkouda.index.MultiIndex.memory_usage</span>
+<span class="sd">        arkouda.series.Series.memory_usage</span>
+<span class="sd">        arkouda.dataframe.DataFrame.memory_usage</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">        &gt;&gt;&gt; idx = Index(ak.array([1, 2, 3]))</span>
+<span class="sd">        &gt;&gt;&gt; idx.memory_usage()</span>
+<span class="sd">        24</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">convert_bytes</span>
+
+        <span class="k">return</span> <span class="n">convert_bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">nbytes</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Index.to_pandas">
 <a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1211,6 +1249,48 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
+
+<div class="viewcode-block" id="MultiIndex.memory_usage">
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.memory_usage">[docs]</a>
+    <span class="k">def</span> <span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the memory usage of the MultiIndex values.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        unit : str, default = &quot;B&quot;</span>
+<span class="sd">            Unit to return. One of {&#39;B&#39;, &#39;KB&#39;, &#39;MB&#39;, &#39;GB&#39;}.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            Bytes of memory consumed.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        arkouda.pdarrayclass.nbytes</span>
+<span class="sd">        arkouda.index.Index.memory_usage</span>
+<span class="sd">        arkouda.series.Series.memory_usage</span>
+<span class="sd">        arkouda.dataframe.DataFrame.memory_usage</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">        &gt;&gt;&gt; m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])</span>
+<span class="sd">        &gt;&gt;&gt; m.memory_usage()</span>
+<span class="sd">        48</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">convert_bytes</span>
+
+        <span class="n">nbytes</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="n">nbytes</span> <span class="o">+=</span> <span class="n">item</span><span class="o">.</span><span class="n">nbytes</span>
+
+        <span class="k">return</span> <span class="n">convert_bytes</span><span class="p">(</span><span class="n">nbytes</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="MultiIndex.to_pandas">
 <a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.to_pandas">[docs]</a>

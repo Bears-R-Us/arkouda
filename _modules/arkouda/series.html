@@ -683,6 +683,62 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
             <span class="k">return</span>
 
+<div class="viewcode-block" id="Series.memory_usage">
+<a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.memory_usage">[docs]</a>
+    <span class="k">def</span> <span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the memory usage of the Series.</span>
+
+<span class="sd">        The memory usage can optionally include the contribution of</span>
+<span class="sd">        the index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : bool, default True</span>
+<span class="sd">            Specifies whether to include the memory usage of the Series index.</span>
+<span class="sd">        unit : str, default = &quot;B&quot;</span>
+<span class="sd">            Unit to return. One of {&#39;B&#39;, &#39;KB&#39;, &#39;MB&#39;, &#39;GB&#39;}.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            Bytes of memory consumed.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        arkouda.pdarrayclass.nbytes</span>
+<span class="sd">        arkouda.index.Index.memory_usage</span>
+<span class="sd">        arkouda.series.Series.memory_usage</span>
+<span class="sd">        arkouda.dataframe.DataFrame.memory_usage</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.series import Series</span>
+<span class="sd">        &gt;&gt;&gt; s = ak.Series(ak.arange(3))</span>
+<span class="sd">        &gt;&gt;&gt; s.memory_usage()</span>
+<span class="sd">        48</span>
+
+<span class="sd">        Not including the index gives the size of the rest of the data, which</span>
+<span class="sd">        is necessarily smaller:</span>
+
+<span class="sd">        &gt;&gt;&gt; s.memory_usage(index=False)</span>
+<span class="sd">        24</span>
+
+<span class="sd">        Select the units:</span>
+
+<span class="sd">        &gt;&gt;&gt; s = ak.Series(ak.arange(3000))</span>
+<span class="sd">        &gt;&gt;&gt; s.memory_usage(unit=&quot;KB&quot;)</span>
+<span class="sd">        46.875</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">convert_bytes</span>
+
+        <span class="n">v</span> <span class="o">=</span> <span class="n">convert_bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">nbytes</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span></div>
+
+
 <div class="viewcode-block" id="Series.has_repeat_labels">
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.has_repeat_labels">[docs]</a>
     <span class="k">def</span> <span class="nf">has_repeat_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -973,6 +1029,7 @@
     <span class="k">def</span> <span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the series to a local PANDAS series&quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">copy</span>
+
         <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">convert_if_categorical</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 

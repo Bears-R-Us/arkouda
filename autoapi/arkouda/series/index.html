@@ -307,7 +307,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id433" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
+<li><p><strong>index</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id640" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
 If empty, it will default to a range of ints whose size match the size of the data.
 optional</p></li>
 <li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em>) – a 1D array. Must not be None.</p></li>
@@ -346,7 +346,7 @@ If entering keywords,</p>
 <dd><p>Accesses entries of a Series by label</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id433" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The key or container of keys to access entries for</p>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id640" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The key or container of keys to access entries for</p>
 </dd>
 </dl>
 </dd></dl>
@@ -379,7 +379,7 @@ If entering keywords,</p>
 <dd><p>Accesses entries of a Series by label</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id433" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The key or container of keys to access entries for</p>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id640" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The key or container of keys to access entries for</p>
 </dd>
 </dl>
 </dd></dl>
@@ -511,7 +511,7 @@ registered object.</p>
 <dd class="field-even"><p>numpy.bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id296" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.RegistrationError" title="arkouda.pdarrayclass.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -551,6 +551,51 @@ preserved with its values use as the key.</p>
 <dd class="field-odd"><p>A Series containing the values corresponding to the key.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.series.Series.memory_usage">
+<span class="sig-name descname"><span class="pre">memory_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'B'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../../_modules/arkouda/series.html#Series.memory_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.series.Series.memory_usage" title="Link to this definition">#</a></dt>
+<dd><p>Return the memory usage of the Series.</p>
+<p>The memory usage can optionally include the contribution of
+the index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>bool</em><em>, </em><em>default True</em>) – Specifies whether to include the memory usage of the Series index.</p></li>
+<li><p><strong>unit</strong> (<em>str</em><em>, </em><em>default = &quot;B&quot;</em>) – Unit to return. One of {‘B’, ‘KB’, ‘MB’, ‘GB’}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Bytes of memory consumed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pdarrayclass.nbytes</span></code>, <a class="reference internal" href="../index/index.html#arkouda.index.Index.memory_usage" title="arkouda.index.Index.memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.index.Index.memory_usage</span></code></a>, <a class="reference internal" href="#arkouda.series.Series.memory_usage" title="arkouda.series.Series.memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.series.Series.memory_usage</span></code></a>, <a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame.memory_usage" title="arkouda.dataframe.DataFrame.memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.dataframe.DataFrame.memory_usage</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">()</span>
+<span class="go">48</span>
+</pre></div>
+</div>
+<p>Not including the index gives the size of the rest of the data, which
+is necessarily smaller:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">24</span>
+</pre></div>
+</div>
+<p>Select the units:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3000</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s2">&quot;KB&quot;</span><span class="p">)</span>
+<span class="go">46.875</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -601,7 +646,7 @@ Please note you cannot register two different Series with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id296" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Series with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.RegistrationError" title="arkouda.pdarrayclass.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Series with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -697,7 +742,7 @@ they are unregistered.</p>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id296" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.RegistrationError" title="arkouda.pdarrayclass.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -717,7 +762,7 @@ they are unregistered.</p>
 Also converts list and tuple arguments into pdarrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id433" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><em>List</em><em>, </em><em>supported_scalars</em>) – The key or container of keys that might be used to index into the Series.</p>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id640" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><em>List</em><em>, </em><em>supported_scalars</em>) – The key or container of keys that might be used to index into the Series.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>The validated key(s), with lists and tuples converted to pdarrays</p>
@@ -741,7 +786,7 @@ from the Series</p></li>
 Also converts list and tuple arguments into pdarrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>val</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id433" title="arkouda.Strings"><em>Strings</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The value or container of values that might be assigned into the Series.</p>
+<dd class="field-odd"><p><strong>val</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id640" title="arkouda.Strings"><em>Strings</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The value or container of values that might be assigned into the Series.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>The validated value, with lists converted to pdarrays</p>
@@ -854,6 +899,7 @@ first element is the most frequently-occurring element.</p>
 <li><a class="reference internal" href="#arkouda.series.Series.is_registered"><code class="docutils literal notranslate"><span class="pre">Series.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.isin"><code class="docutils literal notranslate"><span class="pre">Series.isin()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.locate"><code class="docutils literal notranslate"><span class="pre">Series.locate()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.series.Series.memory_usage"><code class="docutils literal notranslate"><span class="pre">Series.memory_usage()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.pdconcat"><code class="docutils literal notranslate"><span class="pre">Series.pdconcat()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.register"><code class="docutils literal notranslate"><span class="pre">Series.register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.sort_index"><code class="docutils literal notranslate"><span class="pre">Series.sort_index()</span></code></a></li>

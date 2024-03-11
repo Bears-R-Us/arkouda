@@ -17,6 +17,7 @@ Functions
    arkouda.util.attach_all
    arkouda.util.broadcast_dims
    arkouda.util.concatenate
+   arkouda.util.convert_bytes
    arkouda.util.convert_if_categorical
    arkouda.util.enrich_inplace
    arkouda.util.expand
@@ -56,6 +57,16 @@ Functions
 
 
 .. py:function:: concatenate(items, ordered=True)
+
+
+.. py:function:: convert_bytes(nbytes, unit='B')
+
+   Convert the number of bytes to KB, MB, or GB.
+
+   :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+   :type unit: str, default = "B"
+
+   :rtype: int
 
 
 .. py:function:: convert_if_categorical(values)

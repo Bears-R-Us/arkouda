@@ -100,6 +100,27 @@ Classes
    .. py:method:: lookup(key)
 
 
+   .. py:method:: memory_usage(unit='B')
+
+      Return the memory usage of the Index values.
+
+      :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+      :type unit: str, default = "B"
+
+      :returns: Bytes of memory consumed.
+      :rtype: int
+
+      .. seealso:: :obj:`arkouda.pdarrayclass.nbytes`, :obj:`arkouda.index.MultiIndex.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> idx = Index(ak.array([1, 2, 3]))
+      >>> idx.memory_usage()
+      24
+
+
    .. py:method:: register(user_defined_name)
 
       Register this Index object and underlying components with the Arkouda server
@@ -404,6 +425,27 @@ Classes
 
 
    .. py:method:: lookup(key)
+
+
+   .. py:method:: memory_usage(unit='B')
+
+      Return the memory usage of the MultiIndex values.
+
+      :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+      :type unit: str, default = "B"
+
+      :returns: Bytes of memory consumed.
+      :rtype: int
+
+      .. seealso:: :obj:`arkouda.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
+      >>> m.memory_usage()
+      48
 
 
    .. py:method:: register(user_defined_name)
