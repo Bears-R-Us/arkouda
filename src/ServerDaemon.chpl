@@ -659,9 +659,10 @@ module ServerDaemon {
                             const binaryRepMsg = commandMapBinary[cmd](cmd, msgArgs, st);
                             sendRepMsg(binaryRepMsg);
                         } else {
-                            const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd);
+                            const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
+                                  command1D = rawCmd + "1D";
                             if multiDimCommand && nd > ServerConfig.MaxArrayDims &&
-                                (commandMap.contains(rawCmd + "1D") || commandMapBinary.contains(rawCmd + "1D"))
+                                (commandMap.contains(command1D) || commandMapBinary.contains(command1D)) || commandMapArray.contains(command1D)
                             {
                                 const errMsg = "Error: Command '%s' is not supported with the current server configuration "
                                                 .doFormat(cmd) +

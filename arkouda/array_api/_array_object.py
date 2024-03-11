@@ -28,7 +28,7 @@ from ._dtypes import (
     _dtype_categories,
 )
 
-from typing import TYPE_CHECKING, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Optional, Tuple, Union, Any
 import types
 
 if TYPE_CHECKING:
@@ -40,6 +40,8 @@ import numpy as np
 from arkouda.pdarraycreation import scalar_array
 
 from arkouda import array_api
+
+HANDLED_FUNCTIONS = {}
 
 
 class Array:
@@ -103,6 +105,33 @@ class Array:
         """
         return self._array.to_ndarray()
 
+    def item(self):
+        """
+        Convert the array to a Python scalar
+        """
+        return self._array[0]
+
+    def transpose(self, axes: Optional[Tuple[int, ...]] = None):
+        """
+        Return a view of the array with the specified axes transposed.
+
+        For axes=None, reverse all the dimensions of the array.
+        """
+        from ._manipulation_functions import permute_dims
+        if axes is None:
+            _axes = tuple(range(self.ndim - 1, -1, -1))
+        else:
+            if len(axes) < self.ndim:
+                _axes = tuple(range(0, self.ndim))
+                for i, j in enumerate(axes):
+                    _axes[i] = j
+            elif len(axes) == self.ndim:
+                _axes = tuple(axes)
+            else:
+                raise ValueError("number of axes don't match array dimensions")
+
+        return permute_dims(self, _axes)
+
     # These functions are not required by the spec, but are implemented for
     # the sake of usability.
 
@@ -118,16 +147,18 @@ class Array:
         """
         return self._array.__repr__()
 
-    # # This function is not required by the spec, but we implement it here for
-    # # convenience so that np.asarray(np.array_api.Array) will work.
-    # def __array__(self, dtype: None | np.dtype[Any] = None) -> npt.NDArray[Any]:
-    #     """
-    #     Warning: this method is NOT part of the array API spec. Implementers
-    #     of other libraries need not include it, and users should not assume it
-    #     will be present in other implementations.
+    def __array__(self, dtype: None | np.dtype[Any] = None):
+        """
+        convert to numpy array
+        """
+        return np.asarray(self.to_ndarray(), dtype=dtype)
 
-    #     """
-    #     return ak.asarray(self._array, dtype=dtype)
+    __array_ufunc__ = None
+
+    def __array_function__(self, func, types, args, kwargs):
+        if func not in HANDLED_FUNCTIONS:
+            return NotImplemented
+        return HANDLED_FUNCTIONS[func](*args, **kwargs)
 
     # These are various helper functions to make the array behavior match the
     # spec in places where it either deviates from or is more strict than
@@ -330,7 +361,24 @@ class Array:
         key: Union[int, slice, Tuple[Union[int, slice], ...], Array],
         /,
     ) -> Array:
-        k = key._array if isinstance(key, Array) else key
+        if isinstance(key, Array):
+            if key.size == 1 or key.shape == ():
+                k = key._array[0]
+            else:
+                k = key._array
+        elif isinstance(key, Tuple):
+            k = []
+            for kt in key:
+                if isinstance(kt, Array):
+                    if kt.size == 1 or kt.shape == ():
+                        k.append(kt._array[0])
+                    else :
+                        k.append(kt._array)
+                else:
+                    k.append(kt)
+            k = tuple(k)
+        else:
+            k = key
 
         a = self._array[k]
         if isinstance(a, ak.pdarray):
@@ -533,3 +581,11 @@ class Array:
     @property
     def T(self) -> Array:
         raise ValueError("Not implemented")
+
+
+def implements_numpy(numpy_function):
+    """Register an __array_function__ implementation for MyArray objects."""
+    def decorator(func):
+        HANDLED_FUNCTIONS[numpy_function] = func
+        return func
+    return decorator

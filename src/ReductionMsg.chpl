@@ -51,6 +51,7 @@ module ReductionMsg
             op = msgArgs.getValueOf("op"),
             nAxes = msgArgs.get("nAxes").getIntValue(),
             axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+            skipNan = msgArgs.get("skipNan").getBoolValue(),
             rname = st.nextName();
 
       var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
@@ -68,16 +69,16 @@ module ReductionMsg
         if nd == 1 || nAxes == 0 {
           var s: opType;
           select op {
-            when "sum" do s = (+ reduce eIn.a:opType):opType;
-            when "prod" do s = (* reduce eIn.a:opType):opType;
-            when "min" do s = min reduce eIn.a;
-            when "max" do s = max reduce eIn.a;
+            when "sum" do s = if skipNan then sumSkipNan(eIn.a, opType) else (+ reduce eIn.a:opType):opType;
+            when "prod" do s = if skipNan then prodSkipNan(eIn.a, opType) else (* reduce eIn.a:opType):opType;
+            when "min" do s = if skipNan then getMinSkipNan(eIn.a) else min reduce eIn.a;
+            when "max" do s = if skipNan then getMaxSkipNan(eIn.a) else max reduce eIn.a;
             otherwise halt("unreachable");
           }
 
           const scalarValue = if (t == bool && (op == "min" || op == "max"))
             then "bool " + bool2str(if s == 1 then true else false)
-            else "%s %s".doFormat(type2str(opType), type2fmt(opType)).doFormat(s);
+            else (type2str(opType) + " " + type2fmt(opType)).doFormat(s);
           rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
@@ -94,10 +95,18 @@ module ReductionMsg
               const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
               var s: opType;
               select op {
-                when "sum" do s = sum(eIn.a, sliceDom, opType);
-                when "prod" do s = prod(eIn.a, sliceDom, opType);
-                when "min" do s = getMin(eIn.a, sliceDom);
-                when "max" do s = getMax(eIn.a, sliceDom);
+                when "sum" do s = if skipNan
+                  then sumSkipNan(eIn.a, sliceDom, opType)
+                  else sum(eIn.a, sliceDom, opType);
+                when "prod" do s =if skipNan
+                  then prodSkipNan(eIn.a, sliceDom, opType)
+                  else prod(eIn.a, sliceDom, opType);
+                when "min" do s = if skipNan
+                  then getMinSkipNan(eIn.a, sliceDom)
+                  else getMin(eIn.a, sliceDom);
+                when "max" do s = if skipNan
+                  then getMaxSkipNan(eIn.a, sliceDom)
+                  else getMax(eIn.a, sliceDom);
                 otherwise halt("unreachable");
               }
               eOut.a[sliceIdx] = s;
@@ -315,6 +324,9 @@ module ReductionMsg
     }
 
     private module SliceReductionOps {
+      private proc isArgandType(type t) param: bool do
+        return isRealType(t) || isImagType(t) || isComplexType(t);
+
       proc any(ref a: [] bool, slice): bool {
         var hasAny = false;
         forall i in slice with (|| reduce hasAny) do hasAny ||= a[i];
@@ -345,9 +357,33 @@ module ReductionMsg
         return sum;
       }
 
+      proc sumSkipNan(ref a: [?d], type opType): opType
+        do return sumSkipNan(a, d, opType);
+
+      proc sumSkipNan(ref a: [] ?t, slice, type opType): opType {
+        var sum = 0:opType;
+        forall i in slice with (+ reduce sum) {
+          if isArgandType(t) { if isNan(a[i]) then continue; }
+          sum += a[i]:opType;
+        }
+        return sum;
+      }
+
       proc prod(ref a: [] ?t, slice, type opType): opType {
         var prod = 1.0; // always use real(64) to avoid int overflow
         forall i in slice with (* reduce prod) do prod *= a[i]:opType;
+        return prod: opType;
+      }
+
+      proc prodSkipNan(ref a: [?d], type opType): opType
+        do return prodSkipNan(a, d, opType);
+
+      proc prodSkipNan(ref a: [] ?t, slice, type opType): opType {
+        var prod = 1.0; // always use real(64) to avoid int overflow
+        forall i in slice with (* reduce prod) {
+          if isArgandType(t) { if isNan(a[i]) then continue; }
+          prod *= a[i]:opType;
+        }
         return prod: opType;
       }
 
@@ -357,9 +393,33 @@ module ReductionMsg
         return minVal;
       }
 
+      proc getMinSkipNan(ref a: [?d] ?t): t
+        do return getMinSkipNan(a, d);
+
+      proc getMinSkipNan(ref a: [] ?t, slice): t {
+        var minVal = max(t);
+        forall i in slice with (min reduce minVal) {
+          if isArgandType(t) { if isNan(a[i]) then continue; }
+          minVal reduce= a[i];
+        }
+        return minVal;
+      }
+
       proc getMax(ref a: [] ?t, slice): t {
         var maxVal = min(t);
         forall i in slice with (max reduce maxVal) do maxVal reduce= a[i];
+        return maxVal;
+      }
+
+      proc getMaxSkipNan(ref a: [?d] ?t): t
+        do return getMaxSkipNan(a, d);
+
+      proc getMaxSkipNan(ref a: [] ?t, slice): t {
+        var maxVal = min(t);
+        forall i in slice with (max reduce maxVal) {
+          if isArgandType(t) { if isNan(a[i]) then continue; }
+          maxVal reduce= a[i];
+        }
         return maxVal;
       }
 

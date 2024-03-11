@@ -2300,7 +2300,10 @@ def sum(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "sum", "x": pda, "nAxes": 0, "axis": []})
+    repMsg = generic_msg(
+        cmd=f"reduce{pda.ndim}D",
+        args={"op": "sum", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+    )
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2378,7 +2381,10 @@ def prod(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "prod", "x": pda, "nAxes": 0, "axis": []})
+    repMsg = generic_msg(
+        cmd=f"reduce{pda.ndim}D",
+        args={"op": "prod", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+    )
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2403,7 +2409,10 @@ def min(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "min", "x": pda, "nAxes": 0, "axis": []})
+    repMsg = generic_msg(
+        cmd=f"reduce{pda.ndim}D",
+        args={"op": "min", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+    )
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2429,7 +2438,10 @@ def max(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "max", "x": pda, "nAxes": 0, "axis": []})
+    repMsg = generic_msg(
+        cmd=f"reduce{pda.ndim}D",
+        args={"op": "max", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+    )
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2515,7 +2527,8 @@ def mean(pda: pdarray) -> np.float64:
     """
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "mean", "nAxes": 0, "axis": [], "ddof": 0}
+            cmd=f"stats{pda.ndim}D",
+            args={"x": pda, "comp": "mean", "nAxes": 0, "axis": [], "ddof": 0, "skipNan": False}
         )
     )
 
@@ -2566,7 +2579,8 @@ def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
         raise ValueError("var: ddof must be less than number of values")
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "var", "ddof": ddof, "nAxes": 0, "axis": []}
+            cmd=f"stats{pda.ndim}D",
+            args={"x": pda, "comp": "var", "ddof": ddof, "nAxes": 0, "axis": [], "skipNan": False}
         )
     )
 
@@ -2621,7 +2635,8 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
         raise ValueError("ddof must be an integer 0 or greater")
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "std", "ddof": ddof, "nAxes": 0, "axis": []}
+            cmd=f"stats{pda.ndim}D",
+            args={"x": pda, "comp": "std", "ddof": ddof, "nAxes": 0, "axis": [], "skipNan": False}
         )
     )
 

@@ -11,7 +11,7 @@ from ._dtypes import (
     float64,
     # complex128,
 )
-from ._array_object import Array
+from ._array_object import Array, implements_numpy
 from ._manipulation_functions import squeeze
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union
@@ -23,8 +23,11 @@ from arkouda.numeric import cast as akcast
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import parse_single_value, create_pdarray
 from arkouda.pdarraycreation import scalar_array
+import numpy as np
 
 
+@implements_numpy(np.max)
+@implements_numpy(np.nanmax)
 def max(
     x: Array,
     /,
@@ -46,6 +49,7 @@ def max(
             "op": "max",
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
@@ -58,6 +62,13 @@ def max(
             return arr
         else:
             return squeeze(arr, axis)
+
+
+@implements_numpy(np.nanmean)
+@implements_numpy(np.mean)
+def mean_shim(x: Array, axis=None, dtype=None, out=None, keepdims=False):
+    return mean(x, axis=axis, keepdims=keepdims)
+    # raise NotImplementedError("mean_shim is not implemented")
 
 
 def mean(
@@ -82,6 +93,7 @@ def mean(
             "nAxes": len(axis_list),
             "axis": axis_list,
             "ddof": 0,
+            "skipNan": True,  # TODO: handle all-nan slices
         },
     )
 
@@ -96,6 +108,8 @@ def mean(
             return squeeze(arr, axis)
 
 
+@implements_numpy(np.min)
+@implements_numpy(np.nanmin)
 def min(
     x: Array,
     /,
@@ -117,6 +131,7 @@ def min(
             "op": "min",
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
@@ -131,6 +146,8 @@ def min(
             return squeeze(arr, axis)
 
 
+@implements_numpy(np.prod)
+@implements_numpy(np.nanprod)
 def prod(
     x: Array,
     /,
@@ -160,6 +177,7 @@ def prod(
             "op": "prod",
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
@@ -174,6 +192,7 @@ def prod(
             return squeeze(arr, axis)
 
 
+@implements_numpy(np.nanmax)
 def std(
     x: Array,
     /,
@@ -199,6 +218,7 @@ def std(
             "ddof": correction,
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
@@ -213,6 +233,8 @@ def std(
             return squeeze(arr, axis)
 
 
+@implements_numpy(np.sum)
+@implements_numpy(np.nansum)
 def sum(
     x: Array,
     /,
@@ -242,6 +264,7 @@ def sum(
             "op": "sum",
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
@@ -256,6 +279,8 @@ def sum(
             return squeeze(arr, axis)
 
 
+@implements_numpy(np.var)
+@implements_numpy(np.nanvar)
 def var(
     x: Array,
     /,
@@ -282,6 +307,7 @@ def var(
             "ddof": correction,
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 

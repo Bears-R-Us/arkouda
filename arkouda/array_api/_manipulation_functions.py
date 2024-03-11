@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from ._array_object import Array
+from ._array_object import Array, implements_numpy
 
 from typing import List, Optional, Tuple, Union, cast
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray
 from arkouda.util import broadcast_dims
+
+import numpy as np
 
 
 def broadcast_arrays(*arrays: Array) -> List[Array]:
@@ -23,6 +25,7 @@ def broadcast_arrays(*arrays: Array) -> List[Array]:
     return [broadcast_to(a, shape=bcShape) for a in arrays]
 
 
+@implements_numpy(np.broadcast_to)
 def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
     """
     Broadcast the array to the specified shape.
