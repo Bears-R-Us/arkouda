@@ -408,7 +408,7 @@
 
 <div class="viewcode-block" id="gen_ranges">
 <a class="viewcode-back" href="../../autoapi/arkouda/join/index.html#arkouda.gen_ranges">[docs]</a>
-<span class="k">def</span> <span class="nf">gen_ranges</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">gen_ranges</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_lengths</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a segmented array of variable-length, contiguous ranges between pairs of</span>
 <span class="sd">    start- and end-points.</span>
@@ -421,6 +421,8 @@
 <span class="sd">        The end value (exclusive) of each range</span>
 <span class="sd">    stride: int</span>
 <span class="sd">        Difference between successive elements of each range</span>
+<span class="sd">    return_lengths: bool, optional</span>
+<span class="sd">        Whether or not to return the lengths of each segment. Default False.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -428,6 +430,8 @@
 <span class="sd">        The starting index of each range in the resulting array</span>
 <span class="sd">    ranges : pdarray, int64</span>
 <span class="sd">        The actual ranges, flattened into a single array</span>
+<span class="sd">    lengths : pdarray, int64</span>
+<span class="sd">        The lengths of each segment. Only returned if return_lengths=True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">starts</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">ends</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;starts and ends must be same length&quot;</span><span class="p">)</span>
@@ -449,7 +453,12 @@
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="n">slices</span><span class="p">[</span><span class="n">segs</span><span class="p">[</span><span class="n">non_empty</span><span class="p">]]</span> <span class="o">=</span> <span class="n">diffs</span>
-    <span class="k">return</span> <span class="n">segs</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">(</span><span class="n">slices</span><span class="p">)</span></div>
+
+    <span class="n">sums</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">(</span><span class="n">slices</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_lengths</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">segs</span><span class="p">,</span> <span class="n">sums</span><span class="p">,</span> <span class="n">lengths</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">segs</span><span class="p">,</span> <span class="n">sums</span></div>
 
 
 

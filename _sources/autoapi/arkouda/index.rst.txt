@@ -25731,7 +25731,7 @@ Attributes
    array([True, True, True, True, True])
 
 
-.. py:function:: gen_ranges(starts, ends, stride=1)
+.. py:function:: gen_ranges(starts, ends, stride=1, return_lengths=False)
 
    Generate a segmented array of variable-length, contiguous ranges between pairs of
    start- and end-points.
@@ -25742,12 +25742,15 @@ Attributes
    :type ends: pdarray, int64
    :param stride: Difference between successive elements of each range
    :type stride: int
+   :param return_lengths: Whether or not to return the lengths of each segment. Default False.
+   :type return_lengths: bool, optional
 
    :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
              * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
+             * **lengths** (*pdarray, int64*) -- The lengths of each segment. Only returned if return_lengths=True.
 
 
-.. py:function:: gen_ranges(starts, ends, stride=1)
+.. py:function:: gen_ranges(starts, ends, stride=1, return_lengths=False)
 
    Generate a segmented array of variable-length, contiguous ranges between pairs of
    start- and end-points.
@@ -25758,9 +25761,12 @@ Attributes
    :type ends: pdarray, int64
    :param stride: Difference between successive elements of each range
    :type stride: int
+   :param return_lengths: Whether or not to return the lengths of each segment. Default False.
+   :type return_lengths: bool, optional
 
    :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
              * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
+             * **lengths** (*pdarray, int64*) -- The lengths of each segment. Only returned if return_lengths=True.
 
 
 .. py:function:: generic_concat(items, ordered=True)

@@ -297,7 +297,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.join.compute_join_size" title="arkouda.join.compute_join_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_join_size</span></code></a>(→ Tuple[int, int])</p></td>
 <td><p>Compute the internal size of a hypothetical join between a and b. Returns</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.join.gen_ranges" title="arkouda.join.gen_ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_ranges</span></code></a>(starts, ends[, stride])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.join.gen_ranges" title="arkouda.join.gen_ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_ranges</span></code></a>(starts, ends[, stride, return_lengths])</p></td>
 <td><p>Generate a segmented array of variable-length, contiguous ranges between pairs of</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.join.join_on_eq_with_dt" title="arkouda.join.join_on_eq_with_dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_on_eq_with_dt</span></code></a>(...)</p></td>
@@ -315,7 +315,7 @@ both the number of elements and number of bytes required for the join.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.join.gen_ranges">
-<span class="sig-prename descclassname"><span class="pre">arkouda.join.</span></span><span class="sig-name descname"><span class="pre">gen_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/join.html#gen_ranges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.join.gen_ranges" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.join.</span></span><span class="sig-name descname"><span class="pre">gen_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_lengths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/join.html#gen_ranges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.join.gen_ranges" title="Link to this definition">#</a></dt>
 <dd><p>Generate a segmented array of variable-length, contiguous ranges between pairs of
 start- and end-points.</p>
 <dl class="field-list simple">
@@ -324,12 +324,14 @@ start- and end-points.</p>
 <li><p><strong>starts</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The start value of each range</p></li>
 <li><p><strong>ends</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The end value (exclusive) of each range</p></li>
 <li><p><strong>stride</strong> (<em>int</em>) – Difference between successive elements of each range</p></li>
+<li><p><strong>return_lengths</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to return the lengths of each segment. Default False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>segments</strong> (<em>pdarray, int64</em>) – The starting index of each range in the resulting array</p></li>
 <li><p><strong>ranges</strong> (<em>pdarray, int64</em>) – The actual ranges, flattened into a single array</p></li>
+<li><p><strong>lengths</strong> (<em>pdarray, int64</em>) – The lengths of each segment. Only returned if return_lengths=True.</p></li>
 </ul>
 </p>
 </dd>
