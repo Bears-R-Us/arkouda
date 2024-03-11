@@ -59,6 +59,30 @@ class IndexTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             idx = ak.MultiIndex([ak.arange(5), ak.arange(3)])
 
+    def test_memory_usage(self):
+        from arkouda.dtypes import BigInt
+        from arkouda.index import Index, MultiIndex
+
+        idx = Index(ak.cast(ak.array([1, 2, 3]), dt="bigint"))
+        self.assertEqual(idx.memory_usage(), 3 * BigInt.itemsize)
+
+        n = 2000
+        idx = Index(ak.cast(ak.arange(n), dt="int64"))
+        self.assertEqual(
+            idx.memory_usage(unit="GB"), n * ak.dtypes.int64.itemsize / (1024 * 1024 * 1024)
+        )
+        self.assertEqual(idx.memory_usage(unit="MB"), n * ak.dtypes.int64.itemsize / (1024 * 1024))
+        self.assertEqual(idx.memory_usage(unit="KB"), n * ak.dtypes.int64.itemsize / (1024))
+        self.assertEqual(idx.memory_usage(unit="B"), n * ak.dtypes.int64.itemsize)
+
+        midx = MultiIndex([ak.cast(ak.arange(n), dt="int64"), ak.cast(ak.arange(n), dt="int64")])
+        self.assertEqual(
+            midx.memory_usage(unit="GB"), 2 * n * ak.dtypes.int64.itemsize / (1024 * 1024 * 1024)
+        )
+        self.assertEqual(midx.memory_usage(unit="MB"), 2 * n * ak.dtypes.int64.itemsize / (1024 * 1024))
+        self.assertEqual(midx.memory_usage(unit="KB"), 2 * n * ak.dtypes.int64.itemsize / (1024))
+        self.assertEqual(midx.memory_usage(unit="B"), 2 * n * ak.dtypes.int64.itemsize)
+
     def test_is_unique(self):
         i = ak.Index(ak.array([0, 1, 2]))
         self.assertTrue(i.is_unique)

@@ -192,6 +192,41 @@ class Index:
 
         return cls.factory(idx) if len(idx) > 1 else cls.factory(idx[0])
 
+    def memory_usage(self, unit="B"):
+        """
+        Return the memory usage of the Index values.
+
+        Parameters
+        ----------
+        unit : str, default = "B"
+            Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+
+        Returns
+        -------
+        int
+            Bytes of memory consumed.
+
+        See Also
+        --------
+        arkouda.pdarrayclass.nbytes
+        arkouda.index.MultiIndex.memory_usage
+        arkouda.series.Series.memory_usage
+        arkouda.dataframe.DataFrame.memory_usage
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> idx = Index(ak.array([1, 2, 3]))
+        >>> idx.memory_usage()
+        24
+
+        """
+        from arkouda.util import convert_bytes
+
+        return convert_bytes(self.values.nbytes, unit=unit)
+
     def to_pandas(self):
         if isinstance(self.values, list):
             val = ndarray(self.values)
@@ -866,6 +901,45 @@ class MultiIndex(Index):
     @property
     def index(self):
         return self.values
+
+    def memory_usage(self, unit="B"):
+        """
+        Return the memory usage of the MultiIndex values.
+
+        Parameters
+        ----------
+        unit : str, default = "B"
+            Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+
+        Returns
+        -------
+        int
+            Bytes of memory consumed.
+
+        See Also
+        --------
+        arkouda.pdarrayclass.nbytes
+        arkouda.index.Index.memory_usage
+        arkouda.series.Series.memory_usage
+        arkouda.dataframe.DataFrame.memory_usage
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
+        >>> m.memory_usage()
+        48
+
+        """
+        from arkouda.util import convert_bytes
+
+        nbytes = 0
+        for item in self.values:
+            nbytes += item.nbytes
+
+        return convert_bytes(nbytes, unit=unit)
 
     def to_pandas(self):
         idx = [convert_if_categorical(i) for i in self.index]

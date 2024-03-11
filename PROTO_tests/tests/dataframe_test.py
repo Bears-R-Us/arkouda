@@ -879,13 +879,13 @@ class TestDataFrame:
         assert test_df["col_B"].to_list() == [False, False]
 
     def test_corr(self):
-        df = ak.DataFrame({'col1': [1, 2], 'col2': [-1, -2]})
+        df = ak.DataFrame({"col1": [1, 2], "col2": [-1, -2]})
         corr = df.corr()
         pd_corr = df.to_pandas().corr()
         assert_frame_equal(corr.to_pandas(retain_index=True), pd_corr)
 
         for i in range(5):
-            df = ak.DataFrame({'col1': ak.randint(0, 10, 10), 'col2': ak.randint(0, 10, 10)})
+            df = ak.DataFrame({"col1": ak.randint(0, 10, 10), "col2": ak.randint(0, 10, 10)})
             corr = df.corr()
             pd_corr = df.to_pandas().corr()
             assert_frame_equal(corr.to_pandas(retain_index=True), pd_corr)
@@ -989,6 +989,31 @@ class TestDataFrame:
                     # from pandas.testing import assert_frame_equal
                     # assert_frame_equal(sorted_ak.to_pandas()[sorted_column_names],
                     # sorted_pd[sorted_column_names])
+
+    def test_memory_usage(self):
+        dtypes = [ak.int64, ak.float64, ak.bool]
+        data = dict([(str(t), ak.ones(5000, dtype=ak.int64).astype(t)) for t in dtypes])
+        df = ak.DataFrame(data)
+        ak_memory_usage = df.memory_usage()
+        pd_memory_usage = pd.Series(
+            [40000, 40000, 40000, 5000], index=["Index", "int64", "float64", "bool"]
+        )
+        assert_series_equal(ak_memory_usage.to_pandas(), pd_memory_usage)
+
+        assert df.memory_usage_info(unit="B") == "125000.00 B"
+        assert df.memory_usage_info(unit="KB") == "122.07 KB"
+        assert df.memory_usage_info(unit="MB") == "0.12 MB"
+        assert df.memory_usage_info(unit="GB") == "0.00 GB"
+
+        ak_memory_usage = df.memory_usage(index=False)
+        pd_memory_usage = pd.Series([40000, 40000, 5000], index=["int64", "float64", "bool"])
+        assert_series_equal(ak_memory_usage.to_pandas(), pd_memory_usage)
+
+        ak_memory_usage = df.memory_usage(unit="KB")
+        pd_memory_usage = pd.Series(
+            [39.0625, 39.0625, 39.0625, 4.88281], index=["Index", "int64", "float64", "bool"]
+        )
+        assert_series_equal(ak_memory_usage.to_pandas(), pd_memory_usage)
 
 
 def pda_to_str_helper(pda):
