@@ -297,7 +297,13 @@ module MultiTypeSymEntry
                 return s;
             }
 
-            return subArrayStr(1, 0);
+            var s = subArrayStr(1, 0);
+            if this.etype == bool {
+                s = s.replace("true","True");
+                s = s.replace("false","False");
+            }
+
+            return s;
         }
     }
 
