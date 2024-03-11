@@ -1372,7 +1372,7 @@ Functions
       '15 KB'
 
 
-   .. py:method:: merge(right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
+   .. py:method:: merge(right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y', convert_ints: bool = True, sort: bool = True) -> DataFrame
 
       Merge Arkouda DataFrames with a database-style join.
       The resulting dataframe contains rows from both DataFrames as specified by
@@ -1395,6 +1395,14 @@ Functions
       :param right_suffix: A string indicating the suffix to add to columns from the right dataframe for overlapping
                            column names in both left and right. Defaults to "_y". Only used when how is "inner".
       :type right_suffix: str, default = "_y"
+      :param convert_ints: If True, convert columns with missing int values (due to the join) to float64.
+                           This is to match pandas.
+                           If False, do not convert the column dtypes.
+                           This has no effect when how = "inner".
+      :type convert_ints: bool = True
+      :param sort: If True, DataFrame is returned sorted by "on".
+                   Otherwise, the DataFrame is not sorted.
+      :type sort: bool = True
 
       :returns: Joined Arkouda DataFrame.
       :rtype: arkouda.dataframe.DataFrame
@@ -1458,13 +1466,13 @@ Functions
       +====+========+==========+==========+
       |  0 |      0 |        0 |        0 |
       +----+--------+----------+----------+
-      |  1 |      2 |        2 |       -2 |
+      |  1 |      1 |      nan |       -1 |
       +----+--------+----------+----------+
-      |  2 |      4 |        4 |       -4 |
+      |  2 |      2 |        2 |       -2 |
       +----+--------+----------+----------+
-      |  3 |      1 |      nan |       -1 |
+      |  3 |      3 |      nan |       -3 |
       +----+--------+----------+----------+
-      |  4 |      3 |      nan |       -3 |
+      |  4 |      4 |        4 |       -4 |
       +----+--------+----------+----------+
 
       >>> left_df.merge(right_df, on = "col1", how = "right")
@@ -1481,6 +1489,26 @@ Functions
       |  3 |      6 |      nan |        6 |
       +----+--------+----------+----------+
       |  4 |      8 |      nan |        8 |
+      +----+--------+----------+----------+
+
+      >>> left_df.merge(right_df, on = "col1", how = "outer")
+
+      +----+--------+----------+----------+
+      |    |   col1 |   col2_y |   col2_x |
+      +====+========+==========+==========+
+      |  0 |      0 |        0 |        0 |
+      +----+--------+----------+----------+
+      |  1 |      1 |      nan |       -1 |
+      +----+--------+----------+----------+
+      |  2 |      2 |        2 |       -2 |
+      +----+--------+----------+----------+
+      |  3 |      3 |      nan |       -3 |
+      +----+--------+----------+----------+
+      |  4 |      4 |        4 |       -4 |
+      +----+--------+----------+----------+
+      |  5 |      6 |        6 |      nan |
+      +----+--------+----------+----------+
+      |  6 |      8 |        8 |      nan |
       +----+--------+----------+----------+
 
 
@@ -2504,7 +2532,7 @@ Functions
    array([1 2 0 4 3])
 
 
-.. py:function:: merge(left: DataFrame, right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y') -> DataFrame
+.. py:function:: merge(left: DataFrame, right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y', convert_ints: bool = True, sort: bool = True) -> DataFrame
 
    Merge Arkouda DataFrames with a database-style join.
    The resulting dataframe contains rows from both DataFrames as specified by
@@ -2521,7 +2549,7 @@ Functions
               If on is None, this defaults to the intersection of the columns in both DataFrames.
    :type on: Optional[Union[str, List[str]]] = None
    :param how: The merge condition.
-               Must be one of "inner", "left", or "right".
+               Must be one of "inner", "left", "right", or "outer".
    :type how: str, default = "inner"
    :param left_suffix: A string indicating the suffix to add to columns from the left dataframe for overlapping
                        column names in both left and right. Defaults to "_x". Only used when how is "inner".
@@ -2529,6 +2557,14 @@ Functions
    :param right_suffix: A string indicating the suffix to add to columns from the right dataframe for overlapping
                         column names in both left and right. Defaults to "_y". Only used when how is "inner".
    :type right_suffix: str, default = "_y"
+   :param convert_ints: If True, convert columns with missing int values (due to the join) to float64.
+                        This is to match pandas.
+                        If False, do not convert the column dtypes.
+                        This has no effect when how = "inner".
+   :type convert_ints: bool = True
+   :param sort: If True, DataFrame is returned sorted by "on".
+                Otherwise, the DataFrame is not sorted.
+   :type sort: bool = True
 
    :returns: Joined Arkouda DataFrame.
    :rtype: arkouda.dataframe.DataFrame
@@ -2539,6 +2575,7 @@ Functions
 
    >>> import arkouda as ak
    >>> ak.connect()
+   >>> from arkouda import merge
    >>> left_df = ak.DataFrame({'col1': ak.arange(5), 'col2': -1 * ak.arange(5)})
    >>> display(left_df)
 
@@ -2592,13 +2629,13 @@ Functions
    +====+========+==========+==========+
    |  0 |      0 |        0 |        0 |
    +----+--------+----------+----------+
-   |  1 |      2 |        2 |       -2 |
+   |  1 |      1 |      nan |       -1 |
    +----+--------+----------+----------+
-   |  2 |      4 |        4 |       -4 |
+   |  2 |      2 |        2 |       -2 |
    +----+--------+----------+----------+
-   |  3 |      1 |      nan |       -1 |
+   |  3 |      3 |      nan |       -3 |
    +----+--------+----------+----------+
-   |  4 |      3 |      nan |       -3 |
+   |  4 |      4 |        4 |       -4 |
    +----+--------+----------+----------+
 
    >>> merge(left_df, right_df, on = "col1", how = "right")
@@ -2615,6 +2652,26 @@ Functions
    |  3 |      6 |      nan |        6 |
    +----+--------+----------+----------+
    |  4 |      8 |      nan |        8 |
+   +----+--------+----------+----------+
+
+   >>> merge(left_df, right_df, on = "col1", how = "outer")
+
+   +----+--------+----------+----------+
+   |    |   col1 |   col2_y |   col2_x |
+   +====+========+==========+==========+
+   |  0 |      0 |        0 |        0 |
+   +----+--------+----------+----------+
+   |  1 |      1 |      nan |       -1 |
+   +----+--------+----------+----------+
+   |  2 |      2 |        2 |       -2 |
+   +----+--------+----------+----------+
+   |  3 |      3 |      nan |       -3 |
+   +----+--------+----------+----------+
+   |  4 |      4 |        4 |       -4 |
+   +----+--------+----------+----------+
+   |  5 |      6 |        6 |      nan |
+   +----+--------+----------+----------+
+   |  6 |      8 |        8 |      nan |
    +----+--------+----------+----------+
 
 
