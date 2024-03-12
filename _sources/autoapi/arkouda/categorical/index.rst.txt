@@ -628,6 +628,28 @@ Classes
       .. seealso:: :obj:`to_hdf`
 
 
+   .. py:method:: to_strings() -> List
+
+      Convert the Categorical to Strings.
+
+      :returns: A Strings object corresponding to the values in
+                this Categorical.
+      :rtype: arkouda.strings.Strings
+
+      .. rubric:: Examples
+
+      >>> from arkouda import ak
+      >>> ak.connect()
+      >>> a = ak.array(["a","b","c"])
+      >>> a
+      >>> c = ak.Categorical(a)
+      >>>  c.to_strings()
+      c.to_strings()
+
+      >>> isinstance(c.to_strings(), ak.Strings)
+      True
+
+
    .. py:method:: transfer(hostname: str, port: arkouda.dtypes.int_scalars)
 
       Sends a Categorical object to a different Arkouda server
