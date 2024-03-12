@@ -25,5 +25,9 @@ or
 
    .. method:: proc init(type t, seed)
 
+   .. method:: proc ref fill(ref arr: []) where arr.isRectangular()
+
+   .. method:: proc ref fill(ref arr: [], min: arr.eltType, max: arr.eltType) where arr.isRectangular()
+
 .. function:: proc sample(arr: [?d] ?t, n: int, withReplacement: bool): [] t throws
 

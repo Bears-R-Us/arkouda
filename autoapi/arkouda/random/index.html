@@ -306,16 +306,13 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.random.default_rng" title="arkouda.random.default_rng"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_rng</span></code></a>([seed])</p></td>
-<td><p>Construct a new Generator.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.random.randint" title="arkouda.random.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.random.randint" title="arkouda.random.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Generate a pdarray of randomized int, float, or bool values in a</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.random.standard_normal" title="arkouda.random.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.random.standard_normal" title="arkouda.random.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Draw real numbers from the standard normal distribution.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.random.uniform" title="arkouda.random.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.random.uniform" title="arkouda.random.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
 <td><p>Generate a pdarray with uniformly distributed random float values</p></td>
 </tr>
 </tbody>
@@ -323,7 +320,7 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.random.Generator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/random/_generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/random/_generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator" title="Link to this definition">#</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">Generator</span></code> exposes a number of methods for generating random
 numbers drawn from a variety of probability distributions. In addition to
 the distribution-specific arguments, each method takes a keyword argument
@@ -332,13 +329,21 @@ value is generated and returned. If <cite>size</cite> is an integer, then a 1-D
 array filled with generated values is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>seed</strong> (<em>int</em>) – Seed to allow for reproducible random number generation.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>int</em>) – Seed to allow for reproducible random number generation.</p></li>
+<li><p><strong>name_dict</strong> (<em>dict</em>) – Dictionary mapping the server side names associated with
+the generators for each dtype.</p></li>
+<li><p><strong>state</strong> (<em>int</em>) – The current state we are in the random number generation stream.
+This information makes it so calls to any dtype generator
+function affects the stream of random numbers for the other generators.
+This mimics the behavior we see in numpy</p></li>
+</ul>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#arkouda.random.default_rng" title="arkouda.random.default_rng"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_rng</span></code></a></dt><dd><p>Recommended constructor for <cite>Generator</cite>.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_rng</span></code></dt><dd><p>Recommended constructor for <cite>Generator</cite>.</p>
 </dd>
 </dl>
 </div>
@@ -478,27 +483,6 @@ high must be greater than or equal to low. The default value is 1.0.</p></li>
 </div>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.default_rng">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">default_rng</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/random/_generator.html#default_rng"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.default_rng" title="Link to this definition">#</a></dt>
-<dd><p>Construct a new Generator.</p>
-<p>Right now we only support PCG64, since this is what is available in chapel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>seed</strong> (<em>{None</em><em>, </em><em>int</em><em>, </em><em>Generator}</em><em>, </em><em>optional</em>) – A seed to initialize the <cite>Generator</cite>. If None, then the seed will
-be generated by chapel in an implementation specific manner based on the current time.
-This behavior is currently unstable and may change in the future. If an int,
-then the value must be non-negative. If passed a <cite>Generator</cite>, it will be returned unaltered.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The initialized generator object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.random.Generator" title="arkouda.random.Generator">Generator</a></p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -712,7 +696,6 @@ is invoked with a dtype of float64</p>
 <li><a class="reference internal" href="#arkouda.random.Generator.uniform"><code class="docutils literal notranslate"><span class="pre">Generator.uniform()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#arkouda.random.default_rng"><code class="docutils literal notranslate"><span class="pre">default_rng()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.randint"><code class="docutils literal notranslate"><span class="pre">randint()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.standard_normal"><code class="docutils literal notranslate"><span class="pre">standard_normal()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.uniform"><code class="docutils literal notranslate"><span class="pre">uniform()</span></code></a></li>

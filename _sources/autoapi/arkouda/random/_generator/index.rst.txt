@@ -27,7 +27,7 @@ Functions
 
 
 
-.. py:class:: Generator(seed=None)
+.. py:class:: Generator(name_dict=None, seed=None, state=1)
 
 
    ``Generator`` exposes a number of methods for generating random
@@ -39,6 +39,14 @@ Functions
 
    :param seed: Seed to allow for reproducible random number generation.
    :type seed: int
+   :param name_dict: Dictionary mapping the server side names associated with
+                     the generators for each dtype.
+   :type name_dict: dict
+   :param state: The current state we are in the random number generation stream.
+                 This information makes it so calls to any dtype generator
+                 function affects the stream of random numbers for the other generators.
+                 This mimics the behavior we see in numpy
+   :type state: int
 
    .. seealso::
 

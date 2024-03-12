@@ -138,7 +138,7 @@
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SymbolEntryType</span></span> <span class="pre">{</span> <span class="pre">AbstractSymEntry,</span> <span class="pre">TypedArraySymEntry,</span> <span class="pre">PrimitiveTypedArraySymEntry,</span> <span class="pre">ComplexTypedArraySymEntry,</span> <span class="pre">GenSymEntry,</span> <span class="pre">SegStringSymEntry,</span> <span class="pre">CompositeSymEntry,</span> <span class="pre">AnythingSymEntry,</span> <span class="pre">UnknownSymEntry,</span> <span class="pre">None</span> <span class="pre">}</span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SymbolEntryType</span></span> <span class="pre">{</span> <span class="pre">AbstractSymEntry,</span> <span class="pre">TypedArraySymEntry,</span> <span class="pre">PrimitiveTypedArraySymEntry,</span> <span class="pre">ComplexTypedArraySymEntry,</span> <span class="pre">GenSymEntry,</span> <span class="pre">SegStringSymEntry,</span> <span class="pre">CompositeSymEntry,</span> <span class="pre">GeneratorSymEntry,</span> <span class="pre">AnythingSymEntry,</span> <span class="pre">UnknownSymEntry,</span> <span class="pre">None</span> <span class="pre">}</span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Internal Types we can use to build our Symbol type hierarchy.</p></li>
@@ -177,6 +177,11 @@
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.CompositeSymEntry">
 <em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CompositeSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.CompositeSymEntry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.GeneratorSymEntry">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GeneratorSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.GeneratorSymEntry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
@@ -705,6 +710,31 @@ For Example, group by contains multiple SymEntries that are all considered part 
 
 </dd></dl>
 
+<dl class="chpl class">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GeneratorSymEntry</span></span><span class="pre">:</span> <span class="pre">AbstractSymEntry</span><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry.etype">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">etype</span></span><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.etype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry.generator">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">generator</span></span><span class="pre">:</span> <span class="pre">randomStream(etype)</span><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.generator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry.state">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">state</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">generator:</span> <span class="pre">randomStream(?etype)</span></em>, <em class="sig-param"><span class="pre">state:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.toGenSymEntry">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toGenSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MultiTypeSymEntry.toGenSymEntry" title="Permalink to this definition">¶</a></dt>
@@ -729,6 +759,15 @@ For Example, group by contains multiple SymEntries that are all considered part 
 <dd><ul class="simple">
 <li></li>
 <li><p>Helper proc to cast AbstractSymEntry to SegStringSymEntry</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.toGeneratorSymEntry">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toGeneratorSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MultiTypeSymEntry.toGeneratorSymEntry" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Helper proc to cast AbstractSymEntry to GeneratorSymEntry</p></li>
 </ul>
 </dd></dl>
 

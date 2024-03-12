@@ -19,7 +19,7 @@ or
 
 .. data:: const genLogger = new Logger(logLevel, logChannel)
 
-.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GenSymEntry, SegStringSymEntry, CompositeSymEntry, AnythingSymEntry, UnknownSymEntry, None }
+.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GenSymEntry, SegStringSymEntry, CompositeSymEntry, GeneratorSymEntry, AnythingSymEntry, UnknownSymEntry, None }
 
    *
    * Internal Types we can use to build our Symbol type hierarchy.
@@ -39,6 +39,8 @@ or
    .. enumconstant:: enum constant SegStringSymEntry
 
    .. enumconstant:: enum constant CompositeSymEntry
+
+   .. enumconstant:: enum constant GeneratorSymEntry
 
    .. enumconstant:: enum constant AnythingSymEntry
 
@@ -317,6 +319,16 @@ or
       * :returns: s (string) containing the array data
       
 
+.. class:: GeneratorSymEntry : AbstractSymEntry
+
+   .. attribute:: type etype
+
+   .. attribute:: var generator: randomStream(etype)
+
+   .. attribute:: var state: int
+
+   .. method:: proc init(generator: randomStream(?etype), state: int = 1)
+
 .. function:: proc toGenSymEntry(entry: borrowed AbstractSymEntry) throws
 
    *
@@ -333,6 +345,12 @@ or
 
    *
    * Helper proc to cast AbstractSymEntry to SegStringSymEntry
+   
+
+.. function:: proc toGeneratorSymEntry(entry: borrowed AbstractSymEntry, type t) throws
+
+   *
+   * Helper proc to cast AbstractSymEntry to GeneratorSymEntry
    
 
 .. function:: proc getArraySpecFromEntry(entry: borrowed AbstractSymEntry) throws
