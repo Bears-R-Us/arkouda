@@ -806,13 +806,13 @@ class pdarray:
                             k += int(self.shape[dim])
                         if k < 0 or k >= int(self.shape[dim]):
                             raise IndexError(
-                                f"index {k} is out of bounds in dimension" +
-                                f"{dim} with size {self.shape[dim]}"
+                                f"index {k} is out of bounds in dimension"
+                                + f"{dim} with size {self.shape[dim]}"
                             )
                         else:
                             # treat this as a single element slice
                             starts.append(k)
-                            stops.append(k+1)
+                            stops.append(k + 1)
                             strides.append(1)
 
                 if allScalar:
@@ -839,9 +839,20 @@ class pdarray:
                         },
                     )
             else:
-                raise TypeError(
-                    f"Unhandled key type for ND arrays: {key} ({type(key)})"
-                )
+                raise TypeError(f"Unhandled key type for ND arrays: {key} ({type(key)})")
+
+    @property
+    def nbytes(self):
+        """
+        The size of the pdarray in bytes.
+
+        Returns
+        -------
+        int
+            The size of the pdarray in bytes.
+
+        """
+        return self.size * self.dtype.itemsize
 
     @typechecked
     def fill(self, value: numeric_scalars) -> None:
@@ -2214,9 +2225,7 @@ def any(pda: pdarray) -> np.bool_:
         Raised if there's a server-side error thrown
     """
     return parse_single_value(
-        generic_msg(
-            cmd=f"reduce->bool{pda.ndim}D", args={"op": "any", "x": pda, "nAxes": 0, "axis": []}
-        )
+        generic_msg(cmd=f"reduce->bool{pda.ndim}D", args={"op": "any", "x": pda, "nAxes": 0, "axis": []})
     )
 
 
@@ -2243,9 +2252,7 @@ def all(pda: pdarray) -> np.bool_:
         Raised if there's a server-side error thrown
     """
     return parse_single_value(
-        generic_msg(
-            cmd=f"reduce->bool{pda.ndim}D", args={"op": "all", "x": pda, "nAxes": 0, "axis": []}
-        )
+        generic_msg(cmd=f"reduce->bool{pda.ndim}D", args={"op": "all", "x": pda, "nAxes": 0, "axis": []})
     )
 
 

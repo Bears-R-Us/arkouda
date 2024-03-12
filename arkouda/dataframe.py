@@ -10,6 +10,7 @@ from warnings import warn
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from numpy import ndarray
+from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
 from arkouda.categorical import Categorical
@@ -893,18 +894,18 @@ class DataFrame(UserDict):
         keys = [("'" + key + "'") for key in keys]
         keystr = ", ".join(keys)
 
-        # first call to memory_usage() initializes self._bytes
-        mem = self.memory_usage()
+        # first call to memory_usage_info() initializes self._bytes
+        mem = self.memory_usage_info()
 
         # Get units that make the most sense.
         if self._bytes < 1024:
-            mem = self.memory_usage(unit="B")
+            mem = self.memory_usage_info(unit="B")
         elif self._bytes < 1024**2:
-            mem = self.memory_usage(unit="KB")
+            mem = self.memory_usage_info(unit="KB")
         elif self._bytes < 1024**3:
-            mem = self.memory_usage(unit="MB")
+            mem = self.memory_usage_info(unit="MB")
         else:
-            mem = self.memory_usage(unit="GB")
+            mem = self.memory_usage_info(unit="GB")
         rows = " rows"
         if self._nrows == 1:
             rows = " row"
@@ -1734,18 +1735,18 @@ class DataFrame(UserDict):
         keys = [("'" + key + "'") for key in keys]
         keystr = ", ".join(keys)
 
-        # first call to memory_usage() initializes self._bytes
-        mem = self.memory_usage()
+        # first call to memory_usage_info() initializes self._bytes
+        mem = self.memory_usage_info()
 
         # Get units that make the most sense.
         if self._bytes < 1024:
-            mem = self.memory_usage(unit="B")
+            mem = self.memory_usage_info(unit="B")
         elif self._bytes < 1024**2:
-            mem = self.memory_usage(unit="KB")
+            mem = self.memory_usage_info(unit="KB")
         elif self._bytes < 1024**3:
-            mem = self.memory_usage(unit="MB")
+            mem = self.memory_usage_info(unit="MB")
         else:
-            mem = self.memory_usage(unit="GB")
+            mem = self.memory_usage_info(unit="GB")
         rows = " rows"
         if self._nrows == 1:
             rows = " row"
@@ -2430,9 +2431,121 @@ class DataFrame(UserDict):
             gb = GroupBy(gb, self, gb_key_names=keys, as_index=as_index)
         return gb
 
-    def memory_usage(self, unit="GB"):
+    def memory_usage(self, index=True, unit="B") -> Series:
         """
-        Print the size of this DataFrame.
+        Return the memory usage of each column in bytes.
+
+        The memory usage can optionally include the contribution of
+        the index.
+
+        Parameters
+        ----------
+        index : bool, default True
+            Specifies whether to include the memory usage of the DataFrame's
+            index in returned Series. If ``index=True``, the memory usage of
+            the index is the first item in the output.
+        unit : str, default = "B"
+            Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+
+        Returns
+        -------
+        Series
+            A Series whose index is the original column names and whose values
+            is the memory usage of each column in bytes.
+
+        See Also
+        --------
+        arkouda.pdarrayclass.nbytes
+        arkouda.index.Index.memory_usage
+        arkouda.index.MultiIndex.memory_usage
+        arkouda.series.Series.memory_usage
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> dtypes = [ak.int64, ak.float64,  ak.bool]
+        >>> data = dict([(str(t), ak.ones(5000, dtype=ak.int64).astype(t)) for t in dtypes])
+        >>> df = ak.DataFrame(data)
+        >>> display(df.head())
+
+        +----+---------+-----------+--------+
+        |    |   int64 |   float64 | bool   |
+        +====+=========+===========+========+
+        |  0 |       1 |         1 | True   |
+        +----+---------+-----------+--------+
+        |  1 |       1 |         1 | True   |
+        +----+---------+-----------+--------+
+        |  2 |       1 |         1 | True   |
+        +----+---------+-----------+--------+
+        |  3 |       1 |         1 | True   |
+        +----+---------+-----------+--------+
+        |  4 |       1 |         1 | True   |
+        +----+---------+-----------+--------+
+
+        >>> df.memory_usage()
+
+        +---------+-------+
+        |         |     0 |
+        +=========+=======+
+        | Index   | 40000 |
+        +---------+-------+
+        | int64   | 40000 |
+        +---------+-------+
+        | float64 | 40000 |
+        +---------+-------+
+        | bool    |  5000 |
+        +---------+-------+
+
+        >>> df.memory_usage(index=False)
+
+        +---------+-------+
+        |         |     0 |
+        +=========+=======+
+        | int64   | 40000 |
+        +---------+-------+
+        | float64 | 40000 |
+        +---------+-------+
+        | bool    |  5000 |
+        +---------+-------+
+
+        >>> df.memory_usage(unit="KB")
+
+        +---------+----------+
+        |         |        0 |
+        +=========+==========+
+        | Index   | 39.0625  |
+        +---------+----------+
+        | int64   | 39.0625  |
+        +---------+----------+
+        | float64 | 39.0625  |
+        +---------+----------+
+        | bool    |  4.88281 |
+        +---------+----------+
+
+        To get the approximate total memory usage:
+
+        >>>  df.memory_usage(index=True).sum()
+
+        """
+        from arkouda.util import convert_bytes
+
+        if index:
+            sizes = [self.index.memory_usage(unit=unit)]
+            ret_index = ["Index"]
+        else:
+            sizes = []
+            ret_index = []
+
+        sizes += [convert_bytes(c.nbytes, unit=unit) for col, c in self.items()]
+        ret_index += self.columns.values.copy()
+
+        result = Series(sizes, index=array(ret_index))
+        return result
+
+    def memory_usage_info(self, unit="GB"):
+        """
+        A formatted string representation of the size of this DataFrame.
 
         Parameters
         ----------
@@ -2441,8 +2554,8 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        int
-            The number of bytes used by this DataFrame in [unit]s.
+        str
+            A string representation of the number of bytes used by this DataFrame in [unit]s.
 
         Examples
         --------
@@ -2450,30 +2563,18 @@ class DataFrame(UserDict):
         >>> import arkouda as ak
         >>> ak.connect()
         >>> df = ak.DataFrame({'col1': ak.arange(1000), 'col2': ak.arange(1000)})
-        >>> df.memory_usage()
+        >>> df.memory_usage_info()
         '0.00 GB'
 
-        >>> df.memory_usage(unit="KB")
+        >>> df.memory_usage_info(unit="KB")
         '15 KB'
 
         """
+        from arkouda.util import convert_bytes
 
-        KB = 1024
-        MB = KB * KB
-        GB = MB * KB
-        self._bytes = 0
-        for key, val in self.items():
-            if isinstance(val, pdarray):
-                self._bytes += (val.dtype).itemsize * val.size
-            elif isinstance(val, Strings):
-                self._bytes += val.nbytes
-        if unit == "B":
-            return "{:} B".format(int(self._bytes))
-        elif unit == "MB":
-            return "{:} MB".format(int(self._bytes / MB))
-        elif unit == "KB":
-            return "{:} KB".format(int(self._bytes / KB))
-        return "{:.2f} GB".format(self._bytes / GB)
+        data_size = convert_bytes(self.memory_usage(index=True).sum(), unit=unit)
+
+        return "{:.2f} {}".format(data_size, unit)
 
     def to_pandas(self, datalimit=maxTransferBytes, retain_index=False):
         """
@@ -3972,6 +4073,8 @@ class DataFrame(UserDict):
         how: str = "inner",
         left_suffix: str = "_x",
         right_suffix: str = "_y",
+        convert_ints: bool = True,
+        sort: bool = True,
     ) -> DataFrame:
         r"""
         Merge Arkouda DataFrames with a database-style join.
@@ -3997,7 +4100,14 @@ class DataFrame(UserDict):
         right_suffix: str, default = "_y"
             A string indicating the suffix to add to columns from the right dataframe for overlapping
             column names in both left and right. Defaults to "_y". Only used when how is "inner".
-
+        convert_ints: bool = True
+            If True, convert columns with missing int values (due to the join) to float64.
+            This is to match pandas.
+            If False, do not convert the column dtypes.
+            This has no effect when how = "inner".
+        sort: bool = True
+            If True, DataFrame is returned sorted by "on".
+            Otherwise, the DataFrame is not sorted.
         Returns
         -------
         arkouda.dataframe.DataFrame
@@ -4065,13 +4175,13 @@ class DataFrame(UserDict):
         +====+========+==========+==========+
         |  0 |      0 |        0 |        0 |
         +----+--------+----------+----------+
-        |  1 |      2 |        2 |       -2 |
+        |  1 |      1 |      nan |       -1 |
         +----+--------+----------+----------+
-        |  2 |      4 |        4 |       -4 |
+        |  2 |      2 |        2 |       -2 |
         +----+--------+----------+----------+
-        |  3 |      1 |      nan |       -1 |
+        |  3 |      3 |      nan |       -3 |
         +----+--------+----------+----------+
-        |  4 |      3 |      nan |       -3 |
+        |  4 |      4 |        4 |       -4 |
         +----+--------+----------+----------+
 
         >>> left_df.merge(right_df, on = "col1", how = "right")
@@ -4090,8 +4200,30 @@ class DataFrame(UserDict):
         |  4 |      8 |      nan |        8 |
         +----+--------+----------+----------+
 
+        >>> left_df.merge(right_df, on = "col1", how = "outer")
+
+        +----+--------+----------+----------+
+        |    |   col1 |   col2_y |   col2_x |
+        +====+========+==========+==========+
+        |  0 |      0 |        0 |        0 |
+        +----+--------+----------+----------+
+        |  1 |      1 |      nan |       -1 |
+        +----+--------+----------+----------+
+        |  2 |      2 |        2 |       -2 |
+        +----+--------+----------+----------+
+        |  3 |      3 |      nan |       -3 |
+        +----+--------+----------+----------+
+        |  4 |      4 |        4 |       -4 |
+        +----+--------+----------+----------+
+        |  5 |      6 |        6 |      nan |
+        +----+--------+----------+----------+
+        |  6 |      8 |        8 |      nan |
+        +----+--------+----------+----------+
+
         """
-        return merge(self, right, on, how, left_suffix, right_suffix)
+        return merge(
+            self, right, on, how, left_suffix, right_suffix, convert_ints=convert_ints, sort=sort
+        )
 
     @typechecked
     def register(self, user_defined_name: str) -> DataFrame:
@@ -4728,6 +4860,7 @@ def _inner_join_merge(
     col_intersect: Union[str, List[str]],
     left_suffix: str = "_x",
     right_suffix: str = "_y",
+    sort: bool = True,
 ) -> DataFrame:
     """
     Utilizes the ak.join.inner_join function to return an ak
@@ -4749,6 +4882,9 @@ def _inner_join_merge(
     right_suffix: str = "_y"
         A string indicating the suffix to add to columns from the right dataframe for overlapping
         column names in both left and right. Defaults to "_y"
+    sort: bool = True
+        If True, DataFrame is returned sorted by "on".
+        Otherwise, the DataFrame is not sorted.
     Returns
     -------
     arkouda.dataframe.DataFrame
@@ -4773,7 +4909,11 @@ def _inner_join_merge(
     for col in right_cols:
         new_col = col + right_suffix if col in col_intersect else col
         new_dict[new_col] = right[col][right_inds]
-    return DataFrame(new_dict)
+
+    ret_df = DataFrame(new_dict)
+    if sort is True:
+        ret_df = ret_df.sort_values(on).reset_index()
+    return ret_df
 
 
 def _right_join_merge(
@@ -4783,6 +4923,8 @@ def _right_join_merge(
     col_intersect: Union[str, List[str]],
     left_suffix: str = "_x",
     right_suffix: str = "_y",
+    convert_ints: bool = True,
+    sort: bool = True,
 ) -> DataFrame:
     """
     Utilizes the ak.join.inner_join_merge function to return an
@@ -4806,12 +4948,19 @@ def _right_join_merge(
     right_suffix: str = "_y"
         A string indicating the suffix to add to columns from the right dataframe for overlapping
         column names in both left and right. Defaults to "_y"
+    convert_ints: bool = True
+        If True, convert columns with missing int values (due to the join) to float64.
+        This is to match pandas.
+        If False, do not convert the column dtypes.
+    sort: bool = True
+        If True, DataFrame is returned sorted by "on".
+        Otherwise, the DataFrame is not sorted.
     Returns
     -------
     arkouda.dataframe.DataFrame
         Right-Joined Arkouda DataFrame
     """
-    in_left = _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix)
+    in_left = _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix, sort=False)
     in_left_cols, left_cols = in_left.columns.values.copy(), left.columns.values.copy()
     if isinstance(on, str):
         left_at_on = left[on]
@@ -4825,22 +4974,152 @@ def _right_join_merge(
             left_cols.remove(col)
             in_left_cols.remove(col)
 
-    not_in_left = right[~in1d(right_at_on, left_at_on)]
+    not_in_left = right[in1d(right_at_on, left_at_on, invert=True)]
     for col in not_in_left.columns:
         if col in left_cols:
             not_in_left[col + right_suffix] = not_in_left[col]
             not_in_left = not_in_left.drop(col, axis=1)
 
-    nan_cols = list(set(in_left) - set(in_left).intersection(set(not_in_left)))
+    nan_cols = list(set(in_left) - set(not_in_left))
     for col in nan_cols:
-        # Create a nan array for all values not in the left df
-        nan_arr = full(len(not_in_left), np.nan)
-        if in_left[col].dtype == int:
+        if convert_ints is True and in_left[col].dtype == int:
             in_left[col] = akcast(in_left[col], akfloat64)
-        else:
-            nan_arr = akcast(nan_arr, in_left[col].dtype)
-        not_in_left[col] = nan_arr
-    return DataFrame.append(in_left, not_in_left)
+
+        # Create a nan array for all values not in the left df
+        not_in_left[col] = __nulls_like(in_left[col], len(not_in_left))
+    ret_df = DataFrame.append(in_left, not_in_left)
+    if sort is True:
+        ret_df = ret_df.sort_values(on).reset_index()
+    return ret_df
+
+
+def _outer_join_merge(
+    left: DataFrame,
+    right: DataFrame,
+    on: Union[str, List[str]],
+    col_intersect: Union[str, List[str]],
+    left_suffix: str = "_x",
+    right_suffix: str = "_y",
+    convert_ints: bool = True,
+    sort: bool = True,
+) -> DataFrame:
+    """
+    Utilizes the ak.join.inner_join_merge function to return an
+    ak DataFrame object containing all the rows in each DataFrame (based on the "on" param),
+    and all of their associated values.
+    Based on pandas merge functionality.
+
+    Parameters
+    ----------
+    left: DataFrame
+        The Left DataFrame to be joined
+    right: DataFrame
+        The Right DataFrame to be joined
+    on: Optional[Union[str, List[str]]] = None
+        The name or list of names of the DataFrame column(s) to join on.
+        If on is None, this defaults to the intersection of the columns in both DataFrames.
+    left_suffix: str = "_x"
+        A string indicating the suffix to add to columns from the left dataframe for overlapping
+        column names in both left and right. Defaults to "_x"
+    right_suffix: str = "_y"
+        A string indicating the suffix to add to columns from the right dataframe for overlapping
+        column names in both left and right. Defaults to "_y"
+    convert_ints: bool = True
+        If True, convert columns with missing int values (due to the join) to float64.
+        This is to match pandas.
+        If False, do not convert the column dtypes.
+    sort: bool = True
+        If True, DataFrame is returned sorted by "on".
+        Otherwise, the DataFrame is not sorted.
+    Returns
+    -------
+    arkouda.dataframe.DataFrame
+        Outer-Joined Arkouda DataFrame
+    """
+    inner = _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix, sort=False)
+    left_cols, right_cols = (
+        left.columns.values.copy(),
+        right.columns.values.copy(),
+    )
+
+    if isinstance(on, str):
+        left_at_on = left[on]
+        right_at_on = right[on]
+        left_cols.remove(on)
+        right_cols.remove(on)
+
+    else:
+        left_at_on = [left[col] for col in on]
+        right_at_on = [right[col] for col in on]
+        for col in on:
+            left_cols.remove(col)
+            right_cols.remove(col)
+
+    not_in_left = right[in1d(right_at_on, left_at_on, invert=True)]
+    for col in not_in_left.columns:
+        if col in left_cols:
+            not_in_left[col + right_suffix] = not_in_left[col]
+            not_in_left = not_in_left.drop(col, axis=1)
+
+    not_in_right = left[in1d(left_at_on, right_at_on, invert=True)]
+    for col in not_in_right.columns:
+        if col in right_cols:
+            not_in_right[col + left_suffix] = not_in_right[col]
+            not_in_right = not_in_right.drop(col, axis=1)
+
+    left_nan_cols = list(set(inner) - set(not_in_left))
+    right_nan_cols = list(set(inner) - set(not_in_right))
+
+    for col in set(left_nan_cols).union(set(right_nan_cols)):
+        if convert_ints is True and inner[col].dtype == int:
+            inner[col] = akcast(inner[col], akfloat64)
+        if col in left_nan_cols:
+            if convert_ints is True and not_in_right[col].dtype == int:
+                not_in_right[col] = akcast(not_in_right[col], akfloat64)
+            elif col in not_in_left.columns.values:
+                not_in_right[col] = akcast(not_in_right[col], not_in_left[col].dtype)
+        if col in right_nan_cols:
+            if convert_ints is True and not_in_left[col].dtype == int:
+                not_in_left[col] = akcast(not_in_left[col], akfloat64)
+            elif col in not_in_right.columns.values:
+                not_in_left[col] = akcast(not_in_left[col], not_in_right[col].dtype)
+
+    for col in left_nan_cols:
+        # Create a nan array for all values not in the left df
+        not_in_left[col] = __nulls_like(inner[col], len(not_in_left))
+
+    for col in right_nan_cols:
+        # Create a nan array for all values not in the left df
+        not_in_right[col] = __nulls_like(inner[col], len(not_in_right))
+
+    ret_df = DataFrame.append(DataFrame.append(inner, not_in_left), not_in_right)
+    if sort is True:
+        ret_df = ret_df.sort_values(on).reset_index()
+
+    return ret_df
+
+
+def __nulls_like(
+    arry: Union[pdarray, Strings, Categorical],
+    size: Union[
+        int,
+        np.signedinteger[_8Bit],
+        np.signedinteger[_16Bit],
+        np.signedinteger[_32Bit],
+        np.signedinteger[_64Bit],
+        np.unsignedinteger[_8Bit],
+        np.unsignedinteger[_16Bit],
+        np.unsignedinteger[_32Bit],
+        np.unsignedinteger[_64Bit],
+    ] = None,
+):
+    if size is None:
+        size = arry.size
+
+    if isinstance(arry, (Strings, Categorical)):
+        return full(size, "nan")
+    else:
+        return full(size, np.nan, arry.dtype)
 
 
 @typechecked
@@ -4851,6 +5130,8 @@ def merge(
     how: str = "inner",
     left_suffix: str = "_x",
     right_suffix: str = "_y",
+    convert_ints: bool = True,
+    sort: bool = True,
 ) -> DataFrame:
     r"""
     Merge Arkouda DataFrames with a database-style join.
@@ -4871,13 +5152,21 @@ def merge(
         If on is None, this defaults to the intersection of the columns in both DataFrames.
     how: str, default = "inner"
         The merge condition.
-        Must be one of "inner", "left", or "right".
+        Must be one of "inner", "left", "right", or "outer".
     left_suffix: str, default = "_x"
         A string indicating the suffix to add to columns from the left dataframe for overlapping
         column names in both left and right. Defaults to "_x". Only used when how is "inner".
     right_suffix: str, default = "_y"
         A string indicating the suffix to add to columns from the right dataframe for overlapping
         column names in both left and right. Defaults to "_y". Only used when how is "inner".
+    convert_ints: bool = True
+        If True, convert columns with missing int values (due to the join) to float64.
+        This is to match pandas.
+        If False, do not convert the column dtypes.
+        This has no effect when how = "inner".
+    sort: bool = True
+        If True, DataFrame is returned sorted by "on".
+        Otherwise, the DataFrame is not sorted.
     Returns
     -------
     arkouda.dataframe.DataFrame
@@ -4892,6 +5181,7 @@ def merge(
 
     >>> import arkouda as ak
     >>> ak.connect()
+    >>> from arkouda import merge
     >>> left_df = ak.DataFrame({'col1': ak.arange(5), 'col2': -1 * ak.arange(5)})
     >>> display(left_df)
 
@@ -4945,13 +5235,13 @@ def merge(
     +====+========+==========+==========+
     |  0 |      0 |        0 |        0 |
     +----+--------+----------+----------+
-    |  1 |      2 |        2 |       -2 |
+    |  1 |      1 |      nan |       -1 |
     +----+--------+----------+----------+
-    |  2 |      4 |        4 |       -4 |
+    |  2 |      2 |        2 |       -2 |
     +----+--------+----------+----------+
-    |  3 |      1 |      nan |       -1 |
+    |  3 |      3 |      nan |       -3 |
     +----+--------+----------+----------+
-    |  4 |      3 |      nan |       -3 |
+    |  4 |      4 |        4 |       -4 |
     +----+--------+----------+----------+
 
     >>> merge(left_df, right_df, on = "col1", how = "right")
@@ -4970,6 +5260,26 @@ def merge(
     |  4 |      8 |      nan |        8 |
     +----+--------+----------+----------+
 
+    >>> merge(left_df, right_df, on = "col1", how = "outer")
+
+    +----+--------+----------+----------+
+    |    |   col1 |   col2_y |   col2_x |
+    +====+========+==========+==========+
+    |  0 |      0 |        0 |        0 |
+    +----+--------+----------+----------+
+    |  1 |      1 |      nan |       -1 |
+    +----+--------+----------+----------+
+    |  2 |      2 |        2 |       -2 |
+    +----+--------+----------+----------+
+    |  3 |      3 |      nan |       -3 |
+    +----+--------+----------+----------+
+    |  4 |      4 |        4 |       -4 |
+    +----+--------+----------+----------+
+    |  5 |      6 |        6 |      nan |
+    +----+--------+----------+----------+
+    |  6 |      8 |        8 |      nan |
+    +----+--------+----------+----------+
+
     """
     col_intersect = list(set(left.columns) & set(right.columns))
     on = on if on is not None else col_intersect
@@ -4982,10 +5292,46 @@ def merge(
             raise ValueError("All columns of a multi-column merge must be pdarrays")
 
     if how == "inner":
-        return _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix)
+        return _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix, sort=sort)
     elif how == "right":
-        return _right_join_merge(left, right, on, col_intersect, left_suffix, right_suffix)
+        return _right_join_merge(
+            left,
+            right,
+            on,
+            col_intersect,
+            left_suffix,
+            right_suffix,
+            convert_ints=convert_ints,
+            sort=sort,
+        )
     elif how == "left":
-        return _right_join_merge(right, left, on, col_intersect, right_suffix, left_suffix)
+        return _right_join_merge(
+            right,
+            left,
+            on,
+            col_intersect,
+            right_suffix,
+            left_suffix,
+            convert_ints=convert_ints,
+            sort=sort,
+        )
+    elif how == "outer":
+        warn(
+            "Outer joins should not be performed on large data sets as they may require "
+            "prohibitive amounts of memory.",
+            UserWarning,
+        )
+        return _outer_join_merge(
+            right,
+            left,
+            on,
+            col_intersect,
+            right_suffix,
+            left_suffix,
+            convert_ints=convert_ints,
+            sort=sort,
+        )
     else:
-        raise ValueError(f"Unexpected value of {how} for how. Must choose: 'inner', 'left', or 'right'")
+        raise ValueError(
+            f"Unexpected value of {how} for how. Must choose: 'inner', 'left', 'right' or 'outer'"
+        )
