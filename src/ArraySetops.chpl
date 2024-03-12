@@ -122,78 +122,100 @@ module ArraySetops
       return uniqueSort(aux, false);
     }
 
-    proc combineHelper(const ref idx1: [?D] ?t, const ref idx2: [] t, const ref val1: [] ?t2, const ref val2: [] t2, doMerge = false) throws {
-      // combine two sorted lists of indices and apply the sort permutation to their associated values
-      const allocSize = idx1.size + idx2.size;
-      var sortedIdx = makeDistArray(allocSize, t);
-      var permutedVals = makeDistArray(allocSize, t2);
-      if doMerge {
-        // create refs to arrays so it's easier to swap them if we come up with a good heuristic
-        //  for which causes fewer data shuffles between locales
-        const ref a = idx1;
-        const ref aVal = val1;
-        const ref b = idx2;
-        const ref bVal = val2;
-        
-        // private space is a distributed domain of size numLocales
-        var segs: [PrivateSpace] int;
-        // indicates if we need to pull any values from the next locale.
-        // the first bool is for a and the second is for b
-        var pullLocalFlag: [0..<numLocales] (bool, bool);
-        // number of elements to pull local (we only need one int because only one of a and b will ever need to
-        //  fetch from the next locale). proofish:
-        //  a and b are sorted, so a_max_loc_i <= a_min_loc_(i+1) and b_max_loc_i <= b_min_loc_(i+1)
-        //  assume fetch condition a_min_loc_(i+1) < b_max_loc_i is met, combining these inequalities gives
-        //  a_max_loc_i <= a_min_loc_(i+1) < b_max_loc_i <= b_min_loc_(i+1) => the other fetch condition cannot be met
-        var pullLocalCount: [0..<numLocales] int;
+    proc mergeHelper(ref sortedIdx: [?sD] ?t, ref permutedVals: [] ?t2, const ref idx1: [?D] t, const ref idx2: [] t, const ref val1: [] t2, const ref val2: [] t2, percentTransferLimit:int = 100) throws {
+      const allocSize = sD.size;
+      // create refs to arrays so it's easier to swap them if we come up with a good heuristic
+      //  for which causes fewer data shuffles between locales
+      const ref a = idx1;
+      const ref aVal = val1;
+      const ref b = idx2;
+      const ref bVal = val2;
 
-        var aMin = -1, aMax = -1, bMin = -1, bMax = -1;
-        // we iterate over locales serially because the logic relies on the mins and maxs referring to the previous locale
-        for loc in Locales {
-          on loc {  // perform loop body computation on locale #loc
-            // domains of a and b that are live on this locale
-            const aDom = a.localSubdomain();
-            const bDom = b.localSubdomain();
-            segs[here.id] = aDom.size + bDom.size;
-            aMin = a[aDom.first];
-            bMin = b[bDom.first];
+      // private space is a distributed domain of size numLocales
+      var segs: [PrivateSpace] int;
+      // indicates if we need to pull any values from the next locale.
+      // the first bool is for a and the second is for b
+      var pullLocalFlag: [0..<numLocales] (bool, bool);
+      // number of elements to pull local (we only need one int because only one of a and b will ever need to
+      //  fetch from the next locale). proofish:
+      //  a and b are sorted, so a_max_loc_i <= a_min_loc_(i+1) and b_max_loc_i <= b_min_loc_(i+1)
+      //  assume fetch condition a_min_loc_(i+1) < b_max_loc_i is met, combining these inequalities gives
+      //  a_max_loc_i <= a_min_loc_(i+1) < b_max_loc_i <= b_min_loc_(i+1) => the other fetch condition cannot be met
+      var pullLocalCount: [0..<numLocales] int;
 
-            if loc != Locales[0] {
-              // each locale determines if it needs to send values to the previous,
-              //  so locale0 can skip this check (this also means indexing at [here.id - 1] is safe)
+      // if the merge based workflow seems too comm heavy, fall back to radix sort
+      var toGiveUp = false;
 
-              // we've updated mins but not maxs. So mins refer to locale_i and maxs refer to locale_(i-1).
-              // The previous locale needs to pull data local if it's max for one array is less
-              //  than our min for the other array.
-              if aMin < bMax {
-                pullLocalFlag[here.id - 1] = (true, false);
-                // binary search local chunk of a to find where b_min_loc_(i-1) falls,
-                //  so we know how many vals to send to loc_(i-1)
-                var (status, binSearchIdx) = search(a.localSlice[aDom], bMax, sorted=true);
-                // the number of elements the previous locale will need to fetch from here
-                pullLocalCount[here.id - 1] = (binSearchIdx-aDom.first);
+      var aMin = -1, aMax = -1, bMin = -1, bMax = -1;
+      // we iterate over locales serially because the logic relies on the mins and maxs referring to the previous locale
+      for loc in Locales {
+        on loc {  // perform loop body computation on locale #loc
+          // domains of a and b that are live on this locale
+          const aDom = a.localSubdomain();
+          const bDom = b.localSubdomain();
+          segs[here.id] = aDom.size + bDom.size;
+          aMin = a[aDom.first];
+          bMin = b[bDom.first];
+
+          if loc != Locales[0] {
+            // each locale determines if it needs to send values to the previous,
+            //  so locale0 can skip this check (this also means indexing at [here.id - 1] is safe)
+
+            // we've updated mins but not maxs. So mins refer to locale_i and maxs refer to locale_(i-1).
+            // The previous locale needs to pull data local if it's max for one array is less
+            //  than our min for the other array.
+            if aMin < bMax {
+              pullLocalFlag[here.id - 1] = (true, false);
+              // binary search local chunk of a to find where b_min_loc_(i-1) falls,
+              //  so we know how many vals to send to loc_(i-1)
+              var (status, binSearchIdx) = search(a.localSlice[aDom], bMax, sorted=true);
+              if (binSearchIdx == (aDom.last+1)) {
+                toGiveUp = true;
               }
-              else if bMin < aMax {
-                pullLocalFlag[here.id - 1] = (false, true);
-                // binary search local chunk of b to find where a_min_loc_(i-1) falls,
-                //  so we know how many vals to send to loc_(i-1)
-                var (status, binSearchIdx) = search(b.localSlice[bDom], aMax, sorted=true);
-                // the number of elements the previous locale will need to fetch from here
-                pullLocalCount[here.id - 1] = (binSearchIdx-bDom.first);
-              }
+              // the number of elements the previous locale will need to fetch from here
+              pullLocalCount[here.id - 1] = (binSearchIdx-aDom.first);
             }
-            aMax = a[aDom.last];
-            bMax = b[bDom.last];
+            else if bMin < aMax {
+              pullLocalFlag[here.id - 1] = (false, true);
+              // binary search local chunk of b to find where a_min_loc_(i-1) falls,
+              //  so we know how many vals to send to loc_(i-1)
+              var (status, binSearchIdx) = search(b.localSlice[bDom], aMax, sorted=true);
+              if (binSearchIdx == (bDom.last+1)) {
+                toGiveUp = true;
+              }
+              // the number of elements the previous locale will need to fetch from here
+              pullLocalCount[here.id - 1] = (binSearchIdx-bDom.first);
+            }
           }
+          aMax = a[aDom.last];
+          bMax = b[bDom.last];
         }
-        // TODO future work: add parameter for percentage locale swaps acceptable, if exceeded fall
-        // back to radix sort or if data shuffles would exceed a locale, drop back
-        const totNumElemsMoved = + reduce pullLocalCount;
-        asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Total number of elements moved to a different locale = %i".doFormat(totNumElemsMoved));
-        asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Percent of elements moved to a different locale = %i%%".doFormat((totNumElemsMoved:real / allocSize)*100:int));
+        // break is not allowed in an on statement
+        if toGiveUp {
+          break;
+        }
+      }
+      const totNumElemsMoved = + reduce pullLocalCount;
+      const percentTransfered = (totNumElemsMoved:real / allocSize)*100:int;
+      asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                      "Total number of elements moved to a different locale = %i".doFormat(totNumElemsMoved));
+      asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                      "Percent of elements moved to a different locale = %i%%".doFormat(percentTransfered));
 
+      if toGiveUp || (percentTransfered > percentTransferLimit) {
+        // fall back to sort
+        if toGiveUp {
+          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "Falling back to sort workflow since merge would need to shift an entire locale of data");
+        }
+        else {
+          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "Falling back to sort workflow since percent of elements moved to a different locale = %i%% exceeds percentTransferLimit = %i%%".doFormat(percentTransfered, percentTransferLimit));
+        }
+        sortHelper(sortedIdx, permutedVals, idx1, idx2, val1, val2);
+      }
+      else {
+        // we met the necessary conditions to continue with merge based workflow
         segs = (+ scan segs) - segs;
         
         // give each locale constant reference to distributed arrays that won't be edited
@@ -250,21 +272,38 @@ module ArraySetops
           }
         }
       }
+    }
+
+    proc sortHelper(ref sortedIdx: [?sD] ?t, ref permutedVals: [] ?t2, const ref idx1: [?D] t, const ref idx2: [] t, const ref val1: [] t2, const ref val2: [] t2) throws {
+      const allocSize = sD.size;
+      var perm = makeDistArray(allocSize, int);
+      forall (s, p, sp) in zip(sortedIdx, perm, radixSortLSD(concatArrays(idx1, idx2, ordered=false))) {
+        (s, p) = sp;
+      }
+      // concatenate the values with the same ordering as the indices
+      const vals = concatArrays(val1, val2, ordered=false);
+      forall (p, i) in zip(permutedVals, perm) with (var agg = newSrcAggregator(t2)) {
+        agg.copy(p, vals[i]);
+      }
+    }
+
+    proc combineHelper(const ref idx1: [?D] ?t, const ref idx2: [] t, const ref val1: [] ?t2, const ref val2: [] t2, doMerge = false, percentTransferLimit:int = 100) throws {
+      // combine two sorted lists of indices and apply the sort permutation to their associated values
+      const allocSize = idx1.size + idx2.size;
+      var sortedIdx = makeDistArray(allocSize, t);
+      var permutedVals = makeDistArray(allocSize, t2);
+      if doMerge {
+        // attempt to use merge workflow. if certain conditions are met, fall back to radixsort
+        mergeHelper(sortedIdx, permutedVals, idx1, idx2, val1, val2, percentTransferLimit);
+      }
       else {
-        var perm = makeDistArray(allocSize, int);
-        forall (s, p, sp) in zip(sortedIdx, perm, radixSortLSD(concatArrays(idx1, idx2, ordered=false))) {
-          (s, p) = sp;
-        }
-        const vals = concatArrays(val1, val2, ordered=false);
-        forall (p, i) in zip(permutedVals, perm) with (var agg = newSrcAggregator(t2)) {
-          agg.copy(p, vals[i]);
-        }
+        sortHelper(sortedIdx, permutedVals, idx1, idx2, val1, val2);
       }
       return (sortedIdx, permutedVals);
     }
 
-    proc sparseSumHelper(const ref idx1: [] ?t, const ref idx2: [] t, const ref val1: [] ?t2, const ref val2: [] t2, doMerge = false) throws {
-      const (sortedIdx, permutedVals) = combineHelper(idx1, idx2, val1, val2, doMerge);
+    proc sparseSumHelper(const ref idx1: [] ?t, const ref idx2: [] t, const ref val1: [] ?t2, const ref val2: [] t2, doMerge = false, percentTransferLimit:int = 100) throws {
+      const (sortedIdx, permutedVals) = combineHelper(idx1, idx2, val1, val2, doMerge, percentTransferLimit);
       const sD = sortedIdx.domain;
       var firstOccurence = makeDistArray(sD, bool);
       firstOccurence[0] = true;

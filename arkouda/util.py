@@ -292,7 +292,7 @@ def attach_all(names: list):
     return {n: attach(n) for n in names}
 
 
-def sparse_sum_help(idx1, idx2, val1, val2, merge=True):
+def sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=100):
     """
     Helper for summing two sparse matrices together
 
@@ -312,6 +312,10 @@ def sparse_sum_help(idx1, idx2, val1, val2, merge=True):
     merge: bool
         If true the indices are combined using a merge based workflow,
         otherwise they are combine using a sort based workflow.
+    percent_transfer_limit: int
+        Only used when merge is true. This is the maximum percentage of the data allowed
+        to be moved between locales during the merge workflow. If we would exceed this percentage,
+        we fall back to using the sort based workflow.
 
     Returns
     --------
@@ -338,6 +342,7 @@ def sparse_sum_help(idx1, idx2, val1, val2, merge=True):
             "val1": val1,
             "val2": val2,
             "merge": merge,
+            "percent_transfer_limit": percent_transfer_limit,
         },
     )
     inds, vals = repMsg.split("+", maxsplit=1)
