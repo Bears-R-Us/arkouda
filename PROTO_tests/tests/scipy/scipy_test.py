@@ -1,15 +1,13 @@
-import math
-
 import numpy as np
-from base_test import ArkoudaTest
-from context import arkouda as ak
+from scipy.stats import power_divergence as scipy_power_divergence
+
+import arkouda as ak
+from arkouda.scipy import power_divergence as ak_power_divergence
 
 
-class StatsTest(ArkoudaTest):
-    def setUp(self):
-        ArkoudaTest.setUp(self)
-
-    def create_stat_test_pairs(self):
+class TestStats:
+    @staticmethod
+    def create_stat_test_pairs():
         pairs = [
             (
                 ak.array([10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000]),
@@ -21,10 +19,6 @@ class StatsTest(ArkoudaTest):
         return pairs
 
     def test_power_divergence(self):
-        from scipy.stats import power_divergence as scipy_power_divergence
-
-        from arkouda.akscipy import power_divergence as ak_power_divergence
-
         pairs = self.create_stat_test_pairs()
 
         lambdas = [
@@ -57,7 +51,7 @@ class StatsTest(ArkoudaTest):
     def test_chisquare(self):
         from scipy.stats import chisquare as scipy_chisquare
 
-        from arkouda.akscipy import chisquare as ak_chisquare
+        from arkouda.scipy import chisquare as ak_chisquare
 
         pairs = self.create_stat_test_pairs()
 

@@ -1,15 +1,11 @@
 import numpy as np
-from base_test import ArkoudaTest
-from context import arkouda as ak
 
-from arkouda.akscipy.special import xlogy
+import arkouda as ak
 from arkouda.pdarrayclass import pdarray
+from arkouda.scipy.special import xlogy
 
 
-class StatsTest(ArkoudaTest):
-    def setUp(self):
-        ArkoudaTest.setUp(self)
-
+class TestStats:
     def test_xlogy(self):
         from scipy.special import xlogy as scipy_xlogy
 
