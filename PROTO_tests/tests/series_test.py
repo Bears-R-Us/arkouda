@@ -208,3 +208,39 @@ class TestSeries:
         )
         assert s.memory_usage(unit="KB", index=True) == 2 * size * ak.dtypes.int64.itemsize / 1024
         assert s.memory_usage(unit="B", index=True) == 2 * size * ak.dtypes.int64.itemsize
+
+    def test_map(self):
+        a = ak.Series(ak.array(["1", "1", "4", "4", "4"]))
+        b = ak.Series(ak.array([2, 3, 2, 3, 4]))
+        c = ak.Series(ak.array([1.0, 1.0, 2.2, 2.2, 4.4]), index=ak.array([5, 4, 2, 3, 1]))
+
+        result = a.map({"4": 25, "5": 30, "1": 7})
+        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
+        assert result.values.to_list() == [7, 7, 25, 25, 25]
+
+        result = a.map({"1": 7})
+        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
+        assert (
+            result.values.to_list()
+            == ak.cast(ak.array([7, 7, np.nan, np.nan, np.nan]), dt=ak.int64).to_list()
+        )
+
+        result = a.map({"1": 7.0})
+        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
+        assert np.allclose(result.values.to_list(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
+
+        result = b.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
+        assert result.values.to_list() == [30.0, 5.0, 30.0, 5.0, 25.0]
+
+        result = c.map({1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d"})
+        assert result.index.values.to_list() == [5, 4, 2, 3, 1]
+        assert result.values.to_list() == ["a", "a", "b", "b", "c"]
+
+        result = c.map({1.0: "a"})
+        assert result.index.values.to_list() == [5, 4, 2, 3, 1]
+        assert result.values.to_list() == ["a", "a", "null", "null", "null"]
+
+        result = c.map({1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d", 6.0: "e"})
+        assert result.index.values.to_list() == [5, 4, 2, 3, 1]
+        assert result.values.to_list() == ["a", "a", "b", "b", "c"]

@@ -380,6 +380,32 @@ class Categorical:
         """
         return self.to_ndarray().tolist()
 
+    def to_strings(self) -> List:
+        """
+        Convert the Categorical to Strings.
+
+        Returns
+        -------
+        arkouda.strings.Strings
+            A Strings object corresponding to the values in
+            this Categorical.
+
+        Examples
+        --------
+        >>> from arkouda import ak
+        >>> ak.connect()
+        >>> a = ak.array(["a","b","c"])
+        >>> a
+        >>> c = ak.Categorical(a)
+        >>>  c.to_strings()
+        c.to_strings()
+
+        >>> isinstance(c.to_strings(), ak.Strings)
+        True
+
+        """
+        return self.categories[self.codes]
+
     def __iter__(self):
         raise NotImplementedError(
             "Categorical does not support iteration. To force data transfer from server, use to_ndarray"
