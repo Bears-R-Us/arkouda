@@ -20,6 +20,7 @@ from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
+from arkouda.dtypes import dtype
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
@@ -29,10 +30,10 @@ from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum, where
 from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarraycreation import arange, array, create_pdarray, full, zeros
-from arkouda.pdarraysetops import concatenate, in1d, intersect1d
+from arkouda.pdarraysetops import concatenate, in1d, intersect1d, indexof1d
 from arkouda.row import Row
 from arkouda.segarray import SegArray
-from arkouda.series import Series
+from arkouda.series import Series, is_supported_scalar
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
@@ -676,7 +677,7 @@ class DataFrame(UserDict):
                         val = array(val)
                     if not isinstance(val, self._COLUMN_CLASSES):
                         raise ValueError(f"Values must be one of {self._COLUMN_CLASSES}.")
-                    if key.lower() == "index":
+                    if isinstance(key, str) and key.lower() == "index":
                         # handles the index as an Index object instead of a column
                         self._set_index(val)
                         continue
@@ -752,66 +753,86 @@ class DataFrame(UserDict):
             self._empty = True
         self.update_nrows()
 
+    def validate_key(self, key):
+        if isinstance(key,Series):
+            # TODO: check index alignment
+            return self.validate_key(key.values)
+        if isinstance(key, list):
+            return self.validate_key(array(key))
+        if isinstance(key, tuple):
+            raise TypeError("DataFrame does not support tuple keys")
+        
+        if isinstance(key, slice):
+            if key.start is not None and key.start < 0:
+                raise ValueError("Negative start index not supported")
+            if key.stop is not None and key.stop > len(self):
+                raise ValueError("Slice stop index out of range")
+            return key
+
+        if is_supported_scalar(key):
+            if len(self.columns) != 0 and dtype(type(key)) != dtype(type(self.columns[0])):
+                raise TypeError("Expected key of type {}, received {}".format(type(self.columns[0]), type(key)))
+            if key not in self.columns:
+                raise KeyError("column {} not present in DataFrame".format(key))
+            return key
+        
+        if isinstance(key, pdarray) and key.dtype == akbool:
+            if len(key) != len(self):
+                raise ValueError("boolean mask arguments must have the same length as the DataFrame.")
+            return key
+        
+        if isinstance(key, (pdarray,Strings,Categorical,SegArray)):
+            for k in key.to_ndarray():
+                if len(self.columns) != 0 and dtype(type(k)) != dtype(type(self.columns[0])):
+                    raise TypeError("Expected key of type {}, received {}".format(type(self.columns[0]), type(k)))
+                if k not in self.columns:
+                    raise KeyError("column {} not present in DataFrame".format(k)) 
+            return key
+
+        raise TypeError("Indexing with keys of type {} not supported".format(type(key)))
+
+        
     def __getitem__(self, key):
+        """
+        Name-based indexing of columns, except for an integer slice, which does
+        position-based indexing of rows.
+        """
         # convert series to underlying values
         # Should check for index alignment
-        if isinstance(key, Series):
-            key = key.values
+        key = self.validate_key(key)
+        
+        # if a scalar argument, return a Series
+        if is_supported_scalar(key):
+            values = UserDict.__getitem__(self, key)
+            index = self.index
+            return Series(index=index, data=values)
 
-        # Select rows using an integer pdarray
-        if isinstance(key, pdarray):
-            if key.dtype == akbool:
-                key = arange(key.size)[key]
-            result = {}
-            for k in self._columns:
-                result[k] = UserDict.__getitem__(self, k)[key]
-            # To stay consistent with numpy, provide the old index values
-            return DataFrame(initialdata=result, index=self.index.index[key])
+        # boolean mask
+        if isinstance(key, pdarray) and key.dtype == akbool:
+            return self.get_rows(key)
 
-        # Select rows or columns using a list
-        if isinstance(key, (list, tuple)):
+        #slice
+        if isinstance(key, slice):
+            start_index = key.start if key.start is not None else 0
+            stop_index = key.stop if key.stop is not None else len(self.index)
+            print("start and stop indices:", start_index, stop_index)
+            print('slice: ', key)
+            print("index: ", self.index)
+            return self.get_rows(arange(start_index, stop_index, 1))
+        
+        if isinstance(key, (pdarray,Strings)):
             result = DataFrame()
             if len(key) <= 0:
                 return result
-            if len({type(x) for x in key}) > 1:
-                raise TypeError("Invalid selector: too many types in list.")
-            if isinstance(key[0], str):
-                for k in key:
-                    result.data[k] = UserDict.__getitem__(self, k)
-                    result._columns.append(k)
-                result._empty = False
-                result._set_index(self.index)  # column lens remain the same. Copy the indexing
-                return result
-            else:
-                raise TypeError(
-                    "DataFrames only support lists for column indexing. "
-                    "All list entries must be of type str."
-                )
+            for k in key.to_ndarray():
+                result.data[k] = UserDict.__getitem__(self, k)
+                result._columns.append(k)
+            result._empty = False
+            result._set_index(self.index)
+            return result
 
-        # Select a single row using an integer
-        if isinstance(key, int):
-            result = {}
-            row = array([key])
-            for k in self._columns:
-                result[k] = (UserDict.__getitem__(self, k)[row])[0]
-            return Row(result)
+        raise ValueError("key not supported: {}".format(key))
 
-        # Select a single column using a string
-        elif isinstance(key, str):
-            if key not in self.keys():
-                raise KeyError(f"Invalid column name '{key}'.")
-            return UserDict.__getitem__(self, key)
-
-        # Select rows using a slice
-        elif isinstance(key, slice):
-            # result = DataFrame()
-            rtn_data = {}
-            s = key
-            for k in self._columns:
-                rtn_data[k] = UserDict.__getitem__(self, k)[s]
-            return DataFrame(initialdata=rtn_data, index=self.index.index[arange(self._nrows)[s]])
-        else:
-            raise IndexError("Invalid selector: unknown error.")
 
     def __setitem__(self, key, value):
         self.update_nrows()
@@ -1024,6 +1045,28 @@ class DataFrame(UserDict):
         new_df = DataFrame(df_dict)
         new_df._set_index(self.index.index[idx])
         return new_df.to_pandas(retain_index=True)[self._columns]
+
+    def get_rows(self, key):
+        """
+        Gets rows of the dataframe based with the provided indices
+        """
+        if not isinstance(key, (pdarray, slice)):
+            raise TypeError("get_rows requires pdarray of row indices or a slice")
+        
+        if isinstance(key, slice):
+            start = key.start if key.start is not None else 0
+            stop = key.stop if key.stop is not None else len(self)
+            step = key.step if key.step is not None else 1
+            key = arange(start, stop, step)
+        if key.dtype == akbool:
+            key = arange(key.size)[key]
+        result = {}
+        print('key in get_rows: {}'.format(key))
+        for k in self._columns:
+            result[k] = UserDict.__getitem__(self, k)[key]
+        # To stay consistent with numpy, provide the old index values
+        return DataFrame(initialdata=result, index=self.index.index[key])
+
 
     def transfer(self, hostname, port):
         """

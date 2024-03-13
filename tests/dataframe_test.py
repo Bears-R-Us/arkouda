@@ -1162,5 +1162,202 @@ class DataFrameTest(ArkoudaTest):
                     # sorted_pd[sorted_columns])
 
 
+    def test_getitem_scalars_and_slice(self):
+        ints = [0,2,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        default_index = [0,1,2,3,4]
+        unordered_index = [9,3,0,23,3]
+        string_index = ['one','two','three','four','five']
+        #group 1: string labels
+
+        # default index
+        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+
+        # unorderd index
+        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=unordered_index)
+        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=unordered_index)
+        
+        # string index
+        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
+        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
+
+         #group 2: int labels
+
+        # default index
+        df4 = ak.DataFrame({1: ak.array(ints), 2:ak.array(floats), 3:ak.array(strings)})
+        _df4 = pd.DataFrame({1: np.array(ints), 2:np.array(floats), 3:np.array(strings)})
+
+        # unorderd index
+        df5 = ak.DataFrame({1: ak.array(ints), 2:ak.array(floats), 3:ak.array(strings)},index=unordered_index)
+        _df5 = pd.DataFrame({1: np.array(ints), 2:np.array(floats), 3:np.array(strings)},index=unordered_index)
+        
+        # string index
+        df6 = ak.DataFrame({1: ak.array(ints), 2:ak.array(floats), 3:ak.array(strings)},index=string_index)
+        _df6 = pd.DataFrame({1: np.array(ints), 2:np.array(floats), 3:np.array(strings)},index=string_index)
+
+        access = _df4[1]
+
+        string_keys = ['ints', 'floats', 'strings']
+        int_keys = [1,2,3]
+
+        dfs = [df1,df2,df3,df4,df5,df6]
+        _dfs = [_df1,_df2,_df3,_df4,_df5,_df6]
+        keys_list = [string_keys, string_keys, string_keys, int_keys, int_keys, int_keys]
+        indexes = [default_index,unordered_index,string_index,default_index,unordered_index,string_index]
+        for (df,_df,keys,index) in zip(dfs, _dfs, keys_list, indexes):
+            # single column label returns a series
+            for key in keys:
+                access1_ = _df[key]
+                access1 = df[key]
+                self.assertIsInstance(access1_, pd.Series)
+                self.assertIsInstance(access1, ak.Series)
+                self.assertListEqual(access1_.values.tolist(), access1.values.to_list())
+                self.assertListEqual(access1_.index.tolist(), access1.index.to_list())
+            
+            # matching behavior for nonexistant label
+            with self.assertRaises(KeyError):
+                _access2 = _df[keys[0] * 100]
+            with self.assertRaises(KeyError):
+                access2 = df[keys[0] * 100]
+
+            # result reference behavior
+            _access3 = _df[keys[0]]
+            access3 = df[keys[0]]
+            access3[index[0]] = 100
+            _access3[index[0]] = 100
+            self.assertEqual(_df[keys[0]][index[0]], df[keys[0]][index[0]])
+
+            # key type matches column label types
+            with self.assertRaises(TypeError):
+                if isinstance(keys[0], int):
+                    a = df['int']
+                else:
+                    a = df[3]
+            with self.assertRaises(TypeError):
+                b = df[1.0]
+
+        # slices
+        def slice_check(_slice_access, slice_access):
+            self.assertIsInstance(_slice_access, pd.DataFrame)
+            self.assertIsInstance(slice_access, ak.DataFrame)
+            self.assertListEqual(_slice_access.index.tolist(), slice_access.index.to_list())
+            self.assertListEqual(_slice_access.columns.tolist(), slice_access.columns.to_list())
+            self.assertListEqual(_slice_access['ints'].values.tolist(), slice_access['ints'].values.to_list())
+            self.assertListEqual(_slice_access['floats'].values.tolist(), slice_access['floats'].values.to_list())
+            self.assertListEqual(_slice_access['strings'].values.tolist(), slice_access['strings'].values.to_list())
+
+        
+        # slice both bounds
+        _slice_access = _df1[1:4]
+        slice_access = df1[1:4]
+        slice_check(_slice_access, slice_access)
+        
+        # slice high bound
+        _slice_access = _df1[:3]
+        slice_access = df1[:3]
+        slice_check(_slice_access, slice_access)
+
+        # slice low bound
+        _slice_access = _df1[3:]
+        slice_access = df1[3:]
+        slice_check(_slice_access, slice_access)
+
+        # slice no bounds
+        _slice_access = _df1[:]
+        slice_access = df1[:]
+        slice_check(_slice_access, slice_access)
+
+        _d = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)}, index=[0,2,5,1,5])
+        _a = _d[1:4]
+        d = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)}, index=ak.array([0,2,5,1,5]))
+        a = d[1:4]
+        slice_check(_a, a)
+
+        # priority when same index and label types
+        df2 = ak.DataFrame({"A": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=ak.array(strings))
+        _df2 = pd.DataFrame({"A": pd.array(ints), "floats":pd.array(floats), "strings":pd.array(strings)},index=pd.array(strings))
+
+        access4 = df2['A']
+        _access4 = _df2['A']
+        self.assertIsInstance(_access4, pd.Series)
+        self.assertIsInstance(access4, ak.Series)
+        self.assertListEqual(_access4.values.tolist(), access4.values.to_list())
+        self.assertListEqual(_access4.index.tolist(), access4.index.to_list())
+        
+
+    def test_getitem_vectors(self):
+        ints = [0,1,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        def result_check(_a, a):
+            self.assertIsInstance(_a, pd.DataFrame)
+            self.assertIsInstance(a, ak.DataFrame)
+            self.assertListEqual(_a.index.tolist(), a.index.to_list())
+            self.assertListEqual(_a.columns.tolist(), a.columns.to_list())
+            self.assertListEqual(_a['ints'].values.tolist(), a['ints'].values.to_list())
+            self.assertListEqual(_a['floats'].values.tolist(), a['floats'].values.to_list())
+
+        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+        # multiple columns
+        _access1 = _df1[['ints','floats']]
+        access1 = df1[['ints','floats']]
+        result_check(_access1, access1)
+
+        _access2 = _df1[np.array(['ints','floats'])]
+        access2 = df1[ak.array(['ints','floats'])]
+        result_check(_access2, access2)
+
+        # boolean mask
+        _access3 = _df1[_df1['ints'] == 3]
+        access3 = df1[df1['ints'] == 3]
+        result_check(_access3, access3)
+
+        # boolean mask of incorrect length
+        bad = [True, True, False, False]
+        with self.assertRaises(ValueError):
+            _df1[np.array(bad)]
+        with self.assertRaises(ValueError):
+            df1[ak.array(bad)]
+        
+        # one key present one missing
+        with self.assertRaises(KeyError):
+            _access4 = _df1[['ints','not']]
+        with self.assertRaises(KeyError):
+            access4 = df1[['ints','not']]  
+        
+        # repeated index
+        repeated_index = [0,1,1,4,6]
+        df2 = ak.DataFrame({"ints": ak.array(ints), 'floats': ak.array(floats)},index=repeated_index)
+        _df2 = pd.DataFrame({"ints": np.array(ints), 'floats': np.array(floats)},index=repeated_index)
+
+        _access5 = _df2[['ints','floats']]
+        access5 = df2[['ints','floats']]
+        result_check(_access5, access5)
+
+        #arg order
+        _access6 = _df2[['floats','ints']]
+        access6 = df2[['floats','ints']]
+        result_check(_access6, access6)
+
+
+
+    def test_setitem_scalars(self):
+        pass
+
+    def test_setitem_vectors(self):
+        pass
+
+    def test_setitem_slice(self):
+        pass
+
+
 def pda_to_str_helper(pda):
+
     return ak.array([f"str {i}" for i in pda.to_list()])
+
+
