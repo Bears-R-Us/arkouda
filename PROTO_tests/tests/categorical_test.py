@@ -74,6 +74,24 @@ class TestCategorical:
     def test_to_list(self):
         assert self.non_unique_cat.to_list() == np.array(self.non_unique_strs).tolist()
 
+    def test_to_strings(self):
+        cat = self.non_unique_cat
+        cat_list = [
+            "string",
+            "string1",
+            "non-string",
+            "non-string2",
+            "string",
+            "non-string",
+            "string3",
+            "non-string2",
+            "string",
+            "non-string",
+        ]
+
+        assert cat.to_strings().to_list() == cat_list
+        assert isinstance(cat.to_strings(), ak.Strings)
+
     def test_equality(self):
         cat = self.create_basic_categorical()
         cat_dupe = self.create_basic_categorical()

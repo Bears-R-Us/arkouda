@@ -14,6 +14,7 @@ module RandMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+    use ArkoudaRandomCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -172,7 +173,132 @@ module RandMsg
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+
+    /*
+     * Creates a generator server-side and returns the SymTab name used to
+     * retrieve the generator from the SymTab.
+     */
+    proc createGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName();
+        var rname: string;
+        const hasSeed = msgArgs.get("has_seed").getBoolValue();
+        const seed = if hasSeed then msgArgs.get("seed").getIntValue() else -1;
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        const dtype = str2dtype(dtypeStr);
+        const state = msgArgs.get("state").getIntValue();
+
+        if hasSeed {
+            randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                            "dtype: %? seed: %i state: %i".doFormat(dtypeStr,seed,state));
+        }
+        else {
+            randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                            "dtype: %? state: %i".doFormat(dtypeStr,state));
+        }
+
+        proc creationHelper(type t, seed, state, st: borrowed SymTab): string throws {
+            var generator = if hasSeed then new randomStream(t, seed) else new randomStream(t);
+            if state != 1 {
+                // you have to skip to one before where you want to be
+                generator.skipToNth(state-1);
+            }
+            var entry = new shared GeneratorSymEntry(generator, state);
+            var name = st.nextName();
+            st.addEntry(name, entry);
+            return name;
+        }
+
+        select dtype {
+            when DType.Int64 {
+                rname = creationHelper(int, seed, state, st);
+            }
+            when DType.UInt64 {
+                rname = creationHelper(uint, seed, state, st);
+            }
+            when DType.Float64 {
+                rname = creationHelper(real, seed, state, st);
+            }
+            when DType.Bool {
+                rname = creationHelper(bool, seed, state, st);
+            }
+            otherwise {
+                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+
+        const repMsg = st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+
+    proc uniformGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName();
+        var rname = st.nextName();
+        const name = msgArgs.getValueOf("name");
+        const size = msgArgs.get("size").getIntValue();
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        const dtype = str2dtype(dtypeStr);
+        const state = msgArgs.get("state").getIntValue();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i dtype: %? state %i".doFormat(name, size, dtypeStr, state));
+
+        st.checkTable(name);
+
+        proc uniformHelper(type t, low, high, state, st: borrowed SymTab) throws {
+            var generatorEntry: borrowed GeneratorSymEntry(t) = toGeneratorSymEntry(st.lookup(name), t);
+            ref rng = generatorEntry.generator;
+            if state != 1 {
+                // you have to skip to one before where you want to be
+                rng.skipToNth(state-1);
+            }
+            var uniformEntry = createSymEntry(size, t);
+            if t != bool {
+                rng.fill(uniformEntry.a, low, high);
+            }
+            else {
+                // chpl doesn't support bounded random with boolean type
+                rng.fill(uniformEntry.a);
+            }
+            st.addEntry(rname, uniformEntry);
+        }
+
+        select dtype {
+            when DType.Int64 {
+                const low = msgArgs.get("low").getIntValue();
+                const high = msgArgs.get("high").getIntValue();
+                uniformHelper(int, low, high, state, st);
+            }
+            when DType.UInt64 {
+                const low = msgArgs.get("low").getIntValue();
+                const high = msgArgs.get("high").getIntValue();
+                uniformHelper(uint, low, high, state, st);
+            }
+            when DType.Float64 {
+                const low = msgArgs.get("low").getRealValue();
+                const high = msgArgs.get("high").getRealValue();
+                uniformHelper(real, low, high, state, st);
+            }
+            when DType.Bool {
+                // chpl doesn't support bounded random with boolean type
+                uniformHelper(bool, 0, 1, state, st);
+            }
+            otherwise {
+                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+        var repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
     
     use CommandMap;
     registerFunction("randomNormal", randomNormalMsg, getModuleName());
+    registerFunction("createGenerator", createGeneratorMsg, getModuleName());
+    registerFunction("uniformGenerator", uniformGeneratorMsg, getModuleName());
 }

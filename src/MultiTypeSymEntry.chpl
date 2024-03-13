@@ -11,6 +11,7 @@ module MultiTypeSymEntry
     public use NumPyDType;
     public use SymArrayDmapCompat;
     use ArkoudaSymEntryCompat;
+    use ArkoudaRandomCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -31,6 +32,8 @@ module MultiTypeSymEntry
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
 
             CompositeSymEntry,        // Entries that consist of multiple SymEntries of varying type
+
+            GeneratorSymEntry,  // Entry for random number generators
 
             AnythingSymEntry, // Placeholder to stick aritrary things in the map
             UnknownSymEntry,
@@ -403,6 +406,20 @@ module MultiTypeSymEntry
         }
     }
 
+    class GeneratorSymEntry:AbstractSymEntry {
+        type etype;
+        var generator: randomStream(etype);
+        var state: int;
+
+        proc init(generator: randomStream(?etype), state: int = 1) {
+            this.entryType = SymbolEntryType.GeneratorSymEntry;
+            assignableTypes.add(this.entryType);
+            this.etype = etype;
+            this.generator = generator;
+            this.state = state;
+        }
+    }
+
     /**
      * Helper proc to cast AbstrcatSymEntry to GenSymEntry
      */
@@ -422,6 +439,13 @@ module MultiTypeSymEntry
      */
     proc toSegStringSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed SegStringSymEntry);
+    }
+
+    /**
+     * Helper proc to cast AbstractSymEntry to GeneratorSymEntry
+     */
+    proc toGeneratorSymEntry(entry: borrowed AbstractSymEntry, type t) throws {
+        return (entry: borrowed GeneratorSymEntry(t));
     }
 
     /**

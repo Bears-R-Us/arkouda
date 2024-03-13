@@ -2,13 +2,13 @@ import glob
 import os
 import shutil
 import tempfile
-import pytest
 
 import numpy as np
+import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-from arkouda import io_util, io
+from arkouda import Strings, io, io_util
 
 
 class CategoricalTest(ArkoudaTest):
@@ -137,6 +137,24 @@ class CategoricalTest(ArkoudaTest):
             ]
         )
         self.assertListEqual(cat.to_list(), ndcat.tolist())
+
+    def testToStrings(self):
+        cat = self._getRandomizedCategorical()
+        cat_list = [
+            "string",
+            "string1",
+            "non-string",
+            "non-string2",
+            "string",
+            "non-string",
+            "string3",
+            "non-string2",
+            "string",
+            "non-string",
+        ]
+
+        self.assertListEqual(cat.to_strings().to_list(), cat_list)
+        self.assertTrue(isinstance(cat.to_strings(), Strings))
 
     def testEquality(self):
         cat = self._getCategorical()
@@ -374,7 +392,6 @@ class CategoricalTest(ArkoudaTest):
             self.assertListEqual(d.segments.to_list(), replace_cat.segments.to_list())
             self.assertListEqual(d._akNAcode.to_list(), replace_cat._akNAcode.to_list())
             self.assertListEqual(d.categories.to_list(), replace_cat.categories.to_list())
-
 
     def test_unused_categories_logic(self):
         """

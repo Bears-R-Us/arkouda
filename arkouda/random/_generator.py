@@ -1,7 +1,12 @@
 import numpy.random as np_random
 
+from arkouda.client import generic_msg
+from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import dtype as to_numpy_dtype
+from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import uint64 as akuint64
+from arkouda.pdarrayclass import create_pdarray
 
 
 class Generator:
@@ -18,14 +23,26 @@ class Generator:
     seed : int
         Seed to allow for reproducible random number generation.
 
+    name_dict: dict
+        Dictionary mapping the server side names associated with
+        the generators for each dtype.
+
+    state: int
+        The current state we are in the random number generation stream.
+        This information makes it so calls to any dtype generator
+        function affects the stream of random numbers for the other generators.
+        This mimics the behavior we see in numpy
+
     See Also
     --------
     default_rng : Recommended constructor for `Generator`.
     """
 
-    def __init__(self, seed=None):
+    def __init__(self, name_dict=None, seed=None, state=1):
         self._seed = seed
         self._np_generator = np_random.default_rng(seed)
+        self._name_dict = name_dict
+        self._state = state
 
     def __repr__(self):
         return self.__str__()
@@ -78,19 +95,35 @@ class Generator:
         >>> rng.integers(5, size=10)
         array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
         """
-        from arkouda.random._legacy import randint
+        # normalize dtype so things like "int" will work
+        dtype = to_numpy_dtype(dtype)
+
+        if dtype is akfloat64:
+            raise TypeError("Unsupported dtype dtype('float64') for integers")
 
         if size is None:
             # delegate to numpy when return size is 1
-            return self._np_generator.integers(
-                low=low, high=high, dtype=to_numpy_dtype(dtype), endpoint=endpoint
-            )
+            return self._np_generator.integers(low=low, high=high, dtype=dtype, endpoint=endpoint)
         if high is None:
-            high = low + 1
+            high = low
             low = 0
-        elif endpoint:
-            high = high + 1
-        return randint(low=low, high=high, size=size, dtype=dtype, seed=self._seed)
+        elif not endpoint:
+            high = high - 1
+
+        name = self._name_dict[dtype]
+        rep_msg = generic_msg(
+            cmd="uniformGenerator",
+            args={
+                "name": name,
+                "low": low,
+                "high": high,
+                "size": size,
+                "dtype": dtype,
+                "state": self._state,
+            },
+        )
+        self._state += size
+        return create_pdarray(rep_msg)
 
     def random(self, size=None):
         """
@@ -129,7 +162,19 @@ class Generator:
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.random()
-        return self.uniform(low=0.0, high=1.0, size=size)
+        rep_msg = generic_msg(
+            cmd="uniformGenerator",
+            args={
+                "name": self._name_dict[akfloat64],
+                "low": 0.0,
+                "high": 1.0,
+                "size": size,
+                "dtype": akfloat64,
+                "state": self._state,
+            },
+        )
+        self._state += size
+        return create_pdarray(rep_msg)
 
     def standard_normal(self, size=None):
         """
@@ -203,12 +248,22 @@ class Generator:
         >>> rng.uniform(-1, 1, 3)
         array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
         """
-        from arkouda.random._legacy import uniform
-
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.uniform(low=low, high=high)
-        return uniform(low=low, high=high, size=size, seed=self._seed)
+        rep_msg = generic_msg(
+            cmd="uniformGenerator",
+            args={
+                "name": self._name_dict[akfloat64],
+                "low": low,
+                "high": high,
+                "size": size,
+                "dtype": akfloat64,
+                "state": self._state,
+            },
+        )
+        self._state += size
+        return create_pdarray(rep_msg)
 
 
 def default_rng(seed=None):
@@ -231,6 +286,33 @@ def default_rng(seed=None):
         The initialized generator object.
     """
     if isinstance(seed, Generator):
-        # Pass through a Generator.
+        # Pass through the generator
         return seed
-    return Generator(seed)
+    if seed is None:
+        seed = -1
+        has_seed = False
+    else:
+        has_seed = True
+
+    state = 1
+    # chpl has to know the type of the generator, in order to avoid having to declare
+    # the type of the generator beforehand (which is not what numpy does)
+    # we declare a generator for each type and fast-forward the state
+    int_name = generic_msg(
+        cmd="createGenerator",
+        args={"dtype": "int64", "has_seed": has_seed, "seed": seed, "state": state},
+    )
+    uint_name = generic_msg(
+        cmd="createGenerator",
+        args={"dtype": "uint64", "has_seed": has_seed, "seed": seed, "state": state},
+    )
+    float_name = generic_msg(
+        cmd="createGenerator",
+        args={"dtype": "float64", "has_seed": has_seed, "seed": seed, "state": state},
+    )
+    bool_name = generic_msg(
+        cmd="createGenerator",
+        args={"dtype": "bool", "has_seed": has_seed, "seed": seed, "state": state},
+    )
+    name_dict = {akint64: int_name, akuint64: uint_name, akfloat64: float_name, akbool: bool_name}
+    return Generator(name_dict, seed if has_seed else None, state=state)

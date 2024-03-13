@@ -403,6 +403,9 @@ module MultiTypeSymbolTable
                 var c: CompositeSymEntry = toCompositeSymEntry(entry);
                 return "%s %? %?".doFormat(name, c.size, c.ndim);
             }
+            else if entry.isAssignableTo(SymbolEntryType.GeneratorSymEntry) {
+                return name;
+            }
             
             throw new Error("attrib - Unsupported Entry Type %s".doFormat(entry.entryType));
         }
