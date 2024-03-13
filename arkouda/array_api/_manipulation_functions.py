@@ -134,6 +134,10 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
         raise IndexError(f"Failed to flip array: {e}")
 
 
+def moveaxis(x: Array, source: Union[int, Tuple[int, ...]], destination: Union[int, Tuple[int, ...]], /) -> Array:
+    raise NotImplementedError("moveaxis is not yet implemented")
+
+
 def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
     """
     Array API compatible wrapper for :py:func:`np.transpose <numpy.transpose>`.
@@ -157,6 +161,10 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
         )
     except RuntimeError as e:
         raise IndexError(f"Failed to permute array dimensions: {e}")
+
+
+def repeat(x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = None) -> Array:
+    raise NotImplementedError("repeat is not yet implemented")
 
 
 def reshape(
@@ -278,3 +286,11 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
             )
         )
     )
+
+
+def tile(x: Array, repetitions: Tuple[int, ...], /) -> Array:
+    raise NotImplementedError("tile is not yet implemented")
+
+
+def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
+    raise NotImplementedError("unstack is not yet implemented")

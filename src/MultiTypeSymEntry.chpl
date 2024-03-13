@@ -180,8 +180,7 @@ module MultiTypeSymEntry
         }
     }
 
-    /* Symbol table entry
-       Only supports 1-d arrays for now */
+    /* Symbol table entry */
     class SymEntry : GenSymEntry
     {
         /*

@@ -3489,11 +3489,12 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
             f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
+    # TODO: handle shape broadcasting for multidimensional arrays
     return create_pdarray(
         cast(
             str,
             generic_msg(
-                cmd="efunc2",
+                cmd=f"efunc2Arg{dividend.ndim if isinstance(dividend, pdarray) else divisor.ndim}D",
                 args={
                     "func": "fmod",
                     "A": dividend,

@@ -53,7 +53,7 @@ def max(
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -64,11 +64,11 @@ def max(
             return squeeze(arr, axis)
 
 
+# this is a temporary fix to get mean working with XArray
 @implements_numpy(np.nanmean)
 @implements_numpy(np.mean)
 def mean_shim(x: Array, axis=None, dtype=None, out=None, keepdims=False):
     return mean(x, axis=axis, keepdims=keepdims)
-    # raise NotImplementedError("mean_shim is not implemented")
 
 
 def mean(
@@ -97,7 +97,7 @@ def mean(
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -135,7 +135,7 @@ def min(
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -181,7 +181,7 @@ def prod(
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -222,7 +222,7 @@ def std(
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -233,8 +233,8 @@ def std(
             return squeeze(arr, axis)
 
 
-@implements_numpy(np.sum)
-@implements_numpy(np.nansum)
+# @implements_numpy(np.sum)
+# @implements_numpy(np.nansum)
 def sum(
     x: Array,
     /,
@@ -268,7 +268,7 @@ def sum(
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -311,7 +311,7 @@ def var(
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))

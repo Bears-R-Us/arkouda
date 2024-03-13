@@ -323,6 +323,63 @@ module ReductionMsg
       }
     }
 
+    @arkouda.registerND
+    proc nonzeroMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+      param pn = Reflection.getRoutineName();
+      const x = msgArgs.getValueOf("x"),
+            rnames = [i in 0..<nd] st.nextName();
+
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+
+      proc findNonZero(type t): MsgTuple throws {
+        const eIn = toSymEntry(gEnt, t, nd);
+
+        var nnzPerLocale: [0..<numLocales] int;
+        coforall loc in Locales with (ref nnzPerLocale) do on loc {
+          var nnzloc = 0;
+          forall idx in eIn.a.localSubdomain() with (+ reduce nnzloc)
+            do if eIn.a[idx] != 0:t then nnzloc += 1;
+          nnzPerLocale[loc.id] = nnzloc;
+        }
+
+        const numNonZero = + reduce nnzPerLocale,
+              locStarts = (+ scan nnzPerLocale) - nnzPerLocale;
+
+        // var eOuts = [rn in rnames] st.addEntry(rn, numNonZero, int);
+        var eOuts: [0..<nd] borrowed SymEntry(int, 1)?;
+        for i in 0..<nd do eOuts[i] = st.addEntry(rnames[i], numNonZero, int);
+
+        // TODO: refactor to use aggregation or bulk assignment to avoid fine-grained communication
+        coforall loc in Locales do on loc {
+          var i = locStarts[loc.id];
+          // TODO: do this in parallel (need finer-grained counting in above coforall loop)
+          for idx in eIn.a.localSubdomain() {
+            if eIn.a[idx] != 0:t {
+              for d in 0..<nd do
+                eOuts[d]!.a[i] = if nd == 1 then idx else idx[d];
+              i += 1;
+            }
+          }
+        }
+
+        const repMsg = try! '+'.join([rn in rnames] "created " + st.attrib(rn));
+        rmLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+      }
+
+      select gEnt.dtype {
+        when DType.Int64 do return findNonZero(int);
+        when DType.UInt64 do return findNonZero(uint);
+        when DType.Float64 do return findNonZero(real);
+        when DType.Bool do return findNonZero(bool);
+        otherwise {
+          var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+          rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg,MsgType.ERROR);
+        }
+      }
+    }
+
     private module SliceReductionOps {
       private proc isArgandType(type t) param: bool do
         return isRealType(t) || isImagType(t) || isComplexType(t);

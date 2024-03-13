@@ -1,10 +1,9 @@
-import unittest
-
 from base_test import ArkoudaTest
 from context import arkouda as ak
 import arkouda.array_api as Array
 
 SEED = 314159
+
 
 class SearchingFunctions(ArkoudaTest):
 
@@ -37,3 +36,36 @@ class SearchingFunctions(ArkoudaTest):
         aArgmin1Keepdims = Array.argmin(a, axis=1, keepdims=True)
         self.assertEqual(aArgmin1Keepdims.shape, (4, 1, 6))
         self.assertEqual(aArgmin1Keepdims[3, 0, 1], 2)
+
+    def test_nonzero(self):
+        a = Array.zeros((4, 5, 6), dtype=ak.int64)
+        a[0, 1, 0] = 1
+        a[1, 2, 3] = 1
+        a[2, 2, 2] = 1
+        a[3, 2, 1] = 1
+
+        nz = Array.nonzero(a)
+
+        print(nz)
+
+        self.assertEqual(nz[0].tolist(), [0, 1, 2, 3])
+        self.assertEqual(nz[1].tolist(), [1, 2, 2, 2])
+        self.assertEqual(nz[2].tolist(), [0, 3, 2, 1])
+
+    def test_where(self):
+        a = Array.zeros((4, 5, 6), dtype=ak.int64)
+        a[1, 2, 3] = 1
+        a[3, 2, 1] = 1
+        a[2, 2, 2] = 1
+
+        b = Array.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
+        c = Array.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
+
+        d = Array.where(a, b, c)
+
+        self.assertEqual(d.shape, (4, 5, 6))
+        self.assertEqual(d[1, 2, 3], b[1, 2, 3])
+        self.assertEqual(d[3, 2, 1], b[3, 2, 1])
+        self.assertEqual(d[2, 2, 2], b[2, 2, 2])
+        self.assertEqual(d[0, 0, 0], c[0, 0, 0])
+        self.assertEqual(d[3, 3, 3], c[3, 3, 3])

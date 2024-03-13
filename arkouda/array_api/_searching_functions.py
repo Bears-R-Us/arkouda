@@ -3,21 +3,18 @@ from __future__ import annotations
 from ._array_object import Array
 from ._dtypes import _real_numeric_dtypes
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Literal
 
-from ._manipulation_functions import squeeze, reshape
+from ._manipulation_functions import squeeze, reshape, broadcast_arrays
 
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import parse_single_value, create_pdarray
 from arkouda.pdarraycreation import scalar_array
+from arkouda.numeric import cast as akcast
+import arkouda as ak
 
 
 def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.argmax <numpy.argmax>`.
-
-    See its docstring for more information.
-    """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in argmax")
 
@@ -49,11 +46,6 @@ def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
 
 
 def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.argmin <numpy.argmin>`.
-
-    See its docstring for more information.
-    """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in argmax")
 
@@ -85,19 +77,45 @@ def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
 
 
 def nonzero(x: Array, /) -> Tuple[Array, ...]:
-    """
-    Array API compatible wrapper for :py:func:`np.nonzero <numpy.nonzero>`.
+    resp = generic_msg(
+        cmd=f"nonzero{x.ndim}D",
+        args={"x": x._array},
+    )
 
-    See its docstring for more information.
-    """
-    raise ValueError("nonzero not implemented")
+    print(resp)
+
+    array_resp = resp.split("+")
+
+    print(array_resp)
+
+    arrays = [Array._new(create_pdarray(a)) for a in array_resp]
+
+    print(arrays)
+
+    return tuple(arrays)
+
+    # return tuple(Array._new(create_pdarray(a) for a in resp.split('+')))
 
 
 def where(condition: Array, x1: Array, x2: Array, /) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.where <numpy.where>`.
+    broadcasted = broadcast_arrays(condition, x1, x2)
 
-    See its docstring for more information.
-    """
-    # Call result type here just to raise on disallowed type combinations
-    raise ValueError("where not implemented")
+    return Array._new(
+        create_pdarray(
+            generic_msg(
+                cmd=f"efunc3vv{broadcasted[0].ndim}D",
+                args={
+                    "func": "where",
+                    "condition": akcast(broadcasted[0]._array, ak.dtypes.bool),
+                    "a": broadcasted[1]._array,
+                    "b": broadcasted[2]._array,
+                },
+            )
+        )
+    )
+
+
+def searchsorted(
+    x1: Array, x2: Array, /, *, side: Literal['left', 'right'] = 'left', sorter: Optional[Array] = None
+) -> Array:
+    raise NotImplementedError("searchsorted is not yet implemented")
