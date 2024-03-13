@@ -345,7 +345,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>([pre])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.sparse_sum_help" title="arkouda.util.sparse_sum_help"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_sum_help</span></code></a>(idx1, idx2, val1, val2)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.sparse_sum_help" title="arkouda.util.sparse_sum_help"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_sum_help</span></code></a>(idx1, idx2, val1, val2[, merge, ...])</p></td>
 <td><p>Helper for summing two sparse matrices together</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.unregister" title="arkouda.util.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
@@ -429,7 +429,7 @@
 <dd class="field-even"><p>The expanded array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -521,22 +521,29 @@ with earlier arkouda versions.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.sparse_sum_help">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">sparse_sum_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#sparse_sum_help"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.sparse_sum_help" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">sparse_sum_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent_transfer_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#sparse_sum_help"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.sparse_sum_help" title="Link to this definition">#</a></dt>
 <dd><p>Helper for summing two sparse matrices together</p>
+<p>Return is equivalent to
+ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>idx1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – indices for the first sparse matrix</p></li>
-<li><p><strong>idx2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – indices for the second sparse matrix</p></li>
-<li><p><strong>val1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for the first sparse matrix</p></li>
-<li><p><strong>val2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for the second sparse matrix</p></li>
+<li><p><strong>idx1</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – indices for the first sparse matrix</p></li>
+<li><p><strong>idx2</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – indices for the second sparse matrix</p></li>
+<li><p><strong>val1</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – values for the first sparse matrix</p></li>
+<li><p><strong>val2</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – values for the second sparse matrix</p></li>
+<li><p><strong>merge</strong> (<em>bool</em>) – If true the indices are combined using a merge based workflow,
+otherwise they are combine using a sort based workflow.</p></li>
+<li><p><strong>percent_transfer_limit</strong> (<em>int</em>) – Only used when merge is true. This is the maximum percentage of the data allowed
+to be moved between locales during the merge workflow. If we would exceed this percentage,
+we fall back to using the sort based workflow.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>indices and values for the summed sparse matrix</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>)</p>
+<dd class="field-odd"><p>(<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>, <a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>)</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>

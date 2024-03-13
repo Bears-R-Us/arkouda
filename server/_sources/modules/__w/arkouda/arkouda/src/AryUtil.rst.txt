@@ -110,7 +110,7 @@ or
 
 .. function:: proc fillUniform(A: [?D] int, a_min: int, a_max: int, seed: int = 241)
 
-.. function:: proc concatArrays(a: [?aD] ?t, b: [?bD] t) throws
+.. function:: proc concatArrays(a: [?aD] ?t, b: [?bD] t, ordered = true) throws
 
    
    Concatenate 2 arrays and return the result.

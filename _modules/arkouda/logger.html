@@ -523,6 +523,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not match any handler&quot;</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="getArkoudaLogger">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.getArkoudaLogger">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">getArkoudaLogger</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -567,7 +569,8 @@
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">ArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">handlers</span><span class="o">=</span><span class="n">handlers</span><span class="p">,</span> <span class="n">logFormat</span><span class="o">=</span><span class="n">logFormat</span><span class="p">,</span> <span class="n">logLevel</span><span class="o">=</span><span class="n">logLevel</span><span class="p">)</span>
     <span class="n">loggers</span><span class="p">[</span><span class="n">logger</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">logger</span>
-    <span class="k">return</span> <span class="n">logger</span>
+    <span class="k">return</span> <span class="n">logger</span></div>
+
 
 
 <span class="nd">@typechecked</span>

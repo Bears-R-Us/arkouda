@@ -631,9 +631,12 @@
 
 <div class="viewcode-block" id="sparse_sum_help">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.sparse_sum_help">[docs]</a>
-<span class="k">def</span> <span class="nf">sparse_sum_help</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">,</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">sparse_sum_help</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">,</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">,</span> <span class="n">merge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">percent_transfer_limit</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper for summing two sparse matrices together</span>
+
+<span class="sd">    Return is equivalent to</span>
+<span class="sd">    ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
@@ -645,6 +648,13 @@
 <span class="sd">        values for the first sparse matrix</span>
 <span class="sd">    val2: pdarray</span>
 <span class="sd">        values for the second sparse matrix</span>
+<span class="sd">    merge: bool</span>
+<span class="sd">        If true the indices are combined using a merge based workflow,</span>
+<span class="sd">        otherwise they are combine using a sort based workflow.</span>
+<span class="sd">    percent_transfer_limit: int</span>
+<span class="sd">        Only used when merge is true. This is the maximum percentage of the data allowed</span>
+<span class="sd">        to be moved between locales during the merge workflow. If we would exceed this percentage,</span>
+<span class="sd">        we fall back to using the sort based workflow.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    --------</span>
@@ -664,7 +674,15 @@
 <span class="sd">    (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sparseSumHelp&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;idx1&quot;</span><span class="p">:</span> <span class="n">idx1</span><span class="p">,</span> <span class="s2">&quot;idx2&quot;</span><span class="p">:</span> <span class="n">idx2</span><span class="p">,</span> <span class="s2">&quot;val1&quot;</span><span class="p">:</span> <span class="n">val1</span><span class="p">,</span> <span class="s2">&quot;val2&quot;</span><span class="p">:</span> <span class="n">val2</span><span class="p">}</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sparseSumHelp&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;idx1&quot;</span><span class="p">:</span> <span class="n">idx1</span><span class="p">,</span>
+            <span class="s2">&quot;idx2&quot;</span><span class="p">:</span> <span class="n">idx2</span><span class="p">,</span>
+            <span class="s2">&quot;val1&quot;</span><span class="p">:</span> <span class="n">val1</span><span class="p">,</span>
+            <span class="s2">&quot;val2&quot;</span><span class="p">:</span> <span class="n">val2</span><span class="p">,</span>
+            <span class="s2">&quot;merge&quot;</span><span class="p">:</span> <span class="n">merge</span><span class="p">,</span>
+            <span class="s2">&quot;percent_transfer_limit&quot;</span><span class="p">:</span> <span class="n">percent_transfer_limit</span><span class="p">,</span>
+        <span class="p">},</span>
     <span class="p">)</span>
     <span class="n">inds</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">inds</span><span class="p">),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span></div>

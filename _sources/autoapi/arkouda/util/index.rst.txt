@@ -153,9 +153,12 @@ Functions
 .. py:function:: report_mem(pre='')
 
 
-.. py:function:: sparse_sum_help(idx1, idx2, val1, val2)
+.. py:function:: sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=100)
 
    Helper for summing two sparse matrices together
+
+   Return is equivalent to
+   ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))
 
    :param idx1: indices for the first sparse matrix
    :type idx1: pdarray
@@ -165,6 +168,13 @@ Functions
    :type val1: pdarray
    :param val2: values for the second sparse matrix
    :type val2: pdarray
+   :param merge: If true the indices are combined using a merge based workflow,
+                 otherwise they are combine using a sort based workflow.
+   :type merge: bool
+   :param percent_transfer_limit: Only used when merge is true. This is the maximum percentage of the data allowed
+                                  to be moved between locales during the merge workflow. If we would exceed this percentage,
+                                  we fall back to using the sort based workflow.
+   :type percent_transfer_limit: int
 
    :returns: indices and values for the summed sparse matrix
    :rtype: (pdarray, pdarray)
