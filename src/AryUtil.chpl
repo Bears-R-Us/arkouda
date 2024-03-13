@@ -9,6 +9,7 @@ module AryUtil
     use ServerErrors;
     use BitOps;
     use GenSymIO;
+    use PrivateDist;
 
     use ArkoudaPOSIXCompat;
     use ArkoudaCTypesCompat;
@@ -207,12 +208,33 @@ module AryUtil
     /*
        Concatenate 2 arrays and return the result.
      */
-    proc concatArrays(a: [?aD] ?t, b: [?bD] t) throws {
-      var ret = makeDistArray((a.size + b.size), t);
-
-      ret[0..#a.size] = a;
-      ret[a.size..#b.size] = b;
-
+    proc concatArrays(a: [?aD] ?t, b: [?bD] t, ordered=true) throws {
+      const retSize = a.size + b.size;
+      var ret = makeDistArray(retSize, t);
+      if ordered {
+        ret[0..#a.size] = a;
+        ret[a.size..#b.size] = b;
+      }
+      else {
+        // if unordered, we interleave the arrays by concatenating each locale's
+        // local part of the arrays to lower communication between locales
+        // this is a simplified version of the logic in concatenateMsg
+        var blocksizes: [PrivateSpace] int;
+        coforall loc in Locales with (ref blocksizes) {
+          on loc {
+            blocksizes[here.id] += (a.localSubdomain().size + b.localSubdomain().size);
+          }
+        }
+        const blockstarts: [PrivateSpace] int = (+ scan blocksizes) - blocksizes;
+        coforall loc in Locales with (const ref blockstarts) {
+          on loc {
+            const aDom = a.localSubdomain();
+            const bDom = b.localSubdomain();
+            ret[blockstarts[here.id]..#(aDom.size)] = a.localSlice[aDom];
+            ret[(blockstarts[here.id]+aDom.size)..#(bDom.size)] = b.localSlice[bDom];
+          }
+        }
+      }
       return ret;
     }
 
