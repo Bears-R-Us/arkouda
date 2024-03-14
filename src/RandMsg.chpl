@@ -200,7 +200,7 @@ module RandMsg
             var generator = if hasSeed then new randomStream(t, seed) else new randomStream(t);
             if state != 1 {
                 // you have to skip to one before where you want to be
-                generator.skipToNth(state-1);
+                generator.skipTo(state-1);
             }
             var entry = new shared GeneratorSymEntry(generator, state);
             var name = st.nextName();
@@ -253,7 +253,7 @@ module RandMsg
             ref rng = generatorEntry.generator;
             if state != 1 {
                 // you have to skip to one before where you want to be
-                rng.skipToNth(state-1);
+                rng.skipTo(state-1);
             }
             var uniformEntry = createSymEntry(size, t);
             if t != bool {
