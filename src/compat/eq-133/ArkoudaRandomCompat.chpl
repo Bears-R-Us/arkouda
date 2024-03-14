@@ -4,5 +4,5 @@ module ArkoudaRandomCompat {
     var r = new randomStream(int);
     return r.choice(arr, size=n, replace=withReplacement);
   }
-  proc randomStream.skipTo(n: int) do this.skipToNth(n);
+  proc randomStream.skipTo(n: int) do try! this.skipToNth(n);
 }
