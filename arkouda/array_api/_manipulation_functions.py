@@ -134,7 +134,9 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
         raise IndexError(f"Failed to flip array: {e}")
 
 
-def moveaxis(x: Array, source: Union[int, Tuple[int, ...]], destination: Union[int, Tuple[int, ...]], /) -> Array:
+def moveaxis(
+    x: Array, source: Union[int, Tuple[int, ...]], destination: Union[int, Tuple[int, ...]], /
+) -> Array:
     raise NotImplementedError("moveaxis is not yet implemented")
 
 

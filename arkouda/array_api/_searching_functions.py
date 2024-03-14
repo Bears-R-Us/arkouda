@@ -3,7 +3,7 @@ from __future__ import annotations
 from ._array_object import Array
 from ._dtypes import _real_numeric_dtypes
 
-from typing import Optional, Tuple, Literal
+from typing import Optional, Tuple, Literal, cast
 
 from ._manipulation_functions import squeeze, reshape, broadcast_arrays
 
@@ -77,24 +77,15 @@ def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
 
 
 def nonzero(x: Array, /) -> Tuple[Array, ...]:
-    resp = generic_msg(
-        cmd=f"nonzero{x.ndim}D",
-        args={"x": x._array},
+    resp = cast(
+        str,
+        generic_msg(
+            cmd=f"nonzero{x.ndim}D",
+            args={"x": x._array},
+        )
     )
 
-    print(resp)
-
-    array_resp = resp.split("+")
-
-    print(array_resp)
-
-    arrays = [Array._new(create_pdarray(a)) for a in array_resp]
-
-    print(arrays)
-
-    return tuple(arrays)
-
-    # return tuple(Array._new(create_pdarray(a) for a in resp.split('+')))
+    return tuple([Array._new(create_pdarray(a)) for a in resp.split("+")])
 
 
 def where(condition: Array, x1: Array, x2: Array, /) -> Array:

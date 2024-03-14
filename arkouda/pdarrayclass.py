@@ -31,6 +31,7 @@ from arkouda.dtypes import translate_np_dtype
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
+from arkouda.pdarraycreation import scalar_array
 
 __all__ = [
     "pdarray",
@@ -3490,19 +3491,24 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
     # TODO: handle shape broadcasting for multidimensional arrays
-    return create_pdarray(
-        cast(
-            str,
-            generic_msg(
-                cmd=f"efunc2Arg{dividend.ndim if isinstance(dividend, pdarray) else divisor.ndim}D",
-                args={
-                    "func": "fmod",
-                    "A": dividend,
-                    "B": divisor,
-                },
-            ),
+    if isinstance(dividend, pdarray) or isinstance(divisor, pdarray):
+        ndim = \
+            dividend.ndim if isinstance(dividend, pdarray) else divisor.ndim  # type: ignore[union-attr]
+        return create_pdarray(
+            cast(
+                str,
+                generic_msg(
+                    cmd=f"efunc2Arg{ndim}D",
+                    args={
+                        "func": "fmod",
+                        "A": dividend,
+                        "B": divisor,
+                    },
+                ),
+            )
         )
-    )
+    else:
+        return scalar_array(mod(dividend, divisor))
 
 
 @typechecked
