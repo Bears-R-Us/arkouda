@@ -772,8 +772,6 @@ class DataFrame(UserDict):
         if is_supported_scalar(key):
             if len(self.columns) != 0 and dtype(type(key)) != dtype(type(self.columns[0])):
                 raise TypeError("Expected key of type {}, received {}".format(type(self.columns[0]), type(key)))
-            if key not in self.columns:
-                raise KeyError("column {} not present in DataFrame".format(key))
             return key
         
         if isinstance(key, pdarray) and key.dtype == akbool:
@@ -785,12 +783,15 @@ class DataFrame(UserDict):
             for k in key.to_ndarray():
                 if len(self.columns) != 0 and dtype(type(k)) != dtype(type(self.columns[0])):
                     raise TypeError("Expected key of type {}, received {}".format(type(self.columns[0]), type(k)))
-                if k not in self.columns:
-                    raise KeyError("column {} not present in DataFrame".format(k)) 
             return key
 
         raise TypeError("Indexing with keys of type {} not supported".format(type(key)))
 
+    def column_label_type(self):
+        if len(self.columns) != 0:
+            return type(self.columns[0])
+        else:
+            return type(None)
         
     def __getitem__(self, key):
         """
@@ -803,6 +804,8 @@ class DataFrame(UserDict):
         
         # if a scalar argument, return a Series
         if is_supported_scalar(key):
+            if key not in self.columns:
+                raise KeyError("column {} not present in DataFrame".format(key))
             values = UserDict.__getitem__(self, key)
             index = self.index
             return Series(index=index, data=values)
@@ -821,6 +824,9 @@ class DataFrame(UserDict):
             return self.get_rows(arange(start_index, stop_index, 1))
         
         if isinstance(key, (pdarray,Strings)):
+            for k in key.to_ndarray():
+                if k not in self.columns:
+                    raise KeyError("column {} not present in DataFrame".format(k))
             result = DataFrame()
             if len(key) <= 0:
                 return result
@@ -834,6 +840,17 @@ class DataFrame(UserDict):
         raise ValueError("key not supported: {}".format(key))
 
 
+    def validate_value(self, value):
+        if isinstance(value,Series):
+            # TODO: check index alignment
+            return self.validate_value(value.values)
+        if isinstance(value, list):
+            return self.validate_value(array(value))
+        if isinstance(value, tuple):
+            raise TypeError("DataFrame does not support tuple values")
+
+        return value
+    
     def __setitem__(self, key, value):
         self.update_nrows()
 
@@ -841,6 +858,61 @@ class DataFrame(UserDict):
         add_index = False
         if self._empty:
             add_index = True
+
+        # Update or insert a single column into the dataframe
+        key = self.validate_key(key)
+        value = self.validate_value(value)
+        
+        
+        if isinstance(key, self.column_label_type()):
+            if is_supported_scalar(value):
+                value = full(len(self), value, dtype=dtype(type(value)))
+            if isinstance(value, pdarray) and len(value) != len(self):
+                raise ValueError("Column length must match DataFrame length")
+
+            # Set a single column in the dataframe using a scalar value
+            if key not in self.columns:
+                self._empty = False
+                self._columns.append(key)
+            else:
+                # Check that values match the column type
+                if value.dtype != UserDict.__getitem__(self,key).dtype:
+                    raise TypeError("Column {} has type {}, received {}".format(key, UserDict.__getitem__(self,key).dtype, value.dtype))
+            UserDict.__setitem__(self, key, value)
+            
+            
+
+        if isinstance(key, pdarray) and key.dtype == akbool:
+            #TODO: validate length and width of value matches number of entries needed
+            if not isinstance(value, DataFrame):
+                raise ValueError("Expected DataFrame type for boolean mask assignment")
+            if len(intersect1d(self.columns, value.columns)) != 0:
+                raise ValueError("Right-hand side columns do not match left-hand side columns")
+            g = akGroupBy(key)
+            keys,counts = g.count()
+            #True is the second option
+            mask_size = counts[-1] if len(counts) == 2 or ( len(counts) == 1 and counts[0] == True) else 0
+            if len(value) != mask_size:
+                raise ValueError("Boolean mask length must match DataFrame length")
+            
+            pass
+
+        if isinstance(key, (pdarray,Strings)):
+            #TODO: 
+            if isinstance(value, DataFrame):
+                if not len(key) == len(value.columns):
+                    raise ValueError("Number of keys and values must match: {} != {}".format(len(key), len(value.columns)))    
+            
+            for (k,valueColumn) in zip(key.to_ndarray(), value.columns):
+                v = value[valueColumn].values
+                if len(v) != len(self):
+                    raise ValueError("Column length must match DataFrame length")
+                if k not in self.columns:
+                    self._empty = False
+                    self._columns.append(k)
+                UserDict.__setitem__(self, k, v)
+
+    def set_row(self, key, value):
 
         # Set a single row in the dataframe using a dict of values
         if isinstance(key, int):
@@ -863,29 +935,6 @@ class DataFrame(UserDict):
                     if k == "index":
                         continue
                     self[k][key] = v
-
-        # Set a single column in the dataframe using a an arkouda array
-        elif isinstance(key, str):
-            if not isinstance(value, self._COLUMN_CLASSES):
-                raise ValueError(f"Column must be one of {self._COLUMN_CLASSES}.")
-            elif self._nrows is not None and self._nrows != value.size:
-                raise ValueError(f"Expected size {self._nrows} but received size {value.size}.")
-            else:
-                self._empty = False
-                UserDict.__setitem__(self, key, value)
-                # Update the index values
-                if key not in self._columns:
-                    self._columns.append(key)
-
-        # Do nothing and return if there's no valid data
-        else:
-            raise ValueError("No valid data received.")
-
-        # Update the dataframe indices and metadata.
-        if add_index:
-            self.update_nrows()
-            self._set_index(arange(self._nrows))
-
     def __len__(self):
         """
         Return the number of rows.

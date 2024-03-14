@@ -1344,16 +1344,170 @@ class DataFrameTest(ArkoudaTest):
         access6 = df2[['floats','ints']]
         result_check(_access6, access6)
 
-
-
     def test_setitem_scalars(self):
-        pass
+        ints = [0,1,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
 
+        def result_check(_a, a):
+            self.assertIsInstance(_a, pd.DataFrame)
+            self.assertIsInstance(a, ak.DataFrame)
+            self.assertListEqual(_a.index.tolist(), a.index.to_list())
+            self.assertListEqual(_a.columns.tolist(), a.columns.to_list())
+            for column in _a.columns:
+                self.assertListEqual(_a[column].values.tolist(), a[column].values.to_list(), "failure for column {}".format(column))
+
+        
+        _df = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+        df = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+
+        # add new column
+        new_ints = [8,9,-10,8,12]
+        _df['new'] = np.array(new_ints)
+        df['new'] = ak.array(new_ints)
+        result_check(_df, df)
+
+        # modify existing column
+        _df['ints'] = np.array([1,2,3,4,5])
+        df['ints'] = ak.array([1,2,3,4,5])
+        result_check(_df, df)
+
+        # change data type
+        with self.assertRaises(TypeError):
+            df['strings'] = ak.array([1.0,2.0,3.0,4.0,5.0])
+
+        # indexing with boolean mask, scalar value
+        _df[_df['ints'] == 3]['ints'] = 101
+        df[df['ints'] == 3]['ints'] = 101
+        result_check(_df, df)
+
+        # setting scalar value
+        _df['ints'] = 100
+        df['ints'] = 100
+
+        # indexing with boolean mask, array value
+        _df[_df['ints'] == 100]['ints'] = np.array([1,2,3,4,5])
+        df[df['ints'] == 100]['ints'] = ak.array([1,2,3,4,5])
+        result_check(_df, df)
+
+        # indexing with boolean mask, array value, incorrect length
+        with self.assertRaises(ValueError):
+            _df[np.array([True, True, False, False, False])]['ints'] = np.array([1,2,3,4])
+        with self.assertRaises(ValueError):
+            df[ak.array([True, True, False, False, False])]['ints'] = ak.array([1,2,3,4])
+        
+        # indexing with boolean mask, array value, incorrect value type
+        with self.assertRaises(TypeError):
+            df[ak.array([True, True, True, True, False])]['floats'] = ak.array([1,2,3,4])
+        
+        # incorrect column index type
+        with self.assertRaises(TypeError):
+            df[1] = ak.array([1,2,3,4,5])
+
+        # integer column labels, integer index labels
+        _df = pd.DataFrame({1: np.array(ints), 2:np.array(floats), 3:np.array(strings)})
+        df = ak.DataFrame({1: ak.array(ints), 2:ak.array(floats), 3:ak.array(strings)})
+
+        # add new column
+        new_ints = [8,9,-10,8,12]
+
+        _df[4] = np.array(new_ints)
+        df[4] = ak.array(new_ints)
+        result_check(_df, df)
+
+        # modify existing column
+        _df[1] = np.array([1,2,3,4,5])
+        df[1] = ak.array([1,2,3,4,5])
+        result_check(_df, df)
+
+        # change data type
+        with self.assertRaises(TypeError):
+            df[3] = ak.array([1.0,2.0,3.0,4.0,5.0])
+
+        # indexing with boolean mask, scalar value
+        _df[_df[1] == 3][1] = 101
+        df[df[1] == 3][1] = 101
+        result_check(_df, df)
+
+        # setting to scalar value
+        _df[1] = 100
+        df[1] = 100
+        result_check(_df, df)
+
+        # indexing with boolean mask, array value
+        _df[_df[1] == 100][1] = np.array([1,2,3,4,5])
+        df[df[1] == 100][1] = ak.array([1,2,3,4,5])
+        result_check(_df, df)
+
+        # indexing with boolean mask, array value, incorrect length
+        with self.assertRaises(ValueError):
+            _df[np.array([True, True, False, False, False])][1] = np.array([1,2,3,4])
+        with self.assertRaises(ValueError):
+            df[ak.array([True, True, False, False, False])][1] = ak.array([1,2,3,4])
+
+        # indexing with boolean mask, array value, incorrect value type
+        with self.assertRaises(TypeError):
+            df[ak.array([True, True, True, True, False])][2] = ak.array([1,2,3,4])
+
+        # incorrect column index type
+        with self.assertRaises(TypeError):
+            df['new column'] = ak.array([1,2,3,4,5])
+        
+        
+    
     def test_setitem_vectors(self):
-        pass
+        ints = [0,1,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
 
-    def test_setitem_slice(self):
-        pass
+        ints2 = [8,9,-10,8,12]
+        floats2 = [8.5,5.0,6.2,1.2,0.0]
+        strings2 = ["B", "D", "D", "EF", "Y"]
+        def result_check(_a, a):
+            self.assertIsInstance(_a, pd.DataFrame)
+            self.assertIsInstance(a, ak.DataFrame)
+            self.assertListEqual(_a.index.tolist(), a.index.to_list())
+            self.assertListEqual(_a.columns.tolist(), a.columns.to_list())
+            for column in _a.columns:
+                self.assertListEqual(_a[column].values.tolist(), a[column].values.to_list(), "failure for column {}".format(column))
+
+        _df = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+        df = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+
+        _df2 = pd.DataFrame({"ints": np.array(ints2), "floats":np.array(floats2), "strings":np.array(strings2)})    
+        df2 = ak.DataFrame({"ints": ak.array(ints2), "floats":ak.array(floats2), "strings":ak.array(strings2)})
+
+        # assignment of one dataframe access to another
+        _df[['ints','floats']] = _df2[['ints','floats']]
+        df[['ints','floats']] = df2[['ints','floats']]
+        result_check(_df, df)
+
+        # new contents for dataframe being read
+        _df2['ints'] = np.array(ints)
+        df2['ints'] = ak.array(ints)
+        _df2['floats'] = np.array(floats)
+        df2['floats'] = ak.array(floats)
+
+        # assignment of one dataframe access to another, different order
+        _df[['floats','ints']] = _df2[['floats','ints']]
+        df[['floats','ints']] = df2[['floats','ints']]
+        result_check(_df, df)
+
+        # inserting multiple columns at once
+        _df[['new1', 'new2']] = _df2[['ints','floats']]
+        df[['new1', 'new2']] = df2[['ints','floats']]
+        result_check(_df, df)
+
+        #reset values
+        _df2['ints'] = np.array(ints2)
+        df2['ints'] = ak.array(ints2)
+        _df2['floats'] = np.array(floats2)
+        df2['floats'] = ak.array(floats2)
+
+        # boolean mask, accessing two columns
+        _df[_df['ints'] == 3][['ints','floats']] = _df2[0:2][['ints','floats']]
+        df[df['ints'] == 3][['ints','floats']] = df2[0:2][['ints','floats']]
+        result_check(_df, df)
 
 
 def pda_to_str_helper(pda):
