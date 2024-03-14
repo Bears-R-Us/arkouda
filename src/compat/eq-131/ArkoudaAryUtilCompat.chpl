@@ -85,4 +85,31 @@ module ArkoudaAryUtilCompat {
     }
     return D[{(...outDims)}];
   }
+
+  /*
+    Naively create a domain over a chunk of the input domain
+
+    Chunks are created by splitting the largest dimension of the input domain
+    into 'nChunks' roughly equal-sized chunks, and then taking the
+    'chunkIdx'-th chunk
+
+    (if 'nChunks' is greater than the size of the largest dimension, the
+    first 'nChunks-1' chunks will be empty, and the last chunk will contain
+    the entire domain)
+  */
+  private proc subDomChunk(dom: domain, chunkIdx: int, nChunks: int): domain {
+    const dimSizes = [i in 0..<dom.rank] dom.dim(i).size,
+          (maxDim, maxDimIdx) = maxloc reduce zip(dimSizes, dimSizes.domain);
+
+    const chunkSize = maxDim / nChunks,
+          start = chunkIdx * chunkSize + dom.dim(maxDimIdx).low,
+          end = if chunkIdx == nChunks-1
+            then dom.dim(maxDimIdx).high
+            else (chunkIdx+1) * chunkSize + dom.dim(maxDimIdx).low - 1;
+
+    var rngs: dom.rank*range;
+    for i in 0..<dom.rank do rngs[i] = dom.dim(i);
+    rngs[maxDimIdx] = start..end;
+    return {(...rngs)};
+  }
 }
