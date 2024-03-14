@@ -31,7 +31,6 @@ from arkouda.dtypes import translate_np_dtype
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
-from arkouda.pdarraycreation import scalar_array
 
 __all__ = [
     "pdarray",
@@ -3508,7 +3507,16 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
             )
         )
     else:
-        return scalar_array(mod(dividend, divisor))
+        m = mod(dividend, divisor)
+        return create_pdarray(
+            generic_msg(
+                cmd="create0D",
+                args={
+                    "dtype": resolve_scalar_dtype(m),
+                    "value": m,
+                },
+            )
+        )
 
 
 @typechecked
