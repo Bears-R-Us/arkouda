@@ -348,6 +348,10 @@ ifeq ($(shell expr $(CHPL_MINOR) \> 33),1)
 	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
 endif
 
+ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
+	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
+endif
+
 SERVER_CONFIG_SCRIPT=$(ARKOUDA_SOURCE_DIR)/parseServerConfig.py
 # This is the main compilation statement section
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
