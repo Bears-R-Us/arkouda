@@ -29,5 +29,7 @@ or
 
    .. method:: proc ref fill(ref arr: [], min: arr.eltType, max: arr.eltType) where arr.isRectangular()
 
+   .. method:: proc skipTo(n: int)
+
 .. function:: proc sample(arr: [?d] ?t, n: int, withReplacement: bool): [] t throws
 

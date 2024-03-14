@@ -429,7 +429,7 @@
 <dd class="field-even"><p>The expanded array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -528,10 +528,10 @@ ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>idx1</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – indices for the first sparse matrix</p></li>
-<li><p><strong>idx2</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – indices for the second sparse matrix</p></li>
-<li><p><strong>val1</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – values for the first sparse matrix</p></li>
-<li><p><strong>val2</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – values for the second sparse matrix</p></li>
+<li><p><strong>idx1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – indices for the first sparse matrix</p></li>
+<li><p><strong>idx2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – indices for the second sparse matrix</p></li>
+<li><p><strong>val1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for the first sparse matrix</p></li>
+<li><p><strong>val2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for the second sparse matrix</p></li>
 <li><p><strong>merge</strong> (<em>bool</em>) – If true the indices are combined using a merge based workflow,
 otherwise they are combine using a sort based workflow.</p></li>
 <li><p><strong>percent_transfer_limit</strong> (<em>int</em>) – Only used when merge is true. This is the maximum percentage of the data allowed
@@ -543,7 +543,7 @@ we fall back to using the sort based workflow.</p></li>
 <dd class="field-even"><p>indices and values for the summed sparse matrix</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>, <a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>)</p>
+<dd class="field-odd"><p>(<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>)</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
