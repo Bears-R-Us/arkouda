@@ -40,7 +40,7 @@ module SymArrayDmapCompat
                 }
                 // fix the annoyance about boundingBox being empty
                 else {
-                  return {0..#0} dmapped blockDist(boundingBox={0..0});
+                  return dom dmapped blockDist(boundingBox=dom.expand(1));
                 }
             }
             otherwise {
