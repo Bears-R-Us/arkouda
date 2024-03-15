@@ -97,7 +97,7 @@ module ArkoudaAryUtilCompat {
     first 'nChunks-1' chunks will be empty, and the last chunk will contain
     the entire domain)
   */
-  proc subDomChunk(dom: domain, chunkIdx: int, nChunks: int): domain {
+  proc subDomChunk(dom: domain, chunkIdx: int, nChunks: int) {
     const dimSizes = [i in 0..<dom.rank] dom.dim(i).size,
           (maxDim, maxDimIdx) = maxloc reduce zip(dimSizes, dimSizes.domain);
 
