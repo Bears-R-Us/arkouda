@@ -1366,6 +1366,122 @@ class DataFrameTest(ArkoudaTest):
             }
         )
 
+    def test_isna_notna(self):
+        df = ak.DataFrame(
+            {
+                "A": [np.nan, 2, 2, 3],
+                "B": [3, np.nan, 5, 0],
+                "C": [1, np.nan, 2, np.nan],
+                "D": ["a", "b", "c", ""],
+            }
+        )
+        assert_frame_equal(df.isna().to_pandas(), df.to_pandas().isna())
+        assert_frame_equal(df.notna().to_pandas(), df.to_pandas().notna())
+
+    def test_any_all(self):
+        df1 = ak.DataFrame(
+            {
+                "A": [True, True, True, True],
+                "B": [True, True, True, False],
+                "C": [True, False, True, False],
+                "D": [False, False, False, False],
+                "E": [0, 1, 2, 3],
+                "F": ["a", "b", "c", ""],
+            }
+        )
+
+        df2 = ak.DataFrame(
+            {
+                "A": [True, True, True, True],
+                "B": [True, True, True, True],
+            }
+        )
+
+        df3 = ak.DataFrame(
+            {
+                "A": [False, False],
+                "B": [False, False],
+            }
+        )
+
+        df4 = ak.DataFrame({"A": [1, 2, 3], "B": ["a", "b", "c"]})
+
+        df5 = ak.DataFrame()
+
+        for df in [df1, df2, df3, df4, df5]:
+            for axis in [0, 1, "index", "columns"]:
+                # There's a bug in assert_series_equal where two empty series will not register as equal.
+                if df.to_pandas().any(axis=axis, bool_only=True).empty:
+                    self.assertTrue(df.any(axis=axis).to_pandas().empty)
+                else:
+                    assert_series_equal(
+                        df.any(axis=axis).to_pandas(), df.to_pandas().any(axis=axis, bool_only=True)
+                    )
+                if df.to_pandas().all(axis=axis, bool_only=True).empty:
+                    self.assertTrue(df.all(axis=axis).to_pandas().empty)
+                else:
+                    assert_series_equal(
+                        df.all(axis=axis).to_pandas(), df.to_pandas().all(axis=axis, bool_only=True)
+                    )
+            # Test is axis=None
+            self.assertEqual(df.any(axis=None), df.to_pandas().any(axis=None, bool_only=True))
+            self.assertEqual(df.all(axis=None), df.to_pandas().all(axis=None, bool_only=True))
+
+    def test_dropna(self):
+        df1 = ak.DataFrame(
+            {
+                "A": [True, True, True, True],
+                "B": [1, np.nan, 2, np.nan],
+                "C": [1, 2, 3, np.nan],
+                "D": [False, False, False, False],
+                "E": [1, 2, 3, 4],
+                "F": ["a", "b", "c", "d"],
+                "G": [1, 2, 3, 4],
+            }
+        )
+
+        df2 = ak.DataFrame(
+            {
+                "A": [True, True, True, True],
+                "B": [True, True, True, True],
+            }
+        )
+
+        df3 = ak.DataFrame(
+            {
+                "A": [False, False],
+                "B": [False, False],
+            }
+        )
+
+        df4 = ak.DataFrame({"A": [1, 2, 3], "B": ["a", "b", "c"]})
+
+        df5 = ak.DataFrame()
+
+        for df in [df1, df2, df3, df4, df5]:
+            for axis in [0, 1, "index", "columns"]:
+                for how in ["any", "all"]:
+                    for ignore_index in [True, False]:
+                        assert_frame_equal(
+                            df.dropna(axis=axis, how=how, ignore_index=ignore_index).to_pandas(
+                                retain_index=True
+                            ),
+                            df.to_pandas(retain_index=True).dropna(
+                                axis=axis, how=how, ignore_index=ignore_index
+                            ),
+                        )
+
+                for thresh in [0, 1, 2, 3, 4, 5]:
+                    if df.to_pandas(retain_index=True).dropna(axis=axis, thresh=thresh).empty:
+                        self.assertTrue(
+                            df.dropna(axis=axis, thresh=thresh).to_pandas(retain_index=True).empty
+                        )
+                    else:
+                        assert_frame_equal(
+                            df.dropna(axis=axis, thresh=thresh).to_pandas(retain_index=True),
+                            df.to_pandas(retain_index=True).dropna(axis=axis, thresh=thresh),
+                        )
+
     def test_multi_col_merge(self):
         size = 1000
         seed = 1
