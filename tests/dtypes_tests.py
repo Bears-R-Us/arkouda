@@ -114,6 +114,17 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual("int64", dtypes.resolve_scalar_dtype(np.int64(1)))
         self.assertEqual("<class 'list'>", dtypes.resolve_scalar_dtype([1]))
 
+    def test_is_dtype_in_union(self):
+        from arkouda.dtypes import _is_dtype_in_union
+        from typing import Union
+
+        float_scalars = Union[float, np.float64, np.float32]
+        self.assertTrue(_is_dtype_in_union(np.float64, float_scalars))
+        # Test with a type not present in the union
+        self.assertFalse(_is_dtype_in_union(np.int64, float_scalars))
+        # Test with a non-Union type
+        self.assertFalse(_is_dtype_in_union(np.float64, float))
+
     def test_nbytes(self):
         from arkouda.dtypes import BigInt
 

@@ -1,4 +1,7 @@
+import numpy as np
+
 import arkouda as ak
+from arkouda.util import is_float, is_int, is_numeric
 
 
 class TestUtil:
@@ -20,3 +23,24 @@ class TestUtil:
         assert (merge_idx == sort_idx).all()
         assert (merge_idx == gb_idx).all()
         assert (merge_vals == sort_vals).all()
+
+    def test_is_numeric(self):
+        a = ak.array(["a", "b"])
+        b = ak.array([1, 2])
+        c = ak.Categorical(a)
+        d = ak.array([1, np.nan])
+
+        assert ~is_numeric(a)
+        assert is_numeric(b)
+        assert ~is_numeric(c)
+        assert is_numeric(d)
+
+        assert ~is_int(a)
+        assert is_int(b)
+        assert ~is_int(c)
+        assert ~is_int(d)
+
+        assert ~is_float(a)
+        assert ~is_float(b)
+        assert ~is_float(c)
+        assert is_float(d)

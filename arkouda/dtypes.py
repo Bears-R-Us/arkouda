@@ -64,6 +64,22 @@ def dtype(x):
         return np.dtype(x)
 
 
+def _is_dtype_in_union(dtype: type, union_type: type) -> bool:
+    """
+    Check if a given type is in a typing.Union.
+
+    Args
+    ----
+        dtype (type): The type to check for.
+        union_type (type): The typing.Union type to check against.
+
+    Returns
+    -------
+        bool: True if the dtype is in the union_type, False otherwise.
+    """
+    return hasattr(union_type, "__args__") and dtype in union_type.__args__
+
+
 class BigInt:
     # an estimate of the itemsize of bigint (128 bytes)
     itemsize = 128
