@@ -1536,7 +1536,35 @@ module SegmentedString {
     The SegFunction called by computeOnSegments for isdigit
   */
   inline proc stringIsDigit(ref values, rng) throws {
-    return interpretAsString(values, rng, borrow=true).isDigit();
+    use In1d;
+    const special_digits = "⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉";
+    const myString = interpretAsString(values, rng, borrow=true);
+    // test if string is all regular digits for early out
+    if myString.isDigit(){
+      return true;
+    }
+    // test if string is all alphanumeric characters for early out
+    else if myString.isAlpha() || myString.isEmpty() {
+      return false;
+    }
+    // string contains at least one special digit character, full test
+    else {
+      proc toUint64(c) {
+        var ret:uint = 0;
+        var i = 0;
+        for b in c.bytes() {
+          var tmp = b:uint;
+          ret |= (tmp << (i*8));
+          i += 1;
+        }
+        return ret;
+      }
+      var special_array = [s in special_digits] toUint64(s);
+      var myString_array = [b in myString] toUint64(b);
+      var digitTruth = [b in myString] b.isDigit();
+      const specialTruth = In1d.in1d[myString_array, special_array];
+      return & reduce (specialTruth | digitTruth);
+    }
   }
 
   /*

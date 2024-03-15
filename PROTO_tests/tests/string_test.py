@@ -560,6 +560,8 @@ class TestString:
                 "3.14",
                 "\u0030",  # Unicode for zero
                 "\u00B2",
+                "2³₇",  # additional tests for super/subscripts
+                "2³x₇",
             ]
         )
 
@@ -573,6 +575,8 @@ class TestString:
             False,
             False,
             False,
+            True,
+            True,
             True,
             False,
         ]
@@ -598,6 +602,8 @@ class TestString:
                 "3.14",
                 "\u0030",  # Unicode for zero
                 "\u00B2",
+                "2³₇",  # additional tests for super/subscripts
+                "2³x₇",
             ]
         )
 
@@ -611,6 +617,8 @@ class TestString:
             False,
             False,
             False,
+            True,
+            True,
             True,
             False,
         ]
