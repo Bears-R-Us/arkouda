@@ -26,8 +26,6 @@ from arkouda.pdarraycreation import scalar_array
 import numpy as np
 
 
-@implements_numpy(np.max)
-@implements_numpy(np.nanmax)
 def max(
     x: Array,
     /,
@@ -65,6 +63,8 @@ def max(
 
 
 # this is a temporary fix to get mean working with XArray
+# (until a counterpart to np.nanmean is added to the array API
+# see: https://github.com/data-apis/array-api/issues/621)
 @implements_numpy(np.nanmean)
 @implements_numpy(np.mean)
 def mean_shim(x: Array, axis=None, dtype=None, out=None, keepdims=False):
@@ -108,8 +108,6 @@ def mean(
             return squeeze(arr, axis)
 
 
-@implements_numpy(np.min)
-@implements_numpy(np.nanmin)
 def min(
     x: Array,
     /,
@@ -146,8 +144,6 @@ def min(
             return squeeze(arr, axis)
 
 
-@implements_numpy(np.prod)
-@implements_numpy(np.nanprod)
 def prod(
     x: Array,
     /,
@@ -192,7 +188,8 @@ def prod(
             return squeeze(arr, axis)
 
 
-@implements_numpy(np.nanmax)
+# Not working with XArray yet, pending a fix for:
+# https://github.com/pydata/xarray/issues/8566#issuecomment-1870472827
 def std(
     x: Array,
     /,
@@ -233,8 +230,6 @@ def std(
             return squeeze(arr, axis)
 
 
-# @implements_numpy(np.sum)
-# @implements_numpy(np.nansum)
 def sum(
     x: Array,
     /,
@@ -279,8 +274,8 @@ def sum(
             return squeeze(arr, axis)
 
 
-@implements_numpy(np.var)
-@implements_numpy(np.nanvar)
+# Not working with XArray yet, pending a fix for:
+# https://github.com/pydata/xarray/issues/8566#issuecomment-1870472827
 def var(
     x: Array,
     /,
