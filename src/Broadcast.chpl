@@ -23,6 +23,10 @@ module Broadcast {
    * original array. Intended to be used with arkouda.GroupBy.
    */
   proc broadcast(perm: [?D] int, segs: [?sD] int, vals: [sD] ?t) throws {
+    if sD.size == 0 {
+      // early out if size 0
+      return makeDistArray(D.size, t);
+    }
     // The stragegy is to go from the segment domain to the full
     // domain by forming the full derivative and integrating it
     var keepSegs = makeDistArray(sD, bool);
@@ -112,6 +116,10 @@ module Broadcast {
    * original array. Intended to be used with arkouda.GroupBy.
    */
   proc broadcast(perm: [?D] int, segs: [?sD] int, vals: [sD] bool) throws {
+    if sD.size == 0 {
+      // early out if size 0
+      return makeDistArray(D.size, bool);
+    }
     // The stragegy is to go from the segment domain to the full
     // domain by forming the full derivative and integrating it    
     var keepSegs = makeDistArray(sD, bool);
@@ -229,6 +237,10 @@ module Broadcast {
    * vector such that each nonzero receives its row's value.
    */
   proc broadcast(segs: [?sD] int, vals: [sD] ?t, size: int) throws {
+    if sD.size == 0 {
+      // early out if size 0
+      return makeDistArray(size, t);
+    }
     // The stragegy is to go from the segment domain to the full
     // domain by forming the full derivative and integrating it
     var keepSegs = makeDistArray(sD, bool);
@@ -299,6 +311,10 @@ module Broadcast {
   }
 
   proc broadcast(segs: [?sD] int, vals: [sD] bool, size: int) throws {
+    if sD.size == 0 {
+      // early out if size 0
+      return makeDistArray(size, bool);
+    }
     // The stragegy is to go from the segment domain to the full
     // domain by forming the full derivative and integrating it
     var keepSegs = makeDistArray(sD, bool);
