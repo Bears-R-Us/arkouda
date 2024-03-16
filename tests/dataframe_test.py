@@ -1509,6 +1509,129 @@ class DataFrameTest(ArkoudaTest):
         df[df['ints'] == 3][['ints','floats']] = df2[0:2][['ints','floats']]
         result_check(_df, df)
 
+    def check_df_equality(self, _df, df):
+        self.assertIsInstance(_df, pd.DataFrame)
+        self.assertIsInstance(df, ak.DataFrame)
+        self.assertListEqual(_df.index.tolist(), df.index.to_list())
+        self.assertListEqual(_df.columns.tolist(), df.columns.to_list())
+        for column in _df.columns:
+            self.assertListEqual(_df[column].values.tolist(), df[column].values.to_list(), "failure for column {}".format(column))
+
+    def test_loc_get(self):
+        ints = [0,1,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        default_index = [0,1,2,3,4]
+        unordered_index = [9,3,0,23,3]
+        string_index = ['one','two','three','four','five']
+
+        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+
+        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=unordered_index)
+        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=unordered_index)
+        
+        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
+        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
+
+        # single label for row
+        _loc1 = _df1.loc[2]
+        loc1 = df1.loc[2]
+        self.assertIsInstance(_loc1, pd.Series)
+        self.assertIsInstance(loc1, ak.DataFrame)
+        for column in _loc1.index:
+            self.assertEqual(_loc1[column], loc1[column].values[0])
+ 
+        # list of labels
+        _loc2 = _df1.loc[[2,3,4]]
+        loc2 = df1.loc[[2,3,4]]
+        self.check_df_equality(_loc2, loc2)
+
+        # slice of labels
+        _loc3 = _df1.loc[1:3]
+        loc3 = df1.loc[1:3]
+        self.check_df_equality(_loc3, loc3)
+
+        # boolean array of same length as array being sliced
+        _loc4 = _df1.loc[[True, True, False, False, True]]
+        loc4 = df1.loc[ak.array([True, True, False, False, True])]
+        self.check_df_equality(_loc4, loc4)
+
+        # alignable boolean Series
+        _loc5 = _df1.loc[_df1['ints'] == 3]
+        loc5 = df1.loc[df1['ints'] == 3]
+        self.check_df_equality(_loc5, loc5)
+
+        # single label for row and column
+        _loc6 = _df1.loc[2, 'floats']
+        loc6 = df1.loc[2, 'floats']
+        self.assertEqual(_loc6, loc6)
+
+        # slice with label for row and single label for column
+        _loc7 = _df1.loc[1:3, 'floats']
+        loc7 = df1.loc[1:3, 'floats']
+        self.assertIsInstance(_loc7, pd.Series)
+        self.assertIsInstance(loc7, ak.Series)
+        for column in _loc7.index:
+            self.assertListEqual(_loc7.values.tolist(), loc7.values.to_list()) 
+
+        # boolean array for row and array of labels for columns
+        _loc8 = _df1.loc[[True, True, False, False, True], ['ints','floats']]
+        loc8 = df1.loc[ak.array([True, True, False, False, True]), ['ints','floats']]
+        self.check_df_equality(_loc8, loc8)
+
+        #TODO: tests for other index types
+
+
+    def test_loc_set(self):
+        ints = [0,1,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        default_index = [0,1,2,3,4]
+        unordered_index = [9,3,0,23,3]
+        string_index = ['one','two','three','four','five']
+
+        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+
+        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=unordered_index)
+        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=unordered_index)
+        
+        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
+        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
+
+        # single row, single column, scalar value
+        _df1.loc[2, 'floats'] = 100.0
+        df1.loc[2, 'floats'] = 100.0
+        self.check_df_equality(_df1, df1)
+
+        # multiple rows, single column, scalar value
+        _df1.loc[[2,3,4], 'floats'] = 101.0
+        df1.loc[[2,3,4], 'floats'] = 101.0
+        self.check_df_equality(_df1, df1)
+
+        # setting an entire row
+        _df1.loc[2] = [100, 100.0, "100"]
+        #TODO: can't do this with arkouda unless all the columns are the same type.
+
+        # setting an entire column
+        _df1.loc[:,'floats'] = 99.0
+        df1.loc[:,'floats'] = 99.0
+        self.check_df_equality(_df1, df1)
+
+        # setting value for rows matching boolean 
+        _df1.loc[_df1['ints'] == 3, 'floats'] = 102.0
+        df1.loc[df1['ints'] == 3, 'floats'] = 102.0
+        self.check_df_equality(_df1, df1)
+
+        # setting with Series matches index labels, not positions
+        
+        # setting with DataFrame matches index labels, not positions
+
+
+
 
 def pda_to_str_helper(pda):
 

@@ -28,7 +28,7 @@ from arkouda.index import Index, MultiIndex
 from arkouda.join import inner_join
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum, where
-from arkouda.pdarrayclass import RegistrationError, pdarray
+from arkouda.pdarrayclass import RegistrationError, pdarray, any
 from arkouda.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d, indexof1d
 from arkouda.row import Row
@@ -912,6 +912,9 @@ class DataFrame(UserDict):
                     self._columns.append(k)
                 UserDict.__setitem__(self, k, v)
 
+    @property
+    def loc(self):
+        return LocIndexer(self)
     def set_row(self, key, value):
 
         # Set a single row in the dataframe using a dict of values
@@ -4555,6 +4558,58 @@ class DataFrame(UserDict):
 
         return cls(columns, idx)
 
+class LocIndexer:
+    def __init__(self, df):
+        self.df = df
+
+    def __getitem__(self, key):
+        if isinstance(key, tuple) and len(key) == 2:
+            return self.get_row_col(key[0], key[1])
+        if isinstance(key, list):
+            key = array(key)
+        if isinstance(key, Series):
+            key = key.values
+        if is_supported_scalar(key) and self.df.index.dtype == dtype(type(key)):
+            return self.df.get_rows(indexof1d(array([key]), self.df.index.values))
+        
+        if isinstance(key, pdarray) and key.dtype == self.df.index.dtype:
+            return self.df.get_rows(indexof1d(key, self.df.index.values))
+        
+        if isinstance(key, slice):
+            if key.start is not None and not (in1d(array([key.start]), self.df.index.values)):
+                raise ValueError(f"Index {key.start} not found in DataFrame index")
+            if key.stop is not None and not any(in1d(array([key.stop]), self.df.index.values)):
+                raise ValueError(f"Index {key.stop} not found in DataFrame index")
+            
+            start_idx = indexof1d(array([key.start]), self.df.index.values)[0] if key.start is not None else 0
+            stop_idx = indexof1d(array([key.stop]), self.df.index.values)[0] + 1 if key.stop is not None else self.df.index.size
+
+            indices = arange(start_idx, stop_idx)
+            return self.df.get_rows(indices)
+        
+        if isinstance(key, pdarray) and key.dtype == akbool:
+            return self.df.get_rows(key)
+
+        return None
+
+    def get_row_col(self, row_key, col_key):
+        return self[row_key][col_key]
+    
+
+    def __setitem__(self, key, val):
+        if isinstance(key, tuple) and len(key) == 2:
+            self.set_row_col(key[0], key[1], val)
+            return
+        
+        if isinstance(key, list):
+            key = array(key)
+        if isinstance(key, Series):
+            key = key.values
+        
+        return None
+
+    def set_row_col(self, row_key, col_key, val):
+        return None
 
 def intx(a, b):
     """
