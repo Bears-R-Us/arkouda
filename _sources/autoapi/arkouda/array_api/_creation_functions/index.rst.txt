@@ -58,7 +58,7 @@ Functions
 .. py:function:: full_like(x: arkouda.array_api._typing.Array, /, fill_value: Union[int, float], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._typing.Array
 
 
-.. py:function:: linspace(start: Union[int, float], stop: Union[int, float], /, num: int, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None, endpoint: bool = True) -> arkouda.array_api._typing.Array
+.. py:function:: linspace(start: Union[int, float], stop: Union[int, float], /, num: int, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None, endpoint: bool = True) -> arkouda.array_api._array_object.Array
 
 
 .. py:function:: meshgrid(*arrays: arkouda.array_api._typing.Array, indexing: str = 'xy') -> List[arkouda.array_api._typing.Array]

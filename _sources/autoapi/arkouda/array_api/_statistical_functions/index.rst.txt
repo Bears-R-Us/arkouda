@@ -17,6 +17,7 @@ Functions
 
    arkouda.array_api._statistical_functions.max
    arkouda.array_api._statistical_functions.mean
+   arkouda.array_api._statistical_functions.mean_shim
    arkouda.array_api._statistical_functions.min
    arkouda.array_api._statistical_functions.prod
    arkouda.array_api._statistical_functions.prod_sum_dtype
@@ -30,6 +31,9 @@ Functions
 
 
 .. py:function:: mean(x: arkouda.array_api._array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: mean_shim(x: arkouda.array_api._array_object.Array, axis=None, dtype=None, out=None, keepdims=False)
 
 
 .. py:function:: min(x: arkouda.array_api._array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> arkouda.array_api._array_object.Array

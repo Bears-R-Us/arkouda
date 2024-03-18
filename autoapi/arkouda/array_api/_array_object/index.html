@@ -310,6 +310,30 @@ of ndarray.</p>
 </tbody>
 </table>
 </div>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h3>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api._array_object.implements_numpy" title="arkouda.array_api._array_object.implements_numpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">implements_numpy</span></code></a>(numpy_function)</p></td>
+<td><p>Register an __array_function__ implementation for MyArray objects.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">#</a></h3>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api._array_object.HANDLED_FUNCTIONS" title="arkouda.array_api._array_object.HANDLED_FUNCTIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HANDLED_FUNCTIONS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.array_api._array_object.Array">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.array_api._array_object.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><a class="reference internal" href="../../../../_modules/arkouda/array_api/_array_object.html#Array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api._array_object.Array" title="Link to this definition">#</a></dt>
@@ -358,6 +382,12 @@ functions, such as asarray().</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.array_api._array_object.Array.item">
+<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/_array_object.html#Array.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api._array_object.Array.item" title="Link to this definition">#</a></dt>
+<dd><p>Convert the array to a Python scalar</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.array_api._array_object.Array.to_device">
 <span class="sig-name descname"><span class="pre">to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.array_api._typing.Device</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.array_api._array_object.Array" title="arkouda.array_api._array_object.Array"><span class="pre">Array</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/array_api/_array_object.html#Array.to_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api._array_object.Array.to_device" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
@@ -374,6 +404,24 @@ functions, such as asarray().</p>
 <dd><p>Convert the array to a Python list or nested lists</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.array_api._array_object.Array.transpose">
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/_array_object.html#Array.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api._array_object.Array.transpose" title="Link to this definition">#</a></dt>
+<dd><p>Return a view of the array with the specified axes transposed.</p>
+<p>For axes=None, reverse all the dimensions of the array.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="arkouda.array_api._array_object.HANDLED_FUNCTIONS">
+<span class="sig-prename descclassname"><span class="pre">arkouda.array_api._array_object.</span></span><span class="sig-name descname"><span class="pre">HANDLED_FUNCTIONS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#arkouda.array_api._array_object.HANDLED_FUNCTIONS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.array_api._array_object.implements_numpy">
+<span class="sig-prename descclassname"><span class="pre">arkouda.array_api._array_object.</span></span><span class="sig-name descname"><span class="pre">implements_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numpy_function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/_array_object.html#implements_numpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api._array_object.implements_numpy" title="Link to this definition">#</a></dt>
+<dd><p>Register an __array_function__ implementation for MyArray objects.</p>
 </dd></dl>
 
 </section>
@@ -419,7 +467,9 @@ functions, such as asarray().</p>
             <ul>
 <li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_api._array_object</span></code></a><ul>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
-<li><a class="reference internal" href="#classes">Classes</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#attributes">Attributes</a><ul>
 <li><a class="reference internal" href="#arkouda.array_api._array_object.Array"><code class="docutils literal notranslate"><span class="pre">Array</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.array_api._array_object.Array.T"><code class="docutils literal notranslate"><span class="pre">Array.T</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._array_object.Array.device"><code class="docutils literal notranslate"><span class="pre">Array.device</span></code></a></li>
@@ -428,11 +478,15 @@ functions, such as asarray().</p>
 <li><a class="reference internal" href="#arkouda.array_api._array_object.Array.ndim"><code class="docutils literal notranslate"><span class="pre">Array.ndim</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._array_object.Array.shape"><code class="docutils literal notranslate"><span class="pre">Array.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._array_object.Array.size"><code class="docutils literal notranslate"><span class="pre">Array.size</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.array_api._array_object.Array.item"><code class="docutils literal notranslate"><span class="pre">Array.item()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._array_object.Array.to_device"><code class="docutils literal notranslate"><span class="pre">Array.to_device()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._array_object.Array.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Array.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._array_object.Array.tolist"><code class="docutils literal notranslate"><span class="pre">Array.tolist()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.array_api._array_object.Array.transpose"><code class="docutils literal notranslate"><span class="pre">Array.transpose()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#arkouda.array_api._array_object.HANDLED_FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">HANDLED_FUNCTIONS</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.array_api._array_object.implements_numpy"><code class="docutils literal notranslate"><span class="pre">implements_numpy()</span></code></a></li>
 </ul>
 </li>
 </ul>

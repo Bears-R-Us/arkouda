@@ -308,7 +308,7 @@
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">ak_all</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="nb">any</span> <span class="k">as</span> <span class="n">ak_any</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">argmax</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">linspace</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">scalar_array</span>
 <span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
 
 <span class="n">Categorical</span> <span class="o">=</span> <span class="n">ForwardRef</span><span class="p">(</span><span class="s2">&quot;Categorical&quot;</span><span class="p">)</span>
@@ -1379,53 +1379,59 @@
             <span class="sa">f</span><span class="s2">&quot;Unsupported types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="si">}</span><span class="s2"> and/or </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">denom</span><span class="p">)</span><span class="si">}</span><span class="s2">. Supported &quot;</span>
             <span class="s2">&quot;types are numeric scalars and pdarrays. At least one argument must be a pdarray.&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span>
-            <span class="nb">str</span><span class="p">,</span>
-            <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;efunc2&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;arctan2&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">,</span>
-                    <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">,</span>
-                <span class="p">},</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>  <span class="c1"># type: ignore</span>
+    <span class="c1"># TODO: handle shape broadcasting for multidimensional arrays</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">ndim</span> <span class="o">=</span> <span class="n">num</span><span class="o">.</span><span class="n">ndim</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">denom</span><span class="o">.</span><span class="n">ndim</span>  <span class="c1"># type: ignore[union-attr]</span>
+        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">,</span>
+                <span class="n">generic_msg</span><span class="p">(</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc2Arg</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;arctan2&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">,</span>
+                        <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>  <span class="c1"># type: ignore</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">where</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where must have dtype bool, got </span><span class="si">{</span><span class="n">where</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> instead&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+                <span class="c1"># TODO: handle shape broadcasting for multidimensional arrays</span>
+                <span class="n">repMsg</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">generic_msg</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc2Arg</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;arctan2&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
+                            <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
+                        <span class="p">},</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+                <span class="n">repMsg</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">generic_msg</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc2Arg</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;arctan2&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">num</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">num</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
+                            <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">denom</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">denom</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
+                        <span class="p">},</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="n">new_pda</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+            <span class="n">new_pda</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">new_pda</span><span class="p">,</span> <span class="n">ret</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">new_pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span>
+            <span class="k">return</span> <span class="n">new_pda</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">where</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where must have dtype bool, got </span><span class="si">{</span><span class="n">where</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> instead&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">,</span>
-                <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;efunc2&quot;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                        <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;arctan2&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
-                        <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
-                    <span class="p">},</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">,</span>
-                <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;efunc2&quot;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                        <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;arctan2&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">num</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">num</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
-                        <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">denom</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">denom</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
-                    <span class="p">},</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
-        <span class="n">new_pda</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
-        <span class="n">new_pda</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">new_pda</span><span class="p">,</span> <span class="n">ret</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">new_pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span>
-        <span class="k">return</span> <span class="n">new_pda</span></div>
+        <span class="k">return</span> <span class="n">scalar_array</span><span class="p">(</span><span class="n">arctan2</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span> <span class="k">if</span> <span class="n">where</span> <span class="k">else</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span></div>
 
 
 
@@ -2053,8 +2059,9 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">_str_cat_where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="c1"># TODO: handle shape broadcasting for multidimensional arrays</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;efunc3vv&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc3vv</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
@@ -2065,7 +2072,7 @@
     <span class="c1"># For scalars, try to convert it to the array&#39;s dtype</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">B</span><span class="p">):</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;efunc3vs&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc3vs</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
@@ -2076,7 +2083,7 @@
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;efunc3sv&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc3sv</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
@@ -2106,7 +2113,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot cast between scalars </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2"> to supported dtype&quot;</span><span class="p">)</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;efunc3ss&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc3ss</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>

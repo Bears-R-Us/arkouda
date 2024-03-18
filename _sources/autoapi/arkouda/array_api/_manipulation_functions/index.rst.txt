@@ -20,11 +20,15 @@ Functions
    arkouda.array_api._manipulation_functions.concat
    arkouda.array_api._manipulation_functions.expand_dims
    arkouda.array_api._manipulation_functions.flip
+   arkouda.array_api._manipulation_functions.moveaxis
    arkouda.array_api._manipulation_functions.permute_dims
+   arkouda.array_api._manipulation_functions.repeat
    arkouda.array_api._manipulation_functions.reshape
    arkouda.array_api._manipulation_functions.roll
    arkouda.array_api._manipulation_functions.squeeze
    arkouda.array_api._manipulation_functions.stack
+   arkouda.array_api._manipulation_functions.tile
+   arkouda.array_api._manipulation_functions.unstack
 
 
 
@@ -61,11 +65,17 @@ Functions
    See its docstring for more information.
 
 
+.. py:function:: moveaxis(x: arkouda.array_api._array_object.Array, source: Union[int, Tuple[int, Ellipsis]], destination: Union[int, Tuple[int, Ellipsis]], /) -> arkouda.array_api._array_object.Array
+
+
 .. py:function:: permute_dims(x: arkouda.array_api._array_object.Array, /, axes: Tuple[int, Ellipsis]) -> arkouda.array_api._array_object.Array
 
    Array API compatible wrapper for :py:func:`np.transpose <numpy.transpose>`.
 
    See its docstring for more information.
+
+
+.. py:function:: repeat(x: arkouda.array_api._array_object.Array, repeats: Union[int, arkouda.array_api._array_object.Array], /, *, axis: Optional[int] = None) -> arkouda.array_api._array_object.Array
 
 
 .. py:function:: reshape(x: arkouda.array_api._array_object.Array, /, shape: Tuple[int, Ellipsis], *, copy: Optional[bool] = None) -> arkouda.array_api._array_object.Array
@@ -94,5 +104,11 @@ Functions
    Array API compatible wrapper for :py:func:`np.stack <numpy.stack>`.
 
    See its docstring for more information.
+
+
+.. py:function:: tile(x: arkouda.array_api._array_object.Array, repetitions: Tuple[int, Ellipsis], /) -> arkouda.array_api._array_object.Array
+
+
+.. py:function:: unstack(x: arkouda.array_api._array_object.Array, /, *, axis: int = 0) -> Tuple[arkouda.array_api._array_object.Array, Ellipsis]
 
 

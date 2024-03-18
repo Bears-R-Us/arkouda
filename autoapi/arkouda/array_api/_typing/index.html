@@ -376,6 +376,12 @@ functions, such as asarray().</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.array_api._typing.Array.item">
+<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/_array_object.html#Array.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api._typing.Array.item" title="Link to this definition">#</a></dt>
+<dd><p>Convert the array to a Python scalar</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.array_api._typing.Array.to_device">
 <span class="sig-name descname"><span class="pre">to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.array_api._typing.Device</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.array_api._typing.Array" title="arkouda.array_api._typing.Array"><span class="pre">Array</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/array_api/_array_object.html#Array.to_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api._typing.Array.to_device" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
@@ -390,6 +396,13 @@ functions, such as asarray().</p>
 <dt class="sig sig-object py" id="arkouda.array_api._typing.Array.tolist">
 <span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/_array_object.html#Array.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api._typing.Array.tolist" title="Link to this definition">#</a></dt>
 <dd><p>Convert the array to a Python list or nested lists</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.array_api._typing.Array.transpose">
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/_array_object.html#Array.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api._typing.Array.transpose" title="Link to this definition">#</a></dt>
+<dd><p>Return a view of the array with the specified axes transposed.</p>
+<p>For axes=None, reverse all the dimensions of the array.</p>
 </dd></dl>
 
 </dd></dl>
@@ -501,9 +514,11 @@ Protocol classes can be generic, they are defined as:</p>
 <li><a class="reference internal" href="#arkouda.array_api._typing.Array.ndim"><code class="docutils literal notranslate"><span class="pre">Array.ndim</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._typing.Array.shape"><code class="docutils literal notranslate"><span class="pre">Array.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._typing.Array.size"><code class="docutils literal notranslate"><span class="pre">Array.size</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.array_api._typing.Array.item"><code class="docutils literal notranslate"><span class="pre">Array.item()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._typing.Array.to_device"><code class="docutils literal notranslate"><span class="pre">Array.to_device()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._typing.Array.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Array.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api._typing.Array.tolist"><code class="docutils literal notranslate"><span class="pre">Array.tolist()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.array_api._typing.Array.transpose"><code class="docutils literal notranslate"><span class="pre">Array.transpose()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.array_api._typing.Device"><code class="docutils literal notranslate"><span class="pre">Device</span></code></a></li>

@@ -289,23 +289,20 @@
 <span class="kn">from</span> <span class="nn">._array_object</span> <span class="kn">import</span> <span class="n">Array</span>
 <span class="kn">from</span> <span class="nn">._dtypes</span> <span class="kn">import</span> <span class="n">_real_numeric_dtypes</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">from</span> <span class="nn">._manipulation_functions</span> <span class="kn">import</span> <span class="n">squeeze</span><span class="p">,</span> <span class="n">reshape</span>
+<span class="kn">from</span> <span class="nn">._manipulation_functions</span> <span class="kn">import</span> <span class="n">squeeze</span><span class="p">,</span> <span class="n">reshape</span><span class="p">,</span> <span class="n">broadcast_arrays</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">parse_single_value</span><span class="p">,</span> <span class="n">create_pdarray</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">scalar_array</span>
+<span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+<span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
 
 
 <div class="viewcode-block" id="argmax">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_searching_functions/index.html#arkouda.array_api._searching_functions.argmax">[docs]</a>
 <span class="k">def</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.argmax &lt;numpy.argmax&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real numeric dtypes are allowed in argmax&quot;</span><span class="p">)</span>
 
@@ -340,11 +337,6 @@
 <div class="viewcode-block" id="argmin">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_searching_functions/index.html#arkouda.array_api._searching_functions.argmin">[docs]</a>
 <span class="k">def</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.argmin &lt;numpy.argmin&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real numeric dtypes are allowed in argmax&quot;</span><span class="p">)</span>
 
@@ -379,25 +371,45 @@
 <div class="viewcode-block" id="nonzero">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_searching_functions/index.html#arkouda.array_api._searching_functions.nonzero">[docs]</a>
 <span class="k">def</span> <span class="nf">nonzero</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.nonzero &lt;numpy.nonzero&gt;`.</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+        <span class="nb">str</span><span class="p">,</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;nonzero</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;nonzero not implemented&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)])</span></div>
 
 
 
 <div class="viewcode-block" id="where">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_searching_functions/index.html#arkouda.array_api._searching_functions.where">[docs]</a>
 <span class="k">def</span> <span class="nf">where</span><span class="p">(</span><span class="n">condition</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.where &lt;numpy.where&gt;`.</span>
+    <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;where not implemented&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
+        <span class="n">create_pdarray</span><span class="p">(</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc3vv</span><span class="si">{</span><span class="n">broadcasted</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">akcast</span><span class="p">(</span><span class="n">broadcasted</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">bool</span><span class="p">),</span>
+                    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">broadcasted</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+                    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">broadcasted</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="searchsorted">
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_searching_functions/index.html#arkouda.array_api._searching_functions.searchsorted">[docs]</a>
+<span class="k">def</span> <span class="nf">searchsorted</span><span class="p">(</span>
+    <span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">sorter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;searchsorted is not yet implemented&quot;</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

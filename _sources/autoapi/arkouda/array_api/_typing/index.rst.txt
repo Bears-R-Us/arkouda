@@ -84,6 +84,11 @@ Attributes
       :type: int
 
 
+   .. py:method:: item()
+
+      Convert the array to a Python scalar
+
+
    .. py:method:: to_device(device: arkouda.array_api._typing.Device, /, stream: None = None) -> Array
 
 
@@ -95,6 +100,13 @@ Attributes
    .. py:method:: tolist()
 
       Convert the array to a Python list or nested lists
+
+
+   .. py:method:: transpose(axes: Optional[Tuple[int, Ellipsis]] = None)
+
+      Return a view of the array with the specified axes transposed.
+
+      For axes=None, reverse all the dimensions of the array.
 
 
 

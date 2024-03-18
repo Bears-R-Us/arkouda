@@ -297,7 +297,7 @@
     <span class="n">float64</span><span class="p">,</span>
     <span class="c1"># complex128,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._array_object</span> <span class="kn">import</span> <span class="n">Array</span>
+<span class="kn">from</span> <span class="nn">._array_object</span> <span class="kn">import</span> <span class="n">Array</span><span class="p">,</span> <span class="n">implements_numpy</span>
 <span class="kn">from</span> <span class="nn">._manipulation_functions</span> <span class="kn">import</span> <span class="n">squeeze</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
@@ -309,6 +309,7 @@
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">parse_single_value</span><span class="p">,</span> <span class="n">create_pdarray</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">scalar_array</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
 <div class="viewcode-block" id="max">
@@ -334,10 +335,11 @@
             <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span>
             <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis_list</span><span class="p">),</span>
             <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_list</span><span class="p">,</span>
+            <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">parse_single_value</span><span class="p">(</span><span class="n">resp</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
@@ -346,6 +348,18 @@
             <span class="k">return</span> <span class="n">arr</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">squeeze</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># this is a temporary fix to get mean working with XArray</span>
+<span class="c1"># (until a counterpart to np.nanmean is added to the array API</span>
+<span class="c1"># see: https://github.com/data-apis/array-api/issues/621)</span>
+<div class="viewcode-block" id="mean_shim">
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_statistical_functions/index.html#arkouda.array_api._statistical_functions.mean_shim">[docs]</a>
+<span class="nd">@implements_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">)</span>
+<span class="nd">@implements_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">mean_shim</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 
@@ -373,10 +387,11 @@
             <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis_list</span><span class="p">),</span>
             <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_list</span><span class="p">,</span>
             <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># TODO: handle all-nan slices</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">parse_single_value</span><span class="p">(</span><span class="n">resp</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
@@ -411,10 +426,11 @@
             <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span>
             <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis_list</span><span class="p">),</span>
             <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_list</span><span class="p">,</span>
+            <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">parse_single_value</span><span class="p">(</span><span class="n">resp</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
@@ -457,10 +473,11 @@
             <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
             <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis_list</span><span class="p">),</span>
             <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_list</span><span class="p">,</span>
+            <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">parse_single_value</span><span class="p">(</span><span class="n">resp</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
@@ -472,6 +489,8 @@
 
 
 
+<span class="c1"># Not working with XArray yet, pending a fix for:</span>
+<span class="c1"># https://github.com/pydata/xarray/issues/8566#issuecomment-1870472827</span>
 <div class="viewcode-block" id="std">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_statistical_functions/index.html#arkouda.array_api._statistical_functions.std">[docs]</a>
 <span class="k">def</span> <span class="nf">std</span><span class="p">(</span>
@@ -499,10 +518,11 @@
             <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">correction</span><span class="p">,</span>
             <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis_list</span><span class="p">),</span>
             <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_list</span><span class="p">,</span>
+            <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">parse_single_value</span><span class="p">(</span><span class="n">resp</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
@@ -545,10 +565,11 @@
             <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
             <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis_list</span><span class="p">),</span>
             <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_list</span><span class="p">,</span>
+            <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">parse_single_value</span><span class="p">(</span><span class="n">resp</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
@@ -560,6 +581,8 @@
 
 
 
+<span class="c1"># Not working with XArray yet, pending a fix for:</span>
+<span class="c1"># https://github.com/pydata/xarray/issues/8566#issuecomment-1870472827</span>
 <div class="viewcode-block" id="var">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_statistical_functions/index.html#arkouda.array_api._statistical_functions.var">[docs]</a>
 <span class="k">def</span> <span class="nf">var</span><span class="p">(</span>
@@ -588,10 +611,11 @@
             <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">correction</span><span class="p">,</span>
             <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis_list</span><span class="p">),</span>
             <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_list</span><span class="p">,</span>
+            <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">parse_single_value</span><span class="p">(</span><span class="n">resp</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>

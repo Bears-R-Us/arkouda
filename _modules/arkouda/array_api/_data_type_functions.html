@@ -286,7 +286,7 @@
           <h1>Source code for arkouda.array_api._data_type_functions</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">._array_object</span> <span class="kn">import</span> <span class="n">Array</span>
+<span class="kn">from</span> <span class="nn">._array_object</span> <span class="kn">import</span> <span class="n">Array</span><span class="p">,</span> <span class="n">implements_numpy</span>
 <span class="kn">from</span> <span class="nn">._dtypes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_all_dtypes</span><span class="p">,</span>
     <span class="n">_boolean_dtypes</span><span class="p">,</span>
@@ -452,6 +452,7 @@
 
 <div class="viewcode-block" id="result_type">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_data_type_functions/index.html#arkouda.array_api._data_type_functions.result_type">[docs]</a>
+<span class="nd">@implements_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="n">Dtype</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dtype</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Array API compatible wrapper for :py:func:`np.result_type &lt;numpy.result_type&gt;`.</span>

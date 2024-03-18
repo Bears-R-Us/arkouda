@@ -176,6 +176,18 @@ Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span> <span class="pre">throws</span></dt>
 <dd></dd></dl>
 
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ArkoudaAryUtilCompat.subDomChunk">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">subDomChunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dom:</span> <span class="pre">domain</span></em>, <em class="sig-param"><span class="pre">chunkIdx:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nChunks:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span><a class="headerlink" href="#ArkoudaAryUtilCompat.subDomChunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Naively create a domain over a chunk of the input domain</p>
+<p>Chunks are created by splitting the largest dimension of the input domain
+into ‘nChunks’ roughly equal-sized chunks, and then taking the
+‘chunkIdx’-th chunk</p>
+<p>(if ‘nChunks’ is greater than the size of the largest dimension, the
+first ‘nChunks-1’ chunks will be empty, and the last chunk will contain
+the entire domain)</p>
+</dd></dl>
+
 </div>
 
 
