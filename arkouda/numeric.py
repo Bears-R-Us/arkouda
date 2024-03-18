@@ -1004,7 +1004,9 @@ def arctan2(
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
+    if not all(
+        isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]
+    ):
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
@@ -1225,7 +1227,9 @@ def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     return _trig_helper(pda, "arctanh", where)
 
 
-def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
+def _trig_helper(
+    pda: pdarray, func: str, where: Union[bool, pdarray] = True
+) -> pdarray:
     """
     Returns the result of the input trig function acting element-wise on the array.
 
@@ -1363,7 +1367,11 @@ def _hash_helper(a):
 
     if isinstance(a, SegArray_):
         return json.dumps(
-            {"segments": a.segments.name, "values": a.values.name, "valObjType": a.values.objType}
+            {
+                "segments": a.segments.name,
+                "values": a.values.name,
+                "valObjType": a.values.objType,
+            }
         )
     elif isinstance(a, Categorical_):
         return json.dumps({"categories": a.categories.name, "codes": a.codes.name})
@@ -1437,7 +1445,10 @@ def hash(
         return _hash_single(pda, full) if isinstance(pda, pdarray) else pda.hash()
     elif isinstance(pda, List):
         if any(
-            wrong_type := [not isinstance(a, (pdarray, Strings, SegArray_, Categorical_)) for a in pda]
+            wrong_type := [
+                not isinstance(a, (pdarray, Strings, SegArray_, Categorical_))
+                for a in pda
+            ]
         ):
             raise TypeError(
                 f"Unsupported type {type(pda[np.argmin(wrong_type)])}. Supported types are pdarray,"
@@ -1519,16 +1530,22 @@ def _str_cat_where(
             new_categories = concatenate([A.categories, array([B])])
             b_code = A.codes.size + 1
         new_codes = where(condition, A.codes, b_code)
-        return Categorical.from_codes(new_codes, new_categories, NAvalue=A.NAvalue).reset_categories()
+        return Categorical.from_codes(
+            new_codes, new_categories, NAvalue=A.NAvalue
+        ).reset_categories()
 
     # both cat
     if isinstance(A, Categorical) and isinstance(B, Categorical):
         if A.codes.size != B.codes.size:
             raise TypeError("Categoricals must be same length")
-        if A.categories.size != B.categories.size or not ak_all(A.categories == B.categories):
+        if A.categories.size != B.categories.size or not ak_all(
+            A.categories == B.categories
+        ):
             A, B = A.standardize_categories([A, B])
         new_codes = where(condition, A.codes, B.codes)
-        return Categorical.from_codes(new_codes, A.categories, NAvalue=A.NAvalue).reset_categories()
+        return Categorical.from_codes(
+            new_codes, A.categories, NAvalue=A.NAvalue
+        ).reset_categories()
 
     # one strings and one str
     if isinstance(A, Strings) and isinstance(B, str):
@@ -1709,7 +1726,9 @@ def where(
             dt = dtA
         # Cannot safely cast
         else:
-            raise TypeError(f"Cannot cast between scalars {str(A)} and {str(B)} to supported dtype")
+            raise TypeError(
+                f"Cannot cast between scalars {str(A)} and {str(B)} to supported dtype"
+            )
         repMsg = generic_msg(
             cmd="efunc3ss",
             args={
@@ -1853,13 +1872,17 @@ def histogram2d(
         x_bins, y_bins = bins, bins
     else:
         if len(bins) != 2:
-            raise ValueError("Sequences of bins must contain two elements (num_x_bins, num_y_bins)")
+            raise ValueError(
+                "Sequences of bins must contain two elements (num_x_bins, num_y_bins)"
+            )
         x_bins, y_bins = bins
     if x_bins < 1 or y_bins < 1:
         raise ValueError("bins must be 1 or greater")
     x_bin_boundaries = linspace(x.min(), x.max(), x_bins + 1)
     y_bin_boundaries = linspace(y.min(), y.max(), y_bins + 1)
-    repMsg = generic_msg(cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins})
+    repMsg = generic_msg(
+        cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins}
+    )
     return (
         create_pdarray(type_cast(str, repMsg)).reshape(x_bins, y_bins),
         x_bin_boundaries,
@@ -1937,7 +1960,9 @@ def histogramdd(
         bins = [bins] * num_dims
     else:
         if len(bins) != num_dims:
-            raise ValueError("Sequences of bins must contain same number of elements as the sample")
+            raise ValueError(
+                "Sequences of bins must contain same number of elements as the sample"
+            )
     if any(b < 1 for b in bins):
         raise ValueError("bins must be 1 or greater")
 
@@ -2003,8 +2028,13 @@ def value_counts(
     """
     return GroupBy(pda).count()
 
-@typechecked 
-def clip (pda:pdarray,lo:Union[numeric_scalars,pdarray],hi:Union[numeric_scalars,pdarray]) -> pdarray :
+
+@typechecked
+def clip(
+    pda: pdarray,
+    lo: Union[numeric_scalars, pdarray],
+    hi: Union[numeric_scalars, pdarray],
+) -> pdarray:
     """
     Mimic the behavior of numpy.clip.
 
@@ -2036,23 +2066,39 @@ def clip (pda:pdarray,lo:Union[numeric_scalars,pdarray],hi:Union[numeric_scalars
 
     clip_min = True if type(lo) == pdarray else True if lo != None else False
     clip_max = True if type(hi) == pdarray else True if hi != None else False
-    if not (clip_min or clip_max) : raise ValueError ("Either min or max must be supplied.")
+    if not (clip_min or clip_max):
+        raise ValueError("Either min or max must be supplied.")
 
     # if any of the inputs are float, then make everything float
     # note that some type checking is needed, because scalars and pdarrays get cast differently
 
-    dataFloat = (pda.dtype==float)
-    minFloat = True if type(lo)==float else (True if (type(lo)==pdarray and lo.dtype==float) else False)
-    maxFloat = True if type(hi)==float else (True if (type(hi)==pdarray and hi.dtype==float) else False)
+    dataFloat = pda.dtype == float
+    minFloat = (
+        True
+        if type(lo) == float
+        else (True if (type(lo) == pdarray and lo.dtype == float) else False)
+    )
+    maxFloat = (
+        True
+        if type(hi) == float
+        else (True if (type(hi) == pdarray and hi.dtype == float) else False)
+    )
     forceFloat = dataFloat or minFloat or maxFloat
-    if forceFloat :
-        if not dataFloat : pda = cast(pda,np.float64)
-        if clip_min and not minFloat : lo = cast(lo,np.float64) if type(lo) == pdarray else float(lo)
-        if clip_max and not maxFloat : hi = cast(hi,np.float64) if type(hi) == pdarray else float(hi)
-    
+    if forceFloat:
+        if not dataFloat:
+            pda = cast(pda, np.float64)
+        if clip_min and not minFloat:
+#            lo = cast(lo, np.float64) if type(lo) == pdarray else float(lo)
+            lo = cast(lo, np.float64) if isinstance(lo,pdarray) else float(lo)
+        if clip_max and not maxFloat:
+#            hi = cast(hi, np.float64) if type(hi) == pdarray else float(hi)
+            hi = cast(hi, np.float64) if isinstance(hi,pdarray) else float(hi)
+
     # now do the computation.  The below mimics numpy.clip, including the anomaly where lo>hi
 
     pda1 = pda[:]
-    if clip_min : pda1 = where (pda1<lo,lo,pda1)
-    if clip_max : pda1 = where (pda1>hi,hi,pda1)
+    if clip_min:
+        pda1 = where(pda1 < lo, lo, pda1)
+    if clip_max:
+        pda1 = where(pda1 > hi, hi, pda1)
     return pda1
