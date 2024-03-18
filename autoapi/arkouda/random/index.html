@@ -187,6 +187,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/groupby.html">GroupBy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/strings.html">Strings in Arkouda</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/random.html">Random in Arkouda</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/segarray.html">SegArrays in Arkouda</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/arrayview.html">ArrayView in Arkouda</a></li>
 </ul>
@@ -294,7 +295,7 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.random.Generator" title="arkouda.random.Generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Generator</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../usage/random.html#arkouda.random.Generator" title="arkouda.random.Generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Generator</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Generator</span></code> exposes a number of methods for generating random</p></td>
 </tr>
 </tbody>
@@ -343,7 +344,7 @@ This mimics the behavior we see in numpy</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_rng</span></code></dt><dd><p>Recommended constructor for <cite>Generator</cite>.</p>
+<dt><a class="reference internal" href="../../../usage/random.html#arkouda.random.default_rng" title="arkouda.random.default_rng"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_rng</span></code></a></dt><dd><p>Recommended constructor for <cite>Generator</cite>.</p>
 </dd>
 </dl>
 </div>
@@ -473,7 +474,7 @@ high must be greater than or equal to low. The default value is 1.0.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.random.Generator.integers" title="arkouda.random.Generator.integers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">integers</span></code></a>, <a class="reference internal" href="#arkouda.random.Generator.random" title="arkouda.random.Generator.random"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a></p>
+<p><a class="reference internal" href="../../../usage/random.html#arkouda.random.Generator.integers" title="arkouda.random.Generator.integers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">integers</span></code></a>, <a class="reference internal" href="../../../usage/random.html#arkouda.random.Generator.random" title="arkouda.random.Generator.random"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
