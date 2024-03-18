@@ -17,5 +17,6 @@ Usage Guide
    usage/groupby
    usage/strings
    usage/categorical
+   usage/random
    usage/segarray
    usage/arrayview
