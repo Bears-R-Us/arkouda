@@ -1394,3 +1394,84 @@ class NumericTest(ArkoudaTest):
         _, floatmean = g.mean(floatval)
         ak_mse = ak.mean((intmean - floatmean) ** 2)
         self.assertTrue(np.isclose(ak_mse, 0.0))
+
+# test clip on ints, floats, and mash-ups; note if any input is float, output is float
+
+    def testClip(self) :
+        ia = np.random.randint(1,100,100)
+        ilo = 25
+        ihi = 75
+        fa = ia.astype(float)
+        flo = 25.0
+        fhi = 75.0
+        ipda = ak.array(ia)
+        fpda = ak.array(fa)
+
+        # test with scalars
+
+        self.assertTrue(np.all(np.equal(np.clip(ia,ilo,ihi),ak.clip(ipda,ilo,ihi).to_ndarray()))) # all ints
+        self.assertTrue(np.allclose(np.clip(fa,flo,fhi),ak.clip(fpda,flo,fhi).to_ndarray()))      # all floats
+        self.assertTrue(np.allclose(np.clip(ia,ilo,fhi),ak.clip(ipda,ilo,fhi).to_ndarray()))      # int array and lo, float hi
+        self.assertTrue(np.allclose(np.clip(ia,flo,ihi),ak.clip(ipda,flo,ihi).to_ndarray()))      # int array and hi, float lo
+        self.assertTrue(np.allclose(np.clip(fa,ilo,ihi),ak.clip(fpda,ilo,ihi).to_ndarray()))      # int lo and hi, float array
+
+        # test with None for lower limit
+
+        ilo = None
+        flo = None
+        self.assertTrue(np.all(np.equal(np.clip(ia,ilo,ihi),ak.clip(ipda,ilo,ihi).to_ndarray()))) # all ints
+        self.assertTrue(np.allclose(np.clip(fa,flo,fhi),ak.clip(fpda,flo,fhi).to_ndarray()))      # all floats
+        self.assertTrue(np.allclose(np.clip(ia,ilo,fhi),ak.clip(ipda,ilo,fhi).to_ndarray()))      # int array and lo, float hi
+        self.assertTrue(np.allclose(np.clip(ia,flo,ihi),ak.clip(ipda,flo,ihi).to_ndarray()))      # int array and hi, float lo
+        self.assertTrue(np.allclose(np.clip(fa,ilo,ihi),ak.clip(fpda,ilo,ihi).to_ndarray()))      # int lo and hi, float array
+
+        # test with None for upper limit
+
+        ilo = 25 
+        flo = float(ilo)
+        ihi = None
+        fhi = None
+        self.assertTrue(np.all(np.equal(np.clip(ia,ilo,ihi),ak.clip(ipda,ilo,ihi).to_ndarray()))) # all ints
+        self.assertTrue(np.allclose(np.clip(fa,flo,fhi),ak.clip(fpda,flo,fhi).to_ndarray()))      # all floats
+        self.assertTrue(np.allclose(np.clip(ia,ilo,fhi),ak.clip(ipda,ilo,fhi).to_ndarray()))      # int array and lo, float hi
+        self.assertTrue(np.allclose(np.clip(ia,flo,ihi),ak.clip(ipda,flo,ihi).to_ndarray()))      # int array and hi, float lo
+        self.assertTrue(np.allclose(np.clip(fa,ilo,ihi),ak.clip(fpda,ilo,ihi).to_ndarray()))      # int lo and hi, float array
+
+        # test with arrays for lo
+        
+        ilo = np.array([ilo]*ia.size).reshape(ia.shape)
+        iilo = ak.array(ilo)
+        ihi = 75
+        flo = np.array([flo]*ia.size).reshape(ia.shape)
+        fflo = ak.array(flo)
+        fhi = 75.0
+        self.assertTrue(np.all(np.equal(np.clip(ia,ilo,ihi),ak.clip(ipda,iilo,ihi).to_ndarray()))) # all ints
+        self.assertTrue(np.allclose(np.clip(fa,flo,fhi),ak.clip(fpda,fflo,fhi).to_ndarray()))      # all floats
+        self.assertTrue(np.allclose(np.clip(ia,ilo,fhi),ak.clip(ipda,iilo,fhi).to_ndarray()))      # int array and lo, float hi
+        self.assertTrue(np.allclose(np.clip(ia,flo,ihi),ak.clip(ipda,fflo,ihi).to_ndarray()))      # int array and hi, float lo
+        self.assertTrue(np.allclose(np.clip(fa,ilo,ihi),ak.clip(fpda,iilo,ihi).to_ndarray()))      # int lo and hi, float array
+
+        # test with arrays for hi
+        
+        ilo = 25
+        flo = 25.0
+        ihi = np.array([ihi]*ia.size).reshape(ia.shape)
+        iihi = ak.array(ihi)
+        fhi = np.array([fhi]*ia.size).reshape(ia.shape)
+        ffhi = ak.array(fhi)
+        self.assertTrue(np.all(np.equal(np.clip(ia,ilo,ihi),ak.clip(ipda,ilo,iihi).to_ndarray()))) # all ints
+        self.assertTrue(np.allclose(np.clip(fa,flo,fhi),ak.clip(fpda,flo,ffhi).to_ndarray()))      # all floats
+        self.assertTrue(np.allclose(np.clip(ia,ilo,fhi),ak.clip(ipda,ilo,ffhi).to_ndarray()))      # int array and lo, float hi
+        self.assertTrue(np.allclose(np.clip(ia,flo,ihi),ak.clip(ipda,flo,iihi).to_ndarray()))      # int array and hi, float lo
+        self.assertTrue(np.allclose(np.clip(fa,ilo,ihi),ak.clip(fpda,ilo,iihi).to_ndarray()))      # int lo and hi, float array
+
+        # test with arrays for both
+
+        ilo = np.array([ilo]*ia.size).reshape(ia.shape)
+        iilo = ak.array(ilo)
+        self.assertTrue(np.all(np.equal(np.clip(ia,ilo,ihi),ak.clip(ipda,iilo,iihi).to_ndarray()))) # all ints
+        self.assertTrue(np.allclose(np.clip(fa,flo,fhi),ak.clip(fpda,fflo,ffhi).to_ndarray()))      # all floats
+        self.assertTrue(np.allclose(np.clip(ia,ilo,fhi),ak.clip(ipda,iilo,ffhi).to_ndarray()))      # int array and lo, float hi
+        self.assertTrue(np.allclose(np.clip(ia,flo,ihi),ak.clip(ipda,fflo,iihi).to_ndarray()))      # int array and hi, float lo
+        self.assertTrue(np.allclose(np.clip(fa,ilo,ihi),ak.clip(fpda,iilo,iihi).to_ndarray()))      # int lo and hi, float array
+#        self.assertTrue(np.isclose(ak_mse, 0.0))

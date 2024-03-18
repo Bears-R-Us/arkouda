@@ -32,6 +32,7 @@ __all__ = [
     "cast",
     "abs",
     "ceil",
+    "clip",
     "floor",
     "trunc",
     "round",
@@ -2001,3 +2002,57 @@ def value_counts(
     (array([0, 2, 4]), array([3, 2, 1]))
     """
     return GroupBy(pda).count()
+
+@typechecked 
+def clip (pda:pdarray,lo:Union[numeric_scalars,pdarray],hi:Union[numeric_scalars,pdarray]) -> pdarray :
+    """
+    Mimic the behavior of numpy.clip.
+
+    Parameters
+    ----------
+    pda : pdarray, the values to clip
+    lo  : a scalar or pdarray of the lower value(s) to clip to
+    hi  : a scalar or pdarray of the higher value(s) to clip to
+    NOTE: either lo or hi may be None, but not both.
+
+    Returns
+    -------
+    a copy of the input, where each element x remains x if lo <= x <= hi,
+                                           or equals lo if x < lo
+                                           or equals hi if x > hi
+    Notes
+    -----
+    if lo > hi, x = hi.  This is how numpy.clip behaves.
+    if all inputs are int, output is int, but if any input is real, output is real.
+      This is also how numpy.clip behaves.
+
+    Raises
+    ------
+    ValueError
+        Raised if both lo and hi are None
+    """
+
+    # see if lo or hi are None
+
+    clip_min = True if type(lo) == pdarray else True if lo != None else False
+    clip_max = True if type(hi) == pdarray else True if hi != None else False
+    if not (clip_min or clip_max) : raise ValueError ("Either min or max must be supplied.")
+
+    # if any of the inputs are float, then make everything float
+    # note that some type checking is needed, because scalars and pdarrays get cast differently
+
+    dataFloat = (pda.dtype==float)
+    minFloat = True if type(lo)==float else (True if (type(lo)==pdarray and lo.dtype==float) else False)
+    maxFloat = True if type(hi)==float else (True if (type(hi)==pdarray and hi.dtype==float) else False)
+    forceFloat = dataFloat or minFloat or maxFloat
+    if forceFloat :
+        if not dataFloat : pda = cast(pda,np.float64)
+        if clip_min and not minFloat : lo = cast(lo,np.float64) if type(lo) == pdarray else float(lo)
+        if clip_max and not maxFloat : hi = cast(hi,np.float64) if type(hi) == pdarray else float(hi)
+    
+    # now do the computation.  The below mimics numpy.clip, including the anomaly where lo>hi
+
+    pda1 = pda[:]
+    if clip_min : pda1 = where (pda1<lo,lo,pda1)
+    if clip_max : pda1 = where (pda1>hi,hi,pda1)
+    return pda1
