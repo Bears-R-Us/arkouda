@@ -1398,6 +1398,37 @@ class DataFrameTest(ArkoudaTest):
                     # assert_frame_equal(sorted_ak.to_pandas()[sorted_columns],
                     # sorted_pd[sorted_columns])
 
+    def test_to_markdown(self):
+        df = ak.DataFrame({"animal_1": ["elk", "pig"], "animal_2": ["dog", "quetzal"]})
+        self.assertEqual(
+            df.to_markdown(),
+            "+----+------------+------------+\n"
+            "|    | animal_1   | animal_2   |\n"
+            "+====+============+============+\n"
+            "|  0 | elk        | dog        |\n"
+            "+----+------------+------------+\n"
+            "|  1 | pig        | quetzal    |\n"
+            "+----+------------+------------+",
+        )
+
+        self.assertEqual(
+            df.to_markdown(index=False),
+            "+------------+------------+\n"
+            "| animal_1   | animal_2   |\n"
+            "+============+============+\n"
+            "| elk        | dog        |\n"
+            "+------------+------------+\n"
+            "| pig        | quetzal    |\n"
+            "+------------+------------+",
+        )
+
+        self.assertEqual(df.to_markdown(tablefmt="grid"), df.to_pandas().to_markdown(tablefmt="grid"))
+        self.assertEqual(
+            df.to_markdown(tablefmt="grid", index=False),
+            df.to_pandas().to_markdown(tablefmt="grid", index=False),
+        )
+        self.assertEqual(df.to_markdown(tablefmt="jira"), df.to_pandas().to_markdown(tablefmt="jira"))
+
 
 def pda_to_str_helper(pda):
     return ak.array([f"str {i}" for i in pda.to_list()])
