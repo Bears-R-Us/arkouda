@@ -34,6 +34,7 @@ module StatsMsg {
               nAxes = msgArgs.get("nAxes").getIntValue(),
               axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
               ddof = msgArgs.get("ddof").getRealValue(), // "correction" for std and variance
+              skipNan = msgArgs.get("skipNan").getBoolValue(),
               rname = st.nextName();
 
         if !computations.contains(comp) {
@@ -50,9 +51,9 @@ module StatsMsg {
             if nd == 1 || nAxes == 0 {
                 var s: tOut;
                 select comp {
-                    when "mean" do s = mean(eIn.a);
-                    when "var" do s = variance(eIn.a, ddof);
-                    when "std" do s = std(eIn.a, ddof);
+                    when "mean" do s = if skipNan then meanSkipNan(eIn.a) else mean(eIn.a);
+                    when "var" do s = if skipNan then varianceSkipNan(eIn.a, ddof) else variance(eIn.a, ddof);
+                    when "std" do s = if skipNan then stdSkipNan(eIn.a, ddof) else std(eIn.a, ddof);
                     otherwise halt("unreachable");
                 }
 
@@ -73,9 +74,15 @@ module StatsMsg {
                         const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
                         var s: tOut;
                         select comp {
-                            when "mean" do s = meanOver(eIn.a, sliceDom);
-                            when "var" do s = varianceOver(eIn.a, sliceDom, ddof);
-                            when "std" do s = stdOver(eIn.a, sliceDom, ddof);
+                            when "mean" do s = if skipNan
+                                then meanSkipNan(eIn.a, sliceDom)
+                                else meanOver(eIn.a, sliceDom);
+                            when "var" do s = if skipNan
+                                then varianceSkipNan(eIn.a, sliceDom, ddof)
+                                else varianceOver(eIn.a, sliceDom, ddof);
+                            when "std" do s = if skipNan
+                                then stdSkipNan(eIn.a, sliceDom, ddof)
+                                else stdOver(eIn.a, sliceDom, ddof);
                             otherwise halt("unreachable");
                         }
                         eOut.a[sliceIdx] = s;
