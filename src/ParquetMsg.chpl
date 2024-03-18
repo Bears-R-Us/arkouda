@@ -761,7 +761,7 @@ module ParquetMsg {
         }
       }
 
-      for i in locFiles.domain {
+      forall i in locFiles.domain {
         var fname = locFiles[i];
         var locDsetname = dsetname;
         var startIdx = locSubdoms[i].low;
@@ -770,11 +770,13 @@ module ParquetMsg {
 
           var numRead = 0;
           externalData[i][rg] = c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead));
-          for (id, j) in zip(0..#numRead, startIdx..#numRead) {
+	  var tmp: [startIdx..#numRead] int;
+          forall (id, j) in zip(0..#numRead, startIdx..#numRead) with (+ reduce totalBytes) {
             ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[id];
-            entrySeg.a[j] = curr.len + 1;
-            totalBytes += entrySeg.a[j];
-          }
+            tmp[j] = curr.len + 1; // this was only change
+            totalBytes += curr.len+1;
+	  }
+	  entrySeg.a[startIdx..#numRead] = tmp;
           valsRead[i][rg] = numRead;
           startIdx += numRead;
           bytesPerRG[i][rg] = totalBytes;
@@ -784,24 +786,54 @@ module ParquetMsg {
     }
   }
 
-  proc copyValuesFromC(ref entryVal, ref distFiles, ref externalData, ref valsRead, ref numRowGroups, ref bytesPerRG, maxRowGroups) {
+  proc getOffsetIdx(ref valsRead, maxRowGroups, i, rg) {
+    var startIdx = 0;
+    coforall loc in valsRead.targetLocales() with (+ reduce startIdx) do on loc  {
+      var locValsRead: [valsRead.localSubdomain()] [0..#maxRowGroups] int = valsRead[valsRead.localSubdomain()];
+      for row in locValsRead.domain {
+	for col in locValsRead[row].domain {
+	  if i < row && rg < col {
+	    startIdx += locValsRead[row][col];
+	  }
+	}
+      }
+    }
+    writeln('\n', startIdx, '\n');
+    return startIdx;
+  }
+
+  proc copyValuesFromC(ref entryVal, ref distFiles, ref externalData, ref valsRead, ref numRowGroups, ref rgSubdomains, maxRowGroups, sizes, ref segArr) {
+    var (subdoms, length) = getSubdomains(sizes);
     coforall loc in distFiles.targetLocales() with (ref externalData) do on loc {
       var locValsRead: [valsRead.localSubdomain()] [0..#maxRowGroups] int = valsRead[valsRead.localSubdomain()];
       var locNumRowGroups: [numRowGroups.localSubdomain()] int = numRowGroups[numRowGroups.localSubdomain()];
-      // TODO: This corresponds to nothing, needs to be start of the file
-      for i in locNumRowGroups.domain {
+      var locSubdoms = subdoms;
+
+      forall i in locNumRowGroups.domain {
         var numRgs = locNumRowGroups[i];
         for rg in 0..#numRgs {
-          var entryIdx = bytesPerRG[i][rg].low;
+          var entryIdx = rgSubdomains[i][rg].low;
           var numRead = locValsRead[i][rg];
-          for idx in 0..#numRead {
+	  var offsetIdx = 0;//getOffsetIdx(valsRead, maxRowGroups, i, rg);
+	  var tmp: [0..#(numRead*4)] uint(8);//var tmp: [rgSubdomains[i][rg]] uint(8);
+	  forall (idx, oIdx) in zip(0..#numRead, offsetIdx..#numRead) {
+	    ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[idx];
+            for j in 0..#curr.len {
+	      tmp[4*oIdx+j] = curr.ptr[j];
+              //tmp[segArr[oIdx]+j] = curr.ptr[j];
+            }
+	  }
+	  entryVal.a[0..#(numRead*4)] = tmp;
+	  //var tmp: [rgSubdomains[i][rg]] uint(8);
+	  //writeln("START:", getOffsetStart(valsRead,i,rg));
+          /*for idx in 0..#numRead {
             ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[idx];
             for j in 0..#curr.len {
               entryVal.a[entryIdx] = curr.ptr[j];
               entryIdx+=1;
             }
             entryIdx+=1;
-          }
+	    }*/
         }
       }
     }
@@ -981,7 +1013,7 @@ module ParquetMsg {
           
           var entryVal = createSymEntry(totalBytes, uint(8));
 
-          copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups);
+          copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups, sizes, entrySeg.a);
 
           for i in externalData.domain {
             for j in externalData[i].domain {
