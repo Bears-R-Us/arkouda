@@ -209,6 +209,30 @@ class TestGroupBy:
         assert bcast.sum() == check
         assert (bcast[:-1] >= bcast[1:]).all()
 
+    def test_empty_segs_broadcast(self):
+        # verify the reproducer from issue #3035 gives correct answer
+        # note: this was due to a race condition, so it will only appear with multiple locales
+
+        # test with int and bool vals
+        for vals in ak.arange(7), (ak.arange(7) % 2 == 0):
+            segs = ak.array([3, 3, 5, 6, 6, 7, 7])
+            size = 10
+            perm = ak.array([9, 1, 0, 5, 7, 2, 8, 4, 3, 6])
+
+            # filter out empty segs
+            non_empty_segs = ak.array([False, True, True, False, True, False, True])
+            compressed_segs = segs[non_empty_segs]
+            compressed_vals = vals[non_empty_segs]
+
+            assert (
+                ak.broadcast(segs, vals, size).to_list()
+                == ak.broadcast(compressed_segs, compressed_vals, size).to_list()
+            )
+            assert (
+                ak.broadcast(segs, vals, size, perm).to_list()
+                == ak.broadcast(compressed_segs, compressed_vals, size, perm).to_list()
+            )
+
     def test_count(self):
         keys, counts = self.igb.count()
 

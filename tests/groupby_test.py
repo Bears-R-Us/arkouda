@@ -226,6 +226,30 @@ class GroupByTest(ArkoudaTest):
         self.assertEqual(bcast.sum(), check)
         self.assertTrue((bcast[:-1] >= bcast[1:]).all())
 
+    def test_empty_segs_broadcast(self):
+        # verify the reproducer from issue #3035 gives correct answer
+        # note: this was due to a race condition, so it will only appear with multiple locales
+
+        # test with int and bool vals
+        for vals in ak.arange(7), (ak.arange(7) % 2 == 0):
+            segs = ak.array([3, 3, 5, 6, 6, 7, 7])
+            size = 10
+            perm = ak.array([9, 1, 0, 5, 7, 2, 8, 4, 3, 6])
+
+            # filter out empty segs
+            non_empty_segs = ak.array([False, True, True, False, True, False, True])
+            compressed_segs = segs[non_empty_segs]
+            compressed_vals = vals[non_empty_segs]
+
+            self.assertEqual(
+                ak.broadcast(segs, vals, size).to_list(),
+                ak.broadcast(compressed_segs, compressed_vals, size).to_list(),
+            )
+            self.assertEqual(
+                ak.broadcast(segs, vals, size, perm).to_list(),
+                ak.broadcast(compressed_segs, compressed_vals, size, perm).to_list(),
+            )
+
     def test_broadcast_ints(self):
         keys, counts = self.igb.count()
 
@@ -283,7 +307,7 @@ class GroupByTest(ArkoudaTest):
     def test_broadcast_strings(self):
         keys, counts = self.sgb.count()
         self.assertListEqual([1, 4, 2, 1, 2], counts.to_list())
-        self.assertListEqual(['1', '2', '3', '4', '5'], keys.to_list())
+        self.assertListEqual(["1", "2", "3", "4", "5"], keys.to_list())
 
         s_results = self.sgb.broadcast(1 * (counts > 2))
         i_results = self.igb.broadcast(1 * (counts > 2))
@@ -298,11 +322,11 @@ class GroupByTest(ArkoudaTest):
         self.assertListEqual(i_results.to_list(), s_results.to_list())
 
         # test str Groupby.broadcast with and without permute
-        s_results = self.sgb.broadcast(ak.array(['1', '2', '6', '8', '9']), permute=False)
-        i_results = self.igb.broadcast(ak.array(['1', '2', '6', '8', '9']), permute=False)
+        s_results = self.sgb.broadcast(ak.array(["1", "2", "6", "8", "9"]), permute=False)
+        i_results = self.igb.broadcast(ak.array(["1", "2", "6", "8", "9"]), permute=False)
         self.assertListEqual(i_results.to_list(), s_results.to_list())
-        s_results = self.sgb.broadcast(ak.array(['1', '2', '6', '8', '9']))
-        i_results = self.igb.broadcast(ak.array(['1', '2', '6', '8', '9']))
+        s_results = self.sgb.broadcast(ak.array(["1", "2", "6", "8", "9"]))
+        i_results = self.igb.broadcast(ak.array(["1", "2", "6", "8", "9"]))
         self.assertListEqual(i_results.to_list(), s_results.to_list())
 
     def test_broadcast_bigints(self):
