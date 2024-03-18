@@ -335,8 +335,8 @@
 <li><p><strong>initialdata</strong> (<em>List</em><em> or </em><em>dictionary</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list/dictionary entry corresponds to one column of the data and
 should be a homogenous type. Different columns may have different
 types. If using a dictionary, keys should be strings.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
-<li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
+<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
 be strings. Defaults to an stringified integer range.</p></li>
 </ul>
 </dd>
@@ -1379,7 +1379,7 @@ arkouda server which was registered using register().</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id396" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id397" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -2239,7 +2239,7 @@ appending rows.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id396" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components.</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id397" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -3051,7 +3051,7 @@ Please note you cannot register two different DataFrames with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str.</p></li>
-<li><p><a class="reference internal" href="../index.html#id396" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name.</p></li>
+<li><p><a class="reference internal" href="../index.html#id397" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3972,6 +3972,59 @@ locale number.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.to_markdown">
+<span class="sig-name descname"><span class="pre">to_markdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tablefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.to_markdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.to_markdown" title="Link to this definition">#</a></dt>
+<dd><p>Print DataFrame in Markdown-friendly format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – Mode in which file is opened, “wt” by default.</p></li>
+<li><p><strong>index</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default True</em>) – Add index (row) labels.</p></li>
+<li><p><strong>tablefmt</strong> (<em>str = &quot;grid&quot;</em>) – Table format to call from tablulate:
+<a class="reference external" href="https://pypi.org/project/tabulate/">https://pypi.org/project/tabulate/</a></p></li>
+<li><p><strong>storage_options</strong> (<em>dict</em><em>, </em><em>optional</em>) – Extra options that make sense for a particular storage connection,
+e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,
+e.g., starting “s3://”, “gcs://”.
+An error will be raised if providing this argument with a non-fsspec URL.
+See the fsspec and backend storage implementation docs for the set
+of allowed keys and values.</p></li>
+<li><p><strong>**kwargs</strong> – These parameters will be passed to tabulate.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function should only be called on small DataFrames as it calls pandas.DataFrame.to_markdown:
+<a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html">https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html</a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;animal_1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;elk&quot;</span><span class="p">,</span> <span class="s2">&quot;pig&quot;</span><span class="p">],</span> <span class="s2">&quot;animal_2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;quetzal&quot;</span><span class="p">]})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">())</span>
+<span class="go">+----+------------+------------+</span>
+<span class="go">|    | animal_1   | animal_2   |</span>
+<span class="go">+====+============+============+</span>
+<span class="go">|  0 | elk        | dog        |</span>
+<span class="go">+----+------------+------------+</span>
+<span class="go">|  1 | pig        | quetzal    |</span>
+<span class="go">+----+------------+------------+</span>
+</pre></div>
+</div>
+<p>Suppress the index:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span><span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">))</span>
+<span class="go">+------------+------------+</span>
+<span class="go">| animal_1   | animal_2   |</span>
+<span class="go">+============+============+</span>
+<span class="go">| elk        | dog        |</span>
+<span class="go">+------------+------------+</span>
+<span class="go">| pig        | quetzal    |</span>
+<span class="go">+------------+------------+</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.to_pandas">
 <span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datalimit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">maxTransferBytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retain_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.to_pandas" title="Link to this definition">#</a></dt>
 <dd><p>Send this DataFrame to a pandas DataFrame.</p>
@@ -4162,7 +4215,7 @@ a supported dtype</p></li>
 registered using register() and/or attached to using attach().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id396" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id397" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister.</p>
 </dd>
 </dl>
@@ -4198,7 +4251,7 @@ with the arkouda server via register().</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – If user_defined_name is not a string.</p></li>
-<li><p><a class="reference internal" href="../index.html#id396" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If there is an issue attempting to unregister any underlying components.</p></li>
+<li><p><a class="reference internal" href="../index.html#id397" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If there is an issue attempting to unregister any underlying components.</p></li>
 </ul>
 </dd>
 </dl>
@@ -4359,8 +4412,8 @@ that the caller gets the indices of values present in both arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
-<li><p><strong>b</strong> (<a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
+<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
+<li><p><strong>b</strong> (<a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
 <li><p><strong>positions</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Return tuple of boolean pdarrays that indicate positions in <cite>a</cite> and <cite>b</cite>
 of the intersection values.</p></li>
 <li><p><strong>unique</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If the number of distinct values in <cite>a</cite> (and <cite>b</cite>) is equal to the size of
@@ -4928,6 +4981,7 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.tail"><code class="docutils literal notranslate"><span class="pre">DataFrame.tail()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_csv"><code class="docutils literal notranslate"><span class="pre">DataFrame.to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_hdf"><code class="docutils literal notranslate"><span class="pre">DataFrame.to_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_markdown"><code class="docutils literal notranslate"><span class="pre">DataFrame.to_markdown()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_pandas"><code class="docutils literal notranslate"><span class="pre">DataFrame.to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_parquet"><code class="docutils literal notranslate"><span class="pre">DataFrame.to_parquet()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.transfer"><code class="docutils literal notranslate"><span class="pre">DataFrame.transfer()</span></code></a></li>

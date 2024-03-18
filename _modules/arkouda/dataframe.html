@@ -3020,6 +3020,69 @@
             <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">pandas_data</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="DataFrame.to_markdown">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_markdown">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">storage_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print DataFrame in Markdown-friendly format.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mode : str, optional</span>
+<span class="sd">            Mode in which file is opened, &quot;wt&quot; by default.</span>
+<span class="sd">        index : bool, optional, default True</span>
+<span class="sd">            Add index (row) labels.</span>
+<span class="sd">        tablefmt: str = &quot;grid&quot;</span>
+<span class="sd">            Table format to call from tablulate:</span>
+<span class="sd">            https://pypi.org/project/tabulate/</span>
+<span class="sd">        storage_options: dict, optional</span>
+<span class="sd">            Extra options that make sense for a particular storage connection,</span>
+<span class="sd">            e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,</span>
+<span class="sd">            e.g., starting “s3://”, “gcs://”.</span>
+<span class="sd">            An error will be raised if providing this argument with a non-fsspec URL.</span>
+<span class="sd">            See the fsspec and backend storage implementation docs for the set</span>
+<span class="sd">            of allowed keys and values.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            These parameters will be passed to tabulate.</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">        This function should only be called on small DataFrames as it calls pandas.DataFrame.to_markdown:</span>
+<span class="sd">        https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;animal_1&quot;: [&quot;elk&quot;, &quot;pig&quot;], &quot;animal_2&quot;: [&quot;dog&quot;, &quot;quetzal&quot;]})</span>
+<span class="sd">        &gt;&gt;&gt; print(df.to_markdown())</span>
+<span class="sd">        +----+------------+------------+</span>
+<span class="sd">        |    | animal_1   | animal_2   |</span>
+<span class="sd">        +====+============+============+</span>
+<span class="sd">        |  0 | elk        | dog        |</span>
+<span class="sd">        +----+------------+------------+</span>
+<span class="sd">        |  1 | pig        | quetzal    |</span>
+<span class="sd">        +----+------------+------------+</span>
+
+
+<span class="sd">        Suppress the index:</span>
+
+<span class="sd">        &gt;&gt;&gt; print(df.to_markdown(index = False))</span>
+<span class="sd">        +------------+------------+</span>
+<span class="sd">        | animal_1   | animal_2   |</span>
+<span class="sd">        +============+============+</span>
+<span class="sd">        | elk        | dog        |</span>
+<span class="sd">        +------------+------------+</span>
+<span class="sd">        | pig        | quetzal    |</span>
+<span class="sd">        +------------+------------+</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="n">tablefmt</span><span class="p">,</span> <span class="n">storage_options</span><span class="o">=</span><span class="n">storage_options</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
     <span class="k">def</span> <span class="nf">_prep_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># if no columns are stored, we will save all columns</span>
         <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

@@ -307,7 +307,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
+<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
 If empty, it will default to a range of ints whose size match the size of the data.
 optional</p></li>
 <li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em>) – a 1D array. Must not be None.</p></li>
@@ -346,7 +346,7 @@ If entering keywords,</p>
 <dd><p>Accesses entries of a Series by label</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The key or container of keys to access entries for</p>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The key or container of keys to access entries for</p>
 </dd>
 </dl>
 </dd></dl>
@@ -379,7 +379,7 @@ If entering keywords,</p>
 <dd><p>Accesses entries of a Series by label</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The key or container of keys to access entries for</p>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The key or container of keys to access entries for</p>
 </dd>
 </dl>
 </dd></dl>
@@ -511,7 +511,7 @@ registered object.</p>
 <dd class="field-even"><p>numpy.bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id396" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id397" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -762,7 +762,7 @@ Please note you cannot register two different Series with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id396" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Series with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#id397" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Series with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -832,6 +832,62 @@ they are unregistered.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.series.Series.to_markdown">
+<span class="sig-name descname"><span class="pre">to_markdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tablefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/series.html#Series.to_markdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.series.Series.to_markdown" title="Link to this definition">#</a></dt>
+<dd><p>Print Series in Markdown-friendly format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – Mode in which file is opened, “wt” by default.</p></li>
+<li><p><strong>index</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default True</em>) – Add index (row) labels.</p></li>
+<li><p><strong>tablefmt</strong> (<em>str = &quot;grid&quot;</em>) – Table format to call from tablulate:
+<a class="reference external" href="https://pypi.org/project/tabulate/">https://pypi.org/project/tabulate/</a></p></li>
+<li><p><strong>storage_options</strong> (<em>dict</em><em>, </em><em>optional</em>) – Extra options that make sense for a particular storage connection,
+e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,
+e.g., starting “s3://”, “gcs://”.
+An error will be raised if providing this argument with a non-fsspec URL.
+See the fsspec and backend storage implementation docs for the set
+of allowed keys and values.</p></li>
+<li><p><strong>**kwargs</strong> – These parameters will be passed to tabulate.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function should only be called on small Series as it calls pandas.Series.to_markdown:
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.Series.to_markdown.html">https://pandas.pydata.org/docs/reference/api/pandas.Series.to_markdown.html</a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;elk&quot;</span><span class="p">,</span> <span class="s2">&quot;pig&quot;</span><span class="p">,</span> <span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;quetzal&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;animal&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">())</span>
+<span class="go">|    | animal   |</span>
+<span class="go">|---:|:---------|</span>
+<span class="go">|  0 | elk      |</span>
+<span class="go">|  1 | pig      |</span>
+<span class="go">|  2 | dog      |</span>
+<span class="go">|  3 | quetzal  |</span>
+</pre></div>
+</div>
+<p>Output markdown with a tabulate option.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span><span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">))</span>
+<span class="go">+----+----------+</span>
+<span class="go">|    | animal   |</span>
+<span class="go">+====+==========+</span>
+<span class="go">|  0 | elk      |</span>
+<span class="go">+----+----------+</span>
+<span class="go">|  1 | pig      |</span>
+<span class="go">+----+----------+</span>
+<span class="go">|  2 | dog      |</span>
+<span class="go">+----+----------+</span>
+<span class="go">|  3 | quetzal  |</span>
+<span class="go">+----+----------+</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.series.Series.to_pandas">
 <span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.Series</span></span></span><a class="reference internal" href="../../../_modules/arkouda/series.html#Series.to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.series.Series.to_pandas" title="Link to this definition">#</a></dt>
 <dd><p>Convert the series to a local PANDAS series</p>
@@ -858,7 +914,7 @@ they are unregistered.</p>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id396" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id397" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -878,7 +934,7 @@ they are unregistered.</p>
 Also converts list and tuple arguments into pdarrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><em>List</em><em>, </em><em>supported_scalars</em>) – The key or container of keys that might be used to index into the Series.</p>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><em>List</em><em>, </em><em>supported_scalars</em>) – The key or container of keys that might be used to index into the Series.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>The validated key(s), with lists and tuples converted to pdarrays</p>
@@ -902,7 +958,7 @@ from the Series</p></li>
 Also converts list and tuple arguments into pdarrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>val</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id533" title="arkouda.Strings"><em>Strings</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The value or container of values that might be assigned into the Series.</p>
+<dd class="field-odd"><p><strong>val</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a><em>, </em><em>list</em><em>, </em><em>supported_scalars</em>) – The value or container of values that might be assigned into the Series.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>The validated value, with lists converted to pdarrays</p>
@@ -1024,6 +1080,7 @@ first element is the most frequently-occurring element.</p>
 <li><a class="reference internal" href="#arkouda.series.Series.tail"><code class="docutils literal notranslate"><span class="pre">Series.tail()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.to_dataframe"><code class="docutils literal notranslate"><span class="pre">Series.to_dataframe()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.to_list"><code class="docutils literal notranslate"><span class="pre">Series.to_list()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.series.Series.to_markdown"><code class="docutils literal notranslate"><span class="pre">Series.to_markdown()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.to_pandas"><code class="docutils literal notranslate"><span class="pre">Series.to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.topn"><code class="docutils literal notranslate"><span class="pre">Series.topn()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.unregister"><code class="docutils literal notranslate"><span class="pre">Series.unregister()</span></code></a></li>

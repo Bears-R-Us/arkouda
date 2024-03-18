@@ -4973,6 +4973,58 @@ Attributes
       +----+-----+-----+
 
 
+   .. py:method:: to_markdown(mode='wt', index=True, tablefmt='grid', storage_options=None, **kwargs)
+
+      Print DataFrame in Markdown-friendly format.
+
+      :param mode: Mode in which file is opened, "wt" by default.
+      :type mode: str, optional
+      :param index: Add index (row) labels.
+      :type index: bool, optional, default True
+      :param tablefmt: Table format to call from tablulate:
+                       https://pypi.org/project/tabulate/
+      :type tablefmt: str = "grid"
+      :param storage_options: Extra options that make sense for a particular storage connection,
+                              e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,
+                              e.g., starting “s3://”, “gcs://”.
+                              An error will be raised if providing this argument with a non-fsspec URL.
+                              See the fsspec and backend storage implementation docs for the set
+                              of allowed keys and values.
+      :type storage_options: dict, optional
+      :param \*\*kwargs: These parameters will be passed to tabulate.
+
+      .. note::
+
+         This function should only be called on small DataFrames as it calls pandas.DataFrame.to_markdown:
+         https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({"animal_1": ["elk", "pig"], "animal_2": ["dog", "quetzal"]})
+      >>> print(df.to_markdown())
+      +----+------------+------------+
+      |    | animal_1   | animal_2   |
+      +====+============+============+
+      |  0 | elk        | dog        |
+      +----+------------+------------+
+      |  1 | pig        | quetzal    |
+      +----+------------+------------+
+
+      Suppress the index:
+
+      >>> print(df.to_markdown(index = False))
+      +------------+------------+
+      | animal_1   | animal_2   |
+      +============+============+
+      | elk        | dog        |
+      +------------+------------+
+      | pig        | quetzal    |
+      +------------+------------+
+
+
+
    .. py:method:: to_pandas(datalimit=maxTransferBytes, retain_index=False)
 
       Send this DataFrame to a pandas DataFrame.
@@ -7329,6 +7381,58 @@ Attributes
       +----+-----+-----+
       |  1 |   2 |   4 |
       +----+-----+-----+
+
+
+   .. py:method:: to_markdown(mode='wt', index=True, tablefmt='grid', storage_options=None, **kwargs)
+
+      Print DataFrame in Markdown-friendly format.
+
+      :param mode: Mode in which file is opened, "wt" by default.
+      :type mode: str, optional
+      :param index: Add index (row) labels.
+      :type index: bool, optional, default True
+      :param tablefmt: Table format to call from tablulate:
+                       https://pypi.org/project/tabulate/
+      :type tablefmt: str = "grid"
+      :param storage_options: Extra options that make sense for a particular storage connection,
+                              e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,
+                              e.g., starting “s3://”, “gcs://”.
+                              An error will be raised if providing this argument with a non-fsspec URL.
+                              See the fsspec and backend storage implementation docs for the set
+                              of allowed keys and values.
+      :type storage_options: dict, optional
+      :param \*\*kwargs: These parameters will be passed to tabulate.
+
+      .. note::
+
+         This function should only be called on small DataFrames as it calls pandas.DataFrame.to_markdown:
+         https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({"animal_1": ["elk", "pig"], "animal_2": ["dog", "quetzal"]})
+      >>> print(df.to_markdown())
+      +----+------------+------------+
+      |    | animal_1   | animal_2   |
+      +====+============+============+
+      |  0 | elk        | dog        |
+      +----+------------+------------+
+      |  1 | pig        | quetzal    |
+      +----+------------+------------+
+
+      Suppress the index:
+
+      >>> print(df.to_markdown(index = False))
+      +------------+------------+
+      | animal_1   | animal_2   |
+      +============+============+
+      | elk        | dog        |
+      +------------+------------+
+      | pig        | quetzal    |
+      +------------+------------+
+
 
 
    .. py:method:: to_pandas(datalimit=maxTransferBytes, retain_index=False)
@@ -14208,6 +14312,60 @@ Attributes
 
 
    .. py:method:: to_list() -> list
+
+
+   .. py:method:: to_markdown(mode='wt', index=True, tablefmt='grid', storage_options=None, **kwargs)
+
+      Print Series in Markdown-friendly format.
+
+      :param mode: Mode in which file is opened, "wt" by default.
+      :type mode: str, optional
+      :param index: Add index (row) labels.
+      :type index: bool, optional, default True
+      :param tablefmt: Table format to call from tablulate:
+                       https://pypi.org/project/tabulate/
+      :type tablefmt: str = "grid"
+      :param storage_options: Extra options that make sense for a particular storage connection,
+                              e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,
+                              e.g., starting “s3://”, “gcs://”.
+                              An error will be raised if providing this argument with a non-fsspec URL.
+                              See the fsspec and backend storage implementation docs for the set
+                              of allowed keys and values.
+      :type storage_options: dict, optional
+      :param \*\*kwargs: These parameters will be passed to tabulate.
+
+      .. note::
+
+         This function should only be called on small Series as it calls pandas.Series.to_markdown:
+         https://pandas.pydata.org/docs/reference/api/pandas.Series.to_markdown.html
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
+      >>> print(s.to_markdown())
+      |    | animal   |
+      |---:|:---------|
+      |  0 | elk      |
+      |  1 | pig      |
+      |  2 | dog      |
+      |  3 | quetzal  |
+
+      Output markdown with a tabulate option.
+
+      >>> print(s.to_markdown(tablefmt="grid"))
+      +----+----------+
+      |    | animal   |
+      +====+==========+
+      |  0 | elk      |
+      +----+----------+
+      |  1 | pig      |
+      +----+----------+
+      |  2 | dog      |
+      +----+----------+
+      |  3 | quetzal  |
+      +----+----------+
 
 
    .. py:method:: to_pandas() -> pandas.Series
