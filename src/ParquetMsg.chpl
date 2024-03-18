@@ -746,7 +746,7 @@ module ParquetMsg {
     return maxRowGroups;
   }
   
-  proc fillSegmentsAndPersistData(ref distFiles, ref entrySeg, ref externalData, valsRead, dsetname, sizes, len, numRowGroups, ref bytesPerRG) {
+  proc fillSegmentsAndPersistData(ref distFiles, ref entrySeg, ref externalData, valsRead, dsetname, sizes, len, numRowGroups, ref bytesPerRG, ref startIdxs) {
     var (subdoms, length) = getSubdomains(sizes);
     coforall loc in distFiles.targetLocales() with (ref externalData, ref valsRead, ref bytesPerRG) do on loc {
       var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
@@ -767,6 +767,7 @@ module ParquetMsg {
         var startIdx = locSubdoms[i].low;
         for rg in 0..#numRowGroups[i] {
           var totalBytes = 0;
+          startIdxs[i][rg] = startIdx;
 
           var numRead = 0;
           externalData[i][rg] = c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead));
@@ -786,27 +787,12 @@ module ParquetMsg {
     }
   }
 
-  proc getOffsetIdx(ref valsRead, maxRowGroups, i, rg) {
-    var startIdx = 0;
-    coforall loc in valsRead.targetLocales() with (+ reduce startIdx) do on loc  {
-      var locValsRead: [valsRead.localSubdomain()] [0..#maxRowGroups] int = valsRead[valsRead.localSubdomain()];
-      for row in locValsRead.domain {
-	for col in locValsRead[row].domain {
-	  if i < row && rg < col {
-	    startIdx += locValsRead[row][col];
-	  }
-	}
-      }
-    }
-    writeln('\n', startIdx, '\n');
-    return startIdx;
-  }
-
-  proc copyValuesFromC(ref entryVal, ref distFiles, ref externalData, ref valsRead, ref numRowGroups, ref rgSubdomains, maxRowGroups, sizes, ref segArr) {
+  proc copyValuesFromC(ref entryVal, ref distFiles, ref externalData, ref valsRead, ref numRowGroups, ref rgSubdomains, maxRowGroups, sizes, ref segArr, ref startIdxs) {
     var (subdoms, length) = getSubdomains(sizes);
     coforall loc in distFiles.targetLocales() with (ref externalData) do on loc {
       var locValsRead: [valsRead.localSubdomain()] [0..#maxRowGroups] int = valsRead[valsRead.localSubdomain()];
       var locNumRowGroups: [numRowGroups.localSubdomain()] int = numRowGroups[numRowGroups.localSubdomain()];
+      var locStartIdxs: [startIdxs.localSubdomain()] [0..#maxRowGroups] int = startIdxs[startIdxs.localSubdomain()];
       var locSubdoms = subdoms;
 
       forall i in locNumRowGroups.domain {
@@ -814,26 +800,15 @@ module ParquetMsg {
         for rg in 0..#numRgs {
           var entryIdx = rgSubdomains[i][rg].low;
           var numRead = locValsRead[i][rg];
-	  var offsetIdx = 0;//getOffsetIdx(valsRead, maxRowGroups, i, rg);
-	  var tmp: [0..#(numRead*4)] uint(8);//var tmp: [rgSubdomains[i][rg]] uint(8);
+          var offsetIdx = locStartIdxs[i][rg];
+	  var tmp: [rgSubdomains[i][rg]] uint(8);
 	  forall (idx, oIdx) in zip(0..#numRead, offsetIdx..#numRead) {
 	    ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[idx];
             for j in 0..#curr.len {
-	      tmp[4*oIdx+j] = curr.ptr[j];
-              //tmp[segArr[oIdx]+j] = curr.ptr[j];
+	      tmp[segArr[oIdx]+j] = curr.ptr[j];
             }
 	  }
-	  entryVal.a[0..#(numRead*4)] = tmp;
-	  //var tmp: [rgSubdomains[i][rg]] uint(8);
-	  //writeln("START:", getOffsetStart(valsRead,i,rg));
-          /*for idx in 0..#numRead {
-            ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[idx];
-            for j in 0..#curr.len {
-              entryVal.a[entryIdx] = curr.ptr[j];
-              entryIdx+=1;
-            }
-            entryIdx+=1;
-	    }*/
+	  entryVal.a[rgSubdomains[i][rg]] = tmp;
         }
       }
     }
@@ -1005,15 +980,16 @@ module ParquetMsg {
           var externalData: [distFiles.domain] [0..#maxRowGroups] c_ptr(void);
           var valsRead: [distFiles.domain] [0..#maxRowGroups] int;
           var bytesPerRG: [distFiles.domain] [0..#maxRowGroups] int;
+          var startIdxs: [distFiles.domain] [0..#maxRowGroups] int; // correspond to starting idx in entrySeg
 
-          fillSegmentsAndPersistData(distFiles, entrySeg, externalData, valsRead, dsetname, sizes, len, numRowGroups, bytesPerRG);
+          fillSegmentsAndPersistData(distFiles, entrySeg, externalData, valsRead, dsetname, sizes, len, numRowGroups, bytesPerRG, startIdxs);
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
 
           var (rgSubdomains, totalBytes) = getRGSubdomains(bytesPerRG, maxRowGroups);
           
           var entryVal = createSymEntry(totalBytes, uint(8));
 
-          copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups, sizes, entrySeg.a);
+          copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups, sizes, entrySeg.a, startIdxs);
 
           for i in externalData.domain {
             for j in externalData[i].domain {
