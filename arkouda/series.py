@@ -819,7 +819,7 @@ class Series:
 
     @typechecked
     def to_dataframe(
-        self, index_labels: List[str] = None, value_label: str = None
+        self, index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None
     ) -> arkouda.dataframe.DataFrame:
         """Converts series to an arkouda data frame
 
@@ -1062,8 +1062,8 @@ class Series:
     def concat(
         arrays: List,
         axis: int = 0,
-        index_labels: List[str] = None,
-        value_labels: List[str] = None,
+        index_labels: Union[List[str], None] = None,
+        value_labels: Union[List[str], None] = None,
     ) -> Union[arkouda.dataframe.DataFrame, Series]:
         """Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
         vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
@@ -1545,7 +1545,9 @@ class Series:
 
     @staticmethod
     @typechecked
-    def pdconcat(arrays: List, axis: int = 0, labels: Strings = None) -> Union[pd.Series, pd.DataFrame]:
+    def pdconcat(
+        arrays: List, axis: int = 0, labels: Union[Strings, None] = None
+    ) -> Union[pd.Series, pd.DataFrame]:
         """Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
 
         If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping

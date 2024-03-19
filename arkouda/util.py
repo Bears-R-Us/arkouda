@@ -1,3 +1,4 @@
+import builtins
 import json
 from typing import Sequence, Tuple, Union, cast
 from warnings import warn
@@ -417,7 +418,7 @@ def convert_bytes(nbytes, unit="B"):
         return nbytes / gb
 
 
-def is_numeric(arry: Union[pdarray, Strings, Categorical]):
+def is_numeric(arry: Union[pdarray, Strings, Categorical]) -> builtins.bool:
     """
     Check if the dtype of the given array is numeric.
 

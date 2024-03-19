@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import builtins
 import sys
 from enum import Enum
@@ -55,7 +57,7 @@ NUMBER_FORMAT_STRINGS = {
 }
 
 
-def dtype(x: Union[np.dtype, str]) -> Union[np.dtype, str]:
+def dtype(x):  # type: ignore
     # we had to create our own bigint type since numpy
     # gives them dtype=object there's no np equivalent
     if (isinstance(x, str) and x == "bigint") or isinstance(x, BigInt):
@@ -64,7 +66,7 @@ def dtype(x: Union[np.dtype, str]) -> Union[np.dtype, str]:
         return np.dtype(x)
 
 
-def _is_dtype_in_union(dtype: Union[str, np.dtype], union_type) -> builtins.bool:
+def _is_dtype_in_union(dtype, union_type) -> builtins.bool:  # type: ignore
     """
     Check if a given type is in a typing.Union.
 
@@ -86,6 +88,7 @@ class BigInt:
 
     def __init__(self):
         self.name = "bigint"
+        self.kind = "ui"
 
     def __str__(self):
         return self.name
@@ -256,14 +259,14 @@ def isSupportedNumber(num):
     return isinstance(num, ARKOUDA_SUPPORTED_NUMBERS)
 
 
-def _as_dtype(dt) -> np.dtype:
+def _as_dtype(dt) -> Union[np.dtype, "BigInt"]:
     if not isinstance(dt, np.dtype):
         return dtype(dt)
     return dt
 
 
 @typechecked
-def check_np_dtype(dt: np.dtype) -> None:
+def check_np_dtype(dt: Union[np.dtype, "BigInt"]) -> None:
     """
     Assert that numpy dtype dt is one of the dtypes supported
     by arkouda, otherwise raise TypeError.
@@ -280,7 +283,7 @@ def check_np_dtype(dt: np.dtype) -> None:
 
 
 @typechecked
-def translate_np_dtype(dt: np.dtype) -> Tuple[builtins.str, int]:
+def translate_np_dtype(dt) -> Tuple[builtins.str, int]:
     """
     Split numpy dtype dt into its kind and byte size, raising
     TypeError for unsupported dtypes.
