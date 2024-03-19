@@ -2064,8 +2064,8 @@ def clip(
 
     # see if lo or hi are None
 
-    clip_min = True if type(lo) == pdarray else True if lo != None else False
-    clip_max = True if type(hi) == pdarray else True if hi != None else False
+    clip_min = True if isinstance(lo, pdarray) else True if lo is not None else False
+    clip_max = True if isinstance(hi, pdarray) else True if hi is not None else False
     if not (clip_min or clip_max):
         raise ValueError("Either min or max must be supplied.")
 
@@ -2075,13 +2075,13 @@ def clip(
     dataFloat = pda.dtype == float
     minFloat = (
         True
-        if type(lo) == float
-        else (True if (type(lo) == pdarray and lo.dtype == float) else False)
+        if isinstance(lo, float)
+        else (True if (isinstance(lo, pdarray) and lo.dtype == float) else False)
     )
     maxFloat = (
         True
-        if type(hi) == float
-        else (True if (type(hi) == pdarray and hi.dtype == float) else False)
+        if isinstance(hi, float)
+        else (True if (isinstance(hi, pdarray) and hi.dtype == float) else False)
     )
     forceFloat = dataFloat or minFloat or maxFloat
     if forceFloat:
