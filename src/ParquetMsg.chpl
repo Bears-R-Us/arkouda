@@ -42,7 +42,7 @@ module ParquetMsg {
   config const TRUNCATE: int = 0;
   config const APPEND: int = 1;
   
-  private config const ROWGROUPS = 10;//512*1024*1024 / numBytes(int); // 512 mb of int64
+  private config const ROWGROUPS = 512*1024*1024 / numBytes(int); // 512 mb of int64
   // Undocumented for now, just for internal experiments
   private config const batchSize = getEnvInt("ARKOUDA_SERVER_PARQUET_BATCH_SIZE", 8192);
 
@@ -976,7 +976,6 @@ module ParquetMsg {
           var numRowGroups: [distFiles.domain] int;
 
           var maxRowGroups = getRowGroupNums(distFiles, numRowGroups);
-          
           var externalData: [distFiles.domain] [0..#maxRowGroups] c_ptr(void);
           var valsRead: [distFiles.domain] [0..#maxRowGroups] int;
           var bytesPerRG: [distFiles.domain] [0..#maxRowGroups] int;
