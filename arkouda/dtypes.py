@@ -55,7 +55,7 @@ NUMBER_FORMAT_STRINGS = {
 }
 
 
-def dtype(x):
+def dtype(x: Union[np.dtype, str]) -> Union[np.dtype, str]:
     # we had to create our own bigint type since numpy
     # gives them dtype=object there's no np equivalent
     if (isinstance(x, str) and x == "bigint") or isinstance(x, BigInt):
@@ -64,7 +64,7 @@ def dtype(x):
         return np.dtype(x)
 
 
-def _is_dtype_in_union(dtype, union_type) -> bool:
+def _is_dtype_in_union(dtype: Union[str, np.dtype], union_type) -> builtins.bool:
     """
     Check if a given type is in a typing.Union.
 
