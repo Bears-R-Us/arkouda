@@ -1,5 +1,5 @@
 import json
-from typing import Sequence, Tuple, cast
+from typing import Sequence, Tuple, Union, cast
 from warnings import warn
 
 from typeguard import typechecked
@@ -417,7 +417,7 @@ def convert_bytes(nbytes, unit="B"):
         return nbytes / gb
 
 
-def is_numeric(arry: Tuple[pdarray, Strings, Categorical]):
+def is_numeric(arry: Union[pdarray, Strings, Categorical]):
     """
     Check if the dtype of the given array is numeric.
 
@@ -445,7 +445,7 @@ def is_numeric(arry: Tuple[pdarray, Strings, Categorical]):
     return _is_dtype_in_union(dtype(arry.dtype), numeric_scalars)
 
 
-def is_float(arry: Tuple[pdarray, Strings, Categorical]):
+def is_float(arry: Union[pdarray, Strings, Categorical]):
     """
     Check if the dtype of the given array is float.
 
@@ -473,7 +473,7 @@ def is_float(arry: Tuple[pdarray, Strings, Categorical]):
     return _is_dtype_in_union(dtype(arry.dtype), float_scalars)
 
 
-def is_int(arry: Tuple[pdarray, Strings, Categorical]):
+def is_int(arry: Union[pdarray, Strings, Categorical]):
     """
     Check if the dtype of the given array is int.
 
