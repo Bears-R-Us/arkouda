@@ -2088,11 +2088,9 @@ def clip(
         if not dataFloat:
             pda = cast(pda, np.float64)
         if clip_min and not minFloat:
-#            lo = cast(lo, np.float64) if type(lo) == pdarray else float(lo)
-            lo = cast(lo, np.float64) if isinstance(lo,pdarray) else float(lo)
+            lo = cast(lo, np.float64) if isinstance(lo, pdarray) else float(lo)
         if clip_max and not maxFloat:
-#            hi = cast(hi, np.float64) if type(hi) == pdarray else float(hi)
-            hi = cast(hi, np.float64) if isinstance(hi,pdarray) else float(hi)
+            hi = cast(hi, np.float64) if isinstance(hi, pdarray) else float(hi)
 
     # now do the computation.  The below mimics numpy.clip, including the anomaly where lo>hi
 
