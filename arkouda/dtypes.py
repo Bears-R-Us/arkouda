@@ -64,7 +64,7 @@ def dtype(x):
         return np.dtype(x)
 
 
-def _is_dtype_in_union(dtype: type, union_type: type) -> bool:
+def _is_dtype_in_union(dtype, union_type) -> bool:
     """
     Check if a given type is in a typing.Union.
 
