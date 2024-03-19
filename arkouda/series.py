@@ -27,7 +27,7 @@ from arkouda.pdarrayclass import (
 from arkouda.pdarraycreation import arange, array, full, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.strings import Strings
-from arkouda.util import convert_if_categorical, get_callback, is_numeric
+from arkouda.util import convert_if_categorical, get_callback, is_float
 
 # pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
 # truncation issues. If issues arise, that's where to look for it.
@@ -1283,7 +1283,7 @@ class Series:
 
         """
 
-        if not is_numeric(self.values):
+        if not is_float(self.values):
             return Series(full(self.values.size, False, dtype=bool), index=self.index)
 
         return Series(isnan(self.values), index=self.index)
@@ -1367,7 +1367,7 @@ class Series:
 
         """
 
-        if not is_numeric(self.values):
+        if not is_float(self.values):
             return Series(full(self.values.size, True, dtype=bool), index=self.index)
 
         return Series(~isnan(self.values), index=self.index)
@@ -1435,7 +1435,7 @@ class Series:
         >>> s.hasnans
         True
         """
-        if is_numeric(self.values):
+        if is_float(self.values):
             return any(isnan(self.values))
         else:
             return False
@@ -1538,7 +1538,10 @@ class Series:
         if isinstance(value, Series):
             value = value.values
 
-        return Series(where(isnan(self.values), value, self.values), index=self.index)
+        if isinstance(self.values, pdarray) and is_float(self.values):
+            return Series(where(isnan(self.values), value, self.values), index=self.index)
+        else:
+            return Series(self.values, index=self.index)
 
     @staticmethod
     @typechecked
