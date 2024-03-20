@@ -1,7 +1,7 @@
-:py:mod:`arkouda.akscipy.special`
-=================================
+:py:mod:`arkouda.scipy.special`
+===============================
 
-.. py:module:: arkouda.akscipy.special
+.. py:module:: arkouda.scipy.special
 
 
 Package Contents
@@ -13,7 +13,7 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.akscipy.special.xlogy
+   arkouda.scipy.special.xlogy
 
 
 
@@ -32,7 +32,7 @@ Functions
 
    >>> import arkouda as ak
    >>> ak.connect()
-   >>> from arkouda.akscipy.special import xlogy
+   >>> from arkouda.scipy.special import xlogy
    >>> xlogy( ak.array([1, 2, 3, 4]),  ak.array([5,6,7,8]))
    array([1.6094379124341003 3.5835189384561099 5.8377304471659395 8.317766166719343])
    >>> xlogy( 5.0, ak.array([1, 2, 3, 4]))

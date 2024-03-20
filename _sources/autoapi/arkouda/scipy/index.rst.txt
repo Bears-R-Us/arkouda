@@ -1,20 +1,27 @@
-:orphan:
+:py:mod:`arkouda.scipy`
+=======================
 
-:py:mod:`arkouda.akscipy._stats_py`
-===================================
-
-.. py:module:: arkouda.akscipy._stats_py
+.. py:module:: arkouda.scipy
 
 
-Module Contents
----------------
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   special/index.rst
+
+
+Package Contents
+----------------
 
 Classes
 ~~~~~~~
 
 .. autoapisummary::
 
-   arkouda.akscipy._stats_py.Power_divergenceResult
+   arkouda.scipy.Power_divergenceResult
 
 
 
@@ -23,8 +30,8 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.akscipy._stats_py.chisquare
-   arkouda.akscipy._stats_py.power_divergence
+   arkouda.scipy.chisquare
+   arkouda.scipy.power_divergence
 
 
 

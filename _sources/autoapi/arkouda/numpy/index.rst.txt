@@ -1,0 +1,15 @@
+:py:mod:`arkouda.numpy`
+=======================
+
+.. py:module:: arkouda.numpy
+
+
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   char/index.rst
+
+

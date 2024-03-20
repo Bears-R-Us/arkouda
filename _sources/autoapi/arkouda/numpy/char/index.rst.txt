@@ -1,0 +1,6 @@
+:py:mod:`arkouda.numpy.char`
+============================
+
+.. py:module:: arkouda.numpy.char
+
+

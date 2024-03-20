@@ -1,9 +1,9 @@
 :orphan:
 
-:py:mod:`arkouda.akscipy.special._math`
-=======================================
+:py:mod:`arkouda.scipy.special._math`
+=====================================
 
-.. py:module:: arkouda.akscipy.special._math
+.. py:module:: arkouda.scipy.special._math
 
 
 Module Contents
@@ -15,7 +15,7 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.akscipy.special._math.xlogy
+   arkouda.scipy.special._math.xlogy
 
 
 
@@ -34,7 +34,7 @@ Functions
 
    >>> import arkouda as ak
    >>> ak.connect()
-   >>> from arkouda.akscipy.special import xlogy
+   >>> from arkouda.scipy.special import xlogy
    >>> xlogy( ak.array([1, 2, 3, 4]),  ak.array([5,6,7,8]))
    array([1.6094379124341003 3.5835189384561099 5.8377304471659395 8.317766166719343])
    >>> xlogy( 5.0, ak.array([1, 2, 3, 4]))
