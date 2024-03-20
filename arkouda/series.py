@@ -713,6 +713,69 @@ class Series:
         else:
             return pd.Series(val.to_ndarray(), index=idx)
 
+    def to_markdown(self, mode="wt", index=True, tablefmt="grid", storage_options=None, **kwargs):
+        r"""
+        Print Series in Markdown-friendly format.
+
+        Parameters
+        ----------
+        mode : str, optional
+            Mode in which file is opened, "wt" by default.
+        index : bool, optional, default True
+            Add index (row) labels.
+        tablefmt: str = "grid"
+            Table format to call from tablulate:
+            https://pypi.org/project/tabulate/
+        storage_options: dict, optional
+            Extra options that make sense for a particular storage connection,
+            e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,
+            e.g., starting “s3://”, “gcs://”.
+            An error will be raised if providing this argument with a non-fsspec URL.
+            See the fsspec and backend storage implementation docs for the set
+            of allowed keys and values.
+
+        **kwargs
+            These parameters will be passed to tabulate.
+
+        Note
+        ----
+        This function should only be called on small Series as it calls pandas.Series.to_markdown:
+        https://pandas.pydata.org/docs/reference/api/pandas.Series.to_markdown.html
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
+        >>> print(s.to_markdown())
+        |    | animal   |
+        |---:|:---------|
+        |  0 | elk      |
+        |  1 | pig      |
+        |  2 | dog      |
+        |  3 | quetzal  |
+
+        Output markdown with a tabulate option.
+
+        >>> print(s.to_markdown(tablefmt="grid"))
+        +----+----------+
+        |    | animal   |
+        +====+==========+
+        |  0 | elk      |
+        +----+----------+
+        |  1 | pig      |
+        +----+----------+
+        |  2 | dog      |
+        +----+----------+
+        |  3 | quetzal  |
+        +----+----------+
+
+        """
+        return self.to_pandas().to_markdown(
+            mode=mode, index=index, tablefmt=tablefmt, storage_options=storage_options, **kwargs
+        )
+
     @typechecked()
     def to_list(self) -> list:
         p = self.to_pandas()

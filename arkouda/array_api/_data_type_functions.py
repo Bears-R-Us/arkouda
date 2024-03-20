@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ._array_object import Array
+from ._array_object import Array, implements_numpy
 from ._dtypes import (
     _all_dtypes,
     _boolean_dtypes,
@@ -149,6 +149,7 @@ def isdtype(
         )
 
 
+@implements_numpy(np.result_type)
 def result_type(*arrays_and_dtypes: Union[Array, Dtype]) -> Dtype:
     """
     Array API compatible wrapper for :py:func:`np.result_type <numpy.result_type>`.

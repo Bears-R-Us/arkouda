@@ -2307,7 +2307,10 @@ def sum(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "sum", "x": pda, "nAxes": 0, "axis": []})
+    repMsg = generic_msg(
+        cmd=f"reduce{pda.ndim}D",
+        args={"op": "sum", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+    )
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2385,7 +2388,10 @@ def prod(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "prod", "x": pda, "nAxes": 0, "axis": []})
+    repMsg = generic_msg(
+        cmd=f"reduce{pda.ndim}D",
+        args={"op": "prod", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+    )
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2410,7 +2416,10 @@ def min(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "min", "x": pda, "nAxes": 0, "axis": []})
+    repMsg = generic_msg(
+        cmd=f"reduce{pda.ndim}D",
+        args={"op": "min", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+    )
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2436,7 +2445,10 @@ def max(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd=f"reduce{pda.ndim}D", args={"op": "max", "x": pda, "nAxes": 0, "axis": []})
+    repMsg = generic_msg(
+        cmd=f"reduce{pda.ndim}D",
+        args={"op": "max", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+    )
     return parse_single_value(cast(str, repMsg))
 
 
@@ -2522,7 +2534,8 @@ def mean(pda: pdarray) -> np.float64:
     """
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "mean", "nAxes": 0, "axis": [], "ddof": 0}
+            cmd=f"stats{pda.ndim}D",
+            args={"x": pda, "comp": "mean", "nAxes": 0, "axis": [], "ddof": 0, "skipNan": False}
         )
     )
 
@@ -2573,7 +2586,8 @@ def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
         raise ValueError("var: ddof must be less than number of values")
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "var", "ddof": ddof, "nAxes": 0, "axis": []}
+            cmd=f"stats{pda.ndim}D",
+            args={"x": pda, "comp": "var", "ddof": ddof, "nAxes": 0, "axis": [], "skipNan": False}
         )
     )
 
@@ -2628,7 +2642,8 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
         raise ValueError("ddof must be an integer 0 or greater")
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D", args={"x": pda, "comp": "std", "ddof": ddof, "nAxes": 0, "axis": []}
+            cmd=f"stats{pda.ndim}D",
+            args={"x": pda, "comp": "std", "ddof": ddof, "nAxes": 0, "axis": [], "skipNan": False}
         )
     )
 
@@ -3474,19 +3489,34 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
             f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
-    return create_pdarray(
-        cast(
-            str,
-            generic_msg(
-                cmd="efunc2",
-                args={
-                    "func": "fmod",
-                    "A": dividend,
-                    "B": divisor,
-                },
-            ),
+    # TODO: handle shape broadcasting for multidimensional arrays
+    if isinstance(dividend, pdarray) or isinstance(divisor, pdarray):
+        ndim = \
+            dividend.ndim if isinstance(dividend, pdarray) else divisor.ndim  # type: ignore[union-attr]
+        return create_pdarray(
+            cast(
+                str,
+                generic_msg(
+                    cmd=f"efunc2Arg{ndim}D",
+                    args={
+                        "func": "fmod",
+                        "A": dividend,
+                        "B": divisor,
+                    },
+                ),
+            )
         )
-    )
+    else:
+        m = mod(dividend, divisor)
+        return create_pdarray(
+            generic_msg(
+                cmd="create0D",
+                args={
+                    "dtype": resolve_scalar_dtype(m),
+                    "value": m,
+                },
+            )
+        )
 
 
 @typechecked

@@ -22,7 +22,7 @@ from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import all as ak_all
 from arkouda.pdarrayclass import any as ak_any
 from arkouda.pdarrayclass import argmax, create_pdarray, pdarray
-from arkouda.pdarraycreation import array, linspace
+from arkouda.pdarraycreation import array, linspace, scalar_array
 from arkouda.strings import Strings
 
 Categorical = ForwardRef("Categorical")
@@ -1013,53 +1013,59 @@ def arctan2(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
-    if where is True:
-        repMsg = type_cast(
-            str,
-            generic_msg(
-                cmd="efunc2",
-                args={
-                    "func": "arctan2",
-                    "A": num,
-                    "B": denom,
-                },
-            ),
-        )
-        return create_pdarray(repMsg)
-    elif where is False:
-        return num / denom  # type: ignore
+    # TODO: handle shape broadcasting for multidimensional arrays
+    if isinstance(num, pdarray) or isinstance(denom, pdarray):
+        ndim = num.ndim if isinstance(num, pdarray) else denom.ndim  # type: ignore[union-attr]
+        if where is True:
+            repMsg = type_cast(
+                str,
+                generic_msg(
+                    cmd=f"efunc2Arg{ndim}D",
+                    args={
+                        "func": "arctan2",
+                        "A": num,
+                        "B": denom,
+                    },
+                ),
+            )
+            return create_pdarray(repMsg)
+        elif where is False:
+            return num / denom  # type: ignore
+        else:
+            if where.dtype != bool:
+                raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
+            if isinstance(num, pdarray) and isinstance(denom, pdarray):
+                # TODO: handle shape broadcasting for multidimensional arrays
+                repMsg = type_cast(
+                    str,
+                    generic_msg(
+                        cmd=f"efunc2Arg{ndim}D",
+                        args={
+                            "func": "arctan2",
+                            "A": num[where],
+                            "B": denom[where],
+                        },
+                    ),
+                )
+            if not isinstance(num, pdarray) or not isinstance(denom, pdarray):
+                repMsg = type_cast(
+                    str,
+                    generic_msg(
+                        cmd=f"efunc2Arg{ndim}D",
+                        args={
+                            "func": "arctan2",
+                            "A": num if not isinstance(num, pdarray) else num[where],
+                            "B": denom if not isinstance(denom, pdarray) else denom[where],
+                        },
+                    ),
+                )
+            new_pda = num / denom
+            ret = create_pdarray(repMsg)
+            new_pda = cast(new_pda, ret.dtype)
+            new_pda[where] = ret
+            return new_pda
     else:
-        if where.dtype != bool:
-            raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
-        if isinstance(num, pdarray) and isinstance(denom, pdarray):
-            repMsg = type_cast(
-                str,
-                generic_msg(
-                    cmd="efunc2",
-                    args={
-                        "func": "arctan2",
-                        "A": num[where],
-                        "B": denom[where],
-                    },
-                ),
-            )
-        if not isinstance(num, pdarray) or not isinstance(denom, pdarray):
-            repMsg = type_cast(
-                str,
-                generic_msg(
-                    cmd="efunc2",
-                    args={
-                        "func": "arctan2",
-                        "A": num if not isinstance(num, pdarray) else num[where],
-                        "B": denom if not isinstance(denom, pdarray) else denom[where],
-                    },
-                ),
-            )
-        new_pda = num / denom
-        ret = create_pdarray(repMsg)
-        new_pda = cast(new_pda, ret.dtype)
-        new_pda[where] = ret
-        return new_pda
+        return scalar_array(arctan2(num, denom) if where else num / denom)
 
 
 @typechecked
@@ -1657,8 +1663,9 @@ def where(
             )
         return _str_cat_where(condition, A, B)
     if isinstance(A, pdarray) and isinstance(B, pdarray):
+        # TODO: handle shape broadcasting for multidimensional arrays
         repMsg = generic_msg(
-            cmd="efunc3vv",
+            cmd=f"efunc3vv{condition.ndim}D",
             args={
                 "func": "where",
                 "condition": condition,
@@ -1669,7 +1676,7 @@ def where(
     # For scalars, try to convert it to the array's dtype
     elif isinstance(A, pdarray) and np.isscalar(B):
         repMsg = generic_msg(
-            cmd="efunc3vs",
+            cmd=f"efunc3vs{condition.ndim}D",
             args={
                 "func": "where",
                 "condition": condition,
@@ -1680,7 +1687,7 @@ def where(
         )
     elif isinstance(B, pdarray) and np.isscalar(A):
         repMsg = generic_msg(
-            cmd="efunc3sv",
+            cmd=f"efunc3sv{condition.ndim}D",
             args={
                 "func": "where",
                 "condition": condition,
@@ -1710,7 +1717,7 @@ def where(
         else:
             raise TypeError(f"Cannot cast between scalars {str(A)} and {str(B)} to supported dtype")
         repMsg = generic_msg(
-            cmd="efunc3ss",
+            cmd=f"efunc3ss{condition.ndim}D",
             args={
                 "func": "where",
                 "condition": condition,

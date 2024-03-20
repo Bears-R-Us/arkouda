@@ -11,7 +11,7 @@ from ._dtypes import (
     float64,
     # complex128,
 )
-from ._array_object import Array
+from ._array_object import Array, implements_numpy
 from ._manipulation_functions import squeeze
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union
@@ -23,6 +23,7 @@ from arkouda.numeric import cast as akcast
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import parse_single_value, create_pdarray
 from arkouda.pdarraycreation import scalar_array
+import numpy as np
 
 
 def max(
@@ -46,10 +47,11 @@ def max(
             "op": "max",
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -58,6 +60,15 @@ def max(
             return arr
         else:
             return squeeze(arr, axis)
+
+
+# this is a temporary fix to get mean working with XArray
+# (until a counterpart to np.nanmean is added to the array API
+# see: https://github.com/data-apis/array-api/issues/621)
+@implements_numpy(np.nanmean)
+@implements_numpy(np.mean)
+def mean_shim(x: Array, axis=None, dtype=None, out=None, keepdims=False):
+    return mean(x, axis=axis, keepdims=keepdims)
 
 
 def mean(
@@ -82,10 +93,11 @@ def mean(
             "nAxes": len(axis_list),
             "axis": axis_list,
             "ddof": 0,
+            "skipNan": True,  # TODO: handle all-nan slices
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -117,10 +129,11 @@ def min(
             "op": "min",
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -160,10 +173,11 @@ def prod(
             "op": "prod",
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -174,6 +188,8 @@ def prod(
             return squeeze(arr, axis)
 
 
+# Not working with XArray yet, pending a fix for:
+# https://github.com/pydata/xarray/issues/8566#issuecomment-1870472827
 def std(
     x: Array,
     /,
@@ -199,10 +215,11 @@ def std(
             "ddof": correction,
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -242,10 +259,11 @@ def sum(
             "op": "sum",
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))
@@ -256,6 +274,8 @@ def sum(
             return squeeze(arr, axis)
 
 
+# Not working with XArray yet, pending a fix for:
+# https://github.com/pydata/xarray/issues/8566#issuecomment-1870472827
 def var(
     x: Array,
     /,
@@ -282,10 +302,11 @@ def var(
             "ddof": correction,
             "nAxes": len(axis_list),
             "axis": axis_list,
+            "skipNan": True,
         },
     )
 
-    if axis is None:
+    if axis is None or x.ndim == 1:
         return Array._new(scalar_array(parse_single_value(resp)))
     else:
         arr = Array._new(create_pdarray(resp))

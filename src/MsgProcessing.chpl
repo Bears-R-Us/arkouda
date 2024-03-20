@@ -68,7 +68,6 @@ module MsgProcessing
     // used for "zero-dimensional" array api scalars
     proc createMsg0D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const dtype = str2dtype(msgArgs.getValueOf("dtype")),
-              valueArg = msgArgs.get("value"),
               rname = st.nextName();
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -83,8 +82,16 @@ module MsgProcessing
         e.ndim = 1; // this is 1 rather than 0 s.t. calls to other message handlers treat it as a 1D
                     // array (e.g., we should call 'set1D', not 'set0D' on this array)
 
-        proc setValue(type t) throws do
-            toSymEntry(e, t, 1).a[0] = valueArg.getValueAsType(t);
+        // set the value if a 'value' argument is provided
+        proc setValue(type t) throws {
+            try {
+                const valueArg = msgArgs.get("value");
+                toSymEntry(e, t, 1).a[0] = valueArg.getValueAsType(t);
+            } catch e: ErrorWithContext {
+            } catch e {
+                throw e;
+            }
+        }
 
         select dtype {
             when DType.Int64 do setValue(int);

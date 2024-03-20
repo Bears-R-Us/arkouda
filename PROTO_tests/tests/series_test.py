@@ -244,3 +244,53 @@ class TestSeries:
         result = c.map({1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d", 6.0: "e"})
         assert result.index.values.to_list() == [5, 4, 2, 3, 1]
         assert result.values.to_list() == ["a", "a", "b", "b", "c"]
+
+    def test_to_markdown(self):
+        s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
+        assert (
+            s.to_markdown() == "+----+----------+\n"
+            "|    | animal   |\n"
+            "+====+==========+\n"
+            "|  0 | elk      |\n"
+            "+----+----------+\n"
+            "|  1 | pig      |\n"
+            "+----+----------+\n"
+            "|  2 | dog      |\n"
+            "+----+----------+\n"
+            "|  3 | quetzal  |\n"
+            "+----+----------+"
+        )
+
+        assert (
+            s.to_markdown(index=False) == "+----------+\n"
+            "| animal   |\n"
+            "+==========+\n"
+            "| elk      |\n"
+            "+----------+\n"
+            "| pig      |\n"
+            "+----------+\n"
+            "| dog      |\n"
+            "+----------+\n"
+            "| quetzal  |\n"
+            "+----------+"
+        )
+
+        assert (
+            s.to_markdown(tablefmt="grid") == "+----+----------+\n"
+            "|    | animal   |\n"
+            "+====+==========+\n"
+            "|  0 | elk      |\n"
+            "+----+----------+\n"
+            "|  1 | pig      |\n"
+            "+----+----------+\n"
+            "|  2 | dog      |\n"
+            "+----+----------+\n"
+            "|  3 | quetzal  |\n"
+            "+----+----------+"
+        )
+
+        assert s.to_markdown(tablefmt="grid") == s.to_pandas().to_markdown(tablefmt="grid")
+        assert s.to_markdown(tablefmt="grid", index=False) == s.to_pandas().to_markdown(
+            tablefmt="grid", index=False
+        )
+        assert s.to_markdown(tablefmt="jira") == s.to_pandas().to_markdown(tablefmt="jira")
