@@ -1664,7 +1664,7 @@ class NumericTest(ArkoudaTest):
 
         # test with arrays for lo
 
-        ilo = np.array([ilo]*ia.size).reshape(ia.shape)
+        ilo = np.full(ia.shape,ilo)
         for dtype1 in dtypes:
             for dtype2 in dtypes:
                 for dtype3 in dtypes:
@@ -1678,7 +1678,7 @@ class NumericTest(ArkoudaTest):
         # test with arrays for hi
 
         ilo = 25
-        ihi = np.array([ihi]*ia.size).reshape(ia.shape)
+        ihi = np.full(ia.shape,ihi)
         for dtype1 in dtypes:
             for dtype2 in dtypes:
                 for dtype3 in dtypes:
@@ -1691,7 +1691,7 @@ class NumericTest(ArkoudaTest):
 
         # test with arrays for both 
 
-        ilo = np.array([ilo]*ia.size).reshape(ia.shape)
+        ilo = np.full(ia.shape,ilo)
         for dtype1 in dtypes:
             for dtype2 in dtypes:
                 for dtype3 in dtypes:
