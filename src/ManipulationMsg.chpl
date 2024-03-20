@@ -8,6 +8,7 @@ module ManipulationMsg {
   use Logging;
   use ServerErrorStrings;
   use CommAggregation;
+  use ArkoudaAryUtilCompat;
 
   use Reflection;
   use BigInteger;
@@ -42,7 +43,6 @@ module ManipulationMsg {
     aware that promotion of singleton dimensions may be necessary. E.g.,
     make matrix multiplication aware that it can treat a singleton
     value as a vector of the appropriate length during multiplication.
-
     (this may require a modification of SymEntry to keep track of
     which dimensions are explicitly singletons)
 
@@ -86,18 +86,38 @@ module ManipulationMsg {
           mLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         } else {
+          // use List;
+          // var bcDimsList = new list(int);
+          // for i in 0..<ndIn do if bcDims[i] then bcDimsList.pushBack(i);
+
+          // // iterate over each slice of the output array corresponding to one
+          // // copy of the input array and perform the copy
+          // /* Example:
+          //   broadcast 5x1x3 array into 5x4x3 array:
+          //   - the 5x1x3 array is copied into the 5x4x3 array 4 times
+          //   - domOffAxis => {0..0, 0..<4, 0..0}
+          //   - for 'nonBCIndex' = (0, 0, 0), outSliceIdx = (0..<5, 0..0, 0..<3)
+          //   - for 'nonBCIndex' = (0, 1, 0), outSliceIdx = (0..<5, 1..1, 0..<3)
+          //   - etc.
+          // */
+          // forall nonBCIndex in domOffAxis(eOut.a.domain, bcDimsList.toArray()) {
+          //   const nbcT = if ndOut == 1 then (nonBCIndex,) else nonBCIndex;
+          //   var outSliceIdx: ndOut*range;
+          //   for i in 0..<ndOut do outSliceIdx[i] = 0..<shapeOut[i];
+          //   for i in 0..<ndIn do if bcDims[i] then outSliceIdx[i] = nbcT[i]..nbcT[i];
+
+          //   eOut.a[{(...outSliceIdx)}] = eIn.a;
+          // }
+
           // define a mapping from the output array's indices to the input array's indices
-          inline proc imap(idx: int ...ndOut): ndIn*int {
+          inline proc imap(idx: ndOut*int, bc: ndIn*int): ndIn*int {
             var ret: ndIn*int;
-            for param i in 0..<ndIn do
-              ret[i] = if bcDims[i] then 0 else idx[i];
+            for param i in 0..<ndIn do ret[i] = if bc[i] then 0 else idx[i];
             return ret;
           }
 
-          forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-            if ndOut == 1
-              then eOut.a[idx] = eIn.a[imap(idx)];
-              else eOut.a[idx] = eIn.a[imap((...idx))];
+          forall idx in eOut.a.domain with (var agg = newSrcAggregator(t), const bc = bcDims) do
+            agg.copy(eOut.a[idx], eIn.a[imap(if ndOut==1 then (idx,) else idx, bc)]);
         }
       }
 
@@ -126,7 +146,7 @@ module ManipulationMsg {
 
     for param iIn in 0..<Nf {
       param iOut = Nt - Nf + iIn;
-      if from[iIn] == 1 && to[iOut] != 1 {
+      if from[iIn] == 1 {
         dimsToBroadcast[iIn] = true;
       } else if from[iIn] != to[iOut] {
         return (false, dimsToBroadcast);
@@ -169,23 +189,14 @@ module ManipulationMsg {
       } else {
         var eOut = st.addEntry(rname, (...shapeOut), t);
 
-        // mapping between the input and output array indices
-        inline proc imap(arrIdx: int, idx: nd*int): nd*int
-          where nd > 1
-        {
-          var ret = idx;
-          ret[axis] += startOffsets[arrIdx];
-          return ret;
-        }
-
-        inline proc imap(arrIdx: int, idx: int): int
-          where nd == 1
-            do return idx + startOffsets[arrIdx];
-
         // copy the data from the input arrays to the output array
-        for (arrIdx, arr) in zip(eIns.domain, eIns) do
-          forall idx in arr.a.domain with (var agg = newDstAggregator(t)) do
-            agg.copy(eOut.a[imap(arrIdx, idx)], arr.a[idx]);
+        forall (arrIdx, arr) in zip(eIns.domain, eIns) with (in startOffsets) {
+          forall idx in arr.a.domain with (var agg = newDstAggregator(t)) {
+            var outIdx = if nd == 1 then (idx,) else idx;
+            outIdx[axis] += startOffsets[arrIdx];
+            agg.copy(eOut.a[outIdx], arr.a[idx]);
+          }
+        }
 
         const repMsg = "created " + st.attrib(rname);
         mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -376,18 +387,12 @@ module ManipulationMsg {
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
-        // mapping between the input and output array indices with the specified axes flipped
-        inline proc imap(idx: nd*int): nd*int {
-          var ret = idx;
-          for axis in axes do
-            ret[axis] = eIn.tupShape[axis] - idx[axis] - 1;
-          return ret;
-        }
-
         // copy the data from the input array to the output array
-        // while flipping along the specified axis
-        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-          agg.copy(eOut.a[idx], eIn.a[imap(if nd == 1 then (idx,) else idx)]);
+        // while flipping along the specified axes
+        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t), const imap = new indexFlip(eIn.tupShape, axes)) {
+          const inIdx = imap(if nd == 1 then (idx,) else idx);
+          agg.copy(eOut.a[idx], eIn.a[inIdx]);
+        }
 
         const repMsg = "created " + st.attrib(rname);
         mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -406,6 +411,27 @@ module ManipulationMsg {
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg,MsgType.ERROR);
       }
+    }
+  }
+
+  record indexFlip {
+    param nd;
+    const shape: nd*int;
+    const d: domain(rank=1, idxType=int, strides=strideKind.one);
+    const axes: [d] int;
+
+    proc init(shape: ?nd*int, in axes: [?d] int) {
+      this.nd = nd;
+      this.shape = shape;
+      this.d = d;
+      this.axes = axes;
+    }
+
+    proc this(idx: nd*int): nd*int {
+      var ret = idx;
+      for axis in axes do
+        ret[axis] = shape[axis] - idx[axis] - 1;
+      return ret;
     }
   }
 
@@ -437,18 +463,10 @@ module ManipulationMsg {
       const eIn = toSymEntry(gEnt, t, nd);
       var eOut = st.addEntry(rname, (...eIn.tupShape), t);
 
-      // mapping between the input and output array indices with all axes flipped
-      inline proc imap(idx: nd*int): nd*int {
-        var ret: nd*int;
-        for param i in 0..<nd do
-          ret[i] = eIn.tupShape[i] - idx[i] - 1;
-        return ret;
+      forall idx in eOut.a.domain with (var agg = newSrcAggregator(t), const imap = new allIndexFlip(nd, eIn.tupShape)) {
+        const inIdx = imap(if nd == 1 then (idx,) else idx);
+        agg.copy(eOut.a[idx], eIn.a[inIdx]);
       }
-
-      // copy the data from the input array to the output array
-      // while flipping along each axis
-      forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-        agg.copy(eOut.a[idx], eIn.a[imap(if nd == 1 then (idx, ) else idx)]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -466,6 +484,17 @@ module ManipulationMsg {
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg,MsgType.ERROR);
       }
+    }
+  }
+
+  record allIndexFlip {
+    param nd;
+    const shape: nd*int;
+    proc this(idx: nd*int): nd*int {
+      var ret = idx;
+      for param i in 0..<nd do
+        ret[i] = shape[i] - idx[i] - 1;
+      return ret;
     }
   }
 
@@ -491,9 +520,14 @@ module ManipulationMsg {
         const outShape = permuteTuple(eIn.tupShape, perm);
         var eOut = st.addEntry(rname, (...outShape), t);
 
-        // copy the data from the input array to the output array while permuting the axes
-        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-          agg.copy(eOut.a[idx], eIn.a[permuteTuple(if nd == 1 then (idx,) else idx, perm)]);
+        // // copy the data from the input array to the output array while permuting the axes
+        // forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
+        //   agg.copy(eOut.a[idx], eIn.a[permuteTuple(if nd == 1 then (idx,) else idx, perm)]);
+
+        forall idx in eIn.a.domain with (var agg = newDstAggregator(t)) {
+          const outIdx = permuteTuple(if nd == 1 then (idx,) else idx, perm);
+          agg.copy(eOut.a[outIdx], eIn.a[idx]);
+        }
 
         const repMsg = "created " + st.attrib(rname);
         mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -521,6 +555,9 @@ module ManipulationMsg {
     return ret;
   }
 
+  // ensure all axis indices are in the range [-N, N-1]
+  // convert negative indices to positive indices
+  // return false if any axis index is out of range
   private proc validateAxes(axes: ?N*int): (bool, N*int) {
     var ret: N*int;
     for param i in 0..<N {
@@ -551,30 +588,23 @@ module ManipulationMsg {
 
     proc doReshape(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, ndIn),
-            (valid, shape) = validateShape(rawShape, eIn.a.size);
+            (valid, outShape) = validateShape(rawShape, eIn.a.size);
 
       if !valid {
         const errMsg = "Cannot reshape array of shape %? into shape %?. The total number of elements must match".doFormat(eIn.tupShape, rawShape);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
-        var eOut = st.addEntry(rname, (...shape), t);
-
-        const sizes = [i in 0..<ndOut by -1] eOut.tupShape[i],
-              accumSizes = * scan sizes / sizes;
-
-        // index -> order for the output array's indices
-        // e.g., order = k + (nz * j) + (nz * ny * i)
-        inline proc indexToOrder(idx: ndOut*int): int {
-          var order = 0;
-          for param i in 0..<ndOut do order += idx[i] * accumSizes[i];
-          return order;
-        }
+        var eOut = st.addEntry(rname, (...outShape), t);
 
         // copy the data from the input array to the output array while reshaping
-        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) {
-          const inIdx = eIn.a.domain.orderToIndex(indexToOrder(if ndOut==1 then (idx,) else idx));
-          agg.copy(eOut.a[idx], eIn.a[inIdx]);
+        forall idx in eIn.a.domain with (
+          var agg = newDstAggregator(t),
+          const output = eOut.a.domain,
+          const input = new orderer(eIn.tupShape)
+        ) {
+          const outIdx = output.orderToIndex(input.indexToOrder(if ndIn == 1 then (idx,) else idx));
+          agg.copy(eOut.a[outIdx], eIn.a[idx]);
         }
 
         const repMsg = "created " + st.attrib(rname);
@@ -594,6 +624,26 @@ module ManipulationMsg {
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg,MsgType.ERROR);
       }
+    }
+  }
+
+  // helper for computing the order of an index in the input array in the reshape loop above
+  record orderer {
+    param rank: int;
+    const accumRankSizes: [0..<rank] int;
+
+    proc init(shape: ?N*int) {
+      this.rank = N;
+      const sizesRev = [i in 0..<N] shape[N - i - 1];
+      this.accumRankSizes = * scan sizesRev / sizesRev;
+    }
+
+    // index -> order for the input array's indices
+    // e.g., order = k + (nz * j) + (nz * ny * i)
+    inline proc indexToOrder(idx: rank*int): int {
+      var order = 0;
+      for param i in 0..<rank do order += idx[i] * accumRankSizes[rank - i - 1];
+      return order;
     }
   }
 
@@ -667,17 +717,13 @@ module ManipulationMsg {
       } else {
         var eOut = st.addEntry(rname, (...eIn.tupShape), t);
 
-        // mapping between a starting index and the rolled index
-        inline proc rollIdx(idx: nd*int): nd*int {
-          var ret = idx;
-          for i in 0..<nAxes do
-            ret[axes[i]] = (idx[axes[i]] + shifts[i] + eIn.tupShape[axes[i]]) % eIn.tupShape[axes[i]];
-          return ret;
-        }
-
         // copy the data from the input array to the output array while rolling along the specified axes
-        forall idx in eIn.a.domain with (var agg = newDstAggregator(t)) do
-          agg.copy(eOut.a[rollIdx(if nd == 1 then (idx, ) else idx)], eIn.a[idx]);
+        forall idx in eIn.a.domain with (
+          var agg = newDstAggregator(t),
+          const imap = new rollIdxMapper(eIn.tupShape, axes, shifts)
+        ) {
+          agg.copy(eOut.a[imap(if nd == 1 then (idx, ) else idx)], eIn.a[idx]);
+        }
 
         const repMsg = "created " + st.attrib(rname);
         mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -699,6 +745,29 @@ module ManipulationMsg {
     }
   }
 
+  record rollIdxMapper {
+    param nd;
+    const shape: nd*int;
+    const nAxes: int;
+    const axes: [0..<nAxes] int;
+    const shifts: [0..<nAxes] int;
+
+    proc init(shape: ?nd*int, in axes: [?d] int, in shifts: [d] int) {
+      this.nd = nd;
+      this.shape = shape;
+      this.nAxes = d.size;
+      this.axes = axes;
+      this.shifts = shifts;
+    }
+
+    proc this(idx: nd*int): nd*int {
+      var ret = idx;
+      for i in 0..<nAxes do
+        ret[axes[i]] = (idx[axes[i]] + shifts[i] + shape[axes[i]]) % shape[axes[i]];
+      return ret;
+    }
+  }
+
   // alternative to 'rollMsg' to be used when the axis argument is 'None'
   @arkouda.registerND
   proc rollFlattenedMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
@@ -715,8 +784,11 @@ module ManipulationMsg {
             inFlatRolled = rollBy(shift, flatten(eIn.a));
 
       // copy the flattened/rolled array into the output array while unflattening
-      forall idx in inFlatRolled.domain with (var agg = newDstAggregator(t)) do
-        agg.copy(eOut.a[eOut.a.domain.orderToIndex(idx)], inFlatRolled[idx]);
+      forall idx in inFlatRolled.domain with (
+        var agg = newDstAggregator(t),
+        const outDom = eOut.a.domain
+      ) do
+        agg.copy(eOut.a[outDom.orderToIndex(idx)], inFlatRolled[idx]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -769,16 +841,11 @@ module ManipulationMsg {
       } else {
         var eOut = st.addEntry(rname, (...shape), t);
 
-        // mapping between the input and output array indices
-        inline proc imap(idx: ndOut*int): ndIn*int {
-          var ret: ndIn*int;
-          for param ii in 0..<ndIn do ret[ii] = eIn.a.domain.dim(ii).low;
-          for param io in 0..<ndOut do ret[mapping[io]] = idx[io];
-          return ret;
-        }
-
         // copy the data from the input array to the output array
-        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
+        forall idx in eOut.a.domain with (
+          var agg = newSrcAggregator(t),
+          const imap = new squeezeIndexMapper(ndIn, ndOut, mapping)
+        ) do
           agg.copy(eOut.a[idx], eIn.a[imap(if ndOut==1 then (idx,) else idx)]);
 
         const repMsg = "created " + st.attrib(rname);
@@ -798,6 +865,18 @@ module ManipulationMsg {
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg,MsgType.ERROR);
       }
+    }
+  }
+
+  record squeezeIndexMapper {
+    param ndIn: int;
+    param ndOut: int;
+    const mapping: ndOut*int;
+
+    proc this(idx: ndOut*int): ndIn*int {
+      var ret: ndIn*int;
+      for param i in 0..<ndOut do ret[mapping[i]] = idx[i];
+      return ret;
     }
   }
 
@@ -854,21 +933,13 @@ module ManipulationMsg {
             (shapeOut, mapping) = stackedShape(eIns[0].tupShape, axis, nArrays);
       var eOut = st.addEntry(rname, (...shapeOut), t);
 
-      // mapping between the input and output array indices
-      inline proc imap(arrIdx: int, idx: nd*int): (nd+1)*int {
-        var ret: (nd+1)*int;
-        for i in 0..nd {
-          if i == axis
-            then ret[i] = arrIdx;
-            else ret[i] = idx[mapping[i]];
-        }
-        return ret;
-      }
-
       // copy the data from the input arrays to the output array
       forall (arrIdx, arr) in zip(eIns.domain, eIns) do
-        forall idx in arr.a.domain with (var agg = newDstAggregator(t)) do
-          agg.copy(eOut.a[imap(arrIdx, if nd==1 then (idx,) else idx)], arr.a[idx]);
+        forall idx in arr.a.domain with (
+          var agg = newDstAggregator(t),
+          const imap = new stackIndexMapper(nd+1, axis, arrIdx, mapping)
+        ) do
+          agg.copy(eOut.a[imap(if nd==1 then (idx,) else idx)], arr.a[idx]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -886,6 +957,20 @@ module ManipulationMsg {
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg,MsgType.ERROR);
       }
+    }
+  }
+
+  record stackIndexMapper {
+    param ndOut: int;
+    const axis: int;
+    const arrIdx: int;
+    const mapping: ndOut*int;
+
+    proc this(idx: (ndOut-1)*int): ndOut*int {
+      var ret: ndOut*int;
+      for param i in 0..<ndOut do ret[i] = idx[mapping[i]];
+      ret[axis] = arrIdx;
+      return ret;
     }
   }
 
