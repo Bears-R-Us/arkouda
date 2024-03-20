@@ -2036,7 +2036,7 @@ def clip(
     hi: Union[numeric_scalars, pdarray],
 ) -> pdarray:
     """
-    Mimic the behavior of numpy.clip.
+    clip an array so that everything is within the bounds of lo and hi (inclusive)
 
     Parameters
     ----------
@@ -2047,14 +2047,35 @@ def clip(
 
     Returns
     -------
-    a copy of the input, where each element x remains x if lo <= x <= hi,
-                                           or equals lo if x < lo
-                                           or equals hi if x > hi
+    a pdarray matching pda, except that element x remains x if lo <= x <= hi,
+                                                or becomes lo if x < lo 
+                                                or becomes hi if x > hi
+
+    if lo or hi (or both) are pdarrays, the check is by individual paired elements.
+
+    Examples:
+    --------
+    >>> a = ak.array([1,2,3,4,5,6,7,8,9,10])
+    >>> ak.clip(a,3,8)
+    array([3,3,3,4,5,6,7,8,8,8])
+    >>> ak.clip(a,3,8.0)
+    array([3.00000000000000000 3.00000000000000000 3.00000000000000000 4.00000000000000000 5.00000000000000000 6.00000000000000000 7.00000000000000000 8.00000000000000000 8.00000000000000000 8.00000000000000000])
+    >>> ak.clip(a,None,7)
+    array([1,2,3,4,5,6,7,7,7,7])
+    >>> ak.clip(a,5,None)
+    array([5,5,5,5,5,6,7,8,9,10])
+    >>> ak.clip(a,None,None)
+    ValueError : either min or max must be supplied
+    >>> ak.clip(a,ak.array([2,2,3,3,8,8,5,5,6,6],8))
+    array([2,2,3,4,8,8,7,8,8,8])
+    >>> ak.clip(a,4,ak.array([10,9,8,7,6,5,5,5,5,5]))
+    array([4,4,4,4,5,5,5,5,5,5])   Note that hi < lo for much of this array ; see Notes
+
     Notes
     -----
-    if lo > hi, x = hi.  This is how numpy.clip behaves.
+    if lo > hi, all x = hi.
+
     if all inputs are int, output is int, but if any input is real, output is real.
-      This is also how numpy.clip behaves.
 
     Raises
     ------
@@ -2064,25 +2085,18 @@ def clip(
 
     # see if lo or hi are None
 
-    clip_min = True if isinstance(lo, pdarray) else True if lo is not None else False
-    clip_max = True if isinstance(hi, pdarray) else True if hi is not None else False
-    if not (clip_min or clip_max):
+    if lo is None and hi is None :
         raise ValueError("Either min or max must be supplied.")
+
+    clip_min = lo is not None
+    clip_max = hi is not None
 
     # if any of the inputs are float, then make everything float
     # note that some type checking is needed, because scalars and pdarrays get cast differently
 
     dataFloat = pda.dtype == float
-    minFloat = (
-        True
-        if isinstance(lo, float)
-        else (True if (isinstance(lo, pdarray) and lo.dtype == float) else False)
-    )
-    maxFloat = (
-        True
-        if isinstance(hi, float)
-        else (True if (isinstance(hi, pdarray) and hi.dtype == float) else False)
-    )
+    minFloat = isinstance(lo, float) or (isinstance(lo, pdarray) and lo.dtype == float)
+    maxFloat = isinstance(hi, float) or (isinstance(hi, pdarray) and hi.dtype == float)
     forceFloat = dataFloat or minFloat or maxFloat
     if forceFloat:
         if not dataFloat:
@@ -2094,9 +2108,10 @@ def clip(
 
     # now do the computation.  The below mimics numpy.clip, including the anomaly where lo>hi
 
-    pda1 = pda[:]
     if clip_min:
-        pda1 = where(pda1 < lo, lo, pda1)
+        pda1 = where(pda < lo, lo, pda)
+    else :
+        pda1 = pda[:]
     if clip_max:
         pda1 = where(pda1 > hi, hi, pda1)
     return pda1

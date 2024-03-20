@@ -1622,153 +1622,84 @@ class NumericTest(ArkoudaTest):
 
     # test clip on ints, floats, and mash-ups; note if any input is float, output is float
 
-    def testClip(self):
+    def test_clip(self):
         ia = np.random.randint(1, 100, 100)
         ilo = 25
         ihi = 75
-        fa = ia.astype(float)
-        flo = 25.0
-        fhi = 75.0
-        ipda = ak.array(ia)
-        fpda = ak.array(fa)
 
         # test with scalars
 
-        self.assertTrue(
-            np.all(
-                np.equal(np.clip(ia, ilo, ihi), ak.clip(ipda, ilo, ihi).to_ndarray())
-            )
-        )  # all ints
-        self.assertTrue(
-            np.allclose(np.clip(fa, flo, fhi), ak.clip(fpda, flo, fhi).to_ndarray())
-        )  # all floats
-        self.assertTrue(
-            np.allclose(np.clip(ia, ilo, fhi), ak.clip(ipda, ilo, fhi).to_ndarray())
-        )  # int array and lo, float hi
-        self.assertTrue(
-            np.allclose(np.clip(ia, flo, ihi), ak.clip(ipda, flo, ihi).to_ndarray())
-        )  # int array and hi, float lo
-        self.assertTrue(
-            np.allclose(np.clip(fa, ilo, ihi), ak.clip(fpda, ilo, ihi).to_ndarray())
-        )  # int lo and hi, float array
+        dtypes = ['int64', 'float64']
+
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    hi = np.dtype(dtype1).type(ihi)
+                    lo = np.dtype(dtype2).type(ilo)
+                    nd_arry = ia.astype(dtype3)
+                    ak_arry = ak.array(nd_arry)
+                    assert (np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray()))
 
         # test with None for lower limit
 
-        ilo = None
-        flo = None
-        self.assertTrue(
-            np.all(
-                np.equal(np.clip(ia, ilo, ihi), ak.clip(ipda, ilo, ihi).to_ndarray())
-            )
-        )  # all ints
-        self.assertTrue(
-            np.allclose(np.clip(fa, flo, fhi), ak.clip(fpda, flo, fhi).to_ndarray())
-        )  # all floats
-        self.assertTrue(
-            np.allclose(np.clip(ia, ilo, fhi), ak.clip(ipda, ilo, fhi).to_ndarray())
-        )  # int array and lo, float hi
-        self.assertTrue(
-            np.allclose(np.clip(ia, flo, ihi), ak.clip(ipda, flo, ihi).to_ndarray())
-        )  # int array and hi, float lo
-        self.assertTrue(
-            np.allclose(np.clip(fa, ilo, ihi), ak.clip(fpda, ilo, ihi).to_ndarray())
-        )  # int lo and hi, float array
+        lo = None
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    hi = np.dtype(dtype1).type(ihi)
+                    nd_arry = ia.astype(dtype3)
+                    ak_arry = ak.array(nd_arry)
+                    assert (np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray()))
 
         # test with None for upper limit
 
-        ilo = 25
-        flo = float(ilo)
-        ihi = None
-        fhi = None
-        self.assertTrue(
-            np.all(
-                np.equal(np.clip(ia, ilo, ihi), ak.clip(ipda, ilo, ihi).to_ndarray())
-            )
-        )  # all ints
-        self.assertTrue(
-            np.allclose(np.clip(fa, flo, fhi), ak.clip(fpda, flo, fhi).to_ndarray())
-        )  # all floats
-        self.assertTrue(
-            np.allclose(np.clip(ia, ilo, fhi), ak.clip(ipda, ilo, fhi).to_ndarray())
-        )  # int array and lo, float hi
-        self.assertTrue(
-            np.allclose(np.clip(ia, flo, ihi), ak.clip(ipda, flo, ihi).to_ndarray())
-        )  # int array and hi, float lo
-        self.assertTrue(
-            np.allclose(np.clip(fa, ilo, ihi), ak.clip(fpda, ilo, ihi).to_ndarray())
-        )  # int lo and hi, float array
+        hi = None
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    lo = np.dtype(dtype2).type(ilo)
+                    nd_arry = ia.astype(dtype3)
+                    ak_arry = ak.array(nd_arry)
+                    assert (np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray()))
 
         # test with arrays for lo
 
-        ilo = np.array([ilo] * ia.size).reshape(ia.shape)
-        iilo = ak.array(ilo)
-        ihi = 75
-        flo = np.array([flo] * ia.size).reshape(ia.shape)
-        fflo = ak.array(flo)
-        fhi = 75.0
-        self.assertTrue(
-            np.all(
-                np.equal(np.clip(ia, ilo, ihi), ak.clip(ipda, iilo, ihi).to_ndarray())
-            )
-        )  # all ints
-        self.assertTrue(
-            np.allclose(np.clip(fa, flo, fhi), ak.clip(fpda, fflo, fhi).to_ndarray())
-        )  # all floats
-        self.assertTrue(
-            np.allclose(np.clip(ia, ilo, fhi), ak.clip(ipda, iilo, fhi).to_ndarray())
-        )  # int array and lo, float hi
-        self.assertTrue(
-            np.allclose(np.clip(ia, flo, ihi), ak.clip(ipda, fflo, ihi).to_ndarray())
-        )  # int array and hi, float lo
-        self.assertTrue(
-            np.allclose(np.clip(fa, ilo, ihi), ak.clip(fpda, iilo, ihi).to_ndarray())
-        )  # int lo and hi, float array
+        ilo = np.array([ilo]*ia.size).reshape(ia.shape)
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    hi = np.dtype(dtype1).type(ihi)
+                    nd_lo = ilo.astype(dtype2)
+                    nd_arry = ia.astype(dtype3)
+                    ak_lo = ak.array(nd_lo)
+                    ak_arry = ak.array(nd_arry)
+                    assert (np.allclose(np.clip(nd_arry, nd_lo, hi), ak.clip(ak_arry, ak_lo, hi).to_ndarray()))
 
         # test with arrays for hi
 
         ilo = 25
-        flo = 25.0
-        ihi = np.array([ihi] * ia.size).reshape(ia.shape)
-        iihi = ak.array(ihi)
-        fhi = np.array([fhi] * ia.size).reshape(ia.shape)
-        ffhi = ak.array(fhi)
-        self.assertTrue(
-            np.all(
-                np.equal(np.clip(ia, ilo, ihi), ak.clip(ipda, ilo, iihi).to_ndarray())
-            )
-        )  # all ints
-        self.assertTrue(
-            np.allclose(np.clip(fa, flo, fhi), ak.clip(fpda, flo, ffhi).to_ndarray())
-        )  # all floats
-        self.assertTrue(
-            np.allclose(np.clip(ia, ilo, fhi), ak.clip(ipda, ilo, ffhi).to_ndarray())
-        )  # int array and lo, float hi
-        self.assertTrue(
-            np.allclose(np.clip(ia, flo, ihi), ak.clip(ipda, flo, iihi).to_ndarray())
-        )  # int array and hi, float lo
-        self.assertTrue(
-            np.allclose(np.clip(fa, ilo, ihi), ak.clip(fpda, ilo, iihi).to_ndarray())
-        )  # int lo and hi, float array
+        ihi = np.array([ihi]*ia.size).reshape(ia.shape)
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    lo = np.dtype(dtype2).type(ilo)
+                    nd_hi = ihi.astype(dtype1)
+                    nd_arry = ia.astype(dtype3)
+                    ak_hi = ak.array(nd_hi)
+                    ak_arry = ak.array(nd_arry)
+                    assert (np.allclose(np.clip(nd_arry, lo, nd_hi), ak.clip(ak_arry, lo, ak_hi).to_ndarray()))
 
-        # test with arrays for both
+        # test with arrays for both 
 
-        ilo = np.array([ilo] * ia.size).reshape(ia.shape)
-        iilo = ak.array(ilo)
-        self.assertTrue(
-            np.all(
-                np.equal(np.clip(ia, ilo, ihi), ak.clip(ipda, iilo, iihi).to_ndarray())
-            )
-        )  # all ints
-        self.assertTrue(
-            np.allclose(np.clip(fa, flo, fhi), ak.clip(fpda, fflo, ffhi).to_ndarray())
-        )  # all floats
-        self.assertTrue(
-            np.allclose(np.clip(ia, ilo, fhi), ak.clip(ipda, iilo, ffhi).to_ndarray())
-        )  # int array and lo, float hi
-        self.assertTrue(
-            np.allclose(np.clip(ia, flo, ihi), ak.clip(ipda, fflo, iihi).to_ndarray())
-        )  # int array and hi, float lo
-        self.assertTrue(
-            np.allclose(np.clip(fa, ilo, ihi), ak.clip(fpda, iilo, iihi).to_ndarray())
-        )  # int lo and hi, float array
+        ilo = np.array([ilo]*ia.size).reshape(ia.shape)
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    nd_hi = ihi.astype(dtype1)
+                    nd_lo = ilo.astype(dtype2)
+                    nd_arry = ia.astype(dtype3)
+                    ak_lo = ak.array(nd_lo)
+                    ak_hi = ak.array(nd_hi)
+                    ak_arry = ak.array(nd_arry)
+                    assert (np.allclose(np.clip(nd_arry, nd_lo, nd_hi), ak.clip(ak_arry, ak_lo, ak_hi).to_ndarray()))
 
