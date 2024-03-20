@@ -78,14 +78,18 @@ module CSVMsg {
 
     }
 
-    proc prepFiles(filename: string, overwrite: bool, A) throws { 
+    proc prepFiles(filename: string, overwrite: bool, A) throws {
+        // TODO can prob make prefix and extension const
         var prefix: string;
         var extension: string;
         (prefix,extension) = getFileMetadata(filename);
 
         var targetSize: int = A.targetLocales().size;
+        // TODO maybe make filenames distributed? since we are accessing it within a coforall
+        // and do forall (i,f) in zip(filesnames.domain, filenames)
         var filenames: [0..#targetSize] string;
         forall i in 0..#targetSize {
+            // TODO think about inlining generateFilename (and potential impact on other IO methods)
             filenames[i] = generateFilename(prefix, extension, i);
         }
 
@@ -103,12 +107,14 @@ module CSVMsg {
                 errorClass="InvalidArgumentError");
         }
         else {
-            coforall loc in A.targetLocales() do on loc {
-                var fn = filenames[loc.id].localize();
-                var existList = glob(fn);
-                if overwrite && existList.size == 1 {
-                    remove(fn);
-                    csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Overwriting CSV File, %s".doFormat(fn));
+            if overwrite {
+                coforall loc in A.targetLocales() do on loc {
+                    var fn = filenames[loc.id].localize();
+                    var existList = glob(fn);
+                    if existList.size == 1 {
+                        remove(fn);
+                        csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Overwriting CSV File, %s".doFormat(fn));
+                    }
                 }
             }
         }
@@ -188,7 +194,7 @@ module CSVMsg {
                 throw getErrorWithContext(
                            msg="Invalid DType Found, %s".doFormat(dtype2str(gse.dtype)),
                            lineNumber=getLineNumber(),
-                           routineName=getRoutineName(), 
+                           routineName=getRoutineName(),
                            moduleName=getModuleName(),
                            errorClass="DataTypeError");
             }
@@ -213,44 +219,50 @@ module CSVMsg {
             // need to get local subdomain -- should be the same for each element due to sizes being same
             var localSubdomain = getLocalDomain(gse);
 
-            for r in localSubdomain {
-                var row: [0..#ndsets] string;
-                forall (i, cname) in zip(0..#ndsets, datasets) {
-                    var col_gen: borrowed GenSymEntry = getGenericTypedArrayEntry(cname, st);
-                    select col_gen.dtype {
-                        when DType.Int64 {
-                            var col = toSymEntry(col_gen, int);
-                            row[i] = col.a[r]: string;
-                        }
-                        when DType.UInt64 {
-                            var col = toSymEntry(col_gen, uint);
-                            row[i] = col.a[r]: string;
-                        }
-                        when DType.Float64 {
-                            var col = toSymEntry(col_gen, real);
-                            row[i] = col.a[r]: string;
-                        }
-                        when DType.Bool {
-                            var col = toSymEntry(col_gen, bool);
-                            row[i] = col.a[r]: string;
-                        }
-                        when DType.Strings {
-                            var segString:SegString = getSegString(cname, st);
-                            row[i] = segString[r];
-                            
-                        } otherwise {
-                            throw getErrorWithContext(
-                                    msg="Data Type %s cannot be written to CSV.".doFormat(dtypes[i]),
-                                    lineNumber=getLineNumber(), 
-                                    routineName=getRoutineName(), 
-                                    moduleName=getModuleName(), 
-                                    errorClass="IOError"
-                            );
-                        }
+            var nativeStr: [localSubdomain] string;
+            for (i, cname) in zip(0..#ndsets, datasets) {
+                var col_gen: borrowed GenSymEntry = getGenericTypedArrayEntry(cname, st);
+                select col_gen.dtype {
+                    when DType.Int64 {
+                        var col = toSymEntry(col_gen, int);
+                        nativeStr += [i in col.a.localSlice[localSubdomain]] i:string;
+                    }
+                    when DType.UInt64 {
+                        var col = toSymEntry(col_gen, uint);
+                        nativeStr += [i in col.a.localSlice[localSubdomain]] i:string;
+                    }
+                    when DType.Float64 {
+                        var col = toSymEntry(col_gen, real);
+                        nativeStr += [i in col.a.localSlice[localSubdomain]] i:string;
+                    }
+                    when DType.Bool {
+                        var col = toSymEntry(col_gen, bool);
+                        nativeStr += [i in col.a.localSlice[localSubdomain]] i:string;
+                    }
+                    when DType.Strings {
+                        var segString:SegString = getSegString(cname, st);
+                        nativeStr += try! [i in localSubdomain] segString[i];
+                    } otherwise {
+                        throw getErrorWithContext(
+                                msg="Data Type %s cannot be written to CSV.".doFormat(dtypes[i]),
+                                lineNumber=getLineNumber(),
+                                routineName=getRoutineName(),
+                                moduleName=getModuleName(),
+                                errorClass="IOError"
+                        );
                     }
                 }
-                var write_row = col_delim.join(row) + LINE_DELIM;
-                writer.write(write_row);
+                if i != (ndsets - 1) {
+                    nativeStr += col_delim;
+                }
+                else {
+                    nativeStr += LINE_DELIM;
+                }
+            }
+            // TODO might be able to better than looping the elements
+            //  (calling write directly on nativeStr gives spaces between elements)
+            for s in nativeStr {
+                writer.write(s);
             }
             writer.close();
             csvFile.close();
