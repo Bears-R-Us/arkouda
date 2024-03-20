@@ -79,10 +79,7 @@ module CSVMsg {
     }
 
     proc prepFiles(filename: string, overwrite: bool, A) throws {
-        // TODO can prob make prefix and extension const
-        var prefix: string;
-        var extension: string;
-        (prefix,extension) = getFileMetadata(filename);
+        const (prefix,extension) = getFileMetadata(filename);
 
         var targetSize: int = A.targetLocales().size;
         // TODO maybe make filenames distributed? since we are accessing it within a coforall
