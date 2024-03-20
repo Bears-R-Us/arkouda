@@ -38,10 +38,7 @@ class NumericTest(ArkoudaTest):
         )
         # Strings (uniformly distributed length)
         self.assertFalse(
-            (
-                ak.random_strings_uniform(1, 10, N)
-                == ak.random_strings_uniform(1, 10, N)
-            ).all()
+            (ak.random_strings_uniform(1, 10, N) == ak.random_strings_uniform(1, 10, N)).all()
         )
         self.assertListEqual(
             ak.random_strings_uniform(1, 10, N, seed=seed).to_list(),
@@ -49,10 +46,7 @@ class NumericTest(ArkoudaTest):
         )
         # Strings (log-normally distributed length)
         self.assertFalse(
-            (
-                ak.random_strings_lognormal(2, 1, N)
-                == ak.random_strings_lognormal(2, 1, N)
-            ).all()
+            (ak.random_strings_lognormal(2, 1, N) == ak.random_strings_lognormal(2, 1, N)).all()
         )
         self.assertListEqual(
             ak.random_strings_lognormal(2, 1, N, seed=seed).to_list(),
@@ -111,12 +105,8 @@ class NumericTest(ArkoudaTest):
         uintNAN = 0
         uintstr = ak.array(["1", "2 ", "3?", "-4", "  5", "45", "0b101", "0x30", "N/A"])
         uintans = np.array([1, 2, uintNAN, uintNAN, 5, 45, 0b101, 0x30, uintNAN])
-        floatstr = ak.array(
-            ["1.1", "2.2 ", "3?.3", "4.!4", "  5.5", "6.6e-6", "78.91E+4", "6", "N/A"]
-        )
-        floatans = np.array(
-            [1.1, 2.2, np.nan, np.nan, 5.5, 6.6e-6, 78.91e4, 6.0, np.nan]
-        )
+        floatstr = ak.array(["1.1", "2.2 ", "3?.3", "4.!4", "  5.5", "6.6e-6", "78.91E+4", "6", "N/A"])
+        floatans = np.array([1.1, 2.2, np.nan, np.nan, 5.5, 6.6e-6, 78.91e4, 6.0, np.nan])
         boolstr = ak.array(
             [
                 "True",
@@ -170,9 +160,7 @@ class NumericTest(ArkoudaTest):
 
         # test 2d histogram
         seed = 1
-        ak_x, ak_y = ak.randint(1, 100, 1000, seed=seed), ak.randint(
-            1, 100, 1000, seed=seed + 1
-        )
+        ak_x, ak_y = ak.randint(1, 100, 1000, seed=seed), ak.randint(1, 100, 1000, seed=seed + 1)
         np_x, np_y = ak_x.to_ndarray(), ak_y.to_ndarray()
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y)
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y)
@@ -219,9 +207,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
 
         self.assertTrue(np.allclose(np.abs(na), ak.abs(pda).to_ndarray()))
-        self.assertListEqual(
-            ak.arange(5, 1, -1).to_list(), ak.abs(ak.arange(-5, -1)).to_list()
-        )
+        self.assertListEqual(ak.arange(5, 1, -1).to_list(), ak.abs(ak.arange(-5, -1)).to_list())
         self.assertListEqual(
             [5, 4, 3, 2, 1],
             ak.abs(ak.linspace(-5, -1, 5)).to_list(),
@@ -243,12 +229,8 @@ class NumericTest(ArkoudaTest):
                 pda1 = ak.array(na1)
                 pda2 = ak.array(na2)
                 self.assertTrue(np.allclose(np.dot(na1, na2), ak.dot(pda1, pda2)))
-                self.assertTrue(
-                    np.allclose(np.dot(na1[0], na2), ak.dot(pda1[0], pda2).to_ndarray())
-                )
-                self.assertTrue(
-                    np.allclose(np.dot(na1, na2[0]), ak.dot(pda1, pda2[0]).to_ndarray())
-                )
+                self.assertTrue(np.allclose(np.dot(na1[0], na2), ak.dot(pda1[0], pda2).to_ndarray()))
+                self.assertTrue(np.allclose(np.dot(na1, na2[0]), ak.dot(pda1, pda2[0]).to_ndarray()))
 
     def testCumSum(self):
         na = np.linspace(1, 10)
@@ -278,9 +260,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.sin(na, where=True), ak.sin(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.sin(na, where=True), ak.sin(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.sin(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -293,9 +273,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.sin(na, where=True), ak.sin(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.sin(na, where=True), ak.sin(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.sin(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -308,9 +286,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.sin(na, where=True), ak.sin(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.sin(na, where=True), ak.sin(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.sin(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -327,9 +303,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.cos(na, where=True), ak.cos(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.cos(na, where=True), ak.cos(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.cos(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -342,9 +316,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.cos(na, where=True), ak.cos(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.cos(na, where=True), ak.cos(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.cos(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -357,9 +329,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.cos(na, where=True), ak.cos(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.cos(na, where=True), ak.cos(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.cos(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -376,9 +346,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.tan(na, where=True), ak.tan(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.tan(na, where=True), ak.tan(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.tan(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -391,9 +359,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.tan(na, where=True), ak.tan(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.tan(na, where=True), ak.tan(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.tan(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -406,9 +372,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.tan(na, where=True), ak.tan(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.tan(na, where=True), ak.tan(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.tan(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -425,11 +389,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(
-                np.arcsin(na, where=True), ak.arcsin(pda, where=True).to_ndarray()
-            )
-        )
+        self.assertTrue(np.allclose(np.arcsin(na, where=True), ak.arcsin(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.arcsin(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -442,11 +402,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(
-                np.arcsin(na, where=True), ak.arcsin(pda, where=True).to_ndarray()
-            )
-        )
+        self.assertTrue(np.allclose(np.arcsin(na, where=True), ak.arcsin(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.arcsin(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -459,11 +415,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(
-                np.arcsin(na, where=True), ak.arcsin(pda, where=True).to_ndarray()
-            )
-        )
+        self.assertTrue(np.allclose(np.arcsin(na, where=True), ak.arcsin(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.arcsin(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -480,11 +432,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(
-                np.arccos(na, where=True), ak.arccos(pda, where=True).to_ndarray()
-            )
-        )
+        self.assertTrue(np.allclose(np.arccos(na, where=True), ak.arccos(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.arccos(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -497,11 +445,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(
-                np.arccos(na, where=True), ak.arccos(pda, where=True).to_ndarray()
-            )
-        )
+        self.assertTrue(np.allclose(np.arccos(na, where=True), ak.arccos(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.arccos(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -514,11 +458,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(
-                np.arccos(na, where=True), ak.arccos(pda, where=True).to_ndarray()
-            )
-        )
+        self.assertTrue(np.allclose(np.arccos(na, where=True), ak.arccos(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.arccos(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -535,11 +475,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(
-                np.arctan(na, where=True), ak.arctan(pda, where=True).to_ndarray()
-            )
-        )
+        self.assertTrue(np.allclose(np.arctan(na, where=True), ak.arctan(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.arctan(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -552,11 +488,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(
-                np.arctan(na, where=True), ak.arctan(pda, where=True).to_ndarray()
-            )
-        )
+        self.assertTrue(np.allclose(np.arctan(na, where=True), ak.arctan(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.arctan(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -569,9 +501,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.arctan(na), ak.arctan(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.arctan(na), ak.arctan(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.arctan(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -586,9 +516,7 @@ class NumericTest(ArkoudaTest):
         # Edge case: infinities
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
-        self.assertTrue(
-            np.allclose(np.arctan(na), ak.arctan(pda).to_ndarray(), equal_nan=True)
-        )
+        self.assertTrue(np.allclose(np.arctan(na), ak.arctan(pda).to_ndarray(), equal_nan=True))
 
     def testArctan2(self):
         na1_int = np.arange(10, 0, -1, dtype="int64")
@@ -614,11 +542,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(na1_int[i], na2_int[i])
-                        if truth_np[i]
-                        else na1_int[i] / na2_int[i]
-                    )
+                    (np.arctan2(na1_int[i], na2_int[i]) if truth_np[i] else na1_int[i] / na2_int[i])
                     for i in range(len(na1_int))
                 ],
                 ak.arctan2(pda1_int, pda2_int, where=truth_ak).to_ndarray(),
@@ -627,11 +551,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(na1_int[i], na2_uint[i])
-                        if truth_np[i]
-                        else na1_int[i] / na2_uint[i]
-                    )
+                    (np.arctan2(na1_int[i], na2_uint[i]) if truth_np[i] else na1_int[i] / na2_uint[i])
                     for i in range(len(na1_int))
                 ],
                 ak.arctan2(pda1_int, pda2_uint, where=truth_ak).to_ndarray(),
@@ -640,11 +560,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(na1_int[i], na2_float[i])
-                        if truth_np[i]
-                        else na1_int[i] / na2_float[i]
-                    )
+                    (np.arctan2(na1_int[i], na2_float[i]) if truth_np[i] else na1_int[i] / na2_float[i])
                     for i in range(len(na1_int))
                 ],
                 ak.arctan2(pda1_int, pda2_float, where=truth_ak).to_ndarray(),
@@ -654,11 +570,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(na1_uint[i], na2_int[i])
-                        if truth_np[i]
-                        else na1_uint[i] / na2_int[i]
-                    )
+                    (np.arctan2(na1_uint[i], na2_int[i]) if truth_np[i] else na1_uint[i] / na2_int[i])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(pda1_uint, pda2_int, where=truth_ak).to_ndarray(),
@@ -667,11 +579,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(na1_uint[i], na2_uint[i])
-                        if truth_np[i]
-                        else na1_uint[i] / na2_uint[i]
-                    )
+                    (np.arctan2(na1_uint[i], na2_uint[i]) if truth_np[i] else na1_uint[i] / na2_uint[i])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(pda1_uint, pda2_uint, where=truth_ak).to_ndarray(),
@@ -694,11 +602,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(na1_float[i], na2_int[i])
-                        if truth_np[i]
-                        else na1_float[i] / na2_int[i]
-                    )
+                    (np.arctan2(na1_float[i], na2_int[i]) if truth_np[i] else na1_float[i] / na2_int[i])
                     for i in range(len(na1_float))
                 ],
                 ak.arctan2(pda1_float, pda2_int, where=truth_ak).to_ndarray(),
@@ -749,11 +653,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(na1_int[i], denom[0])
-                        if truth_np[i]
-                        else na1_int[i] / denom[0]
-                    )
+                    (np.arctan2(na1_int[i], denom[0]) if truth_np[i] else na1_int[i] / denom[0])
                     for i in range(len(na1_int))
                 ],
                 ak.arctan2(pda1_int, denom[0], where=truth_ak).to_ndarray(),
@@ -781,11 +681,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(na1_uint[i], denom[0])
-                        if truth_np[i]
-                        else na1_uint[i] / denom[0]
-                    )
+                    (np.arctan2(na1_uint[i], denom[0]) if truth_np[i] else na1_uint[i] / denom[0])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(pda1_uint, denom[0], where=truth_ak).to_ndarray(),
@@ -813,11 +709,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(na1_float[i], denom[0])
-                        if truth_np[i]
-                        else na1_float[i] / denom[0]
-                    )
+                    (np.arctan2(na1_float[i], denom[0]) if truth_np[i] else na1_float[i] / denom[0])
                     for i in range(len(na1_float))
                 ],
                 ak.arctan2(pda1_float, denom[0], where=truth_ak).to_ndarray(),
@@ -874,11 +766,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(num[0], na2_int[i])
-                        if truth_np[i]
-                        else num[0] / na2_int[i]
-                    )
+                    (np.arctan2(num[0], na2_int[i]) if truth_np[i] else num[0] / na2_int[i])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(num[0], pda2_int, where=truth_ak).to_ndarray(),
@@ -887,11 +775,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(num[0], na2_uint[i])
-                        if truth_np[i]
-                        else num[0] / na2_uint[i]
-                    )
+                    (np.arctan2(num[0], na2_uint[i]) if truth_np[i] else num[0] / na2_uint[i])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(num[0], pda2_uint, where=truth_ak).to_ndarray(),
@@ -900,11 +784,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    (
-                        np.arctan2(num[0], na2_float[i])
-                        if truth_np[i]
-                        else num[0] / na2_float[i]
-                    )
+                    (np.arctan2(num[0], na2_float[i]) if truth_np[i] else num[0] / na2_float[i])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(num[0], pda2_float, where=truth_ak).to_ndarray(),
@@ -969,24 +849,16 @@ class NumericTest(ArkoudaTest):
             )
         )
         self.assertTrue(
-            np.allclose(
-                np.arctan2(na1, 5), ak.arctan2(pda1, 5).to_ndarray(), equal_nan=True
-            )
+            np.allclose(np.arctan2(na1, 5), ak.arctan2(pda1, 5).to_ndarray(), equal_nan=True)
         )
         self.assertTrue(
-            np.allclose(
-                np.arctan2(5, na1), ak.arctan2(5, pda1).to_ndarray(), equal_nan=True
-            )
+            np.allclose(np.arctan2(5, na1), ak.arctan2(5, pda1).to_ndarray(), equal_nan=True)
         )
         self.assertTrue(
-            np.allclose(
-                np.arctan2(na1, 0), ak.arctan2(pda1, 0).to_ndarray(), equal_nan=True
-            )
+            np.allclose(np.arctan2(na1, 0), ak.arctan2(pda1, 0).to_ndarray(), equal_nan=True)
         )
         self.assertTrue(
-            np.allclose(
-                np.arctan2(0, na1), ak.arctan2(0, pda1).to_ndarray(), equal_nan=True
-            )
+            np.allclose(np.arctan2(0, na1), ak.arctan2(0, pda1).to_ndarray(), equal_nan=True)
         )
 
     def testSinh(self):
@@ -994,9 +866,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.sinh(na, where=True), ak.sinh(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.sinh(na, where=True), ak.sinh(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.sinh(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -1009,9 +879,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.sinh(na, where=True), ak.sinh(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.sinh(na, where=True), ak.sinh(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.sinh(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -1024,9 +892,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.sinh(na, where=True), ak.sinh(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.sinh(na, where=True), ak.sinh(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.sinh(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -1041,18 +907,14 @@ class NumericTest(ArkoudaTest):
         # Edge case: infinities
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
-        self.assertTrue(
-            np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray(), equal_nan=True)
-        )
+        self.assertTrue(np.allclose(np.sinh(na), ak.sinh(pda).to_ndarray(), equal_nan=True))
 
     def testCosh(self):
         na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.cosh(na, where=True), ak.cosh(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.cosh(na, where=True), ak.cosh(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.cosh(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -1065,9 +927,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.cosh(na, where=True), ak.cosh(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.cosh(na, where=True), ak.cosh(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.cosh(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -1080,9 +940,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.cosh(na, where=True), ak.cosh(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.cosh(na, where=True), ak.cosh(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.cosh(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -1097,18 +955,14 @@ class NumericTest(ArkoudaTest):
         # Edge case: infinities
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
-        self.assertTrue(
-            np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray(), equal_nan=True)
-        )
+        self.assertTrue(np.allclose(np.cosh(na), ak.cosh(pda).to_ndarray(), equal_nan=True))
 
     def testTanh(self):
         na = np.arange(-5, 5, dtype="int64")
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.tanh(na, where=True), ak.tanh(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.tanh(na, where=True), ak.tanh(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.tanh(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -1121,9 +975,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.tanh(na, where=True), ak.tanh(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.tanh(na, where=True), ak.tanh(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.tanh(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -1136,9 +988,7 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
-        self.assertTrue(
-            np.allclose(np.tanh(na, where=True), ak.tanh(pda, where=True).to_ndarray())
-        )
+        self.assertTrue(np.allclose(np.tanh(na, where=True), ak.tanh(pda, where=True).to_ndarray()))
         self.assertTrue(np.allclose(na, ak.tanh(pda, where=False).to_ndarray()))
         self.assertTrue(
             np.allclose(
@@ -1153,9 +1003,7 @@ class NumericTest(ArkoudaTest):
         # Edge case: infinities
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
-        self.assertTrue(
-            np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray(), equal_nan=True)
-        )
+        self.assertTrue(np.allclose(np.tanh(na), ak.tanh(pda).to_ndarray(), equal_nan=True))
 
     def testArcsinh(self):
         na = np.arange(-5, 5, dtype="int64")
@@ -1163,9 +1011,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.arcsinh(na, where=True), ak.arcsinh(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.arcsinh(na, where=True), ak.arcsinh(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.arcsinh(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1180,9 +1026,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.arcsinh(na, where=True), ak.arcsinh(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.arcsinh(na, where=True), ak.arcsinh(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.arcsinh(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1197,9 +1041,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.arcsinh(na, where=True), ak.arcsinh(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.arcsinh(na, where=True), ak.arcsinh(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.arcsinh(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1215,9 +1057,7 @@ class NumericTest(ArkoudaTest):
         # Edge case: infinities
         na = np.array([np.inf, -np.inf])
         pda = ak.array(na)
-        self.assertTrue(
-            np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray(), equal_nan=True)
-        )
+        self.assertTrue(np.allclose(np.arcsinh(na), ak.arcsinh(pda).to_ndarray(), equal_nan=True))
 
     def testArccosh(self):
         na = np.arange(1, 5, dtype="int64")
@@ -1225,9 +1065,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.arccosh(na, where=True), ak.arccosh(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.arccosh(na, where=True), ak.arccosh(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.arccosh(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1242,9 +1080,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.arccosh(na, where=True), ak.arccosh(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.arccosh(na, where=True), ak.arccosh(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.arccosh(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1259,9 +1095,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.arccosh(na, where=True), ak.arccosh(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.arccosh(na, where=True), ak.arccosh(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.arccosh(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1277,14 +1111,8 @@ class NumericTest(ArkoudaTest):
         # Edge case: infinities
         na = np.array([1, np.inf])
         pda = ak.array(na)
-        self.assertTrue(
-            np.allclose(
-                np.arccosh(na).tolist(), ak.arccosh(pda).to_list(), equal_nan=True
-            )
-        )
-        self.assertTrue(
-            np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray(), equal_nan=True)
-        )
+        self.assertTrue(np.allclose(np.arccosh(na).tolist(), ak.arccosh(pda).to_list(), equal_nan=True))
+        self.assertTrue(np.allclose(np.arccosh(na), ak.arccosh(pda).to_ndarray(), equal_nan=True))
 
     def testArctanh(self):
         na = np.arange(-1, 2, dtype="int64")
@@ -1292,9 +1120,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.arctanh(na, where=True), ak.arctanh(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.arctanh(na, where=True), ak.arctanh(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.arctanh(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1309,9 +1135,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.arctanh(na, where=True), ak.arctanh(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.arctanh(na, where=True), ak.arctanh(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.arctanh(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1326,9 +1150,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.arctanh(na, where=True), ak.arctanh(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.arctanh(na, where=True), ak.arctanh(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.arctanh(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1347,9 +1169,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.rad2deg(na, where=True), ak.rad2deg(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.rad2deg(na, where=True), ak.rad2deg(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.rad2deg(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1364,9 +1184,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.rad2deg(na, where=True), ak.rad2deg(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.rad2deg(na, where=True), ak.rad2deg(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.rad2deg(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1381,9 +1199,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.rad2deg(na, where=True), ak.rad2deg(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.rad2deg(na, where=True), ak.rad2deg(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.rad2deg(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1402,9 +1218,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.deg2rad(na, where=True), ak.deg2rad(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.deg2rad(na, where=True), ak.deg2rad(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.deg2rad(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1419,9 +1233,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.deg2rad(na, where=True), ak.deg2rad(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.deg2rad(na, where=True), ak.deg2rad(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.deg2rad(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1436,9 +1248,7 @@ class NumericTest(ArkoudaTest):
         truth_np = np.arange(len(na)) % 2 == 0
         truth_ak = ak.array(truth_np)
         self.assertTrue(
-            np.allclose(
-                np.deg2rad(na, where=True), ak.deg2rad(pda, where=True).to_ndarray()
-            )
+            np.allclose(np.deg2rad(na, where=True), ak.deg2rad(pda, where=True).to_ndarray())
         )
         self.assertTrue(np.allclose(na, ak.deg2rad(pda, where=False).to_ndarray()))
         self.assertTrue(
@@ -1529,9 +1339,7 @@ class NumericTest(ArkoudaTest):
         self.assertNotEqual(h2[0], h2[1])
 
         # test categorical hash
-        categories, codes = ak.array([f"str {i}" for i in range(3)]), ak.randint(
-            0, 3, 10**5
-        )
+        categories, codes = ak.array([f"str {i}" for i in range(3)]), ak.randint(0, 3, 10**5)
         my_cat = ak.Categorical.from_codes(codes=codes, categories=categories)
         h1, h2 = ak.hash(my_cat)
         rev = ak.arange(10**5)[::-1]
@@ -1583,9 +1391,7 @@ class NumericTest(ArkoudaTest):
 
         # Currently we can't make an int64 array with a NaN in it so verify that we throw an Exception
         ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))
-        with self.assertRaises(
-            RuntimeError, msg="Currently isnan on int64 is not supported"
-        ):
+        with self.assertRaises(RuntimeError, msg="Currently isnan on int64 is not supported"):
             ak.isnan(ark_s_int64)
 
     def test_str_cat_cast(self):
@@ -1593,9 +1399,7 @@ class NumericTest(ArkoudaTest):
             ak.array([f"str {i}" for i in range(101)]),
             ak.array([f"str {i%3}" for i in range(101)]),
         ]
-        for test_str, test_cat in zip(
-            test_strs, [ak.Categorical(s) for s in test_strs]
-        ):
+        for test_str, test_cat in zip(test_strs, [ak.Categorical(s) for s in test_strs]):
             cast_str = ak.cast(test_cat, ak.Strings)
             self.assertTrue((cast_str == test_str).all())
             cast_cat = ak.cast(test_str, ak.Categorical)
@@ -1629,7 +1433,7 @@ class NumericTest(ArkoudaTest):
 
         # test with scalars
 
-        dtypes = ['int64', 'float64']
+        dtypes = ["int64", "float64"]
 
         for dtype1 in dtypes:
             for dtype2 in dtypes:
@@ -1638,7 +1442,7 @@ class NumericTest(ArkoudaTest):
                     lo = np.dtype(dtype2).type(ilo)
                     nd_arry = ia.astype(dtype3)
                     ak_arry = ak.array(nd_arry)
-                    assert (np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray()))
+                    assert np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray())
 
         # test with None for lower limit
 
@@ -1649,7 +1453,7 @@ class NumericTest(ArkoudaTest):
                     hi = np.dtype(dtype1).type(ihi)
                     nd_arry = ia.astype(dtype3)
                     ak_arry = ak.array(nd_arry)
-                    assert (np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray()))
+                    assert np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray())
 
         # test with None for upper limit
 
@@ -1660,11 +1464,11 @@ class NumericTest(ArkoudaTest):
                     lo = np.dtype(dtype2).type(ilo)
                     nd_arry = ia.astype(dtype3)
                     ak_arry = ak.array(nd_arry)
-                    assert (np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray()))
+                    assert np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray())
 
         # test with arrays for lo
 
-        ilo = np.full(ia.shape,ilo)
+        ilo = np.full(ia.shape, ilo)
         for dtype1 in dtypes:
             for dtype2 in dtypes:
                 for dtype3 in dtypes:
@@ -1673,12 +1477,15 @@ class NumericTest(ArkoudaTest):
                     nd_arry = ia.astype(dtype3)
                     ak_lo = ak.array(nd_lo)
                     ak_arry = ak.array(nd_arry)
-                    assert (np.allclose(np.clip(nd_arry, nd_lo, hi), ak.clip(ak_arry, ak_lo, hi).to_ndarray()))
+                    assert np.allclose(
+                        np.clip(nd_arry, nd_lo, hi),
+                        ak.clip(ak_arry, ak_lo, hi).to_ndarray(),
+                    )
 
         # test with arrays for hi
 
         ilo = 25
-        ihi = np.full(ia.shape,ihi)
+        ihi = np.full(ia.shape, ihi)
         for dtype1 in dtypes:
             for dtype2 in dtypes:
                 for dtype3 in dtypes:
@@ -1687,11 +1494,14 @@ class NumericTest(ArkoudaTest):
                     nd_arry = ia.astype(dtype3)
                     ak_hi = ak.array(nd_hi)
                     ak_arry = ak.array(nd_arry)
-                    assert (np.allclose(np.clip(nd_arry, lo, nd_hi), ak.clip(ak_arry, lo, ak_hi).to_ndarray()))
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, nd_hi),
+                        ak.clip(ak_arry, lo, ak_hi).to_ndarray(),
+                    )
 
-        # test with arrays for both 
+        # test with arrays for both
 
-        ilo = np.full(ia.shape,ilo)
+        ilo = np.full(ia.shape, ilo)
         for dtype1 in dtypes:
             for dtype2 in dtypes:
                 for dtype3 in dtypes:
@@ -1701,5 +1511,7 @@ class NumericTest(ArkoudaTest):
                     ak_lo = ak.array(nd_lo)
                     ak_hi = ak.array(nd_hi)
                     ak_arry = ak.array(nd_arry)
-                    assert (np.allclose(np.clip(nd_arry, nd_lo, nd_hi), ak.clip(ak_arry, ak_lo, ak_hi).to_ndarray()))
-
+                    assert np.allclose(
+                        np.clip(nd_arry, nd_lo, nd_hi),
+                        ak.clip(ak_arry, ak_lo, ak_hi).to_ndarray(),
+                    )
