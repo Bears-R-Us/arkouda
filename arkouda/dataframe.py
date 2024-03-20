@@ -915,6 +915,7 @@ class DataFrame(UserDict):
     @property
     def loc(self):
         return LocIndexer(self)
+    
     def set_row(self, key, value):
 
         # Set a single row in the dataframe using a dict of values
@@ -938,6 +939,7 @@ class DataFrame(UserDict):
                     if k == "index":
                         continue
                     self[k][key] = v
+
     def __len__(self):
         """
         Return the number of rows.
@@ -1119,7 +1121,50 @@ class DataFrame(UserDict):
         # To stay consistent with numpy, provide the old index values
         return DataFrame(initialdata=result, index=self.index.index[key])
 
+    def column_labels(self):
+        """
+        Return the column labels.
+        """
+        return self._columns
 
+    def add_new_rows(self, key):
+        # If the key is a scalar, convert it to an array
+        if is_supported_scalar(key) and dtype(type(key)) == self.index.dtype:
+            key = array([key])
+        
+        # Cannot add new rows to dataframes with String columns
+        for k in self._columns:
+            if isinstance(UserDict.__getitem__(self, k), Strings):
+                raise ValueError(
+                    "This DataFrame has a column of type ak.Strings;"
+                    " so this DataFrame is immutable. This feature could change"
+                    " if arkouda supports mutable Strings in the future."
+                )
+        
+
+        if isinstance(key, pdarray) and key.dtype == self.index.dtype:
+            new_keys = key[in1d(key, self.index.values, invert=True)]
+            self._set_index(self.index.concat(Index(new_keys)))
+            for k in self._columns:
+                current_col = UserDict.__getitem__(self, k)
+                new_col = concatenate([current_col, full(len(new_keys), 0, dtype=current_col.dtype)])
+                UserDict.__setitem__(self, k, new_col)
+
+            self.update_nrows()
+        else:
+            raise ValueError("Invalid key type for adding new rows")
+
+    def add_column(self, key, dtype):
+        """
+        Adds a column to the DataFrame with the given key and dtype.
+        """
+        if key in self.columns:
+            raise ValueError(f"Column {key} already exists in DataFrame")
+        default_value = 0
+        if dtype == akfloat64:
+            default_value = np.nan
+        self[key] = full(len(self), default_value, dtype=dtype)
+    
     def transfer(self, hostname, port):
         """
         Sends a DataFrame to a different Arkouda server.
@@ -4609,7 +4654,80 @@ class LocIndexer:
         return None
 
     def set_row_col(self, row_key, col_key, val):
+        if isinstance(row_key, list):
+            row_key = array(row_key)
+        if isinstance(row_key, Series):
+            #TODO: align indices
+            row_key = row_key.values
+        if is_supported_scalar(col_key) and col_key not in self.df.column_labels():
+            self.df.add_column(col_key, dtype(type(val)))
+
+        if is_supported_scalar(val):
+            return self.set_row_col_scalar_val(row_key, col_key, val)
+        else:
+            return self.set_row_col_vector_val(row_key, col_key, val)
+        
+    def set_row_col_scalar_val(self, row_key, col_key, val):
+        if is_supported_scalar(row_key):
+            if not self.df.index.dtype == dtype(type(row_key)):
+                raise TypeError("Row key must be of the same type as the DataFrame index")
+            if any(in1d(array([row_key]), self.df.index.values, invert=True)):
+                self.df.add_new_rows(row_key)
+            # updating a single row
+            row_idx = indexof1d(array([row_key]), self.df.index.values)
+            if row_idx.size == 0:
+                raise ValueError(f"Index {row_key} not found in DataFrame index")
+            
+            self.df.data[col_key][row_idx] = val
+        
+        if isinstance(row_key, pdarray) and row_key.dtype == self.df.index.dtype:
+            if any(in1d(row_key, self.df.index.values, invert=True)):
+                self.df.add_new_rows(row_key)
+            # updating multiple rows
+            row_idx = indexof1d(row_key, self.df.index.values)
+            self.df.data[col_key][row_idx] = val
+
+        if isinstance(row_key, pdarray) and row_key.dtype == akbool:
+            self.df.data[col_key][row_key] = val
+        if isinstance(row_key, slice):
+            if row_key.start is not None and not (in1d(array([row_key.start]), self.df.index.values)):
+                raise ValueError(f"Index {row_key.start} not found in DataFrame index")
+            if row_key.stop is not None and not any(in1d(array([row_key.stop]), self.df.index.values)):
+                raise ValueError(f"Index {row_key.stop} not found in DataFrame index")
+            
+            start_idx = indexof1d(array([row_key.start]), self.df.index.values)[0] if row_key.start is not None else 0
+            stop_idx = indexof1d(array([row_key.stop]), self.df.index.values)[0] + 1 if row_key.stop is not None else self.df.index.size
+
+            indices = arange(start_idx, stop_idx)
+            self.df.data[col_key][indices] = val
+        
+        
         return None
+    def set_row_col_vector_val(self, row_key, col_key, val):
+        if isinstance(val, Series):
+            aligned_indices = indexof1d(val.index.values, self.df.index.values)
+            print('aligned_indices:', aligned_indices)
+            self.df.data[col_key][aligned_indices] = val.values
+            return
+        if isinstance(row_key, pdarray) and row_key.dtype == self.df.index.dtype:
+            if any(in1d(row_key, self.df.index.values, invert=True)):
+                self.df.add_new_rows(row_key)
+            # updating multiple rows
+            row_idx = indexof1d(row_key, self.df.index.values)
+            self.df.data[col_key][row_idx] = val
+        if isinstance(row_key, slice):
+            if row_key.start is not None and not (in1d(array([row_key.start]), self.df.index.values)):
+                raise ValueError(f"Index {row_key.start} not found in DataFrame index")
+            if row_key.stop is not None and not any(in1d(array([row_key.stop]), self.df.index.values)):
+                raise ValueError(f"Index {row_key.stop} not found in DataFrame index")
+            
+            start_idx = indexof1d(array([row_key.start]), self.df.index.values)[0] if row_key.start is not None else 0
+            stop_idx = indexof1d(array([row_key.stop]), self.df.index.values)[0] + 1 if row_key.stop is not None else self.df.index.size
+
+            indices = arange(start_idx, stop_idx)
+            self.df.data[col_key][indices] = val
+        return None
+    
 
 def intx(a, b):
     """

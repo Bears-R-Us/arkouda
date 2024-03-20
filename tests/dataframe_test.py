@@ -4,6 +4,7 @@ import os
 import random
 import string
 import tempfile
+import math
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -1515,7 +1516,10 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(_df.index.tolist(), df.index.to_list())
         self.assertListEqual(_df.columns.tolist(), df.columns.to_list())
         for column in _df.columns:
-            self.assertListEqual(_df[column].values.tolist(), df[column].values.to_list(), "failure for column {}".format(column))
+            pd_list = _df[column].values.tolist()
+            ak_list = df[column].values.to_list()
+            for i in range(len(pd_list)):
+                self.assertTrue(pd_list[i] == ak_list[i] or math.isnan(pd_list[i]) and math.isnan(ak_list[i]), "failure for column {}. {} vs {}".format(column, pd_list, ak_list))
 
     def test_loc_get(self):
         ints = [0,1,3,7,3]
@@ -1584,7 +1588,7 @@ class DataFrameTest(ArkoudaTest):
         #TODO: tests for other index types
 
 
-    def test_loc_set(self):
+    def test_loc_set_scalar(self):
         ints = [0,1,3,7,3]
         floats = [0.0, 1.5, 0.5, 1.5, -1.0]
         strings = ["A", "C", "C", "DE", "Z"]
@@ -1612,13 +1616,13 @@ class DataFrameTest(ArkoudaTest):
         df1.loc[[2,3,4], 'floats'] = 101.0
         self.check_df_equality(_df1, df1)
 
-        # setting an entire row
-        _df1.loc[2] = [100, 100.0, "100"]
-        #TODO: can't do this with arkouda unless all the columns are the same type.
-
         # setting an entire column
         _df1.loc[:,'floats'] = 99.0
         df1.loc[:,'floats'] = 99.0
+        self.check_df_equality(_df1, df1)
+
+        _df1.loc[1:3,'floats'] = 98.0
+        df1.loc[1:3,'floats'] = 98.0
         self.check_df_equality(_df1, df1)
 
         # setting value for rows matching boolean 
@@ -1626,10 +1630,91 @@ class DataFrameTest(ArkoudaTest):
         df1.loc[df1['ints'] == 3, 'floats'] = 102.0
         self.check_df_equality(_df1, df1)
 
-        # setting with Series matches index labels, not positions
-        
-        # setting with DataFrame matches index labels, not positions
+        # incorrect column index type
+        with self.assertRaises(TypeError):
+            df1.loc[2, 1] = 100.0
 
+        #incorrect row index type
+        with self.assertRaises(TypeError):
+            df1.loc[1.0, 'floats'] = 100.0
+
+        #TODO: df2 and _df2
+        
+
+    def test_loc_set_vector(self):
+        ints = [0,1,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        default_index = [0,1,2,3,4]
+        unordered_index = [9,3,0,23,3]
+        string_index = ['one','two','three','four','five']
+
+        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+
+        # two rows, one column, two values
+        _df1.loc[[2,3], 'floats'] = np.array([100.0, 101.0])
+        df1.loc[[2,3], 'floats'] = ak.array([100.0, 101.0])
+        self.check_df_equality(_df1, df1)
+
+        # setting with Series matches index labels, not positions
+        _df1.loc[:, 'floats'] = pd.Series([100.0, 101.0, 102.0, 103.0, 104.0], index=[0,1,2,3,4])
+        df1.loc[:, 'floats'] = ak.Series(ak.array([100.0, 101.0, 102.0, 103.0, 104.0]), index=ak.array([0,1,2,3,4]))
+        self.check_df_equality(_df1, df1)
+
+        # setting with Series with unordered index
+        _df1.loc[:, 'ints'] = pd.Series([2,3,4,5,6], index=[3,2,1,0,4])
+        df1.loc[:, 'ints'] = ak.Series(ak.array([2,3,4,5,6]), index=ak.array([3,2,1,0,4]))
+        self.check_df_equality(_df1, df1)
+
+        # setting with Series against an array of indices
+        _df1.loc[np.array([2,3,4]), 'floats'] = pd.Series([70.0,71.0,72.0], index=[3,4,2])
+        df1.loc[ak.array([2,3,4]), 'floats'] = ak.Series(ak.array([70.0,71.0,72.0]), index=ak.array([3,4,2]))
+        self.check_df_equality(_df1, df1)
+
+    def test_set_new_values(self):
+        ints = [0,1,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        default_index = [0,1,2,3,4]
+        unordered_index = [9,3,0,23,3]
+        string_index = ['one','two','three','four','five']
+
+        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats)})
+        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats)})
+
+        # new column
+        _df1.loc[2, 'not'] = 100.0
+        df1.loc[2, 'not'] = 100.0
+        self.check_df_equality(_df1, df1)
+
+        # TODO: The following two lines behave differently because pandas
+        # converts the int column to floating point to accomodate the nan
+        # value of the new column
+        #_df1.loc[100, 'floats'] = 100.0
+        #df1.loc[100, 'floats'] = 100.0
+        #self.check_df_equality(_df1, df1)
+
+        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+        
+        # can add new columns to a dataframe with string columns
+        _df2.loc[2, 'not'] = 100.0
+        df2.loc[2, 'not'] = 100.0
+        self.check_df_equality(_df2, df2)
+
+        # cannot add new rows to a dataframe with string column
+        with self.assertRaises(ValueError):
+            df2.loc[100, 'floats'] = 100.0
+        
+
+    def test_iloc_get(self):
+        pass
+
+    def test_iloc_set(self):
+        pass
 
 
 
