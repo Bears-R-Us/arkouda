@@ -2044,7 +2044,7 @@ def clip(
                                                 or becomes lo if x < lo,
                                                 or becomes hi if x > hi.
 
-    Examples:
+    Examples
     --------
     >>> a = ak.array([1,2,3,4,5,6,7,8,9,10])
     >>> ak.clip(a,3,8)
