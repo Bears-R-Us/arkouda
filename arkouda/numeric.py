@@ -2101,8 +2101,6 @@ def clip(
     pda1 = pda
     if lo is not None:
         pda1 = where(pda < lo, lo, pda)
-#    else:
-#        pda1 = pda[:]
     if hi is not None:
         pda1 = where(pda1 > hi, hi, pda1)
     return pda1
