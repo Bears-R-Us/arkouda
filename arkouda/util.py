@@ -339,7 +339,7 @@ def sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=1
     >>> idx2 = ak.array([0, 1, 3, 6, 9])
     >>> vals1 = idx1
     >>> vals2 = ak.array([10, 11, 13, 16, 19])
-    >>> ak.util.sparse_sum_help(idx1, inds2, vals1, vals2)
+    >>> ak.util.sparse_sum_help(idx1, idx2, vals1, vals2)
     (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
 
     >>> ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((vals1, vals2)))
@@ -354,6 +354,57 @@ def sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=1
             "val2": val2,
             "merge": merge,
             "percent_transfer_limit": percent_transfer_limit,
+        },
+    )
+    inds, vals = repMsg.split("+", maxsplit=1)
+    return create_pdarray(inds), create_pdarray(vals)
+
+
+def sparse_sum_partition_help(idx1, idx2, val1, val2):
+    """
+    Helper for summing two sparse matrices together
+
+    Return is equivalent to
+    ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))
+
+    This operates by calculating the optimal partition
+    to write the output data prior to the sort operation.
+
+    Parameters
+    -----------
+    idx1: pdarray
+        indices for the first sparse matrix
+    idx2: pdarray
+        indices for the second sparse matrix
+    val1: pdarray
+        values for the first sparse matrix
+    val2: pdarray
+        values for the second sparse matrix
+
+    Returns
+    --------
+    (pdarray, pdarray)
+        indices and values for the summed sparse matrix
+
+    Examples
+    --------
+    >>> idx1 = ak.array([0, 1, 3, 4, 7, 9])
+    >>> idx2 = ak.array([0, 1, 3, 6, 9])
+    >>> vals1 = idx1
+    >>> vals2 = ak.array([10, 11, 13, 16, 19])
+    >>> ak.util.sparse_sum_partition_help(idx1, idx2, vals1, vals2)
+    (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
+
+    >>> ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((vals1, vals2)))
+    (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
+    """
+    repMsg = generic_msg(
+        cmd="sparseSumPartitionHelp",
+        args={
+            "idx1": idx1,
+            "idx2": idx2,
+            "val1": val1,
+            "val2": val2,
         },
     )
     inds, vals = repMsg.split("+", maxsplit=1)

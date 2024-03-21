@@ -318,6 +318,68 @@ module ArraySetopsMsg
         }
       }
     }
+
+    proc sparseSumPartitionHelpMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+      param pn = Reflection.getRoutineName();
+      var repMsg: string; // response message
+
+      var iname = st.nextName();
+      var vname = st.nextName();
+
+      const gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("idx1"), st);
+      const gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("idx2"), st);
+      const gEnt3: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("val1"), st);
+      const gEnt4: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("val2"), st);
+
+      const gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
+      const gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
+      const union_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
+      overMemLimit(union_maxMem);
+
+      select(gEnt.dtype, gEnt2.dtype, gEnt3.dtype, gEnt4.dtype) {
+        when (DType.Int64, DType.Int64, DType.Int64, DType.Int64) {
+          const e = toSymEntry(gEnt,int);
+          const f = toSymEntry(gEnt2,int);
+          const g = toSymEntry(gEnt3,int);
+          const h = toSymEntry(gEnt4,int);
+          const ref ea = e.a;
+          const ref fa = f.a;
+          const ref ga = g.a;
+          const ref ha = h.a;
+
+          const (retIdx, retVals) = sparseSumPartitionHelper(ea, fa, ga, ha);
+          st.addEntry(iname, createSymEntry(retIdx));
+          st.addEntry(vname, createSymEntry(retVals));
+
+          const repMsg = "created " + st.attrib(iname) + "+created " + st.attrib(vname);
+          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+          return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+        when (DType.Int64, DType.Int64, DType.UInt64, DType.UInt64) {
+          const e = toSymEntry(gEnt,int);
+          const f = toSymEntry(gEnt2,int);
+          const g = toSymEntry(gEnt3,uint);
+          const h = toSymEntry(gEnt4,uint);
+          const ref ea = e.a;
+          const ref fa = f.a;
+          const ref ga = g.a;
+          const ref ha = h.a;
+
+          const (retIdx, retVals) = sparseSumPartitionHelper(ea, fa, ga, ha);
+          st.addEntry(iname, createSymEntry(retIdx));
+          st.addEntry(vname, createSymEntry(retVals));
+
+          const repMsg = "created " + st.attrib(iname) + "+created " + st.attrib(vname);
+          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+          return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+        otherwise {
+          var errorMsg = notImplementedError("sparseSumPartitionHelper",gEnt.dtype);
+          asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+      }
+    }
     
     use CommandMap;
     registerFunction("intersect1d", intersect1dMsg, getModuleName());
@@ -325,4 +387,5 @@ module ArraySetopsMsg
     registerFunction("setxor1d", setxor1dMsg, getModuleName());
     registerFunction("union1d", union1dMsg, getModuleName());
     registerFunction("sparseSumHelp", sparseSumHelpMsg, getModuleName());
+    registerFunction("sparseSumPartitionHelp", sparseSumPartitionHelpMsg, getModuleName());
 }
