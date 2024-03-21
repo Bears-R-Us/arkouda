@@ -576,8 +576,8 @@ class TestString:
             False,
             False,
             True,
-            True,
-            True,
+            False,
+            False,
             False,
         ]
 

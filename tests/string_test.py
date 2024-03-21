@@ -661,8 +661,8 @@ class StringTest(ArkoudaTest):
             False,
             False,
             True,
-            True,
-            True,
+            False,
+            False,
             False,
         ]
 

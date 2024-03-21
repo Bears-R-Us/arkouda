@@ -618,6 +618,14 @@ class Strings:
         array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
         >>> strings.isdecimal()
         array([False False False True True True])
+
+        Special Character Examples
+        --------------------------
+        >>> special_strings = ak.array(["3.14", "\u0030", "\u00B2", "2³₇", "2³x₇"])
+        >>> special_strings
+        array(['3.14', '0', '²', '2³₇', '2³x₇'])
+        >>> special_strings.isdecimal()
+        array([False True False False False])
         """
         return create_pdarray(
             generic_msg(
@@ -881,6 +889,14 @@ class Strings:
         array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
         >>> strings.isdigit()
         array([False False False True True True])
+        
+        Special Character Examples
+        --------------------------
+        >>> special_strings = ak.array(["3.14", "\u0030", "\u00B2", "2³₇", "2³x₇"])
+        >>> special_strings
+        array(['3.14', '0', '²', '2³₇', '2³x₇'])
+        >>> special_strings.isdigit()
+        array([False True True True False])
         """
         return create_pdarray(
             generic_msg(
