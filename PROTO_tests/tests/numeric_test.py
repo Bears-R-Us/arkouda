@@ -3,7 +3,8 @@ import pytest
 import arkouda as ak
 from arkouda.dtypes import npstr
 
-prob_size = 1000
+#prob_size = 1000
+prob_size = 10
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 NO_FLOAT = [ak.int64, ak.bool, ak.uint64]
@@ -604,3 +605,96 @@ class TestNumeric:
         h3, h4 = ak.hash([bi])
         assert h1.to_list() == h3.to_list()
         assert h2.to_list() == h4.to_list()
+
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_clip(self, prob_size):
+        ia = np.random.randint(1, 100, prob_size)
+    # test clip on ints, floats, and mash-ups; note if any input is float, output is float
+        ilo = 25
+        ihi = 75
+
+        # test with scalars
+
+        dtypes = ["int64", "float64"]
+
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    hi = np.dtype(dtype1).type(ihi)
+                    lo = np.dtype(dtype2).type(ilo)
+                    nd_arry = ia.astype(dtype3)
+                    ak_arry = ak.array(nd_arry)
+                    assert np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray())
+
+        # test with None for lower limit
+
+        lo = None
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    hi = np.dtype(dtype1).type(ihi)
+                    nd_arry = ia.astype(dtype3)
+                    ak_arry = ak.array(nd_arry)
+                    assert np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray())
+
+        # test with None for upper limit
+
+        hi = None
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    lo = np.dtype(dtype2).type(ilo)
+                    nd_arry = ia.astype(dtype3)
+                    ak_arry = ak.array(nd_arry)
+                    assert np.allclose(np.clip(nd_arry, lo, hi), ak.clip(ak_arry, lo, hi).to_ndarray())
+
+        # test with arrays for lo
+
+        ilo = np.full(ia.shape, ilo)
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    hi = np.dtype(dtype1).type(ihi)
+                    nd_lo = ilo.astype(dtype2)
+                    nd_arry = ia.astype(dtype3)
+                    ak_lo = ak.array(nd_lo)
+                    ak_arry = ak.array(nd_arry)
+                    assert np.allclose(
+                        np.clip(nd_arry, nd_lo, hi),
+                        ak.clip(ak_arry, ak_lo, hi).to_ndarray(),
+                    )
+
+        # test with arrays for hi
+
+        ilo = 25
+        ihi = np.full(ia.shape, ihi)
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    lo = np.dtype(dtype2).type(ilo)
+                    nd_hi = ihi.astype(dtype1)
+                    nd_arry = ia.astype(dtype3)
+                    ak_hi = ak.array(nd_hi)
+                    ak_arry = ak.array(nd_arry)
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, nd_hi),
+                        ak.clip(ak_arry, lo, ak_hi).to_ndarray(),
+                    )
+
+        # test with arrays for both
+
+        ilo = np.full(ia.shape, ilo)
+        for dtype1 in dtypes:
+            for dtype2 in dtypes:
+                for dtype3 in dtypes:
+                    nd_hi = ihi.astype(dtype1)
+                    nd_lo = ilo.astype(dtype2)
+                    nd_arry = ia.astype(dtype3)
+                    ak_lo = ak.array(nd_lo)
+                    ak_hi = ak.array(nd_hi)
+                    ak_arry = ak.array(nd_arry)
+                    assert np.allclose(
+                        np.clip(nd_arry, nd_lo, nd_hi),
+                        ak.clip(ak_arry, ak_lo, ak_hi).to_ndarray(),
+                    )

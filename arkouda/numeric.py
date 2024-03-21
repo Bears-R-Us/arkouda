@@ -2015,29 +2015,34 @@ def clip(
     hi: Union[numeric_scalars, pdarray],
 ) -> pdarray:
     """
-    clip (limit) the values in an array to a given range [lo,hi]
+    Clip (limit) the values in an array to a given range [lo,hi]
 
     Given an array a, values outside the range are clipped to the
     range edges, such that all elements lie in the range.
 
-    There is no check on lo < hi, and if lo > hi, the corresponding
+    There is no check to enforce that lo < hi.  If lo > hi, the corresponding
     value of the array will be set to hi.
+
+    If lo or hi (or both) are pdarrays, the check is by pairwise elements.
+    See examples.
 
     Parameters
     ----------
-    pda : pdarray, the values to clip
-    lo  : a scalar or pdarray of the lower value(s) to clip to
-    hi  : a scalar or pdarray of the higher value(s) to clip to
-    NOTE: either lo or hi may be None, but not both.
+    pda : pdarray, int64 or float64
+        the array of values to clip
+    lo  : scalar or pdarray, int64 or float64
+        the lower value of the clipping range
+    hi  : scalar or pdarray, int64 or float64
+        the higher value of the clipping range
+    If lo or hi (or both) are pdarrays, the check is by pairwise elements.
+        See examples.
 
     Returns
     -------
-    a pdarray matching pda, except that element x remains x if lo <= x <= hi,
-                                                or becomes lo if x < lo
-                                                or becomes hi if x > hi
-
-    if lo or hi (or both) are pdarrays, the check is by pairwise elements.
-    See examples.
+    arkouda.pdarrayclass.pdarray
+        A pdarray matching pda, except that element x remains x if lo <= x <= hi,
+                                                or becomes lo if x < lo,
+                                                or becomes hi if x > hi.
 
     Examples:
     --------
@@ -2045,7 +2050,9 @@ def clip(
     >>> ak.clip(a,3,8)
     array([3,3,3,4,5,6,7,8,8,8])
     >>> ak.clip(a,3,8.0)
-    array([3.00000000000000000 3.00000000000000000 3.00000000000000000 4.00000000000000000 5.00000000000000000 6.00000000000000000 7.00000000000000000 8.00000000000000000 8.00000000000000000 8.00000000000000000])
+    array([3.00000000000000000 3.00000000000000000 3.00000000000000000 4.00000000000000000
+           5.00000000000000000 6.00000000000000000 7.00000000000000000 8.00000000000000000
+           8.00000000000000000 8.00000000000000000])
     >>> ak.clip(a,None,7)
     array([1,2,3,4,5,6,7,7,7,7])
     >>> ak.clip(a,5,None)
@@ -2055,13 +2062,13 @@ def clip(
     >>> ak.clip(a,ak.array([2,2,3,3,8,8,5,5,6,6],8))
     array([2,2,3,4,8,8,7,8,8,8])
     >>> ak.clip(a,4,ak.array([10,9,8,7,6,5,5,5,5,5]))
-    array([4,4,4,4,5,5,5,5,5,5])   Note that hi < lo for much of this array ; see Notes
+    array([4,4,4,4,5,5,5,5,5,5])
 
     Notes
     -----
-    if lo > hi, all x = hi.
-
-    if all inputs are int, output is int, but if any input is real, output is real.
+    Either lo or hi may be None, but not both.
+    If lo > hi, all x = hi.
+    If all inputs are int64, output is int64, but if any input is float64, output is float64.
 
     Raises
     ------
@@ -2069,13 +2076,13 @@ def clip(
         Raised if both lo and hi are None
     """
 
-    # see if lo or hi are None
+    # Check that a range was actually supplied.
 
     if lo is None and hi is None:
         raise ValueError("Either min or max must be supplied.")
 
-    # if any of the inputs are float, then make everything float
-    # note that some type checking is needed, because scalars and pdarrays get cast differently
+    # If any of the inputs are float, then make everything float.
+    # Some type checking is needed, because scalars and pdarrays get cast differently.
 
     dataFloat = pda.dtype == float
     minFloat = isinstance(lo, float) or (isinstance(lo, pdarray) and lo.dtype == float)
@@ -2089,7 +2096,7 @@ def clip(
         if hi is not None and not maxFloat:
             hi = cast(hi, np.float64) if isinstance(hi, pdarray) else float(hi)
 
-    # now do the computation.  The below mimics numpy.clip, including the anomaly where lo>hi
+    # Now do the clipping.
 
     if lo is not None:
         pda1 = where(pda < lo, lo, pda)
