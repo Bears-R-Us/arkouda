@@ -3,8 +3,7 @@ import pytest
 import arkouda as ak
 from arkouda.dtypes import npstr
 
-#prob_size = 1000
-prob_size = 10
+prob_size = 1000
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 NO_FLOAT = [ak.int64, ak.bool, ak.uint64]
