@@ -1,5 +1,6 @@
+import builtins
 import json
-from typing import Sequence, Tuple, cast
+from typing import Sequence, Tuple, Union, cast
 from warnings import warn
 
 from typeguard import typechecked
@@ -7,9 +8,16 @@ from typeguard import typechecked
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
+from arkouda.dtypes import (
+    _is_dtype_in_union,
+    dtype,
+    float_scalars,
+    int_scalars,
+    numeric_scalars,
+)
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_registry
-from arkouda.pdarrayclass import create_pdarray
+from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
 from arkouda.segarray import SegArray
@@ -408,3 +416,97 @@ def convert_bytes(nbytes, unit="B"):
         return nbytes / mb
     elif unit == "GB":
         return nbytes / gb
+
+
+def is_numeric(arry: Union[pdarray, Strings, Categorical]) -> builtins.bool:
+    """
+    Check if the dtype of the given array is numeric.
+
+    Parameters:
+         arry ((pdarray, Strings, Categorical)):
+            The input pdarray, Strings, or Categorical object.
+
+    Returns
+    -------
+    bool:
+        True if the dtype of pda is numeric, False otherwise.
+
+    Example:
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> data = ak.array([1, 2, 3, 4, 5])
+        >>> is_numeric(data)
+        True
+
+        >>> strings = ak.array(["a", "b", "c"])
+        >>> is_numeric(strings)
+        False
+
+    """
+    if isinstance(arry, pdarray):
+        return _is_dtype_in_union(dtype(arry.dtype), numeric_scalars)
+    else:
+        return False
+
+
+def is_float(arry: Union[pdarray, Strings, Categorical]):
+    """
+    Check if the dtype of the given array is float.
+
+    Parameters:
+         arry ((pdarray, Strings, Categorical)):
+            The input pdarray, Strings, or Categorical object.
+
+    Returns
+    -------
+    bool:
+        True if the dtype of pda is of type float, False otherwise.
+
+    Example:
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> data = ak.array([1.0, 2, 3, 4, np.nan])
+        >>> is_float(data)
+        True
+
+        >>> data2 = ak.arange(5)
+        >>> is_float(data2)
+        False
+
+    """
+    if isinstance(arry, pdarray):
+        return _is_dtype_in_union(dtype(arry.dtype), float_scalars)
+    else:
+        return False
+
+
+def is_int(arry: Union[pdarray, Strings, Categorical]):
+    """
+    Check if the dtype of the given array is int.
+
+    Parameters
+    ----------
+    arry ((pdarray, Strings, Categorical)):
+            The input pdarray, Strings, or Categorical object.
+
+    Returns
+    -------
+    bool:
+        True if the dtype of pda is of type int, False otherwise.
+
+    Example:
+    >>> import arkouda as ak
+    >>> ak.connect()
+    >>> data = ak.array([1.0, 2, 3, 4, np.nan])
+    >>> is_int(data)
+    False
+
+    >>> data2 = ak.arange(5)
+    >>> is_int(data2)
+    True
+
+    """
+    if isinstance(arry, pdarray):
+        return _is_dtype_in_union(dtype(arry.dtype), int_scalars)
+    else:
+        return False

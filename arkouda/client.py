@@ -7,7 +7,7 @@ from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 import pyfiglet  # type: ignore
 
 from arkouda import __version__, io_util, security
-from arkouda.logger import getArkoudaLogger, LogLevel
+from arkouda.logger import LogLevel, getArkoudaLogger
 from arkouda.message import (
     MessageFormat,
     MessageType,
@@ -15,7 +15,6 @@ from arkouda.message import (
     ReplyMessage,
     RequestMessage,
 )
-
 
 __all__ = [
     "connect",
@@ -266,8 +265,8 @@ class Channel:
         user: str,
         server: str = "localhost",
         port: int = 5555,
-        token: str = None,
-        connect_url: str = None,
+        token: Optional[str] = None,
+        connect_url: Optional[str] = None,
     ) -> None:
         """
         user : str
@@ -288,7 +287,7 @@ class Channel:
         self._set_access_token(server, port, token)
         self.logger = getArkoudaLogger(name="Arkouda Client")
 
-    def _set_url(self, server: str, port: int, connect_url: str = None) -> None:
+    def _set_url(self, server: str, port: int, connect_url: Optional[str] = None) -> None:
         """
         If the connect_url is None, generates and sets the Channel url per the
         Channel protocol as well as host and port. Otherwise, sets the Channel url
@@ -371,9 +370,9 @@ class Channel:
         self,
         cmd: str,
         recv_binary: bool = False,
-        args: str = None,
+        args: Optional[str] = None,
         size: int = -1,
-        request_id: str = None,
+        request_id: Optional[str] = None,
     ) -> Union[str, memoryview]:
         """
         Generates a RequestMessage encapsulating command and requesting
@@ -419,9 +418,9 @@ class Channel:
         cmd: str,
         payload: memoryview,
         recv_binary: bool = False,
-        args: str = None,
+        args: Optional[str] = None,
         size: int = -1,
-        request_id: str = None,
+        request_id: Optional[str] = None,
     ) -> Union[str, memoryview]:
         """
         Generates a RequestMessage encapsulating command and requesting user information,
@@ -437,7 +436,7 @@ class Channel:
             object on the Arkouda server
         recv_binary : bool, defaults to False
             Indicates if the return message will be a string or binary data
-        args : str
+        args : str, default=None
             A delimited string containing 1..n command arguments
         request_id: str, defaults to None
             Specifies an identifier for each request submitted to Arkouda
@@ -500,9 +499,9 @@ class ZmqChannel(Channel):
         self,
         cmd: str,
         recv_binary: bool = False,
-        args: str = None,
+        args: Optional[str] = None,
         size: int = -1,
-        request_id: str = None,
+        request_id: Optional[str] = None,
     ) -> Union[str, memoryview]:
         message = RequestMessage(
             user=username, token=self.token, cmd=cmd, format=MessageFormat.STRING, args=args, size=size
@@ -541,9 +540,9 @@ class ZmqChannel(Channel):
         cmd: str,
         payload: memoryview,
         recv_binary: bool = False,
-        args: str = None,
+        args: Optional[str] = None,
         size: int = -1,
-        request_id: str = None,
+        request_id: Optional[str] = None,
     ) -> Union[str, memoryview]:
         # Note - Size is a placeholder here because Binary msg not yet support json args and
         # request_id is a noop for now
@@ -616,7 +615,10 @@ channelType = ChannelType(os.getenv("ARKOUDA_CHANNEL_TYPE", "ZMQ").upper())
 
 
 def get_channel(
-    server: str = "localhost", port: int = 5555, token: str = None, connect_url: str = None
+    server: str = "localhost",
+    port: int = 5555,
+    token: Optional[str] = None,
+    connect_url: Optional[str] = None,
 ) -> Channel:
     """
     Returns the configured Channel implementation
@@ -628,7 +630,7 @@ def get_channel(
         machine). Defaults to `localhost`.
     port : int
         The port of the server. Defaults to 5555.
-    access_token : str, optional
+    token : str, optional
         The token used to connect to an existing socket to enable access to
         an Arkouda server where authentication is enabled. Defaults to None.
     connect_url : str, optional
@@ -656,9 +658,9 @@ def connect(
     server: str = "localhost",
     port: int = 5555,
     timeout: int = 0,
-    access_token: str = None,
-    connect_url: str = None,
-    access_channel: Channel = None,
+    access_token: Optional[str] = None,
+    connect_url: Optional[str] = None,
+    access_channel: Optional[Channel] = None,
 ) -> None:
     """
     Connect to a running arkouda server.
@@ -904,14 +906,14 @@ def shutdown() -> None:
     serverConfig = None
 
 
-def _json_args_to_str(json_obj: Dict = None) -> Tuple[int, str]:
+def _json_args_to_str(json_obj: Optional[Dict] = None) -> Tuple[int, str]:
     """
     Convert Python Dictionary into a JSON formatted string that can be parsed by the msg
     processing system on the Arkouda Server
 
     Parameters
     ----------
-    json_obj : dict
+    json_obj : dict = None
         Python dictionary of key:val representing command arguments
 
     Return
@@ -945,8 +947,8 @@ def _json_args_to_str(json_obj: Dict = None) -> Tuple[int, str]:
 
 def generic_msg(
     cmd: str,
-    args: Dict = None,
-    payload: memoryview = None,
+    args: Optional[Dict] = None,
+    payload: Optional[memoryview] = None,
     send_binary: bool = False,
     recv_binary: bool = False,
 ) -> Union[str, memoryview]:

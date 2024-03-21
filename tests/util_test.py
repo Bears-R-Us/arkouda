@@ -1,6 +1,7 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
-
+import numpy as np
+from arkouda.util import is_numeric, is_int, is_float
 
 class UtilTest(ArkoudaTest):
     def test_sparse_sum_helper(self):
@@ -21,3 +22,26 @@ class UtilTest(ArkoudaTest):
         self.assertTrue((merge_idx == sort_idx).all())
         self.assertTrue((merge_idx == gb_idx).all())
         self.assertTrue((merge_vals == sort_vals).all())
+
+    def test_is_numeric(self):
+        a = ak.array(["a", "b"])
+        b = ak.array([1, 2])
+        c = ak.Categorical(a)
+        d = ak.array([1, np.nan])
+
+        self.assertFalse(is_numeric(a))
+        self.assertTrue(is_numeric(b))
+        self.assertFalse(is_numeric(c))
+        self.assertTrue(is_numeric(d))
+
+        self.assertFalse(is_int(a))
+        self.assertTrue(is_int(b))
+        self.assertFalse(is_int(c))
+        self.assertFalse(is_int(d))
+
+        self.assertFalse(is_float(a))
+        self.assertFalse(is_float(b))
+        self.assertFalse(is_float(c))
+        self.assertTrue(is_float(d))
+
+

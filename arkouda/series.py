@@ -16,7 +16,7 @@ from arkouda.dtypes import dtype, float64, int64
 from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numeric import cast as akcast
-from arkouda.numeric import value_counts
+from arkouda.numeric import isnan, value_counts
 from arkouda.pdarrayclass import (
     RegistrationError,
     any,
@@ -24,10 +24,10 @@ from arkouda.pdarrayclass import (
     create_pdarray,
     pdarray,
 )
-from arkouda.pdarraycreation import arange, array, zeros
+from arkouda.pdarraycreation import arange, array, full, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.strings import Strings
-from arkouda.util import convert_if_categorical, get_callback
+from arkouda.util import convert_if_categorical, get_callback, is_float
 
 # pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
 # truncation issues. If issues arise, that's where to look for it.
@@ -819,7 +819,7 @@ class Series:
 
     @typechecked
     def to_dataframe(
-        self, index_labels: List[str] = None, value_label: str = None
+        self, index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None
     ) -> arkouda.dataframe.DataFrame:
         """Converts series to an arkouda data frame
 
@@ -1062,8 +1062,8 @@ class Series:
     def concat(
         arrays: List,
         axis: int = 0,
-        index_labels: List[str] = None,
-        value_labels: List[str] = None,
+        index_labels: Union[List[str], None] = None,
+        value_labels: Union[List[str], None] = None,
     ) -> Union[arkouda.dataframe.DataFrame, Series]:
         """Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
         vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
@@ -1245,9 +1245,309 @@ class Series:
         else:
             raise TypeError("Map must be dict or arkouda.Series.")
 
+    def isna(self) -> Series:
+        """
+        Detect missing values.
+
+        Return a boolean same-sized object indicating if the values are NA. NA values,
+        such as numpy.NaN, gets mapped to True values.
+        Everything else gets mapped to False values.
+        Characters such as empty strings '' are not considered NA values.
+
+        Returns
+        -------
+        arkouda.series.Series
+            Mask of bool values for each element in Series
+            that indicates whether an element is an NA value.
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> from arkouda import Series
+        >>> import numpy as np
+
+        >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+        >>> s.isna()
+
+        +----+---------+
+        |    |   0     |
+        +====+=========+
+        |  1 |   False |
+        +----+---------+
+        |  2 |   False |
+        +----+---------+
+        |  4 |   True  |
+        +----+---------+
+
+        """
+
+        if not is_float(self.values):
+            return Series(full(self.values.size, False, dtype=bool), index=self.index)
+
+        return Series(isnan(self.values), index=self.index)
+
+    def isnull(self) -> Series:
+        """
+        Series.isnull is an alias for Series.isna.
+
+        Detect missing values.
+
+        Return a boolean same-sized object indicating if the values are NA. NA values,
+        such as numpy.NaN, gets mapped to True values.
+        Everything else gets mapped to False values.
+        Characters such as empty strings '' are not considered NA values.
+
+        Returns
+        -------
+        arkouda.series.Series
+            Mask of bool values for each element in Series
+            that indicates whether an element is an NA value.
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> from arkouda import Series
+        >>> import numpy as np
+
+        >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+        >>> s.isnull()
+
+        +----+---------+
+        |    |   0     |
+        +====+=========+
+        |  1 |   False |
+        +----+---------+
+        |  2 |   False |
+        +----+---------+
+        |  4 |   True  |
+        +----+---------+
+
+        """
+        return self.isna()
+
+    def notna(self) -> Series:
+        """
+        Detect existing (non-missing) values.
+
+        Return a boolean same-sized object indicating if the values are not NA.
+        Non-missing values get mapped to True.
+        Characters such as empty strings '' are not considered NA values.
+        NA values, such as numpy.NaN, get mapped to False values.
+
+        Returns
+        -------
+        arkouda.series.Series
+            Mask of bool values for each element in Series
+            that indicates whether an element is not an NA value.
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> from arkouda import Series
+        >>> import numpy as np
+
+        >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+        >>> s.notna()
+
+        +----+---------+
+        |    |   0     |
+        +====+=========+
+        |  1 |   True  |
+        +----+---------+
+        |  2 |   True  |
+        +----+---------+
+        |  4 |   False |
+        +----+---------+
+
+        """
+
+        if not is_float(self.values):
+            return Series(full(self.values.size, True, dtype=bool), index=self.index)
+
+        return Series(~isnan(self.values), index=self.index)
+
+    def notnull(self) -> Series:
+        """
+        Series.notnull is an alias for Series.notna.
+
+        Detect existing (non-missing) values.
+
+        Return a boolean same-sized object indicating if the values are not NA.
+        Non-missing values get mapped to True.
+        Characters such as empty strings '' are not considered NA values.
+        NA values, such as numpy.NaN, get mapped to False values.
+
+        Returns
+        -------
+        arkouda.series.Series
+            Mask of bool values for each element in Series
+            that indicates whether an element is not an NA value.
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> from arkouda import Series
+        >>> import numpy as np
+
+        >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+        >>> s.notnull()
+
+        +----+---------+
+        |    |   0     |
+        +====+=========+
+        |  1 |   True  |
+        +----+---------+
+        |  2 |   True  |
+        +----+---------+
+        |  4 |   False |
+        +----+---------+
+
+        """
+        return self.notna()
+
+    def hasnans(self) -> bool:
+        """
+        Return True if there are any NaNs.
+
+        Returns
+        -------
+        bool
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> from arkouda import Series
+        >>> import numpy as np
+
+        >>> s = ak.Series(ak.array([1, 2, 3, np.nan]))
+        >>> s
+
+        >>> s.hasnans
+        True
+        """
+        if is_float(self.values):
+            return any(isnan(self.values))
+        else:
+            return False
+
+    def fillna(self, value) -> Series:
+        """
+        Fill NA/NaN values using the specified method.
+
+        Parameters
+        ----------
+        value : scalar, Series, or pdarray
+            Value to use to fill holes (e.g. 0), alternately a
+            Series of values specifying which value to use for
+            each index.  Values not in the Series will not be filled.
+            This value cannot be a list.
+
+        Returns
+        -------
+        Series
+            Object with missing values filled.
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> from arkouda import Series
+
+        >>> data = ak.Series([1, np.nan, 3, np.nan, 5])
+        >>> data
+
+        +----+-----+
+        |    |   0 |
+        +====+=====+
+        |  0 |   1 |
+        +----+-----+
+        |  1 | nan |
+        +----+-----+
+        |  2 |   3 |
+        +----+-----+
+        |  3 | nan |
+        +----+-----+
+        |  4 |   5 |
+        +----+-----+
+
+        >>> fill_values1 = ak.ones(5)
+        >>> data.fillna(fill_values1)
+
+        +----+-----+
+        |    |   0 |
+        +====+=====+
+        |  0 |   1 |
+        +----+-----+
+        |  1 |   1 |
+        +----+-----+
+        |  2 |   3 |
+        +----+-----+
+        |  3 |   1 |
+        +----+-----+
+        |  4 |   5 |
+        +----+-----+
+
+        >>> fill_values2 = Series(ak.ones(5))
+        >>> data.fillna(fill_values2)
+
+        +----+-----+
+        |    |   0 |
+        +====+=====+
+        |  0 |   1 |
+        +----+-----+
+        |  1 |   1 |
+        +----+-----+
+        |  2 |   3 |
+        +----+-----+
+        |  3 |   1 |
+        +----+-----+
+        |  4 |   5 |
+        +----+-----+
+
+        >>> fill_values3 = 100.0
+        >>> data.fillna(fill_values3)
+
+        +----+-----+
+        |    |   0 |
+        +====+=====+
+        |  0 |   1 |
+        +----+-----+
+        |  1 | 100 |
+        +----+-----+
+        |  2 |   3 |
+        +----+-----+
+        |  3 | 100 |
+        +----+-----+
+        |  4 |   5 |
+        +----+-----+
+
+        """
+        from arkouda.numeric import where
+
+        if isinstance(value, Series):
+            value = value.values
+
+        if isinstance(self.values, pdarray) and is_float(self.values):
+            return Series(where(isnan(self.values), value, self.values), index=self.index)
+        else:
+            return Series(self.values, index=self.index)
+
     @staticmethod
     @typechecked
-    def pdconcat(arrays: List, axis: int = 0, labels: Strings = None) -> Union[pd.Series, pd.DataFrame]:
+    def pdconcat(
+        arrays: List, axis: int = 0, labels: Union[Strings, None] = None
+    ) -> Union[pd.Series, pd.DataFrame]:
         """Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
 
         If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping

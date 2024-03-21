@@ -1,4 +1,4 @@
-from typing import Callable, Sequence, Tuple, Union, cast
+from typing import Callable, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -191,10 +191,12 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
 def inner_join(
     left: Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
     right: Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
-    wherefunc: Callable = None,
-    whereargs: Tuple[
-        Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
-        Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
+    wherefunc: Optional[Callable] = None,
+    whereargs: Optional[
+        Tuple[
+            Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
+            Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
+        ]
     ] = None,
 ) -> Tuple[pdarray, pdarray]:
     """Perform inner join on values in <left> and <right>,
@@ -211,7 +213,7 @@ def inner_join(
         Function that takes two pdarray arguments and returns
         a pdarray(bool) used to filter the join. Results for
         which wherefunc is False will be dropped.
-    whereargs : 2-tuple of pdarray, Strings, Categorical, or Sequence of pdarray
+    whereargs : 2-tuple of pdarray, Strings, Categorical, or Sequence of pdarray, optional
         The two arguments for wherefunc
 
     Returns

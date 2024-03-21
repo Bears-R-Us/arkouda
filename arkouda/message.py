@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict
+from typing import Dict, Optional
 
 from typeguard import typechecked
 
@@ -337,9 +337,9 @@ class RequestMessage:
         self,
         user: str,
         cmd: str,
-        token: str = None,
+        token: Optional[str] = None,
         format: MessageFormat = MessageFormat.STRING,
-        args: str = None,
+        args: Optional[str] = None,
         size: int = -1,
     ) -> None:
         """

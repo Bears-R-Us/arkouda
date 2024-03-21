@@ -3,6 +3,8 @@ import pandas as pd
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
+from arkouda.series import Series
+
 
 class SeriesTest(ArkoudaTest):
     def test_series_creation(self):
@@ -740,3 +742,69 @@ class SeriesTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(result.values.to_list(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
         )
+
+    def test_isna_int(self):
+        # Test case with integer data type
+        data_int = Series([1, 2, 3, 4, 5])
+        expected_int = Series([False, False, False, False, False])
+        self.assertTrue(
+            np.allclose(data_int.isna().values.to_ndarray(), expected_int.values.to_ndarray())
+        )
+        self.assertTrue(
+            np.allclose(data_int.isnull().values.to_ndarray(), expected_int.values.to_ndarray())
+        )
+        self.assertTrue(
+            np.allclose(data_int.notna().values.to_ndarray(), ~expected_int.values.to_ndarray())
+        )
+        self.assertTrue(
+            np.allclose(data_int.notnull().values.to_ndarray(), ~expected_int.values.to_ndarray())
+        )
+        self.assertFalse(data_int.hasnans())
+
+    def test_isna_float(self):
+        # Test case with float data type
+        data_float = Series([1.0, 2.0, 3.0, np.nan, 5.0])
+        expected_float = Series([False, False, False, True, False])
+        self.assertTrue(
+            np.allclose(data_float.isna().values.to_ndarray(), expected_float.values.to_ndarray())
+        )
+        self.assertTrue(
+            np.allclose(data_float.isnull().values.to_ndarray(), expected_float.values.to_ndarray())
+        )
+        self.assertTrue(
+            np.allclose(data_float.notna().values.to_ndarray(), ~expected_float.values.to_ndarray())
+        )
+        self.assertTrue(
+            np.allclose(data_float.notnull().values.to_ndarray(), ~expected_float.values.to_ndarray())
+        )
+        self.assertTrue(data_float.hasnans())
+
+    def test_isna_string(self):
+        # Test case with string data type
+        data_string = Series(["a", "b", "c", "d", "e"])
+        expected_string = Series([False, False, False, False, False])
+        self.assertTrue(
+            np.allclose(data_string.isna().values.to_ndarray(), expected_string.values.to_ndarray())
+        )
+        self.assertTrue(
+            np.allclose(data_string.isnull().values.to_ndarray(), expected_string.values.to_ndarray())
+        )
+        self.assertTrue(
+            np.allclose(data_string.notna().values.to_ndarray(), ~expected_string.values.to_ndarray())
+        )
+        self.assertTrue(
+            np.allclose(data_string.notnull().values.to_ndarray(), ~expected_string.values.to_ndarray())
+        )
+        self.assertFalse(data_string.hasnans())
+
+    def test_fillna(self):
+        data = ak.Series([1, np.nan, 3, np.nan, 5])
+
+        fill_values1 = ak.ones(5)
+        self.assertListEqual(data.fillna(fill_values1).to_list(), [1.0, 1.0, 3.0, 1.0, 5.0])
+
+        fill_values2 = Series(2 * ak.ones(5))
+        self.assertListEqual(data.fillna(fill_values2).to_list(), [1.0, 2.0, 3.0, 2.0, 5.0])
+
+        fill_values3 = 100.0
+        self.assertListEqual(data.fillna(fill_values3).to_list(), [1.0, 100.0, 3.0, 100.0, 5.0])
