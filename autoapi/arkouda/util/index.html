@@ -335,28 +335,37 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.invert_permutation" title="arkouda.util.invert_permutation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">invert_permutation</span></code></a>(perm)</p></td>
 <td><p>Find the inverse of a permutation array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.is_registered" title="arkouda.util.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>(→ bool)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.is_float" title="arkouda.util.is_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_float</span></code></a>(arry)</p></td>
+<td><p>Check if the dtype of the given array is float.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.is_int" title="arkouda.util.is_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_int</span></code></a>(arry)</p></td>
+<td><p>Check if the dtype of the given array is int.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.is_numeric" title="arkouda.util.is_numeric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_numeric</span></code></a>(→ bool)</p></td>
+<td><p>Check if the dtype of the given array is numeric.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.is_registered" title="arkouda.util.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>(→ bool)</p></td>
 <td><p>Determine if the name provided is associated with a registered Object</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.most_common" title="arkouda.util.most_common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">most_common</span></code></a>(g, values)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.most_common" title="arkouda.util.most_common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">most_common</span></code></a>(g, values)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register" title="arkouda.util.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>(obj, name)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.register" title="arkouda.util.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>(obj, name)</p></td>
 <td><p>Register an arkouda object with a user-specified name. Backwards compatible</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.register_all" title="arkouda.util.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register_all" title="arkouda.util.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data)</p></td>
 <td><p>Register all objects in the provided dictionary</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>([pre])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>([pre])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.sparse_sum_help" title="arkouda.util.sparse_sum_help"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_sum_help</span></code></a>(idx1, idx2, val1, val2[, merge, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.sparse_sum_help" title="arkouda.util.sparse_sum_help"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_sum_help</span></code></a>(idx1, idx2, val1, val2[, merge, ...])</p></td>
 <td><p>Helper for summing two sparse matrices together</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.unregister" title="arkouda.util.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.unregister" title="arkouda.util.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.unregister_all" title="arkouda.util.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.unregister_all" title="arkouda.util.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
 <td><p>Unregister all names provided</p></td>
 </tr>
 </tbody>
@@ -470,6 +479,92 @@ proper as ak.broadcast. It is retained here for backwards compatibility.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ak.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.is_float">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">is_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#is_float"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.is_float" title="Link to this definition">#</a></dt>
+<dd><p>Check if the dtype of the given array is float.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arry</strong> (<em>(</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>)</em>) – The input pdarray, Strings, or Categorical object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul>
+<li><p><em>bool</em> – True if the dtype of pda is of type float, False otherwise.</p></li>
+<li><p><em>Example</em> – &gt;&gt;&gt; import arkouda as ak
+&gt;&gt;&gt; ak.connect()
+&gt;&gt;&gt; data = ak.array([1.0, 2, 3, 4, np.nan])
+&gt;&gt;&gt; is_float(data)
+True</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_float</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.is_int">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">is_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#is_int"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.is_int" title="Link to this definition">#</a></dt>
+<dd><p>Check if the dtype of the given array is int.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>(</strong><strong>pdarray</strong> (<em>arry</em>) – The input pdarray, Strings, or Categorical object.</p></li>
+<li><p><strong>Strings</strong> – The input pdarray, Strings, or Categorical object.</p></li>
+<li><p><strong>Categorical</strong><strong>)</strong><strong>)</strong> – The input pdarray, Strings, or Categorical object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>bool</em> – True if the dtype of pda is of type int, False otherwise.</p></li>
+<li><p><em>Example</em></p></li>
+<li><p><em>&gt;&gt;&gt; import arkouda as ak</em></p></li>
+<li><p><em>&gt;&gt;&gt; ak.connect()</em></p></li>
+<li><p><em>&gt;&gt;&gt; data = ak.array([1.0, 2, 3, 4, np.nan])</em></p></li>
+<li><p><em>&gt;&gt;&gt; is_int(data)</em></p></li>
+<li><p><em>False</em></p></li>
+<li><p><em>&gt;&gt;&gt; data2 = ak.arange(5)</em></p></li>
+<li><p><em>&gt;&gt;&gt; is_int(data2)</em></p></li>
+<li><p><em>True</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.is_numeric">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">is_numeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/util.html#is_numeric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.is_numeric" title="Link to this definition">#</a></dt>
+<dd><p>Check if the dtype of the given array is numeric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arry</strong> (<em>(</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id534" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>)</em>) – The input pdarray, Strings, or Categorical object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul>
+<li><p><em>bool</em> – True if the dtype of pda is numeric, False otherwise.</p></li>
+<li><p><em>Example</em> – &gt;&gt;&gt; import arkouda as ak
+&gt;&gt;&gt; ak.connect()
+&gt;&gt;&gt; data = ak.array([1, 2, 3, 4, 5])
+&gt;&gt;&gt; is_numeric(data)
+True</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_numeric</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -659,6 +754,9 @@ we fall back to using the sort based workflow.</p></li>
 <li><a class="reference internal" href="#arkouda.util.get_callback"><code class="docutils literal notranslate"><span class="pre">get_callback()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.identity"><code class="docutils literal notranslate"><span class="pre">identity()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.invert_permutation"><code class="docutils literal notranslate"><span class="pre">invert_permutation()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.is_float"><code class="docutils literal notranslate"><span class="pre">is_float()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.is_int"><code class="docutils literal notranslate"><span class="pre">is_int()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.is_numeric"><code class="docutils literal notranslate"><span class="pre">is_numeric()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.is_registered"><code class="docutils literal notranslate"><span class="pre">is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.most_common"><code class="docutils literal notranslate"><span class="pre">most_common()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.register"><code class="docutils literal notranslate"><span class="pre">register()</span></code></a></li>

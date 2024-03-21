@@ -25,6 +25,9 @@ Functions
    arkouda.util.get_callback
    arkouda.util.identity
    arkouda.util.invert_permutation
+   arkouda.util.is_float
+   arkouda.util.is_int
+   arkouda.util.is_numeric
    arkouda.util.is_registered
    arkouda.util.most_common
    arkouda.util.register
@@ -115,6 +118,64 @@ Functions
 
    :returns: The inverse of the permutation array.
    :rtype: ak.array
+
+
+.. py:function:: is_float(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical])
+
+   Check if the dtype of the given array is float.
+
+   :param arry: The input pdarray, Strings, or Categorical object.
+   :type arry: (pdarray, Strings, Categorical)
+
+   :returns: * *bool* -- True if the dtype of pda is of type float, False otherwise.
+             * *Example* -- >>> import arkouda as ak
+               >>> ak.connect()
+               >>> data = ak.array([1.0, 2, 3, 4, np.nan])
+               >>> is_float(data)
+               True
+
+               >>> data2 = ak.arange(5)
+               >>> is_float(data2)
+               False
+
+
+.. py:function:: is_int(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical])
+
+   Check if the dtype of the given array is int.
+
+   :param arry ((pdarray: The input pdarray, Strings, or Categorical object.
+   :param Strings: The input pdarray, Strings, or Categorical object.
+   :param Categorical)): The input pdarray, Strings, or Categorical object.
+
+   :returns: * *bool* -- True if the dtype of pda is of type int, False otherwise.
+             * *Example*
+             * *>>> import arkouda as ak*
+             * *>>> ak.connect()*
+             * *>>> data = ak.array([1.0, 2, 3, 4, np.nan])*
+             * *>>> is_int(data)*
+             * *False*
+             * *>>> data2 = ak.arange(5)*
+             * *>>> is_int(data2)*
+             * *True*
+
+
+.. py:function:: is_numeric(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> bool
+
+   Check if the dtype of the given array is numeric.
+
+   :param arry: The input pdarray, Strings, or Categorical object.
+   :type arry: (pdarray, Strings, Categorical)
+
+   :returns: * *bool* -- True if the dtype of pda is numeric, False otherwise.
+             * *Example* -- >>> import arkouda as ak
+               >>> ak.connect()
+               >>> data = ak.array([1, 2, 3, 4, 5])
+               >>> is_numeric(data)
+               True
+
+               >>> strings = ak.array(["a", "b", "c"])
+               >>> is_numeric(strings)
+               False
 
 
 .. py:function:: is_registered(name: str, as_component: bool = False) -> bool

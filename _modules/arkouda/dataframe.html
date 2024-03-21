@@ -1922,7 +1922,7 @@
 <div class="viewcode-block" id="DataFrame.reset_index">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.reset_index">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the index to an integer range.</span>
 
@@ -1932,7 +1932,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        size : int</span>
+<span class="sd">        size : int, optional</span>
 <span class="sd">            If size is passed, do not attempt to determine size based on</span>
 <span class="sd">            existing column sizes. Assume caller handles consistency correctly.</span>
 <span class="sd">        inplace: bool, default=False</span>
@@ -5590,16 +5590,18 @@
 
 <span class="k">def</span> <span class="nf">__nulls_like</span><span class="p">(</span>
     <span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
-    <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
-        <span class="nb">int</span><span class="p">,</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">[</span><span class="n">_8Bit</span><span class="p">],</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">[</span><span class="n">_16Bit</span><span class="p">],</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">[</span><span class="n">_32Bit</span><span class="p">],</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">[</span><span class="n">_64Bit</span><span class="p">],</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">[</span><span class="n">_8Bit</span><span class="p">],</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">[</span><span class="n">_16Bit</span><span class="p">],</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">[</span><span class="n">_32Bit</span><span class="p">],</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">[</span><span class="n">_64Bit</span><span class="p">],</span>
+    <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Union</span><span class="p">[</span>
+            <span class="nb">int</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">[</span><span class="n">_8Bit</span><span class="p">],</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">[</span><span class="n">_16Bit</span><span class="p">],</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">[</span><span class="n">_32Bit</span><span class="p">],</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">[</span><span class="n">_64Bit</span><span class="p">],</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">[</span><span class="n">_8Bit</span><span class="p">],</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">[</span><span class="n">_16Bit</span><span class="p">],</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">[</span><span class="n">_32Bit</span><span class="p">],</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">[</span><span class="n">_64Bit</span><span class="p">],</span>
+        <span class="p">]</span>
     <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

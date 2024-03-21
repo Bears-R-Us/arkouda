@@ -403,7 +403,7 @@ Attributes
       array([True True True True True True True True True True])
 
 
-   .. py:method:: build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy
+   .. py:method:: build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy
       :staticmethod:
 
       function to build a new GroupBy object from component keys and permutation.

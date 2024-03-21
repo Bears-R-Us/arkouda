@@ -1697,7 +1697,7 @@ Functions
       +----+-----+-----+
 
 
-   .. py:method:: reset_index(size: int = None, inplace: bool = False) -> Union[None, DataFrame]
+   .. py:method:: reset_index(size: Optional[int] = None, inplace: bool = False) -> Union[None, DataFrame]
 
       Set the index to an integer range.
 
@@ -1707,7 +1707,7 @@ Functions
 
       :param size: If size is passed, do not attempt to determine size based on
                    existing column sizes. Assume caller handles consistency correctly.
-      :type size: int
+      :type size: int, optional
       :param inplace: When True, perform the operation on the calling object.
                       When False, return a new object.
       :type inplace: bool, default=False

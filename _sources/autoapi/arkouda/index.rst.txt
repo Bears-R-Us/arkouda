@@ -4531,7 +4531,7 @@ Attributes
       +----+-----+-----+
 
 
-   .. py:method:: reset_index(size: int = None, inplace: bool = False) -> Union[None, DataFrame]
+   .. py:method:: reset_index(size: Optional[int] = None, inplace: bool = False) -> Union[None, DataFrame]
 
       Set the index to an integer range.
 
@@ -4541,7 +4541,7 @@ Attributes
 
       :param size: If size is passed, do not attempt to determine size based on
                    existing column sizes. Assume caller handles consistency correctly.
-      :type size: int
+      :type size: int, optional
       :param inplace: When True, perform the operation on the calling object.
                       When False, return a new object.
       :type inplace: bool, default=False
@@ -6941,7 +6941,7 @@ Attributes
       +----+-----+-----+
 
 
-   .. py:method:: reset_index(size: int = None, inplace: bool = False) -> Union[None, DataFrame]
+   .. py:method:: reset_index(size: Optional[int] = None, inplace: bool = False) -> Union[None, DataFrame]
 
       Set the index to an integer range.
 
@@ -6951,7 +6951,7 @@ Attributes
 
       :param size: If size is passed, do not attempt to determine size based on
                    existing column sizes. Assume caller handles consistency correctly.
-      :type size: int
+      :type size: int, optional
       :param inplace: When True, perform the operation on the calling object.
                       When False, return a new object.
       :type inplace: bool, default=False
@@ -8885,7 +8885,7 @@ Attributes
       array([True True True True True True True True True True])
 
 
-   .. py:method:: build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy
+   .. py:method:: build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy
       :staticmethod:
 
       function to build a new GroupBy object from component keys and permutation.
@@ -9814,7 +9814,7 @@ Attributes
       array([True True True True True True True True True True])
 
 
-   .. py:method:: build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy
+   .. py:method:: build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy
       :staticmethod:
 
       function to build a new GroupBy object from component keys and permutation.
@@ -10743,7 +10743,7 @@ Attributes
       array([True True True True True True True True True True])
 
 
-   .. py:method:: build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy
+   .. py:method:: build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy
       :staticmethod:
 
       function to build a new GroupBy object from component keys and permutation.
@@ -11672,7 +11672,7 @@ Attributes
       array([True True True True True True True True True True])
 
 
-   .. py:method:: build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy
+   .. py:method:: build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy
       :staticmethod:
 
       function to build a new GroupBy object from component keys and permutation.
@@ -12601,7 +12601,7 @@ Attributes
       array([True True True True True True True True True True])
 
 
-   .. py:method:: build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy
+   .. py:method:: build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy
       :staticmethod:
 
       function to build a new GroupBy object from component keys and permutation.
@@ -14020,7 +14020,7 @@ Attributes
       :type nkeys: number of keys, if a multi-index was registerd
 
 
-   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: List[str] = None, value_labels: List[str] = None) -> Union[arkouda.dataframe.DataFrame, Series]
+   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None) -> Union[arkouda.dataframe.DataFrame, Series]
       :staticmethod:
 
       Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
@@ -14050,6 +14050,94 @@ Attributes
       Returns a new series with the same index and length.  First value is set to NaN.
 
 
+   .. py:method:: fillna(value) -> Series
+
+      Fill NA/NaN values using the specified method.
+
+      :param value: Value to use to fill holes (e.g. 0), alternately a
+                    Series of values specifying which value to use for
+                    each index.  Values not in the Series will not be filled.
+                    This value cannot be a list.
+      :type value: scalar, Series, or pdarray
+
+      :returns: Object with missing values filled.
+      :rtype: Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+
+      >>> data = ak.Series([1, np.nan, 3, np.nan, 5])
+      >>> data
+
+      +----+-----+
+      |    |   0 |
+      +====+=====+
+      |  0 |   1 |
+      +----+-----+
+      |  1 | nan |
+      +----+-----+
+      |  2 |   3 |
+      +----+-----+
+      |  3 | nan |
+      +----+-----+
+      |  4 |   5 |
+      +----+-----+
+
+      >>> fill_values1 = ak.ones(5)
+      >>> data.fillna(fill_values1)
+
+      +----+-----+
+      |    |   0 |
+      +====+=====+
+      |  0 |   1 |
+      +----+-----+
+      |  1 |   1 |
+      +----+-----+
+      |  2 |   3 |
+      +----+-----+
+      |  3 |   1 |
+      +----+-----+
+      |  4 |   5 |
+      +----+-----+
+
+      >>> fill_values2 = Series(ak.ones(5))
+      >>> data.fillna(fill_values2)
+
+      +----+-----+
+      |    |   0 |
+      +====+=====+
+      |  0 |   1 |
+      +----+-----+
+      |  1 |   1 |
+      +----+-----+
+      |  2 |   3 |
+      +----+-----+
+      |  3 |   1 |
+      +----+-----+
+      |  4 |   5 |
+      +----+-----+
+
+      >>> fill_values3 = 100.0
+      >>> data.fillna(fill_values3)
+
+      +----+-----+
+      |    |   0 |
+      +====+=====+
+      |  0 |   1 |
+      +----+-----+
+      |  1 | 100 |
+      +----+-----+
+      |  2 |   3 |
+      +----+-----+
+      |  3 | 100 |
+      +----+-----+
+      |  4 |   5 |
+      +----+-----+
+
+
    .. py:method:: from_return_msg(repMsg: str) -> Series
       :classmethod:
 
@@ -14070,6 +14158,26 @@ Attributes
    .. py:method:: has_repeat_labels() -> bool
 
       Returns whether the Series has any labels that appear more than once
+
+
+   .. py:method:: hasnans() -> bool
+
+      Return True if there are any NaNs.
+
+      :rtype: bool
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+      >>> import numpy as np
+
+      >>> s = ak.Series(ak.array([1, 2, 3, np.nan]))
+      >>> s
+
+      >>> s.hasnans
+      True
 
 
    .. py:method:: head(n: int = 10) -> Series
@@ -14104,6 +14212,76 @@ Attributes
       Either a python list or an arkouda array.
 
       :rtype: Arkouda boolean which is true for elements that are in the list and false otherwise.
+
+
+   .. py:method:: isna() -> Series
+
+      Detect missing values.
+
+      Return a boolean same-sized object indicating if the values are NA. NA values,
+      such as numpy.NaN, gets mapped to True values.
+      Everything else gets mapped to False values.
+      Characters such as empty strings '' are not considered NA values.
+
+      :returns: Mask of bool values for each element in Series
+                that indicates whether an element is an NA value.
+      :rtype: arkouda.series.Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+      >>> import numpy as np
+
+      >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+      >>> s.isna()
+
+      +----+---------+
+      |    |   0     |
+      +====+=========+
+      |  1 |   False |
+      +----+---------+
+      |  2 |   False |
+      +----+---------+
+      |  4 |   True  |
+      +----+---------+
+
+
+   .. py:method:: isnull() -> Series
+
+      Series.isnull is an alias for Series.isna.
+
+      Detect missing values.
+
+      Return a boolean same-sized object indicating if the values are NA. NA values,
+      such as numpy.NaN, gets mapped to True values.
+      Everything else gets mapped to False values.
+      Characters such as empty strings '' are not considered NA values.
+
+      :returns: Mask of bool values for each element in Series
+                that indicates whether an element is an NA value.
+      :rtype: arkouda.series.Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+      >>> import numpy as np
+
+      >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+      >>> s.isnull()
+
+      +----+---------+
+      |    |   0     |
+      +====+=========+
+      |  1 |   False |
+      +----+---------+
+      |  2 |   False |
+      +----+---------+
+      |  4 |   True  |
+      +----+---------+
 
 
    .. py:method:: locate(key: Union[int, arkouda.pdarrayclass.pdarray, arkouda.index.Index, Series, List, Tuple]) -> Series
@@ -14227,7 +14405,77 @@ Attributes
       46.875
 
 
-   .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: arkouda.strings.Strings = None) -> Union[pandas.Series, pandas.DataFrame]
+   .. py:method:: notna() -> Series
+
+      Detect existing (non-missing) values.
+
+      Return a boolean same-sized object indicating if the values are not NA.
+      Non-missing values get mapped to True.
+      Characters such as empty strings '' are not considered NA values.
+      NA values, such as numpy.NaN, get mapped to False values.
+
+      :returns: Mask of bool values for each element in Series
+                that indicates whether an element is not an NA value.
+      :rtype: arkouda.series.Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+      >>> import numpy as np
+
+      >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+      >>> s.notna()
+
+      +----+---------+
+      |    |   0     |
+      +====+=========+
+      |  1 |   True  |
+      +----+---------+
+      |  2 |   True  |
+      +----+---------+
+      |  4 |   False |
+      +----+---------+
+
+
+   .. py:method:: notnull() -> Series
+
+      Series.notnull is an alias for Series.notna.
+
+      Detect existing (non-missing) values.
+
+      Return a boolean same-sized object indicating if the values are not NA.
+      Non-missing values get mapped to True.
+      Characters such as empty strings '' are not considered NA values.
+      NA values, such as numpy.NaN, get mapped to False values.
+
+      :returns: Mask of bool values for each element in Series
+                that indicates whether an element is not an NA value.
+      :rtype: arkouda.series.Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+      >>> import numpy as np
+
+      >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+      >>> s.notnull()
+
+      +----+---------+
+      |    |   0     |
+      +====+=========+
+      |  1 |   True  |
+      +----+---------+
+      |  2 |   True  |
+      +----+---------+
+      |  4 |   False |
+      +----+---------+
+
+
+   .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: Union[arkouda.strings.Strings, None] = None) -> Union[pandas.Series, pandas.DataFrame]
       :staticmethod:
 
       Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
@@ -14300,7 +14548,7 @@ Attributes
       Return the last n values of the series
 
 
-   .. py:method:: to_dataframe(index_labels: List[str] = None, value_label: str = None) -> arkouda.dataframe.DataFrame
+   .. py:method:: to_dataframe(index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None) -> arkouda.dataframe.DataFrame
 
       Converts series to an arkouda data frame
 
@@ -21585,7 +21833,7 @@ Attributes
    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -21637,7 +21885,7 @@ Attributes
    <class 'arkouda.strings.Strings'>
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -21689,7 +21937,7 @@ Attributes
    <class 'arkouda.strings.Strings'>
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -22092,7 +22340,7 @@ Attributes
    array([2, 3, 4, 5, 6])
 
 
-.. py:function:: check_np_dtype(dt: numpy.dtype) -> None
+.. py:function:: check_np_dtype(dt: Union[numpy.dtype, BigInt]) -> None
 
    Assert that numpy dtype dt is one of the dtypes supported
    by arkouda, otherwise raise TypeError.
@@ -22824,7 +23072,7 @@ Attributes
           32.494295836924771, 12.478894913238722])
 
 
-.. py:function:: export(read_path: str, dataset_name: str = 'ak_data', write_file: str = None, return_obj: bool = True, index: bool = False)
+.. py:function:: export(read_path: str, dataset_name: str = 'ak_data', write_file: Optional[str] = None, return_obj: bool = True, index: bool = False)
 
    Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be
    readable by Pandas
@@ -23481,7 +23729,7 @@ Attributes
     array([0.0 1.6 3.2 4.8 6.4 8.0])]
 
 
-.. py:function:: import_data(read_path: str, write_file: str = None, return_obj: bool = True, index: bool = False)
+.. py:function:: import_data(read_path: str, write_file: Optional[str] = None, return_obj: bool = True, index: bool = False)
 
    Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
    a file formatted to be read by Arkouda.
@@ -29562,7 +29810,7 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: arkouda.dtypes.int_scalars = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
 
    Generate a pdarray of randomized int, float, or bool values in a
    specified range bounded by the low and high parameters.
@@ -29576,7 +29824,7 @@ Attributes
    :param dtype: The dtype of the array
    :type dtype: Union[int64, float64, bool]
    :param seed: Index for where to pull the first returned value
-   :type seed: int_scalars
+   :type seed: int_scalars, optional
 
    :returns: Values drawn uniformly from the specified range having the desired dtype
    :rtype: pdarray
@@ -29614,7 +29862,7 @@ Attributes
    array([False, True, True, True, True, False, True, True, True, True])
 
 
-.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: arkouda.dtypes.int_scalars = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
 
    Generate a pdarray of randomized int, float, or bool values in a
    specified range bounded by the low and high parameters.
@@ -29628,7 +29876,7 @@ Attributes
    :param dtype: The dtype of the array
    :type dtype: Union[int64, float64, bool]
    :param seed: Seed to allow for reproducible random number generation
-   :type seed: int_scalars
+   :type seed: int_scalars, optional
 
    :returns: Values drawn uniformly from the specified range having the desired dtype
    :rtype: pdarray
@@ -30185,7 +30433,7 @@ Attributes
    array([1, 3, 3])
 
 
-.. py:function:: save_all(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
+.. py:function:: save_all(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
 
    DEPRECATED
    Save multiple named pdarrays to HDF5/Parquet files.
@@ -30763,7 +31011,7 @@ Attributes
    <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
 
 
-.. py:function:: to_csv(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], prefix_path: str, names: List[str] = None, col_delim: str = ',', overwrite: bool = False)
+.. py:function:: to_csv(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], prefix_path: str, names: Optional[List[str]] = None, col_delim: str = ',', overwrite: bool = False)
 
    Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
    include a header denoting data types of the columns.
@@ -30805,7 +31053,7 @@ Attributes
      bytes as uint(8).
 
 
-.. py:function:: to_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
+.. py:function:: to_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
 
    Save multiple named pdarrays to HDF5 files.
 
@@ -30853,7 +31101,7 @@ Attributes
    >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b'])
 
 
-.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', compression: Optional[str] = None, convert_categoricals: bool = False) -> None
+.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, mode: str = 'truncate', compression: Optional[str] = None, convert_categoricals: bool = False) -> None
 
    Save multiple named pdarrays to Parquet files.
 
@@ -30907,7 +31155,7 @@ Attributes
    >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b'])
 
 
-.. py:function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[str, int]
+.. py:function:: translate_np_dtype(dt) -> Tuple[str, int]
 
    Split numpy dtype dt into its kind and byte size, raising
    TypeError for unsupported dtypes.
@@ -31220,7 +31468,7 @@ Attributes
 .. py:function:: unsqueeze(p)
 
 
-.. py:function:: update_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, repack: bool = True)
+.. py:function:: update_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, repack: bool = True)
 
    Overwrite the datasets with name appearing in names or keys in columns if columns
    is a dictionary

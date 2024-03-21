@@ -171,7 +171,7 @@ Functions
 
 
 
-.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: arkouda.dtypes.int_scalars = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
 
    Generate a pdarray of randomized int, float, or bool values in a
    specified range bounded by the low and high parameters.
@@ -185,7 +185,7 @@ Functions
    :param dtype: The dtype of the array
    :type dtype: Union[int64, float64, bool]
    :param seed: Seed to allow for reproducible random number generation
-   :type seed: int_scalars
+   :type seed: int_scalars, optional
 
    :returns: Values drawn uniformly from the specified range having the desired dtype
    :rtype: pdarray

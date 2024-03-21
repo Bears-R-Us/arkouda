@@ -40,7 +40,7 @@ Functions
 
 
 
-.. py:function:: export(read_path: str, dataset_name: str = 'ak_data', write_file: str = None, return_obj: bool = True, index: bool = False)
+.. py:function:: export(read_path: str, dataset_name: str = 'ak_data', write_file: Optional[str] = None, return_obj: bool = True, index: bool = False)
 
    Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be
    readable by Pandas
@@ -147,7 +147,7 @@ Functions
    .. seealso:: :obj:`get_datasets`, :obj:`ls`
 
 
-.. py:function:: import_data(read_path: str, write_file: str = None, return_obj: bool = True, index: bool = False)
+.. py:function:: import_data(read_path: str, write_file: Optional[str] = None, return_obj: bool = True, index: bool = False)
 
    Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
    a file formatted to be read by Arkouda.
@@ -667,7 +667,7 @@ Functions
    objects in HDF5. Thus, they are returned within the dictionary as a dataframe.
 
 
-.. py:function:: save_all(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
+.. py:function:: save_all(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
 
    DEPRECATED
    Save multiple named pdarrays to HDF5/Parquet files.
@@ -737,7 +737,7 @@ Functions
    .. seealso:: :obj:`ak.restore`
 
 
-.. py:function:: to_csv(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], prefix_path: str, names: List[str] = None, col_delim: str = ',', overwrite: bool = False)
+.. py:function:: to_csv(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], prefix_path: str, names: Optional[List[str]] = None, col_delim: str = ',', overwrite: bool = False)
 
    Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
    include a header denoting data types of the columns.
@@ -779,7 +779,7 @@ Functions
      bytes as uint(8).
 
 
-.. py:function:: to_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
+.. py:function:: to_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
 
    Save multiple named pdarrays to HDF5 files.
 
@@ -827,7 +827,7 @@ Functions
    >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b'])
 
 
-.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', compression: Optional[str] = None, convert_categoricals: bool = False) -> None
+.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, mode: str = 'truncate', compression: Optional[str] = None, convert_categoricals: bool = False) -> None
 
    Save multiple named pdarrays to Parquet files.
 
@@ -881,7 +881,7 @@ Functions
    >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b'])
 
 
-.. py:function:: update_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: List[str] = None, repack: bool = True)
+.. py:function:: update_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, repack: bool = True)
 
    Overwrite the datasets with name appearing in names or keys in columns if columns
    is a dictionary

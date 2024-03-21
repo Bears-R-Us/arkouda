@@ -298,7 +298,7 @@
 <span class="kn">import</span> <span class="nn">pyfiglet</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">io_util</span><span class="p">,</span> <span class="n">security</span>
-<span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span><span class="p">,</span> <span class="n">LogLevel</span>
+<span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">LogLevel</span><span class="p">,</span> <span class="n">getArkoudaLogger</span>
 <span class="kn">from</span> <span class="nn">arkouda.message</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">MessageFormat</span><span class="p">,</span>
     <span class="n">MessageType</span><span class="p">,</span>
@@ -306,7 +306,6 @@
     <span class="n">ReplyMessage</span><span class="p">,</span>
     <span class="n">RequestMessage</span><span class="p">,</span>
 <span class="p">)</span>
-
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;connect&quot;</span><span class="p">,</span>
@@ -557,8 +556,8 @@
         <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5555</span><span class="p">,</span>
-        <span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">connect_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">connect_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        user : str</span>
@@ -579,7 +578,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_access_token</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Arkouda Client&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">connect_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_set_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">connect_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If the connect_url is None, generates and sets the Channel url per the</span>
 <span class="sd">        Channel protocol as well as host and port. Otherwise, sets the Channel url</span>
@@ -662,9 +661,9 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">recv_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a RequestMessage encapsulating command and requesting</span>
@@ -710,9 +709,9 @@
         <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">payload</span><span class="p">:</span> <span class="nb">memoryview</span><span class="p">,</span>
         <span class="n">recv_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a RequestMessage encapsulating command and requesting user information,</span>
@@ -728,7 +727,7 @@
 <span class="sd">            object on the Arkouda server</span>
 <span class="sd">        recv_binary : bool, defaults to False</span>
 <span class="sd">            Indicates if the return message will be a string or binary data</span>
-<span class="sd">        args : str</span>
+<span class="sd">        args : str, default=None</span>
 <span class="sd">            A delimited string containing 1..n command arguments</span>
 <span class="sd">        request_id: str, defaults to None</span>
 <span class="sd">            Specifies an identifier for each request submitted to Arkouda</span>
@@ -791,9 +790,9 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">recv_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
         <span class="n">message</span> <span class="o">=</span> <span class="n">RequestMessage</span><span class="p">(</span>
             <span class="n">user</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">MessageFormat</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span>
@@ -832,9 +831,9 @@
         <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">payload</span><span class="p">:</span> <span class="nb">memoryview</span><span class="p">,</span>
         <span class="n">recv_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
         <span class="c1"># Note - Size is a placeholder here because Binary msg not yet support json args and</span>
         <span class="c1"># request_id is a noop for now</span>
@@ -907,7 +906,10 @@
 
 
 <span class="k">def</span> <span class="nf">get_channel</span><span class="p">(</span>
-    <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5555</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">connect_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5555</span><span class="p">,</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">connect_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Channel</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the configured Channel implementation</span>
@@ -919,7 +921,7 @@
 <span class="sd">        machine). Defaults to `localhost`.</span>
 <span class="sd">    port : int</span>
 <span class="sd">        The port of the server. Defaults to 5555.</span>
-<span class="sd">    access_token : str, optional</span>
+<span class="sd">    token : str, optional</span>
 <span class="sd">        The token used to connect to an existing socket to enable access to</span>
 <span class="sd">        an Arkouda server where authentication is enabled. Defaults to None.</span>
 <span class="sd">    connect_url : str, optional</span>
@@ -949,9 +951,9 @@
     <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
     <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5555</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">connect_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">access_channel</span><span class="p">:</span> <span class="n">Channel</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">access_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">connect_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">access_channel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Channel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Connect to a running arkouda server.</span>
@@ -1204,14 +1206,14 @@
 
 
 
-<span class="k">def</span> <span class="nf">_json_args_to_str</span><span class="p">(</span><span class="n">json_obj</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">_json_args_to_str</span><span class="p">(</span><span class="n">json_obj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert Python Dictionary into a JSON formatted string that can be parsed by the msg</span>
 <span class="sd">    processing system on the Arkouda Server</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    json_obj : dict</span>
+<span class="sd">    json_obj : dict = None</span>
 <span class="sd">        Python dictionary of key:val representing command arguments</span>
 
 <span class="sd">    Return</span>
@@ -1245,8 +1247,8 @@
 
 <span class="k">def</span> <span class="nf">generic_msg</span><span class="p">(</span>
     <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">payload</span><span class="p">:</span> <span class="nb">memoryview</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">payload</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">memoryview</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">send_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">recv_binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>

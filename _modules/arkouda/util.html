@@ -289,8 +289,9 @@
         </div>
         <article role="main">
           <h1>Source code for arkouda.util</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span>
+<span></span><span class="kn">import</span> <span class="nn">builtins</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
@@ -298,9 +299,16 @@
 <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">get_config</span><span class="p">,</span> <span class="n">get_mem_used</span>
 <span class="kn">from</span> <span class="nn">arkouda.client_dtypes</span> <span class="kn">import</span> <span class="n">BitVector</span><span class="p">,</span> <span class="n">BitVectorizer</span><span class="p">,</span> <span class="n">IPv4</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_is_dtype_in_union</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">,</span>
+    <span class="n">float_scalars</span><span class="p">,</span>
+    <span class="n">int_scalars</span><span class="p">,</span>
+    <span class="n">numeric_scalars</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span>
 <span class="kn">from</span> <span class="nn">arkouda.infoclass</span> <span class="kn">import</span> <span class="n">list_registry</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">unique</span>
 <span class="kn">from</span> <span class="nn">arkouda.segarray</span> <span class="kn">import</span> <span class="n">SegArray</span>
@@ -758,6 +766,109 @@
         <span class="k">return</span> <span class="n">nbytes</span> <span class="o">/</span> <span class="n">mb</span>
     <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;GB&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">nbytes</span> <span class="o">/</span> <span class="n">gb</span></div>
+
+
+
+<div class="viewcode-block" id="is_numeric">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_numeric">[docs]</a>
+<span class="k">def</span> <span class="nf">is_numeric</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the dtype of the given array is numeric.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">         arry ((pdarray, Strings, Categorical)):</span>
+<span class="sd">            The input pdarray, Strings, or Categorical object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool:</span>
+<span class="sd">        True if the dtype of pda is numeric, False otherwise.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">        &gt;&gt;&gt; data = ak.array([1, 2, 3, 4, 5])</span>
+<span class="sd">        &gt;&gt;&gt; is_numeric(data)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        &gt;&gt;&gt; strings = ak.array([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;])</span>
+<span class="sd">        &gt;&gt;&gt; is_numeric(strings)</span>
+<span class="sd">        False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">arry</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">numeric_scalars</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="is_float">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_float">[docs]</a>
+<span class="k">def</span> <span class="nf">is_float</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the dtype of the given array is float.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">         arry ((pdarray, Strings, Categorical)):</span>
+<span class="sd">            The input pdarray, Strings, or Categorical object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool:</span>
+<span class="sd">        True if the dtype of pda is of type float, False otherwise.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">        &gt;&gt;&gt; data = ak.array([1.0, 2, 3, 4, np.nan])</span>
+<span class="sd">        &gt;&gt;&gt; is_float(data)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        &gt;&gt;&gt; data2 = ak.arange(5)</span>
+<span class="sd">        &gt;&gt;&gt; is_float(data2)</span>
+<span class="sd">        False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">arry</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">float_scalars</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="is_int">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_int">[docs]</a>
+<span class="k">def</span> <span class="nf">is_int</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the dtype of the given array is int.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arry ((pdarray, Strings, Categorical)):</span>
+<span class="sd">            The input pdarray, Strings, or Categorical object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool:</span>
+<span class="sd">        True if the dtype of pda is of type int, False otherwise.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">    &gt;&gt;&gt; data = ak.array([1.0, 2, 3, 4, np.nan])</span>
+<span class="sd">    &gt;&gt;&gt; is_int(data)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &gt;&gt;&gt; data2 = ak.arange(5)</span>
+<span class="sd">    &gt;&gt;&gt; is_int(data2)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">arry</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">int_scalars</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
 </pre></div>
         </article>

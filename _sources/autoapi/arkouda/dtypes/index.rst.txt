@@ -94,7 +94,7 @@ Attributes
 
    
 
-.. py:function:: check_np_dtype(dt: numpy.dtype) -> None
+.. py:function:: check_np_dtype(dt: Union[numpy.dtype, BigInt]) -> None
 
    Assert that numpy dtype dt is one of the dtypes supported
    by arkouda, otherwise raise TypeError.
@@ -184,7 +184,7 @@ Attributes
 
    
 
-.. py:function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[str, int]
+.. py:function:: translate_np_dtype(dt) -> Tuple[str, int]
 
    Split numpy dtype dt into its kind and byte size, raising
    TypeError for unsupported dtypes.

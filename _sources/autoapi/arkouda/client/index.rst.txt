@@ -27,7 +27,7 @@ Functions
 
 
 
-.. py:function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: str = None, connect_url: str = None, access_channel: Channel = None) -> None
+.. py:function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: Optional[str] = None, connect_url: Optional[str] = None, access_channel: Optional[Channel] = None) -> None
 
    Connect to a running arkouda server.
 

@@ -289,7 +289,9 @@
         </div>
         <article role="main">
           <h1>Source code for arkouda.dtypes</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">builtins</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">builtins</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
@@ -348,7 +350,7 @@
 
 <div class="viewcode-block" id="dtype">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.dtype">[docs]</a>
-<span class="k">def</span> <span class="nf">dtype</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">dtype</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
     <span class="c1"># we had to create our own bigint type since numpy</span>
     <span class="c1"># gives them dtype=object there&#39;s no np equivalent</span>
     <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">):</span>
@@ -358,12 +360,29 @@
 
 
 
+<span class="k">def</span> <span class="nf">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">union_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if a given type is in a typing.Union.</span>
+
+<span class="sd">    Args</span>
+<span class="sd">    ----</span>
+<span class="sd">        dtype (type): The type to check for.</span>
+<span class="sd">        union_type (type): The typing.Union type to check against.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        bool: True if the dtype is in the union_type, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">union_type</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">union_type</span><span class="o">.</span><span class="n">__args__</span>
+
+
 <span class="k">class</span> <span class="nc">BigInt</span><span class="p">:</span>
     <span class="c1"># an estimate of the itemsize of bigint (128 bytes)</span>
     <span class="n">itemsize</span> <span class="o">=</span> <span class="mi">128</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bigint&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;ui&quot;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
@@ -540,7 +559,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_as_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_as_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;BigInt&quot;</span><span class="p">]:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dt</span>
@@ -549,7 +568,7 @@
 <div class="viewcode-block" id="check_np_dtype">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.check_np_dtype">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">check_np_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">check_np_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;BigInt&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Assert that numpy dtype dt is one of the dtypes supported</span>
 <span class="sd">    by arkouda, otherwise raise TypeError.</span>
@@ -569,7 +588,7 @@
 <div class="viewcode-block" id="translate_np_dtype">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.translate_np_dtype">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">translate_np_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">builtins</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">translate_np_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">builtins</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split numpy dtype dt into its kind and byte size, raising</span>
 <span class="sd">    TypeError for unsupported dtypes.</span>

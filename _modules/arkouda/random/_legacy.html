@@ -289,7 +289,7 @@
         </div>
         <article role="main">
           <h1>Source code for arkouda.random._legacy</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
@@ -309,7 +309,7 @@
     <span class="n">high</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">,</span>
-    <span class="n">seed</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a pdarray of randomized int, float, or bool values in a</span>
@@ -325,7 +325,7 @@
 <span class="sd">        The length of the returned array</span>
 <span class="sd">    dtype : Union[int64, float64, bool]</span>
 <span class="sd">        The dtype of the array</span>
-<span class="sd">    seed : int_scalars</span>
+<span class="sd">    seed : int_scalars, optional</span>
 <span class="sd">        Seed to allow for reproducible random number generation</span>
 
 

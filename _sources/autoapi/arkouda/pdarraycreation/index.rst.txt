@@ -84,7 +84,7 @@ Functions
    array([-5, -6, -7, -8, -9])
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -402,7 +402,7 @@ Functions
    array([True, True, True, True, True])
 
 
-.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: arkouda.dtypes.int_scalars = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
 
    Generate a pdarray of randomized int, float, or bool values in a
    specified range bounded by the low and high parameters.
@@ -416,7 +416,7 @@ Functions
    :param dtype: The dtype of the array
    :type dtype: Union[int64, float64, bool]
    :param seed: Index for where to pull the first returned value
-   :type seed: int_scalars
+   :type seed: int_scalars, optional
 
    :returns: Values drawn uniformly from the specified range having the desired dtype
    :rtype: pdarray
