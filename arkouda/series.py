@@ -1150,7 +1150,7 @@ class Series:
         ------
         TypeError
             Raised if arg is not of type dict or arkouda.Series.
-            Raised if arg values not of type pdarray or Strings.
+            Raised if series values not of type pdarray, Categorical, or Strings.
         Examples
         --------
         >>> import arkouda as ak
@@ -1206,44 +1206,10 @@ class Series:
         +----+-----+
 
         """
-        from arkouda import Series, broadcast, full
+        from arkouda import Series
+        from arkouda.util import map
 
-        keys = self.values
-        gb = GroupBy(keys, dropna=False)
-        gb_keys = gb.unique_keys
-
-        mapping = arg
-        if isinstance(mapping, dict):
-            mapping = Series([array(list(mapping.keys())), array(list(mapping.values()))])
-
-        if isinstance(mapping, Series):
-            xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]
-
-            if xtra_keys.size > 0:
-                if not isinstance(mapping.values, (Strings, Categorical)):
-                    nans = full(xtra_keys.size, np.nan, mapping.values.dtype)
-                else:
-                    nans = full(xtra_keys.size, "null")
-
-                if isinstance(xtra_keys, Categorical):
-                    xtra_keys = xtra_keys.to_strings()
-
-                xtra_series = Series(nans, index=xtra_keys)
-                mapping = Series.concat([mapping, xtra_series])
-
-            if isinstance(gb_keys, Categorical):
-                mapping = mapping[gb_keys.to_strings()]
-            else:
-                mapping = mapping[gb_keys]
-
-            if isinstance(mapping.values, (pdarray, Strings)):
-                return Series(
-                    broadcast(gb.segments, mapping.values, permutation=gb.permutation), index=self.index
-                )
-            else:
-                raise TypeError("Map values must be castable to pdarray or Strings.")
-        else:
-            raise TypeError("Map must be dict or arkouda.Series.")
+        return Series(map(self.values, arg), index=self.index)
 
     def isna(self) -> Series:
         """

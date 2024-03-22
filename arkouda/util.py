@@ -1,6 +1,6 @@
 import builtins
 import json
-from typing import Sequence, Tuple, Union, cast
+from typing import TYPE_CHECKING, Sequence, Tuple, Union, cast
 from warnings import warn
 
 from typeguard import typechecked
@@ -24,6 +24,9 @@ from arkouda.segarray import SegArray
 from arkouda.sorting import coargsort
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
+
+if TYPE_CHECKING:
+    from arkouda.series import Series
 
 
 def identity(x):
@@ -510,3 +513,87 @@ def is_int(arry: Union[pdarray, Strings, Categorical]):
         return _is_dtype_in_union(dtype(arry.dtype), int_scalars)
     else:
         return False
+
+
+def map(
+    values: Union[pdarray, Strings, Categorical], mapping: Union[dict, "Series"]
+) -> Union[pdarray, Strings]:
+    """
+    Map values of an array according to an input mapping.
+
+    Parameters
+    ----------
+    values :  pdarray, Strings, or Categorical
+        The values to be mapped.
+    mapping : dict or Series
+        The mapping correspondence.
+
+    Returns
+    -------
+    arkouda.pdarrayclass.pdarray or arkouda.strings.Strings
+        A new array with the values mapped by the mapping correspondence.
+        When the input Series has Categorical values,
+        the return Series will have Strings values.
+        Otherwise, the return type will match the input type.
+    Raises
+    ------
+    TypeError
+        Raised if arg is not of type dict or arkouda.Series.
+        Raised if values not of type pdarray, Categorical, or Strings.
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.connect()
+    >>> from arkouda.util import map
+    >>> a = ak.array([2, 3, 2, 3, 4])
+    >>> a
+    array([2 3 2 3 4])
+    >>> map(a, {4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+    array([30.00000000000000000 5.00000000000000000 30.00000000000000000
+    5.00000000000000000 25.00000000000000000])
+    >>> s = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
+    >>> map(a, s)
+    array(['b', 'b', 'd', 'd', 'a'])
+
+    """
+    import numpy as np
+
+    from arkouda import Series, array, broadcast, full
+    from arkouda.pdarraysetops import in1d
+
+    keys = values
+    gb = GroupBy(keys, dropna=False)
+    gb_keys = gb.unique_keys
+
+    if isinstance(mapping, dict):
+        mapping = Series([array(list(mapping.keys())), array(list(mapping.values()))])
+
+    if isinstance(mapping, Series):
+        from arkouda.series import Series as akSeries
+
+        print(isinstance(mapping, akSeries))
+        xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]
+
+        if xtra_keys.size > 0:
+            if not isinstance(mapping.values, (Strings, Categorical)):
+                nans = full(xtra_keys.size, np.nan, mapping.values.dtype)
+            else:
+                nans = full(xtra_keys.size, "null")
+
+            if isinstance(xtra_keys, Categorical):
+                xtra_keys = xtra_keys.to_strings()
+
+            xtra_series = Series(nans, index=xtra_keys)
+            mapping = Series.concat([mapping, xtra_series])
+
+        if isinstance(gb_keys, Categorical):
+            mapping = mapping[gb_keys.to_strings()]
+        else:
+            mapping = mapping[gb_keys]
+
+        if isinstance(mapping.values, (pdarray, Strings)):
+            return broadcast(gb.segments, mapping.values, permutation=gb.permutation)
+        else:
+            raise TypeError("Map values must be castable to pdarray or Strings.")
+    else:
+        raise TypeError("Map must be dict or arkouda.Series.")

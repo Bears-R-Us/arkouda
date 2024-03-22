@@ -118,6 +118,12 @@ class TestIndex:
         assert i4.argsort(ascending=True).to_list() == [0, 1, 2]
         assert i4.argsort(ascending=False).to_list() == [2, 1, 0]
 
+    def test_map(self):
+        idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
+
+        result = idx.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+        assert result.values.to_list() == [30.0, 5.0, 30.0, 5.0, 25.0]
+
     def test_concat(self):
         idx_1 = ak.Index.factory(ak.arange(5))
 
