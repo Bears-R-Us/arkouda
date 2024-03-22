@@ -547,7 +547,6 @@ class TestString:
         example = ak.concatenate([not_decimal, decimal])
         assert example.isdecimal().to_list() == [False, False, False, True, True, True]
 
-
         example2 = ak.array(
             [
                 "",
