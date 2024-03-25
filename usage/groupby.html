@@ -308,7 +308,7 @@ for aggregating the within-group values of another array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id534" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array to group by value, or if list, the column arrays to group by row</p></li>
+<li><p><strong>keys</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id536" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array to group by value, or if list, the column arrays to group by row</p></li>
 <li><p><strong>assume_sorted</strong> (<em>bool</em>) – If True, assume keys is already sorted (Default: False)</p></li>
 </ul>
 </dd>
@@ -352,7 +352,7 @@ for aggregating the within-group values of another array.</p>
 <dd><p>The unique values of the keys array(s), in grouped order</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(list of) <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id534" title="arkouda.Strings">Strings</a>, or <a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a></p>
+<dd class="field-odd"><p>(list of) <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id536" title="arkouda.Strings">Strings</a>, or <a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -740,7 +740,7 @@ arkouda server which was registered using register()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id534" title="arkouda.Strings"><em>Strings</em></a>) – The values to put in each group’s segment</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id536" title="arkouda.Strings"><em>Strings</em></a>) – The values to put in each group’s segment</p></li>
 <li><p><strong>permute</strong> (<em>bool</em>) – If True (default), permute broadcast values back to the ordering
 of the original array on which GroupBy was called. If False, the
 broadcast values are grouped by value.</p></li>
@@ -750,7 +750,7 @@ broadcast values are grouped by value.</p></li>
 <dd class="field-even"><p>The broadcasted values</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id534" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id536" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">

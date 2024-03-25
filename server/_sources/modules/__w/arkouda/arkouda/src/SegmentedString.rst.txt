@@ -154,6 +154,13 @@ or
       their lowercase equivalent.  The first character following a space character will be uppercase.
       
 
+   .. method:: proc isDecimal() throws
+
+      
+      Returns list of bools where index i indicates whether the string i of the SegString is a decimal
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is a decimal
+      
+
    .. method:: proc capitalize() throws
 
       
@@ -414,6 +421,12 @@ or
 
    
    The SegFunction called by computeOnSegments for isalpha
+   
+
+.. function:: proc stringIsDecimal(ref values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for isdecimal, using isDigit
    
 
 .. function:: proc stringIsDigit(ref values, rng) throws

@@ -339,6 +339,13 @@ their lowercase equivalent.  The first character following a space character wil
 </dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedString.SegString.isDecimal">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isDecimal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.SegString.isDecimal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of bools where index i indicates whether the string i of the SegString is a decimal
+:returns: [domain] bool where index i indicates whether the string i of the SegString is a decimal</p>
+</dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.capitalize">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">capitalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.SegString.capitalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
@@ -655,6 +662,12 @@ target).</p>
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsAlphabetic">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsAlphabetic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.stringIsAlphabetic" title="Permalink to this definition">¶</a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isalpha</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedString.stringIsDecimal">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsDecimal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.stringIsDecimal" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SegFunction called by computeOnSegments for isdecimal, using isDigit</p>
 </dd></dl>
 
 <dl class="chpl function">

@@ -912,6 +912,52 @@
         <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
 
 
+<div class="viewcode-block" id="Strings.isdecimal">
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.isdecimal">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">isdecimal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a boolean pdarray where index i indicates whether string i of the</span>
+<span class="sd">        Strings has all decimal characters.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray, bool</span>
+<span class="sd">            True for elements that are decimals, False otherwise</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there is a server-side error thrown</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        Strings.isdigit</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; not_decimal = ak.array([f&#39;Strings {i}&#39; for i in range(3)])</span>
+<span class="sd">        &gt;&gt;&gt; decimal = ak.array([f&#39;12{i}&#39; for i in range(3)])</span>
+<span class="sd">        &gt;&gt;&gt; strings = ak.concatenate([not_decimal, decimal])</span>
+<span class="sd">        &gt;&gt;&gt; strings</span>
+<span class="sd">        array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39;120&#39;, &#39;121&#39;, &#39;122&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; strings.isdecimal()</span>
+<span class="sd">        array([False False False True True True])</span>
+<span class="sd">        Special Character Examples</span>
+<span class="sd">        &gt;&gt;&gt; special_strings = ak.array([&quot;3.14&quot;, &quot;\u0030&quot;, &quot;\u00B2&quot;, &quot;2³₇&quot;, &quot;2³x₇&quot;])</span>
+<span class="sd">        &gt;&gt;&gt; special_strings</span>
+<span class="sd">        array([&#39;3.14&#39;, &#39;0&#39;, &#39;²&#39;, &#39;2³₇&#39;, &#39;2³x₇&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; special_strings.isdecimal()</span>
+<span class="sd">        array([False True False False False])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;checkChars&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;isDecimal&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Strings.capitalize">
 <a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.capitalize">[docs]</a>
     <span class="nd">@typechecked</span>
@@ -1187,6 +1233,12 @@
 <span class="sd">        array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39;120&#39;, &#39;121&#39;, &#39;122&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.isdigit()</span>
 <span class="sd">        array([False False False True True True])</span>
+<span class="sd">        Special Character Examples</span>
+<span class="sd">        &gt;&gt;&gt; special_strings = ak.array([&quot;3.14&quot;, &quot;\u0030&quot;, &quot;\u00B2&quot;, &quot;2³₇&quot;, &quot;2³x₇&quot;])</span>
+<span class="sd">        &gt;&gt;&gt; special_strings</span>
+<span class="sd">        array([&#39;3.14&#39;, &#39;0&#39;, &#39;²&#39;, &#39;2³₇&#39;, &#39;2³x₇&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; special_strings.isdigit()</span>
+<span class="sd">        array([False True True True False])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
