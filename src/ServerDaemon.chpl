@@ -477,6 +477,15 @@ module ServerDaemon {
             
         }
 
+        proc processErrorMessageMetrics(user: string, cmd: string, e: ErrorWithMsg) throws {
+            // Log to the console or arkouda.log file
+            sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(), e.msg);
+        }
+
+        proc processErrorMetrics(user: string, cmd: string, e: Error) throws {
+            // Log to the console or arkouda.log file
+            sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(), e.message());
+        }
 
         override proc run() throws {
             this.arkDirectory = this.initArkoudaDirectory();
@@ -720,6 +729,10 @@ module ServerDaemon {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
                 sendRepMsg(serialize(msg=e.msg,msgType=MsgType.ERROR, msgFormat=MsgFormat.STRING, 
                                                         user=user));
+                if metricsEnabled() {
+                    processErrorMessageMetrics(user, cmd, e);
+                }                
+
                 if trace {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                         "<<< %s resulted in error %s in  %.17r sec".doFormat(cmd, e.msg, timeSinceEpoch().totalSeconds() - s0));
@@ -730,6 +743,10 @@ module ServerDaemon {
             
                 if errorMsg.isEmpty() {
                     errorMsg = "unexpected error";
+                }
+
+                if metricsEnabled() {
+                    processErrorMetrics(user, cmd, e);
                 }
 
                 sendRepMsg(serialize(msg=errorMsg,msgType=MsgType.ERROR, 
