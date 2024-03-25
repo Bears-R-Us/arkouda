@@ -916,6 +916,10 @@ class DataFrame(UserDict):
     def loc(self):
         return LocIndexer(self)
     
+    @property
+    def iloc(self):
+        return ILocIndexer(self)
+    
     def set_row(self, key, value):
 
         # Set a single row in the dataframe using a dict of values
@@ -4728,7 +4732,142 @@ class LocIndexer:
             self.df.data[col_key][indices] = val
         return None
     
+class ILocIndexer:
+    def __init__(self, df):
+        self.df = df
 
+    def __getitem__(self, key):
+        if isinstance(key, tuple) and len(key) == 2:
+            return self.get_row_col(key[0], key[1])
+        if isinstance(key, list):
+            key = array(key)
+        if isinstance(key, Series):
+            key = key.values
+
+        if is_supported_scalar(key):
+            if not isinstance(key, int):
+                raise ValueError("iloc key must be an integer")
+            if key >= len(self.df) or key < -len(self.df):
+                raise IndexError("Index out of range")
+            return self.df.get_rows(array([key]))
+        
+        if isinstance(key, pdarray):
+            if key.dtype == akint64:
+                if any(key < -len(self.df)) or any(key >= len(self.df)):
+                    raise IndexError("Index out of range")
+                return self.df.get_rows(key)
+            if key.dtype == akbool:
+                if key.size != self.df.index.size:
+                    raise IndexError("Boolean array must be the same size as the DataFrame index")
+                return self.df.get_rows(key)
+            raise ValueError("Invalid dtype for iloc key, must be int or bool: {}".format(key.dtype))
+        
+        if isinstance(key, slice):
+            if key.start is not None and not isinstance(key.start, int):
+                raise ValueError("Start of slice must be an integer")
+            if key.stop is not None and not isinstance(key.stop, int):
+                raise ValueError("Stop of slice must be an integer")
+            if key.step is not None and not isinstance(key.step, int):
+                raise ValueError("Step of slice must be an integer")
+            start = key.start if key.start is not None else 0
+            stop = key.stop if key.stop is not None else self.df.index.size
+            step = key.step if key.step is not None else 1
+            return self.df.get_rows(arange(start, stop, step))
+        
+        raise ValueError("Invalid iloc key: {}".format(key))
+    
+    def get_row_col(self, row_key, col_key):
+        row_indexed = self[row_key]
+        
+        if isinstance(col_key, list):
+            col_key = array(col_key)
+        if isinstance(col_key, Series):
+            col_key = col_key.values
+        
+        if isinstance(row_indexed, DataFrame):
+            if is_supported_scalar(col_key) and isinstance(col_key, int):
+                column_name = row_indexed.columns[col_key]
+                column = row_indexed[column_name]
+                if len(column) == 1:
+                    return column.values[0]
+                else:
+                    return column
+            
+            if isinstance(col_key, pdarray):
+                column_array = array(row_indexed.columns)
+                if col_key.dtype == akbool or col_key.dtype == akint64:
+                    return row_indexed[column_array[col_key]]
+                raise ValueError("Invalid dtype for iloc key, must be int or bool: {}".format(col_key.dtype))
+
+    def __setitem__(self, key, val):
+        if isinstance(key, tuple) and len(key) == 2:
+            self.set_row_col(key[0], key[1], val)
+            return
+        
+        if isinstance(key, list):
+            key = array(key)
+        if isinstance(key, Series):
+            key = key.values
+        
+        raise ValueError("Invalid iloc key: {}".format(key))
+
+    def set_row_col(self, row_key, col_key, val):
+        if isinstance(row_key, list):
+            row_key = array(row_key)
+        if isinstance(row_key, Series):
+            row_key = row_key.values
+        
+        #Only supports setting a single column at a time
+        if not isinstance(col_key, int):
+            raise ValueError("Column key must be an integer")
+        if col_key >= len(self.df.columns) or col_key < -len(self.df.columns):
+            raise IndexError("Index out of range")
+
+        row_indices = None
+
+        if is_supported_scalar(row_key):
+            if not isinstance(row_key, int):
+                raise ValueError("Row key must be an integer")
+            if row_key >= len(self.df) or row_key < -len(self.df):
+                raise IndexError("Index out of range")
+            row_indices = array([row_key])
+        elif isinstance(row_key, pdarray):
+            if row_key.dtype == akint64:
+                if any(row_key < -len(self.df)) or any(row_key >= len(self.df)):
+                    raise IndexError("Index out of range")
+                row_indices = row_key
+            elif row_key.dtype == akbool:
+                if row_key.size != self.df.index.size:
+                    raise IndexError("Boolean array must be the same size as the DataFrame index")
+                row_indices = row_key
+            else:
+                raise ValueError("Invalid dtype for iloc key, must be int or bool: {}".format(row_key.dtype))
+        elif isinstance(row_key, slice):
+            if row_key.start is not None and not isinstance(row_key.start, int):
+                raise ValueError("Start of slice must be an integer")
+            if row_key.stop is not None and not isinstance(row_key.stop, int):
+                raise ValueError("Stop of slice must be an integer")
+            if row_key.step is not None and not isinstance(row_key.step, int):
+                raise ValueError("Step of slice must be an integer")
+            start = row_key.start if row_key.start is not None else 0
+            stop = row_key.stop if row_key.stop is not None else self.df.index.size
+            step = row_key.step if row_key.step is not None else 1
+            row_indices = arange(start, stop, step)
+        else:
+            raise TypeError("invalid row key type: {}".format(type(row_key)))
+        
+        if is_supported_scalar(val):
+            self.df.data[self.df.columns[col_key]][row_indices] = val
+        elif isinstance(val, pdarray):
+            if val.size != len(row_indices):
+                raise ValueError("Value array must be the same size as the row indices")
+            self.df.data[self.df.columns[col_key]][row_indices] = val
+        else:
+            raise ValueError("Invalid value type: {}".format(type(val)))
+        
+        
+    
+        
 def intx(a, b):
     """
     Find all the rows that are in both dataframes.

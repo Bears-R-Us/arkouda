@@ -14,6 +14,7 @@ from pandas.testing import assert_frame_equal, assert_series_equal
 
 from arkouda import io_util
 from arkouda.index import Index
+from arkouda.dtypes import float64 as akfloat64
 
 
 def build_ak_df():
@@ -1711,9 +1712,194 @@ class DataFrameTest(ArkoudaTest):
         
 
     def test_iloc_get(self):
+        ints = [0,1,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        default_index = [0,1,2,3,4]
+        unordered_index = [9,3,0,23,3]
+        string_index = ['one','two','three','four','five']
+
+        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+
+        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=unordered_index)
+        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=unordered_index)
+
+        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
+        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
+
+        for (_df1,df1) in zip([_df1, _df2, _df3], [df1, df2, df3]):
+            # integer input
+            _iloc1 = _df1.iloc[2]
+            iloc1 = df1.iloc[2]
+            self.assertIsInstance(_iloc1, pd.Series)
+            self.assertIsInstance(iloc1, ak.DataFrame)
+            for column in _iloc1.index:
+                self.assertEqual(_iloc1[column], iloc1[column].values[0])
+            
+            # list of integers
+            _iloc2 = _df1.iloc[[2,3,4]]
+            iloc2 = df1.iloc[[2,3,4]]
+            self.check_df_equality(_iloc2, iloc2)
+
+            # list of unordered integers
+            _iloc3 = _df1.iloc[[4,2,3]]
+            iloc3 = df1.iloc[[4,2,3]]
+            self.check_df_equality(_iloc3, iloc3)
+
+            # array of integers
+            _iloc4 = _df1.iloc[np.array([2,3,4])]
+            iloc4 = df1.iloc[ak.array([2,3,4])]
+            self.check_df_equality(_iloc4, iloc4)
+
+            #array of unordered integers
+            _iloc5 = _df1.iloc[np.array([4,2,3])]
+            iloc5 = df1.iloc[ak.array([4,2,3])]
+            self.check_df_equality(_iloc5, iloc5)
+
+            # slice object with ints
+            _iloc6 = _df1.iloc[1:3]
+            iloc6 = df1.iloc[1:3]
+            self.check_df_equality(_iloc6, iloc6)
+
+            # slice object with no lower bound
+            _iloc7 = _df1.iloc[:3]
+            iloc7 = df1.iloc[:3]
+            self.check_df_equality(_iloc7, iloc7)
+
+            # slice object with no upper bound
+            _iloc8 = _df1.iloc[3:]
+            iloc8 = df1.iloc[3:]
+            self.check_df_equality(_iloc8, iloc8)
+
+            # slice object with no bounds
+            _iloc9 = _df1.iloc[:]
+            iloc9 = df1.iloc[:]
+            self.check_df_equality(_iloc9, iloc9)
+
+            # boolean array
+            _iloc10 = _df1.iloc[[True, True, False, False, True]]
+            iloc10 = df1.iloc[ak.array([True, True, False, False, True])]
+            self.check_df_equality(_iloc10, iloc10)
+
+            # boolean array of incorrect length
+            with self.assertRaises(IndexError):
+                _df1.iloc[[True, True, False, False]]
+            with self.assertRaises(IndexError):
+                df1.iloc[ak.array([True, True, False, False])]
+            
+            # tuple of row and column indexes
+            _iloc11 = _df1.iloc[2, 1]
+            iloc11 = df1.iloc[2, 1]
+            self.assertIsInstance(_iloc11, np.float64)
+            print("iloc11 type: ", type(iloc11))
+            self.assertIsInstance(iloc11, np.float64)
+            self.assertEqual(_iloc11, iloc11)
+
+            # integer row, list column
+            _iloc12 = _df1.iloc[2, [0,1]]
+            iloc12 = df1.iloc[2, [0,1]]
+            self.assertIsInstance(_iloc12, pd.Series)
+            self.assertIsInstance(iloc12, ak.DataFrame)
+            for column in _iloc12.index:
+                self.assertEqual(_iloc12[column], iloc12[column].values[0])
+
+            # list row, integer column
+            _iloc13 = _df1.iloc[[2,3], 1]
+            iloc13 = df1.iloc[[2,3], 1]
+            self.assertIsInstance(_iloc13, pd.Series)
+            self.assertIsInstance(iloc13, ak.Series)
+            for column in _iloc13.index:
+                self.assertEqual(_iloc13[column], iloc13[column])
+            
+
+            # list row, list column
+            _iloc14 = _df1.iloc[[2,3], [0,1]]
+            iloc14 = df1.iloc[[2,3], [0,1]]
+            self.check_df_equality(_iloc14, iloc14)
+
+            # slice row, boolean array column
+            _iloc15 = _df1.iloc[1:3, [True, False, True]]
+            iloc15 = df1.iloc[1:3, [True, False, True]]
+            self.check_df_equality(_iloc15, iloc15)
+
+
+        # raises IndexError if requested indexer is out-of-bounds
+        with self.assertRaises(IndexError):
+            _df1.iloc[100]
+        with self.assertRaises(IndexError):
+            df1.iloc[100]
+        with self.assertRaises(IndexError):
+            _df1.iloc[100, 1]
+        with self.assertRaises(IndexError):
+            df1.iloc[100, 1]
+        with self.assertRaises(IndexError):
+            _df1.iloc[[0,2,100], 1]
+        with self.assertRaises(IndexError):
+            df1.iloc[[0,2,100], 1]
+        with self.assertRaises(IndexError):
+            _df1.iloc[1,100]
+        with self.assertRaises(IndexError):
+            df1.iloc[1,100]
+        
         pass
 
     def test_iloc_set(self):
+        ints = [0,1,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        default_index = [0,1,2,3,4]
+        unordered_index = [9,3,0,23,3]
+        string_index = ['one','two','three','four','five']
+
+        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+
+        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=unordered_index)
+        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=unordered_index)
+
+        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
+        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
+
+        for (_df,df) in zip([_df1, _df2, _df3], [df1, df2, df3]):
+            # tuple of integers
+            _df.iloc[2, 1] = 100.0
+            df.iloc[2, 1] = 100.0
+            self.check_df_equality(_df, df)
+
+            # list row, integer column
+            _df.iloc[[2,3], 1] = 102.0
+            df.iloc[[2,3], 1] = 102.0
+            self.check_df_equality(_df, df)
+
+            # slice row, integer column
+            _df.iloc[1:3, 1] = 103.0
+            df.iloc[1:3, 1] = 103.0
+            self.check_df_equality(_df, df)
+
+            # slice row, no lower bound, integer column
+            _df.iloc[:3, 1] = 104.0
+            df.iloc[:3, 1] = 104.0
+            self.check_df_equality(_df, df)
+
+            # slice row, no upper bound, integer column
+            _df.iloc[3:, 1] = 105.0
+            df.iloc[3:, 1] = 105.0
+            self.check_df_equality(_df, df)
+
+            # slice row, no bounds, integer column
+            _df.iloc[:, 1] = 106.0
+            df.iloc[:, 1] = 106.0
+            self.check_df_equality(_df, df)
+
+            # string columns immutable
+            with self.assertRaises(TypeError):
+                df.iloc[2, 2] = 'new string'
+            
+        
+
         pass
 
 
