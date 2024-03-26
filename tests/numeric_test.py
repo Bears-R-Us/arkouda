@@ -84,7 +84,8 @@ class NumericTest(ArkoudaTest):
                 if (t1, t2) in roundtripable:
                     roundtrip = ak.cast(other, t1)
                     self.assertTrue(
-                        (orig == roundtrip).all(), f"{t1}: {orig[:5]}, {t2}: {roundtrip[:5]}"
+                        (orig == roundtrip).all(),
+                        f"{t1}: {orig[:5]}, {t2}: {roundtrip[:5]}",
                     )
 
         self.assertListEqual(
@@ -107,7 +108,17 @@ class NumericTest(ArkoudaTest):
         floatstr = ak.array(["1.1", "2.2 ", "3?.3", "4.!4", "  5.5", "6.6e-6", "78.91E+4", "6", "N/A"])
         floatans = np.array([1.1, 2.2, np.nan, np.nan, 5.5, 6.6e-6, 78.91e4, 6.0, np.nan])
         boolstr = ak.array(
-            ["True", "False ", "Neither", "N/A", "  True", "true", "false", "TRUE", "NOTTRUE"]
+            [
+                "True",
+                "False ",
+                "Neither",
+                "N/A",
+                "  True",
+                "true",
+                "false",
+                "TRUE",
+                "NOTTRUE",
+            ]
         )
         boolans = np.array([True, False, False, False, True, True, False, True, False])
         validans = ak.array([True, True, False, False, True, True, True, True, False])
@@ -531,7 +542,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_int[i], na2_int[i]) if truth_np[i] else na1_int[i] / na2_int[i]
+                    (np.arctan2(na1_int[i], na2_int[i]) if truth_np[i] else na1_int[i] / na2_int[i])
                     for i in range(len(na1_int))
                 ],
                 ak.arctan2(pda1_int, pda2_int, where=truth_ak).to_ndarray(),
@@ -540,7 +551,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_int[i], na2_uint[i]) if truth_np[i] else na1_int[i] / na2_uint[i]
+                    (np.arctan2(na1_int[i], na2_uint[i]) if truth_np[i] else na1_int[i] / na2_uint[i])
                     for i in range(len(na1_int))
                 ],
                 ak.arctan2(pda1_int, pda2_uint, where=truth_ak).to_ndarray(),
@@ -549,7 +560,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_int[i], na2_float[i]) if truth_np[i] else na1_int[i] / na2_float[i]
+                    (np.arctan2(na1_int[i], na2_float[i]) if truth_np[i] else na1_int[i] / na2_float[i])
                     for i in range(len(na1_int))
                 ],
                 ak.arctan2(pda1_int, pda2_float, where=truth_ak).to_ndarray(),
@@ -559,7 +570,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_uint[i], na2_int[i]) if truth_np[i] else na1_uint[i] / na2_int[i]
+                    (np.arctan2(na1_uint[i], na2_int[i]) if truth_np[i] else na1_uint[i] / na2_int[i])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(pda1_uint, pda2_int, where=truth_ak).to_ndarray(),
@@ -568,7 +579,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_uint[i], na2_uint[i]) if truth_np[i] else na1_uint[i] / na2_uint[i]
+                    (np.arctan2(na1_uint[i], na2_uint[i]) if truth_np[i] else na1_uint[i] / na2_uint[i])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(pda1_uint, pda2_uint, where=truth_ak).to_ndarray(),
@@ -577,7 +588,11 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_uint[i], na2_float[i]) if truth_np[i] else na1_uint[i] / na2_float[i]
+                    (
+                        np.arctan2(na1_uint[i], na2_float[i])
+                        if truth_np[i]
+                        else na1_uint[i] / na2_float[i]
+                    )
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(pda1_uint, pda2_float, where=truth_ak).to_ndarray(),
@@ -587,7 +602,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_float[i], na2_int[i]) if truth_np[i] else na1_float[i] / na2_int[i]
+                    (np.arctan2(na1_float[i], na2_int[i]) if truth_np[i] else na1_float[i] / na2_int[i])
                     for i in range(len(na1_float))
                 ],
                 ak.arctan2(pda1_float, pda2_int, where=truth_ak).to_ndarray(),
@@ -596,7 +611,11 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_float[i], na2_uint[i]) if truth_np[i] else na1_float[i] / na2_uint[i]
+                    (
+                        np.arctan2(na1_float[i], na2_uint[i])
+                        if truth_np[i]
+                        else na1_float[i] / na2_uint[i]
+                    )
                     for i in range(len(na1_float))
                 ],
                 ak.arctan2(pda1_float, pda2_uint, where=truth_ak).to_ndarray(),
@@ -605,9 +624,11 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_float[i], na2_float[i])
-                    if truth_np[i]
-                    else na1_float[i] / na2_float[i]
+                    (
+                        np.arctan2(na1_float[i], na2_float[i])
+                        if truth_np[i]
+                        else na1_float[i] / na2_float[i]
+                    )
                     for i in range(len(na1_float))
                 ],
                 ak.arctan2(pda1_float, pda2_float, where=truth_ak).to_ndarray(),
@@ -632,7 +653,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_int[i], denom[0]) if truth_np[i] else na1_int[i] / denom[0]
+                    (np.arctan2(na1_int[i], denom[0]) if truth_np[i] else na1_int[i] / denom[0])
                     for i in range(len(na1_int))
                 ],
                 ak.arctan2(pda1_int, denom[0], where=truth_ak).to_ndarray(),
@@ -660,7 +681,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_uint[i], denom[0]) if truth_np[i] else na1_uint[i] / denom[0]
+                    (np.arctan2(na1_uint[i], denom[0]) if truth_np[i] else na1_uint[i] / denom[0])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(pda1_uint, denom[0], where=truth_ak).to_ndarray(),
@@ -688,7 +709,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(na1_float[i], denom[0]) if truth_np[i] else na1_float[i] / denom[0]
+                    (np.arctan2(na1_float[i], denom[0]) if truth_np[i] else na1_float[i] / denom[0])
                     for i in range(len(na1_float))
                 ],
                 ak.arctan2(pda1_float, denom[0], where=truth_ak).to_ndarray(),
@@ -745,7 +766,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(num[0], na2_int[i]) if truth_np[i] else num[0] / na2_int[i]
+                    (np.arctan2(num[0], na2_int[i]) if truth_np[i] else num[0] / na2_int[i])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(num[0], pda2_int, where=truth_ak).to_ndarray(),
@@ -754,7 +775,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(num[0], na2_uint[i]) if truth_np[i] else num[0] / na2_uint[i]
+                    (np.arctan2(num[0], na2_uint[i]) if truth_np[i] else num[0] / na2_uint[i])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(num[0], pda2_uint, where=truth_ak).to_ndarray(),
@@ -763,7 +784,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue(
             np.allclose(
                 [
-                    np.arctan2(num[0], na2_float[i]) if truth_np[i] else num[0] / na2_float[i]
+                    (np.arctan2(num[0], na2_float[i]) if truth_np[i] else num[0] / na2_float[i])
                     for i in range(len(na1_uint))
                 ],
                 ak.arctan2(num[0], pda2_float, where=truth_ak).to_ndarray(),
@@ -814,10 +835,18 @@ class NumericTest(ArkoudaTest):
         pda2 = ak.array(na2)
 
         self.assertTrue(
-            np.allclose(np.arctan2(na1, na2), ak.arctan2(pda1, pda2).to_ndarray(), equal_nan=True)
+            np.allclose(
+                np.arctan2(na1, na2),
+                ak.arctan2(pda1, pda2).to_ndarray(),
+                equal_nan=True,
+            )
         )
         self.assertTrue(
-            np.allclose(np.arctan2(na2, na1), ak.arctan2(pda2, pda1).to_ndarray(), equal_nan=True)
+            np.allclose(
+                np.arctan2(na2, na1),
+                ak.arctan2(pda2, pda1).to_ndarray(),
+                equal_nan=True,
+            )
         )
         self.assertTrue(
             np.allclose(np.arctan2(na1, 5), ak.arctan2(pda1, 5).to_ndarray(), equal_nan=True)
@@ -1395,3 +1424,71 @@ class NumericTest(ArkoudaTest):
         _, floatmean = g.mean(floatval)
         ak_mse = ak.mean((intmean - floatmean) ** 2)
         self.assertTrue(np.isclose(ak_mse, 0.0))
+
+    # test clip on ints, floats, and mash-ups; note if any input is float, output is float
+
+    def test_clip(self):
+        ia = np.random.randint(1, 100, 100)
+        ilo = 25
+        ihi = 75
+
+        dtypes = ["int64", "float64"]
+
+        # test clip.
+        # array to be clipped can be integer or float
+        # range limits can be integer, float, or none, and can be scalars or arrays
+
+        # Looping over all data types, the interior loop tests using lo, hi as:
+
+        #   None, Scalar
+        #   None, Array
+        #   Scalar, Scalar
+        #   Scalar, Array
+        #   Scalar, None
+        #   Array, Scalar
+        #   Array, Array
+        #   Array, None
+
+        # There is no test with lo and hi both equal to None, because that's not allowed
+
+        for dtype3 in dtypes:
+            nd_arry = ia.astype(dtype3)
+            ak_arry = ak.array(nd_arry)
+            for dtype2 in dtypes:
+                lo = np.full(ia.shape, ilo, dtype=dtype2)
+                aklo = ak.array(lo)
+                for dtype1 in dtypes:
+                    hi = np.full(ia.shape, ihi, dtype=dtype1)
+                    akhi = ak.array(hi)
+                    assert np.allclose(
+                        np.clip(nd_arry, None, hi[0]),
+                        ak.clip(ak_arry, None, hi[0]).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, None, hi),
+                        ak.clip(ak_arry, None, akhi).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], hi[0]),
+                        ak.clip(ak_arry, lo[0], hi[0]).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], hi),
+                        ak.clip(ak_arry, lo[0], akhi).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], None),
+                        ak.clip(ak_arry, lo[0], None).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, hi[0]),
+                        ak.clip(ak_arry, aklo, hi[0]).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, hi),
+                        ak.clip(ak_arry, aklo, akhi).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, None),
+                        ak.clip(ak_arry, aklo, None).to_ndarray(),
+                    )
