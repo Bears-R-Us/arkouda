@@ -569,9 +569,6 @@ def map(
         mapping = Series([array(list(mapping.keys())), array(list(mapping.values()))])
 
     if isinstance(mapping, Series):
-        from arkouda.series import Series as akSeries
-
-        print(isinstance(mapping, akSeries))
         xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]
 
         if xtra_keys.size > 0:
