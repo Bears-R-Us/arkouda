@@ -50,6 +50,26 @@ class TestRandom:
         assert all(bounded_arr.to_ndarray() >= -5)
         assert all(bounded_arr.to_ndarray() < 5)
 
+    def test_permutation(self):
+        # verify same seed gives reproducible arrays
+        rng = ak.random.default_rng(18)
+        # providing just a number permutes the range(num)
+        range_permute = rng.permutation(20)
+        assert (ak.arange(20) == ak.sort(range_permute)).all()
+
+        pda = rng.integers(-(2**32), 2**32, 10)
+        array_permute = rng.permutation(pda)
+        # verify all the same elements are in permutation as the original
+        assert (ak.sort(pda) == ak.sort(array_permute)).all()
+
+        rng = ak.random.default_rng(18)
+        same_seed_range_permute = rng.permutation(20)
+        assert (range_permute == same_seed_range_permute).all()
+
+        pda = rng.integers(-(2**32), 2**32, 10)
+        same_seed_array_permute = rng.permutation(pda)
+        assert (array_permute == same_seed_array_permute).all()
+
     def test_uniform(self):
         # verify same seed gives different but reproducible arrays
         rng = ak.random.default_rng(18)

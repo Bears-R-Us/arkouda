@@ -82,6 +82,23 @@ def _is_dtype_in_union(dtype, union_type) -> builtins.bool:  # type: ignore
     return hasattr(union_type, "__args__") and dtype in union_type.__args__
 
 
+def _val_isinstance_of_union(val, union_type) -> builtins.bool:  # type: ignore
+    """
+    Check if a given val is an instance of one of the types in the typing.Union
+
+    Args
+    ----
+        val: The val to do the isinstance check on.
+        union_type (type): The typing.Union type to check against.
+
+    Returns
+    -------
+        bool: True if the val is an instance of one
+            of the types in the union_type, False otherwise.
+    """
+    return hasattr(union_type, "__args__") and isinstance(val, union_type.__args__)
+
+
 class BigInt:
     # an estimate of the itemsize of bigint (128 bytes)
     itemsize = 128

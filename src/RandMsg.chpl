@@ -10,6 +10,7 @@ module RandMsg
     use Logging;
     use Message;
     use RandArray;
+    use CommAggregation;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -296,9 +297,82 @@ module RandMsg
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-    
+
+    proc permutationMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName();
+        var rname = st.nextName();
+        const name = msgArgs.getValueOf("name");
+        const xName = msgArgs.getValueOf("x");
+        const size = msgArgs.get("size").getIntValue();
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        const dtype = str2dtype(dtypeStr);
+        const state = msgArgs.get("state").getIntValue();
+        const isDomPerm = msgArgs.get("isDomPerm").getBoolValue();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i dtype: %? state %i isDomPerm %?".doFormat(name, size, dtypeStr, state, isDomPerm));
+
+        st.checkTable(name);
+
+        proc permuteHelper(type t, st: borrowed SymTab) throws {
+            // we need the int generator in order for permute(domain) to work correctly
+            var intGeneratorEntry: borrowed GeneratorSymEntry(int) = toGeneratorSymEntry(st.lookup(name), int);
+            ref intRng = intGeneratorEntry.generator;
+
+            if state != 1 {
+                // you have to skip to one before where you want to be
+                intRng.skipTo(state-1);
+            }
+            const permutedDom = makeDistDom(size);
+            const permutedIdx = intRng.permute(permutedDom);
+
+            if isDomPerm {
+                const permutedEntry = createSymEntry(permutedIdx);
+                st.addEntry(rname, permutedEntry);
+            }
+            else {
+                // permute requires idxType must be coercible from this stream’s eltType, so
+                // instead we use the permute(dom) and use that to gather the permuted vals. But we're
+                // not missing out on much bc permute(arr) seems to do the same thing but without aggregation
+                var permutedArr: [permutedDom] t;
+                ref myArr = toSymEntry(getGenericTypedArrayEntry(xName, st),t).a;
+
+                forall (pa,idx) in zip(permutedArr, permutedIdx) with (var agg = newSrcAggregator(t)) {
+                    agg.copy(pa, myArr[idx]);
+                }
+
+                const permutedEntry = createSymEntry(permutedArr);
+                st.addEntry(rname, permutedEntry);
+            }
+        }
+
+        select dtype {
+            when DType.Int64 {
+                permuteHelper(int, st);
+            }
+            when DType.UInt64 {
+                permuteHelper(uint, st);
+            }
+            when DType.Float64 {
+                permuteHelper(real, st);
+            }
+            when DType.Bool {
+                permuteHelper(bool, st);
+            }
+            otherwise {
+                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+        var repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     use CommandMap;
     registerFunction("randomNormal", randomNormalMsg, getModuleName());
     registerFunction("createGenerator", createGeneratorMsg, getModuleName());
     registerFunction("uniformGenerator", uniformGeneratorMsg, getModuleName());
+    registerFunction("permutation", permutationMsg, getModuleName());
 }
