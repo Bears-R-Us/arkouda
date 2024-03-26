@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import json
-from typing import List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 
 import pandas as pd  # type: ignore
 from numpy import array as ndarray
@@ -16,6 +18,9 @@ from arkouda.pdarraycreation import arange, array, create_pdarray, ones
 from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.util import convert_if_categorical, generic_concat, get_callback
+
+if TYPE_CHECKING:
+    from arkouda.series import Series
 
 
 class Index:
@@ -447,6 +452,45 @@ class Index:
         else:
             i = argsort(self.values)
         return i
+
+    def map(self, arg: Union[dict, "Series"]) -> "Index":
+        """
+        Map values of Index according to an input mapping.
+
+        Parameters
+        ----------
+        arg : dict or Series
+            The mapping correspondence.
+
+        Returns
+        -------
+        arkouda.index.Index
+            A new index with the values transformed by the mapping correspondence.
+
+        Raises
+        ------
+        TypeError
+            Raised if arg is not of type dict or arkouda.Series.
+            Raised if index values not of type pdarray, Categorical, or Strings.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
+        >>> display(idx)
+        Index(array([2 3 2 3 4]), dtype='int64')
+        >>> idx.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+        Index(array([30.00000000000000000 5.00000000000000000 30.00000000000000000
+        5.00000000000000000 25.00000000000000000]), dtype='float64')
+        >>> s2 = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
+        >>> idx.map(s2)
+        Index(array(['b', 'b', 'd', 'd', 'a']), dtype='<U0')
+
+        """
+        from arkouda.util import map
+
+        return Index(map(self.values, arg))
 
     def concat(self, other):
         self._check_types(other)
