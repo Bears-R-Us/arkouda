@@ -1004,7 +1004,9 @@ def arctan2(
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
+    if not all(
+        isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]
+    ):
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
@@ -1225,7 +1227,9 @@ def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     return _trig_helper(pda, "arctanh", where)
 
 
-def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
+def _trig_helper(
+    pda: pdarray, func: str, where: Union[bool, pdarray] = True
+) -> pdarray:
     """
     Returns the result of the input trig function acting element-wise on the array.
 
@@ -1441,7 +1445,10 @@ def hash(
         return _hash_single(pda, full) if isinstance(pda, pdarray) else pda.hash()
     elif isinstance(pda, List):
         if any(
-            wrong_type := [not isinstance(a, (pdarray, Strings, SegArray_, Categorical_)) for a in pda]
+            wrong_type := [
+                not isinstance(a, (pdarray, Strings, SegArray_, Categorical_))
+                for a in pda
+            ]
         ):
             raise TypeError(
                 f"Unsupported type {type(pda[np.argmin(wrong_type)])}. Supported types are pdarray,"
@@ -1523,16 +1530,22 @@ def _str_cat_where(
             new_categories = concatenate([A.categories, array([B])])
             b_code = A.codes.size + 1
         new_codes = where(condition, A.codes, b_code)
-        return Categorical.from_codes(new_codes, new_categories, NAvalue=A.NAvalue).reset_categories()
+        return Categorical.from_codes(
+            new_codes, new_categories, NAvalue=A.NAvalue
+        ).reset_categories()
 
     # both cat
     if isinstance(A, Categorical) and isinstance(B, Categorical):
         if A.codes.size != B.codes.size:
             raise TypeError("Categoricals must be same length")
-        if A.categories.size != B.categories.size or not ak_all(A.categories == B.categories):
+        if A.categories.size != B.categories.size or not ak_all(
+            A.categories == B.categories
+        ):
             A, B = A.standardize_categories([A, B])
         new_codes = where(condition, A.codes, B.codes)
-        return Categorical.from_codes(new_codes, A.categories, NAvalue=A.NAvalue).reset_categories()
+        return Categorical.from_codes(
+            new_codes, A.categories, NAvalue=A.NAvalue
+        ).reset_categories()
 
     # one strings and one str
     if isinstance(A, Strings) and isinstance(B, str):
@@ -1713,7 +1726,9 @@ def where(
             dt = dtA
         # Cannot safely cast
         else:
-            raise TypeError(f"Cannot cast between scalars {str(A)} and {str(B)} to supported dtype")
+            raise TypeError(
+                f"Cannot cast between scalars {str(A)} and {str(B)} to supported dtype"
+            )
         repMsg = generic_msg(
             cmd="efunc3ss",
             args={
@@ -1857,13 +1872,17 @@ def histogram2d(
         x_bins, y_bins = bins, bins
     else:
         if len(bins) != 2:
-            raise ValueError("Sequences of bins must contain two elements (num_x_bins, num_y_bins)")
+            raise ValueError(
+                "Sequences of bins must contain two elements (num_x_bins, num_y_bins)"
+            )
         x_bins, y_bins = bins
     if x_bins < 1 or y_bins < 1:
         raise ValueError("bins must be 1 or greater")
     x_bin_boundaries = linspace(x.min(), x.max(), x_bins + 1)
     y_bin_boundaries = linspace(y.min(), y.max(), y_bins + 1)
-    repMsg = generic_msg(cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins})
+    repMsg = generic_msg(
+        cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins}
+    )
     return (
         create_pdarray(type_cast(str, repMsg)).reshape(x_bins, y_bins),
         x_bin_boundaries,
@@ -1941,7 +1960,9 @@ def histogramdd(
         bins = [bins] * num_dims
     else:
         if len(bins) != num_dims:
-            raise ValueError("Sequences of bins must contain same number of elements as the sample")
+            raise ValueError(
+                "Sequences of bins must contain same number of elements as the sample"
+            )
     if any(b < 1 for b in bins):
         raise ValueError("bins must be 1 or greater")
 
