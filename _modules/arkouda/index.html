@@ -289,8 +289,10 @@
         </div>
         <article role="main">
           <h1>Source code for arkouda.index</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ndarray</span>
@@ -307,6 +309,9 @@
 <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">in1d</span>
 <span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">coargsort</span>
 <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">convert_if_categorical</span><span class="p">,</span> <span class="n">generic_concat</span><span class="p">,</span> <span class="n">get_callback</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
 
 
 <div class="viewcode-block" id="Index">
@@ -775,6 +780,48 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">i</span></div>
+
+
+<div class="viewcode-block" id="Index.map">
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.map">[docs]</a>
+    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Index&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Map values of Index according to an input mapping.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        arg : dict or Series</span>
+<span class="sd">            The mapping correspondence.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        arkouda.index.Index</span>
+<span class="sd">            A new index with the values transformed by the mapping correspondence.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if arg is not of type dict or arkouda.Series.</span>
+<span class="sd">            Raised if index values not of type pdarray, Categorical, or Strings.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">        &gt;&gt;&gt; idx = ak.Index(ak.array([2, 3, 2, 3, 4]))</span>
+<span class="sd">        &gt;&gt;&gt; display(idx)</span>
+<span class="sd">        Index(array([2 3 2 3 4]), dtype=&#39;int64&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; idx.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})</span>
+<span class="sd">        Index(array([30.00000000000000000 5.00000000000000000 30.00000000000000000</span>
+<span class="sd">        5.00000000000000000 25.00000000000000000]), dtype=&#39;float64&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; s2 = ak.Series(ak.array([&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;]), index = ak.array([4,2,1,3]))</span>
+<span class="sd">        &gt;&gt;&gt; idx.map(s2)</span>
+<span class="sd">        Index(array([&#39;b&#39;, &#39;b&#39;, &#39;d&#39;, &#39;d&#39;, &#39;a&#39;]), dtype=&#39;&lt;U0&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="nb">map</span>
+
+        <span class="k">return</span> <span class="n">Index</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">arg</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="Index.concat">

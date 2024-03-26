@@ -291,7 +291,7 @@
           <h1>Source code for arkouda.util</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">builtins</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
@@ -315,6 +315,9 @@
 <span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">coargsort</span>
 <span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
 <span class="kn">from</span> <span class="nn">arkouda.timeclass</span> <span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
 
 
 <div class="viewcode-block" id="identity">
@@ -869,6 +872,90 @@
         <span class="k">return</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">arry</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">int_scalars</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="map">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.map">[docs]</a>
+<span class="k">def</span> <span class="nf">map</span><span class="p">(</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span> <span class="n">mapping</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Map values of an array according to an input mapping.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    values :  pdarray, Strings, or Categorical</span>
+<span class="sd">        The values to be mapped.</span>
+<span class="sd">    mapping : dict or Series</span>
+<span class="sd">        The mapping correspondence.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    arkouda.pdarrayclass.pdarray or arkouda.strings.Strings</span>
+<span class="sd">        A new array with the values mapped by the mapping correspondence.</span>
+<span class="sd">        When the input Series has Categorical values,</span>
+<span class="sd">        the return Series will have Strings values.</span>
+<span class="sd">        Otherwise, the return type will match the input type.</span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if arg is not of type dict or arkouda.Series.</span>
+<span class="sd">        Raised if values not of type pdarray, Categorical, or Strings.</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">    &gt;&gt;&gt; from arkouda.util import map</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.array([2, 3, 2, 3, 4])</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([2 3 2 3 4])</span>
+<span class="sd">    &gt;&gt;&gt; map(a, {4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})</span>
+<span class="sd">    array([30.00000000000000000 5.00000000000000000 30.00000000000000000</span>
+<span class="sd">    5.00000000000000000 25.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; s = ak.Series(ak.array([&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;]), index = ak.array([4,2,1,3]))</span>
+<span class="sd">    &gt;&gt;&gt; map(a, s)</span>
+<span class="sd">    array([&#39;b&#39;, &#39;b&#39;, &#39;d&#39;, &#39;d&#39;, &#39;a&#39;])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">Series</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">broadcast</span><span class="p">,</span> <span class="n">full</span>
+    <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">in1d</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">values</span>
+    <span class="n">gb</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">gb_keys</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">unique_keys</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="p">([</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span> <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()))])</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
+        <span class="n">xtra_keys</span> <span class="o">=</span> <span class="n">gb_keys</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">xtra_keys</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
+                <span class="n">nans</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">xtra_keys</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nans</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">xtra_keys</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xtra_keys</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+                <span class="n">xtra_keys</span> <span class="o">=</span> <span class="n">xtra_keys</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()</span>
+
+            <span class="n">xtra_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">nans</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">xtra_keys</span><span class="p">)</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">mapping</span><span class="p">,</span> <span class="n">xtra_series</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">gb_keys</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">gb_keys</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">gb</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">permutation</span><span class="o">=</span><span class="n">gb</span><span class="o">.</span><span class="n">permutation</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Map values must be castable to pdarray or Strings.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Map must be dict or arkouda.Series.&quot;</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

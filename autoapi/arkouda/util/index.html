@@ -347,25 +347,28 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.is_registered" title="arkouda.util.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>(→ bool)</p></td>
 <td><p>Determine if the name provided is associated with a registered Object</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.most_common" title="arkouda.util.most_common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">most_common</span></code></a>(g, values)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.map" title="arkouda.util.map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<td><p>Map values of an array according to an input mapping.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.most_common" title="arkouda.util.most_common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">most_common</span></code></a>(g, values)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.register" title="arkouda.util.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>(obj, name)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register" title="arkouda.util.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>(obj, name)</p></td>
 <td><p>Register an arkouda object with a user-specified name. Backwards compatible</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register_all" title="arkouda.util.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.register_all" title="arkouda.util.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data)</p></td>
 <td><p>Register all objects in the provided dictionary</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>([pre])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>([pre])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.sparse_sum_help" title="arkouda.util.sparse_sum_help"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_sum_help</span></code></a>(idx1, idx2, val1, val2[, merge, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.sparse_sum_help" title="arkouda.util.sparse_sum_help"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_sum_help</span></code></a>(idx1, idx2, val1, val2[, merge, ...])</p></td>
 <td><p>Helper for summing two sparse matrices together</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.unregister" title="arkouda.util.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.unregister" title="arkouda.util.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.unregister_all" title="arkouda.util.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.unregister_all" title="arkouda.util.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
 <td><p>Unregister all names provided</p></td>
 </tr>
 </tbody>
@@ -589,6 +592,48 @@ a registered object</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.util.map">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><span class="pre">arkouda.Series</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/util.html#map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.map" title="Link to this definition">#</a></dt>
+<dd><p>Map values of an array according to an input mapping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id536" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The values to be mapped.</p></li>
+<li><p><strong>mapping</strong> (<em>dict</em><em> or </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a>) – The mapping correspondence.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new array with the values mapped by the mapping correspondence.
+When the input Series has Categorical values,
+the return Series will have Strings values.
+Otherwise, the return type will match the input type.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">arkouda.pdarrayclass.pdarray</a> or <a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings">arkouda.strings.Strings</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if arg is not of type dict or arkouda.Series.
+Raised if values not of type pdarray, Categorical, or Strings.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="nb">map</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([2 3 2 3 4])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">:</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">})</span>
+<span class="go">array([30.00000000000000000 5.00000000000000000 30.00000000000000000</span>
+<span class="go">5.00000000000000000 25.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">]),</span> <span class="n">index</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="go">array([&#39;b&#39;, &#39;b&#39;, &#39;d&#39;, &#39;d&#39;, &#39;a&#39;])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.most_common">
 <span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">most_common</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#most_common"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.most_common" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
@@ -758,6 +803,7 @@ we fall back to using the sort based workflow.</p></li>
 <li><a class="reference internal" href="#arkouda.util.is_int"><code class="docutils literal notranslate"><span class="pre">is_int()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.is_numeric"><code class="docutils literal notranslate"><span class="pre">is_numeric()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.is_registered"><code class="docutils literal notranslate"><span class="pre">is_registered()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.map"><code class="docutils literal notranslate"><span class="pre">map()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.most_common"><code class="docutils literal notranslate"><span class="pre">most_common()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.register"><code class="docutils literal notranslate"><span class="pre">register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.register_all"><code class="docutils literal notranslate"><span class="pre">register_all()</span></code></a></li>

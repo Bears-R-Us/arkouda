@@ -402,7 +402,7 @@ Classes
       :rtype: arkouda.series.Series
 
       :raises TypeError: Raised if arg is not of type dict or arkouda.Series.
-          Raised if arg values not of type pdarray or Strings.
+          Raised if series values not of type pdarray, Categorical, or Strings.
 
       .. rubric:: Examples
 

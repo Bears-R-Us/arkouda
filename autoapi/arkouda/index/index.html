@@ -428,6 +428,41 @@ they are unregistered.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.index.Index.map">
+<span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../series/index.html#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">arkouda.series.Series</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.index.Index" title="arkouda.index.Index"><span class="pre">Index</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/index.html#Index.map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.Index.map" title="Link to this definition">#</a></dt>
+<dd><p>Map values of Index according to an input mapping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arg</strong> (<em>dict</em><em> or </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a>) – The mapping correspondence.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new index with the values transformed by the mapping correspondence.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.index.Index" title="arkouda.index.Index">arkouda.index.Index</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if arg is not of type dict or arkouda.Series.
+Raised if index values not of type pdarray, Categorical, or Strings.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">display</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+<span class="go">Index(array([2 3 2 3 4]), dtype=&#39;int64&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span><span class="o">.</span><span class="n">map</span><span class="p">({</span><span class="mi">4</span><span class="p">:</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">})</span>
+<span class="go">Index(array([30.00000000000000000 5.00000000000000000 30.00000000000000000</span>
+<span class="go">5.00000000000000000 25.00000000000000000]), dtype=&#39;float64&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">]),</span> <span class="n">index</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+<span class="go">Index(array([&#39;b&#39;, &#39;b&#39;, &#39;d&#39;, &#39;d&#39;, &#39;a&#39;]), dtype=&#39;&lt;U0&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.Index.memory_usage">
 <span class="sig-name descname"><span class="pre">memory_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'B'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/index.html#Index.memory_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.Index.memory_usage" title="Link to this definition">#</a></dt>
 <dd><p>Return the memory usage of the Index values.</p>
@@ -1093,6 +1128,7 @@ file with the new data</p></li>
 <li><a class="reference internal" href="#arkouda.index.Index.from_return_msg"><code class="docutils literal notranslate"><span class="pre">Index.from_return_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.is_registered"><code class="docutils literal notranslate"><span class="pre">Index.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.lookup"><code class="docutils literal notranslate"><span class="pre">Index.lookup()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.Index.map"><code class="docutils literal notranslate"><span class="pre">Index.map()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.memory_usage"><code class="docutils literal notranslate"><span class="pre">Index.memory_usage()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.register"><code class="docutils literal notranslate"><span class="pre">Index.register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.save"><code class="docutils literal notranslate"><span class="pre">Index.save()</span></code></a></li>

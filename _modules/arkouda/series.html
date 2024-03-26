@@ -1517,7 +1517,7 @@
 <span class="sd">        ------</span>
 <span class="sd">        TypeError</span>
 <span class="sd">            Raised if arg is not of type dict or arkouda.Series.</span>
-<span class="sd">            Raised if arg values not of type pdarray or Strings.</span>
+<span class="sd">            Raised if series values not of type pdarray, Categorical, or Strings.</span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
@@ -1573,44 +1573,10 @@
 <span class="sd">        +----+-----+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">Series</span><span class="p">,</span> <span class="n">broadcast</span><span class="p">,</span> <span class="n">full</span>
+        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">Series</span>
+        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="nb">map</span>
 
-        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">gb</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">gb_keys</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">unique_keys</span>
-
-        <span class="n">mapping</span> <span class="o">=</span> <span class="n">arg</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="p">([</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span> <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()))])</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
-            <span class="n">xtra_keys</span> <span class="o">=</span> <span class="n">gb_keys</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
-
-            <span class="k">if</span> <span class="n">xtra_keys</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
-                    <span class="n">nans</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">xtra_keys</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">nans</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">xtra_keys</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xtra_keys</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
-                    <span class="n">xtra_keys</span> <span class="o">=</span> <span class="n">xtra_keys</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()</span>
-
-                <span class="n">xtra_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">nans</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">xtra_keys</span><span class="p">)</span>
-                <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">mapping</span><span class="p">,</span> <span class="n">xtra_series</span><span class="p">])</span>
-
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
-                <span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">gb_keys</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">gb_keys</span><span class="p">]</span>
-
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)):</span>
-                <span class="k">return</span> <span class="n">Series</span><span class="p">(</span>
-                    <span class="n">broadcast</span><span class="p">(</span><span class="n">gb</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">permutation</span><span class="o">=</span><span class="n">gb</span><span class="o">.</span><span class="n">permutation</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Map values must be castable to pdarray or Strings.&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Map must be dict or arkouda.Series.&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">arg</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Series.isna">
