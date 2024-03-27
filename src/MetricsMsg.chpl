@@ -362,6 +362,10 @@ module MetricsMsg {
             metrics.pushBack(metric);
         }
 
+        for metric in getNumErrorMetrics() {
+            metrics.pushBack(metric);
+        }
+
         return metrics.toArray();
     }
    
