@@ -51,6 +51,7 @@ module SegmentedComputation {
     StringIsAlphaNumeric,
     StringIsAlphabetic,
     StringIsDigit,
+    StringIsDecimal,
     StringIsEmpty,
     StringIsSpace,
   }
@@ -121,6 +122,9 @@ module SegmentedComputation {
                 }
                 when SegFunction.StringIsDigit {
                   agg.copy(res[i], stringIsDigit(values, start..#len));
+                }
+                when SegFunction.StringIsDecimal {
+                  agg.copy(res[i], stringIsDecimal(values, start..#len));
                 }
                 when SegFunction.StringIsEmpty {
                   agg.copy(res[i], stringIsEmpty(values, start..#len));

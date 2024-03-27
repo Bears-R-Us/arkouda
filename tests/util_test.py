@@ -1,7 +1,9 @@
+import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
-import numpy as np
-from arkouda.util import is_numeric, is_int, is_float
+
+from arkouda.util import is_float, is_int, is_numeric, map
+
 
 class UtilTest(ArkoudaTest):
     def test_sparse_sum_helper(self):
@@ -44,4 +46,49 @@ class UtilTest(ArkoudaTest):
         self.assertFalse(is_float(c))
         self.assertTrue(is_float(d))
 
+    def test_map(self):
+        a = ak.array(["1", "1", "4", "4", "4"])
+        b = ak.array([2, 3, 2, 3, 4])
+        c = ak.array([1.0, 1.0, 2.2, 2.2, 4.4])
+        d = ak.Categorical(a)
 
+        result = map(a, {"4": 25, "5": 30, "1": 7})
+        self.assertListEqual(result.to_list(), [7, 7, 25, 25, 25])
+
+        result = map(a, {"1": 7})
+        self.assertListEqual(
+            result.to_list(), ak.cast(ak.array([7, 7, np.nan, np.nan, np.nan]), dt=ak.int64).to_list()
+        )
+
+        result = map(a, {"1": 7.0})
+        self.assertTrue(
+            np.allclose(result.to_list(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
+        )
+
+        result = map(b, {4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+        self.assertListEqual(result.to_list(), [30.0, 5.0, 30.0, 5.0, 25.0])
+
+        result = map(c, {1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d"})
+        self.assertListEqual(result.to_list(), ["a", "a", "b", "b", "c"])
+
+        result = map(c, {1.0: "a"})
+        self.assertListEqual(result.to_list(), ["a", "a", "null", "null", "null"])
+
+        result = map(c, {1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d", 6.0: "e"})
+        self.assertListEqual(result.to_list(), ["a", "a", "b", "b", "c"])
+
+        result = map(d, {"4": 25, "5": 30, "1": 7})
+        self.assertListEqual(result.to_list(), [7, 7, 25, 25, 25])
+
+        result = map(d, {"1": 7})
+        self.assertTrue(
+            np.allclose(
+                result.to_list(),
+                ak.cast(ak.array([7, 7, np.nan, np.nan, np.nan]), dt=ak.int64).to_list(),
+            )
+        )
+
+        result = map(d, {"1": 7.0})
+        self.assertTrue(
+            np.allclose(result.to_list(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
+        )
