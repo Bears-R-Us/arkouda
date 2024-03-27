@@ -361,7 +361,6 @@ module MetricsMsg {
         for metric in getAllUserRequestMetrics() {
             metrics.pushBack(metric);
         }
-
         for metric in getNumErrorMetrics() {
             metrics.pushBack(metric);
         }
@@ -680,6 +679,9 @@ module MetricsMsg {
             }
             when MetricCategory.TOTAL_RESPONSE_TIME {
                 metrics = formatJson(getTotalResponseTimeMetrics());            
+            }
+            when MetricCategory.NUM_ERRORS {
+                metrics = formatJson(getNumErrorMetrics());
             }
             otherwise {
                 throw getErrorWithContext(getLineNumber(),getModuleName(),getRoutineName(),
