@@ -199,6 +199,20 @@ module ServerErrors {
         proc init(){ super.init(); }
     }
 
+    /*
+     * The OverMemoryLimitError is thrown if the projected memory required for a method
+     * invocation will exceed available, free memory on 1..n locales
+     */
+    class OverMemoryLimitError: ErrorWithContext {
+
+        proc init(msg : string, lineNumber: int, routineName: string,
+                                                           moduleName: string) {
+           super.init(msg,lineNumber,routineName,moduleName,errorClass='OverMemoryLimitError');
+        }
+
+        proc init(){ super.init(); }
+    }
+
      /*
      * The ConfigurationError if the current instance of the server was not
      * configured to complete a requested operation.
@@ -214,7 +228,7 @@ module ServerErrors {
     }
 
     /*
-     * Generatea a detailed, context-rich error message for errors such as instances of 
+     * Generates a detailed, context-rich error message for errors such as instances of 
      * built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext
      * error message format. 
      */
@@ -229,7 +243,7 @@ module ServerErrors {
      * error was thrown.
      */
     proc getErrorWithContext(lineNumber: int, moduleName: string, 
-                    routineName: string, msg: string, errorClass: string): Error throws {
+                    routineName: string, msg: string, errorClass: string) throws {
         select errorClass {
             when "ErrorWithContext"             { return new owned 
                                                           ErrorWithContext(msg=msg,
@@ -297,6 +311,14 @@ module ServerErrors {
                                                           lineNumber=lineNumber,
                                                           routineName=routineName,
                                                           moduleName=moduleName); }
+
+            when "OverMemoryLimitError"          { return new owned
+                                                          OverMemoryLimitError(msg=msg,
+                                                          lineNumber=lineNumber,
+                                                          routineName=routineName,
+                                                          moduleName=moduleName); 
+                                                 }
+
             otherwise                            { return new owned 
                                                           Error(generateErrorContext(
                                                           msg=msg,

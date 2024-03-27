@@ -17,7 +17,7 @@ module MetricsMsg {
     use ArkoudaIOCompat;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,TOTAL_RESPONSE_TIME,
-                        TOTAL_MEMORY_USED,SYSTEM,SERVER,SERVER_INFO};
+                        TOTAL_MEMORY_USED,SYSTEM,SERVER,SERVER_INFO,NUM_ERRORS};
     enum MetricScope{GLOBAL,LOCALE,REQUEST,USER};
     enum MetricDataType{INT,REAL};
 
@@ -42,6 +42,8 @@ module MetricsMsg {
     var users = new Users();
     
     var userMetrics = new UserMetrics();
+
+    var errorMetrics = new CounterTable();
 
     record User {
         var name: string;
@@ -359,6 +361,9 @@ module MetricsMsg {
         for metric in getAllUserRequestMetrics() {
             metrics.pushBack(metric);
         }
+        for metric in getNumErrorMetrics() {
+            metrics.pushBack(metric);
+        }
 
         return metrics.toArray();
     }
@@ -394,6 +399,22 @@ module MetricsMsg {
         metrics.pushBack(new Metric(name='total', 
                                   category=MetricCategory.NUM_REQUESTS, 
                                   value=requestMetrics.total()));
+        return metrics;
+    }
+
+    proc getNumErrorMetrics() throws {
+        var metrics = new list(owned Metric?);
+
+        for item in errorMetrics.items() {
+
+            metrics.pushBack(new Metric(name=item[0],
+                                        category=MetricCategory.NUM_ERRORS,
+                                        value=item[1]));
+        }
+
+        metrics.pushBack(new Metric(name='total',
+                                    category=MetricCategory.NUM_ERRORS,
+                                    value=errorMetrics.total()));
         return metrics;
     }
 
@@ -658,6 +679,9 @@ module MetricsMsg {
             }
             when MetricCategory.TOTAL_RESPONSE_TIME {
                 metrics = formatJson(getTotalResponseTimeMetrics());            
+            }
+            when MetricCategory.NUM_ERRORS {
+                metrics = formatJson(getNumErrorMetrics());
             }
             otherwise {
                 throw getErrorWithContext(getLineNumber(),getModuleName(),getRoutineName(),
