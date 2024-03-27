@@ -496,7 +496,6 @@ module ServerDaemon {
 
         proc processErrorMetrics(user, cmd, errName) throws {
             errorMetrics.increment(errName);
-            errorMetrics.increment('total');
         }
 
         override proc run() throws {
