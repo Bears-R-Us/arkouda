@@ -317,10 +317,19 @@ module ManipulationMsg {
 
 
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.expand_dims.html#array_api.expand_dims
+  // insert a new singleton dimension at the given axis
   @arkouda.registerND
   proc expandDimsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    // TODO: add a check and error handling if nd+1 exceeds the maximum supported array rank
+
+    if nd == MaxArrayDims {
+      const errMsg = "Cannot expand arrays with rank %i, as this would result an an array with rank %i".doFormat(nd, nd+1) +
+                     ", exceeding the server's configured maximum of %i. ".doFormat(MaxArrayDims) +
+                     "Please update the configuration and recompile to support higher-dimensional arrays.";
+      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+      return new MsgTuple(errMsg,MsgType.ERROR);
+    }
+
     const name = msgArgs.getValueOf("name"),
           axis = msgArgs.get("axis").getPositiveIntValue(nd+1),
           rname = st.nextName();
@@ -921,6 +930,15 @@ module ManipulationMsg {
   @arkouda.registerND
   proc stackMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
+
+    if nd == MaxArrayDims {
+      const errMsg = "Cannot stack arrays with rank %i, as this would result an an array with rank %i".doFormat(nd, nd+1) +
+                     ", exceeding the server's configured maximum of %i. ".doFormat(MaxArrayDims) +
+                     "Please update the configuration and recompile to support higher-dimensional arrays.";
+      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+      return new MsgTuple(errMsg,MsgType.ERROR);
+    }
+
     const nArrays = msgArgs.get("n").getIntValue(),
           names = msgArgs.get("names").getList(nArrays),
           axis = msgArgs.get("axis").getPositiveIntValue(nd+1),
