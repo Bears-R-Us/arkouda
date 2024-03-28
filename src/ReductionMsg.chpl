@@ -344,7 +344,7 @@ module ReductionMsg
         var nnzPerTask: [0..<numLocales] [0..<nTasks] int;
         coforall loc in Locales with (ref nnzPerTask) do on loc {
           const locDom = eIn.a.localSubdomain();
-          coforall tid in 0..<nTasks with (ref nnzPerTask) do {
+          coforall tid in 0..<nTasks with (ref nnzPerTask) {
             var nnzTask = 0;
             // TODO: evaluate whether 'subDomChunk' chunking along the largest dimension
             // is the best choice. Perhaps it would be better to always chunk along the
@@ -366,8 +366,8 @@ module ReductionMsg
 
         // populate the arrays with the indices of the non-zero elements
         // TODO: refactor to use aggregation or bulk assignment to avoid fine-grained communication
-        coforall loc in Locales do on loc {
-          const taskStarts = (+ scan nnzPerTask[loc.id]) - nnzPerTask[loc.id] + locStarts[loc.id],
+        coforall loc in Locales with (const ref nnzPerTask, const ref locStarts) do on loc {
+          const taskStarts = ((+ scan nnzPerTask[loc.id]) - nnzPerTask[loc.id]) + locStarts[loc.id],
                 locDom = eIn.a.localSubdomain();
           coforall tid in 0..<nTasks {
             var i = taskStarts[tid];

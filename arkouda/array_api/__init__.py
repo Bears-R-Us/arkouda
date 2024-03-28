@@ -118,11 +118,15 @@ from ._manipulation_functions import (
     concat,
     expand_dims,
     flip,
+    moveaxis,
     permute_dims,
+    repeat,
     reshape,
     roll,
     squeeze,
     stack,
+    tile,
+    unstack,
 )
 
 from ._searching_functions import argmax, argmin, nonzero, where
@@ -255,11 +259,15 @@ __all__ += [
     "concat",
     "expand_dims",
     "flip",
+    "moveaxis",
     "permute_dims",
+    "repeat",
     "reshape",
     "roll",
     "squeeze",
     "stack",
+    "tile",
+    "unstack",
 ]
 
 __all__ += ["argmax", "argmin", "nonzero", "where"]
