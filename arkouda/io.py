@@ -1008,7 +1008,9 @@ def read_csv(
     return _build_objects(rep)
 
 
-def import_data(read_path: str, write_file: str = None, return_obj: bool = True, index: bool = False):
+def import_data(
+    read_path: str, write_file: Optional[str] = None, return_obj: bool = True, index: bool = False
+):
     """
     Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
     a file formatted to be read by Arkouda.
@@ -1086,7 +1088,7 @@ def import_data(read_path: str, write_file: str = None, return_obj: bool = True,
 def export(
     read_path: str,
     dataset_name: str = "ak_data",
-    write_file: str = None,
+    write_file: Optional[str] = None,
     return_obj: bool = True,
     index: bool = False,
 ):
@@ -1163,7 +1165,7 @@ def _bulk_write_prep(
         Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     convert_categoricals: bool = False,
 ):
     datasetNames = []
@@ -1202,7 +1204,7 @@ def to_parquet(
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
     prefix_path: str,
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     mode: str = "truncate",
     compression: Optional[str] = None,
     convert_categoricals: bool = False,
@@ -1308,7 +1310,7 @@ def to_hdf(
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
     prefix_path: str,
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     mode: str = "truncate",
     file_type: str = "distribute",
 ) -> None:
@@ -1420,7 +1422,7 @@ def update_hdf(
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
     prefix_path: str,
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     repack: bool = True,
 ):
     """
@@ -1470,7 +1472,7 @@ def update_hdf(
 def to_csv(
     columns: Union[Mapping[str, Union[pdarray, Strings]], List[Union[pdarray, Strings]]],
     prefix_path: str,
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     col_delim: str = ",",
     overwrite: bool = False,
 ):
@@ -1549,7 +1551,7 @@ def save_all(
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
     prefix_path: str,
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     file_format="HDF5",
     mode: str = "truncate",
     file_type: str = "distribute",

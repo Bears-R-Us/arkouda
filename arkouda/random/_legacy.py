@@ -1,4 +1,4 @@
-from typing import Tuple, Union, cast
+from typing import Optional, Tuple, Union, cast
 
 from typeguard import typechecked
 
@@ -16,7 +16,7 @@ def randint(
     high: numeric_scalars,
     size: Union[int_scalars, Tuple[int_scalars, ...]] = 1,
     dtype=akint64,
-    seed: int_scalars = None,
+    seed: Optional[int_scalars] = None,
 ) -> pdarray:
     """
     Generate a pdarray of randomized int, float, or bool values in a
@@ -32,7 +32,7 @@ def randint(
         The length of the returned array
     dtype : Union[int64, float64, bool]
         The dtype of the array
-    seed : int_scalars
+    seed : int_scalars, optional
         Seed to allow for reproducible random number generation
 
 

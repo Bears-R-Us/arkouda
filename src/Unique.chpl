@@ -62,9 +62,9 @@ module Unique
     proc uniqueSortWithInverse(a: [?aD] ?eltType) throws {
         if (aD.size == 0) {
             try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
-            var u = makeDistArray(0, eltType);
-            var c = makeDistArray(0, int);
-            var inv = makeDistArray(0, int);
+            var u = makeDistArray(aD.size, eltType);
+            var c = makeDistArray(aD.size, int);
+            var inv = makeDistArray(aD.size, int);
             return (u, c, inv);
         }
         var sorted = makeDistArray(aD, eltType);
@@ -84,7 +84,7 @@ module Unique
         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
         overMemLimit(numBytes(int) * bcast.size);
         bcast = (+ scan bcast);
-        var inv = makeDistArray(aD, int);
+        var inv = makeDistArray(aD.size, int);
         forall (p, b) in zip(perm, bcast) with (var agg = newDstAggregator(int)) {
             agg.copy(inv[p], b);
         }

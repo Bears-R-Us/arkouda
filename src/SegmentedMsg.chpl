@@ -278,6 +278,10 @@ module SegmentedMsg {
         var strings = getSegString(name, st);
         var truth = st.addEntry(rname, strings.size, bool);
         select subcmd {
+          when "isDecimal" {
+            truth.a = strings.isDecimal();
+            repMsg = "created "+st.attrib(rname);
+          }
           when "isLower" {
             truth.a = strings.isLower();
             repMsg = "created "+st.attrib(rname);

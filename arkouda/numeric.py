@@ -477,6 +477,15 @@ def isnan(pda: pdarray) -> pdarray:
     >>> ak.isnan(ak.array[1.0, 2.0, 1.0 / 0.0])
     array([False, False, True])
     """
+    from arkouda.util import is_numeric, is_float
+
+    if is_numeric(pda) and not is_float(pda):
+        from arkouda.pdarraycreation import full
+
+        return full(pda.size, False, dtype=bool)
+    elif not is_numeric(pda):
+        raise TypeError("isnan only supports pdarray of numeric type.")
+
     repMsg = generic_msg(
         cmd=f"efunc{pda.ndim}D",
         args={

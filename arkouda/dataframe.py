@@ -1612,7 +1612,7 @@ class DataFrame(UserDict):
             )
 
     @typechecked
-    def reset_index(self, size: int = None, inplace: bool = False) -> Union[None, DataFrame]:
+    def reset_index(self, size: Optional[int] = None, inplace: bool = False) -> Union[None, DataFrame]:
         """
         Set the index to an integer range.
 
@@ -1622,7 +1622,7 @@ class DataFrame(UserDict):
 
         Parameters
         ----------
-        size : int
+        size : int, optional
             If size is passed, do not attempt to determine size based on
             existing column sizes. Assume caller handles consistency correctly.
         inplace: bool, default=False
@@ -5161,16 +5161,18 @@ def _outer_join_merge(
 
 def __nulls_like(
     arry: Union[pdarray, Strings, Categorical],
-    size: Union[
-        int,
-        np.signedinteger[_8Bit],
-        np.signedinteger[_16Bit],
-        np.signedinteger[_32Bit],
-        np.signedinteger[_64Bit],
-        np.unsignedinteger[_8Bit],
-        np.unsignedinteger[_16Bit],
-        np.unsignedinteger[_32Bit],
-        np.unsignedinteger[_64Bit],
+    size: Optional[
+        Union[
+            int,
+            np.signedinteger[_8Bit],
+            np.signedinteger[_16Bit],
+            np.signedinteger[_32Bit],
+            np.signedinteger[_64Bit],
+            np.unsignedinteger[_8Bit],
+            np.unsignedinteger[_16Bit],
+            np.unsignedinteger[_32Bit],
+            np.unsignedinteger[_64Bit],
+        ]
     ] = None,
 ):
     if size is None:

@@ -72,6 +72,17 @@ class TestDTypes:
         assert "uint64" == dtypes.resolve_scalar_dtype(2**63 + 1)
         assert "bigint" == dtypes.resolve_scalar_dtype(2**64)
 
+    def test_is_dtype_in_union(self):
+        from arkouda.dtypes import _is_dtype_in_union
+        from typing import Union
+
+        float_scalars = Union[float, np.float64, np.float32]
+        assert _is_dtype_in_union(np.float64, float_scalars)
+        # Test with a type not present in the union
+        assert ~_is_dtype_in_union(np.int64, float_scalars)
+        # Test with a non-Union type
+        assert ~_is_dtype_in_union(np.float64, float)
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_nbytes(self, size):
         from arkouda.dtypes import BigInt

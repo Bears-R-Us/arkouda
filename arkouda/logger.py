@@ -132,7 +132,7 @@ class ArkoudaLogger(Logger):
             self.addHandler(handler)
 
     @typechecked
-    def changeLogLevel(self, level: LogLevel, handlerNames: List[str] = None) -> None:
+    def changeLogLevel(self, level: LogLevel, handlerNames: Optional[List[str]] = None) -> None:
         """
         Dynamically changes the logging level for ArkoudaLogger and 1..n
         of configured Handlers
@@ -239,7 +239,7 @@ def getArkoudaLogger(
     name: str,
     handlers: Optional[List[Handler]] = None,
     logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT,
-    logLevel: LogLevel = None,
+    logLevel: Optional[LogLevel] = None,
 ) -> ArkoudaLogger:
     """
     A convenience method for instantiating an ArkoudaLogger that retrieves the
