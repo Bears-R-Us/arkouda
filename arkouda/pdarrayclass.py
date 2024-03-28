@@ -5,7 +5,6 @@ import json
 from functools import reduce
 from math import ceil
 from typing import List, Optional, Sequence, Tuple, Union, cast
-from types import EllipsisType
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -664,7 +663,7 @@ class pdarray:
             # replace '...' with the appropriate number of ':'
             elipsis_axis_idx = -1
             for dim, k in enumerate(key):
-                if isinstance(k, EllipsisType):
+                if isinstance(k, type(Ellipsis)):
                     if elipsis_axis_idx != -1:
                         raise IndexError("array index can only have one ellipsis")
                     else:

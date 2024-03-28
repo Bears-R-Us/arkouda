@@ -118,10 +118,15 @@ def moveaxis(
 ) -> Array:
     perm = list(range(x.ndim))
     if isinstance(source, tuple):
-        for s, d in zip(source, destination):
-            perm[s] = d
-    else:
+        if isinstance(destination, tuple):
+            for s, d in zip(source, destination):
+                perm[s] = d
+        else:
+            raise ValueError("source and destination must both be tuples if source is a tuple")
+    elif isinstance(destination, int):
         perm[source] = destination
+    else:
+        raise ValueError("source and destination must both be integers if source is a tuple")
 
     return permute_dims(x, axes=tuple(perm))
 
