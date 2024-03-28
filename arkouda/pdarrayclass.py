@@ -5,6 +5,7 @@ import json
 from functools import reduce
 from math import ceil
 from typing import List, Optional, Sequence, Tuple, Union, cast
+from types import EllipsisType
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -657,18 +658,41 @@ class pdarray:
             return create_pdarray(repMsg)
 
         if isinstance(key, tuple):
-            allScalar = True
+            if len(key) > self.ndim:
+                raise IndexError(f"too many indices ({len(key)}) for array with {self.ndim} dimensions")
+
+            # replace '...' with the appropriate number of ':'
+            elipsis_axis_idx = -1
+            for dim, k in enumerate(key):
+                if isinstance(k, EllipsisType):
+                    if elipsis_axis_idx != -1:
+                        raise IndexError("array index can only have one ellipsis")
+                    else:
+                        elipsis_axis_idx = dim
+
+            if elipsis_axis_idx != -1:
+                key = tuple(
+                        key[:elipsis_axis_idx] +
+                        (slice(None),) * (self.ndim - len(key) + 1) +
+                        key[(elipsis_axis_idx+1):]
+                    )
+
+            # parse the key tuple
+            num_scalar = 0
+            scalar_axes = []
             starts = []
             stops = []
             strides = []
             for dim, k in enumerate(key):
                 if isinstance(k, slice):
-                    allScalar = False
                     (start, stop, stride) = k.indices(self.shape[dim])
                     starts.append(start)
                     stops.append(stop)
                     strides.append(stride)
                 elif np.isscalar(k) and (resolve_scalar_dtype(k) in ["int64", "uint64"]):
+                    num_scalar += 1
+                    scalar_axes.append(dim)
+
                     if k < 0:
                         # Interpret negative key as offset from end of array
                         k += int(self.shape[dim])
@@ -678,15 +702,14 @@ class pdarray:
                         )
                     else:
                         # treat this as a single element slice
-                        # TODO: implement rank-reducing slices
                         starts.append(k)
                         stops.append(k + 1)
                         strides.append(1)
                 else:
                     raise IndexError(f"Unhandled key type: {k} ({type(k)})")
 
-            if allScalar:
-                # use simpler indexing (and return a scalar) if we got a tuple of only scalars
+            if num_scalar == len(key):
+                # all scalars: use simpler indexing (and return a scalar)
                 repMsg = generic_msg(
                     cmd=f"[int]{self.ndim}D",
                     args={
@@ -706,7 +729,22 @@ class pdarray:
                         "strides": tuple(strides),
                     },
                 )
-                return create_pdarray(repMsg)
+                maybe_degen_arr = create_pdarray(repMsg)
+
+                if num_scalar > 0:
+                    # reduce the array rank if there are any scalar indices
+                    # note: squeeze requires the non-default ManipulationMsg server module
+                    repMsg = generic_msg(
+                        cmd=f"squeeze{maybe_degen_arr.ndim}Dx{maybe_degen_arr.ndim - num_scalar}D",
+                        args={
+                            "name": maybe_degen_arr,
+                            "nAxes": num_scalar,
+                            "axes": scalar_axes,
+                        },
+                    )
+                    return create_pdarray(repMsg)
+                else:
+                    return maybe_degen_arr
 
         if isinstance(key, pdarray) and self.ndim == 1:
             kind, _ = translate_np_dtype(key.dtype)

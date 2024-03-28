@@ -11,7 +11,6 @@ module ManipulationMsg {
   use ArkoudaAryUtilCompat;
 
   use Reflection;
-  use BigInteger;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -102,11 +101,13 @@ module ManipulationMsg {
           // */
           // forall nonBCIndex in domOffAxis(eOut.a.domain, bcDimsList.toArray()) {
           //   const nbcT = if ndOut == 1 then (nonBCIndex,) else nonBCIndex;
+
+
           //   var outSliceIdx: ndOut*range;
           //   for i in 0..<ndOut do outSliceIdx[i] = 0..<shapeOut[i];
-          //   for i in 0..<ndIn do if bcDims[i] then outSliceIdx[i] = nbcT[i]..nbcT[i];
+          //   for i in 0..<ndIn do if bcDims[i] then outSliceIdx[i] = nbcT[i];
 
-          //   eOut.a[{(...outSliceIdx)}] = eIn.a;
+          //   eOut.a[(...outSliceIdx)] = eIn.a; // !!! Doesn't work because of rank mismatch !!!
           // }
 
           // define a mapping from the output array's indices to the input array's indices
@@ -116,8 +117,9 @@ module ManipulationMsg {
             return ret;
           }
 
-          forall idx in eOut.a.domain with (var agg = newSrcAggregator(t), const bc = bcDims) do
-            agg.copy(eOut.a[idx], eIn.a[imap(if ndOut==1 then (idx,) else idx, bc)]);
+          // copy values from the input array into the output array
+          forall idx in eOut.a.domain with (var agg = newSrcAggregator(t), in bcDims) do
+            agg.copy(eOut.a[idx], eIn.a[imap(if ndOut==1 then (idx,) else idx, bcDims)]);
         }
       }
 
@@ -209,7 +211,6 @@ module ManipulationMsg {
       when DType.UInt64 do return doConcat(uint);
       when DType.Float64 do return doConcat(real);
       when DType.Bool do return doConcat(bool);
-      when DType.BigInt do return doConcat(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(dt));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -268,10 +269,9 @@ module ManipulationMsg {
       var eOut = st.addEntry(rname, + reduce sizes, t);
 
       // copy the data from the input arrays to the output array
-      for arrIdx in 0..<nArrays {
-        const a = flatten(eIns[arrIdx].a);
-        forall idx in a.domain with (var agg = newSrcAggregator(t)) do
-          agg.copy(eOut.a[idx + starts[arrIdx]], a[idx]);
+      forall arrIdx in 0..<nArrays {
+        const a = if nd == 1 then eIns[arrIdx].a else flatten(eIns[arrIdx].a);
+        eOut.a[starts[arrIdx]..#sizes[arrIdx]] = a;
       }
 
       const repMsg = "created " + st.attrib(rname);
@@ -284,7 +284,6 @@ module ManipulationMsg {
       when DType.UInt64 do return doFlatConcat(uint);
       when DType.Float64 do return doFlatConcat(real);
       when DType.Bool do return doFlatConcat(bool);
-      when DType.BigInt do return doFlatConcat(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(dt));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -293,12 +292,29 @@ module ManipulationMsg {
     }
   }
 
-  private proc flatten(const ref a: [?d] ?t): [] t throws {
+  private proc flatten(const ref a: [?d] ?t): [] t throws
+    where a.rank > 1
+  {
     var flat = makeDistArray({0..<d.size}, t);
-    forall idx in flat.domain with (var agg = newSrcAggregator(t)) do
-      agg.copy(flat[idx], a[d.orderToIndex(idx)]);
+    const rankLast = d.dim(d.rank-1);
+
+    // iterate over each slice of the input array along the last dimension
+    // and copy the data into the corresponding slice of the flat array
+    forall idx in domOffAxis(d, d.rank-1) with (const ord = new orderer(d.shape)) {
+      var idxTup: (d.rank-1)*int;
+      for i in 0..<(d.rank-1) do idxTup[i] = idx[i];
+      const rrSlice = ((...idxTup), rankLast);
+
+      const low = ((...idxTup), rankLast.low),
+            high = ((...idxTup), rankLast.high),
+            flatSlice = ord.indexToOrder(low)..ord.indexToOrder(high);
+
+      flat[flatSlice] = a[(...rrSlice)];
+    }
+
     return flat;
   }
+
 
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.expand_dims.html#array_api.expand_dims
   @arkouda.registerND
@@ -318,7 +334,7 @@ module ManipulationMsg {
       var eOut = st.addEntry(rname, (...shapeOut), t);
 
       // mapping between the input and output array indices
-      inline proc imap(idx: (nd+1)*int): nd*int {
+      inline proc imap(idx: (nd+1)*int, axis: int): nd*int {
         var ret: nd*int, ii = 0;
         for param io in 0..nd {
           if io != axis {
@@ -331,7 +347,7 @@ module ManipulationMsg {
 
       // copy the data from the input array to the output array
       forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-        agg.copy(eOut.a[idx], eIn.a[imap(idx)]);
+        agg.copy(eOut.a[idx], eIn.a[imap(idx, axis)]);
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -343,7 +359,6 @@ module ManipulationMsg {
       when DType.UInt64 do return expandDims(uint);
       when DType.Float64 do return expandDims(real);
       when DType.Bool do return expandDims(bool);
-      when DType.BigInt do return expandDims(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -389,7 +404,10 @@ module ManipulationMsg {
       } else {
         // copy the data from the input array to the output array
         // while flipping along the specified axes
-        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t), const imap = new indexFlip(eIn.tupShape, axes)) {
+        forall idx in eOut.a.domain with (
+          var agg = newSrcAggregator(t),
+          const imap = new indexFlip(eIn.tupShape, axes)
+        ) {
           const inIdx = imap(if nd == 1 then (idx,) else idx);
           agg.copy(eOut.a[idx], eIn.a[inIdx]);
         }
@@ -405,7 +423,6 @@ module ManipulationMsg {
       when DType.UInt64 do return doFlip(uint);
       when DType.Float64 do return doFlip(real);
       when DType.Bool do return doFlip(bool);
-      when DType.BigInt do return doFlip(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -463,7 +480,10 @@ module ManipulationMsg {
       const eIn = toSymEntry(gEnt, t, nd);
       var eOut = st.addEntry(rname, (...eIn.tupShape), t);
 
-      forall idx in eOut.a.domain with (var agg = newSrcAggregator(t), const imap = new allIndexFlip(nd, eIn.tupShape)) {
+      forall idx in eOut.a.domain with (
+        var agg = newSrcAggregator(t),
+        const imap = new allIndexFlip(nd, eIn.tupShape)
+      ) {
         const inIdx = imap(if nd == 1 then (idx,) else idx);
         agg.copy(eOut.a[idx], eIn.a[inIdx]);
       }
@@ -478,7 +498,6 @@ module ManipulationMsg {
       when DType.UInt64 do return doFlip(uint);
       when DType.Float64 do return doFlip(real);
       when DType.Bool do return doFlip(bool);
-      when DType.BigInt do return doFlip(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -520,14 +539,9 @@ module ManipulationMsg {
         const outShape = permuteTuple(eIn.tupShape, perm);
         var eOut = st.addEntry(rname, (...outShape), t);
 
-        // // copy the data from the input array to the output array while permuting the axes
-        // forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-        //   agg.copy(eOut.a[idx], eIn.a[permuteTuple(if nd == 1 then (idx,) else idx, perm)]);
-
-        forall idx in eIn.a.domain with (var agg = newDstAggregator(t)) {
-          const outIdx = permuteTuple(if nd == 1 then (idx,) else idx, perm);
-          agg.copy(eOut.a[outIdx], eIn.a[idx]);
-        }
+        // copy the data from the input array to the output array while permuting the axes
+        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
+          agg.copy(eOut.a[idx], eIn.a[permuteTuple(if nd == 1 then (idx,) else idx, perm)]);
 
         const repMsg = "created " + st.attrib(rname);
         mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -540,7 +554,6 @@ module ManipulationMsg {
       when DType.UInt64 do return doPermutation(uint);
       when DType.Float64 do return doPermutation(real);
       when DType.Bool do return doPermutation(bool);
-      when DType.BigInt do return doPermutation(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -618,7 +631,6 @@ module ManipulationMsg {
       when DType.UInt64 do return doReshape(uint);
       when DType.Float64 do return doReshape(real);
       when DType.Bool do return doReshape(bool);
-      when DType.BigInt do return doReshape(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -736,7 +748,6 @@ module ManipulationMsg {
       when DType.UInt64 do return doRoll(uint);
       when DType.Float64 do return doRoll(real);
       when DType.Bool do return doRoll(bool);
-      when DType.BigInt do return doRoll(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -781,7 +792,8 @@ module ManipulationMsg {
     proc doRoll(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
             eOut = st.addEntry(rname, (...eIn.tupShape), t),
-            inFlatRolled = rollBy(shift, flatten(eIn.a));
+            inFlat = if nd == 1 then eIn.a else flatten(eIn.a),
+            inFlatRolled = rollBy(shift, inFlat);
 
       // copy the flattened/rolled array into the output array while unflattening
       forall idx in inFlatRolled.domain with (
@@ -800,7 +812,6 @@ module ManipulationMsg {
       when DType.UInt64 do return doRoll(uint);
       when DType.Float64 do return doRoll(real);
       when DType.Bool do return doRoll(bool);
-      when DType.BigInt do return doRoll(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -859,7 +870,6 @@ module ManipulationMsg {
       when DType.UInt64 do return doSqueeze(uint);
       when DType.Float64 do return doSqueeze(real);
       when DType.Bool do return doSqueeze(bool);
-      when DType.BigInt do return doSqueeze(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -913,33 +923,36 @@ module ManipulationMsg {
     param pn = Reflection.getRoutineName();
     const nArrays = msgArgs.get("n").getIntValue(),
           names = msgArgs.get("names").getList(nArrays),
-          axis = msgArgs.get("axis").getPositiveIntValue(nd),
+          axis = msgArgs.get("axis").getPositiveIntValue(nd+1),
           rname = st.nextName();
 
-    var gEnts: [0..<nArrays] borrowed GenSymEntry = getGenericEntries(names, st);
+    var gEnts = for n in names do getGenericTypedArrayEntry(n, st);
 
     // confirm that all arrays have the same dtype and shape
     // (type promotion needs to be completed before calling 'stack')
-    const dt = gEnts[0].dtype,
-          sh = gEnts[0].shape;
-    for i in 1..#nArrays do if gEnts[i].dtype != dt || gEnts[i].shape != sh {
-      const errMsg = "All arrays must have the same dtype and shape to stack";
-      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-      return new MsgTuple(errMsg,MsgType.ERROR);
+    const dt = gEnts[0]!.dtype,
+          sh = gEnts[0]!.shape;
+    for i in 1..<nArrays do if gEnts[i]!.dtype != dt || gEnts[i]!.shape != sh {
+        const errMsg = "All arrays must have the same dtype and shape to stack";
+        mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+        return new MsgTuple(errMsg,MsgType.ERROR);
     }
 
     proc doStack(type t): MsgTuple throws {
-      const eIns = [i in 0..#nArrays] toSymEntry(gEnts[i], t, nd),
+      const eIns = [i in 0..#nArrays] toSymEntry(gEnts[i]!, t, nd),
             (shapeOut, mapping) = stackedShape(eIns[0].tupShape, axis, nArrays);
       var eOut = st.addEntry(rname, (...shapeOut), t);
 
       // copy the data from the input arrays to the output array
-      forall (arrIdx, arr) in zip(eIns.domain, eIns) do
+      // TODO: does a nested forall with aggregators use too much memory for agg buffers?
+      //       (maybe make outer loop be a 'for' or switch inner/outer loops?)
+      forall (arrIdx, arr) in zip(eIns.domain, eIns) {
         forall idx in arr.a.domain with (
           var agg = newDstAggregator(t),
           const imap = new stackIndexMapper(nd+1, axis, arrIdx, mapping)
         ) do
           agg.copy(eOut.a[imap(if nd==1 then (idx,) else idx)], arr.a[idx]);
+      }
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
@@ -951,7 +964,6 @@ module ManipulationMsg {
       when DType.UInt64 do return doStack(uint);
       when DType.Float64 do return doStack(real);
       when DType.Bool do return doStack(bool);
-      when DType.BigInt do return doStack(bigint);
       otherwise {
         var errorMsg = notImplementedError(pn,dtype2str(dt));
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -989,6 +1001,279 @@ module ManipulationMsg {
       }
     }
     return (shapeOut, mapping);
+  }
+
+
+  // https://data-apis.org/array-api/latest/API_specification/generated/array_api.tile.html#array_api.tile
+  // assumes that 'reps' is the same length as the array's shape
+  // this is achieved on the client side by either:
+  //  * reshaping the array to add singleton dimensions (if reps is longer than the array's shape)
+  //  * prepending 1's to reps (if reps is shorter than the array's shape)
+  @arkouda.registerND
+  proc tileMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    const name = msgArgs.getValueOf("name"),
+          reps = msgArgs.get("reps").getTuple(nd),
+          rname = st.nextName();
+
+    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+    proc doTile(type t): MsgTuple throws {
+      const eIn = toSymEntry(gEnt, t, nd),
+            shapeOut = tiledShape(eIn.tupShape, reps);
+      var eOut = st.addEntry(rname, (...shapeOut), t);
+
+      // copy the data from the input array to the output array while tiling
+      forall idx in eOut.a.domain with (
+        var agg = newSrcAggregator(t),
+        const imap = new tileIndexMapper(nd, eIn.tupShape)
+      ) {
+        const inIdx = imap(if nd == 1 then (idx,) else idx);
+        agg.copy(eOut.a[idx], eIn.a[inIdx]);
+      }
+
+      const repMsg = "created " + st.attrib(rname);
+      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    select gEnt.dtype {
+      when DType.Int64 do return doTile(int);
+      when DType.UInt64 do return doTile(uint);
+      when DType.Float64 do return doTile(real);
+      when DType.Bool do return doTile(bool);
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      }
+    }
+  }
+
+  record tileIndexMapper {
+    param nd: int;
+    const shapeIn: nd*int;
+
+    proc this(idx: nd*int): nd*int {
+      var ret: nd*int;
+      for param i in 0..<nd do ret[i] = idx[i] % shapeIn[i];
+      return ret;
+    }
+  }
+
+
+  proc tiledShape(shape: ?N*int, reps: N*int): N*int {
+    var shapeOut: N*int;
+    for i in 0..<N do shapeOut[i] = shape[i] * reps[i];
+    return shapeOut;
+  }
+
+  // https://data-apis.org/array-api/latest/API_specification/generated/array_api.unstack.html
+  // unstack an array into multiple arrays along a specified axis
+  @arkouda.registerND
+  proc unstackMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+
+    if nd == 1 {
+      const errMsg = "Cannot unstack a 1D array";
+      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+      return new MsgTuple(errMsg,MsgType.ERROR);
+    }
+
+    const name = msgArgs.getValueOf("name"),
+          axis = msgArgs.get("axis").getPositiveIntValue(nd),
+          numReturnArrays = msgArgs.get("numReturnArrays").getIntValue(),
+          rnames = [i in 0..<numReturnArrays] st.nextName();
+
+    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+    proc doUnstack(type t): MsgTuple throws {
+      const eIn = toSymEntry(gEnt, t, nd),
+            (valid, shapeOut) = unstackedShape(eIn.tupShape, axis, numReturnArrays);
+
+      if !valid {
+        const errMsg = "Unable to unstack array with shape %? along axis %? into %? arrays".doFormat(eIn.tupShape, axis, numReturnArrays);
+        mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+        return new MsgTuple(errMsg,MsgType.ERROR);
+      } else {
+        var eOuts = for rn in rnames do (try st.addEntry(rn, (...shapeOut), t));
+
+        // copy the data from the input array to the output arrays while unstacking
+        for arrIdx in 0..<numReturnArrays {
+          forall idx in eOuts[arrIdx].a.domain with (
+            var agg = newSrcAggregator(t),
+            const imap = new unstackIdxMapper(nd, arrIdx, axis)
+          ) {
+            const inIdx = imap(if nd == 2 then (idx,) else idx);
+            agg.copy(eOuts[arrIdx].a[idx], eIn.a[inIdx]);
+          }
+        }
+
+        const repMsg = try! '+'.join([rn in rnames] "created " + st.attrib(rn));
+        mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+      }
+    }
+
+    select gEnt.dtype {
+      when DType.Int64 do return doUnstack(int);
+      when DType.UInt64 do return doUnstack(uint);
+      when DType.Float64 do return doUnstack(real);
+      when DType.Bool do return doUnstack(bool);
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      }
+    }
+  }
+
+  record unstackIdxMapper {
+    param ndIn: int;
+    const arrIdx: int;
+    const axis: int;
+
+    proc this(idx: (ndIn-1)*int): ndIn*int {
+      var ret: ndIn*int;
+      var i = 0;
+      for param ii in 0..<ndIn {
+        if ii == axis {
+          ret[ii] = arrIdx;
+        } else {
+          ret[ii] = idx[i];
+          i += 1;
+        }
+      }
+      return ret;
+    }
+  }
+
+  // TODO: should this reduce the array rank by 1, or introduce a singleton dimension for axis?
+  // (the array-api docs are unclear on this point)
+  proc unstackedShape(shape: ?N*int, axis: int, numReturnArrays: int): (bool, (N-1)*int)
+    where N > 1
+  {
+    var shapeOut: (N-1)*int;
+    if numReturnArrays != shape[axis] {
+      return (false, shapeOut);
+    } else {
+      var i = 0;
+      for ii in 0..N {
+        if ii == axis {
+          continue;
+        } else {
+          shapeOut[i] = shape[ii];
+          i += 1;
+        }
+      }
+      return (true, shapeOut);
+    }
+  }
+
+
+  // see: https://numpy.org/doc/stable/reference/generated/numpy.repeat.html#numpy.repeat
+  // flattens the input array and repeats each element 'repeats' times
+  // if 'repeats' is an array, it must have the same number of elements as the input array
+  @arkouda.registerND
+  proc repeatFlatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    const name = msgArgs.getValueOf("name"),
+          repeats = msgArgs.getValueOf("repeats"),
+          rname = st.nextName();
+
+    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st),
+        gEntRepeats: borrowed GenSymEntry = getGenericTypedArrayEntry(repeats, st);
+
+    proc doRepeatFlat(type t): MsgTuple throws {
+      const eIn = toSymEntry(gEnt, t, nd),
+            eRepeats = toSymEntry(gEntRepeats, int, 1),
+            aFlat = if nd == 1 then eIn.a else flatten(eIn.a);
+
+      if eRepeats.a.size == 1 {
+        const rep = eRepeats.a[0],
+              eOut = st.addEntry(rname, aFlat.size * rep, t);
+
+        // simple case: repeat each element of the input array 'rep' times
+        forall i in aFlat.domain do eOut.a[i*rep..#rep] = aFlat[i];
+
+      } else if eRepeats.a.size == aFlat.size {
+        // repeat each element of the input array by the corresponding element of 'repeats'
+
+        // // serial algorithm:
+        // var start = 0;
+        // for idx in aFlat.domain {
+        //   eOut.a[start..#eRepeats.a[idx]] = aFlat[idx];
+        //   start += eRepeats.a[idx];
+        // }
+
+        // compute the number of repeated elements in the output array owned by each task
+        const nTasksPerLoc = here.maxTaskPar;
+        var nRepsPerTask: [0..<numLocales] [0..<nTasksPerLoc] int;
+        coforall loc in Locales with (ref nRepsPerTask) do on loc {
+          const lsd = aFlat.localSubdomain(),
+                indicesPerTask = lsd.size / nTasksPerLoc;
+          coforall tid in 0..<nTasksPerLoc with (ref nRepsPerTask) {
+            const startIdx = tid * indicesPerTask,
+                  stopIdx = if tid == nTasksPerLoc - 1 then lsd.size else (tid + 1) * indicesPerTask;
+
+            var sum = 0;
+            for i in startIdx..<stopIdx do
+              sum += eRepeats.a[i];
+            nRepsPerTask[loc.id][tid] = sum;
+          }
+        }
+
+        // compute the output array's size, and where in the output array each locale should start
+        // depositing its repeated elements
+        const nRepsPerLoc = [nt in nRepsPerTask] + reduce nt,
+              locStarts = (+ scan nRepsPerLoc) - nRepsPerLoc,
+              nTotal = + reduce nRepsPerLoc;
+        var eOut = st.addEntry(rname, nTotal, t);
+
+        // copy the repeated elements into the output array
+        coforall loc in Locales with (const ref nRepsPerTask, const ref locStarts) do on loc {
+          const lsd = aFlat.localSubdomain(),
+                indicesPerTask = lsd.size / nTasksPerLoc;
+
+          // compute where in the output array each of this locale's tasks should start depositing
+          // its repeated elements
+          const taskStarts = ((+ scan nRepsPerTask[loc.id]) - nRepsPerTask[loc.id]) + locStarts[loc.id];
+          coforall tid in 0..<nTasksPerLoc {
+            const startIdx = tid * indicesPerTask,
+                  stopIdx = if tid == nTasksPerLoc - 1 then lsd.size else (tid + 1) * indicesPerTask;
+
+            // copy this task's repeated elements into the output array
+            var outStart = taskStarts[tid];
+
+            for i in startIdx..<stopIdx {
+              eOut.a[outStart..#eRepeats.a[i]] = aFlat[i];
+              outStart += eRepeats.a[i];
+            }
+          }
+        }
+      } else {
+        const errMsg = "Unable to repeat array with shape %? using repeats %?. ".doFormat(eIn.tupShape, eRepeats.tupShape) +
+                       "Repeats must be a scalar or have the same number of elements as the input array";
+        mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+        return new MsgTuple(errMsg,MsgType.ERROR);
+      }
+
+      const repMsg = "created " + st.attrib(rname);
+      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    select gEnt.dtype {
+      when DType.Int64 do return doRepeatFlat(int);
+      when DType.UInt64 do return doRepeatFlat(uint);
+      when DType.Float64 do return doRepeatFlat(real);
+      when DType.Bool do return doRepeatFlat(bool);
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      }
+    }
   }
 
   proc getGenericEntries(names: [?d] string, st: borrowed SymTab): [] borrowed GenSymEntry throws {

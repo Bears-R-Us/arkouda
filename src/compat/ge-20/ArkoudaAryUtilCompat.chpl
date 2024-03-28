@@ -95,7 +95,7 @@ module ArkoudaAryUtilCompat {
 
     (if 'nChunks' is greater than the size of the largest dimension, the
     first 'nChunks-1' chunks will be empty, and the last chunk will contain
-    the entire domain)
+    the entire set of indices along that dimension)
   */
   proc subDomChunk(dom: domain(?), chunkIdx: int, nChunks: int): domain(?) {
     const dimSizes = [i in 0..<dom.rank] dom.dim(i).size,
