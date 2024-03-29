@@ -59,13 +59,16 @@ module Unique
         return uniqueFromSorted(sorted, needCounts);
     }
 
-    proc uniqueSortWithInverse(a: [?aD] ?eltType) throws {
+    proc uniqueSortWithInverse(a: [?aD] ?eltType, param needIndices=false) throws {
         if (aD.size == 0) {
             try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var u = makeDistArray(aD.size, eltType);
             var c = makeDistArray(aD.size, int);
             var inv = makeDistArray(aD.size, int);
-            return (u, c, inv);
+            var indices = makeDistArray(0, int);
+            if needIndices
+              then return (u, c, inv, indices);
+              else return (u, c, inv);
         }
         var sorted = makeDistArray(aD, eltType);
         var perm = makeDistArray(aD, int);
@@ -88,9 +91,19 @@ module Unique
         forall (p, b) in zip(perm, bcast) with (var agg = newDstAggregator(int)) {
             agg.copy(inv[p], b);
         }
-        return (u, c, inv);
+
+        if needIndices {
+          overMemLimit(numBytes(int) * u.size);
+          var indices = makeDistArray(u.size, int);
+          forall i in indices.domain with (var agg = newSrcAggregator(int)) {
+            agg.copy(indices[i], perm[segs[i]]);
+          }
+          return (u, c, inv, indices);
+        } else {
+          return (u, c, inv);
+        }
     }
-    
+
     proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true) throws {
         var truth = makeDistArray(aD, bool);
         truth[0] = true;
@@ -283,4 +296,3 @@ module Unique
         return (uo, uv, counts);
     }
 }
-
