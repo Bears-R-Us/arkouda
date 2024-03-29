@@ -32,3 +32,7 @@ typed-ast
 mypy>=0.931,<0.990
 flake8
 pytest-benchmark
+mathjax
+sphinx-autopackagesummary
+sphinx-design
+sphinx-autodoc-typehints
