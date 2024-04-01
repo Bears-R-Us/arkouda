@@ -8,6 +8,7 @@ module ManipulationMsg {
   use Logging;
   use ServerErrorStrings;
   use CommAggregation;
+  use AryUtil;
   use ArkoudaAryUtilCompat;
 
   use Reflection;
@@ -291,30 +292,6 @@ module ManipulationMsg {
       }
     }
   }
-
-  private proc flatten(const ref a: [?d] ?t): [] t throws
-    where a.rank > 1
-  {
-    var flat = makeDistArray({0..<d.size}, t);
-    const rankLast = d.dim(d.rank-1);
-
-    // iterate over each slice of the input array along the last dimension
-    // and copy the data into the corresponding slice of the flat array
-    forall idx in domOffAxis(d, d.rank-1) with (const ord = new orderer(d.shape)) {
-      var idxTup: (d.rank-1)*int;
-      for i in 0..<(d.rank-1) do idxTup[i] = idx[i];
-      const rrSlice = ((...idxTup), rankLast);
-
-      const low = ((...idxTup), rankLast.low),
-            high = ((...idxTup), rankLast.high),
-            flatSlice = ord.indexToOrder(low)..ord.indexToOrder(high);
-
-      flat[flatSlice] = a[(...rrSlice)];
-    }
-
-    return flat;
-  }
-
 
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.expand_dims.html#array_api.expand_dims
   // insert a new singleton dimension at the given axis
@@ -617,16 +594,27 @@ module ManipulationMsg {
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
-        var eOut = st.addEntry(rname, (...outShape), t);
+        if ndIn == 1 && ndOut == 1 {
+          st.addEntry(rname, createSymEntry(eIn.a));
+        } else if ndIn == 1 {
+          // special case: unflatten a 1D array into a higher-dimensional array
+          st.addEntry(rname, createSymEntry(unflatten(eIn.a, outShape)));
+        } else if ndOut == 1 {
+          // special case: flatten an array into a 1D array
+          st.addEntry(rname, createSymEntry(flatten(eIn.a)));
+        } else {
+          // general case
+          var eOut = st.addEntry(rname, (...outShape), t);
 
-        // copy the data from the input array to the output array while reshaping
-        forall idx in eIn.a.domain with (
-          var agg = newDstAggregator(t),
-          const output = eOut.a.domain,
-          const input = new orderer(eIn.tupShape)
-        ) {
-          const outIdx = output.orderToIndex(input.indexToOrder(if ndIn == 1 then (idx,) else idx));
-          agg.copy(eOut.a[outIdx], eIn.a[idx]);
+          // copy the data from the input array to the output array while reshaping
+          forall idx in eIn.a.domain with (
+            var agg = newDstAggregator(t),
+            const output = eOut.a.domain,
+            const input = new orderer(eIn.tupShape)
+          ) {
+            const outIdx = output.orderToIndex(input.indexToOrder(if ndIn == 1 then (idx,) else idx));
+            agg.copy(eOut.a[outIdx], eIn.a[idx]);
+          }
         }
 
         const repMsg = "created " + st.attrib(rname);
@@ -645,26 +633,6 @@ module ManipulationMsg {
         mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg,MsgType.ERROR);
       }
-    }
-  }
-
-  // helper for computing the order of an index in the input array in the reshape loop above
-  record orderer {
-    param rank: int;
-    const accumRankSizes: [0..<rank] int;
-
-    proc init(shape: ?N*int) {
-      this.rank = N;
-      const sizesRev = [i in 0..<N] shape[N - i - 1];
-      this.accumRankSizes = * scan sizesRev / sizesRev;
-    }
-
-    // index -> order for the input array's indices
-    // e.g., order = k + (nz * j) + (nz * ny * i)
-    inline proc indexToOrder(idx: rank*int): int {
-      var order = 0;
-      for param i in 0..<rank do order += idx[i] * accumRankSizes[rank - i - 1];
-      return order;
     }
   }
 
@@ -800,16 +768,10 @@ module ManipulationMsg {
 
     proc doRoll(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
-            eOut = st.addEntry(rname, (...eIn.tupShape), t),
             inFlat = if nd == 1 then eIn.a else flatten(eIn.a),
-            inFlatRolled = rollBy(shift, inFlat);
+            rolled = unflatten(rollBy(shift, inFlat), eIn.tupShape);
 
-      // copy the flattened/rolled array into the output array while unflattening
-      forall idx in inFlatRolled.domain with (
-        var agg = newDstAggregator(t),
-        const outDom = eOut.a.domain
-      ) do
-        agg.copy(eOut.a[outDom.orderToIndex(idx)], inFlatRolled[idx]);
+      st.addEntry(rname, createSymEntry(rolled));
 
       const repMsg = "created " + st.attrib(rname);
       mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);

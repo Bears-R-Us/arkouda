@@ -669,7 +669,7 @@ module AryUtil
     */
     proc broadcastShape(sa: ?Na*int, sb: ?Nb*int, param N: int): N*int throws {
       var s: N*int;
-      for param i in 0..<N by -1 do {
+      for param i in 0..<N by -1 {
         const n1 = Na - N + i,
               n2 = Nb - N + i,
               d1 = if n1 < 0 then 1 else sa[n1],
@@ -730,5 +730,80 @@ module AryUtil
         throw new Error("Axis out of bounds");
       }
       return s;
+    }
+
+    /*
+      unflatten a 1D array into a multi-dimensional array of the given shape
+    */
+    proc unflatten(const ref aFlat: [?d] ?t, shape: ?N*int): [] t throws {
+      var unflat = makeDistArray((...shape), t);
+      const lastRank = unflat.domain.dim(N-1);
+
+      if N == 1 {
+        unflat = aFlat;
+        return unflat;
+      }
+
+      // iterate over each slice of the output array along the last dimension
+      // and copy the data from the corresponding slice of the flat array
+      forall idx in domOffAxis(unflat.domain, N-1) with (const ord = new orderer(shape)) {
+        var idxTup: (N-1)*int;
+        for i in 0..<(N-1) do idxTup[i] = idx[i];
+        const rrSlice = ((...idxTup), lastRank);
+
+        const low = ((...idxTup), lastRank.low),
+              high = ((...idxTup), lastRank.high),
+              flatSlice = ord.indexToOrder(low)..ord.indexToOrder(high);
+
+        unflat[(...rrSlice)] = aFlat[flatSlice];
+      }
+
+      return unflat;
+    }
+
+    /*
+      flatten a multi-dimensional array into a 1D array
+    */
+    proc flatten(const ref a: [?d] ?t): [] t throws
+      where a.rank > 1
+    {
+      var flat = makeDistArray(d.size, t);
+      const lastRank = d.dim(d.rank-1);
+
+      // iterate over each slice of the input array along the last dimension
+      // and copy the data into the corresponding slice of the flat array
+      forall idx in domOffAxis(d, d.rank-1) with (const ord = new orderer(d.shape)) {
+        var idxTup: (d.rank-1)*int;
+        for i in 0..<(d.rank-1) do idxTup[i] = idx[i];
+        const rrSlice = ((...idxTup), lastRank);
+
+        const low = ((...idxTup), lastRank.low),
+              high = ((...idxTup), lastRank.high),
+              flatSlice = ord.indexToOrder(low)..ord.indexToOrder(high);
+
+        flat[flatSlice] = a[(...rrSlice)];
+      }
+
+      return flat;
+    }
+
+    // helper for computing an array element's index from its order
+    record orderer {
+      param rank: int;
+      const accumRankSizes: [0..<rank] int;
+
+      proc init(shape: ?N*int) {
+        this.rank = N;
+        const sizesRev = [i in 0..<N] shape[N - i - 1];
+        this.accumRankSizes = * scan sizesRev / sizesRev;
+      }
+
+      // index -> order for the input array's indices
+      // e.g., order = k + (nz * j) + (nz * ny * i)
+      inline proc indexToOrder(idx: rank*int): int {
+        var order = 0;
+        for param i in 0..<rank do order += idx[i] * accumRankSizes[rank - i - 1];
+        return order;
+      }
     }
 }
