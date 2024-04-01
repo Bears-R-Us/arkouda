@@ -44,9 +44,9 @@ module SetMsg {
     select gEnt.dtype {
       when DType.Int64 do return getUniqueVals(int);
       // when DType.UInt8 do return getUniqueVals(uint(8));
-      // when DType.UInt64 do return getUniqueVals(uint);
-      // when DType.Float64 do return getUniqueVals(real);
-      // when DType.Bool do return getUniqueVals(bool);
+      when DType.UInt64 do return getUniqueVals(uint);
+      when DType.Float64 do return getUniqueVals(real);
+      when DType.Bool do return getUniqueVals(bool);
       otherwise {
         var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
         sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -82,9 +82,9 @@ module SetMsg {
     select gEnt.dtype {
       when DType.Int64 do return getUniqueVals(int);
       // when DType.UInt8 do return getUniqueVals(uint(8));
-      // when DType.UInt64 do return getUniqueVals(uint);
-      // when DType.Float64 do return getUniqueVals(real);
-      // when DType.Bool do return getUniqueVals(bool);
+      when DType.UInt64 do return getUniqueVals(uint);
+      when DType.Float64 do return getUniqueVals(real);
+      when DType.Bool do return getUniqueVals(bool);
       otherwise {
         var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
         sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -118,9 +118,9 @@ module SetMsg {
     select gEnt.dtype {
       when DType.Int64 do return getUniqueVals(int);
       // when DType.UInt8 do return getUniqueVals(uint(8));
-      // when DType.UInt64 do return getUniqueVals(uint);
-      // when DType.Float64 do return getUniqueVals(real);
-      // when DType.Bool do return getUniqueVals(bool);
+      when DType.UInt64 do return getUniqueVals(uint);
+      when DType.Float64 do return getUniqueVals(real);
+      when DType.Bool do return getUniqueVals(bool);
       otherwise {
         var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
         sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -133,7 +133,7 @@ module SetMsg {
   proc uniqueAllMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs.getValueOf("name"),
-          rnames = [i in 0..<4] st.nextName();
+          rnames = for 0..<4 do st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
@@ -155,9 +155,9 @@ module SetMsg {
     select gEnt.dtype {
       when DType.Int64 do return getUniqueVals(int);
       // when DType.UInt8 do return getUniqueVals(uint(8));
-      // when DType.UInt64 do return getUniqueVals(uint);
-      // when DType.Float64 do return getUniqueVals(real);
-      // when DType.Bool do return getUniqueVals(bool);
+      when DType.UInt64 do return getUniqueVals(uint);
+      when DType.Float64 do return getUniqueVals(real);
+      when DType.Bool do return getUniqueVals(bool);
       otherwise {
         var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
         sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
@@ -166,16 +166,26 @@ module SetMsg {
     }
   }
 
+  // TODO: put this in AryUtil or some other common module after merging with #3056
   private proc unflatten(const ref aFlat: [?d] ?t, shape: ?N*int): [] t throws {
-    var aRet = makeDistArray((...shape), t);
-    forall flatIdx in d with (
-      var agg = newDstAggregator(t),
-      const dLocal = aRet.domain
-    ){
-      const outIdx = dLocal.orderToIndex(flatIdx);
-      agg.copy(aRet[outIdx], aFlat[flatIdx]);
+    var unflat = makeDistArray((...shape), t);
+    const lastRank = unflat.domain.dim(N-1);
+
+    // iterate over each slice of the output array along the last dimension
+    // and copy the data from the corresponding slice of the flat array
+    forall idx in domOffAxis(unflat.domain, N-1) with (const ord = new orderer(unflat.domain.shape)) {
+      var idxTup: (N-1)*int;
+      for i in 0..<(N-1) do idxTup[i] = idx[i];
+      const rrSlice = ((...idxTup), lastRank);
+
+      const low = ((...idxTup), lastRank.low),
+            high = ((...idxTup), lastRank.high),
+            flatSlice = ord.indexToOrder(low)..ord.indexToOrder(high);
+
+      unflat[(...rrSlice)] = aFlat[flatSlice];
     }
-    return aRet;
+
+    return unflat;
   }
 
   // TODO: put this in AryUtil or some other common module after merging with #3056

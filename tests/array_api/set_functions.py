@@ -36,14 +36,14 @@ class SetFunctionTests(ArkoudaTest):
 
             self.assertEqual(ua.values.tolist(), nuv.tolist())
             self.assertEqual(ua.indices.tolist(), nuidx.tolist())
-            # compare flattened inverse_indices to numpy (since numpy returns a 1D array)
-            self.assertEqual(Array.reshape(ua.inverse_indices, (-1,)).tolist(), nuinv.tolist())
+
+            self.assertEqual(ua.inverse_indices.tolist(), np.reshape(nuinv, shape).tolist())
             self.assertEqual(ua.counts.tolist(), nuc.tolist())
 
             self.assertEqual(uc.values.tolist(), nuv.tolist())
             self.assertEqual(uc.counts.tolist(), nuc.tolist())
 
             self.assertEqual(ui.values.tolist(), nuv.tolist())
-            self.assertEqual(Array.reshape(ui.inverse_indices, (-1,)).tolist(), nuinv.tolist())
+            self.assertEqual(ui.inverse_indices.tolist(), np.reshape(nuinv, shape).tolist())
 
             self.assertEqual(uv.tolist(), nuv.tolist())
