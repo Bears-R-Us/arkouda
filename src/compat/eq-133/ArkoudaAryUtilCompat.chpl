@@ -60,7 +60,7 @@ module ArkoudaAryUtilCompat {
     label ranks for i in 0..<D.rank {
       for param j in 0..<NA {
         if i == axes[j] {
-          outDims[i] = 0..0;
+          outDims[i] = D.dim(i).low..D.dim(i).low;
           continue ranks;
         }
       }
@@ -77,7 +77,7 @@ module ArkoudaAryUtilCompat {
     label ranks for i in 0..<D.rank {
       for j in 0..<axes.size {
         if i == axes[j] {
-          outDims[i] = 0..0;
+          outDims[i] = D.dim(i).low..D.dim(i).low;
           continue ranks;
         }
       }
