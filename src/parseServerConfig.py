@@ -30,7 +30,7 @@ def ndStamp(nd_msg_handler_name, cmd_prefix, d, mod_name):
     return \
     f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws\n" + \
     f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n" + \
-    f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, '{mod_name}');\n"
+    f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, \"{mod_name}\");\n"
 
 
 def ndStampBinary(nd_msg_handler_name, cmd_prefix, d, mod_name):
@@ -38,7 +38,7 @@ def ndStampBinary(nd_msg_handler_name, cmd_prefix, d, mod_name):
     return \
     f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws\n" + \
     f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n" + \
-    f"registerBinaryFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, '{mod_name}');\n"
+    f"registerBinaryFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, \"{mod_name}\");\n"
 
 
 def ndStampArrayMsg(d):
@@ -54,7 +54,7 @@ def ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2, mod_name):
     return \
     f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws\n" + \
     f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d1}, {d2});\n" + \
-    f"registerFunction(\"{cmd_prefix}{d1}Dx{d2}D\", {msg_proc_name}, '{mod_name}');\n"
+    f"registerFunction(\"{cmd_prefix}{d1}Dx{d2}D\", {msg_proc_name}, \"{mod_name}\");\n"
 
 
 def ndStampPermInc(nd_msg_handler_name, cmd_prefix, stamp_file, max_dims, mod_name):
@@ -103,7 +103,7 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
                 cmd_prefix = g[1]
 
             # if return type is bytes, this is a binary message handler
-            binaryHandler = g[3] is None
+            binaryHandler = g[3] is not None
 
             # instantiate the message handler for each rank from 1..max_dims
             # and register the instantiated proc with a unique command name
