@@ -1,4 +1,3 @@
-import os
 import sys
 import re
 import json
@@ -9,6 +8,7 @@ import math
 # would remove the need for regex parsing, special handling of binary message handlers, problems
 # with multiline proc signatures, etc.
 
+
 def getModules(config):
     with open(config, 'r') as cfg_file:
         mods = []
@@ -18,23 +18,28 @@ def getModules(config):
                 mods.append(mod)
         return mods
 
-def getModuleFiles(mods, src_dir):
-    return " ".join([f"{mod}.chpl" if mod[0] == '/' else f"{src_dir}/{mod}.chpl" \
-                        for mod in mods])
 
-def ndStamp(nd_msg_handler_name, cmd_prefix, d):
+def getModuleFiles(mods, src_dir):
+    return " ".join([
+        f"{mod}.chpl" if mod[0] == '/' else f"{src_dir}/{mod}.chpl" for mod in mods
+        ])
+
+
+def ndStamp(nd_msg_handler_name, cmd_prefix, d, mod_name):
     msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d}D"
     return \
     f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws\n" + \
     f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n" + \
-    f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name});\n"
+    f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, '{mod_name}');\n"
 
-def ndStampBinary(nd_msg_handler_name, cmd_prefix, d):
+
+def ndStampBinary(nd_msg_handler_name, cmd_prefix, d, mod_name):
     msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d}D"
     return \
     f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws\n" + \
     f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n" + \
-    f"registerBinaryFunction(\"{cmd_prefix}{d}D\", {msg_proc_name});\n"
+    f"registerBinaryFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, '{mod_name}');\n"
+
 
 def ndStampArrayMsg(d):
     msg_proc_name = f"arkouda_nd_stamp_arrayMsg{d}D"
@@ -44,29 +49,33 @@ def ndStampArrayMsg(d):
     f"registerArrayFunction(\"array{d}D\", {msg_proc_name});\n"
 
 
-def ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2):
+def ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2, mod_name):
     msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d1}Dx{d2}D"
     return \
     f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws\n" + \
     f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d1}, {d2});\n" + \
-    f"registerFunction(\"{cmd_prefix}{d1}Dx{d2}D\", {msg_proc_name});\n"
+    f"registerFunction(\"{cmd_prefix}{d1}Dx{d2}D\", {msg_proc_name}, '{mod_name}');\n"
 
-def ndStampPermInc(nd_msg_handler_name, cmd_prefix, stamp_file, max_dims):
+
+def ndStampPermInc(nd_msg_handler_name, cmd_prefix, stamp_file, max_dims, mod_name):
     # (e.g., broadcast1Dx1D, broadcast1Dx2D, broadcast1Dx3D, broadcast2Dx2D, broadcast2Dx3D etc.)
     for d1 in range(1, max_dims+1):
         for d2 in range(d1, max_dims+1):
-            stamp_file.write(ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2))
+            stamp_file.write(ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2, mod_name))
 
-def ndStampPermDec(nd_msg_handler_name, cmd_prefix, stamp_file, max_dims):
+
+def ndStampPermDec(nd_msg_handler_name, cmd_prefix, stamp_file, max_dims, mod_name):
     # (e.g., squeeze1Dx1D, squeeze2Dx1D, squeeze2Dx2D, squeeze3Dx1D, squeeze3Dx2D etc.)
     for d1 in range(1, max_dims+1):
         for d2 in range(1, d1+1):
-            stamp_file.write(ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2))
+            stamp_file.write(ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2, mod_name))
 
-def ndStampPermAll(nd_msg_handler_name, cmd_prefix, stamp_file, max_dims):
+
+def ndStampPermAll(nd_msg_handler_name, cmd_prefix, stamp_file, max_dims, mod_name):
     for d1 in range(1, max_dims+1):
         for d2 in range(1, max_dims+1):
-            stamp_file.write(ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2))
+            stamp_file.write(ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2, mod_name))
+
 
 def stampOutModule(mod, src_dir, stamp_file, max_dims):
     with open(f"{src_dir}/{mod}.chpl", 'r') as src_file:
@@ -86,7 +95,7 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
             g = m.groups()
             proc_name = g[2]
 
-            if g[0] == None:
+            if g[0] is None:
                 # no 'cmd_prefix' argument
                 cmd_prefix = proc_name.replace('Msg', '')
             else:
@@ -94,15 +103,15 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
                 cmd_prefix = g[1]
 
             # if return type is bytes, this is a binary message handler
-            binaryHandler = g[3] != None
+            binaryHandler = g[3] is None
 
             # instantiate the message handler for each rank from 1..max_dims
             # and register the instantiated proc with a unique command name
             for d in range(1, max_dims+1):
                 if binaryHandler:
-                    modOut.write(ndStampBinary(proc_name, cmd_prefix, d))
+                    modOut.write(ndStampBinary(proc_name, cmd_prefix, d, mod))
                 else:
-                    modOut.write(ndStamp(proc_name, cmd_prefix, d))
+                    modOut.write(ndStamp(proc_name, cmd_prefix, d, mod))
 
         # find each procedure annotated with '@arkouda.registerNDPerm[Inc|Dec|All]'
         #            group 0  \/                      1 \/            2 \/          3 \/                                4\/
@@ -111,17 +120,17 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
             g = m.groups()
             proc_name = g[3]
 
-            if g[1] == None:
+            if g[1] is None:
                 cmd_prefix = proc_name.replace('Msg', '')
             else:
                 cmd_prefix = g[2]
 
             if g[0] == "Inc":
-                ndStampPermInc(proc_name, cmd_prefix, modOut, max_dims)
+                ndStampPermInc(proc_name, cmd_prefix, modOut, max_dims, mod)
             elif g[0] == "Dec":
-                ndStampPermDec(proc_name, cmd_prefix, modOut, max_dims)
+                ndStampPermDec(proc_name, cmd_prefix, modOut, max_dims, mod)
             else:
-                ndStampPermAll(proc_name, cmd_prefix, modOut, max_dims)
+                ndStampPermAll(proc_name, cmd_prefix, modOut, max_dims, mod)
 
         # special handling for 'arrayMsg'
         for m in re.finditer(r'\@arkouda.registerArrayMsg', ftext):
@@ -134,6 +143,7 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
         if found_annotation:
             modOut.write('/'*100 + '\n\n')
             stamp_file.write(modOut.getvalue())
+
 
 def createNDHandlerInstantiations(config, modules, src_dir):
     max_dims = config["max_array_dims"]
@@ -154,6 +164,7 @@ def createNDHandlerInstantiations(config, modules, src_dir):
 
     return f"{filename} -sMaxArrayDims={max_dims}"
 
+
 def getSupportedTypes(config):
     supportedFlags = []
     for t in ["uint8", "uint16", "uint32", "uint64", \
@@ -162,6 +173,7 @@ def getSupportedTypes(config):
         isSupported = "true" if config["supported_scalar_types"][t] else "false"
         supportedFlags.append(f"-sSupports{t.capitalize()}={isSupported}")
     return " ".join(supportedFlags)
+
 
 def parseServerConfig(config_filename, src_dir):
     server_config = json.load(open('serverConfig.json', 'r'))
@@ -180,6 +192,7 @@ def parseServerConfig(config_filename, src_dir):
     type_flags = getSupportedTypes(server_config)
 
     print(f"{module_source_files} {nd_stamp_flags} {type_flags}")
+
 
 if __name__ == "__main__":
     parseServerConfig(sys.argv[1], sys.argv[2])
