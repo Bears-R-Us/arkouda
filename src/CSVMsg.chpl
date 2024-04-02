@@ -205,8 +205,8 @@ module CSVMsg {
         // calculate the amount of memory required to write the csv file all in one go
         var memRequired: uint = 0;
         var numStrings = 0;
-        for (cname, dt) in zip(dtypes, datasets) {
-            if dt == "Strings" {
+        for (cname, dt) in zip(datasets, dtypes) {
+            if dt == "str" {
                 var ss = new SegString("", toSegStringSymEntry(st.lookup(cname)));
                 // strings vals are uint(8), so they're only one byte but overcount
                 // because they're not evenly distributed across locales
@@ -220,7 +220,10 @@ module CSVMsg {
 
         // if we can put the entire df in mem (i.e. memLim > (memUsed + memRequired)), then we can do it all in one go.
         // Otherwise we can only put (memLim - memUsed) in memory at a time, so that's our batchSize
-        const numBatches = if memLim > (memUsed + memRequired) then 1 else ceil(memRequired:real / (memLim - memUsed)):int;
+        // if memLim > memUsed then we use chunks no bigger than 5% of total memory (memLim is 90% so dividing by 18 gives us 5%)
+        const numBatches = if memLim > memUsed then ceil(memRequired:real / (memLim - memUsed)):int else ceil(memRequired:real / (memLim / 18)):int;
+
+        csvLogger.info(getModuleName(),getRoutineName(),getLineNumber(), "Start csv write with %i batches".doFormat(numBatches));
 
         coforall loc in Locales do on loc {
             const localeFilename = filenames[loc.id];
