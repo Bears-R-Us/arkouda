@@ -90,7 +90,9 @@ class TestMessage:
 class TestJSONArgs:
     # TODO numpy dtypes are not supported by json, we probably want to add an issue to handle this
     SCALAR_TYPES = [int, float, bool, str]
-    PDA_TYPES = [ak.dtype(t) for t in ak.DTypes if t != "str"]
+#   The types below are support in arkouda, as noted in serverConfig.json.  This may be
+#   the same issue noted in the above comment.
+    SUPPORTED_TYPES = [ak.bool, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
 
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     def test_scalar_args(self, dtype):
@@ -204,7 +206,7 @@ class TestJSONArgs:
         )
         assert args == expected
 
-    @pytest.mark.parametrize("dtype", PDA_TYPES)
+    @pytest.mark.parametrize("dtype", SUPPORTED_TYPES)
     def test_pda_arg(self, dtype):
         pda1 = ak.arange(3, dtype=dtype)
         pda2 = ak.arange(4, dtype=dtype)
