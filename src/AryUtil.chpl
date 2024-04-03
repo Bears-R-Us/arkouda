@@ -669,7 +669,7 @@ module AryUtil
     */
     proc broadcastShape(sa: ?Na*int, sb: ?Nb*int, param N: int): N*int throws {
       var s: N*int;
-      for param i in 0..<N by -1 do {
+      for param i in 0..<N by -1 {
         const n1 = Na - N + i,
               n2 = Nb - N + i,
               d1 = if n1 < 0 then 1 else sa[n1],
