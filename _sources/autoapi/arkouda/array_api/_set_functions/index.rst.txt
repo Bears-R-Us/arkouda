@@ -101,8 +101,4 @@ Functions
 
 .. py:function:: unique_values(x: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
 
-   Array API compatible wrapper for :py:func:`np.unique <numpy.unique>`.
-
-   See its docstring for more information.
-
 

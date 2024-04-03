@@ -45,7 +45,7 @@ for example if (a.max-a.min > a.size) means that a's are sparse
    :returns: ([] int, [] int)
    
 
-.. function:: proc uniqueSortWithInverse(a: [?aD] ?eltType) throws
+.. function:: proc uniqueSortWithInverse(a: [?aD] ?eltType, param needIndices = false) throws
 
 .. function:: proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true) throws
 

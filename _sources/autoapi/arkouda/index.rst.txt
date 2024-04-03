@@ -85,14 +85,14 @@ Classes
    arkouda.GroupBy
    arkouda.GroupBy
    arkouda.IPv4
-   arkouda.Index
    arkouda.LogLevel
-   arkouda.MultiIndex
    arkouda.Power_divergenceResult
    arkouda.Properties
    arkouda.Row
+   arkouda.SegArray
    arkouda.Series
    arkouda.StringAccessor
+   arkouda.Strings
    arkouda.Strings
    arkouda.Strings
    arkouda.Strings
@@ -116,7 +116,6 @@ Functions
    arkouda.abs
    arkouda.akabs
    arkouda.akcast
-   arkouda.akcast
    arkouda.align
    arkouda.all
    arkouda.any
@@ -138,7 +137,6 @@ Functions
    arkouda.argmink
    arkouda.argsort
    arkouda.argsort
-   arkouda.argsort
    arkouda.array
    arkouda.array
    arkouda.array
@@ -146,6 +144,7 @@ Functions
    arkouda.attach_all
    arkouda.attach_pdarray
    arkouda.bigint_from_uint_arrays
+   arkouda.broadcast
    arkouda.broadcast
    arkouda.broadcast
    arkouda.broadcast
@@ -160,11 +159,11 @@ Functions
    arkouda.clz
    arkouda.coargsort
    arkouda.coargsort
-   arkouda.coargsort
    arkouda.compute_join_size
    arkouda.concatenate
    arkouda.concatenate
-   arkouda.convert_if_categorical
+   arkouda.concatenate
+   arkouda.connect
    arkouda.corr
    arkouda.cos
    arkouda.cosh
@@ -175,11 +174,13 @@ Functions
    arkouda.ctz
    arkouda.cumprod
    arkouda.cumsum
+   arkouda.cumsum
    arkouda.date_operators
    arkouda.date_range
    arkouda.date_range
    arkouda.deg2rad
    arkouda.disableVerbose
+   arkouda.disconnect
    arkouda.divmod
    arkouda.dot
    arkouda.dtype
@@ -196,14 +197,22 @@ Functions
    arkouda.full
    arkouda.full_like
    arkouda.gen_ranges
-   arkouda.generic_concat
+   arkouda.gen_ranges
+   arkouda.generate_history
+   arkouda.generic_msg
+   arkouda.generic_msg
+   arkouda.getArkoudaLogger
    arkouda.get_byteorder
-   arkouda.get_callback
    arkouda.get_columns
+   arkouda.get_config
    arkouda.get_datasets
    arkouda.get_filetype
+   arkouda.get_mem_avail
+   arkouda.get_mem_status
+   arkouda.get_mem_used
    arkouda.get_null_indices
    arkouda.get_server_byteorder
+   arkouda.get_server_commands
    arkouda.hash
    arkouda.hist_all
    arkouda.histogram
@@ -211,7 +220,6 @@ Functions
    arkouda.histogram2d
    arkouda.histogramdd
    arkouda.import_data
-   arkouda.in1d
    arkouda.in1d
    arkouda.in1d
    arkouda.in1d_intervals
@@ -225,11 +233,13 @@ Functions
    arkouda.ip_address
    arkouda.isSupportedInt
    arkouda.isSupportedInt
+   arkouda.isSupportedInt
    arkouda.isSupportedNumber
    arkouda.is_cosorted
    arkouda.is_ipv4
    arkouda.is_ipv6
    arkouda.is_registered
+   arkouda.is_sorted
    arkouda.is_sorted
    arkouda.isfinite
    arkouda.isinf
@@ -266,6 +276,7 @@ Functions
    arkouda.power
    arkouda.power_divergence
    arkouda.pretty_print_information
+   arkouda.print_server_commands
    arkouda.prod
    arkouda.rad2deg
    arkouda.randint
@@ -286,10 +297,13 @@ Functions
    arkouda.rotl
    arkouda.rotr
    arkouda.round
+   arkouda.ruok
    arkouda.save_all
    arkouda.search_intervals
+   arkouda.segarray
    arkouda.setdiff1d
    arkouda.setxor1d
+   arkouda.shutdown
    arkouda.sign
    arkouda.sin
    arkouda.sinh
@@ -317,7 +331,6 @@ Functions
    arkouda.union1d
    arkouda.unique
    arkouda.unique
-   arkouda.unique
    arkouda.unregister
    arkouda.unregister_all
    arkouda.unregister_pdarray_by_name
@@ -331,6 +344,7 @@ Functions
    arkouda.write_log
    arkouda.xlogy
    arkouda.zero_up
+   arkouda.zeros
    arkouda.zeros
    arkouda.zeros
    arkouda.zeros
@@ -348,13 +362,16 @@ Attributes
    arkouda.DTypeObjects
    arkouda.DTypes
    arkouda.GROUPBY_REDUCTION_TYPES
+   arkouda.LEN_SUFFIX
    arkouda.RegisteredSymbols
+   arkouda.SEG_SUFFIX
    arkouda.ScalarDTypes
+   arkouda.VAL_SUFFIX
    arkouda.akbool
    arkouda.akfloat64
-   arkouda.akfloat64
    arkouda.akint64
    arkouda.akint64
+   arkouda.akuint64
    arkouda.akuint64
    arkouda.akuint64
    arkouda.all_scalars
@@ -379,8 +396,10 @@ Attributes
    arkouda.intTypes
    arkouda.int_scalars
    arkouda.int_scalars
+   arkouda.int_scalars
    arkouda.numeric_scalars
    arkouda.numpy_scalars
+   arkouda.str_
    arkouda.str_
    arkouda.str_scalars
    arkouda.uint16
@@ -13252,401 +13271,10 @@ Attributes
 
 
 
-.. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index], name: Optional[str] = None, allow_list=False, max_list_size=1000)
+.. py:data:: LEN_SUFFIX
+   :value: '_lengths'
 
-
-   .. py:property:: index
-
-      This is maintained to support older code
-
-   .. py:property:: is_unique
-
-      Property indicating if all values in the index are unique
-      :rtype: bool - True if all values are unique, False otherwise.
-
-   .. py:property:: shape
-
-
-   .. py:attribute:: objType
-      :value: 'Index'
-
-      Sequence used for indexing and alignment.
-
-      The basic object storing axis labels for all DataFrame objects.
-
-      :param values:
-      :type values: List, pdarray, Strings, Categorical, pandas.Index, or Index
-      :param name: Name to be stored in the index.
-      :type name: str, default=None
-      :param allow_list = False: If False, list values will be converted to a pdarray.
-                                 If True, list values will remain as a list, provided the data length is less than max_list_size.
-      :param : If False, list values will be converted to a pdarray.
-               If True, list values will remain as a list, provided the data length is less than max_list_size.
-      :param max_list_size = 1000: This is the maximum allowed data length for the values to be stored as a list object.
-
-      :raises ValueError: Raised if allow_list=True and the size of values is > max_list_size.
-
-      .. seealso:: :obj:`MultiIndex`
-
-      .. rubric:: Examples
-
-      >>> ak.Index([1, 2, 3])
-      Index(array([1 2 3]), dtype='int64')
-
-      >>> ak.Index(list('abc'))
-      Index(array(['a', 'b', 'c']), dtype='<U0')
-
-      >>> ak.Index([1, 2, 3], allow_list=True)
-      Index([1, 2, 3], dtype='int64')
-
-   .. py:method:: argsort(ascending=True)
-
-
-   .. py:method:: concat(other)
-
-
-   .. py:method:: factory(index)
-      :staticmethod:
-
-
-   .. py:method:: from_return_msg(rep_msg)
-      :classmethod:
-
-
-   .. py:method:: is_registered()
-
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: numpy.bool
-
-      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: lookup(key)
-
-
-   .. py:method:: map(arg: Union[dict, arkouda.series.Series]) -> Index
-
-      Map values of Index according to an input mapping.
-
-      :param arg: The mapping correspondence.
-      :type arg: dict or Series
-
-      :returns: A new index with the values transformed by the mapping correspondence.
-      :rtype: arkouda.index.Index
-
-      :raises TypeError: Raised if arg is not of type dict or arkouda.Series.
-          Raised if index values not of type pdarray, Categorical, or Strings.
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
-      >>> display(idx)
-      Index(array([2 3 2 3 4]), dtype='int64')
-      >>> idx.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
-      Index(array([30.00000000000000000 5.00000000000000000 30.00000000000000000
-      5.00000000000000000 25.00000000000000000]), dtype='float64')
-      >>> s2 = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
-      >>> idx.map(s2)
-      Index(array(['b', 'b', 'd', 'd', 'a']), dtype='<U0')
-
-
-   .. py:method:: memory_usage(unit='B')
-
-      Return the memory usage of the Index values.
-
-      :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
-      :type unit: str, default = "B"
-
-      :returns: Bytes of memory consumed.
-      :rtype: int
-
-      .. seealso:: :obj:`arkouda.pdarrayclass.nbytes`, :obj:`arkouda.index.MultiIndex.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> idx = Index(ak.array([1, 2, 3]))
-      >>> idx.memory_usage()
-      24
-
-
-   .. py:method:: register(user_defined_name)
-
-      Register this Index object and underlying components with the Arkouda server
-
-      :param user_defined_name: user defined name the Index is to be registered under,
-                                this will be the root name for underlying components
-      :type user_defined_name: str
-
-      :returns: The same Index which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support
-                a fluid programming style.
-                Please note you cannot register two different Indexes with the same name.
-      :rtype: Index
-
-      :raises TypeError: Raised if user_defined_name is not a str
-      :raises RegistrationError: If the server was unable to register the Index with the user_defined_name
-
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: save(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
-
-      DEPRECATED
-      Save the index to HDF5 or Parquet. The result is a collection of files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path. Each locale saves its chunk of the array to its
-      corresponding file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Sets the compression type used with Parquet files
-      :type compression: str (Optional)
-      :param file_format: By default, saved files will be written to the HDF5 file format. If
-                          'Parquet', the files will be written to the Parquet file format. This
-                          is case insensitive.
-      :type file_format: str {'HDF5', 'Parquet'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
-          file write location or if the mode parameter is neither truncate
-          nor append
-      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
-          is not a string.
-          Raised if the Index values are a list.
-
-      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`, :obj:`to_parquet`, :obj:`to_hdf`
-
-      .. rubric:: Notes
-
-      The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales``. If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
-      This will require you to use load as if you saved the file with the extension. Try this if
-      an older file is not being found.
-      Any file extension can be used. The file I/O does not rely on the extension to determine the
-      file format.
-
-
-   .. py:method:: set_dtype(dtype)
-
-      Change the data type of the index
-
-      Currently only aku.ip_address and ak.array are supported.
-
-
-   .. py:method:: to_csv(prefix_path: str, dataset: str = 'index', col_delim: str = ',', overwrite: bool = False)
-
-              Write Index to CSV file(s). File will contain a single column with the pdarray data.
-              All CSV Files written by Arkouda include a header denoting data types of the columns.
-
-              Parameters
-              -----------
-              prefix_path: str
-                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-                  when they are written to disk.
-              dataset: str
-                  Column name to save the pdarray under. Defaults to "array".
-              col_delim: str
-                  Defaults to ",". Value to be used to separate columns within the file.
-                  Please be sure that the value used DOES NOT appear in your dataset.
-              overwrite: bool
-                  Defaults to False. If True, any existing files matching your provided prefix_path will
-                  be overwritten. If False, an error will be returned if existing files are found.
-
-              Returns
-              --------
-              str reponse message
-
-              Raises
-              ------
-              ValueError
-                  Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist.
-              RuntimeError
-                  Raised if one or more of the specified files cannot be opened.
-                  If `allow_errors` is true this may be raised if no values are returned
-                  from the server.
-              TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server.
-                  Raised if the Index values are a list.
-
-              Notes
-              ------
-              - CSV format is not currently supported by load/load_all operations
-              - The column delimiter is expected to be the same for column names and data
-              - Be sure that column delimiters are not found within your data.
-              - All CSV files must delimit rows using newline (`
-      `) at this time.
-
-
-
-   .. py:method:: to_dict(label)
-
-
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
-
-      Save the Index to HDF5.
-      The object can be saved to a collection of files or single file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-      :raises TypeError: Raised if the Index values are a list.
-
-      .. rubric:: Notes
-
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-
-   .. py:method:: to_list()
-
-
-   .. py:method:: to_ndarray()
-
-
-   .. py:method:: to_pandas()
-
-
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None)
-
-      Save the Index to Parquet. The result is a collection of files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path. Each locale saves its chunk of the array to its
-      corresponding file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Sets the compression type used with Parquet files
-      :type compression: str (Optional)
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-      :raises TypeError: Raised if the Index values are a list.
-
-      .. rubric:: Notes
-
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`.
-      - 'append' write mode is supported, but is not efficient.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-
-   .. py:method:: unregister()
-
-      Unregister this Index object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
-
-      :raises RegistrationError: If the object is already unregistered or if there is a server error
-          when attempting to unregister
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'index', repack: bool = True)
-
-      Overwrite the dataset with the name provided with this Index object. If
-      the dataset does not exist it is added.
-
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files
-      :type dataset: str
-      :param repack: Default: True
-                     HDF5 does not release memory on delete. When True, the inaccessible
-                     data (that was overwritten) is removed. When False, the data remains, but is
-                     inaccessible. Setting to false will yield better performance, but will cause
-                     file sizes to expand.
-      :type repack: bool
-
-      :rtype: str - success message if successful
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the index
-
-      .. rubric:: Notes
-
-      - If file does not contain File_Format attribute to indicate how it was saved,
-        the file name is checked for _LOCALE#### to determine if it is distributed.
-      - If the dataset provided does not exist, it will be added
-      - Because HDF5 deletes do not release memory, this will create a copy of the
-        file with the new data
-
-
+   
 
 .. py:class:: LogLevel
 
@@ -13681,195 +13309,6 @@ Attributes
       :value: 'WARN'
 
       
-
-
-.. py:class:: MultiIndex(values, name=None, names=None)
-
-
-   Bases: :py:obj:`Index`
-
-   .. py:property:: index
-
-      This is maintained to support older code
-
-   .. py:attribute:: objType
-      :value: 'MultiIndex'
-
-      
-
-   .. py:method:: argsort(ascending=True)
-
-
-   .. py:method:: concat(other)
-
-
-   .. py:method:: is_registered()
-
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: numpy.bool
-
-      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: lookup(key)
-
-
-   .. py:method:: memory_usage(unit='B')
-
-      Return the memory usage of the MultiIndex values.
-
-      :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
-      :type unit: str, default = "B"
-
-      :returns: Bytes of memory consumed.
-      :rtype: int
-
-      .. seealso:: :obj:`arkouda.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
-      >>> m.memory_usage()
-      48
-
-
-   .. py:method:: register(user_defined_name)
-
-      Register this Index object and underlying components with the Arkouda server
-
-      :param user_defined_name: user defined name the Index is to be registered under,
-                                this will be the root name for underlying components
-      :type user_defined_name: str
-
-      :returns: The same Index which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support
-                a fluid programming style.
-                Please note you cannot register two different Indexes with the same name.
-      :rtype: MultiIndex
-
-      :raises TypeError: Raised if user_defined_name is not a str
-      :raises RegistrationError: If the server was unable to register the Index with the user_defined_name
-
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: set_dtype(dtype)
-
-      Change the data type of the index
-
-      Currently only aku.ip_address and ak.array are supported.
-
-
-   .. py:method:: to_dict(labels=None)
-
-
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
-
-      Save the Index to HDF5.
-      The object can be saved to a collection of files or single file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray.
-
-      .. rubric:: Notes
-
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-
-   .. py:method:: to_list()
-
-
-   .. py:method:: to_ndarray()
-
-
-   .. py:method:: to_pandas()
-
-
-   .. py:method:: unregister()
-
-      Unregister this Index object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
-
-      :raises RegistrationError: If the object is already unregistered or if there is a server error
-          when attempting to unregister
-
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
-
-
-   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'index', repack: bool = True)
-
-      Overwrite the dataset with the name provided with this Index object. If
-      the dataset does not exist it is added.
-
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files
-      :type dataset: str
-      :param repack: Default: True
-                     HDF5 does not release memory on delete. When True, the inaccessible
-                     data (that was overwritten) is removed. When False, the data remains, but is
-                     inaccessible. Setting to false will yield better performance, but will cause
-                     file sizes to expand.
-      :type repack: bool
-
-      :rtype: str - success message if successful
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the index
-      :raises TypeError: Raised if the Index values are a list.
-
-      .. rubric:: Notes
-
-      - If file does not contain File_Format attribute to indicate how it was saved,
-        the file name is checked for _LOCALE#### to determine if it is distributed.
-      - If the dataset provided does not exist, it will be added
-      - Because HDF5 deletes do not release memory, this will create a copy of the
-        file with the new data
-
 
 
 .. py:exception:: NonUniqueError
@@ -13950,9 +13389,726 @@ Attributes
    of an aku.DataFrame.
 
 
+.. py:data:: SEG_SUFFIX
+   :value: '_segments'
+
+   
+
 .. py:data:: ScalarDTypes
 
    
+
+.. py:class:: SegArray(segments, values, lengths=None, grouping=None)
+
+
+   .. py:property:: grouping
+
+
+   .. py:property:: non_empty
+
+
+   .. py:attribute:: objType
+      :value: 'SegArray'
+
+      
+
+   .. py:method:: AND(x=None)
+
+
+   .. py:method:: OR(x=None)
+
+
+   .. py:method:: XOR(x=None)
+
+
+   .. py:method:: aggregate(op, x=None)
+
+
+   .. py:method:: all(x=None)
+
+
+   .. py:method:: any(x=None)
+
+
+   .. py:method:: append(other, axis=0)
+
+      Append other to self, either vertically (axis=0, length of resulting SegArray
+      increases), or horizontally (axis=1, each sub-array of other appends to the
+      corresponding sub-array of self).
+
+      :param other: Array of sub-arrays to append
+      :type other: SegArray
+      :param axis: Whether to append vertically (0) or horizontally (1). If axis=1, other
+                   must be same size as self.
+      :type axis: 0 or 1
+
+      :returns: axis=0: New SegArray containing all sub-arrays
+                axis=1: New SegArray of same length, with pairs of sub-arrays concatenated
+      :rtype: SegArray
+
+
+   .. py:method:: append_single(x, prepend=False)
+
+      Append a single value to each sub-array.
+
+      :param x: Single value to append to each sub-array
+      :type x: pdarray or scalar
+
+      :returns: Copy of original SegArray with values from x appended to each sub-array
+      :rtype: SegArray
+
+
+   .. py:method:: argmax(x=None)
+
+
+   .. py:method:: argmin(x=None)
+
+
+   .. py:method:: attach(user_defined_name)
+      :classmethod:
+
+      Using the defined name, attach to a SegArray that has been registered to the Symbol Table
+
+      :param user_defined_name: user defined name which the SegArray object was registered under
+      :type user_defined_name: str
+
+      :returns: The resulting SegArray
+      :rtype: SegArray
+
+      :raises RuntimeError: Raised if the server could not attach to the SegArray object
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`
+
+
+   .. py:method:: concat(x, axis=0, ordered=True)
+      :classmethod:
+
+      Concatenate a sequence of SegArrays
+
+      :param x: The SegArrays to concatenate
+      :type x: sequence of SegArray
+      :param axis: Select vertical (0) or horizontal (1) concatenation. If axis=1, all
+                   SegArrays must have same size.
+      :type axis: 0 or 1
+      :param ordered: Must be True. This option is present for compatibility only, because unordered
+                      concatenation is not yet supported.
+      :type ordered: bool
+
+      :returns: The input arrays joined into one SegArray
+      :rtype: SegArray
+
+
+   .. py:method:: copy()
+
+      Return a deep copy.
+
+
+   .. py:method:: filter(filter, discard_empty: bool = False)
+
+      Filter values out of the SegArray object
+
+      :param filter: The value/s to be filtered out of the SegArray
+      :type filter: pdarray, list, or value
+      :param discard_empty: Defaults to False. When True, empty segments are removed from
+                            the return SegArray
+      :type discard_empty: bool
+
+      :rtype: SegArray
+
+
+   .. py:method:: from_multi_array(m)
+      :classmethod:
+
+      Construct a SegArray from a list of columns. This essentially transposes the input,
+      resulting in an array of rows.
+
+      :param m: List of columns, the rows of which will form the sub-arrays of the output
+      :type m: list of pdarray or Strings
+
+      :returns: Array of rows of input
+      :rtype: SegArray
+
+
+   .. py:method:: from_parts(segments, values, lengths=None, grouping=None) -> SegArray
+      :classmethod:
+
+      DEPRECATED
+      Construct a SegArray object from its parts
+
+      :param segments: Start index of each sub-array in the flattened values array
+      :type segments: pdarray, int64
+      :param values: The flattened values of all sub-arrays
+      :type values: pdarray
+      :param lengths: The length of each segment
+      :type lengths: pdarray
+      :param grouping: grouping of segments
+      :type grouping: GroupBy
+
+      :returns: Data structure representing an array whose elements are variable-length arrays.
+      :rtype: SegArray
+
+      .. rubric:: Notes
+
+      Keyword args 'lengths' and 'grouping' are not user-facing. They are used by the
+      attach method.
+
+
+   .. py:method:: from_return_msg(rep_msg) -> SegArray
+      :classmethod:
+
+
+   .. py:method:: get_jth(j, return_origins=True, compressed=False, default=0)
+
+      Select the j-th element of each sub-array, where possible.
+
+      :param j: The index of the value to get from each sub-array. If j is negative,
+                it counts backwards from the end of each sub-array.
+      :type j: int
+      :param return_origins: If True, return a logical index indicating where j is in bounds
+      :type return_origins: bool
+      :param compressed: If False, return array is same size as self, with default value
+                         where j is out of bounds. If True, the return array only contains
+                         values where j is in bounds.
+      :type compressed: bool
+      :param default: When compressed=False, the value to return when j is out of bounds
+                      for the sub-array
+      :type default: scalar
+
+      :returns: * **val** (*pdarray*) -- compressed=False: The j-th value of each sub-array where j is in
+                  bounds and the default value where j is out of bounds.
+                  compressed=True: The j-th values of only the sub-arrays where j is
+                  in bounds
+                * **origin_indices** (*pdarray, bool*) -- A Boolean array that is True where j is in bounds for the sub-array.
+
+      .. rubric:: Notes
+
+      If values are Strings, only the compressed format is supported.
+
+
+   .. py:method:: get_length_n(n, return_origins=True)
+
+      Return all sub-arrays of length n, as a list of columns.
+
+      :param n: Length of sub-arrays to select
+      :type n: int
+      :param return_origins: Return a logical index indicating which sub-arrays are length n
+      :type return_origins: bool
+
+      :returns: * **columns** (*list of pdarray*) -- An n-long list of pdarray, where each row is one of the n-long
+                  sub-arrays from the SegArray. The number of rows is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Array of bool for each element of the SegArray, True where sub-array
+                  has length n.
+
+
+   .. py:method:: get_ngrams(n, return_origins=True)
+
+      Return all n-grams from all sub-arrays.
+
+      :param n: Length of n-gram
+      :type n: int
+      :param return_origins: If True, return an int64 array indicating which sub-array
+                             each returned n-gram came from.
+      :type return_origins: bool
+
+      :returns: * **ngrams** (*list of pdarray*) -- An n-long list of pdarrays, essentially a table where each row is an n-gram.
+                * **origin_indices** (*pdarray, int*) -- The index of the sub-array from which the corresponding n-gram originated
+
+
+   .. py:method:: get_prefixes(n, return_origins=True, proper=True)
+
+      Return all sub-array prefixes of length n (for sub-arrays that are at least n+1 long)
+
+      :param n: Length of suffix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which sub-arrays
+                             were long enough to return an n-prefix
+      :type return_origins: bool
+      :param proper: If True, only return proper prefixes, i.e. from sub-arrays
+                     that are at least n+1 long. If False, allow the entire
+                     sub-array to be returned as a prefix.
+      :type proper: bool
+
+      :returns: * **prefixes** (*list of pdarray*) -- An n-long list of pdarrays, essentially a table where each row is an n-prefix.
+                  The number of rows is the number of True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the sub-array was long enough to return
+                  an n-suffix, False otherwise.
+
+
+   .. py:method:: get_suffixes(n, return_origins=True, proper=True)
+
+      Return the n-long suffix of each sub-array, where possible
+
+      :param n: Length of suffix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which sub-arrays
+                             were long enough to return an n-suffix
+      :type return_origins: bool
+      :param proper: If True, only return proper suffixes, i.e. from sub-arrays
+                     that are at least n+1 long. If False, allow the entire
+                     sub-array to be returned as a suffix.
+      :type proper: bool
+
+      :returns: * **suffixes** (*list of pdarray*) -- An n-long list of pdarrays, essentially a table where each row is an n-suffix.
+                  The number of rows is the number of True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the sub-array was long enough to return
+                  an n-suffix, False otherwise.
+
+
+   .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+
+      Compute a 128-bit hash of each segment.
+
+      :returns: A tuple of two int64 pdarrays. The ith hash value is the concatenation
+                of the ith values from each array.
+      :rtype: Tuple[pdarray,pdarray]
+
+
+   .. py:method:: intersect(other)
+
+      Computes the intersection of 2 SegArrays.
+
+      :param other: SegArray to compute against
+      :type other: SegArray
+
+      :returns: Segments are the 1d intersections of the segments of self and other
+      :rtype: SegArray
+
+      .. seealso:: :obj:`pdarraysetops.intersect1d`
+
+      .. rubric:: Examples
+
+      >>> a = [1, 2, 3, 1, 4]
+      >>> b = [3, 1, 4, 5]
+      >>> c = [1, 3, 3, 5]
+      >>> d = [2, 2, 4]
+      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a.intersect(seg_b)
+      SegArray([
+      [1, 3],
+      [4]
+      ])
+
+
+   .. py:method:: is_registered() -> bool
+
+      Checks if the name of the SegArray object is registered in the Symbol Table
+
+      :returns: True if SegArray is registered, false if not
+      :rtype: bool
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`
+
+
+   .. py:method:: load(prefix_path, dataset='segarray', segment_name='segments', value_name='values')
+      :classmethod:
+
+
+   .. py:method:: max(x=None)
+
+
+   .. py:method:: mean(x=None)
+
+
+   .. py:method:: min(x=None)
+
+
+   .. py:method:: nunique(x=None)
+
+
+   .. py:method:: prepend_single(x)
+
+
+   .. py:method:: prod(x=None)
+
+
+   .. py:method:: read_hdf(prefix_path, dataset='segarray')
+      :classmethod:
+
+      Load a saved SegArray from HDF5. All arguments must match what
+      was supplied to SegArray.save()
+
+      :param prefix_path: Directory and filename prefix
+      :type prefix_path: str
+      :param dataset: Name prefix for saved data within the HDF5 files
+      :type dataset: str
+
+      :rtype: SegArray
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this SegArray object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name which this SegArray object will be registered under
+      :type user_defined_name: str
+
+      :returns: The same SegArray which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different SegArrays with the same name.
+      :rtype: SegArray
+
+      :raises RegistrationError: Raised if the server could not register the SegArray object
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+
+   .. py:method:: remove_repeats(return_multiplicity=False)
+
+      Condense sequences of repeated values within a sub-array to a single value.
+
+      :param return_multiplicity: If True, also return the number of times each value was repeated.
+      :type return_multiplicity: bool
+
+      :returns: * **norepeats** (*SegArray*) -- Sub-arrays with runs of repeated values replaced with single value
+                * **multiplicity** (*SegArray*) -- If return_multiplicity=True, this array contains the number of times
+                  each value in the returned SegArray was repeated in the original SegArray.
+
+
+   .. py:method:: save(prefix_path, dataset='segarray', mode='truncate', file_type='distribute')
+
+      DEPRECATED
+      Save the SegArray to HDF5.
+      The object can be saved to a collection of files or single file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+      the file name will be `prefix_path`.
+      - If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      - Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+      .. seealso:: :obj:`to_hdf`, :obj:`load`
+
+
+   .. py:method:: set_jth(i, j, v)
+
+      Set the j-th element of each sub-array in a subset.
+
+      :param i: Indices of sub-arrays to set j-th element
+      :type i: pdarray, int
+      :param j: Index of value to set in each sub-array. If j is negative, it counts
+                backwards from the end of the sub-array.
+      :type j: int
+      :param v: The value(s) to set. If v is a pdarray, it must have same length as i.
+      :type v: pdarray or scalar
+
+      :raises ValueError: If j is out of bounds in any of the sub-arrays specified by i.
+
+
+   .. py:method:: setdiff(other)
+
+      Computes the set difference of 2 SegArrays.
+
+      :param other: SegArray to compute against
+      :type other: SegArray
+
+      :returns: Segments are the 1d set difference of the segments of self and other
+      :rtype: SegArray
+
+      .. seealso:: :obj:`pdarraysetops.setdiff1d`
+
+      .. rubric:: Examples
+
+      >>> a = [1, 2, 3, 1, 4]
+      >>> b = [3, 1, 4, 5]
+      >>> c = [1, 3, 3, 5]
+      >>> d = [2, 2, 4]
+      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a.setdiff(seg_b)
+      SegArray([
+      [2, 4],
+      [1, 3, 5]
+      ])
+
+
+   .. py:method:: setxor(other)
+
+      Computes the symmetric difference of 2 SegArrays.
+
+      :param other: SegArray to compute against
+      :type other: SegArray
+
+      :returns: Segments are the 1d symmetric difference of the segments of self and other
+      :rtype: SegArray
+
+      .. seealso:: :obj:`pdarraysetops.setxor1d`
+
+      .. rubric:: Examples
+
+      >>> a = [1, 2, 3, 1, 4]
+      >>> b = [3, 1, 4, 5]
+      >>> c = [1, 3, 3, 5]
+      >>> d = [2, 2, 4]
+      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a.setxor(seg_b)
+      SegArray([
+      [2, 4, 5],
+      [1, 3, 5, 2]
+      ])
+
+
+   .. py:method:: sum(x=None)
+
+
+   .. py:method:: to_hdf(prefix_path, dataset='segarray', mode='truncate', file_type='distribute')
+
+      Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
+      per locale of the arkouda server, where each filename starts with prefix_path.
+
+      :param prefix_path: Directory and filename prefix that all output files will share
+      :type prefix_path: str
+      :param dataset: Name prefix for saved data within the HDF5 file
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', add data as a new column to existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: None
+
+      .. seealso:: :obj:`load`
+
+
+   .. py:method:: to_list()
+
+      Convert the segarray into a list containing sub-arrays
+
+      :returns: A list with the same sub-arrays (also list) as this segarray
+      :rtype: list
+
+      .. seealso:: :obj:`to_ndarray`
+
+      .. rubric:: Examples
+
+      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
+      >>> segarr.to_list()
+      [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
+      >>> type(segarr.to_list())
+      list
+
+
+   .. py:method:: to_ndarray()
+
+      Convert the array into a numpy.ndarray containing sub-arrays
+
+      :returns: A numpy ndarray with the same sub-arrays (also numpy.ndarray) as this array
+      :rtype: np.ndarray
+
+      .. seealso:: :obj:`array`, :obj:`to_list`
+
+      .. rubric:: Examples
+
+      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
+      >>> segarr.to_ndarray()
+      array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
+      >>> type(segarr.to_ndarray())
+      numpy.ndarray
+
+
+   .. py:method:: to_parquet(prefix_path, dataset='segarray', mode: str = 'truncate', compression: Optional[str] = None)
+
+      Save the SegArray object to Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the object to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: Deprecated.
+                   Parameter kept to maintain functionality of other calls. Only Truncate
+                   supported.
+                   By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: If write mode is not Truncate.
+
+      .. rubric:: Notes
+
+      - Append mode for Parquet has been deprecated. It was not implemented for SegArray.
+      - The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales`` for `file_type='distribute'`.
+      - If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      - Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+
+   .. py:method:: transfer(hostname: str, port: arkouda.dtypes.int_scalars)
+
+      Sends a Segmented Array to a different Arkouda server
+
+      :param hostname: The hostname where the Arkouda server intended to
+                       receive the Segmented Array is running.
+      :type hostname: str
+      :param port: The port to send the array over. This needs to be an
+                   open port (i.e., not one that the Arkouda server is
+                   running on). This will open up `numLocales` ports,
+                   each of which in succession, so will use ports of the
+                   range {port..(port+numLocales)} (e.g., running an
+                   Arkouda server of 4 nodes, port 1234 is passed as
+                   `port`, Arkouda will use ports 1234, 1235, 1236,
+                   and 1237 to send the array data).
+                   This port much match the port passed to the call to
+                   `ak.receive_array()`.
+      :type port: int_scalars
+
+      :rtype: A message indicating a complete transfer
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. py:method:: union(other)
+
+      Computes the union of 2 SegArrays.
+
+      :param other: SegArray to compute against
+      :type other: SegArray
+
+      :returns: Segments are the 1d union of the segments of self and other
+      :rtype: SegArray
+
+      .. seealso:: :obj:`pdarraysetops.union1d`
+
+      .. rubric:: Examples
+
+      >>> a = [1, 2, 3, 1, 4]
+      >>> b = [3, 1, 4, 5]
+      >>> c = [1, 3, 3, 5]
+      >>> d = [2, 2, 4]
+      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a.union(seg_b)
+      SegArray([
+      [1, 2, 3, 4, 5],
+      [1, 2, 3, 4, 5]
+      ])
+
+
+   .. py:method:: unique(x=None)
+
+      Return sub-arrays of unique values.
+
+      :param x: The values to unique, per group. By default, the values of this
+                SegArray's sub-arrays.
+      :type x: pdarray
+
+      :returns: Same number of sub-arrays as original SegArray, but elements in sub-array
+                are unique and in sorted order.
+      :rtype: SegArray
+
+
+   .. py:method:: unregister()
+
+      Unregister this SegArray object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :rtype: None
+
+      :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+
+   .. py:method:: unregister_segarray_by_name(user_defined_name)
+      :staticmethod:
+
+      Using the defined name, remove the registered SegArray object from the Symbol Table
+
+      :param user_defined_name: user defined name which the SegArray object was registered under
+      :type user_defined_name: str
+
+      :rtype: None
+
+      :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'segarray', repack: bool = True)
+
+      Overwrite the dataset with the name provided with this SegArray object. If
+      the dataset does not exist it is added.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: None
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the SegArray
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+      - Because HDF5 deletes do not release memory, this will create a copy of the
+        file with the new data
+
+
 
 .. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type], name=None, index: Optional[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Tuple, List, arkouda.index.Index]] = None)
 
@@ -20891,6 +21047,1547 @@ Attributes
 
 
 
+.. py:class:: Strings(strings_pdarray: arkouda.pdarrayclass.pdarray, bytes_size: arkouda.dtypes.int_scalars)
+
+
+   Represents an array of strings whose data resides on the
+   arkouda server. The user should not call this class directly;
+   rather its instances are created by other arkouda functions.
+
+   .. attribute:: entry
+
+      Encapsulation of a Segmented Strings array contained on
+      the arkouda server.  This is a composite of
+       - offsets array: starting indices for each string
+       - bytes array: raw bytes of all strings joined by nulls
+
+      :type: pdarray
+
+   .. attribute:: size
+
+      The number of strings in the array
+
+      :type: int_scalars
+
+   .. attribute:: nbytes
+
+      The total number of bytes in all strings
+
+      :type: int_scalars
+
+   .. attribute:: ndim
+
+      The rank of the array (currently only rank 1 arrays supported)
+
+      :type: int_scalars
+
+   .. attribute:: shape
+
+      The sizes of each dimension of the array
+
+      :type: tuple
+
+   .. attribute:: dtype
+
+      The dtype is ak.str
+
+      :type: dtype
+
+   .. attribute:: logger
+
+      Used for all logging operations
+
+      :type: ArkoudaLogger
+
+   .. rubric:: Notes
+
+   Strings is composed of two pdarrays: (1) offsets, which contains the
+   starting indices for each string and (2) bytes, which contains the
+   raw bytes of all strings, delimited by nulls.
+
+   .. py:attribute:: BinOps
+
+      
+
+   .. py:attribute:: objType
+      :value: 'Strings'
+
+      
+
+   .. py:method:: astype(dtype) -> arkouda.pdarrayclass.pdarray
+
+      Cast values of Strings object to provided dtype
+
+      :param dtype: Dtype to cast to
+      :type dtype: np.dtype or str
+
+      :returns: An arkouda pdarray with values converted to the specified data type
+      :rtype: ak.pdarray
+
+      .. rubric:: Notes
+
+      This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
+
+
+   .. py:method:: attach(user_defined_name: str) -> Strings
+      :staticmethod:
+
+      class method to return a Strings object attached to the registered name in the arkouda
+      server which was registered using register()
+
+      :param user_defined_name: user defined name which the Strings object was registered under
+      :type user_defined_name: str
+
+      :returns: the Strings object registered with user_defined_name in the arkouda server
+      :rtype: Strings object
+
+      :raises TypeError: Raised if user_defined_name is not a str
+
+      .. seealso:: :obj:`register`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/Strings objects in the server are immune to deletion
+      until they are unregistered.
+
+
+   .. py:method:: cached_regex_patterns() -> List
+
+      Returns the regex patterns for which Match objects have been cached
+
+
+   .. py:method:: capitalize() -> Strings
+
+      Returns a new Strings from the original replaced with the first letter capitilzed
+      and the remaining letters lowercase.
+
+      :returns: Strings from the original replaced with the capitalized equivalent.
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown.
+
+      .. seealso:: :obj:`Strings.lower`, :obj:`String.upper`, :obj:`String.title`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array([f'StrINgS aRe Here {i}' for i in range(5)])
+      >>> strings
+      array(['StrINgS aRe Here 0', 'StrINgS aRe Here 1', 'StrINgS aRe Here 2', 'StrINgS aRe Here 3',
+      ... 'StrINgS aRe Here 4'])
+      >>> strings.title()
+      array(['Strings are here 0', 'Strings are here 1', 'Strings are here 2', 'Strings are here 3',
+      ... 'Strings are here 4'])
+
+
+   .. py:method:: contains(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element contains the given substring.
+
+      :param substr: The substring in the form of string or byte array to search for
+      :type substr: str_scalars
+      :param regex: Indicates whether substr is a regular expression
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
+      :type regex: bool
+
+      :returns: True for elements that contain substr, False otherwise
+      :rtype: pdarray, bool
+
+      :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
+      :raises ValueError: Rasied if substr is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.startswith`, :obj:`Strings.endswith`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
+      >>> strings
+      array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
+      >>> strings.contains('string')
+      array([True, True, True, True, True])
+      >>> strings.contains('string \d', regex=True)
+      array([True, True, True, True, True])
+
+
+   .. py:method:: decode(fromEncoding, toEncoding='UTF-8')
+
+      Return a new strings object in `fromEncoding`, expecting that the
+      current Strings is encoded in `toEncoding`
+
+      :param fromEncoding: The current encoding of the strings object
+      :type fromEncoding: str
+      :param toEncoding: The encoding that the strings will be converted to,
+                         default to UTF-8
+      :type toEncoding: str
+
+      :returns: A new Strings object in `toEncoding`
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+
+   .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
+
+      Return a new strings object in `toEncoding`, expecting that the
+      current Strings is encoded in `fromEncoding`
+
+      :param toEncoding: The encoding that the strings will be converted to
+      :type toEncoding: str
+      :param fromEncoding: The current encoding of the strings object, default to
+                           UTF-8
+      :type fromEncoding: str
+
+      :returns: A new Strings object in `toEncoding`
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+
+   .. py:method:: endswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element ends with the given substring.
+
+      :param substr: The suffix to search for
+      :type substr: Union[bytes, str_scalars]
+      :param regex: Indicates whether substr is a regular expression
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
+      :type regex: bool
+
+      :returns: True for elements that end with substr, False otherwise
+      :rtype: pdarray, bool
+
+      :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
+      :raises ValueError: Rasied if substr is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.contains`, :obj:`Strings.startswith`
+
+      .. rubric:: Examples
+
+      >>> strings_start = ak.array([f'{i} string' for i in range(1,6)])
+      >>> strings_start
+      array(['1 string', '2 string', '3 string', '4 string', '5 string'])
+      >>> strings_start.endswith('ing')
+      array([True, True, True, True, True])
+      >>> strings_end = ak.array([f'string {i}' for i in range(1, 6)])
+      >>> strings_end
+      array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+      >>> strings_end.endswith('ing \d', regex = True)
+      array([True, True, True, True, True])
+
+
+   .. py:method:: find_locations(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+
+      Finds pattern matches and returns pdarrays containing the number, start postitions,
+      and lengths of matches
+
+      :param pattern: The regex pattern used to find matches
+      :type pattern: str_scalars
+
+      :returns: * *pdarray, int64* -- For each original string, the number of pattern matches
+                * *pdarray, int64* -- The start positons of pattern matches
+                * *pdarray, int64* -- The lengths of pattern matches
+
+      :raises TypeError: Raised if the pattern parameter is not bytes or str_scalars
+      :raises ValueError: Raised if pattern is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.findall`, :obj:`Strings.match`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
+      >>> num_matches, starts, lens = strings.find_locations('\d')
+      >>> num_matches
+      array([2, 2, 2, 2, 2])
+      >>> starts
+      array([0, 9, 0, 9, 0, 9, 0, 9, 0, 9])
+      >>> lens
+      array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))
+
+
+   .. py:method:: findall(pattern: Union[bytes, arkouda.dtypes.str_scalars], return_match_origins: bool = False) -> Union[Strings, Tuple]
+
+      Return a new Strings containg all non-overlapping matches of pattern
+
+      :param pattern: Regex used to find matches
+      :type pattern: str_scalars
+      :param return_match_origins: If True, return a pdarray containing the index of the original string each
+                                   pattern match is from
+      :type return_match_origins: bool
+
+      :returns: * *Strings* -- Strings object containing only pattern matches
+                * *pdarray, int64 (optional)* -- The index of the original string each pattern match is from
+
+      :raises TypeError: Raised if the pattern parameter is not bytes or str_scalars
+      :raises ValueError: Raised if pattern is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.find_locations`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.findall('_+', return_match_origins=True)
+      (array(['_', '___', '____', '__', '___', '____', '___']), array([0 0 1 3 3 3 3]))
+
+
+   .. py:method:: flatten(delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]
+
+      Unpack delimiter-joined substrings into a flat array.
+
+      :param delimiter: Characters used to split strings into substrings
+      :type delimiter: str
+      :param return_segments: If True, also return mapping of original strings to first substring
+                              in return array.
+      :type return_segments: bool
+      :param regex: Indicates whether delimiter is a regular expression
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
+      :type regex: bool
+
+      :returns: * *Strings* -- Flattened substrings with delimiters removed
+                * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
+                  in the return array
+
+      .. seealso:: :obj:`peel`, :obj:`rpeel`
+
+      .. rubric:: Examples
+
+      >>> orig = ak.array(['one|two', 'three|four|five', 'six'])
+      >>> orig.flatten('|')
+      array(['one', 'two', 'three', 'four', 'five', 'six'])
+      >>> flat, map = orig.flatten('|', return_segments=True)
+      >>> map
+      array([0, 2, 5])
+      >>> under = ak.array(['one_two', 'three_____four____five', 'six'])
+      >>> under_flat, under_map = under.flatten('_+', return_segments=True, regex=True)
+      >>> under_flat
+      array(['one', 'two', 'three', 'four', 'five', 'six'])
+      >>> under_map
+      array([0, 2, 5])
+
+
+   .. py:method:: from_parts(offset_attrib: Union[arkouda.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.pdarrayclass.pdarray, str]) -> Strings
+      :staticmethod:
+
+      Factory method for creating a Strings object from an Arkouda server
+      response where the arrays are separate components.
+
+      :param offset_attrib: the array containing the offsets
+      :type offset_attrib: Union[pdarray, str]
+      :param bytes_attrib: the array containing the string values
+      :type bytes_attrib: Union[pdarray, str]
+
+      :returns: object representing a segmented strings array on the server
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there's an error converting a server-returned str-descriptor
+
+      .. rubric:: Notes
+
+      This factory method is used when we construct the parts of a Strings
+      object on the client side and transfer the offsets & bytes separately
+      to the server.  This results in two entries in the symbol table and we
+      need to instruct the server to assemble the into a composite entity.
+
+
+   .. py:method:: from_return_msg(rep_msg: str) -> Strings
+      :staticmethod:
+
+      Factory method for creating a Strings object from an Arkouda server
+      response message
+
+      :param rep_msg: Server response message currently of form
+                      `created name type size ndim shape itemsize+created bytes.size 1234`
+      :type rep_msg: str
+
+      :returns: object representing a segmented strings array on the server
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there's an error converting a server-returned str-descriptor
+
+      .. rubric:: Notes
+
+      We really don't have an itemsize because these are variable length strings.
+      In the future we could probably use this position to store the total bytes.
+
+
+   .. py:method:: fullmatch(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
+
+      Returns a match object where elements match only if the whole string matches the
+      regular expression pattern
+
+      :param pattern: Regex used to find matches
+      :type pattern: str
+
+      :returns: Match object where elements match only if the whole string matches the
+                regular expression pattern
+      :rtype: Match
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.fullmatch('_+')
+      <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;
+      matched=False; matched=False>
+
+
+   .. py:method:: get_bytes()
+
+      Getter for the bytes component (uint8 pdarray) of this Strings.
+
+      :returns: Pdarray of bytes of the string accessed
+      :rtype: pdarray, uint8
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_bytes()
+      [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
+
+
+   .. py:method:: get_lengths() -> arkouda.pdarrayclass.pdarray
+
+      Return the length of each string in the array.
+
+      :returns: The length of each string
+      :rtype: pdarray, int
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+
+   .. py:method:: get_offsets()
+
+      Getter for the offsets component (int64 pdarray) of this Strings.
+
+      :returns: Pdarray of offsets of the string accessed
+      :rtype: pdarray, int64
+
+      .. rubric:: Example
+
+      >>> x = ak.array(['one', 'two', 'three'])
+      >>> x.get_offsets()
+      [0 4 8]
+
+
+   .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+
+      Return the n-long prefix of each string, where possible
+
+      :param n: Length of prefix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which strings
+                             were long enough to return an n-prefix
+      :type return_origins: bool
+      :param proper: If True, only return proper prefixes, i.e. from strings
+                     that are at least n+1 long. If False, allow the entire
+                     string to be returned as a prefix.
+      :type proper: bool
+
+      :returns: * **prefixes** (*Strings*) -- The array of n-character prefixes; the number of elements is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
+                  an n-character prefix, False otherwise.
+
+
+   .. py:method:: get_suffixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+
+      Return the n-long suffix of each string, where possible
+
+      :param n: Length of suffix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which strings
+                             were long enough to return an n-suffix
+      :type return_origins: bool
+      :param proper: If True, only return proper suffixes, i.e. from strings
+                     that are at least n+1 long. If False, allow the entire
+                     string to be returned as a suffix.
+      :type proper: bool
+
+      :returns: * **suffixes** (*Strings*) -- The array of n-character suffixes; the number of elements is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
+                  an n-character suffix, False otherwise.
+
+
+   .. py:method:: group() -> arkouda.pdarrayclass.pdarray
+
+      Return the permutation that groups the array, placing equivalent
+      strings together. All instances of the same string are guaranteed to lie
+      in one contiguous block of the permuted array, but the blocks are not
+      necessarily ordered.
+
+      :returns: The permutation that groups the array by value
+      :rtype: pdarray
+
+      .. seealso:: :obj:`GroupBy`, :obj:`unique`
+
+      .. rubric:: Notes
+
+      If the arkouda server is compiled with "-sSegmentedString.useHash=true",
+      then arkouda uses 128-bit hash values to group strings, rather than sorting
+      the strings directly. This method is fast, but the resulting permutation
+      merely groups equivalent strings and does not sort them. If the "useHash"
+      parameter is false, then a full sort is performed.
+
+      :raises RuntimeError: Raised if there is a server-side error in executing group request or
+          creating the pdarray encapsulating the return message
+
+
+   .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+
+      Compute a 128-bit hash of each string.
+
+      :returns: A tuple of two int64 pdarrays. The ith hash value is the concatenation
+                of the ith values from each array.
+      :rtype: Tuple[pdarray,pdarray]
+
+      .. rubric:: Notes
+
+      The implementation uses SipHash128, a fast and balanced hash function (used
+      by Python for dictionaries and sets). For realistic numbers of strings (up
+      to about 10**15), the probability of a collision between two 128-bit hash
+      values is negligible.
+
+
+   .. py:method:: info() -> str
+
+      Returns a JSON formatted string containing information about all components of self
+
+      :param None:
+
+      :returns: JSON string containing information about all components of self
+      :rtype: str
+
+
+   .. py:method:: is_registered() -> numpy.bool_
+
+      Return True iff the object is contained in the registry
+
+      :param None:
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. py:method:: isalnum() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is alphanumeric.
+
+      :returns: True for elements that are alphanumeric, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+
+      .. rubric:: Examples
+
+      >>> not_alnum = ak.array([f'%Strings {i}' for i in range(3)])
+      >>> alnum = ak.array([f'Strings{i}' for i in range(3)])
+      >>> strings = ak.concatenate([not_alnum, alnum])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', 'Strings0', 'Strings1', 'Strings2'])
+      >>> strings.isalnum()
+      array([False False False True True True])
+
+
+   .. py:method:: isalpha() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is alphabetic.  This means there is at least one character,
+      and all the characters are alphabetic.
+
+      :returns: True for elements that are alphabetic, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`, :obj:`Strings.isalnum`
+
+      .. rubric:: Examples
+
+      >>> not_alpha = ak.array([f'%Strings {i}' for i in range(3)])
+      >>> alpha = ak.array(['StringA','StringB','StringC'])
+      >>> strings = ak.concatenate([not_alpha, alpha])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', 'StringA','StringB','StringC'])
+      >>> strings.isalpha()
+      array([False False False True True True])
+
+
+   .. py:method:: isdecimal() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings has all decimal characters.
+
+      :returns: True for elements that are decimals, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.isdigit`
+
+      .. rubric:: Examples
+
+      >>> not_decimal = ak.array([f'Strings {i}' for i in range(3)])
+      >>> decimal = ak.array([f'12{i}' for i in range(3)])
+      >>> strings = ak.concatenate([not_decimal, decimal])
+      >>> strings
+      array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
+      >>> strings.isdecimal()
+      array([False False False True True True])
+      Special Character Examples
+      >>> special_strings = ak.array(["3.14", "0", "²", "2³₇", "2³x₇"])
+      >>> special_strings
+      array(['3.14', '0', '²', '2³₇', '2³x₇'])
+      >>> special_strings.isdecimal()
+      array([False True False False False])
+
+
+   .. py:method:: isdigit() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings has all digit characters.
+
+      :returns: True for elements that are digits, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+
+      .. rubric:: Examples
+
+      >>> not_digit = ak.array([f'Strings {i}' for i in range(3)])
+      >>> digit = ak.array([f'12{i}' for i in range(3)])
+      >>> strings = ak.concatenate([not_digit, digit])
+      >>> strings
+      array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
+      >>> strings.isdigit()
+      array([False False False True True True])
+      Special Character Examples
+      >>> special_strings = ak.array(["3.14", "0", "²", "2³₇", "2³x₇"])
+      >>> special_strings
+      array(['3.14', '0', '²', '2³₇', '2³x₇'])
+      >>> special_strings.isdigit()
+      array([False True True True False])
+
+
+   .. py:method:: isempty() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is empty.
+
+
+      True for elements that are the empty string, False otherwise
+
+      :returns: True for elements that are digits, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+
+      .. rubric:: Examples
+
+      >>> not_empty = ak.array([f'Strings {i}' for i in range(3)])
+      >>> empty = ak.array(['' for i in range(3)])
+      >>> strings = ak.concatenate([not_empty, empty])
+      >>> strings
+      array(['%Strings 0', '%Strings 1', '%Strings 2', '', '', ''])
+      >>> strings.isempty()
+
+
+   .. py:method:: islower() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is entirely lowercase
+
+      :returns: True for elements that are entirely lowercase, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.isupper`
+
+      .. rubric:: Examples
+
+      >>> lower = ak.array([f'strings {i}' for i in range(3)])
+      >>> upper = ak.array([f'STRINGS {i}' for i in range(3)])
+      >>> strings = ak.concatenate([lower, upper])
+      >>> strings
+      array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
+      >>> strings.islower()
+      array([True True True False False False])
+
+
+   .. py:method:: isspace() -> arkouda.pdarrayclass.pdarray
+
+              Returns a boolean pdarray where index i indicates whether string i has all
+              whitespace characters (‘ ‘, ‘   ’, ‘
+      ’, ‘
+      ’, ‘
+      ’, ‘
+      ’).
+
+              Returns
+              -------
+              pdarray, bool
+                  True for elements that are whitespace, False otherwise
+
+              Raises
+              ------
+              RuntimeError
+                  Raised if there is a server-side error thrown
+
+              See Also
+              --------
+              Strings.islower
+              Strings.isupper
+              Strings.istitle
+
+              Examples
+              --------
+              >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
+              >>> space = ak.array([' ', '    ', '
+      ', '
+      ', '
+      ', '
+      ', '
+
+
+
+      '])
+              >>> strings = ak.concatenate([not_space, space])
+              >>> strings
+              array(['Strings 0', 'Strings 1', 'Strings 2', ' ',
+              ... 'u0009', 'n', 'u000B', 'u000C', 'u000D', ' u0009nu000Bu000Cu000D'])
+              >>> strings.isspace()
+              array([False False False True True True True True True True])
+
+
+
+   .. py:method:: istitle() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is titlecase
+
+      :returns: True for elements that are titlecase, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`
+
+      .. rubric:: Examples
+
+      >>> mixed = ak.array([f'sTrINgs {i}' for i in range(3)])
+      >>> title = ak.array([f'Strings {i}' for i in range(3)])
+      >>> strings = ak.concatenate([mixed, title])
+      >>> strings
+      array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
+      >>> strings.istitle()
+      array([False False False True True True])
+
+
+   .. py:method:: isupper() -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is entirely uppercase
+
+      :returns: True for elements that are entirely uppercase, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.islower`
+
+      .. rubric:: Examples
+
+      >>> lower = ak.array([f'strings {i}' for i in range(3)])
+      >>> upper = ak.array([f'STRINGS {i}' for i in range(3)])
+      >>> strings = ak.concatenate([lower, upper])
+      >>> strings
+      array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
+      >>> strings.isupper()
+      array([False False False True True True])
+
+
+   .. py:method:: lower() -> Strings
+
+      Returns a new Strings with all uppercase characters from the original replaced with
+      their lowercase equivalent
+
+      :returns: Strings with all uppercase characters from the original replaced with
+                their lowercase equivalent
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.upper`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+      >>> strings
+      array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+      >>> strings.lower()
+      array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
+
+
+   .. py:method:: lstick(other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '') -> Strings
+
+      Join the strings from another array onto the left of the strings
+      of this array, optionally inserting a delimiter.
+      *Warning*: This function is experimental and not guaranteed to work.
+
+      :param other: The strings to join onto self's strings
+      :type other: Strings
+      :param delimiter: String inserted between self and other
+      :type delimiter: Union[bytes,str_scalars]
+
+      :returns: The array of joined strings, as other + self
+      :rtype: Strings
+
+      :raises TypeError: Raised if the delimiter parameter is neither bytes nor a str
+          or if the other parameter is not a Strings instance
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`stick`, :obj:`peel`, :obj:`rpeel`
+
+      .. rubric:: Examples
+
+      >>> s = ak.array(['a', 'c', 'e'])
+      >>> t = ak.array(['b', 'd', 'f'])
+      >>> s.lstick(t, delimiter='.')
+      array(['b.a', 'd.c', 'f.e'])
+
+
+   .. py:method:: match(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
+
+      Returns a match object where elements match only if the beginning of the string matches the
+      regular expression pattern
+
+      :param pattern: Regex used to find matches
+      :type pattern: str
+
+      :returns: Match object where elements match only if the beginning of the string matches the
+                regular expression pattern
+      :rtype: Match
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.match('_+')
+      <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;
+      matched=True, span=(0, 2); matched=False>
+
+
+   .. py:method:: peel(delimiter: Union[bytes, arkouda.dtypes.str_scalars], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, fromRight: bool = False, regex: bool = False) -> Tuple
+
+      Peel off one or more delimited fields from each string (similar
+      to string.partition), returning two new arrays of strings.
+      *Warning*: This function is experimental and not guaranteed to work.
+
+      :param delimiter: The separator where the split will occur
+      :type delimiter: Union[bytes, str_scalars]
+      :param times: The number of times the delimiter is sought, i.e. skip over
+                    the first (times-1) delimiters
+      :type times: Union[int, np.int64]
+      :param includeDelimiter: If true, append the delimiter to the end of the first return
+                               array. By default, it is prepended to the beginning of the
+                               second return array.
+      :type includeDelimiter: bool
+      :param keepPartial: If true, a string that does not contain <times> instances of
+                          the delimiter will be returned in the first array. By default,
+                          such strings are returned in the second array.
+      :type keepPartial: bool
+      :param fromRight: If true, peel from the right instead of the left (see also rpeel)
+      :type fromRight: bool
+      :param regex: Indicates whether delimiter is a regular expression
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
+      :type regex: bool
+
+      :returns:
+
+                left: Strings
+                    The field(s) peeled from the end of each string (unless
+                    fromRight is true)
+                right: Strings
+                    The remainder of each string after peeling (unless fromRight
+                    is true)
+      :rtype: Tuple[Strings, Strings]
+
+      :raises TypeError: Raised if the delimiter parameter is not byte or str_scalars, if
+          times is not int64, or if includeDelimiter, keepPartial, or
+          fromRight is not bool
+      :raises ValueError: Raised if times is < 1 or if delimiter is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`rpeel`, :obj:`stick`, :obj:`lstick`
+
+      .. rubric:: Examples
+
+      >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
+      >>> s.peel('.')
+      (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
+      >>> s.peel('.', includeDelimiter=True)
+      (array(['a.', 'c.', 'e.']), array(['b', 'd', 'f.g']))
+      >>> s.peel('.', times=2)
+      (array(['', '', 'e.f']), array(['a.b', 'c.d', 'g']))
+      >>> s.peel('.', times=2, keepPartial=True)
+      (array(['a.b', 'c.d', 'e.f']), array(['', '', 'g']))
+
+
+   .. py:method:: pretty_print_info() -> None
+
+      Prints information about all components of self in a human readable format
+
+      :param None:
+
+      :rtype: None
+
+
+   .. py:method:: purge_cached_regex_patterns() -> None
+
+      purges cached regex patterns
+
+
+   .. py:method:: register(user_defined_name: str) -> Strings
+
+      Register this Strings object with a user defined name in the arkouda server
+      so it can be attached to later using Strings.attach()
+      This is an in-place operation, registering a Strings object more than once will
+      update the name in the registry and remove the previously registered name.
+      A name can only be registered to one object at a time.
+
+      :param user_defined_name: user defined name which the Strings object is to be registered under
+      :type user_defined_name: str
+
+      :returns: The same Strings object which is now registered with the arkouda server and
+                has an updated name.
+                This is an in-place modification, the original is returned to support a
+                fluid programming style.
+                Please note you cannot register two different objects with the same name.
+      :rtype: Strings
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the Strings object with the user_defined_name
+          If the user is attempting to register more than one object with the same name,
+          the former should be unregistered first to free up the registration name.
+
+      .. seealso:: :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/Strings objects in the server are immune to deletion
+      until they are unregistered.
+
+
+   .. py:method:: rpeel(delimiter: Union[bytes, arkouda.dtypes.str_scalars], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, regex: bool = False)
+
+      Peel off one or more delimited fields from the end of each string
+      (similar to string.rpartition), returning two new arrays of strings.
+      *Warning*: This function is experimental and not guaranteed to work.
+
+      :param delimiter: The separator where the split will occur
+      :type delimiter: Union[bytes, str_scalars]
+      :param times: The number of times the delimiter is sought, i.e. skip over
+                    the last (times-1) delimiters
+      :type times: Union[int, np.int64]
+      :param includeDelimiter: If true, prepend the delimiter to the start of the first return
+                               array. By default, it is appended to the end of the
+                               second return array.
+      :type includeDelimiter: bool
+      :param keepPartial: If true, a string that does not contain <times> instances of
+                          the delimiter will be returned in the second array. By default,
+                          such strings are returned in the first array.
+      :type keepPartial: bool
+      :param regex: Indicates whether delimiter is a regular expression
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
+      :type regex: bool
+
+      :returns:
+
+                left: Strings
+                    The remainder of the string after peeling
+                right: Strings
+                    The field(s) that were peeled from the right of each string
+      :rtype: Tuple[Strings, Strings]
+
+      :raises TypeError: Raised if the delimiter parameter is not bytes or str_scalars or
+          if times is not int64
+      :raises ValueError: Raised if times is < 1 or if delimiter is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`peel`, :obj:`stick`, :obj:`lstick`
+
+      .. rubric:: Examples
+
+      >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
+      >>> s.rpeel('.')
+      (array(['a', 'c', 'e.f']), array(['b', 'd', 'g']))
+      # Compared against peel
+      >>> s.peel('.')
+      (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
+
+
+   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the Strings object to HDF5 or Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. HDF5 support single files, in which case the file name will
+      only be that provided. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read. This is not supported for Parquet files.
+      :type save_offsets: bool
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group: one for the string characters and one for the
+      segments corresponding to the start of each string, (2) the hdf5 group is named
+      via the dataset parameter. (3) Parquet files do not store the segments,
+      only the values.
+
+
+   .. py:method:: search(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
+
+      Returns a match object with the first location in each element where pattern produces a match.
+      Elements match if any part of the string matches the regular expression pattern
+
+      :param pattern: Regex used to find matches
+      :type pattern: str
+
+      :returns: Match object where elements match if any part of the string matches the
+                regular expression pattern
+      :rtype: Match
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.search('_+')
+      <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);
+      matched=False; matched=True, span=(0, 2); matched=False>
+
+
+   .. py:method:: split(pattern: Union[bytes, arkouda.dtypes.str_scalars], maxsplit: int = 0, return_segments: bool = False) -> Union[Strings, Tuple]
+
+      Returns a new Strings split by the occurrences of pattern.
+      If maxsplit is nonzero, at most maxsplit splits occur
+
+      :param pattern: Regex used to split strings into substrings
+      :type pattern: str
+      :param maxsplit: The max number of pattern match occurences in each element to split.
+                       The default maxsplit=0 splits on all occurences
+      :type maxsplit: int
+      :param return_segments: If True, return mapping of original strings to first substring
+                              in return array.
+      :type return_segments: bool
+
+      :returns: * *Strings* -- Substrings with pattern matches removed
+                * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
+                  in the return array
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.split('_+', maxsplit=2, return_segments=True)
+      (array(['1', '2', '', '', '', '3', '', '4', '5____6___7', '']), array([0 3 5 6 9]))
+
+
+   .. py:method:: startswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element starts with the given substring.
+
+      :param substr: The prefix to search for
+      :type substr: Union[bytes, str_scalars]
+      :param regex: Indicates whether substr is a regular expression
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
+      :type regex: bool
+
+      :returns: True for elements that start with substr, False otherwise
+      :rtype: pdarray, bool
+
+      :raises TypeError: Raised if the substr parameter is not a bytes ior str_scalars
+      :raises ValueError: Rasied if substr is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.contains`, :obj:`Strings.endswith`
+
+      .. rubric:: Examples
+
+      >>> strings_end = ak.array([f'string {i}' for i in range(1, 6)])
+      >>> strings_end
+      array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+      >>> strings_end.startswith('string')
+      array([True, True, True, True, True])
+      >>> strings_start = ak.array([f'{i} string' for i in range(1,6)])
+      >>> strings_start
+      array(['1 string', '2 string', '3 string', '4 string', '5 string'])
+      >>> strings_start.startswith('\d str', regex = True)
+      array([True, True, True, True, True])
+
+
+   .. py:method:: stick(other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '', toLeft: bool = False) -> Strings
+
+      Join the strings from another array onto one end of the strings
+      of this array, optionally inserting a delimiter.
+      *Warning*: This function is experimental and not guaranteed to work.
+
+      :param other: The strings to join onto self's strings
+      :type other: Strings
+      :param delimiter: String inserted between self and other
+      :type delimiter: str
+      :param toLeft: If true, join other strings to the left of self. By default,
+                     other is joined to the right of self.
+      :type toLeft: bool
+
+      :returns: The array of joined strings
+      :rtype: Strings
+
+      :raises TypeError: Raised if the delimiter parameter is not bytes or str_scalars
+          or if the other parameter is not a Strings instance
+      :raises ValueError: Raised if times is < 1
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`lstick`, :obj:`peel`, :obj:`rpeel`
+
+      .. rubric:: Examples
+
+      >>> s = ak.array(['a', 'c', 'e'])
+      >>> t = ak.array(['b', 'd', 'f'])
+      >>> s.stick(t, delimiter='.')
+      array(['a.b', 'c.d', 'e.f'])
+
+
+   .. py:method:: strip(chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
+
+      Returns a new Strings object with all leading and trailing occurrences of characters contained
+      in chars removed. The chars argument is a string specifying the set of characters to be removed.
+      If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
+      prefix or suffix; rather, all combinations of its values are stripped.
+
+      :param chars: the set of characters to be removed
+
+      :returns: Strings object with the leading and trailing characters matching the set of characters in
+                the chars argument removed
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['Strings ', '  StringS  ', 'StringS   '])
+      >>> s = strings.strip()
+      >>> s
+      array(['Strings', 'StringS', 'StringS'])
+
+      >>> strings = ak.array(['Strings 1', '1 StringS  ', '  1StringS  12 '])
+      >>> s = strings.strip(' 12')
+      >>> s
+      array(['Strings', 'StringS', 'StringS'])
+
+
+   .. py:method:: sub(pattern: Union[bytes, arkouda.dtypes.str_scalars], repl: Union[bytes, arkouda.dtypes.str_scalars], count: int = 0) -> Strings
+
+      Return new Strings obtained by replacing non-overlapping occurrences of pattern with the
+      replacement repl.
+      If count is nonzero, at most count substitutions occur
+
+      :param pattern: The regex to substitue
+      :type pattern: str_scalars
+      :param repl: The substring to replace pattern matches with
+      :type repl: str_scalars
+      :param count: The max number of pattern match occurences in each element to replace.
+                    The default count=0 replaces all occurences of pattern with repl
+      :type count: int
+
+      :returns: Strings with pattern matches replaced
+      :rtype: Strings
+
+      :raises TypeError: Raised if pattern or repl are not bytes or str_scalars
+      :raises ValueError: Raised if pattern is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.subn`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.sub(pattern='_+', repl='-', count=2)
+      array(['1-2-', '-', '3', '-4-5____6___7', ''])
+
+
+   .. py:method:: subn(pattern: Union[bytes, arkouda.dtypes.str_scalars], repl: Union[bytes, arkouda.dtypes.str_scalars], count: int = 0) -> Tuple
+
+      Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)
+
+      :param pattern: The regex to substitue
+      :type pattern: str_scalars
+      :param repl: The substring to replace pattern matches with
+      :type repl: str_scalars
+      :param count: The max number of pattern match occurences in each element to replace.
+                    The default count=0 replaces all occurences of pattern with repl
+      :type count: int
+
+      :returns: * *Strings* -- Strings with pattern matches replaced
+                * *pdarray, int64* -- The number of substitutions made for each element of Strings
+
+      :raises TypeError: Raised if pattern or repl are not bytes or str_scalars
+      :raises ValueError: Raised if pattern is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.sub`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.subn(pattern='_+', repl='-', count=2)
+      (array(['1-2-', '-', '3', '-4-5____6___7', '']), array([2 1 0 2 0]))
+
+
+   .. py:method:: title() -> Strings
+
+      Returns a new Strings from the original replaced with their titlecase equivalent.
+
+      :returns: Strings from the original replaced with their titlecase equivalent.
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown.
+
+      .. seealso:: :obj:`Strings.lower`, :obj:`String.upper`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+      >>> strings
+      array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+      >>> strings.title()
+      array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
+
+
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
+
+      Write Strings to CSV file(s). File will contain a single column with the Strings data.
+      All CSV Files written by Arkouda include a header denoting data types of the columns.
+      Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+      bytes as uint(8).
+
+      :param prefix_path: The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                          when they are written to disk.
+      :type prefix_path: str
+      :param dataset: Column name to save the Strings under. Defaults to "strings_array".
+      :type dataset: str
+      :param col_delim: Defaults to ",". Value to be used to separate columns within the file.
+                        Please be sure that the value used DOES NOT appear in your dataset.
+      :type col_delim: str
+      :param overwrite: Defaults to False. If True, any existing files matching your provided prefix_path will
+                        be overwritten. If False, an error will be returned if existing files are found.
+      :type overwrite: bool
+
+      :rtype: str reponse message
+
+      :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+          more of the specified files do not exist
+      :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+          If `allow_errors` is true this may be raised if no values are returned
+          from the server.
+      :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
+
+      .. rubric:: Notes
+
+      - CSV format is not currently supported by load/load_all operations
+      - The column delimiter is expected to be the same for column names and data
+      - Be sure that column delimiters are not found within your data.
+      - All CSV files must delimit rows using newline (``\n``) at this time.
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = 'distribute') -> str
+
+      Save the Strings object to HDF5.
+      The object can be saved to a collection of files or single file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - Parquet files do not store the segments, only the values.
+      - Strings state is saved as two datasets within an hdf5 group:
+        one for the string characters and one for the
+        segments corresponding to the start of each string
+      - the hdf5 group is named via the dataset parameter.
+      - The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+        the file name will be `prefix_path`.
+      - If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+      - Any file extension can be used.The file I/O does not rely on the extension to
+        determine the file format.
+
+      .. seealso:: :obj:`to_hdf`
+
+
+   .. py:method:: to_list() -> list
+
+      Convert the SegString to a list, transferring data from the
+      arkouda server to Python. If the SegString exceeds a built-in size limit,
+      a RuntimeError is raised.
+
+      :returns: A list with the same strings as this SegString
+      :rtype: list
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting ak.client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`to_ndarray`
+
+      .. rubric:: Examples
+
+      >>> a = ak.array(["hello", "my", "world"])
+      >>> a.to_list()
+      ['hello', 'my', 'world']
+      >>> type(a.to_list())
+      list
+
+
+   .. py:method:: to_ndarray() -> numpy.ndarray
+
+      Convert the array to a np.ndarray, transferring array data from the
+      arkouda server to Python. If the array exceeds a built-in size limit,
+      a RuntimeError is raised.
+
+      :returns: A numpy ndarray with the same strings as this array
+      :rtype: np.ndarray
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting ak.client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`, :obj:`to_list`
+
+      .. rubric:: Examples
+
+      >>> a = ak.array(["hello", "my", "world"])
+      >>> a.to_ndarray()
+      array(['hello', 'my', 'world'], dtype='<U5')
+      >>> type(a.to_ndarray())
+      numpy.ndarray
+
+
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compression: Optional[str] = None) -> str
+
+      Save the Strings object to Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
+      .. rubric:: Notes
+
+      - The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales`` for `file_type='distribute'`.
+      - 'append' write mode is supported, but is not efficient.
+      - If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      - Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+
+   .. py:method:: transfer(hostname: str, port: arkouda.dtypes.int_scalars)
+
+      Sends a Strings object to a different Arkouda server
+
+      :param hostname: The hostname where the Arkouda server intended to
+                       receive the Strings object is running.
+      :type hostname: str
+      :param port: The port to send the array over. This needs to be an
+                   open port (i.e., not one that the Arkouda server is
+                   running on). This will open up `numLocales` ports,
+                   each of which in succession, so will use ports of the
+                   range {port..(port+numLocales)} (e.g., running an
+                   Arkouda server of 4 nodes, port 1234 is passed as
+                   `port`, Arkouda will use ports 1234, 1235, 1236,
+                   and 1237 to send the array data).
+                   This port much match the port passed to the call to
+                   `ak.receive_array()`.
+      :type port: int_scalars
+
+      :rtype: A message indicating a complete transfer
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. py:method:: unregister() -> None
+
+      Unregister a Strings object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+
+      :rtype: None
+
+      :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
+
+      .. seealso:: :obj:`register`, :obj:`attach`
+
+      .. rubric:: Notes
+
+      Registered names/Strings objects in the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: unregister_strings_by_name(user_defined_name: str) -> None
+      :staticmethod:
+
+      Unregister a Strings object in the arkouda server previously registered via register()
+
+      :param user_defined_name: The registered name of the Strings object
+      :type user_defined_name: str
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'strings_array', save_offsets: bool = True, repack: bool = True)
+
+      Overwrite the dataset with the name provided with this Strings object. If
+      the dataset does not exist it is added
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files
+      :type dataset: str
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param repack: Default: True
+                     HDF5 does not release memory on delete. When True, the inaccessible
+                     data (that was overwritten) is removed. When False, the data remains, but is
+                     inaccessible. Setting to false will yield better performance, but will cause
+                     file sizes to expand.
+      :type repack: bool
+
+      :rtype: str - success message if successful
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the Strings object
+
+      .. rubric:: Notes
+
+      - If file does not contain File_Format attribute to indicate how it was saved,
+        the file name is checked for _LOCALE#### to determine if it is distributed.
+      - If the dataset provided does not exist, it will be added
+
+
+   .. py:method:: upper() -> Strings
+
+      Returns a new Strings with all lowercase characters from the original replaced with
+      their uppercase equivalent
+
+      :returns: Strings with all lowercase characters from the original replaced with
+                their uppercase equivalent
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.lower`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+      >>> strings
+      array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+      >>> strings.upper()
+      array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
+
+
+
 .. py:class:: Timedelta(pda, unit: str = _BASE_UNIT)
 
 
@@ -21224,6 +22921,11 @@ Attributes
       they are unregistered.
 
 
+
+.. py:data:: VAL_SUFFIX
+   :value: '_values'
+
+   
 
 .. py:function:: abs(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
@@ -21315,54 +23017,6 @@ Attributes
    array([False, True, True, True, True])
 
 
-.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
-
-   Cast an array to another dtype.
-
-   :param pda: The array of values to cast
-   :type pda: pdarray or Strings
-   :param dt: The target dtype to cast values to
-   :type dt: np.dtype, type, or str
-   :param errors: Controls how errors are handled when casting strings to a numeric type
-                  (ignored for casts from numeric types).
-                      - strict: raise RuntimeError if *any* string cannot be converted
-                      - ignore: never raise an error. Uninterpretable strings get
-                          converted to NaN (float64), -2**63 (int64), zero (uint64 and
-                          uint8), or False (bool)
-                      - return_validity: in addition to returning the same output as
-                        "ignore", also return a bool array indicating where the cast
-                        was successful.
-   :type errors: {strict, ignore, return_validity}
-
-   :returns: * *pdarray or Strings* -- Array of values cast to desired dtype
-             * **[validity** (*pdarray(bool)]*) -- If errors="return_validity" and input is Strings, a second array is
-               returned with True where the cast succeeded and False where it failed.
-
-   .. rubric:: Notes
-
-   The cast is performed according to Chapel's casting rules and is NOT safe
-   from overflows or underflows. The user must ensure that the target dtype
-   has the precision and capacity to hold the desired result.
-
-   .. rubric:: Examples
-
-   >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
-   array([1, 2, 3, 4, 5])
-
-   >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
-   dtype('float64')
-
-   >>> ak.cast(ak.arange(0,5), dt=ak.bool)
-   array([False, True, True, True, True])
-
-   >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
-   array([False, True, True, True, True])
-
-
-.. py:data:: akfloat64
-
-   
-
 .. py:data:: akfloat64
 
    
@@ -21372,6 +23026,10 @@ Attributes
    
 
 .. py:data:: akint64
+
+   
+
+.. py:data:: akuint64
 
    
 
@@ -21974,33 +23632,6 @@ Attributes
    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
 
 
-.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
-
-   Return the permutation that sorts the array.
-
-   :param pda: The array to sort (int64, uint64, or float64)
-   :type pda: pdarray or Strings or Categorical
-
-   :returns: The indices such that ``pda[indices]`` is sorted
-   :rtype: pdarray, int64
-
-   :raises TypeError: Raised if the parameter is other than a pdarray or Strings
-
-   .. seealso:: :obj:`coargsort`
-
-   .. rubric:: Notes
-
-   Uses a least-significant-digit radix sort, which is stable and
-   resilient to non-uniformity in data but communication intensive.
-
-   .. rubric:: Examples
-
-   >>> a = ak.randint(0, 10, 10)
-   >>> perm = ak.argsort(a)
-   >>> a[perm]
-   array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
-
-
 .. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
@@ -22260,6 +23891,49 @@ Attributes
 .. py:data:: bool_scalars
 
    
+
+.. py:function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], size: Union[int, numpy.int64, numpy.uint64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
+
+   Broadcast a dense column vector to the rows of a sparse matrix or grouped array.
+
+   :param segments: Offsets of the start of each row in the sparse matrix or grouped array.
+                    Must be sorted in ascending order.
+   :type segments: pdarray, int64
+   :param values: The values to broadcast, one per row (or group)
+   :type values: pdarray, Strings
+   :param size: The total number of nonzeros in the matrix. If permutation is given, this
+                argument is ignored and the size is inferred from the permutation array.
+   :type size: int
+   :param permutation: The permutation to go from the original ordering of nonzeros to the ordering
+                       grouped by row. To broadcast values back to the original ordering, this
+                       permutation will be inverted. If no permutation is supplied, it is assumed
+                       that the original nonzeros were already grouped by row. In this case, the
+                       size argument must be given.
+   :type permutation: pdarray, int64
+
+   :returns: The broadcast values, one per nonzero
+   :rtype: pdarray, Strings
+
+   :raises ValueError: - If segments and values are different sizes
+       - If segments are empty
+       - If number of nonzeros (either user-specified or inferred from permutation)
+         is less than one
+
+   .. rubric:: Examples
+
+   >>>
+   # Define a sparse matrix with 3 rows and 7 nonzeros
+   >>> row_starts = ak.array([0, 2, 5])
+   >>> nnz = 7
+   # Broadcast the row number to each nonzero element
+   >>> row_number = ak.arange(3)
+   >>> ak.broadcast(row_starts, row_number, nnz)
+   array([0 0 1 1 1 2 2])
+   # If the original nonzeros were in reverse order...
+   >>> permutation = ak.arange(6, -1, -1)
+   >>> ak.broadcast(row_starts, row_number, permutation=permutation)
+   array([2 2 1 1 1 0 0])
+
 
 .. py:function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], size: Union[int, numpy.int64, numpy.uint64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
 
@@ -22656,46 +24330,6 @@ Attributes
    array([0, 1, 0, 1])
 
 
-.. py:function:: coargsort(arrays: Sequence[Union[arkouda.strings.Strings, arkouda.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
-
-   Return the permutation that groups the rows (left-to-right), if the
-   input arrays are treated as columns. The permutation sorts numeric
-   columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.
-
-   :param arrays: The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
-   :type arrays: Sequence[Union[Strings, pdarray, Categorical]]
-
-   :returns: The indices that permute the rows to grouped order
-   :rtype: pdarray, int64
-
-   :raises ValueError: Raised if the pdarrays are not of the same size or if the parameter
-       is not an Iterable containing pdarrays, Strings, or Categoricals
-
-   .. seealso:: :obj:`argsort`
-
-   .. rubric:: Notes
-
-   Uses a least-significant-digit radix sort, which is stable and resilient
-   to non-uniformity in data but communication intensive. Starts with the
-   last array and moves forward. This sort operates directly on numeric types,
-   but for Strings, it operates on a hash. Thus, while grouping of equivalent
-   strings is guaranteed, lexicographic ordering of the groups is not. For Categoricals,
-   coargsort sorts based on Categorical.codes which guarantees grouping of equivalent categories
-   but not lexicographic ordering of those groups.
-
-   .. rubric:: Examples
-
-   >>> a = ak.array([0, 1, 0, 1])
-   >>> b = ak.array([1, 1, 0, 0])
-   >>> perm = ak.coargsort([a, b])
-   >>> perm
-   array([2, 0, 3, 1])
-   >>> a[perm]
-   array([0, 0, 1, 1])
-   >>> b[perm]
-   array([0, 1, 0, 1])
-
-
 .. py:data:: complex128
 
    
@@ -22782,9 +24416,73 @@ Attributes
    array(['one', 'two', 'three', 'four', 'five'])
 
 
-.. py:function:: convert_if_categorical(values)
+.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
 
-   Convert a Categorical array to Strings for display
+   Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
+   one ``pdarray`` or ``Strings`` object, respectively.
+
+   :param arrays: The arrays to concatenate. Must all have same dtype.
+   :type arrays: Sequence[Union[pdarray,Strings,Categorical]]
+   :param ordered: If True (default), the arrays will be appended in the
+                   order given. If False, array data may be interleaved
+                   in blocks, which can greatly improve performance but
+                   results in non-deterministic ordering of elements.
+   :type ordered: bool
+
+   :returns: Single pdarray or Strings object containing all values, returned in
+             the original order
+   :rtype: Union[pdarray,Strings,Categorical]
+
+   :raises ValueError: Raised if arrays is empty or if 1..n pdarrays have
+       differing dtypes
+   :raises TypeError: Raised if arrays is not a pdarrays or Strings python Sequence such as a
+       list or tuple
+   :raises RuntimeError: Raised if 1..n array elements are dtypes for which
+       concatenate has not been implemented.
+
+   .. rubric:: Examples
+
+   >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
+   array([1, 2, 3, 4, 5, 6])
+
+   >>> ak.concatenate([ak.array([True,False,True]),ak.array([False,True,True])])
+   array([True, False, True, False, True, True])
+
+   >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
+   array(['one', 'two', 'three', 'four', 'five'])
+
+
+.. py:function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: Optional[str] = None, connect_url: Optional[str] = None, access_channel: Optional[Channel] = None) -> None
+
+   Connect to a running arkouda server.
+
+   :param server: The hostname of the server (must be visible to the current
+                  machine). Defaults to `localhost`.
+   :type server: str, optional
+   :param port: The port of the server. Defaults to 5555.
+   :type port: int, optional
+   :param timeout: The timeout in seconds for client send and receive operations.
+                   Defaults to 0 seconds, whicn is interpreted as no timeout.
+   :type timeout: int, optional
+   :param access_token: The token used to connect to an existing socket to enable access to
+                        an Arkouda server where authentication is enabled. Defaults to None.
+   :type access_token: str, optional
+   :param connect_url: The complete url in the format of tcp://server:port?token=<token_value>
+                       where the token is optional
+   :type connect_url: str, optional
+   :param access_channel: The desired Channel implementation that differs from the default ZmqChannel
+   :type access_channel: Channel, optional
+
+   :rtype: None
+
+   :raises ConnectionError: Raised if there's an error in connecting to the Arkouda server
+   :raises ValueError: Raised if there's an error in parsing the connect_url parameter
+   :raises RuntimeError: Raised if there is a server-side error
+
+   .. rubric:: Notes
+
+   On success, prints the connected address, as seen by the server. If called
+   with an existing connection, the socket will be re-initialized.
 
 
 .. py:function:: corr(x: pdarray, y: pdarray) -> numpy.float64
@@ -23001,6 +24699,35 @@ Attributes
    array([0, 1, 1, 2, 3])
 
 
+.. py:function:: cumsum(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the cumulative sum over the array.
+
+   The sum is inclusive, such that the ``i`` th element of the
+   result is the sum of elements up to and including ``i``.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing cumulative sums for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.cumsum(ak.arange([1,5]))
+   array([1, 3, 6])
+
+   >>> ak.cumsum(ak.uniform(5,1.0,5.0))
+   array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,
+          12.710615785506533, 13.945880905466208])
+
+   >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
+   array([0, 1, 1, 2, 3])
+
+
 .. py:function:: date_operators(cls)
 
 
@@ -23123,6 +24850,15 @@ Attributes
    :type logLevel: LogLevel
 
    :raises TypeError: Raised if logLevel is not a LogLevel enum
+
+
+.. py:function:: disconnect() -> None
+
+   Disconnects the client from the Arkouda server
+
+   :rtype: None
+
+   :raises ConnectionError: Raised if there's an error disconnecting from the Arkouda server
 
 
 .. py:function:: divmod(x: Union[arkouda.dtypes.numeric_scalars, pdarray], y: Union[arkouda.dtypes.numeric_scalars, pdarray], where: Union[bool, pdarray] = True) -> Tuple[pdarray, pdarray]
@@ -23569,7 +25305,138 @@ Attributes
              * **lengths** (*pdarray, int64*) -- The lengths of each segment. Only returned if return_lengths=True.
 
 
-.. py:function:: generic_concat(items, ordered=True)
+.. py:function:: gen_ranges(starts, ends, stride=1, return_lengths=False)
+
+   Generate a segmented array of variable-length, contiguous ranges between pairs of
+   start- and end-points.
+
+   :param starts: The start value of each range
+   :type starts: pdarray, int64
+   :param ends: The end value (exclusive) of each range
+   :type ends: pdarray, int64
+   :param stride: Difference between successive elements of each range
+   :type stride: int
+   :param return_lengths: Whether or not to return the lengths of each segment. Default False.
+   :type return_lengths: bool, optional
+
+   :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
+             * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
+             * **lengths** (*pdarray, int64*) -- The lengths of each segment. Only returned if return_lengths=True.
+
+
+.. py:function:: generate_history(num_commands: Optional[int] = None, command_filter: Optional[str] = None) -> List[str]
+
+   Generates list of commands executed within the the Python shell, Jupyter notebook,
+   or IPython notebook, with an optional cmd_filter and number of commands to return.
+
+   :param num_commands: The number of commands from history to retrieve
+   :type num_commands: int
+   :param command_filter: String containing characters used to select a subset of commands.
+   :type command_filter: str
+
+   :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
+   :rtype: List[str]
+
+   .. rubric:: Examples
+
+   >>> ak.connect()
+   connected to arkouda server tcp://*:5555
+   >>> ak.get_config()
+   >>> ak.ones(10000)
+   array([1 1 1 ... 1 1 1])
+   >>> nums = ak.randint(0,500,10000)
+   >>> ak.argsort(nums)
+   array([105 457 647 ... 9362 9602 9683])
+   >>> ak.generate_history(num_commands=5, command_filter='ak.')
+   ['ak.connect()', 'ak.get_config()', 'ak.ones(10000)', 'nums = ak.randint(0,500,10000)',
+   'ak.argsort(nums)']
+
+
+.. py:function:: generic_msg(cmd: str, args: Optional[Dict] = None, payload: Optional[memoryview] = None, send_binary: bool = False, recv_binary: bool = False) -> Union[str, memoryview]
+
+   Sends a binary or string message composed of a command and corresponding
+   arguments to the arkouda_server, returning the response sent by the server.
+
+   :param cmd: The server-side command to be executed
+   :type cmd: str
+   :param args: A space-delimited list of command arguments
+   :type args: str
+   :param payload: The payload when sending binary data
+   :type payload: memoryview
+   :param send_binary: Indicates if the message to be sent is a string or binary
+   :type send_binary: bool
+   :param recv_binary: Indicates if the return message will be a string or binary
+   :type recv_binary: bool
+
+   :returns: The string or binary return message
+   :rtype: Union[str, memoryview]
+
+   :raises KeyboardInterrupt: Raised if the user interrupts during command execution
+   :raises RuntimeError: Raised if the client is not connected to the server or if
+       there is a server-side error thrown
+
+   .. rubric:: Notes
+
+   If the server response is a string, the string corresponds to a success
+   confirmation, warn message, or error message. A memoryview response
+   corresponds to an Arkouda array output as a numpy array.
+
+
+.. py:function:: generic_msg(cmd: str, args: Optional[Dict] = None, payload: Optional[memoryview] = None, send_binary: bool = False, recv_binary: bool = False) -> Union[str, memoryview]
+
+   Sends a binary or string message composed of a command and corresponding
+   arguments to the arkouda_server, returning the response sent by the server.
+
+   :param cmd: The server-side command to be executed
+   :type cmd: str
+   :param args: A space-delimited list of command arguments
+   :type args: str
+   :param payload: The payload when sending binary data
+   :type payload: memoryview
+   :param send_binary: Indicates if the message to be sent is a string or binary
+   :type send_binary: bool
+   :param recv_binary: Indicates if the return message will be a string or binary
+   :type recv_binary: bool
+
+   :returns: The string or binary return message
+   :rtype: Union[str, memoryview]
+
+   :raises KeyboardInterrupt: Raised if the user interrupts during command execution
+   :raises RuntimeError: Raised if the client is not connected to the server or if
+       there is a server-side error thrown
+
+   .. rubric:: Notes
+
+   If the server response is a string, the string corresponds to a success
+   confirmation, warn message, or error message. A memoryview response
+   corresponds to an Arkouda array output as a numpy array.
+
+
+.. py:function:: getArkoudaLogger(name: str, handlers: Optional[List[logging.Handler]] = None, logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT, logLevel: Optional[LogLevel] = None) -> ArkoudaLogger
+
+   A convenience method for instantiating an ArkoudaLogger that retrieves the
+   logging level from the ARKOUDA_LOG_LEVEL env variable
+
+   :param name: The name of the ArkoudaLogger
+   :type name: str
+   :param handlers: A list of logging.Handler objects, if None, a list consisting of
+                    one StreamHandler named 'console-handler' is generated and configured
+   :type handlers: List[Handler]
+   :param logFormat: The format for log messages, defaults to the following format:
+                     '[%(name)s] Line %(lineno)d %(levelname)s: %(message)s'
+   :type logFormat: str
+
+   :rtype: ArkoudaLogger
+
+   :raises TypeError: Raised if either name or logFormat is not a str object or if handlers
+       is not a list of str objects
+
+   .. rubric:: Notes
+
+   Important note: if a list of 1..n logging.Handler objects is passed in, and
+   dynamic changes to 1..n handlers is desired, set a name for each Handler
+   object as follows: handler.name = <desired name>, which will enable retrieval
+   and updates for the specified handler.
 
 
 .. py:function:: get_byteorder(dt: numpy.dtype) -> str
@@ -23577,12 +25444,24 @@ Attributes
    Get a concrete byteorder (turns '=' into '<' or '>')
 
 
-.. py:function:: get_callback(x)
-
-
 .. py:function:: get_columns(filenames: Union[str, List[str]], col_delim: str = ',', allow_errors: bool = False) -> List[str]
 
    Get a list of column names from CSV file(s).
+
+
+.. py:function:: get_config() -> Mapping[str, Union[str, int, float]]
+
+   Get runtime information about the server.
+
+   :returns: serverHostname
+             serverPort
+             numLocales
+             numPUs (number of processor units per locale)
+             maxTaskPar (maximum number of tasks per locale)
+             physicalMemory
+   :rtype: Mapping[str, Union[str, int, float]]
+
+   :raises RuntimeError: Raised if the client is not connected to a server
 
 
 .. py:function:: get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ',', read_nested: bool = True) -> List[str]
@@ -23636,6 +25515,77 @@ Attributes
    .. seealso:: :obj:`read_parquet`, :obj:`read_hdf`
 
 
+.. py:function:: get_mem_avail(unit: str = 'b', as_percent: bool = False) -> int
+
+   Compute the amount of memory available to be used.
+
+   Parameters
+    ----------
+    unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+        unit of return ('b' by default)
+    as_percent : bool
+        If True, return the percent (as an int) of the memory that's available to be used
+        False by default
+
+    Returns
+    -------
+    int
+        Indicates the amount of memory available to be used.
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting memory available
+    ValueError
+        Raised if the returned value is not an int-formatted string
+
+
+.. py:function:: get_mem_status() -> List[Mapping[str, Union[str, int, float]]]
+
+   Retrieves the memory status for each locale
+
+   Returns
+    -------
+    List[Mapping[str, Union[str, int, float]]]
+        total_mem: total physical memory on locale host
+        avail_mem: current available memory on locale host
+        arkouda_mem_alloc: memory allocated to Arkouda chapel process on locale host
+        pct_avail_mem: percentage of physical memory currently available on locale host
+        locale_id: locale id which is between 0 and numLocales-1
+        locale_hostname: host name of locale host
+
+   Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting per-locale
+        memory status information
+
+
+.. py:function:: get_mem_used(unit: str = 'b', as_percent: bool = False) -> int
+
+   Compute the amount of memory used by objects in the server's symbol table.
+
+   Parameters
+    ----------
+    unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+        unit of return ('b' by default)
+    as_percent : bool
+        If True, return the percent (as an int) of the available memory that's been used
+        False by default
+
+    Returns
+    -------
+    int
+        Indicates the amount of memory allocated to symbol table objects.
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting memory used
+    ValueError
+        Raised if the returned value is not an int-formatted string
+
+
 .. py:function:: get_null_indices(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None) -> Union[arkouda.pdarrayclass.pdarray, Mapping[str, arkouda.pdarrayclass.pdarray]]
 
    Get null indices of a string column in a Parquet file.
@@ -23659,6 +25609,17 @@ Attributes
 .. py:function:: get_server_byteorder() -> str
 
    Get the server's byteorder
+
+
+.. py:function:: get_server_commands() -> Mapping[str, str]
+
+   Return a dictionary of available server commands and the functions they map to
+
+   :returns: String to String mapping of available server commands to functions
+   :rtype: dict
+
+   :raises RuntimeError: Raised if there is a server-side error in retrieving and formatting the CommandMap
+   :raises ValueError: Raised if there's an error in parsing the JSON-formatted server string
 
 
 .. py:function:: hash(pda: Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, SegArray, Categorical], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, SegArray, Categorical]]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
@@ -23994,41 +25955,6 @@ Attributes
    Only works for pdarrays of int64 dtype, float64, Strings, or Categorical
 
 
-.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
-
-   Test whether each element of a 1-D array is also present in a second array.
-
-   Returns a boolean array the same length as `pda1` that is True
-   where an element of `pda1` is in `pda2` and False otherwise.
-
-   Support multi-level -- test membership of rows of a in the set of rows of b.
-
-   :param a: Rows are elements for which to test membership in b
-   :type a: list of pdarrays, pdarray, Strings, or Categorical
-   :param b: Rows are elements of the set in which to test membership
-   :type b: list of pdarrays, pdarray, Strings, or Categorical
-   :param assume_unique: If true, assume rows of a and b are each unique and sorted.
-                         By default, sort and unique them explicitly.
-   :type assume_unique: bool
-   :param symmetric: Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.
-   :type symmetric: bool
-   :param invert: If True, the values in the returned array are inverted (that is,
-                  False where an element of `pda1` is in `pda2` and True otherwise).
-                  Default is False. ``ak.in1d(a, b, invert=True)`` is equivalent
-                  to (but is faster than) ``~ak.in1d(a, b)``.
-   :type invert: bool, optional
-
-   :rtype: True for each row in a that is contained in b
-
-   Return Type
-   ------------
-       pdarray, bool
-
-   .. rubric:: Notes
-
-   Only works for pdarrays of int64 dtype, float64, Strings, or Categorical
-
-
 .. py:function:: in1d_intervals(vals, intervals, symmetric=False)
 
    Test each value for membership in *any* of a set of half-open (pythonic)
@@ -24128,6 +26054,10 @@ Attributes
    
 
 .. py:data:: intTypes
+
+   
+
+.. py:data:: int_scalars
 
    
 
@@ -24356,6 +26286,9 @@ Attributes
 .. py:function:: isSupportedInt(num)
 
 
+.. py:function:: isSupportedInt(num)
+
+
 .. py:function:: isSupportedNumber(num)
 
 
@@ -24418,6 +26351,20 @@ Attributes
    :type as_component: bool
 
    :rtype: bool
+
+
+.. py:function:: is_sorted(pda: pdarray) -> numpy.bool_
+
+   Return True iff the array is monotonically non-decreasing.
+
+   :param pda: The pdarray instance to be evaluated
+   :type pda: pdarray
+
+   :returns: Indicates if the array is monotonically non-decreasing
+   :rtype: bool
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. py:function:: is_sorted(pda: pdarray) -> numpy.bool_
@@ -29945,6 +31892,11 @@ Attributes
        retrieving information about the objects in names
 
 
+.. py:function:: print_server_commands()
+
+   Print the list of the available Server commands
+
+
 .. py:function:: prod(pda: pdarray) -> numpy.float64
 
    Return the product of all elements in the array. Return value is
@@ -30601,6 +32553,21 @@ Attributes
    array([1, 3, 3])
 
 
+.. py:function:: ruok() -> str
+
+   Simply sends an "ruok" message to the server and, if the return message is
+   "imok", this means the arkouda_server is up and operating normally. A return
+   message of "imnotok" indicates an error occurred or the connection timed out.
+
+   This method is basically a way to do a quick healthcheck in a way that does
+   not require error handling.
+
+   :returns: A string indicating if the server is operating normally (imok), if there's
+             an error server-side, or if ruok did not return a response (imnotok) in
+             both of the latter cases
+   :rtype: str
+
+
 .. py:function:: save_all(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
 
    DEPRECATED
@@ -30705,6 +32672,12 @@ Attributes
    array([0 0 0 0 1 1 1 -1])
 
 
+.. py:function:: segarray(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, lengths=None, grouping=None)
+
+   Alias for the from_parts function. Prevents user from needing to call `ak.SegArray` constructor
+   DEPRECATED
+
+
 .. py:function:: setdiff1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
 
    Find the set difference of two arrays.
@@ -30789,6 +32762,21 @@ Attributes
    >>> multib = [b, c, d]
    >>> ak.setxor1d(multia, multib)
    [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]
+
+
+.. py:function:: shutdown() -> None
+
+   Sends a shutdown message to the Arkouda server that does the
+   following:
+
+   1. Delete all objects in the SymTable
+   2. Shuts down the Arkouda server
+   3. Disconnects the client from the stopped Arkouda Server
+
+   :rtype: None
+
+   :raises RuntimeError: Raised if the client is not connected to the Arkouda server or
+       there is an error in disconnecting from the server
 
 
 .. py:function:: sign(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
@@ -31049,6 +33037,10 @@ Attributes
    the estimated variance, so even with ``ddof=1``, it will not be an
    unbiased estimate of the standard deviation per se.
 
+
+.. py:data:: str_
+
+   
 
 .. py:data:: str_
 
@@ -31553,44 +33545,6 @@ Attributes
    array([1, 2, 3])
 
 
-.. py:function:: unique(pda: groupable, return_groups: bool = False, assume_sorted: bool = False, return_indices: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
-
-   Find the unique elements of an array.
-
-   Returns the unique elements of an array, sorted if the values are integers.
-   There is an optional output in addition to the unique elements: the number
-   of times each unique value comes up in the input array.
-
-   :param pda: Input array.
-   :type pda: (list of) pdarray, Strings, or Categorical
-   :param return_groups: If True, also return grouping information for the array.
-   :type return_groups: bool, optional
-   :param return_indices: Only applicable if return_groups is True.
-                          If True, return unique key indices along with other groups
-   :type return_indices: bool, optional
-   :param assume_sorted: If True, assume pda is sorted and skip sorting step
-   :type assume_sorted: bool, optional
-
-   :returns: * **unique** (*(list of) pdarray, Strings, or Categorical*) -- The unique values. If input dtype is int64, return values will be sorted.
-             * **permutation** (*pdarray, optional*) -- Permutation that groups equivalent values together (only when return_groups=True)
-             * **segments** (*pdarray, optional*) -- The offset of each group in the permuted array (only when return_groups=True)
-
-   :raises TypeError: Raised if pda is not a pdarray or Strings object
-   :raises RuntimeError: Raised if the pdarray or Strings dtype is unsupported
-
-   .. rubric:: Notes
-
-   For integer arrays, this function checks to see whether `pda` is sorted
-   and, if so, whether it is already unique. This step can save considerable
-   computation. Otherwise, this function will sort `pda`.
-
-   .. rubric:: Examples
-
-   >>> A = ak.array([3, 2, 1, 1, 2, 3])
-   >>> ak.unique(A)
-   array([1, 2, 3])
-
-
 .. py:function:: unregister(name: str) -> str
 
 
@@ -31966,6 +33920,37 @@ Attributes
 
    :returns: **aligned** -- Array with values replaced by 0-up indices
    :rtype: pdarray
+
+
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+
+   Create a pdarray filled with zeros.
+
+   :param size: Size of the array (only rank-1 arrays supported)
+   :type size: int_scalars
+   :param dtype: Type of resulting array, default float64
+   :type dtype: all_scalars
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
+
+   :returns: Zeros of the requested size and dtype
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the supplied dtype is not supported or if the size
+       parameter is neither an int nor a str that is parseable to an int.
+
+   .. seealso:: :obj:`ones`, :obj:`zeros_like`
+
+   .. rubric:: Examples
+
+   >>> ak.zeros(5, dtype=ak.int64)
+   array([0, 0, 0, 0, 0])
+
+   >>> ak.zeros(5, dtype=ak.float64)
+   array([0, 0, 0, 0, 0])
+
+   >>> ak.zeros(5, dtype=ak.bool)
+   array([False, False, False, False, False])
 
 
 .. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
