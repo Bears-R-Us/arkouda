@@ -17,7 +17,7 @@ or
 
    import MetricsMsg;
 
-.. enum:: enum MetricCategory { ALL, NUM_REQUESTS, RESPONSE_TIME, AVG_RESPONSE_TIME, TOTAL_RESPONSE_TIME, TOTAL_MEMORY_USED, SYSTEM, SERVER, SERVER_INFO }
+.. enum:: enum MetricCategory { ALL, NUM_REQUESTS, RESPONSE_TIME, AVG_RESPONSE_TIME, TOTAL_RESPONSE_TIME, TOTAL_MEMORY_USED, SYSTEM, SERVER, SERVER_INFO, NUM_ERRORS }
 
    .. enumconstant:: enum constant ALL
 
@@ -36,6 +36,8 @@ or
    .. enumconstant:: enum constant SERVER
 
    .. enumconstant:: enum constant SERVER_INFO
+
+   .. enumconstant:: enum constant NUM_ERRORS
 
 .. enum:: enum MetricScope { GLOBAL, LOCALE, REQUEST, USER }
 
@@ -72,6 +74,8 @@ or
 .. data:: var users = new Users()
 
 .. data:: var userMetrics = new UserMetrics()
+
+.. data:: var errorMetrics = new CounterTable()
 
 .. record:: User
 
@@ -228,6 +232,8 @@ or
 .. function:: proc getServerMetrics() throws
 
 .. function:: proc getNumRequestMetrics() throws
+
+.. function:: proc getNumErrorMetrics() throws
 
 .. function:: proc getPerUserNumRequestMetrics() throws
 

@@ -133,7 +133,7 @@
 </div>
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MetricCategory</span></span> <span class="pre">{</span> <span class="pre">ALL,</span> <span class="pre">NUM_REQUESTS,</span> <span class="pre">RESPONSE_TIME,</span> <span class="pre">AVG_RESPONSE_TIME,</span> <span class="pre">TOTAL_RESPONSE_TIME,</span> <span class="pre">TOTAL_MEMORY_USED,</span> <span class="pre">SYSTEM,</span> <span class="pre">SERVER,</span> <span class="pre">SERVER_INFO</span> <span class="pre">}</span><a class="headerlink" href="#MetricsMsg.MetricCategory" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MetricCategory</span></span> <span class="pre">{</span> <span class="pre">ALL,</span> <span class="pre">NUM_REQUESTS,</span> <span class="pre">RESPONSE_TIME,</span> <span class="pre">AVG_RESPONSE_TIME,</span> <span class="pre">TOTAL_RESPONSE_TIME,</span> <span class="pre">TOTAL_MEMORY_USED,</span> <span class="pre">SYSTEM,</span> <span class="pre">SERVER,</span> <span class="pre">SERVER_INFO,</span> <span class="pre">NUM_ERRORS</span> <span class="pre">}</span><a class="headerlink" href="#MetricsMsg.MetricCategory" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.ALL">
 <em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ALL</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.ALL" title="Permalink to this definition">¶</a></dt>
@@ -177,6 +177,11 @@
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.SERVER_INFO">
 <em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SERVER_INFO</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.SERVER_INFO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.NUM_ERRORS">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">NUM_ERRORS</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.NUM_ERRORS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -269,6 +274,11 @@
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.userMetrics">
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">userMetrics</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">UserMetrics()</span><a class="headerlink" href="#MetricsMsg.userMetrics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="MetricsMsg.errorMetrics">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">errorMetrics</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">CounterTable()</span><a class="headerlink" href="#MetricsMsg.errorMetrics" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl record">
@@ -590,6 +600,11 @@
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getNumRequestMetrics">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumRequestMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.getNumRequestMetrics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MetricsMsg.getNumErrorMetrics">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumErrorMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MetricsMsg.getNumErrorMetrics" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

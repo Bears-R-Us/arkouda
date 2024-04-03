@@ -187,6 +187,12 @@ or
 
    .. method:: proc processMetrics(user: string, cmd: string, args: MessageArgs, elapsedTime: real, memUsed: uint) throws
 
+   .. method:: proc processErrorMessageMetrics(user, cmd, err) throws
+
+   .. method:: proc getErrorName(err)
+
+   .. method:: proc processErrorMetrics(user, cmd, errName) throws
+
    .. method:: override proc run() throws
 
 .. class:: MetricsServerDaemon : ArkoudaServerDaemon

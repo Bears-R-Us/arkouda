@@ -172,6 +172,17 @@ or
 
    .. method:: proc init()
 
+.. class:: OverMemoryLimitError : ErrorWithContext
+
+   
+   * The OverMemoryLimitError is thrown if the projected memory required for a method
+   * invocation will exceed available, free memory on 1..n locales
+   
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
 .. class:: ConfigurationError : ErrorWithContext
 
    
@@ -186,12 +197,12 @@ or
 .. function:: proc generateErrorContext(msg: string, lineNumber: int, moduleName: string, routineName: string, errorClass: string = "ErrorWithContext"): string
 
    
-   * Generatea a detailed, context-rich error message for errors such as instances of 
+   * Generates a detailed, context-rich error message for errors such as instances of 
    * built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext
    * error message format. 
    
 
-.. function:: proc getErrorWithContext(lineNumber: int, moduleName: string, routineName: string, msg: string, errorClass: string): Error throws
+.. function:: proc getErrorWithContext(lineNumber: int, moduleName: string, routineName: string, msg: string, errorClass: string) throws
 
    
    * Factory method for generating ErrorWithContext objects that include an error
