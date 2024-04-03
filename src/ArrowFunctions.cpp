@@ -129,7 +129,8 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
     else if(myType->id() == arrow::Type::BOOL)
       return ARROWBOOLEAN;
     else if(myType->id() == arrow::Type::STRING ||
-            myType->id() == arrow::Type::BINARY)
+            myType->id() == arrow::Type::BINARY ||
+            myType->id() == arrow::Type::LARGE_STRING)
       return ARROWSTRING;
     else if(myType->id() == arrow::Type::FLOAT)
       return ARROWFLOAT;
@@ -202,7 +203,8 @@ int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
         else if(f_type->id() == arrow::Type::BOOL)
           return ARROWBOOLEAN;
         else if(f_type->id() == arrow::Type::STRING ||
-                f_type->id() == arrow::Type::BINARY)  // Verify that this is functional as expected
+                f_type->id() == arrow::Type::BINARY ||
+                f_type->id() == arrow::Type::LARGE_STRING)  // Verify that this is functional as expected
           return ARROWSTRING;
         else if(f_type->id() == arrow::Type::FLOAT)
           return ARROWFLOAT;
@@ -1949,7 +1951,8 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, bool readNested
          sc->field(i)->type()->id() == arrow::Type::FLOAT ||
          sc->field(i)->type()->id() == arrow::Type::DOUBLE ||
          (sc->field(i)->type()->id() == arrow::Type::LIST && readNested) ||
-         sc->field(i)->type()->id() == arrow::Type::DECIMAL
+         sc->field(i)->type()->id() == arrow::Type::DECIMAL ||
+         sc->field(i)->type()->id() == arrow::Type::LARGE_STRING
          ) {
         if(!first)
           fields += ("," + sc->field(i)->name());
