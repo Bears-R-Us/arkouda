@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from ._array_object import Array
 
-from typing import NamedTuple
+from typing import NamedTuple, cast
 
-import arkouda as ak
+from arkouda.client import generic_msg
+from arkouda.pdarrayclass import create_pdarray
 
 
 class UniqueAllResult(NamedTuple):
@@ -25,22 +26,67 @@ class UniqueInverseResult(NamedTuple):
 
 
 def unique_all(x: Array, /) -> UniqueAllResult:
-    raise ValueError("unique_all not implemented")
+    resp = cast(
+                str,
+                generic_msg(
+                    cmd=f"uniqueAll{x.ndim}D",
+                    args={"name": x._array},
+                ),
+            )
+
+    arrays = [Array._new(create_pdarray(r)) for r in resp.split('+')]
+
+    return UniqueAllResult(
+        values=arrays[0],
+        indices=arrays[1],
+        inverse_indices=arrays[2],
+        counts=arrays[3],
+    )
 
 
 def unique_counts(x: Array, /) -> UniqueCountsResult:
-    raise ValueError("unique_counts not implemented")
+    resp = cast(
+                str,
+                generic_msg(
+                    cmd=f"uniqueCounts{x.ndim}D",
+                    args={"name": x._array},
+                ),
+            )
+
+    arrays = [Array._new(create_pdarray(r)) for r in resp.split('+')]
+
+    return UniqueCountsResult(
+        values=arrays[0],
+        counts=arrays[1],
+    )
 
 
 def unique_inverse(x: Array, /) -> UniqueInverseResult:
-    raise ValueError("unique_inverse not implemented")
+    resp = cast(
+                str,
+                generic_msg(
+                    cmd=f"uniqueInverse{x.ndim}D",
+                    args={"name": x._array},
+                ),
+            )
+
+    arrays = [Array._new(create_pdarray(r)) for r in resp.split('+')]
+
+    return UniqueInverseResult(
+        values=arrays[0],
+        inverse_indices=arrays[1],
+    )
 
 
 def unique_values(x: Array, /) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.unique <numpy.unique>`.
-
-    See its docstring for more information.
-    """
-    res = ak.unique(x._array)
-    return Array._new(res)
+    return Array._new(
+        create_pdarray(
+            cast(
+                str,
+                generic_msg(
+                    cmd=f"uniqueValues{x.ndim}D",
+                    args={"name": x._array},
+                ),
+            )
+        )
+    )
