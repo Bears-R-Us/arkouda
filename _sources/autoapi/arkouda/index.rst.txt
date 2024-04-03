@@ -157,6 +157,7 @@ Functions
    arkouda.check_np_dtype
    arkouda.chisquare
    arkouda.clear
+   arkouda.clip
    arkouda.clz
    arkouda.coargsort
    arkouda.coargsort
@@ -22555,6 +22556,64 @@ Attributes
    :rtype: None
 
    :raises RuntimeError: Raised if there is a server-side error in executing clear request
+
+
+.. py:function:: clip(pda: arkouda.pdarrayclass.pdarray, lo: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], hi: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
+
+   Clip (limit) the values in an array to a given range [lo,hi]
+
+   Given an array a, values outside the range are clipped to the
+   range edges, such that all elements lie in the range.
+
+   There is no check to enforce that lo < hi.  If lo > hi, the corresponding
+   value of the array will be set to hi.
+
+   If lo or hi (or both) are pdarrays, the check is by pairwise elements.
+   See examples.
+
+   :param pda: the array of values to clip
+   :type pda: pdarray, int64 or float64
+   :param lo: the lower value of the clipping range
+   :type lo: scalar or pdarray, int64 or float64
+   :param hi: the higher value of the clipping range
+   :type hi: scalar or pdarray, int64 or float64
+   :param If lo or hi (or both) are pdarrays: See examples.
+   :param the check is by pairwise elements.: See examples.
+
+   :returns:
+
+             A pdarray matching pda, except that element x remains x if lo <= x <= hi,
+                                                     or becomes lo if x < lo,
+                                                     or becomes hi if x > hi.
+   :rtype: arkouda.pdarrayclass.pdarray
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([1,2,3,4,5,6,7,8,9,10])
+   >>> ak.clip(a,3,8)
+   array([3,3,3,4,5,6,7,8,8,8])
+   >>> ak.clip(a,3,8.0)
+   array([3.00000000000000000 3.00000000000000000 3.00000000000000000 4.00000000000000000
+          5.00000000000000000 6.00000000000000000 7.00000000000000000 8.00000000000000000
+          8.00000000000000000 8.00000000000000000])
+   >>> ak.clip(a,None,7)
+   array([1,2,3,4,5,6,7,7,7,7])
+   >>> ak.clip(a,5,None)
+   array([5,5,5,5,5,6,7,8,9,10])
+   >>> ak.clip(a,None,None)
+   ValueError : either min or max must be supplied
+   >>> ak.clip(a,ak.array([2,2,3,3,8,8,5,5,6,6],8))
+   array([2,2,3,4,8,8,7,8,8,8])
+   >>> ak.clip(a,4,ak.array([10,9,8,7,6,5,5,5,5,5]))
+   array([4,4,4,4,5,5,5,5,5,5])
+
+   .. rubric:: Notes
+
+   Either lo or hi may be None, but not both.
+   If lo > hi, all x = hi.
+   If all inputs are int64, output is int64, but if any input is float64, output is float64.
+
+   :raises ValueError: Raised if both lo and hi are None
 
 
 .. py:function:: clz(pda: pdarray) -> pdarray
