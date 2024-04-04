@@ -4058,6 +4058,123 @@ class DataFrame(UserDict):
 
         return DataFrame(df_def, index=self.index)
 
+    def count(self, axis: Union[int, str] = 0, numeric_only=False) -> Series:
+        """
+        Count non-NA cells for each column or row.
+
+        The values np.NaN are considered NA.
+
+        Parameters
+        __________
+        axis : {0 or 'index', 1 or 'columns'}, default 0
+            If 0 or ‘index’ counts are generated for each column.
+            If 1 or ‘columns’ counts are generated for each row.
+
+        numeric_only: bool = False
+            Include only float, int or boolean data.
+
+        Returns
+        _______
+        arkouda.series.Series
+            For each column/row the number of non-NA/null entries.
+
+        Raises
+        ------
+        ValueError
+            Raised if axis is not 0, 1, 'index', or 'columns'.
+
+        See Also
+        ________
+        GroupBy.count()
+
+        Examples
+        ________
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> import numpy as np
+        >>> df = ak.DataFrame({'col_A': ak.array([7, np.nan]), 'col_B':ak.array([1, 9])})
+        >>> display(df)
+
+        +----+---------+---------+
+        |    |   col_A |   col_B |
+        +====+=========+=========+
+        |  0 |       7 |       1 |
+        +----+---------+---------+
+        |  1 |     nan |       9 |
+        +----+---------+---------+
+
+        >>> df.count()
+        col_A    1
+        col_B    2
+        dtype: int64
+
+        >>> df = ak.DataFrame({'col_A': ak.array(["a","b","c"]), 'col_B':ak.array([1, np.nan, np.nan])})
+        >>> display(df)
+
+        +----+---------+---------+
+        |    | col_A   |   col_B |
+        +====+=========+=========+
+        |  0 | a       |       1 |
+        +----+---------+---------+
+        |  1 | b       |     nan |
+        +----+---------+---------+
+        |  2 | c       |     nan |
+        +----+---------+---------+
+
+        >>> df.count()
+        col_A    3
+        col_B    1
+        dtype: int64
+
+        >>> df.count(numeric_only=True)
+        col_B    1
+        dtype: int64
+
+        >>> df.count(axis=1)
+        0    2
+        1    1
+        2    1
+        dtype: int64
+
+        """
+        from arkouda import full, isnan
+        from arkouda.util import is_numeric
+
+        if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
+            index_values_list = []
+            count_values_list = []
+            for col in self.columns:
+                if is_numeric(self[col]):
+                    index_values_list.append(col)
+                    count_values_list.append((~isnan(self[col])).sum())
+                elif not numeric_only or self[col].dtype == bool:
+                    index_values_list.append(col)
+                    # Non-numeric columns do not have NaN values.
+                    count_values_list.append(self[col].size)
+            return Series(array(count_values_list), index=Index(array(index_values_list)))
+        elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
+            first = True
+            for col in self.columns:
+                if is_numeric(self[col]):
+                    if first:
+                        count_values = akcast(~isnan(self[col]), dt="int64")
+                        first = False
+                    else:
+                        count_values += ~isnan(self[col])
+                elif not numeric_only or self[col].dtype == bool:
+                    if first:
+                        count_values = full(self.index.size, 1, dtype=akint64)
+                        first = False
+                    else:
+                        count_values += 1
+                if first:
+                    count_values = full(self.index.size, 0, dtype=akint64)
+            idx = self.index[:]
+            return Series(array(count_values), index=idx)
+        else:
+            raise ValueError(f"No axis named {axis} for object type DataFrame")
+
     def corr(self) -> DataFrame:
         """
         Return new DataFrame with pairwise correlation of columns.

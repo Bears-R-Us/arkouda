@@ -47,6 +47,7 @@ def build_ak_df_with_nans():
         "nums1": [1, np.nan, 3, 4],
         "nums2": [1, np.nan, np.nan, 7],
         "nums3": [10, 8, 9, 7],
+        "bools": [True, False, True, False],
     }
     ak_df = ak.DataFrame({k: ak.array(v) for k, v in data.items()})
     return ak_df
@@ -971,6 +972,17 @@ class DataFrameTest(ArkoudaTest):
         test_df = df.isin(other_df)
         self.assertListEqual(test_df["col_A"].to_list(), [True, True])
         self.assertListEqual(test_df["col_B"].to_list(), [False, False])
+
+    def test_count(self):
+        akdf = build_ak_df_with_nans()
+        pddf = akdf.to_pandas()
+
+        for truth in [True, False]:
+            for axis in [0, 1, "index", "columns"]:
+                assert_series_equal(
+                    akdf.count(axis=axis, numeric_only=truth).to_pandas(),
+                    pddf.count(axis=axis, numeric_only=truth),
+                )
 
     def test_corr(self):
         df = ak.DataFrame({"col1": [1, 2], "col2": [-1, -2]})
