@@ -61,6 +61,11 @@ class RandomTest(ArkoudaTest):
         # verify all the same elements are in permutation as the original
         self.assertEqual(ak.sort(pda).to_list(), ak.sort(array_permute).to_list())
 
+        pda = rng.uniform(-(2**32), 2**32, 10)
+        float_array_permute = rng.permutation(pda)
+        # verify all the same elements are in permutation as the original
+        self.assertTrue(np.allclose(ak.sort(pda).to_list(), ak.sort(float_array_permute).to_list()))
+
         rng = ak.random.default_rng(18)
         same_seed_range_permute = rng.permutation(20)
         self.assertEqual(range_permute.to_list(), same_seed_range_permute.to_list())
@@ -68,6 +73,11 @@ class RandomTest(ArkoudaTest):
         pda = rng.integers(-(2**32), 2**32, 10)
         same_seed_array_permute = rng.permutation(pda)
         self.assertEqual(array_permute.to_list(), same_seed_array_permute.to_list())
+
+        pda = rng.uniform(-(2**32), 2**32, 10)
+        same_seed_float_array_permute = rng.permutation(pda)
+        # verify all the same elements are in permutation as the original
+        self.assertTrue(np.allclose(float_array_permute.to_list(), same_seed_float_array_permute.to_list()))
 
     def test_uniform(self):
         # verify same seed gives different but reproducible arrays

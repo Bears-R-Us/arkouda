@@ -314,7 +314,7 @@ module RandMsg
 
         st.checkTable(name);
 
-        proc permuteHelper(type t, st: borrowed SymTab) throws {
+        proc permuteHelper(type t) throws {
             // we need the int generator in order for permute(domain) to work correctly
             var intGeneratorEntry: borrowed GeneratorSymEntry(int) = toGeneratorSymEntry(st.lookup(name), int);
             ref intRng = intGeneratorEntry.generator;
@@ -331,9 +331,8 @@ module RandMsg
                 st.addEntry(rname, permutedEntry);
             }
             else {
-                // permute requires idxType must be coercible from this stream’s eltType, so
-                // instead we use the permute(dom) and use that to gather the permuted vals. But we're
-                // not missing out on much bc permute(arr) seems to do the same thing but without aggregation
+                // permute requires that the stream's eltType is coercible to the array/domain's idxType,
+                // so we use permute(dom) and use that to gather the permuted vals
                 var permutedArr: [permutedDom] t;
                 ref myArr = toSymEntry(getGenericTypedArrayEntry(xName, st),t).a;
 
@@ -348,16 +347,16 @@ module RandMsg
 
         select dtype {
             when DType.Int64 {
-                permuteHelper(int, st);
+                permuteHelper(int);
             }
             when DType.UInt64 {
-                permuteHelper(uint, st);
+                permuteHelper(uint);
             }
             when DType.Float64 {
-                permuteHelper(real, st);
+                permuteHelper(real);
             }
             when DType.Bool {
-                permuteHelper(bool, st);
+                permuteHelper(bool);
             }
             otherwise {
                 var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);

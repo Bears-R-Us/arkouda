@@ -8,7 +8,7 @@ from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import int_scalars
 from arkouda.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import create_pdarray
+from arkouda.pdarrayclass import create_pdarray, pdarray
 
 
 class Generator:
@@ -233,10 +233,12 @@ class Generator:
             is_domain_perm = True
             dtype = to_numpy_dtype(akint64)
             size = x
-        else:
+        elif isinstance(x, pdarray):
             is_domain_perm = False
             dtype = to_numpy_dtype(x.dtype)
             size = x.size
+        else:
+            raise TypeError("permtation only accepts a pdarray or int scalar.")
 
         # we have to use the int version since we permute the domain
         name = self._name_dict[to_numpy_dtype(akint64)]
