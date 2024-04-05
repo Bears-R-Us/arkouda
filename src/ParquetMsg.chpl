@@ -968,7 +968,7 @@ module ParquetMsg {
           extern proc c_createColumnReader(colname, readerIdx);
           extern proc c_freeMapValues(rowToFree);
           extern proc c_readParquetColumnChunks(filename, batchSize,
-                                      numElems, readerIdx, numRead): c_ptr(void);
+                                      numElems, readerIdx, numRead): c_ptr_void;
 
           var entrySeg = createSymEntry(len, int);
           
@@ -976,7 +976,7 @@ module ParquetMsg {
           var numRowGroups: [distFiles.domain] int;
 
           var maxRowGroups = getRowGroupNums(distFiles, numRowGroups);
-          var externalData: [distFiles.domain] [0..#maxRowGroups] c_ptr(void);
+          var externalData: [distFiles.domain] [0..#maxRowGroups] c_ptr_void;
           var valsRead: [distFiles.domain] [0..#maxRowGroups] int;
           var bytesPerRG: [distFiles.domain] [0..#maxRowGroups] int;
           var startIdxs: [distFiles.domain] [0..#maxRowGroups] int; // correspond to starting idx in entrySeg
