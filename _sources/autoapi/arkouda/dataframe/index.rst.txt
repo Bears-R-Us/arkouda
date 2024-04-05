@@ -757,6 +757,75 @@ Functions
       +------+--------+--------+
 
 
+   .. py:method:: count(axis: Union[int, str] = 0, numeric_only=False) -> arkouda.series.Series
+
+      Count non-NA cells for each column or row.
+
+      The values np.NaN are considered NA.
+
+      :param axis: If 0 or ‘index’ counts are generated for each column.
+                   If 1 or ‘columns’ counts are generated for each row.
+      :type axis: {0 or 'index', 1 or 'columns'}, default 0
+      :param numeric_only: Include only float, int or boolean data.
+      :type numeric_only: bool = False
+
+      :returns: For each column/row the number of non-NA/null entries.
+      :rtype: arkouda.series.Series
+
+      :raises ValueError: Raised if axis is not 0, 1, 'index', or 'columns'.
+
+      .. seealso:: :obj:`GroupBy.count`
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> import numpy as np
+      >>> df = ak.DataFrame({'col_A': ak.array([7, np.nan]), 'col_B':ak.array([1, 9])})
+      >>> display(df)
+
+      +----+---------+---------+
+      |    |   col_A |   col_B |
+      +====+=========+=========+
+      |  0 |       7 |       1 |
+      +----+---------+---------+
+      |  1 |     nan |       9 |
+      +----+---------+---------+
+
+      >>> df.count()
+      col_A    1
+      col_B    2
+      dtype: int64
+
+      >>> df = ak.DataFrame({'col_A': ak.array(["a","b","c"]), 'col_B':ak.array([1, np.nan, np.nan])})
+      >>> display(df)
+
+      +----+---------+---------+
+      |    | col_A   |   col_B |
+      +====+=========+=========+
+      |  0 | a       |       1 |
+      +----+---------+---------+
+      |  1 | b       |     nan |
+      +----+---------+---------+
+      |  2 | c       |     nan |
+      +----+---------+---------+
+
+      >>> df.count()
+      col_A    3
+      col_B    1
+      dtype: int64
+
+      >>> df.count(numeric_only=True)
+      col_B    1
+      dtype: int64
+
+      >>> df.count(axis=1)
+      0    2
+      1    1
+      2    1
+      dtype: int64
+
+
    .. py:method:: drop(keys: Union[str, int, List[Union[str, int]]], axis: Union[str, int] = 0, inplace: bool = False) -> Union[None, DataFrame]
 
       Drop column/s or row/s from the dataframe.
