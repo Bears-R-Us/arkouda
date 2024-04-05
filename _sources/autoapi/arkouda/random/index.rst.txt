@@ -88,6 +88,18 @@ Functions
       array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
 
 
+   .. py:method:: permutation(x)
+
+      Randomly permute a sequence, or return a permuted range.
+
+      :param x: If x is an integer, randomly permute ak.arange(x). If x is an array,
+                make a copy and shuffle the elements randomly.
+      :type x: int or pdarray
+
+      :returns: pdarray of permuted elements
+      :rtype: pdarray
+
+
    .. py:method:: random(size=None)
 
       Return random floats in the half-open interval [0.0, 1.0).

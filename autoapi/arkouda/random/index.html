@@ -391,6 +391,24 @@ or a single such random int if size not provided.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.random.Generator.permutation">
+<span class="sig-name descname"><span class="pre">permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/random/_generator.html#Generator.permutation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator.permutation" title="Link to this definition">#</a></dt>
+<dd><p>Randomly permute a sequence, or return a permuted range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – If x is an integer, randomly permute ak.arange(x). If x is an array,
+make a copy and shuffle the elements randomly.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pdarray of permuted elements</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.random.Generator.random">
 <span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/random/_generator.html#Generator.random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator.random" title="Link to this definition">#</a></dt>
 <dd><p>Return random floats in the half-open interval [0.0, 1.0).</p>
@@ -696,6 +714,7 @@ is invoked with a dtype of float64</p>
 <li><a class="reference internal" href="#functions">Functions</a><ul>
 <li><a class="reference internal" href="#arkouda.random.Generator"><code class="docutils literal notranslate"><span class="pre">Generator</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.random.Generator.integers"><code class="docutils literal notranslate"><span class="pre">Generator.integers()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.random.Generator.permutation"><code class="docutils literal notranslate"><span class="pre">Generator.permutation()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.random"><code class="docutils literal notranslate"><span class="pre">Generator.random()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.standard_normal"><code class="docutils literal notranslate"><span class="pre">Generator.standard_normal()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.uniform"><code class="docutils literal notranslate"><span class="pre">Generator.uniform()</span></code></a></li>

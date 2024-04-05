@@ -376,6 +376,23 @@
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">union_type</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">union_type</span><span class="o">.</span><span class="n">__args__</span>
 
 
+<span class="k">def</span> <span class="nf">_val_isinstance_of_union</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">union_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if a given val is an instance of one of the types in the typing.Union</span>
+
+<span class="sd">    Args</span>
+<span class="sd">    ----</span>
+<span class="sd">        val: The val to do the isinstance check on.</span>
+<span class="sd">        union_type (type): The typing.Union type to check against.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        bool: True if the val is an instance of one</span>
+<span class="sd">            of the types in the union_type, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">union_type</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">union_type</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span>
+
+
 <span class="k">class</span> <span class="nc">BigInt</span><span class="p">:</span>
     <span class="c1"># an estimate of the itemsize of bigint (128 bytes)</span>
     <span class="n">itemsize</span> <span class="o">=</span> <span class="mi">128</span>
