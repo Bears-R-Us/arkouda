@@ -49,6 +49,33 @@ class RandomTest(ArkoudaTest):
         self.assertTrue(all(bounded_arr.to_ndarray() >= -5))
         self.assertTrue(all(bounded_arr.to_ndarray() < 5))
 
+    def test_shuffle(self):
+        # verify same seed gives reproducible arrays
+        rng = ak.random.default_rng(18)
+
+        int_pda = rng.integers(-(2**32), 2**32, 10)
+        pda_copy = int_pda[:]
+        # shuffle int_pda in place
+        rng.shuffle(int_pda)
+        # verify all the same elements are in permutation as the original
+        self.assertEqual(ak.sort(int_pda).to_list(), ak.sort(pda_copy).to_list())
+
+        float_pda = rng.uniform(-(2**32), 2**32, 10)
+        pda_copy = float_pda[:]
+        rng.shuffle(float_pda)
+        # verify all the same elements are in permutation as the original
+        self.assertEqual(ak.sort(float_pda).to_list(), ak.sort(pda_copy).to_list())
+
+        rng = ak.random.default_rng(18)
+
+        pda = rng.integers(-(2**32), 2**32, 10)
+        rng.shuffle(pda)
+        self.assertEqual(pda.to_list(), int_pda.to_list())
+
+        pda = rng.uniform(-(2**32), 2**32, 10)
+        rng.shuffle(pda)
+        self.assertTrue(np.allclose(pda.to_list(), float_pda.to_list()))
+
     def test_permutation(self):
         # verify same seed gives reproducible arrays
         rng = ak.random.default_rng(18)
@@ -77,7 +104,9 @@ class RandomTest(ArkoudaTest):
         pda = rng.uniform(-(2**32), 2**32, 10)
         same_seed_float_array_permute = rng.permutation(pda)
         # verify all the same elements are in permutation as the original
-        self.assertTrue(np.allclose(float_array_permute.to_list(), same_seed_float_array_permute.to_list()))
+        self.assertTrue(
+            np.allclose(float_array_permute.to_list(), same_seed_float_array_permute.to_list())
+        )
 
     def test_uniform(self):
         # verify same seed gives different but reproducible arrays
