@@ -1,5 +1,9 @@
 module ArkoudaRandomCompat {
   use Random.PCGRandom only PCGRandomStream;
+
+  private proc is1DRectangularDomain(d) param do
+    return d.isRectangular() && d.rank == 1;
+
   record randomStream {
     type eltType = int;
     forwarding var r: shared PCGRandomStream(eltType);
@@ -16,6 +20,15 @@ module ArkoudaRandomCompat {
     }
     proc ref fill(ref arr: [], min: arr.eltType, max: arr.eltType) where arr.isRectangular() {
       r.fillRandom(arr, min, max);
+    }
+    proc ref permute(const ref arr: [?d] ?t): [] t  where is1DRectangularDomain(d) && isCoercible(this.eltType, d.idxType) {
+      return r.permutation(arr);
+    }
+    proc ref permute(d: domain(?)): [] d.idxType  where is1DRectangularDomain(d) && isCoercible(this.eltType, d.idxType) {
+      // unfortunately there isn't a domain permutation function so we will create an array to permute
+      var domArr: [d] d.idxType = d;
+      r.permutation(domArr);
+      return domArr;
     }
     proc skipTo(n: int) do try! r.skipToNth(n);
   }

@@ -3045,7 +3045,7 @@ def popcount(pda: pdarray) -> pdarray:
     if pda.dtype == bigint:
         from builtins import sum
 
-        return sum(popcount(a) for a in pda.bigint_to_uint_arrays())
+        return sum(popcount(a) for a in pda.bigint_to_uint_arrays())  # type: ignore
     else:
         repMsg = generic_msg(
             cmd=f"efunc{pda.ndim}D",
