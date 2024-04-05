@@ -997,7 +997,6 @@ module ParquetMsg {
                   c_freeMapValues(externalData[i][j]);
             }
           }
-          // TODO: Need to free c++ memory for the maps and malloced stuff
           
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.pushBack((dsetname, ObjType.STRINGS, "%s+%?".doFormat(stringsEntry.name, stringsEntry.nBytes)));
