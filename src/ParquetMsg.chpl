@@ -771,13 +771,13 @@ module ParquetMsg {
 
           var numRead = 0;
           externalData[i][rg] = c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead));
-	  var tmp: [startIdx..#numRead] int;
+          var tmp: [startIdx..#numRead] int;
           forall (id, j) in zip(0..#numRead, startIdx..#numRead) with (+ reduce totalBytes) {
             ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[id];
             tmp[j] = curr.len + 1; // this was only change
             totalBytes += curr.len+1;
-	  }
-	  entrySeg.a[startIdx..#numRead] = tmp;
+          }
+          entrySeg.a[startIdx..#numRead] = tmp;
           valsRead[i][rg] = numRead;
           startIdx += numRead;
           bytesPerRG[i][rg] = totalBytes;
@@ -801,14 +801,14 @@ module ParquetMsg {
           var entryIdx = rgSubdomains[i][rg].low;
           var numRead = locValsRead[i][rg];
           var offsetIdx = locStartIdxs[i][rg];
-	  var tmp: [rgSubdomains[i][rg]] uint(8);
-	  forall (idx, oIdx) in zip(0..#numRead, offsetIdx..#numRead) {
-	    ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[idx];
+          var tmp: [rgSubdomains[i][rg]] uint(8);
+          forall (idx, oIdx) in zip(0..#numRead, offsetIdx..#numRead) {
+            ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[idx];
             for j in 0..#curr.len {
-	      tmp[segArr[oIdx]+j] = curr.ptr[j];
+              tmp[segArr[oIdx]+j] = curr.ptr[j];
             }
-	  }
-	  entryVal.a[rgSubdomains[i][rg]] = tmp;
+          }
+          entryVal.a[rgSubdomains[i][rg]] = tmp;
         }
       }
     }
