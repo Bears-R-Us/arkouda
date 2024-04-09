@@ -763,6 +763,7 @@ def read_parquet(
     allow_errors: bool = False,
     tag_data: bool = False,
     read_nested: bool = True,
+    has_non_float_nulls: bool = False,
 ) -> Union[
     pdarray,
     Strings,
@@ -819,6 +820,9 @@ def read_parquet(
         Default True, when True, SegArray objects will be read from the file. When False,
         SegArray (or other nested Parquet columns) will be ignored.
         If datasets is not None, this will be ignored.
+    has_non_float_nulls: bool
+        Default False. This flag must be set to True to read non-float parquet columns
+        that contain null values.
 
     Returns
     -------
@@ -883,6 +887,7 @@ def read_parquet(
                 allow_errors=allow_errors,
                 tag_data=tag_data,
                 read_nested=read_nested,
+                has_non_float_nulls=has_non_float_nulls,
             )[dset]
             for dset in datasets
         }
@@ -897,6 +902,7 @@ def read_parquet(
                 "dsets": datasets,
                 "filenames": filenames,
                 "tag_data": tag_data,
+                "has_non_float_nulls": has_non_float_nulls,
             },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
@@ -1847,6 +1853,7 @@ def read(
     calc_string_offsets=False,
     column_delim: str = ",",
     read_nested: bool = True,
+    has_non_float_nulls: bool = False,
 ) -> Union[
     pdarray,
     Strings,
@@ -1908,7 +1915,9 @@ def read(
         SegArray (or other nested Parquet columns) will be ignored.
         Ignored if datasets is not None
         Parquet Files only.
-
+    has_non_float_nulls: bool
+        Default False. This flag must be set to True to read non-float parquet columns
+        that contain null values.
 
     Returns
     -------
@@ -1973,6 +1982,7 @@ def read(
             strict_types=strictTypes,
             allow_errors=allow_errors,
             read_nested=read_nested,
+            has_non_float_nulls=has_non_float_nulls,
         )
     elif ftype.lower() == "csv":
         return read_csv(
@@ -1989,6 +1999,7 @@ def read_tagged_data(
     allow_errors: bool = False,
     calc_string_offsets=False,
     read_nested: bool = True,
+    has_non_float_nulls: bool = False,
 ):
     """
     Read datasets from files and tag each record to the file it was read from.
@@ -2020,6 +2031,9 @@ def read_tagged_data(
         SegArray (or other nested Parquet columns) will be ignored.
         Ignored if datasets is not `None`
         Parquet Files only.
+    has_non_float_nulls: bool
+        Default False. This flag must be set to True to read non-float parquet columns
+        that contain null values.
 
     Notes
     ------
@@ -2070,6 +2084,7 @@ def read_tagged_data(
                 allow_errors=allow_errors,
                 tag_data=True,
                 read_nested=read_nested,
+                has_non_float_nulls=has_non_float_nulls,
             ),
             file_cat,
         )
