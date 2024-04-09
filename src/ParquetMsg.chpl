@@ -746,7 +746,7 @@ module ParquetMsg {
     return maxRowGroups;
   }
   
-  proc fillSegmentsAndPersistData(ref distFiles, ref entrySeg, ref externalData, ref defLevels, valsRead, dsetname, sizes, len, numRowGroups, ref bytesPerRG, ref startIdxs) {
+  proc fillSegmentsAndPersistData(ref distFiles, ref entrySeg, ref externalData, ref defLevels, valsRead, dsetname, sizes, len, numRowGroups, ref bytesPerRG, ref startIdxs) throws {
     var (subdoms, length) = getSubdomains(sizes);
     coforall loc in distFiles.targetLocales() with (ref externalData, ref valsRead, ref bytesPerRG) do on loc {
       var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
@@ -770,7 +770,11 @@ module ParquetMsg {
           startIdxs[i][rg] = startIdx;
 
           var numRead = 0;
-          externalData[i][rg] = c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead), externalData[i][rg], c_ptrTo(defLevels[i][rg]));
+
+          var pqErr = new parquetErrorMsg();
+          if c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead), externalData[i][rg], c_ptrTo(defLevels[i][rg]), c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+            //pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+          }
           var tmp: [startIdx..#numRead] int;
           forall (id, j) in zip(0..#numRead, startIdx..#numRead) with (+ reduce totalBytes) {
             ref curr = (externalData[i][rg]: c_ptr(MyByteArray))[id];
@@ -969,7 +973,7 @@ module ParquetMsg {
           extern proc c_freeMapValues(rowToFree);
           extern proc c_readParquetColumnChunks(filename, batchSize,
                                                 numElems, readerIdx, numRead,
-                                                externalData, defLevels): c_ptr_void;
+                                                externalData, defLevels, errMsg): int;
 
           var entrySeg = createSymEntry(len, int);
           
