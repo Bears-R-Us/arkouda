@@ -55,8 +55,12 @@ extern "C" {
   void c_createColumnReader(const char* colname, int64_t readerIdx);
   void cpp_createColumnReader(const char* colname, int64_t readerIdx);
 
-  void* c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems, int64_t readerIdx, int64_t* numRead);
-  void* cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems, int64_t readerIdx, int64_t* numRead);
+  void* c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
+                                    int64_t readerIdx, int64_t* numRead,
+                                    void* outData, int16_t** outLevels);
+  void* cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
+                                    int64_t readerIdx, int64_t* numRead,
+                                    void* outData, int16_t** outLevels);
 
   int c_getNumRowGroups(int64_t readerIdx);
   int cpp_getNumRowGroups(int64_t readerIdx);
