@@ -862,7 +862,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
             i+=values_read;
           }
         } else {
-          while (reader->HasNext()) {
+          while (reader->HasNext() && i < numElems) {
             double value;
             (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
             // if values_read is 0, that means that it was a null value
