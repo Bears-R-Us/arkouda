@@ -28,7 +28,8 @@ from arkouda.index import Index, MultiIndex
 from arkouda.join import inner_join
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum, where
-from arkouda.pdarrayclass import RegistrationError, pdarray, any
+from arkouda.pdarrayclass import RegistrationError, pdarray
+from arkouda.pdarrayclass import any as akany
 from arkouda.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d, indexof1d
 from arkouda.row import Row
@@ -622,6 +623,7 @@ class DataFrame(UserDict):
         self.registered_name = None
 
         if isinstance(initialdata, DataFrame):
+            print("copy constructor")
             # Copy constructor
             self._nrows = initialdata._nrows
             self._bytes = initialdata._bytes
@@ -675,6 +677,8 @@ class DataFrame(UserDict):
                 for key, val in initialdata.items():
                     if isinstance(val, (list, tuple)):
                         val = array(val)
+                    if isinstance(val, Series):
+                        val = val.values
                     if not isinstance(val, self._COLUMN_CLASSES):
                         raise ValueError(f"Values must be one of {self._COLUMN_CLASSES}.")
                     if isinstance(key, str) and key.lower() == "index":
@@ -735,7 +739,7 @@ class DataFrame(UserDict):
         if key not in self.columns.values:
             raise AttributeError(f"Attribute {key} not found")
         # Should this be cached?
-        return Series(data=self[key], index=self.index.index)
+        return self[key]
 
     def __dir__(self):
         return dir(DataFrame) + self.columns.values + ["columns"]
@@ -759,8 +763,6 @@ class DataFrame(UserDict):
             return self.validate_key(key.values)
         if isinstance(key, list):
             return self.validate_key(array(key))
-        if isinstance(key, tuple):
-            raise TypeError("DataFrame does not support tuple keys")
         
         if isinstance(key, slice):
             if key.start is not None and key.start < 0:
@@ -770,8 +772,8 @@ class DataFrame(UserDict):
             return key
 
         if is_supported_scalar(key):
-            if len(self.columns) != 0 and dtype(type(key)) != dtype(type(self.columns[0])):
-                raise TypeError("Expected key of type {}, received {}".format(type(self.columns[0]), type(key)))
+            if len(self._columns) != 0 and dtype(type(key)) != dtype(type(self._columns[0])):
+                raise TypeError("Expected key of type {}, received {}".format(type(self._columns[0]), type(key)))
             return key
         
         if isinstance(key, pdarray) and key.dtype == akbool:
@@ -788,8 +790,8 @@ class DataFrame(UserDict):
         raise TypeError("Indexing with keys of type {} not supported".format(type(key)))
 
     def column_label_type(self):
-        if len(self.columns) != 0:
-            return type(self.columns[0])
+        if len(self._columns) != 0:
+            return type(self._columns[0])
         else:
             return type(None)
         
@@ -804,11 +806,11 @@ class DataFrame(UserDict):
         
         # if a scalar argument, return a Series
         if is_supported_scalar(key):
-            if key not in self.columns:
+            if key not in self._columns:
                 raise KeyError("column {} not present in DataFrame".format(key))
             values = UserDict.__getitem__(self, key)
             index = self.index
-            return Series(index=index, data=values)
+            return Series(values, index=index)
 
         # boolean mask
         if isinstance(key, pdarray) and key.dtype == akbool:
@@ -859,11 +861,21 @@ class DataFrame(UserDict):
         if self._empty:
             add_index = True
 
-        # Update or insert a single column into the dataframe
         key = self.validate_key(key)
         value = self.validate_value(value)
-        
-        
+
+        #adding first column
+        if len(self._columns) == 0 and is_supported_scalar(key):
+            print("adding first column. \nkey", key, "\nvalue: ", value)
+            self._columns.append(key)
+            self._empty = False
+            if is_supported_scalar(value):
+                value = full(1, value)
+            UserDict.__setitem__(self, key, value)
+            self._set_index(Index(arange(len(value))))
+            self.update_nrows()
+            return
+        # Update or insert a single column into the dataframe
         if isinstance(key, self.column_label_type()):
             if is_supported_scalar(value):
                 value = full(len(self), value, dtype=dtype(type(value)))
@@ -874,10 +886,7 @@ class DataFrame(UserDict):
             if key not in self.columns:
                 self._empty = False
                 self._columns.append(key)
-            else:
-                # Check that values match the column type
-                if value.dtype != UserDict.__getitem__(self,key).dtype:
-                    raise TypeError("Column {} has type {}, received {}".format(key, UserDict.__getitem__(self,key).dtype, value.dtype))
+            
             UserDict.__setitem__(self, key, value)
             
             
@@ -894,8 +903,8 @@ class DataFrame(UserDict):
             mask_size = counts[-1] if len(counts) == 2 or ( len(counts) == 1 and counts[0] == True) else 0
             if len(value) != mask_size:
                 raise ValueError("Boolean mask length must match DataFrame length")
-            
-            pass
+            #TODO: actually do the assignment?
+            return
 
         if isinstance(key, (pdarray,Strings)):
             #TODO: 
@@ -911,6 +920,9 @@ class DataFrame(UserDict):
                     self._empty = False
                     self._columns.append(k)
                 UserDict.__setitem__(self, k, v)
+            return
+        
+        raise TypeError("Setting on dataframe with unexpected type: {}".format(type(key)))
 
     @property
     def loc(self):
@@ -919,6 +931,14 @@ class DataFrame(UserDict):
     @property
     def iloc(self):
         return ILocIndexer(self)
+    
+    @property
+    def at(self) -> AtIndexer:
+        return AtIndexer(self)
+    
+    @property
+    def iat(self) -> IAtIndexer:
+        return IAtIndexer(self)
     
     def set_row(self, key, value):
 
@@ -1024,10 +1044,10 @@ class DataFrame(UserDict):
         if self._nrows <= maxrows:
             newdf = DataFrame()
             for col in self._columns:
-                if isinstance(self[col], Categorical):
-                    newdf[col] = self[col].categories[self[col].codes]
+                if isinstance(self[col].values, Categorical):
+                    newdf[col] = self[col].values.categories[self[col].values.codes]
                 else:
-                    newdf[col] = self[col]
+                    newdf[col] = self[col].values
             newdf._set_index(self.index)
             return newdf.to_pandas(retain_index=True)
         # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
@@ -1036,22 +1056,22 @@ class DataFrame(UserDict):
         )
         msg_list = []
         for col in self._columns:
-            if isinstance(self[col], Categorical):
-                msg_list.append(f"Categorical+{col}+{self[col].codes.name}+{self[col].categories.name}")
-            elif isinstance(self[col], SegArray):
-                msg_list.append(f"SegArray+{col}+{self[col].segments.name}+{self[col].values.name}")
-            elif isinstance(self[col], Strings):
-                msg_list.append(f"Strings+{col}+{self[col].name}")
-            elif isinstance(self[col], Fields):
-                msg_list.append(f"Fields+{col}+{self[col].name}")
-            elif isinstance(self[col], IPv4):
-                msg_list.append(f"IPv4+{col}+{self[col].name}")
-            elif isinstance(self[col], Datetime):
-                msg_list.append(f"Datetime+{col}+{self[col].name}")
-            elif isinstance(self[col], BitVector):
-                msg_list.append(f"BitVector+{col}+{self[col].name}")
+            if isinstance(self[col].values, Categorical):
+                msg_list.append(f"Categorical+{col}+{self[col].values.codes.name}+{self[col].values.categories.name}")
+            elif isinstance(self[col].values, SegArray):
+                msg_list.append(f"SegArray+{col}+{self[col].values.segments.name}+{self[col].values.values.name}")
+            elif isinstance(self[col].values, Strings):
+                msg_list.append(f"Strings+{col}+{self[col].values.name}")
+            elif isinstance(self[col].values, Fields):
+                msg_list.append(f"Fields+{col}+{self[col].values.name}")
+            elif isinstance(self[col].values, IPv4):
+                msg_list.append(f"IPv4+{col}+{self[col].values.name}")
+            elif isinstance(self[col].values, Datetime):
+                msg_list.append(f"Datetime+{col}+{self[col].values.name}")
+            elif isinstance(self[col].values, BitVector):
+                msg_list.append(f"BitVector+{col}+{self[col].values.name}")
             else:
-                msg_list.append(f"pdarray+{col}+{self[col].name}")
+                msg_list.append(f"pdarray+{col}+{self[col].values.name}")
 
         repMsg = cast(
             str,
@@ -1081,11 +1101,11 @@ class DataFrame(UserDict):
             elif t == "Fields":
                 df_dict[msg[1]] = Fields(
                     create_pdarray(msg[2]),
-                    self[msg[1]].names,
-                    MSB_left=self[msg[1]].MSB_left,
-                    pad=self[msg[1]].padchar,
-                    separator=self[msg[1]].separator,
-                    show_int=self[msg[1]].show_int,
+                    self[msg[1]].values.names,
+                    MSB_left=self[msg[1]].values.MSB_left,
+                    pad=self[msg[1]].values.padchar,
+                    separator=self[msg[1]].values.separator,
+                    show_int=self[msg[1]].values.show_int,
                 )
             elif t == "IPv4":
                 df_dict[msg[1]] = IPv4(create_pdarray(msg[2]))
@@ -1094,8 +1114,8 @@ class DataFrame(UserDict):
             elif t == "BitVector":
                 df_dict[msg[1]] = BitVector(
                     create_pdarray(msg[2]),
-                    width=self[msg[1]].width,
-                    reverse=self[msg[1]].reverse,
+                    width=self[msg[1]].values.width,
+                    reverse=self[msg[1]].values.reverse,
                 )
             else:
                 df_dict[msg[1]] = create_pdarray(msg[2])
@@ -1443,6 +1463,7 @@ class DataFrame(UserDict):
         if len(obj._columns) == 0:
             obj._set_index(None)
             obj._empty = True
+        print("update rows obj:", obj)
         obj.update_nrows()
 
         if not inplace:
@@ -1520,9 +1541,9 @@ class DataFrame(UserDict):
 
         if keep == "last":
             _segment_ends = concatenate([gp.segments[1:] - 1, array([gp.permutation.size - 1])])
-            return self[gp.permutation[_segment_ends]]
+            return self.iloc[gp.permutation[_segment_ends]]
         else:
-            return self[gp.permutation[gp.segments]]
+            return self.iloc[gp.permutation[gp.segments]]
 
     @property
     def size(self):
@@ -1826,8 +1847,9 @@ class DataFrame(UserDict):
 
         """
 
+        print("self for reset:", self)
         obj = self if inplace else self.copy()
-
+        print("reseting obj: ", obj)
         if not size:
             obj.update_nrows()
             obj._set_index(arange(obj._nrows))
@@ -1895,6 +1917,28 @@ class DataFrame(UserDict):
             rows = " row"
         return "DataFrame([" + keystr + "], {:,}".format(self._nrows) + rows + ", " + str(mem) + ")"
 
+    def items(self):
+        """
+        Iterate over (column name, column) pairs.
+
+        Returns
+        -------
+        generator
+            A generator of (column name, column) pairs.
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
+        >>> for key, value in df.items():
+        ...     print(key, value)
+        col1 [1 2]
+        col2 [3 4]
+        """
+        for key in self._columns:
+            yield key, UserDict.__getitem__(self, key)
     def update_nrows(self):
         """
         Computes the number of rows on the arkouda server and updates the size parameter.
@@ -1904,7 +1948,7 @@ class DataFrame(UserDict):
             if val is not None:
                 sizes.add(val.size)
         if len(sizes) > 1:
-            raise ValueError("Size mismatch in DataFrame columns.")
+            raise ValueError("Size mismatch in DataFrame columns: ", sizes, ".")
         if len(sizes) == 0:
             self._nrows = None
         else:
@@ -2218,13 +2262,13 @@ class DataFrame(UserDict):
             tmp_data = {}
             for key in keylist:
                 try:
-                    tmp_data[key] = util_concatenate([self[key], other[key]], ordered=ordered)
+                    tmp_data[key] = util_concatenate([self[key], other[key]], ordered=ordered).values
                 except TypeError as e:
                     raise TypeError(
                         f"Incompatible types for column {key}: {type(self[key])} vs {type(other[key])}"
                     ) from e
             self.data = tmp_data
-
+            self._set_index(self.index.concat(other.index))
         # Clean up
         self.update_nrows()
         self.reset_index(inplace=True)
@@ -2261,6 +2305,7 @@ class DataFrame(UserDict):
         for col in columnlist:
             try:
                 ret[col] = util_concatenate([df[col] for df in items], ordered=ordered)
+                print(ret[col])
             except TypeError:
                 raise TypeError(f"Incompatible types for column {col}")
         return ret
@@ -2709,7 +2754,7 @@ class DataFrame(UserDict):
         # Proceed with conversion if possible
         pandas_data = {}
         for key in self._columns:
-            val = self[key]
+            val = self[key].values
             try:
                 # in order for proper pandas functionality, SegArrays must be seen as 1d
                 # and therefore need to be converted to list
@@ -3410,15 +3455,15 @@ class DataFrame(UserDict):
         if self._empty:
             return array([], dtype=akint64)
         if ascending:
-            return argsort(self[key])
+            return argsort(self.data[key])
         else:
-            if isinstance(self[key], pdarray) and self[key].dtype in (
+            if isinstance(self.data[key], pdarray) and self.data[key].dtype in (
                 akint64,
                 akfloat64,
             ):
-                return argsort(-self[key])
+                return argsort(-self.data[key])
             else:
-                return argsort(self[key])[arange(self._nrows - 1, -1, -1)]
+                return argsort(self.data[key])[arange(self._nrows - 1, -1, -1)]
 
     def coargsort(self, keys, ascending=True):
         """
@@ -3463,7 +3508,7 @@ class DataFrame(UserDict):
             return array([], dtype=akint64)
         arrays = []
         for key in keys:
-            arrays.append(self[key])
+            arrays.append(self[key].values)
         i = coargsort(arrays)
         if not ascending:
             i = i[arange(self._nrows - 1, -1, -1)]
@@ -3477,7 +3522,7 @@ class DataFrame(UserDict):
         else:
             new_index = Index(self.index[idx])
 
-        return DataFrame(self[idx], index=new_index)
+        return DataFrame(self.iloc[idx], index=new_index)
 
     def sort_index(self, ascending=True):
         """
@@ -3602,7 +3647,7 @@ class DataFrame(UserDict):
             i = self.coargsort(by, ascending=ascending)
         else:
             raise TypeError("Column name(s) must be str or list/tuple of str")
-        return self[i]
+        return self.get_rows(i)
 
     def apply_permutation(self, perm):
         """
@@ -3807,20 +3852,16 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         """
-
         if deep:
             res = DataFrame()
             res._size = self._nrows
             res._bytes = self._bytes
             res._empty = self._empty
-            res._columns = self._columns[:]  # if this is not a slice, droping columns modifies both
 
-            for key, val in self.items():
-                res[key] = val[:]
-
+            for col in self._columns:
+                res[col] = self[col].iloc[:]
             # if this is not a slice, renaming indexes with update both
             res._set_index(Index(self.index.index[:]))
-
             return res
         else:
             return DataFrame(self)
@@ -4099,7 +4140,7 @@ class DataFrame(UserDict):
         args = {
             "size": len(self.columns.values),
             "columns": self.columns.values,
-            "data_names": [numeric_help(self[c]) for c in self.columns.values],
+            "data_names": [numeric_help(self[c].values) for c in self.columns.values],
         }
 
         ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
@@ -4627,7 +4668,7 @@ class LocIndexer:
         if isinstance(key, slice):
             if key.start is not None and not (in1d(array([key.start]), self.df.index.values)):
                 raise ValueError(f"Index {key.start} not found in DataFrame index")
-            if key.stop is not None and not any(in1d(array([key.stop]), self.df.index.values)):
+            if key.stop is not None and not akany(in1d(array([key.stop]), self.df.index.values)):
                 raise ValueError(f"Index {key.stop} not found in DataFrame index")
             
             start_idx = indexof1d(array([key.start]), self.df.index.values)[0] if key.start is not None else 0
@@ -4675,7 +4716,7 @@ class LocIndexer:
         if is_supported_scalar(row_key):
             if not self.df.index.dtype == dtype(type(row_key)):
                 raise TypeError("Row key must be of the same type as the DataFrame index")
-            if any(in1d(array([row_key]), self.df.index.values, invert=True)):
+            if akany(in1d(array([row_key]), self.df.index.values, invert=True)):
                 self.df.add_new_rows(row_key)
             # updating a single row
             row_idx = indexof1d(array([row_key]), self.df.index.values)
@@ -4685,7 +4726,7 @@ class LocIndexer:
             self.df.data[col_key][row_idx] = val
         
         if isinstance(row_key, pdarray) and row_key.dtype == self.df.index.dtype:
-            if any(in1d(row_key, self.df.index.values, invert=True)):
+            if akany(in1d(row_key, self.df.index.values, invert=True)):
                 self.df.add_new_rows(row_key)
             # updating multiple rows
             row_idx = indexof1d(row_key, self.df.index.values)
@@ -4696,7 +4737,7 @@ class LocIndexer:
         if isinstance(row_key, slice):
             if row_key.start is not None and not (in1d(array([row_key.start]), self.df.index.values)):
                 raise ValueError(f"Index {row_key.start} not found in DataFrame index")
-            if row_key.stop is not None and not any(in1d(array([row_key.stop]), self.df.index.values)):
+            if row_key.stop is not None and not akany(in1d(array([row_key.stop]), self.df.index.values)):
                 raise ValueError(f"Index {row_key.stop} not found in DataFrame index")
             
             start_idx = indexof1d(array([row_key.start]), self.df.index.values)[0] if row_key.start is not None else 0
@@ -4714,7 +4755,7 @@ class LocIndexer:
             self.df.data[col_key][aligned_indices] = val.values
             return
         if isinstance(row_key, pdarray) and row_key.dtype == self.df.index.dtype:
-            if any(in1d(row_key, self.df.index.values, invert=True)):
+            if akany(in1d(row_key, self.df.index.values, invert=True)):
                 self.df.add_new_rows(row_key)
             # updating multiple rows
             row_idx = indexof1d(row_key, self.df.index.values)
@@ -4722,7 +4763,7 @@ class LocIndexer:
         if isinstance(row_key, slice):
             if row_key.start is not None and not (in1d(array([row_key.start]), self.df.index.values)):
                 raise ValueError(f"Index {row_key.start} not found in DataFrame index")
-            if row_key.stop is not None and not any(in1d(array([row_key.stop]), self.df.index.values)):
+            if row_key.stop is not None and not akany(in1d(array([row_key.stop]), self.df.index.values)):
                 raise ValueError(f"Index {row_key.stop} not found in DataFrame index")
             
             start_idx = indexof1d(array([row_key.start]), self.df.index.values)[0] if row_key.start is not None else 0
@@ -4753,7 +4794,7 @@ class ILocIndexer:
         
         if isinstance(key, pdarray):
             if key.dtype == akint64:
-                if any(key < -len(self.df)) or any(key >= len(self.df)):
+                if akany(key < -len(self.df)) or akany(key >= len(self.df)):
                     raise IndexError("Index out of range")
                 return self.df.get_rows(key)
             if key.dtype == akbool:
@@ -4833,7 +4874,7 @@ class ILocIndexer:
             row_indices = array([row_key])
         elif isinstance(row_key, pdarray):
             if row_key.dtype == akint64:
-                if any(row_key < -len(self.df)) or any(row_key >= len(self.df)):
+                if akany(row_key < -len(self.df)) or akany(row_key >= len(self.df)):
                     raise IndexError("Index out of range")
                 row_indices = row_key
             elif row_key.dtype == akbool:
@@ -4865,8 +4906,53 @@ class ILocIndexer:
         else:
             raise ValueError("Invalid value type: {}".format(type(val)))
         
-        
-    
+class AtIndexer:
+
+    def __init__(self, df) -> None:
+        self.df = df
+    def __getitem__(self, key):
+        if not isinstance(key, tuple) or len(key) != 2:
+            raise ValueError(".at requires a row key and a column key")
+        (row,col) = key
+        if not is_supported_scalar(row):
+            raise ValueError(".at only supports scalar row keys")
+        if not is_supported_scalar(col):
+            raise ValueError(".at only supports scalar column keys")
+        return self.df.loc[row,col]
+
+    def __setitem__(self, key, val):
+        if not isinstance(key, tuple) or len(key) != 2:
+            raise ValueError(".at requires a row key and a column key")
+        (row,col) = key
+        if not is_supported_scalar(row):
+            raise ValueError(".at only supports scalar row keys")
+        if not is_supported_scalar(col):
+            raise ValueError(".at only supports scalar column keys")
+        self.df.loc[row,col] = val
+
+class IAtIndexer:
+    def __init__(self, df) -> None:
+        self.df = df
+
+    def __getitem__(self, key):
+        if not isinstance(key, tuple) or len(key) != 2:
+            raise ValueError(".iat requires a row key and a column key")
+        (row,col) = key
+        if not isinstance(row, int):
+            raise ValueError(".iat requires integer row keys")
+        if not isinstance(col, int):
+            raise ValueError(".iat requires integer column keys")
+        return self.df.iloc[row,col]
+
+    def __setitem__(self, key, val):
+        if not isinstance(key, tuple) or len(key) != 2:
+            raise ValueError(".iat requires a row key and a column key")
+        (row,col) = key
+        if not is_supported_scalar(row):
+            raise ValueError(".iat requires integer row keys")
+        if not is_supported_scalar(col):
+            raise ValueError(".iat requires integer column keys")
+        self.df.iloc[row,col] = val
         
 def intx(a, b):
     """
@@ -5160,12 +5246,12 @@ def _inner_join_merge(
     """
     left_cols, right_cols = left.columns.values.copy(), right.columns.values.copy()
     if isinstance(on, str):
-        left_inds, right_inds = inner_join(left[on], right[on])
+        left_inds, right_inds = inner_join(left[on].values, right[on].values)
         new_dict = {on: left[on][left_inds]}
         left_cols.remove(on)
         right_cols.remove(on)
     else:
-        left_inds, right_inds = inner_join([left[col] for col in on], [right[col] for col in on])
+        left_inds, right_inds = inner_join([left[col].values for col in on], [right[col].values for col in on])
         new_dict = {col: left[col][left_inds] for col in on}
         for col in on:
             left_cols.remove(col)
@@ -5218,13 +5304,13 @@ def _right_join_merge(
     in_left = _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix)
     in_left_cols, left_cols = in_left.columns.values.copy(), left.columns.values.copy()
     if isinstance(on, str):
-        left_at_on = left[on]
-        right_at_on = right[on]
+        left_at_on = left[on].values
+        right_at_on = right[on].values
         left_cols.remove(on)
         in_left_cols.remove(on)
     else:
-        left_at_on = [left[col] for col in on]
-        right_at_on = [right[col] for col in on]
+        left_at_on = [left[col].values for col in on]
+        right_at_on = [right[col].values for col in on]
         for col in on:
             left_cols.remove(col)
             in_left_cols.remove(col)
@@ -5239,8 +5325,8 @@ def _right_join_merge(
     for col in nan_cols:
         # Create a nan array for all values not in the left df
         nan_arr = full(len(not_in_left), np.nan)
-        if in_left[col].dtype == int:
-            in_left[col] = akcast(in_left[col], akfloat64)
+        if in_left[col].values.dtype == int:
+            in_left[col] = akcast(in_left[col].values, akfloat64)
         else:
             nan_arr = akcast(nan_arr, in_left[col].dtype)
         not_in_left[col] = nan_arr
@@ -5380,7 +5466,7 @@ def merge(
 
     if not isinstance(on, str):
         if not all(
-            isinstance(left[col], (pdarray, Strings)) and isinstance(right[col], (pdarray, Strings))
+            isinstance(left[col].values, (pdarray, Strings)) and isinstance(right[col].values, (pdarray, Strings))
             for col in on
         ):
             raise ValueError("All columns of a multi-column merge must be pdarrays")

@@ -17,6 +17,7 @@ from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import value_counts
+from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import (
     RegistrationError,
     any,
@@ -132,7 +133,7 @@ class Series:
     @typechecked
     def __init__(
         self,
-        data: Union[Tuple, List, groupable_element_type],
+        data: Union[Tuple, List, groupable_element_type, Series, SegArray],
         name=None,
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
@@ -141,17 +142,22 @@ class Series:
             # handles the previous `ar_tuple` case
             if not isinstance(data[0], (pdarray, Index, Strings, Categorical, list, tuple)):
                 raise TypeError("indices must be a pdarray, Strings, Categorical, List, or Tuple")
-            if not isinstance(data[1], (pdarray, Strings, Categorical)):
-                raise TypeError("values must be a pdarray, Strings, or Categorical")
-            self.values = data[1]
+            if not isinstance(data[1], (pdarray, Strings, Categorical, Series, SegArray)):
+                raise TypeError("values must be a pdarray, Strings, SegArray, or Categorical")
+            self.values = data[1] if not isinstance(data[1], Series) else data[1].values
             self.index = Index.factory(index) if index else Index.factory(data[0])
         else:
             # When only 1 positional argument it will be treated as data and not index
-            self.values = array(data) if not isinstance(data, (Strings, Categorical)) else data
+            if isinstance(data, Series):
+                self.values = data.values
+            elif not isinstance(data, (Strings, Categorical, SegArray)):
+                self.values = array(data)
+            else:
+                self.values = data
             self.index = Index.factory(index) if index is not None else Index(arange(self.values.size))
 
         if self.index.size != self.values.size:
-            raise ValueError("Index size does not match data size")
+            raise ValueError("Index size does not match data size: {} != {}".format(self.index.size, self.values.size))
         self.name = name
         self.size = self.index.size
 
@@ -226,8 +232,8 @@ class Series:
         if is_supported_scalar(key):  # type: ignore
             if dtype(type(key)) != self.index.dtype:
                 raise TypeError(
-                    "Unexpected key type. Received {} but expected {}".format(
-                        dtype(type(key)), self.index.dtype
+                    "Unexpected key type. Received {} but expected {}. key: {}".format(
+                        dtype(type(key)), self.index.dtype, key
                     )
                 )
         elif isinstance(key, Strings):
@@ -252,15 +258,24 @@ class Series:
                         dtype(type(key)), self.index.dtype
                     )
                 )
-
+        elif isinstance(key, slice):
+            start = key.start if key.start is not None else 0
+            stop = key.stop if key.stop is not None else self.size
+            if start < 0:
+                raise IndexError("Slice start must be non-negative")
+            if stop > self.size:
+                raise IndexError("Slice stop must be less than or equal to the size of the Series")
+            if start > stop:
+                raise IndexError("Slice start must be less than or equal to the stop")
+            key = arange(start, stop)
         else:
             raise TypeError(
-                "Series [] only supports indexing by scalars, lists of scalars, and arrays of scalars."
+                "Series [] only supports indexing by scalars, lists of scalars, and arrays of scalars. Received {}".format(type(key))
             )
         return key
 
     @typechecked
-    def __getitem__(self, _key: Union[supported_scalars, pdarray, Strings, List]):
+    def __getitem__(self, _key: Union[supported_scalars, pdarray, Strings, List, SegArray]):
         """
         Gets values from Series.
 
@@ -388,6 +403,7 @@ class Series:
                 )
             self.values[indices] = val
             return
+        
 
     def has_repeat_labels(self) -> bool:
         """
@@ -396,6 +412,12 @@ class Series:
         tf, counts = GroupBy(self.index.values).count()
         return counts.size != self.index.size
 
+    def to_ndarray(self):
+        return self.values.to_ndarray()
+    
+    @property
+    def ndim(self):
+        return 1
     @property
     def loc(self) -> _LocIndexer:
         """
@@ -452,6 +474,9 @@ class Series:
         # mimic the pandas return of series shape property
         return (self.values.size,)
 
+    @property
+    def dtype(self):
+        return self.values.dtype
     @typechecked
     def isin(self, lst: Union[pdarray, Strings, List]) -> Series:
         """Find series elements whose values are in the specified list
@@ -947,6 +972,7 @@ class Series:
         axis: int = 0,
         index_labels: List[str] = None,
         value_labels: List[str] = None,
+        ordered=False
     ) -> Union[arkouda.dataframe.DataFrame, Series]:
         """Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
         vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
@@ -1098,8 +1124,19 @@ class _iLocIndexer:
         elif isinstance(key, int):
             if key >= self.series.size:
                 raise IndexError("{} cannot enlarge its target object.".format(self.name))
+        elif isinstance(key, slice):
+            start = key.start if key.start is not None else 0
+            stop = key.stop if key.stop is not None else self.series.size
+            if start < 0:
+                raise IndexError("Slice start must be non-negative")
+            if stop > self.series.size:
+                raise IndexError("Slice stop must be less than or equal to the size of the Series")
+            if start > stop:
+                raise IndexError("Slice start must be less than or equal to the stop")
+            key = arange(start, stop)
         else:
             raise TypeError(".{} requires integer keys".format(self.name))
+        
         return key
 
     def validate_val(self, val) -> Union[pdarray, supported_scalars]:
