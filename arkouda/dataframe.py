@@ -888,6 +888,7 @@ class DataFrame(UserDict):
                 self._columns.append(key)
             
             UserDict.__setitem__(self, key, value)
+            return
             
             
 
@@ -1463,7 +1464,7 @@ class DataFrame(UserDict):
         if len(obj._columns) == 0:
             obj._set_index(None)
             obj._empty = True
-        print("update rows obj:", obj)
+
         obj.update_nrows()
 
         if not inplace:
