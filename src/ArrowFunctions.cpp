@@ -853,28 +853,18 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           static_cast<parquet::DoubleReader*>(column_reader.get());
         startIdx -= reader->Skip(startIdx);
 
-        if (max_def != 0) {
-          // nulls are in this col
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize)
-              batchSize = numElems - i;
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-            i+=values_read;
+        while (reader->HasNext() && i < numElems) {
+          std::cout << "reading " << i << std::endl;
+          double value;
+          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          // if values_read is 0, that means that it was a null value
+          if(values_read > 0) {
+            // this means it wasn't null
+            chpl_ptr[i] = value;
+          } else {
+            chpl_ptr[i] = NAN;
           }
-        } else {
-          while (reader->HasNext() && i < numElems) {
-            double value;
-            (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-            // if values_read is 0, that means that it was a null value
-            if(values_read > 0) {
-              // this means it wasn't null
-              chpl_ptr[i] = value;
-
-            } else {
-              chpl_ptr[i] = NAN;
-            }
-            i++;
-          }
+          i++;
         }
       } else if(ty == ARROWDECIMAL) {
         auto chpl_ptr = (double*)chpl_arr;
