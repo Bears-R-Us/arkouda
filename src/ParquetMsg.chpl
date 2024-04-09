@@ -794,7 +794,7 @@ module ParquetMsg {
       var locNumRowGroups: [numRowGroups.localSubdomain()] int = numRowGroups[numRowGroups.localSubdomain()];
       var locStartIdxs: [startIdxs.localSubdomain()] [0..#maxRowGroups] int = startIdxs[startIdxs.localSubdomain()];
       var locSubdoms = subdoms;
-      
+
       forall i in locNumRowGroups.domain {
         var numRgs = locNumRowGroups[i];
         for rg in 0..#numRgs {
