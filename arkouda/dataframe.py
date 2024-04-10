@@ -5241,22 +5241,22 @@ def _inner_join_merge(
     left_cols, right_cols = left.columns.values.copy(), right.columns.values.copy()
     if isinstance(on, str):
         left_inds, right_inds = inner_join(left[on].values, right[on].values)
-        new_dict = {on: left[on][left_inds]}
+        new_dict = {on: left[on].iloc[left_inds]}
         left_cols.remove(on)
         right_cols.remove(on)
     else:
         left_inds, right_inds = inner_join([left[col].values for col in on], [right[col].values for col in on])
-        new_dict = {col: left[col][left_inds] for col in on}
+        new_dict = {col: left[col].iloc[left_inds] for col in on}
         for col in on:
             left_cols.remove(col)
             right_cols.remove(col)
 
     for col in left_cols:
         new_col = col + left_suffix if col in col_intersect else col
-        new_dict[new_col] = left[col][left_inds]
+        new_dict[new_col] = left[col].iloc[left_inds]
     for col in right_cols:
         new_col = col + right_suffix if col in col_intersect else col
-        new_dict[new_col] = right[col][right_inds]
+        new_dict[new_col] = right[col].iloc[right_inds]
     return DataFrame(new_dict)
 
 
