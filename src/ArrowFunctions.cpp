@@ -129,7 +129,8 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
     else if(myType->id() == arrow::Type::BOOL)
       return ARROWBOOLEAN;
     else if(myType->id() == arrow::Type::STRING ||
-            myType->id() == arrow::Type::BINARY)
+            myType->id() == arrow::Type::BINARY ||
+            myType->id() == arrow::Type::LARGE_STRING)
       return ARROWSTRING;
     else if(myType->id() == arrow::Type::FLOAT)
       return ARROWFLOAT;
@@ -202,7 +203,8 @@ int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
         else if(f_type->id() == arrow::Type::BOOL)
           return ARROWBOOLEAN;
         else if(f_type->id() == arrow::Type::STRING ||
-                f_type->id() == arrow::Type::BINARY)  // Verify that this is functional as expected
+                f_type->id() == arrow::Type::BINARY ||
+                f_type->id() == arrow::Type::LARGE_STRING)  // Verify that this is functional as expected
           return ARROWSTRING;
         else if(f_type->id() == arrow::Type::FLOAT)
           return ARROWFLOAT;
@@ -845,36 +847,23 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           delete[] rep_lvl;
         }
       } else if(ty == ARROWDOUBLE) {
+        int16_t definition_level; // nullable type and only reading single records in batch
         auto chpl_ptr = (double*)chpl_arr;
         parquet::DoubleReader* reader =
           static_cast<parquet::DoubleReader*>(column_reader.get());
         startIdx -= reader->Skip(startIdx);
 
         while (reader->HasNext() && i < numElems) {
-          if((numElems - i) < batchSize) // adjust batchSize if needed
-            batchSize = numElems - i;
-
-          // define def and rep level tracking to the batch size. This is required to detect NaN
-          int16_t* def_lvl = new int16_t[batchSize] { 0 };
-          int16_t* rep_lvl = new int16_t[batchSize] { 0 };
-
-          double* tmpArr = new double[batchSize] { 0 }; // this will not include NaN values
-          int64_t idx_adjust = 0; // adjustment for NaNs encountered so index into tmpArr is correct
-          (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
-          // copy values into our Chapel array
-          for (int64_t j = 0; j < batchSize; j++){
-            // when definition level is 0, mean Null which equated to NaN here unless 0 is the max meaning no null/nan values
-            if (max_def != 0 && def_lvl[j] == 0) {
-              chpl_ptr[i] = NAN;
-              idx_adjust++; // account for the NaN at the indexes after because tmpArr only stores values
-            } else {
-              chpl_ptr[i] = tmpArr[j-idx_adjust];
-            }
-            i++;
+          double value;
+          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          // if values_read is 0, that means that it was a null value
+          if(values_read > 0) {
+            // this means it wasn't null
+            chpl_ptr[i] = value;
+          } else {
+            chpl_ptr[i] = NAN;
           }
-          delete[] tmpArr;
-          delete[] def_lvl;
-          delete[] rep_lvl;
+          i++;
         }
       } else if(ty == ARROWDECIMAL) {
         auto chpl_ptr = (double*)chpl_arr;
@@ -1949,7 +1938,8 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, bool readNested
          sc->field(i)->type()->id() == arrow::Type::FLOAT ||
          sc->field(i)->type()->id() == arrow::Type::DOUBLE ||
          (sc->field(i)->type()->id() == arrow::Type::LIST && readNested) ||
-         sc->field(i)->type()->id() == arrow::Type::DECIMAL
+         sc->field(i)->type()->id() == arrow::Type::DECIMAL ||
+         sc->field(i)->type()->id() == arrow::Type::LARGE_STRING
          ) {
         if(!first)
           fields += ("," + sc->field(i)->name());

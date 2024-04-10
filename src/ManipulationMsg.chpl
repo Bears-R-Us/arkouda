@@ -1116,7 +1116,6 @@ module ManipulationMsg {
     proc this(idx: (ndIn-1)*int): ndIn*int {
       var ret: ndIn*int;
       var i = 0;
-
       for param ii in 0..<ndIn {
         if ii == axis {
           ret[ii] = arrIdx;

@@ -148,8 +148,10 @@ class TestSeries:
 
     def test_concat(self):
         s = ak.Series(ak.arange(5))
-        s2 = ak.Series(ak.arange(5, 11), ak.arange(5, 11))
-        s3 = ak.Series(ak.arange(5, 10), ak.arange(5, 10))
+        # added data= and index= clarifiers to the next two lines.
+        # without them, the index was interpreted as the name.
+        s2 = ak.Series(data=ak.arange(5, 11), index=ak.arange(5, 11))
+        s3 = ak.Series(data=ak.arange(5, 10), index=ak.arange(5, 10))
 
         df = ak.Series.concat([s, s2], axis=1)
         assert isinstance(df, ak.DataFrame)

@@ -371,7 +371,7 @@ module ServerConfig
                           lineNumber=getLineNumber(),
                           routineName=getRoutineName(),
                           moduleName=getModuleName(),
-                          errorClass="ErrorWithContext");                                        
+                          errorClass="OverMemoryLimitError");
             }        
         }
         
@@ -412,7 +412,7 @@ module ServerConfig
                               lineNumber=getLineNumber(),
                               routineName=getRoutineName(),
                               moduleName=getModuleName(),
-                              errorClass="ErrorWithContext");                                        
+                              errorClass="OverMemoryLimitError");
                 }
             } else {
                 if !isMemAvailable(additionalAmount) {
@@ -424,7 +424,7 @@ module ServerConfig
                               lineNumber=getLineNumber(),
                               routineName=getRoutineName(),
                               moduleName=getModuleName(),
-                              errorClass="ErrorWithContext");                                     
+                              errorClass="OverMemoryLimitError");
                 }
             }
         }

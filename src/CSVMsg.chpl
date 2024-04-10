@@ -155,9 +155,9 @@ module CSVMsg {
     proc writeCSVMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const filename = msgArgs.getValueOf("filename");
         const ndsets = msgArgs.get("num_dsets").getIntValue();
-        var datasets = msgArgs.get("datasets").getList(ndsets);
-        var dtypes = msgArgs.get("dtypes").getList(ndsets);
-        var col_names = msgArgs.get("col_names").getList(ndsets);
+        const datasets = msgArgs.get("datasets").getList(ndsets);
+        const dtypes = msgArgs.get("dtypes").getList(ndsets);
+        const col_names = msgArgs.get("col_names").getList(ndsets);
         const col_delim = msgArgs.getValueOf("col_delim");
         const row_count = msgArgs.get("row_count").getIntValue();
         const overwrite = msgArgs.get("overwrite").getBoolValue();
@@ -197,7 +197,35 @@ module CSVMsg {
             }
         }
 
-        coforall loc in Locales do on loc{
+        // only use 90% of getMemLimit to give ourselves some buffer
+        // these are each per locale measurements
+        const memLim = (getMemLimit() * (.9)):uint;
+        const memUsed = getMemUsed();
+
+        // calculate the amount of memory required to write the csv file all in one go
+        var memRequired: uint = 0;
+        var numStrings = 0;
+        for (cname, dt) in zip(datasets, dtypes) {
+            if dt == "str" {
+                var ss = new SegString("", toSegStringSymEntry(st.lookup(cname)));
+                // strings vals are uint(8), so they're only one byte but overcount
+                // because they're not evenly distributed across locales
+                memRequired += (ss.values.a.size * 1.5):int;
+                numStrings += 1;
+            }
+        }
+        // assume pdarrays are 64 bits / 8 bytes (this is an overestimate for bools, but that's fine)
+        memRequired += ((ndsets-numStrings) * row_count * 8);
+        memRequired = (memRequired:real / numLocales):uint;
+
+        // if we can put the entire df in mem (i.e. memLim > (memUsed + memRequired)), then we can do it all in one go.
+        // Otherwise we can only put (memLim - memUsed) in memory at a time, so that's our batchSize
+        // if memLim > memUsed then we use chunks no bigger than 5% of total memory (memLim is 90% so dividing by 18 gives us 5%)
+        const numBatches = if memLim > memUsed then ceil(memRequired:real / (memLim - memUsed)):int else ceil(memRequired:real / (memLim / 18)):int;
+
+        csvLogger.info(getModuleName(),getRoutineName(),getLineNumber(), "Start csv write with %i batches".doFormat(numBatches));
+
+        coforall loc in Locales do on loc {
             const localeFilename = filenames[loc.id];
             
             // create the file to write to
@@ -208,62 +236,61 @@ module CSVMsg {
             writer.write(CSV_HEADER_OPEN + LINE_DELIM);
             writer.write(",".join(dtypes) + LINE_DELIM);
             writer.write(CSV_HEADER_CLOSE + LINE_DELIM);
-
-            // write the column names
-            var column_header:[0..#ndsets] string;
             writer.write(col_delim.join(col_names) + LINE_DELIM);
 
             // need to get local subdomain -- should be the same for each element due to sizes being same
             var localSubdomain = getLocalDomain(gse);
-
-            var nativeStr: [localSubdomain] string;
-            for (i, cname) in zip(0..#ndsets, datasets) {
-                var col_gen: borrowed GenSymEntry = getGenericTypedArrayEntry(cname, st);
-                select col_gen.dtype {
-                    when DType.Int64 {
-                        var col = toSymEntry(col_gen, int);
-                        nativeStr += [i in col.a.localSlice[localSubdomain]] i:string;
+            const batchSize = (localSubdomain.size / numBatches):int;
+            for N in 0..<numBatches {
+                const batchSlice = if (N != (numBatches - 1)) then (N*batchSize + localSubdomain.first)..<((N+1)*batchSize + localSubdomain.first) else (N*batchSize + localSubdomain.first)..localSubdomain.last;
+                var nativeStr: [batchSlice] string;
+                for (i, cname) in zip(0..#ndsets, datasets) {
+                    var col_gen: borrowed GenSymEntry = getGenericTypedArrayEntry(cname, st);
+                    select col_gen.dtype {
+                        when DType.Int64 {
+                            var col = toSymEntry(col_gen, int);
+                            nativeStr += [i in col.a.localSlice[batchSlice]] i:string;
+                        }
+                        when DType.UInt64 {
+                            var col = toSymEntry(col_gen, uint);
+                            nativeStr += [i in col.a.localSlice[batchSlice]] i:string;
+                        }
+                        when DType.Float64 {
+                            var col = toSymEntry(col_gen, real);
+                            nativeStr += [i in col.a.localSlice[batchSlice]] i:string;
+                        }
+                        when DType.Bool {
+                            var col = toSymEntry(col_gen, bool);
+                            nativeStr += [i in col.a.localSlice[batchSlice]] i:string;
+                        }
+                        when DType.Strings {
+                            var segString:SegString = getSegString(cname, st);
+                            nativeStr += try! [i in batchSlice] segString[i];
+                        } otherwise {
+                            throw getErrorWithContext(
+                                    msg="Data Type %s cannot be written to CSV.".doFormat(dtypes[i]),
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
+                                    errorClass="IOError"
+                            );
+                        }
                     }
-                    when DType.UInt64 {
-                        var col = toSymEntry(col_gen, uint);
-                        nativeStr += [i in col.a.localSlice[localSubdomain]] i:string;
+                    if i != (ndsets - 1) {
+                        nativeStr += col_delim;
                     }
-                    when DType.Float64 {
-                        var col = toSymEntry(col_gen, real);
-                        nativeStr += [i in col.a.localSlice[localSubdomain]] i:string;
-                    }
-                    when DType.Bool {
-                        var col = toSymEntry(col_gen, bool);
-                        nativeStr += [i in col.a.localSlice[localSubdomain]] i:string;
-                    }
-                    when DType.Strings {
-                        var segString:SegString = getSegString(cname, st);
-                        nativeStr += try! [i in localSubdomain] segString[i];
-                    } otherwise {
-                        throw getErrorWithContext(
-                                msg="Data Type %s cannot be written to CSV.".doFormat(dtypes[i]),
-                                lineNumber=getLineNumber(),
-                                routineName=getRoutineName(),
-                                moduleName=getModuleName(),
-                                errorClass="IOError"
-                        );
+                    else {
+                        nativeStr += LINE_DELIM;
                     }
                 }
-                if i != (ndsets - 1) {
-                    nativeStr += col_delim;
+                // TODO might be able to better than looping the elements
+                //  (calling write directly on nativeStr gives spaces between elements)
+                for s in nativeStr {
+                    writer.write(s);
                 }
-                else {
-                    nativeStr += LINE_DELIM;
-                }
-            }
-            // TODO might be able to better than looping the elements
-            //  (calling write directly on nativeStr gives spaces between elements)
-            for s in nativeStr {
-                writer.write(s);
             }
             writer.close();
             csvFile.close();
-
         }
 
         return new MsgTuple("CSV Data written successfully!", MsgType.NORMAL);

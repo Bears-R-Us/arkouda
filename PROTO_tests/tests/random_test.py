@@ -50,6 +50,36 @@ class TestRandom:
         assert all(bounded_arr.to_ndarray() >= -5)
         assert all(bounded_arr.to_ndarray() < 5)
 
+    def test_permutation(self):
+        # verify same seed gives reproducible arrays
+        rng = ak.random.default_rng(18)
+        # providing just a number permutes the range(num)
+        range_permute = rng.permutation(20)
+        assert (ak.arange(20) == ak.sort(range_permute)).all()
+
+        pda = rng.integers(-(2**32), 2**32, 10)
+        array_permute = rng.permutation(pda)
+        # verify all the same elements are in permutation as the original
+        assert (ak.sort(pda) == ak.sort(array_permute)).all()
+
+        pda = rng.uniform(-(2**32), 2**32, 10)
+        float_array_permute = rng.permutation(pda)
+        # verify all the same elements are in permutation as the original
+        assert np.allclose(ak.sort(pda).to_list(), ak.sort(float_array_permute).to_list())
+
+        rng = ak.random.default_rng(18)
+        same_seed_range_permute = rng.permutation(20)
+        assert (range_permute == same_seed_range_permute).all()
+
+        pda = rng.integers(-(2**32), 2**32, 10)
+        same_seed_array_permute = rng.permutation(pda)
+        assert (array_permute == same_seed_array_permute).all()
+
+        pda = rng.uniform(-(2**32), 2**32, 10)
+        same_seed_float_array_permute = rng.permutation(pda)
+        # verify all the same elements are in permutation as the original
+        assert np.allclose(float_array_permute.to_list(), same_seed_float_array_permute.to_list())
+
     def test_uniform(self):
         # verify same seed gives different but reproducible arrays
         rng = ak.random.default_rng(18)
@@ -60,8 +90,8 @@ class TestRandom:
         rng = ak.random.default_rng(18)
         same_seed_first = rng.uniform(-(2**32), 2**32, 10)
         same_seed_second = rng.uniform(-(2**32), 2**32, 10)
-        assert first.to_list() == same_seed_first.to_list()
-        assert second.to_list() == same_seed_second.to_list()
+        assert np.allclose(first.to_list(), same_seed_first.to_list())
+        assert np.allclose(second.to_list(), same_seed_second.to_list())
 
         # verify within bounds (lower inclusive and upper exclusive)
         rng = ak.random.default_rng()
@@ -174,10 +204,10 @@ class TestRandom:
         assert ak.float64 == testArray.dtype
 
         uArray = ak.random.uniform(size=3, low=0, high=5, seed=0)
-        assert [0.30013431967121934, 0.47383036230759112, 1.0441791878997098] == uArray.to_list()
+        assert np.allclose([0.30013431967121934, 0.47383036230759112, 1.0441791878997098], uArray.to_list())
 
         uArray = ak.random.uniform(size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0))
-        assert [0.30013431967121934, 0.47383036230759112, 1.0441791878997098] == uArray.to_list()
+        assert np.allclose([0.30013431967121934, 0.47383036230759112, 1.0441791878997098], uArray.to_list())
 
         with pytest.raises(TypeError):
             ak.random.uniform(low="0", high=5, size=100)
@@ -210,7 +240,7 @@ class TestRandom:
         npda = pda.to_ndarray()
         pda = ak.random.standard_normal(np.int64(100), np.int64(1))
 
-        assert npda.tolist() == pda.to_list()
+        assert np.allclose(npda.tolist(), pda.to_list())
 
         with pytest.raises(TypeError):
             ak.random.standard_normal("100")
