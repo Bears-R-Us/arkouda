@@ -734,10 +734,10 @@ module ParquetMsg {
     coforall loc in distFiles.targetLocales() with (ref numRowGroups) do on loc {
       var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
       for i in locFiles.domain {
-        c_openFile(c_ptrTo(locFiles[i]), getReaderIdx(i,0));
+        c_openFile(locFiles[i].localize().c_str(), getReaderIdx(i,0));
         numRowGroups[i] = c_getNumRowGroups(getReaderIdx(i,0));
         for j in 2..numRowGroups[i] {
-          c_openFile(c_ptrTo(locFiles[i]), getReaderIdx(i,j-1));
+          c_openFile(locFiles[i].localize().c_str(), getReaderIdx(i,j-1));
         }
       }
     }
@@ -757,7 +757,7 @@ module ParquetMsg {
         var locDsetname = dsetname;
         for rg in 0..#numRowGroups[i] {
           c_createRowGroupReader(rg, getReaderIdx(i,rg));
-          c_createColumnReader(c_ptrTo(locDsetname), getReaderIdx(i,rg));
+          c_createColumnReader(locDsetname.localize().c_str(), getReaderIdx(i,rg));
         }
       }
 
@@ -772,7 +772,7 @@ module ParquetMsg {
 
           var numRead = 0;
 
-          if c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead), c_ptrTo(externalData[i][rg]), c_ptrTo(containsNulls[i][rg]), c_ptrTo(errs[i][1].errMsg)) == ARROWERROR {
+          if c_readParquetColumnChunks(fname.localize().c_str(), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead), c_ptrTo(externalData[i][rg]), c_ptrTo(containsNulls[i][rg]), c_ptrTo(errs[i][1].errMsg)) == ARROWERROR {
             errs[i] = (true, errs[i][1]);
           }
           var tmp: [startIdx..#numRead] int;
