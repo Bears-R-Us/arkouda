@@ -296,6 +296,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">scalar_array</span>
 <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">broadcast_dims</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -304,12 +305,6 @@
 <div class="viewcode-block" id="broadcast_arrays">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_manipulation_functions/index.html#arkouda.array_api._manipulation_functions.broadcast_arrays">[docs]</a>
 <span class="k">def</span> <span class="nf">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">:</span> <span class="n">Array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Array</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.broadcast_arrays &lt;numpy.broadcast_arrays&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">shapes</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span>
     <span class="n">bcShape</span> <span class="o">=</span> <span class="n">shapes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
@@ -347,17 +342,11 @@
 
 
 
-<span class="c1"># Note: the function name is different here</span>
 <div class="viewcode-block" id="concat">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_manipulation_functions/index.html#arkouda.array_api._manipulation_functions.concat">[docs]</a>
 <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span>
     <span class="n">arrays</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Array</span><span class="p">]],</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.concatenate &lt;numpy.concatenate&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO: type promotion across input arrays</span>
 
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
@@ -383,11 +372,6 @@
 <div class="viewcode-block" id="expand_dims">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_manipulation_functions/index.html#arkouda.array_api._manipulation_functions.expand_dims">[docs]</a>
 <span class="k">def</span> <span class="nf">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.expand_dims &lt;numpy.expand_dims&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
             <span class="n">create_pdarray</span><span class="p">(</span>
@@ -411,11 +395,6 @@
 <div class="viewcode-block" id="flip">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_manipulation_functions/index.html#arkouda.array_api._manipulation_functions.flip">[docs]</a>
 <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.flip &lt;numpy.flip&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">axisList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">axisList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">axis</span><span class="p">]</span>
@@ -445,18 +424,25 @@
 <span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span> <span class="o">/</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;moveaxis is not yet implemented&quot;</span><span class="p">)</span></div>
+    <span class="n">perm</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+                <span class="n">perm</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;source and destination must both be tuples if source is a tuple&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">perm</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">destination</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;source and destination must both be integers if source is a tuple&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">permute_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">perm</span><span class="p">))</span></div>
 
 
 
 <div class="viewcode-block" id="permute_dims">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_manipulation_functions/index.html#arkouda.array_api._manipulation_functions.permute_dims">[docs]</a>
 <span class="k">def</span> <span class="nf">permute_dims</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axes</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.transpose &lt;numpy.transpose&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
             <span class="n">create_pdarray</span><span class="p">(</span>
@@ -480,7 +466,28 @@
 <div class="viewcode-block" id="repeat">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_manipulation_functions/index.html#arkouda.array_api._manipulation_functions.repeat">[docs]</a>
 <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">repeats</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Array</span><span class="p">],</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;repeat is not yet implemented&quot;</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">reps</span> <span class="o">=</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">repeats</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">reps</span> <span class="o">=</span> <span class="n">repeats</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
+            <span class="n">create_pdarray</span><span class="p">(</span>
+                <span class="n">cast</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">generic_msg</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;repeatFlat</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+                            <span class="s2">&quot;repeats&quot;</span><span class="p">:</span> <span class="n">reps</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+                        <span class="p">},</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;repeat with &#39;axis&#39; argument is not yet implemented&quot;</span><span class="p">)</span></div>
 
 
 
@@ -489,11 +496,6 @@
 <span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.reshape &lt;numpy.reshape&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># TODO: figure out copying semantics (currently always creates a copy)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -525,11 +527,6 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.roll &lt;numpy.roll&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">axisList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">axisList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">axis</span><span class="p">]</span>
@@ -563,11 +560,6 @@
 <div class="viewcode-block" id="squeeze">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_manipulation_functions/index.html#arkouda.array_api._manipulation_functions.squeeze">[docs]</a>
 <span class="k">def</span> <span class="nf">squeeze</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.squeeze &lt;numpy.squeeze&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nAxes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
@@ -593,11 +585,6 @@
 <div class="viewcode-block" id="stack">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_manipulation_functions/index.html#arkouda.array_api._manipulation_functions.stack">[docs]</a>
 <span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="n">arrays</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Array</span><span class="p">]],</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Array API compatible wrapper for :py:func:`np.stack &lt;numpy.stack&gt;`.</span>
-
-<span class="sd">    See its docstring for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO: type promotion across input arrays</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span>
@@ -620,14 +607,49 @@
 <div class="viewcode-block" id="tile">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_manipulation_functions/index.html#arkouda.array_api._manipulation_functions.tile">[docs]</a>
 <span class="k">def</span> <span class="nf">tile</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">repetitions</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;tile is not yet implemented&quot;</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">repetitions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+        <span class="n">xr</span> <span class="o">=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">repetitions</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">reps</span> <span class="o">=</span> <span class="n">repetitions</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">repetitions</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+        <span class="n">xr</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">reps</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">repetitions</span><span class="p">))</span> <span class="o">+</span> <span class="n">repetitions</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">xr</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">reps</span> <span class="o">=</span> <span class="n">repetitions</span>
+
+    <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
+        <span class="n">create_pdarray</span><span class="p">(</span>
+            <span class="n">cast</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">,</span>
+                <span class="n">generic_msg</span><span class="p">(</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;tile</span><span class="si">{</span><span class="n">xr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+                        <span class="s2">&quot;reps&quot;</span><span class="p">:</span> <span class="n">reps</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="unstack">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/_manipulation_functions/index.html#arkouda.array_api._manipulation_functions.unstack">[docs]</a>
 <span class="k">def</span> <span class="nf">unstack</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;unstack is not yet implemented&quot;</span><span class="p">)</span></div>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">,</span>
+                <span class="n">generic_msg</span><span class="p">(</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;unstack</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+                        <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">,</span>
+                        <span class="s2">&quot;numReturnArrays&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span>
+                    <span class="p">},</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)])</span></div>
 
 </pre></div>
         </article>

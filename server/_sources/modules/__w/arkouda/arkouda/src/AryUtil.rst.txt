@@ -227,3 +227,25 @@ or
 
 .. function:: proc appendAxis(shape: int, axis: int, param value: int): 2*(int) throws
 
+.. function:: proc unflatten(const ref a: [?d] ?t, shape: ?N*int): [] t throws
+
+   
+   unflatten a 1D array into a multi-dimensional array of the given shape
+   
+
+.. function:: proc flatten(const ref a: [?d] ?t): [] t throws where a.rank > 1
+
+   
+   flatten a multi-dimensional array into a 1D array
+   
+
+.. record:: orderer
+
+   .. attribute:: param rank: int
+
+   .. attribute:: const accumRankSizes: [0..<rank] int
+
+   .. method:: proc init(shape: ?N*int)
+
+   .. method:: proc indexToOrder(idx: rank*int): int
+

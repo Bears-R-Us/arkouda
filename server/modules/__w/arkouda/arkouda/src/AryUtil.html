@@ -474,6 +474,43 @@ halts if this condition isn’t met.</p>
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">value:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">2*(int)</span> <span class="pre">throws</span></dt>
 <dd></dd></dl>
 
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.unflatten">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unflatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span><a class="headerlink" href="#AryUtil.unflatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>unflatten a 1D array into a multi-dimensional array of the given shape</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.flatten">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">a.rank</span> <span class="pre">&gt;</span> <span class="pre">1</span></em><a class="headerlink" href="#AryUtil.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>flatten a multi-dimensional array into a 1D array</p>
+</dd></dl>
+
+<dl class="chpl record">
+<dt class="sig sig-object chpl" id="AryUtil.orderer">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">orderer</span></span><a class="headerlink" href="#AryUtil.orderer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="AryUtil.orderer.rank">
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">rank</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#AryUtil.orderer.rank" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="AryUtil.orderer.accumRankSizes">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">accumRankSizes</span></span><span class="pre">:</span> <span class="pre">[0..&lt;rank]</span> <span class="pre">int</span><a class="headerlink" href="#AryUtil.orderer.accumRankSizes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="AryUtil.orderer.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.orderer.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="AryUtil.orderer.indexToOrder">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">indexToOrder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">rank*int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#AryUtil.orderer.indexToOrder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 
 

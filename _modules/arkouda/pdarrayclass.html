@@ -959,18 +959,41 @@
             <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="n">allScalar</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;too many indices (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">) for array with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions&quot;</span><span class="p">)</span>
+
+            <span class="c1"># replace &#39;...&#39; with the appropriate number of &#39;:&#39;</span>
+            <span class="n">elipsis_axis_idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">Ellipsis</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">elipsis_axis_idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;array index can only have one ellipsis&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">elipsis_axis_idx</span> <span class="o">=</span> <span class="n">dim</span>
+
+            <span class="k">if</span> <span class="n">elipsis_axis_idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                        <span class="n">key</span><span class="p">[:</span><span class="n">elipsis_axis_idx</span><span class="p">]</span> <span class="o">+</span>
+                        <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
+                        <span class="n">key</span><span class="p">[(</span><span class="n">elipsis_axis_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">):]</span>
+                    <span class="p">)</span>
+
+            <span class="c1"># parse the key tuple</span>
+            <span class="n">num_scalar</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">scalar_axes</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">starts</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">stops</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">strides</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
-                    <span class="n">allScalar</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span>
                     <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
                     <span class="n">stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
                     <span class="n">strides</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stride</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">]):</span>
+                    <span class="n">num_scalar</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">scalar_axes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+
                     <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="c1"># Interpret negative key as offset from end of array</span>
                         <span class="n">k</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span>
@@ -980,15 +1003,14 @@
                         <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># treat this as a single element slice</span>
-                        <span class="c1"># TODO: implement rank-reducing slices</span>
                         <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                         <span class="n">stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                         <span class="n">strides</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled key type: </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">allScalar</span><span class="p">:</span>
-                <span class="c1"># use simpler indexing (and return a scalar) if we got a tuple of only scalars</span>
+            <span class="k">if</span> <span class="n">num_scalar</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="c1"># all scalars: use simpler indexing (and return a scalar)</span>
                 <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                     <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[int]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
                     <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -1008,7 +1030,22 @@
                         <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">strides</span><span class="p">),</span>
                     <span class="p">},</span>
                 <span class="p">)</span>
-                <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+                <span class="n">maybe_degen_arr</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">num_scalar</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># reduce the array rank if there are any scalar indices</span>
+                    <span class="c1"># note: squeeze requires the non-default ManipulationMsg server module</span>
+                    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;squeeze</span><span class="si">{</span><span class="n">maybe_degen_arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">Dx</span><span class="si">{</span><span class="n">maybe_degen_arr</span><span class="o">.</span><span class="n">ndim</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">num_scalar</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">maybe_degen_arr</span><span class="p">,</span>
+                            <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="n">num_scalar</span><span class="p">,</span>
+                            <span class="s2">&quot;axes&quot;</span><span class="p">:</span> <span class="n">scalar_axes</span><span class="p">,</span>
+                        <span class="p">},</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">maybe_degen_arr</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">kind</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">translate_np_dtype</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>

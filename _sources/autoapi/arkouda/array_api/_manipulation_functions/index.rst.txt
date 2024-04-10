@@ -34,10 +34,6 @@ Functions
 
 .. py:function:: broadcast_arrays(*arrays: arkouda.array_api._array_object.Array) -> List[arkouda.array_api._array_object.Array]
 
-   Array API compatible wrapper for :py:func:`np.broadcast_arrays <numpy.broadcast_arrays>`.
-
-   See its docstring for more information.
-
 
 .. py:function:: broadcast_to(x: arkouda.array_api._array_object.Array, /, shape: Tuple[int, Ellipsis]) -> arkouda.array_api._array_object.Array
 
@@ -46,23 +42,11 @@ Functions
 
 .. py:function:: concat(arrays: Union[Tuple[arkouda.array_api._array_object.Array, Ellipsis], List[arkouda.array_api._array_object.Array]], /, *, axis: Optional[int] = 0) -> arkouda.array_api._array_object.Array
 
-   Array API compatible wrapper for :py:func:`np.concatenate <numpy.concatenate>`.
-
-   See its docstring for more information.
-
 
 .. py:function:: expand_dims(x: arkouda.array_api._array_object.Array, /, *, axis: int) -> arkouda.array_api._array_object.Array
 
-   Array API compatible wrapper for :py:func:`np.expand_dims <numpy.expand_dims>`.
-
-   See its docstring for more information.
-
 
 .. py:function:: flip(x: arkouda.array_api._array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.array_api._array_object.Array
-
-   Array API compatible wrapper for :py:func:`np.flip <numpy.flip>`.
-
-   See its docstring for more information.
 
 
 .. py:function:: moveaxis(x: arkouda.array_api._array_object.Array, source: Union[int, Tuple[int, Ellipsis]], destination: Union[int, Tuple[int, Ellipsis]], /) -> arkouda.array_api._array_object.Array
@@ -70,40 +54,20 @@ Functions
 
 .. py:function:: permute_dims(x: arkouda.array_api._array_object.Array, /, axes: Tuple[int, Ellipsis]) -> arkouda.array_api._array_object.Array
 
-   Array API compatible wrapper for :py:func:`np.transpose <numpy.transpose>`.
-
-   See its docstring for more information.
-
 
 .. py:function:: repeat(x: arkouda.array_api._array_object.Array, repeats: Union[int, arkouda.array_api._array_object.Array], /, *, axis: Optional[int] = None) -> arkouda.array_api._array_object.Array
 
 
 .. py:function:: reshape(x: arkouda.array_api._array_object.Array, /, shape: Tuple[int, Ellipsis], *, copy: Optional[bool] = None) -> arkouda.array_api._array_object.Array
 
-   Array API compatible wrapper for :py:func:`np.reshape <numpy.reshape>`.
-
-   See its docstring for more information.
-
 
 .. py:function:: roll(x: arkouda.array_api._array_object.Array, /, shift: Union[int, Tuple[int, Ellipsis]], *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.array_api._array_object.Array
-
-   Array API compatible wrapper for :py:func:`np.roll <numpy.roll>`.
-
-   See its docstring for more information.
 
 
 .. py:function:: squeeze(x: arkouda.array_api._array_object.Array, /, axis: Union[int, Tuple[int, Ellipsis]]) -> arkouda.array_api._array_object.Array
 
-   Array API compatible wrapper for :py:func:`np.squeeze <numpy.squeeze>`.
-
-   See its docstring for more information.
-
 
 .. py:function:: stack(arrays: Union[Tuple[arkouda.array_api._array_object.Array, Ellipsis], List[arkouda.array_api._array_object.Array]], /, *, axis: int = 0) -> arkouda.array_api._array_object.Array
-
-   Array API compatible wrapper for :py:func:`np.stack <numpy.stack>`.
-
-   See its docstring for more information.
 
 
 .. py:function:: tile(x: arkouda.array_api._array_object.Array, repetitions: Tuple[int, Ellipsis], /) -> arkouda.array_api._array_object.Array
