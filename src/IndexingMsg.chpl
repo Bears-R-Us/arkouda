@@ -494,7 +494,7 @@ module IndexingMsg
         var minShape: N*int = inShape,
             firstRank = -1;
 
-        if d.size > N then return (false, -1, minShape);
+        if d.size > N then return (false, firstRank, minShape);
 
         var isSet: N*bool,
             first = true;
