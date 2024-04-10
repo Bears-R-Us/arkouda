@@ -747,7 +747,6 @@ module ParquetMsg {
   }
   
   proc fillSegmentsAndPersistData(ref distFiles, ref entrySeg, ref externalData, ref containsNulls, valsRead, dsetname, sizes, len, numRowGroups, ref bytesPerRG, ref startIdxs) throws {
-    writeln('persist');
     var (subdoms, length) = getSubdomains(sizes);
     coforall loc in distFiles.targetLocales() with (ref externalData, ref valsRead, ref bytesPerRG) do on loc {
       var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
@@ -762,6 +761,7 @@ module ParquetMsg {
         }
       }
 
+      var errs: [locFiles.domain] (bool, parquetErrorMsg) = [0..#locFiles.domain] (false, new parquetErrorMsg());
       forall i in locFiles.domain {
         var fname = locFiles[i];
         var locDsetname = dsetname;
@@ -772,9 +772,8 @@ module ParquetMsg {
 
           var numRead = 0;
 
-          var pqErr = new parquetErrorMsg();
-          if c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead), c_ptrTo(externalData[i][rg]), c_ptrTo(containsNulls[i][rg]), c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-            //pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+          if c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead), c_ptrTo(externalData[i][rg]), c_ptrTo(containsNulls[i][rg]), c_ptrTo(errs[i][1].errMsg)) == ARROWERROR {
+            errs[i] = (true, errs[i][1]);
           }
           var tmp: [startIdx..#numRead] int;
           forall (id, j) in zip(0..#numRead, startIdx..#numRead) with (+ reduce totalBytes) {
@@ -789,11 +788,13 @@ module ParquetMsg {
           totalBytes = 0;
         }
       }
+      for (hadErr, err) in errs do
+        if hadErr then
+          err.parquetError(getLineNumber(), getRoutineName(), getModuleName());
     }
   }
 
   proc copyValuesFromC(ref entryVal, ref distFiles, ref externalData, ref valsRead, ref numRowGroups, ref rgSubdomains, maxRowGroups, sizes, ref segArr, ref startIdxs) {
-    writeln('here');
     var (subdoms, length) = getSubdomains(sizes);
     coforall loc in distFiles.targetLocales() with (ref externalData) do on loc {
       var locValsRead: [valsRead.localSubdomain()] [0..#maxRowGroups] int = valsRead[valsRead.localSubdomain()];
