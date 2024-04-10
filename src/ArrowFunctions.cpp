@@ -2016,7 +2016,7 @@ int cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t
         batchSize = numElems - total_read;
       // adding 1 to definition level, since the first value indicates if null values
       (void)reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values + total_read, &values_read);
-      for(int i = 0; i < 3; i++) {
+      for(int i = 0; i < values_read; i++) {
         if(definition_level[i] == 0)
           *containsNulls = true;
       }
