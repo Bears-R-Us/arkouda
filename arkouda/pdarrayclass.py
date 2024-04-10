@@ -678,7 +678,9 @@ class pdarray:
 
             # parse the key tuple
             num_scalar = 0
+            num_pdarray = 0
             scalar_axes = []
+            pdarray_axes = []
             starts = []
             stops = []
             strides = []
@@ -704,6 +706,16 @@ class pdarray:
                         starts.append(k)
                         stops.append(k + 1)
                         strides.append(1)
+                elif isinstance(k, pdarray):
+                    num_pdarray += 1
+                    pdarray_axes.append(dim)
+                    kind, _ = translate_np_dtype(k.dtype)
+                    if kind not in ("bool", "int", "uint"):
+                        raise TypeError(f"unsupported pdarray index type {k.dtype}")
+                    # select all indices (needed for mixed slice+pdarray indexing)
+                    starts.append(0)
+                    stops.append(self.shape[dim])
+                    strides.append(1)
                 else:
                     raise IndexError(f"Unhandled key type: {k} ({type(k)})")
 
@@ -718,7 +730,59 @@ class pdarray:
                 )
                 fields = repMsg.split()
                 return parse_single_value(" ".join(fields[1:]))
+
+            elif num_pdarray > 0:
+                if num_pdarray == len(key):
+                    # all pdarray indices: skip slice indexing
+                    temp1 = self
+                    # will return a 1D array where all but the first
+                    # dimensions are squeezed out
+                    degen_axes = pdarray_axes[1:]
+                else:
+                    # mix of pdarray and slice indices: do slice indexing first
+                    temp1 = create_pdarray(
+                            generic_msg(
+                                cmd=f"[slice]{self.ndim}D",
+                                args={
+                                    "array": self,
+                                    "starts": tuple(starts),
+                                    "stops": tuple(stops),
+                                    "strides": tuple(strides),
+                                },
+                            )
+                        )
+                    # will return a reduced-rank array, where all but the first
+                    # pdarray dimensions are squeezed out
+                    degen_axes = pdarray_axes[1:] + scalar_axes
+
+                # apply pdarray indexing (returning an ndim array with degenerate dimensions
+                # along all the indexed axes except the first one)
+                temp2 = create_pdarray(
+                        generic_msg(
+                            cmd=f"[pdarray]x{self.ndim}D",
+                            args={
+                                "array": temp1,
+                                "nIdxArrays": num_pdarray,
+                                "idx": [key[dim] for dim in pdarray_axes],
+                                "idxDims": pdarray_axes,
+                            },
+                        )
+                    )
+
+                # remove any degenerate dimensions
+                return create_pdarray(
+                        generic_msg(
+                            cmd=f"squeeze{self.ndim}Dx{self.ndim-len(degen_axes)}D",
+                            args={
+                                "name": temp2,
+                                "nAxes": len(degen_axes),
+                                "axes": degen_axes,
+                            },
+                        )
+                    )
+
             else:
+                # all slice or scalar indices: use slice indexing only
                 repMsg = generic_msg(
                     cmd=f"[slice]{self.ndim}D",
                     args={
