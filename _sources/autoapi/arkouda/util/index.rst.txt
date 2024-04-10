@@ -249,7 +249,7 @@ Functions
 .. py:function:: report_mem(pre='')
 
 
-.. py:function:: sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=100)
+.. py:function:: sparse_sum_help(idx1, idx2, val1, val2, merge=False, percent_transfer_limit=100)
 
    Helper for summing two sparse matrices together
 
