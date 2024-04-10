@@ -303,7 +303,7 @@ def attach_all(names: list):
     return {n: attach(n) for n in names}
 
 
-def sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=100):
+def sparse_sum_help(idx1, idx2, val1, val2, merge=False, percent_transfer_limit=100):
     """
     Helper for summing two sparse matrices together
 
