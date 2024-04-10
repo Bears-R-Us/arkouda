@@ -2005,28 +2005,25 @@ int cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t
                                 int64_t readerIdx, int64_t* numRead,
                                 void** outData, bool* containsNulls, char** errMsg) {
   try {
-    std::cout << "here" << std::endl;
     auto reader = static_cast<parquet::ByteArrayReader*>(globalColumnReaders[readerIdx].get());
     parquet::ByteArray* string_values =
       (parquet::ByteArray*)malloc(numElems*sizeof(parquet::ByteArray));
-    std::vector<int16_t> definition_level;
+    std::vector<int16_t> definition_level(batchSize);
     int64_t values_read = 0;
     int64_t total_read = 0;
     while(reader->HasNext() && total_read < numElems) {
-      std::cout << "read iteration" << std::endl;
       if((numElems - total_read) < batchSize)
         batchSize = numElems - total_read;
       // adding 1 to definition level, since the first value indicates if null values
-      //(void)reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values + total_read, &values_read);
-      (void)reader->ReadBatch(batchSize, nullptr, nullptr, string_values + total_read, &values_read);
+      (void)reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values + total_read, &values_read);
+      for(int i = 0; i < 3; i++) {
+        if(definition_level[i] == 0)
+          *containsNulls = true;
+      }
       total_read += values_read;
     }
-    std::cout << "done reading" << std::endl;
     *numRead = total_read;
     *outData = (void*)string_values;
-    /*for(auto val : definition_level)
-      if(val == 0)
-      *containsNulls = true;*/
     return 0;
   } catch (const std::exception& e) {
     *errMsg = strdup(e.what());
