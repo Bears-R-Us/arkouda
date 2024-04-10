@@ -57,10 +57,10 @@ extern "C" {
 
   int c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
                                 int64_t readerIdx, int64_t* numRead,
-                                void* outData, int16_t** outLevels, char** errMsg);
+                                void** outData, bool* containsNulls, char** errMsg);
   int cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
                                   int64_t readerIdx, int64_t* numRead,
-                                  void* outData, int16_t** outLevels, char** errMsg);
+                                  void** outData, bool* containsNulls, char** errMsg);
 
   int c_getNumRowGroups(int64_t readerIdx);
   int cpp_getNumRowGroups(int64_t readerIdx);

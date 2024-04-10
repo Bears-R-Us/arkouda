@@ -746,7 +746,8 @@ module ParquetMsg {
     return maxRowGroups;
   }
   
-  proc fillSegmentsAndPersistData(ref distFiles, ref entrySeg, ref externalData, ref defLevels, valsRead, dsetname, sizes, len, numRowGroups, ref bytesPerRG, ref startIdxs) throws {
+  proc fillSegmentsAndPersistData(ref distFiles, ref entrySeg, ref externalData, ref containsNulls, valsRead, dsetname, sizes, len, numRowGroups, ref bytesPerRG, ref startIdxs) throws {
+    writeln('persist');
     var (subdoms, length) = getSubdomains(sizes);
     coforall loc in distFiles.targetLocales() with (ref externalData, ref valsRead, ref bytesPerRG) do on loc {
       var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
@@ -772,7 +773,7 @@ module ParquetMsg {
           var numRead = 0;
 
           var pqErr = new parquetErrorMsg();
-          if c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead), externalData[i][rg], c_ptrTo(defLevels[i][rg]), c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+          if c_readParquetColumnChunks(c_ptrTo(fname), 8192, len, getReaderIdx(i,rg), c_ptrTo(numRead), c_ptrTo(externalData[i][rg]), c_ptrTo(containsNulls[i][rg]), c_ptrTo(pqErr.errMsg)) == ARROWERROR {
             //pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
           }
           var tmp: [startIdx..#numRead] int;
@@ -791,7 +792,8 @@ module ParquetMsg {
     }
   }
 
-  proc copyValuesFromC(ref entryVal, ref distFiles, ref externalData, ref defLevels, ref valsRead, ref numRowGroups, ref rgSubdomains, maxRowGroups, sizes, ref segArr, ref startIdxs) {
+  proc copyValuesFromC(ref entryVal, ref distFiles, ref externalData, ref valsRead, ref numRowGroups, ref rgSubdomains, maxRowGroups, sizes, ref segArr, ref startIdxs) {
+    writeln('here');
     var (subdoms, length) = getSubdomains(sizes);
     coforall loc in distFiles.targetLocales() with (ref externalData) do on loc {
       var locValsRead: [valsRead.localSubdomain()] [0..#maxRowGroups] int = valsRead[valsRead.localSubdomain()];
@@ -982,19 +984,18 @@ module ParquetMsg {
 
           var maxRowGroups = getRowGroupNums(distFiles, numRowGroups);
           var externalData: [distFiles.domain] [0..#maxRowGroups] c_ptr_void;
-          var defLevels: [distFiles.domain] [0..#maxRowGroups] c_ptr(int(16));
+          var containsNulls: [distFiles.domain] [0..#maxRowGroups] bool;
           var valsRead: [distFiles.domain] [0..#maxRowGroups] int;
           var bytesPerRG: [distFiles.domain] [0..#maxRowGroups] int;
           var startIdxs: [distFiles.domain] [0..#maxRowGroups] int; // correspond to starting idx in entrySeg
 
-          fillSegmentsAndPersistData(distFiles, entrySeg, externalData, defLevels, valsRead, dsetname, sizes, len, numRowGroups, bytesPerRG, startIdxs);
+          fillSegmentsAndPersistData(distFiles, entrySeg, externalData, containsNulls, valsRead, dsetname, sizes, len, numRowGroups, bytesPerRG, startIdxs);
 
           var (rgSubdomains, totalBytes) = getRGSubdomains(bytesPerRG, maxRowGroups);
           
-          var entryVal; 
-
-          // this indicates that it contains nulls
-          if defLevels[0][0][0] == -1 {
+          var entryVal;
+          
+          if containsNulls[0][0] {
             byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
             entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
             entryVal = createSymEntry((+ reduce byteSizes), uint(8));
@@ -1002,7 +1003,7 @@ module ParquetMsg {
           } else {
             entryVal = createSymEntry(totalBytes, uint(8));
             entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
-            copyValuesFromC(entryVal, distFiles, externalData, defLevels, valsRead, numRowGroups, rgSubdomains, maxRowGroups, sizes, entrySeg.a, startIdxs);
+            copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups, sizes, entrySeg.a, startIdxs);
           }
 
           for i in externalData.domain {
@@ -1010,14 +1011,6 @@ module ParquetMsg {
               if valsRead[i][j] > 0 then
                 on externalData[i][j] do
                   c_freeMapValues(externalData[i][j]);
-            }
-          }
-          extern proc c_free_string(a);
-          for i in defLevels.domain {
-            for j in defLevels[i].domain {
-              if valsRead[i][j] > 0 then
-                on externalData[i][j] do
-                  c_free_string(defLevels[i][j]:c_ptr_void);
             }
           }
           

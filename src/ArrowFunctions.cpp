@@ -2003,28 +2003,30 @@ void cpp_createColumnReader(const char* colname, int64_t readerIdx) {
 
 int cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
                                 int64_t readerIdx, int64_t* numRead,
-                                void* outData, int16_t** outLevels, char** errMsg) {
+                                void** outData, bool* containsNulls, char** errMsg) {
   try {
+    std::cout << "here" << std::endl;
     auto reader = static_cast<parquet::ByteArrayReader*>(globalColumnReaders[readerIdx].get());
     parquet::ByteArray* string_values =
       (parquet::ByteArray*)malloc(numElems*sizeof(parquet::ByteArray));
-    int16_t* definition_level = (int16_t*)malloc(1 + numElems*sizeof(int16_t));
+    std::vector<int16_t> definition_level;
     int64_t values_read = 0;
     int64_t total_read = 0;
     while(reader->HasNext() && total_read < numElems) {
+      std::cout << "read iteration" << std::endl;
       if((numElems - total_read) < batchSize)
         batchSize = numElems - total_read;
       // adding 1 to definition level, since the first value indicates if null values
-      (void)reader->ReadBatch(batchSize, definition_level + 1 + total_read, nullptr, string_values + total_read, &values_read);
+      //(void)reader->ReadBatch(batchSize, definition_level.data(), nullptr, string_values + total_read, &values_read);
+      (void)reader->ReadBatch(batchSize, nullptr, nullptr, string_values + total_read, &values_read);
       total_read += values_read;
-      std::cout << "values read: " << values_read << std::endl;
     }
+    std::cout << "done reading" << std::endl;
     *numRead = total_read;
-    outData = (void*)string_values;
-    *outLevels = definition_level;
-    for(int i = 1; i < batchSize+1; i++)
-      if(definition_level[i] == 0)
-        definition_level[0] = -1;
+    *outData = (void*)string_values;
+    /*for(auto val : definition_level)
+      if(val == 0)
+      *containsNulls = true;*/
     return 0;
   } catch (const std::exception& e) {
     *errMsg = strdup(e.what());
@@ -2178,9 +2180,9 @@ extern "C" {
 
   int c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
                                 int64_t readerIdx, int64_t* numRead,
-                                void* outData, int16_t** outLevels, char** errMsg) {
+                                void** outData, bool* containsNulls, char** errMsg) {
     return cpp_readParquetColumnChunks(filename, batchSize, numElems, readerIdx,
-                                       numRead, outData, outLevels, errMsg);
+                                       numRead, outData, containsNulls, errMsg);
   }
 
   int c_getNumRowGroups(int64_t readerIdx) {
