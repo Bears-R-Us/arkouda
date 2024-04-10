@@ -60,7 +60,7 @@ module ArkoudaAryUtilCompat {
     label ranks for i in 0..<D.rank {
       for param j in 0..<NA {
         if i == axes[j] {
-          outDims[i] = 0..0;
+          outDims[i] = D.dim(i).low..D.dim(i).low;
           continue ranks;
         }
       }
@@ -77,7 +77,7 @@ module ArkoudaAryUtilCompat {
     label ranks for i in 0..<D.rank {
       for j in 0..<axes.size {
         if i == axes[j] {
-          outDims[i] = 0..0;
+          outDims[i] = D.dim(i).low..D.dim(i).low;
           continue ranks;
         }
       }
@@ -95,7 +95,7 @@ module ArkoudaAryUtilCompat {
 
     (if 'nChunks' is greater than the size of the largest dimension, the
     first 'nChunks-1' chunks will be empty, and the last chunk will contain
-    the entire domain)
+    the entire set of indices along that dimension)
   */
   proc subDomChunk(dom: domain(?), chunkIdx: int, nChunks: int): domain(?) {
     const dimSizes = [i in 0..<dom.rank] dom.dim(i).size,
