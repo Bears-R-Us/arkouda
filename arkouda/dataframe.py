@@ -820,9 +820,6 @@ class DataFrame(UserDict):
         if isinstance(key, slice):
             start_index = key.start if key.start is not None else 0
             stop_index = key.stop if key.stop is not None else len(self.index)
-            print("start and stop indices:", start_index, stop_index)
-            print('slice: ', key)
-            print("index: ", self.index)
             return self.get_rows(arange(start_index, stop_index, 1))
         
         if isinstance(key, (pdarray,Strings)):
@@ -866,7 +863,6 @@ class DataFrame(UserDict):
 
         #adding first column
         if len(self._columns) == 0 and is_supported_scalar(key):
-            print("adding first column. \nkey", key, "\nvalue: ", value)
             self._columns.append(key)
             self._empty = False
             if is_supported_scalar(value):
@@ -1140,7 +1136,6 @@ class DataFrame(UserDict):
         if key.dtype == akbool:
             key = arange(key.size)[key]
         result = {}
-        print('key in get_rows: {}'.format(key))
         for k in self._columns:
             result[k] = UserDict.__getitem__(self, k)[key]
         # To stay consistent with numpy, provide the old index values
@@ -1846,11 +1841,9 @@ class DataFrame(UserDict):
         |  2 |   2 |   5 |
         +----+-----+-----+
 
-        """
+        """ 
 
-        print("self for reset:", self)
         obj = self if inplace else self.copy()
-        print("reseting obj: ", obj)
         if not size:
             obj.update_nrows()
             obj._set_index(arange(obj._nrows))
