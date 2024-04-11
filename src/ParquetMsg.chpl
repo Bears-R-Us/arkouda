@@ -734,10 +734,11 @@ module ParquetMsg {
     coforall loc in distFiles.targetLocales() with (ref numRowGroups) do on loc {
       var locFiles: [distFiles.localSubdomain()] string = distFiles[distFiles.localSubdomain()];
       for i in locFiles.domain {
-        for j in 1..numRowGroups[i] {
+        c_openFile(locFiles[i].localize().c_str(), getReaderIdx(i,0));
+        numRowGroups[i] = c_getNumRowGroups(getReaderIdx(i,0));
+        for j in 2..numRowGroups[i] {
           c_openFile(locFiles[i].localize().c_str(), getReaderIdx(i,j-1));
         }
-        numRowGroups[i] = c_getNumRowGroups(getReaderIdx(i,0));
       }
     }
     var maxRowGroups = 0;
