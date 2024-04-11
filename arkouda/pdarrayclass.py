@@ -804,9 +804,9 @@ class pdarray:
                 cmd="[slice]1D",
                 args={
                     "array": self,
-                    "start": start,
-                    "stop": stop,
-                    "stride": stride,
+                    "starts": start,
+                    "stops": stop,
+                    "strides": stride,
                 },
             )
             return create_pdarray(repMsg)
