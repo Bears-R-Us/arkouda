@@ -1,4 +1,4 @@
-\module ParquetMsg {
+module ParquetMsg {
   use IO;
   use ServerErrors, ServerConfig;
   use FileIO;
