@@ -333,10 +333,10 @@ module IndexingMsg
     proc sliceIndexMsg1DFast(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        const start = msgArgs.get("start").getIntValue();
-        const stop = msgArgs.get("stop").getIntValue();
-        const stride = msgArgs.get("stride").getIntValue();
-        var slice: stridableRange = convertSlice(start, stop, stride);
+        const start = msgArgs.get("starts").getTuple(1);
+        const stop = msgArgs.get("stops").getTuple(1);
+        const stride = msgArgs.get("strides").getTuple(1);
+        var slice: stridableRange = convertSlice(start[0], stop[0], stride[0]);
 
         // get next symbol name
         var rname = st.nextName();
@@ -345,7 +345,7 @@ module IndexingMsg
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s pdarray to slice: %s start: %i stop: %i stride: %i slice: %? new name: %s".doFormat(
-                       cmd, st.attrib(name), start, stop, stride, slice, rname));
+                       cmd, st.attrib(name), start[0], stop[0], stride[0], slice, rname));
 
         proc sliceHelper(type t) throws {
             var e = toSymEntry(gEnt,t);
