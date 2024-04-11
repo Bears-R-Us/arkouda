@@ -737,7 +737,7 @@ module ParquetMsg {
         for j in 2..numRowGroups[i] {
           c_openFile(locFiles[i].localize().c_str(), getReaderIdx(i,j-1));
         }
-        numRowGroups[i] = c_getNumRowGroups(getReaderIdx(j,0));
+        numRowGroups[i] = c_getNumRowGroups(getReaderIdx(i,0));
       }
     }
     var maxRowGroups = 0;
