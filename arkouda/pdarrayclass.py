@@ -234,7 +234,7 @@ def _parse_index_tuple(key, shape):
     return (tuple(zip(*slices)), scalar_axes, pdarray_axes)
 
 
-def _parse_none_and_elipsis_keys(key, ndim):
+def _parse_none_and_ellipsis_keys(key, ndim):
     """
     Parse a key tuple for None and Ellipsis values
 
@@ -813,13 +813,11 @@ class pdarray:
 
         if isinstance(key, tuple):
             # handle None and Ellipsis in the key tuple
-            (clean_key, num_none, key_with_none) = _parse_none_and_elipsis_keys(key, self.ndim)
+            (clean_key, num_none, key_with_none) = _parse_none_and_ellipsis_keys(key, self.ndim)
 
             # parse the tuple key into slices, scalars, and pdarrays
             ((starts, stops, strides), scalar_axes, pdarray_axes) = \
                 _parse_index_tuple(clean_key, self.shape)
-
-            print(pdarray_axes)
 
             if len(scalar_axes) == len(clean_key):
                 # all scalars: use simpler indexing (and return a scalar)
@@ -872,11 +870,11 @@ class pdarray:
 
                 if len(scalar_axes) > 0:
                     # reduce the array rank if there are any scalar indices
-                    # note: squeeze requires the non-default ManipulationMsg server module
                     ret_array = _squeeze(maybe_degen_arr, scalar_axes)
                 else:
                     ret_array = maybe_degen_arr
 
+            # expand the dimensions of the array if there were any 'None' values in the key
             if num_none > 0:
                 # If scalar return value, put it into an array so it can be reshaped
                 if len(scalar_axes) == len(clean_key):
