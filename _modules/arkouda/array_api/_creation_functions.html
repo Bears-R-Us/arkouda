@@ -377,8 +377,6 @@
                 <span class="sa">f</span><span class="s2">&quot;allowed transfer size. Increase ak.client.maxTransferBytes to force.&quot;</span>
             <span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;making array, shape: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="si">}</span><span class="s2">,  dtype: </span><span class="si">{</span><span class="n">xdtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
             <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
                 <span class="n">create_pdarray</span><span class="p">(</span>

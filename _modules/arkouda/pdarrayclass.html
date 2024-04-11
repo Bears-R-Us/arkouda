@@ -418,6 +418,159 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported value from server </span><span class="si">{</span><span class="n">mydtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_create_scalar_array</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a pdarray from a single scalar value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;create0D&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_reshape</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reshape the pdarray to the specified shape</span>
+
+<span class="sd">    Requires the ManipulationMsg server module</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reshape</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">Dx</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">array</span><span class="p">,</span>
+                <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_squeeze</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">degen_axes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove degenerate axes from a pdarray</span>
+
+<span class="sd">    Requires the ManipulationMsg server module</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;squeeze</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">Dx</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">degen_axes</span><span class="p">)</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">array</span><span class="p">,</span>
+                <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">degen_axes</span><span class="p">),</span>
+                <span class="s2">&quot;axes&quot;</span><span class="p">:</span> <span class="n">degen_axes</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_slice_index</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">starts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">stops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">strides</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Slice a pdarray with a set of start, stop and stride values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">array</span><span class="p">,</span>
+                <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span> <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">starts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">stops</span><span class="p">)</span> <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">stops</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">strides</span><span class="p">)</span> <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_parse_index_tuple</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse a tuple of indices into slices, scalars, and pdarrays</span>
+
+<span class="sd">    Returns a tuple of (starts, stops and strides) for the slices and scalar indices,</span>
+<span class="sd">    as well as lists indicating which axes are indexed by scalars and pdarrays</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scalar_axes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pdarray_axes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">]):</span>
+            <span class="n">scalar_axes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Interpret negative key as offset from end of array</span>
+                <span class="n">k</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds in dimension </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2"> with size </span><span class="si">{</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># treat this as a single-element slice</span>
+                <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="n">pdarray_axes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+            <span class="n">kind</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">translate_np_dtype</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;uint&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported pdarray index type </span><span class="si">{</span><span class="n">k</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># select all indices (needed for mixed slice+pdarray indexing)</span>
+            <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled key type: </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">slices</span><span class="p">)),</span> <span class="n">scalar_axes</span><span class="p">,</span> <span class="n">pdarray_axes</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_parse_none_and_ellipsis_keys</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ndim</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse a key tuple for None and Ellipsis values</span>
+
+<span class="sd">    Return a tuple of the key with None values removed and the ellipsis replaced</span>
+<span class="sd">    with the appropriate number of colons</span>
+
+<span class="sd">    Also returns a tuple without the &#39;None&#39; values removed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># create a copy to avoid modifying the original key</span>
+    <span class="n">ret_key</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="c1"># how many &#39;None&#39; arguments are in the key tuple</span>
+    <span class="n">num_none</span> <span class="o">=</span> <span class="n">ret_key</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># replace &#39;...&#39; with the appropriate number of &#39;:&#39;</span>
+    <span class="n">elipsis_axis_idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ret_key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">Ellipsis</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">elipsis_axis_idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;array index can only have one ellipsis&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">elipsis_axis_idx</span> <span class="o">=</span> <span class="n">dim</span>
+
+    <span class="k">if</span> <span class="n">elipsis_axis_idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">ret_key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="n">ret_key</span><span class="p">[:</span><span class="n">elipsis_axis_idx</span><span class="p">]</span> <span class="o">+</span>
+                <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ndim</span> <span class="o">-</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ret_key</span><span class="p">)</span> <span class="o">-</span> <span class="n">num_none</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
+                <span class="n">ret_key</span><span class="p">[(</span><span class="n">elipsis_axis_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">):]</span>
+            <span class="p">)</span>
+
+    <span class="n">key_with_none</span> <span class="o">=</span> <span class="n">ret_key</span>
+
+    <span class="k">if</span> <span class="n">num_none</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># remove all &#39;None&#39; indices</span>
+        <span class="n">ret_key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ret_key</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret_key</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ndim</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;cannot index </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D array with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ret_key</span><span class="p">)</span><span class="si">}</span><span class="s2"> indices&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">ret_key</span><span class="p">,</span> <span class="n">num_none</span><span class="p">,</span> <span class="n">key_with_none</span><span class="p">)</span>
+
+
 <span class="c1"># class for the pdarray</span>
 <div class="viewcode-block" id="pdarray">
 <a class="viewcode-back" href="../../usage/pdarray.html#arkouda.pdarray">[docs]</a>
@@ -820,7 +973,9 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">)):</span>
             <span class="k">return</span> <span class="o">~</span><span class="p">(</span><span class="bp">self</span> <span class="o">^</span> <span class="n">other</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">)</span>
@@ -951,101 +1106,95 @@
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;[slice]1D&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
-                    <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
-                    <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span>
-                    <span class="s2">&quot;stride&quot;</span><span class="p">:</span> <span class="n">stride</span><span class="p">,</span>
+                    <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
+                    <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span>
+                    <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="n">stride</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;too many indices (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">) for array with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions&quot;</span><span class="p">)</span>
+            <span class="c1"># handle None and Ellipsis in the key tuple</span>
+            <span class="p">(</span><span class="n">clean_key</span><span class="p">,</span> <span class="n">num_none</span><span class="p">,</span> <span class="n">key_with_none</span><span class="p">)</span> <span class="o">=</span> <span class="n">_parse_none_and_ellipsis_keys</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
 
-            <span class="c1"># replace &#39;...&#39; with the appropriate number of &#39;:&#39;</span>
-            <span class="n">elipsis_axis_idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">Ellipsis</span><span class="p">)):</span>
-                    <span class="k">if</span> <span class="n">elipsis_axis_idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;array index can only have one ellipsis&quot;</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">elipsis_axis_idx</span> <span class="o">=</span> <span class="n">dim</span>
+            <span class="c1"># parse the tuple key into slices, scalars, and pdarrays</span>
+            <span class="p">((</span><span class="n">starts</span><span class="p">,</span> <span class="n">stops</span><span class="p">,</span> <span class="n">strides</span><span class="p">),</span> <span class="n">scalar_axes</span><span class="p">,</span> <span class="n">pdarray_axes</span><span class="p">)</span> <span class="o">=</span> \
+                <span class="n">_parse_index_tuple</span><span class="p">(</span><span class="n">clean_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">elipsis_axis_idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-                        <span class="n">key</span><span class="p">[:</span><span class="n">elipsis_axis_idx</span><span class="p">]</span> <span class="o">+</span>
-                        <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
-                        <span class="n">key</span><span class="p">[(</span><span class="n">elipsis_axis_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">):]</span>
-                    <span class="p">)</span>
-
-            <span class="c1"># parse the key tuple</span>
-            <span class="n">num_scalar</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">scalar_axes</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">starts</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">stops</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">strides</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
-                    <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span>
-                    <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
-                    <span class="n">stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
-                    <span class="n">strides</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stride</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">]):</span>
-                    <span class="n">num_scalar</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="n">scalar_axes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
-
-                    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="c1"># Interpret negative key as offset from end of array</span>
-                        <span class="n">k</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span>
-                    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]):</span>
-                        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds in dimension </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2"> with size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># treat this as a single element slice</span>
-                        <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-                        <span class="n">stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                        <span class="n">strides</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled key type: </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">num_scalar</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalar_axes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_key</span><span class="p">):</span>
                 <span class="c1"># all scalars: use simpler indexing (and return a scalar)</span>
                 <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                     <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[int]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
                     <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                         <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
-                        <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+                        <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">clean_key</span><span class="p">,</span>
                     <span class="p">},</span>
                 <span class="p">)</span>
                 <span class="n">fields</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-                <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                        <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
-                        <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">starts</span><span class="p">),</span>
-                        <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">stops</span><span class="p">),</span>
-                        <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">strides</span><span class="p">),</span>
-                    <span class="p">},</span>
-                <span class="p">)</span>
-                <span class="n">maybe_degen_arr</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+                <span class="n">ret_array</span> <span class="o">=</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
 
-                <span class="k">if</span> <span class="n">num_scalar</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="c1"># reduce the array rank if there are any scalar indices</span>
-                    <span class="c1"># note: squeeze requires the non-default ManipulationMsg server module</span>
-                    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;squeeze</span><span class="si">{</span><span class="n">maybe_degen_arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">Dx</span><span class="si">{</span><span class="n">maybe_degen_arr</span><span class="o">.</span><span class="n">ndim</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">num_scalar</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">maybe_degen_arr</span><span class="p">,</span>
-                            <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="n">num_scalar</span><span class="p">,</span>
-                            <span class="s2">&quot;axes&quot;</span><span class="p">:</span> <span class="n">scalar_axes</span><span class="p">,</span>
-                        <span class="p">},</span>
-                    <span class="p">)</span>
-                    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarray_axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarray_axes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_key</span><span class="p">):</span>
+                    <span class="c1"># all pdarray indices: skip slice indexing</span>
+                    <span class="n">temp1</span> <span class="o">=</span> <span class="bp">self</span>
+
+                    <span class="c1"># will return a 1D array where all but the first</span>
+                    <span class="c1"># dimensions are squeezed out</span>
+                    <span class="n">degen_axes</span> <span class="o">=</span> <span class="n">pdarray_axes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">maybe_degen_arr</span>
+                    <span class="c1"># mix of pdarray and slice indices: do slice indexing first</span>
+                    <span class="n">temp1</span> <span class="o">=</span> <span class="n">_slice_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">stops</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span>
+
+                    <span class="c1"># will return a reduced-rank array, where all but the first</span>
+                    <span class="c1"># pdarray dimensions are squeezed out</span>
+                    <span class="n">degen_axes</span> <span class="o">=</span> <span class="n">pdarray_axes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">scalar_axes</span>
+
+                <span class="c1"># apply pdarray indexing (returning an ndim array with degenerate dimensions</span>
+                <span class="c1"># along all the indexed axes except the first one)</span>
+                <span class="n">temp2</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span>
+                        <span class="n">generic_msg</span><span class="p">(</span>
+                            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[pdarray]x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">temp1</span><span class="p">,</span>
+                                <span class="s2">&quot;nIdxArrays&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarray_axes</span><span class="p">),</span>
+                                <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">clean_key</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">pdarray_axes</span><span class="p">],</span>
+                                <span class="s2">&quot;idxDims&quot;</span><span class="p">:</span> <span class="n">pdarray_axes</span><span class="p">,</span>
+                            <span class="p">},</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># remove any degenerate dimensions</span>
+                <span class="n">ret_array</span> <span class="o">=</span> <span class="n">_squeeze</span><span class="p">(</span><span class="n">temp2</span><span class="p">,</span> <span class="n">degen_axes</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># all slice or scalar indices: use slice indexing only</span>
+                <span class="n">maybe_degen_arr</span> <span class="o">=</span> <span class="n">_slice_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">stops</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalar_axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># reduce the array rank if there are any scalar indices</span>
+                    <span class="n">ret_array</span> <span class="o">=</span> <span class="n">_squeeze</span><span class="p">(</span><span class="n">maybe_degen_arr</span><span class="p">,</span> <span class="n">scalar_axes</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ret_array</span> <span class="o">=</span> <span class="n">maybe_degen_arr</span>
+
+            <span class="c1"># expand the dimensions of the array if there were any &#39;None&#39; values in the key</span>
+            <span class="k">if</span> <span class="n">num_none</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># If scalar return value, put it into an array so it can be reshaped</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalar_axes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_key</span><span class="p">):</span>
+                    <span class="n">ret_array</span> <span class="o">=</span> <span class="n">_create_scalar_array</span><span class="p">(</span><span class="n">ret_array</span><span class="p">)</span>
+
+                <span class="c1"># use &#39;None&#39; values in the original key to expand the dimensions</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">rs</span> <span class="o">=</span> <span class="n">ret_array</span><span class="o">.</span><span class="n">shape</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_with_none</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+                <span class="k">return</span> <span class="n">_reshape</span><span class="p">(</span><span class="n">ret_array</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ret_array</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">kind</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">translate_np_dtype</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
