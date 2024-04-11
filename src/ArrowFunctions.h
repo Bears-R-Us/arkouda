@@ -65,9 +65,6 @@ extern "C" {
   int c_getNumRowGroups(int64_t readerIdx);
   int cpp_getNumRowGroups(int64_t readerIdx);
   
-  void c_free(void* arr);
-  void cpp_free(void* arr);
-  
   // Each C++ function contains the actual implementation of the
   // functionality, and there is a corresponding C function that
   // Chapel can call into through C interoperability, since there
