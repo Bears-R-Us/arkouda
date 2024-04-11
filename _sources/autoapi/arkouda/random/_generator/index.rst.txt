@@ -129,6 +129,16 @@ Functions
       array([0.055256829926011691, 0.62511314008006458, 0.16400145561571539]) # random
 
 
+   .. py:method:: shuffle(x)
+
+      Randomly shuffle a pdarray in place.
+
+      :param x: shuffle the elements of x randomly in place
+      :type x: pdarray
+
+      :rtype: None
+
+
    .. py:method:: standard_normal(size=None)
 
       Draw samples from a standard Normal distribution (mean=0, stdev=1).
