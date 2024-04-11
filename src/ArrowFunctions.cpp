@@ -775,7 +775,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
             (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[i], &values_read);
             // if values_read is 0, that means that it was a null value
             if(values_read == 0) {
-              chpl_ptr[i] = NAN;
               where_null_chpl[i] = true;
             }
             i++;
@@ -808,7 +807,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
             (void)reader->ReadBatch(1, &definition_level, nullptr, &tmp, &values_read);
             // if values_read is 0, that means that it was a null value
             if(values_read == 0) {
-              chpl_ptr[i] = NAN;
               where_null_chpl[i] = true;
             }
             else {
@@ -837,7 +835,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
             (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[i], &values_read);
             // if values_read is 0, that means that it was a null value
             if(values_read == 0) {
-              chpl_ptr[i] = NAN;
               where_null_chpl[i] = true;
             }
             i++;
