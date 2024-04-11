@@ -214,6 +214,35 @@ class Generator:
             return self._np_generator.standard_normal()
         return standard_normal(size=size, seed=self._seed)
 
+    def shuffle(self, x):
+        """
+        Randomly shuffle a pdarray in place.
+
+        Parameters
+        ----------
+        x: pdarray
+            shuffle the elements of x randomly in place
+
+        Returns
+        -------
+        None
+        """
+        if not isinstance(x, pdarray):
+            raise TypeError("shuffle only accepts a pdarray.")
+        dtype = to_numpy_dtype(x.dtype)
+        name = self._name_dict[to_numpy_dtype(akint64)]
+        generic_msg(
+            cmd="shuffle",
+            args={
+                "name": name,
+                "x": x,
+                "size": x.size,
+                "dtype": dtype,
+                "state": self._state,
+            },
+        )
+        self._state += x.size
+
     def permutation(self, x):
         """
         Randomly permute a sequence, or return a permuted range.

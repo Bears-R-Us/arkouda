@@ -234,7 +234,6 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-
     proc uniformGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const pn = Reflection.getRoutineName();
         var rname = st.nextName();
@@ -369,9 +368,61 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    proc shuffleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName();
+        const name = msgArgs.getValueOf("name");
+        const xName = msgArgs.getValueOf("x");
+        const size = msgArgs.get("size").getIntValue();
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        const dtype = str2dtype(dtypeStr);
+        const state = msgArgs.get("state").getIntValue();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i dtype: %? state %i".doFormat(name, size, dtypeStr, state));
+
+        st.checkTable(name);
+
+        proc shuffleHelper(type t) throws {
+            var generatorEntry: borrowed GeneratorSymEntry(int) = toGeneratorSymEntry(st.lookup(name), int);
+            ref rng = generatorEntry.generator;
+
+            if state != 1 {
+                // you have to skip to one before where you want to be
+                rng.skipTo(state-1);
+            }
+
+            ref myArr = toSymEntry(getGenericTypedArrayEntry(xName, st),t).a;
+            rng.shuffle(myArr);
+        }
+
+        select dtype {
+            when DType.Int64 {
+                shuffleHelper(int);
+            }
+            when DType.UInt64 {
+                shuffleHelper(uint);
+            }
+            when DType.Float64 {
+                shuffleHelper(real);
+            }
+            when DType.Bool {
+                shuffleHelper(bool);
+            }
+            otherwise {
+                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+        var repMsg = "created " + st.attrib(xName);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     use CommandMap;
     registerFunction("randomNormal", randomNormalMsg, getModuleName());
     registerFunction("createGenerator", createGeneratorMsg, getModuleName());
     registerFunction("uniformGenerator", uniformGeneratorMsg, getModuleName());
     registerFunction("permutation", permutationMsg, getModuleName());
+    registerFunction("shuffle", shuffleMsg, getModuleName());
 }
