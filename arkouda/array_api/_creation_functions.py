@@ -84,8 +84,6 @@ def asarray(
                 f"allowed transfer size. Increase ak.client.maxTransferBytes to force."
             )
 
-        print(f"making array, shape: {np.shape(obj)},  dtype: {xdtype}")
-
         if obj.shape == ():
             return Array._new(
                 create_pdarray(

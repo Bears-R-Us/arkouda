@@ -817,7 +817,7 @@ module ManipulationMsg {
             (valid, shape, mapping) = validateSqueeze(eIn.tupShape, axes, ndOut);
 
       if !valid {
-        const errMsg = "Unable to squeeze array with shape %? along axes %?".doFormat(eIn.tupShape, axes);
+        const errMsg = "Unable to squeeze array with shape %? along axes %? into a %iD array".doFormat(eIn.tupShape, axes, ndOut);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
@@ -1063,36 +1063,36 @@ module ManipulationMsg {
     const name = msgArgs.getValueOf("name"),
           axis = msgArgs.get("axis").getPositiveIntValue(nd),
           numReturnArrays = msgArgs.get("numReturnArrays").getIntValue(),
-          rnames = [i in 0..<numReturnArrays] st.nextName();
+          rnames = for 0..<numReturnArrays do st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
     proc doUnstack(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
-            (valid, shapeOut) = unstackedShape(eIn.tupShape, axis, numReturnArrays);
+            shapeOut = unstackedShape(eIn.tupShape, axis);
 
-      if !valid {
-        const errMsg = "Unable to unstack array with shape %? along axis %? into %? arrays".doFormat(eIn.tupShape, axis, numReturnArrays);
+      if eIn.tupShape[axis] != numReturnArrays {
+        const errMsg = "Cannot unstack array with shape %? along axis %? into %? arrays".doFormat(eIn.tupShape, axis, numReturnArrays);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
-      } else {
-        var eOuts = for rn in rnames do (try st.addEntry(rn, (...shapeOut), t));
-
-        // copy the data from the input array to the output arrays while unstacking
-        for arrIdx in 0..<numReturnArrays {
-          forall idx in eOuts[arrIdx].a.domain with (
-            var agg = newSrcAggregator(t),
-            const imap = new unstackIdxMapper(nd, arrIdx, axis)
-          ) {
-            const inIdx = imap(if nd == 2 then (idx,) else idx);
-            agg.copy(eOuts[arrIdx].a[idx], eIn.a[inIdx]);
-          }
-        }
-
-        const repMsg = try! '+'.join([rn in rnames] "created " + st.attrib(rn));
-        mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
       }
+
+      var eOuts = for rn in rnames do (try st.addEntry(rn, (...shapeOut), t));
+
+      // copy the data from the input array to the output arrays while unstacking
+      for arrIdx in 0..<numReturnArrays {
+        forall idx in eOuts[arrIdx].a.domain with (
+          var agg = newSrcAggregator(t),
+          const imap = new unstackIdxMapper(nd, arrIdx, axis)
+        ) {
+          const inIdx = imap(if nd == 2 then (idx,) else idx);
+          agg.copy(eOuts[arrIdx].a[idx], eIn.a[inIdx]);
+        }
+      }
+
+      const repMsg = try! '+'.join([rn in rnames] "created " + st.attrib(rn));
+      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     select gEnt.dtype {
@@ -1130,24 +1130,20 @@ module ManipulationMsg {
 
   // TODO: should this reduce the array rank by 1, or introduce a singleton dimension for axis?
   // (the array-api docs are unclear on this point)
-  proc unstackedShape(shape: ?N*int, axis: int, numReturnArrays: int): (bool, (N-1)*int)
+  proc unstackedShape(shape: ?N*int, axis: int): (N-1)*int
     where N > 1
   {
-    var shapeOut: (N-1)*int;
-    if numReturnArrays != shape[axis] {
-      return (false, shapeOut);
-    } else {
-      var i = 0;
-      for ii in 0..N {
-        if ii == axis {
-          continue;
-        } else {
-          shapeOut[i] = shape[ii];
-          i += 1;
-        }
+    var shapeOut: (N-1)*int,
+        i = 0;
+    for ii in 0..<N {
+      if ii == axis {
+        continue;
+      } else {
+        shapeOut[i] = shape[ii];
+        i += 1;
       }
-      return (true, shapeOut);
     }
+    return shapeOut;
   }
 
 
