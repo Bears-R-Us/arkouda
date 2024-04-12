@@ -155,6 +155,7 @@ def unique(
 
 class GroupByReductionType(enum.Enum):
     SUM = "sum"
+    COUNT = "count"
     PROD = "prod"
     VAR = "var"
     STD = "std"
@@ -532,45 +533,44 @@ class GroupBy:
         array([1, 2, 4, 3])
         """
         repMsg = generic_msg(
-            cmd="countReduction",
+            cmd="sizeReduction",
             args={"segments": cast(pdarray, self.segments), "size": self.length},
         )
         self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
 
-    def count(self) -> Tuple[groupable, pdarray]:
+    def count(self, values: pdarray) -> Tuple[groupable, pdarray]:
         """
-        Count the number of elements in each group, i.e. the number of times
-        each key appears.  This counts the total number of rows (including NaN values).
+        Count the number of elements in each group.  NaN values will be excluded from the total.
 
         Parameters
         ----------
-        none
-
+        values: pdarray
+            The values to be count by group (excluding NaN values).
         Returns
         -------
         unique_keys : (list of) pdarray or Strings
             The unique keys, in grouped order
         counts : pdarray, int64
-            The number of times each unique key appears
-
-        Notes
-        -----
-        This alias is an alias of "size".
+            The number of times each unique key appears (excluding NaN values).
 
         Examples
         --------
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.array([1, 0, -1, 1, 0, -1])
         >>> a
-        array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+        array([1 0 -1 1 0 -1])
+        >>> b = ak.array([1, np.nan, -1, np.nan, np.nan, -1], dtype = "float64")
+        >>> b
+        array([1.00000000000000000 nan -1.00000000000000000 nan nan -1.00000000000000000])
         >>> g = ak.GroupBy(a)
-        >>> keys,counts = g.count()
+        >>> keys,counts = g.count(b)
         >>> keys
-        array([1, 2, 3, 4])
+        array([-1 0 1])
         >>> counts
-        array([1, 2, 4, 3])
+        array([2 0 1])
         """
-        return self.size()
+        k, v = self.aggregate(values, "count")
+        return k, cast(pdarray, v)
 
     def aggregate(
         self,
@@ -1267,8 +1267,8 @@ class GroupBy:
         g = GroupBy(togroup)
         # Group unique pairs again by original key
         g2 = GroupBy(g.unique_keys[0], assume_sorted=False)
-        # Count number of unique values per key
-        keyorder, nuniq = g2.count()
+        # Count number of values per key
+        keyorder, nuniq = g2.size()
         # The last GroupBy *should* result in sorted key indices, but in case it
         # doesn't, we need to permute the answer to match the original key order
         if not is_sorted(keyorder):
@@ -1489,7 +1489,7 @@ class GroupBy:
         togroup = self._nested_grouping_helper(values)
         # Get value counts for each key group
         g = GroupBy(togroup)
-        keys_values, value_count = g.count()
+        keys_values, value_count = g.size()
         # Descending rank of first instance of each (key, value) pair
         first_rank = g.length - g.permutation[g.segments]
         ki, unique_values = keys_values[0], keys_values[1:]
@@ -1620,7 +1620,7 @@ class GroupBy:
         >>> a
         array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
         >>> g = ak.GroupBy(a)
-        >>> keys,counts = g.count()
+        >>> keys,counts = g.size()
         >>> g.broadcast(counts > 2)
         array([True False True True True False True True False False])
         >>> g.broadcast(counts == 3)

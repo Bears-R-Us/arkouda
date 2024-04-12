@@ -150,60 +150,6 @@ class GroupBy:
 
         return aggop
 
-    def count(self, as_series=None):
-        """
-        Compute the count of each value as the total number of rows, including NaN values.
-        This is an alias for size(), and may change in the future.
-
-        Parameters
-        ----------
-
-        as_series : bool, default=None
-            Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
-            arkouda.series.Series (if as_series = True)
-
-        Returns
-        -------
-        arkouda.dataframe.DataFrame or arkouda.series.Series
-
-        Examples
-        --------
-
-        >>> import arkouda as ak
-        >>> ak.connect()
-        >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
-        >>> display(df)
-
-        +----+-----+-----+
-        |    |   A |   B |
-        +====+=====+=====+
-        |  0 |   1 |   3 |
-        +----+-----+-----+
-        |  1 |   2 |   4 |
-        +----+-----+-----+
-        |  2 |   2 |   5 |
-        +----+-----+-----+
-        |  3 |   3 |   6 |
-        +----+-----+-----+
-
-        >>> df.groupby("A").count(as_series = False)
-
-        +----+---------+
-        |    |   count |
-        +====+=========+
-        |  0 |       1 |
-        +----+---------+
-        |  1 |       2 |
-        +----+---------+
-        |  2 |       1 |
-        +----+---------+
-
-        """
-        if as_series is True or (as_series is None and self.as_index is True):
-            return self._return_agg_series(self.gb.count())
-        else:
-            return self._return_agg_dataframe(self.gb.count(), "count")
-
     def size(self, as_series=None, sort_index=True):
         """
         Compute the size of each value as the total number of rows, including NaN values.
@@ -3750,7 +3696,7 @@ class DataFrame(UserDict):
         if isinstance(keys, str):
             keys = [keys]
         gb = self.GroupBy(keys, use_series=False)
-        vals, cts = gb.count()
+        vals, cts = gb.size()
         if not high:
             positions = where(cts >= low, 1, 0)
         else:

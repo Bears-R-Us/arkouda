@@ -171,7 +171,7 @@ class Index:
             return len(set(self.values)) == self.size
         else:
             g = GroupBy(self.values)
-            key, ct = g.count()
+            key, ct = g.size()
             return (ct == 1).all()
 
     @staticmethod

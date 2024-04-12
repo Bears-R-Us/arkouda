@@ -820,7 +820,7 @@ class SegArray:
         keyidx = self.grouping.broadcast(arange(self.size), permute=True)
         ukey, uval = GroupBy([keyidx, x]).unique_keys
         g = GroupBy(ukey, assume_sorted=True)
-        _, lengths = g.count()
+        _, lengths = g.size()
         return SegArray(g.segments, uval, grouping=g, lengths=lengths)
 
     def hash(self) -> Tuple[pdarray, pdarray]:
@@ -1178,7 +1178,7 @@ class SegArray:
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
-            k, ct = g.count()
+            k, ct = g.size()
             segments[k] = g.segments
             truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
@@ -1232,7 +1232,7 @@ class SegArray:
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
-            k, ct = g.count()
+            k, ct = g.size()
             segments[k] = g.segments
             truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
@@ -1286,7 +1286,7 @@ class SegArray:
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
-            k, ct = g.count()
+            k, ct = g.size()
             segments[k] = g.segments
             truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
@@ -1340,7 +1340,7 @@ class SegArray:
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
-            k, ct = g.count()
+            k, ct = g.size()
             segments[k] = g.segments
             truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
