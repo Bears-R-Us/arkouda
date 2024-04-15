@@ -778,7 +778,7 @@ class DataFrame(UserDict):
         
         if isinstance(key, pdarray) and key.dtype == akbool:
             if len(key) != len(self):
-                raise ValueError("boolean mask arguments must have the same length as the DataFrame.")
+                raise ValueError("Boolean mask arguments must have the same length as the DataFrame.")
             return key
         
         if isinstance(key, (pdarray,Strings,Categorical,SegArray)):
@@ -797,8 +797,26 @@ class DataFrame(UserDict):
         
     def __getitem__(self, key):
         """
-        Name-based indexing of columns, except for an integer slice, which does
-        position-based indexing of rows.
+        Name-based indexing of columns, except for integer slices and boolean masks, which does position-based indexing of rows.
+
+        Parameters
+        ----------
+        key : str, int, float, list, pdarray, slice
+            The column label(s) the resulting Series or DataFrame should contain. If using a slice, the indices of the desired rows. If using a boolean mask, a pdarray where "True" entries correspond to desired rows.
+
+        Returns
+        -------
+        Series, DataFrame
+            The columns or rows of the DataFrame. If only one column label is provided, the return type is a Series. Otherwise a DataFrame is returned.
+
+        Raises
+        ------
+        KeyError
+            Raised if a column label is not present in the DataFrame
+        ValueError
+            Raised if a boolean mask has the incorrect length or a slice's bounds are out of range
+        TypeError
+            Raised if the key is not a supported type
         """
         # convert series to underlying values
         # Should check for index alignment
@@ -836,7 +854,7 @@ class DataFrame(UserDict):
             result._set_index(self.index)
             return result
 
-        raise ValueError("key not supported: {}".format(key))
+        raise TypeError("key not supported: {}".format(key))
 
 
     def validate_value(self, value):
@@ -851,12 +869,26 @@ class DataFrame(UserDict):
         return value
     
     def __setitem__(self, key, value):
-        self.update_nrows()
+        """
+        Inserts/updates columns in the DataFrame. Can also be used to update one DataFrame with values from another. 
 
-        # If this is the first column added, we must create an index column.
-        add_index = False
-        if self._empty:
-            add_index = True
+        Parameters
+        ----------
+        key : str, int, float, list, pdarray
+            The column label(s) the resulting Series or DataFrame should contain. 
+        value : str, int, float, list, pdarray, Series, DataFrame
+            The value(s) that should be inserted or updated within the DataFrame. 
+        
+        Raises
+        ------
+        KeyError
+            Raised if a column label is not present in the DataFrame
+        IndexError
+            Raised if a boolean mask has the incorrect length
+        TypeError
+            Raised if the key or value are not a supported type
+        """
+        self.update_nrows()
 
         key = self.validate_key(key)
         value = self.validate_value(value)
@@ -886,8 +918,6 @@ class DataFrame(UserDict):
             UserDict.__setitem__(self, key, value)
             return
             
-            
-
         if isinstance(key, pdarray) and key.dtype == akbool:
             #TODO: validate length and width of value matches number of entries needed
             if not isinstance(value, DataFrame):
@@ -899,12 +929,9 @@ class DataFrame(UserDict):
             #True is the second option
             mask_size = counts[-1] if len(counts) == 2 or ( len(counts) == 1 and counts[0] == True) else 0
             if len(value) != mask_size:
-                raise ValueError("Boolean mask length must match DataFrame length")
-            #TODO: actually do the assignment?
-            return
+                raise IndexError("Boolean mask length must match DataFrame length")
 
         if isinstance(key, (pdarray,Strings)):
-            #TODO: 
             if isinstance(value, DataFrame):
                 if not len(key) == len(value.columns):
                     raise ValueError("Number of keys and values must match: {} != {}".format(len(key), len(value.columns)))    
@@ -923,22 +950,65 @@ class DataFrame(UserDict):
 
     @property
     def loc(self):
+        """
+        Label-based row indexing. Supports getting and setting. If there is a single indexing argument, it is interpreted as a row selector. If there are two, the first is interpreted as a row selector and the second as a column selector. Selectors can be scalar label values; lists, pdarrays, or slices of label values; boolean masks as pdarrays; or Series. Setting values with .loc requires both the row and column selectors to be present.
+
+        Raises
+        ------
+        KeyError
+            Raised if a label is not present in the DataFrame.
+        TypeError
+            Raised if the key or value types are not supported.
+        """
         return LocIndexer(self)
     
     @property
     def iloc(self):
+        """
+        Position-based row indexing. Supports getting and setting. If there is a single indexing argument, it is interpreted as a row selector. If there are two, the first is interpreted as a row selector and the second as a column selector. Selectors can be scalar integer values; lists, pdarrays, or slices of integer values; boolean masks as pdarrays; or integer Series. Setting values with .iloc requires both the row and column selectors to be present.
+
+        Raises
+        ------
+        TypeError
+            Raised if the keys or value types are not supported.
+
+        IndexError
+            Raised if an index is out of range.
+
+        ValueError
+            Raised if a boolean mask is of the wrong length.
+        """
         return ILocIndexer(self)
     
     @property
     def at(self) -> AtIndexer:
+        """
+        Access a single value for a row/column by label. Similar to `.loc`. Use only if you need to get or set a single value.
+
+        Raises
+        ------
+        KeyError
+            Raised if a label is not present in the DataFrame.
+        TypeError
+            Raised if the key or value types are not supported.
+        """
         return AtIndexer(self)
     
     @property
     def iat(self) -> IAtIndexer:
+        """
+        Access a single value for a row/column pair by integer position. Similar to `.iloc`. Use only if you need to get or set a single value.
+
+        Raises
+        ------
+        IndexError
+            Raised if an index is out of range.
+        TypeError
+            Raised if the key or value types are not supported.  
+        """
         return IAtIndexer(self)
     
     def set_row(self, key, value):
-
         # Set a single row in the dataframe using a dict of values
         if isinstance(key, int):
             for k in self._columns:
@@ -4661,9 +4731,9 @@ class LocIndexer:
         
         if isinstance(key, slice):
             if key.start is not None and not (in1d(array([key.start]), self.df.index.values)):
-                raise ValueError(f"Index {key.start} not found in DataFrame index")
+                raise KeyError(f"Index {key.start} not found in DataFrame index")
             if key.stop is not None and not akany(in1d(array([key.stop]), self.df.index.values)):
-                raise ValueError(f"Index {key.stop} not found in DataFrame index")
+                raise KeyError(f"Index {key.stop} not found in DataFrame index")
             
             start_idx = indexof1d(array([key.start]), self.df.index.values)[0] if key.start is not None else 0
             stop_idx = indexof1d(array([key.stop]), self.df.index.values)[0] + 1 if key.stop is not None else self.df.index.size
@@ -4679,18 +4749,12 @@ class LocIndexer:
     def get_row_col(self, row_key, col_key):
         return self[row_key][col_key]
     
-
     def __setitem__(self, key, val):
         if isinstance(key, tuple) and len(key) == 2:
             self.set_row_col(key[0], key[1], val)
             return
-        
-        if isinstance(key, list):
-            key = array(key)
-        if isinstance(key, Series):
-            key = key.values
-        
-        return None
+        else:
+            raise ValueError("Invalid key type. '.loc' indexing only supports keys with row and column selectors.")
 
     def set_row_col(self, row_key, col_key, val):
         if isinstance(row_key, list):
@@ -4781,7 +4845,7 @@ class ILocIndexer:
 
         if is_supported_scalar(key):
             if not isinstance(key, int):
-                raise ValueError("iloc key must be an integer")
+                raise TypeError("iloc key must be an integer")
             if key >= len(self.df) or key < -len(self.df):
                 raise IndexError("Index out of range")
             return self.df.get_rows(array([key]))
@@ -4795,21 +4859,23 @@ class ILocIndexer:
                 if key.size != self.df.index.size:
                     raise IndexError("Boolean array must be the same size as the DataFrame index")
                 return self.df.get_rows(key)
-            raise ValueError("Invalid dtype for iloc key, must be int or bool: {}".format(key.dtype))
+            raise TypeError("Invalid dtype for iloc key, must be int or bool: {}".format(key.dtype))
         
         if isinstance(key, slice):
             if key.start is not None and not isinstance(key.start, int):
-                raise ValueError("Start of slice must be an integer")
+                raise TypeError("Start of slice must be an integer")
             if key.stop is not None and not isinstance(key.stop, int):
-                raise ValueError("Stop of slice must be an integer")
+                raise TypeError("Stop of slice must be an integer")
             if key.step is not None and not isinstance(key.step, int):
-                raise ValueError("Step of slice must be an integer")
+                raise TypeError("Step of slice must be an integer")
             start = key.start if key.start is not None else 0
             stop = key.stop if key.stop is not None else self.df.index.size
             step = key.step if key.step is not None else 1
+            if start < 0 or start >= len(self.df) or stop < 0 or stop > len(self.df) or step <= 0:
+                raise IndexError("Slice index out of range")
             return self.df.get_rows(arange(start, stop, step))
         
-        raise ValueError("Invalid iloc key: {}".format(key))
+        raise TypeError("Invalid iloc key: {}".format(key))
     
     def get_row_col(self, row_key, col_key):
         row_indexed = self[row_key]
@@ -5309,7 +5375,7 @@ def _right_join_merge(
             left_cols.remove(col)
             in_left_cols.remove(col)
 
-    not_in_left = right[~in1d(right_at_on, left_at_on)]
+    not_in_left = right[in1d(right_at_on, left_at_on, invert=True)]
     for col in not_in_left.columns:
         if col in left_cols:
             not_in_left[col + right_suffix] = not_in_left[col]

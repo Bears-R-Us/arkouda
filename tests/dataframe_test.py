@@ -1157,6 +1157,41 @@ class DataFrameTest(ArkoudaTest):
                     # sorted_pd[sorted_columns])
 
 
+    def make_dfs_and_refs(self):
+        ints = [0,2,3,7,3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        default_index = [0,1,2,3,4]
+        unordered_index = [9,3,0,23,3]
+        string_index = ['one','two','three','four','five']
+        #group 1: string labels
+
+        # default index
+        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
+        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+
+        # unorderd index, integer labels
+        df2 = ak.DataFrame({1: ak.array(ints), 2:ak.array(floats), 3:ak.array(strings)},index=unordered_index)
+        _df2 = pd.DataFrame({1: np.array(ints), 2:np.array(floats), 3:np.array(strings)},index=unordered_index)
+        
+        # string index
+        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
+        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
+
+        return (df1,_df1,df2,_df2,df3,_df3)
+    
+    def check_df_equality(self, _df, df):
+        self.assertIsInstance(_df, pd.DataFrame)
+        self.assertIsInstance(df, ak.DataFrame)
+        self.assertListEqual(_df.index.tolist(), df.index.to_list())
+        self.assertListEqual(_df.columns.tolist(), df.columns.to_list())
+        for column in _df.columns:
+            pd_list = _df[column].values.tolist()
+            ak_list = df[column].values.to_list()
+            for i in range(len(pd_list)):
+                self.assertTrue(pd_list[i] == ak_list[i] or math.isnan(pd_list[i]) and math.isnan(ak_list[i]), "failure for column {}. {} vs {}".format(column, pd_list, ak_list))
+
     def test_getitem_scalars_and_slice(self):
         ints = [0,2,3,7,3]
         floats = [0.0, 1.5, 0.5, 1.5, -1.0]
@@ -1178,6 +1213,7 @@ class DataFrameTest(ArkoudaTest):
         # string index
         df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
         _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
+
 
          #group 2: int labels
 
@@ -1284,33 +1320,21 @@ class DataFrameTest(ArkoudaTest):
         
 
     def test_getitem_vectors(self):
-        ints = [0,1,3,7,3]
-        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
-        strings = ["A", "C", "C", "DE", "Z"]
+        (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()
 
-        def result_check(_a, a):
-            self.assertIsInstance(_a, pd.DataFrame)
-            self.assertIsInstance(a, ak.DataFrame)
-            self.assertListEqual(_a.index.tolist(), a.index.to_list())
-            self.assertListEqual(_a.columns.tolist(), a.columns.to_list())
-            self.assertListEqual(_a['ints'].values.tolist(), a['ints'].values.to_list())
-            self.assertListEqual(_a['floats'].values.tolist(), a['floats'].values.to_list())
-
-        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
-        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
         # multiple columns
         _access1 = _df1[['ints','floats']]
         access1 = df1[['ints','floats']]
-        result_check(_access1, access1)
+        self.check_df_equality(_access1, access1)
 
         _access2 = _df1[np.array(['ints','floats'])]
         access2 = df1[ak.array(['ints','floats'])]
-        result_check(_access2, access2)
+        self.check_df_equality(_access2, access2)
 
         # boolean mask
         _access3 = _df1[_df1['ints'] == 3]
         access3 = df1[df1['ints'] == 3]
-        result_check(_access3, access3)
+        self.check_df_equality(_access3, access3)
 
         # boolean mask of incorrect length
         bad = [True, True, False, False]
@@ -1326,107 +1350,87 @@ class DataFrameTest(ArkoudaTest):
             access4 = df1[['ints','not']]  
         
         # repeated index
-        repeated_index = [0,1,1,4,6]
-        df2 = ak.DataFrame({"ints": ak.array(ints), 'floats': ak.array(floats)},index=repeated_index)
-        _df2 = pd.DataFrame({"ints": np.array(ints), 'floats': np.array(floats)},index=repeated_index)
 
-        _access5 = _df2[['ints','floats']]
-        access5 = df2[['ints','floats']]
-        result_check(_access5, access5)
+        _access5 = _df2[[1,2]]
+        access5 = df2[[1,2]]
+        self.check_df_equality(_access5, access5)
 
         #arg order
-        _access6 = _df2[['floats','ints']]
-        access6 = df2[['floats','ints']]
-        result_check(_access6, access6)
+        _access6 = _df2[[2,1]]
+        access6 = df2[[2,1]]
+        self.check_df_equality(_access6, access6)
 
     def test_setitem_scalars(self):
-        ints = [0,1,3,7,3]
-        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
-        strings = ["A", "C", "C", "DE", "Z"]
-
-        def result_check(_a, a):
-            self.assertIsInstance(_a, pd.DataFrame)
-            self.assertIsInstance(a, ak.DataFrame)
-            self.assertListEqual(_a.index.tolist(), a.index.to_list())
-            self.assertListEqual(_a.columns.tolist(), a.columns.to_list())
-            for column in _a.columns:
-                self.assertListEqual(_a[column].values.tolist(), a[column].values.to_list(), "failure for column {}".format(column))
-
+        (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()
         
-        _df = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
-        df = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
-
         # add new column
         new_ints = [8,9,-10,8,12]
-        _df['new'] = np.array(new_ints)
-        df['new'] = ak.array(new_ints)
-        result_check(_df, df)
+        _df1['new'] = np.array(new_ints)
+        df1['new'] = ak.array(new_ints)
+        self.check_df_equality(_df1, df1)
 
         # modify existing column
-        _df['ints'] = np.array([1,2,3,4,5])
-        df['ints'] = ak.array([1,2,3,4,5])
-        result_check(_df, df)
+        _df1['ints'] = np.array([1,2,3,4,5])
+        df1['ints'] = ak.array([1,2,3,4,5])
+        self.check_df_equality(_df1, df1)
 
 
         # setting scalar value
-        _df['ints'] = 100
-        df['ints'] = 100
+        _df1['ints'] = 100
+        df1['ints'] = 100
 
         # indexing with boolean mask, array value
-        _df[_df['ints'] == 100]['ints'] = np.array([1,2,3,4,5])
-        df[df['ints'] == 100]['ints'] = ak.array([1,2,3,4,5])
-        result_check(_df, df)
+        _df1[_df1['ints'] == 100]['ints'] = np.array([1,2,3,4,5])
+        df1[df1['ints'] == 100]['ints'] = ak.array([1,2,3,4,5])
+        self.check_df_equality(_df1, df1)
 
         # indexing with boolean mask, array value, incorrect length
         with self.assertRaises(ValueError):
-            _df[np.array([True, True, False, False, False])]['ints'] = np.array([1,2,3,4])
+            _df1[np.array([True, True, False, False, False])]['ints'] = np.array([1,2,3,4])
         with self.assertRaises(ValueError):
-            df[ak.array([True, True, False, False, False])]['ints'] = ak.array([1,2,3,4])
+            df1[ak.array([True, True, False, False, False])]['ints'] = ak.array([1,2,3,4])
         
         # incorrect column index type
         with self.assertRaises(TypeError):
-            df[1] = ak.array([1,2,3,4,5])
+            df1[1] = ak.array([1,2,3,4,5])
 
         # integer column labels, integer index labels
-        _df = pd.DataFrame({1: np.array(ints), 2:np.array(floats), 3:np.array(strings)})
-        df = ak.DataFrame({1: ak.array(ints), 2:ak.array(floats), 3:ak.array(strings)})
-
         # add new column
         new_ints = [8,9,-10,8,12]
 
-        _df[4] = np.array(new_ints)
-        df[4] = ak.array(new_ints)
-        result_check(_df, df)
+        _df2[4] = np.array(new_ints)
+        df2[4] = ak.array(new_ints)
+        self.check_df_equality(_df2,df2)
 
         # modify existing column
-        _df[1] = np.array([1,2,3,4,5])
-        df[1] = ak.array([1,2,3,4,5])
-        result_check(_df, df)
+        _df2[1] = np.array([1,2,3,4,5])
+        df2[1] = ak.array([1,2,3,4,5])
+        self.check_df_equality(_df2,df2)
 
         # indexing with boolean mask, scalar value
-        _df[_df[1] == 3][1] = 101
-        df[df[1] == 3][1] = 101
-        result_check(_df, df)
+        _df2[_df2[1] == 3][1] = 101
+        df2[df2[1] == 3][1] = 101
+        self.check_df_equality(_df2,df2)
 
         # setting to scalar value
-        _df[1] = 100
-        df[1] = 100
-        result_check(_df, df)
+        _df2[1] = 100
+        df2[1] = 100
+        self.check_df_equality(_df2,df2)
 
         # indexing with boolean mask, array value
-        _df[_df[1] == 100][1] = np.array([1,2,3,4,5])
-        df[df[1] == 100][1] = ak.array([1,2,3,4,5])
-        result_check(_df, df)
+        _df2[_df2[1] == 100][1] = np.array([1,2,3,4,5])
+        df2[df2[1] == 100][1] = ak.array([1,2,3,4,5])
+        self.check_df_equality(_df2,df2)
 
         # indexing with boolean mask, array value, incorrect length
         with self.assertRaises(ValueError):
-            _df[np.array([True, True, False, False, False])][1] = np.array([1,2,3,4])
+            _df2[np.array([True, True, False, False, False])][1] = np.array([1,2,3,4])
         with self.assertRaises(ValueError):
-            df[ak.array([True, True, False, False, False])][1] = ak.array([1,2,3,4])
+            df2[ak.array([True, True, False, False, False])][1] = ak.array([1,2,3,4])
 
         # incorrect column index type
         with self.assertRaises(TypeError):
-            df['new column'] = ak.array([1,2,3,4,5])
+            df2['new column'] = ak.array([1,2,3,4,5])
         
         
     
@@ -1438,14 +1442,7 @@ class DataFrameTest(ArkoudaTest):
         ints2 = [8,9,-10,8,12]
         floats2 = [8.5,5.0,6.2,1.2,0.0]
         strings2 = ["B", "D", "D", "EF", "Y"]
-        def result_check(_a, a):
-            self.assertIsInstance(_a, pd.DataFrame)
-            self.assertIsInstance(a, ak.DataFrame)
-            self.assertListEqual(_a.index.tolist(), a.index.to_list())
-            self.assertListEqual(_a.columns.tolist(), a.columns.to_list())
-            for column in _a.columns:
-                self.assertListEqual(_a[column].values.tolist(), a[column].values.to_list(), "failure for column {}".format(column))
-
+        
         _df = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
         df = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
 
@@ -1455,7 +1452,7 @@ class DataFrameTest(ArkoudaTest):
         # assignment of one dataframe access to another
         _df[['ints','floats']] = _df2[['ints','floats']]
         df[['ints','floats']] = df2[['ints','floats']]
-        result_check(_df, df)
+        self.check_df_equality(_df, df)
 
         # new contents for dataframe being read
         _df2['ints'] = np.array(ints)
@@ -1466,12 +1463,12 @@ class DataFrameTest(ArkoudaTest):
         # assignment of one dataframe access to another, different order
         _df[['floats','ints']] = _df2[['floats','ints']]
         df[['floats','ints']] = df2[['floats','ints']]
-        result_check(_df, df)
+        self.check_df_equality(_df, df)
 
         # inserting multiple columns at once
         _df[['new1', 'new2']] = _df2[['ints','floats']]
         df[['new1', 'new2']] = df2[['ints','floats']]
-        result_check(_df, df)
+        self.check_df_equality(_df, df)
 
         #reset values
         _df2['ints'] = np.array(ints2)
@@ -1482,36 +1479,10 @@ class DataFrameTest(ArkoudaTest):
         # boolean mask, accessing two columns
         _df[_df['ints'] == 3][['ints','floats']] = _df2[0:2][['ints','floats']]
         df[df['ints'] == 3][['ints','floats']] = df2[0:2][['ints','floats']]
-        result_check(_df, df)
-
-    def check_df_equality(self, _df, df):
-        self.assertIsInstance(_df, pd.DataFrame)
-        self.assertIsInstance(df, ak.DataFrame)
-        self.assertListEqual(_df.index.tolist(), df.index.to_list())
-        self.assertListEqual(_df.columns.tolist(), df.columns.to_list())
-        for column in _df.columns:
-            pd_list = _df[column].values.tolist()
-            ak_list = df[column].values.to_list()
-            for i in range(len(pd_list)):
-                self.assertTrue(pd_list[i] == ak_list[i] or math.isnan(pd_list[i]) and math.isnan(ak_list[i]), "failure for column {}. {} vs {}".format(column, pd_list, ak_list))
+        self.check_df_equality(_df, df)
 
     def test_loc_get(self):
-        ints = [0,1,3,7,3]
-        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
-        strings = ["A", "C", "C", "DE", "Z"]
-
-        default_index = [0,1,2,3,4]
-        unordered_index = [9,3,0,23,3]
-        string_index = ['one','two','three','four','five']
-
-        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
-        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
-
-        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=unordered_index)
-        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=unordered_index)
-        
-        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
-        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
+        (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()
 
         # single label for row
         _loc1 = _df1.loc[2]
@@ -1559,27 +1530,9 @@ class DataFrameTest(ArkoudaTest):
         loc8 = df1.loc[ak.array([True, True, False, False, True]), ['ints','floats']]
         self.check_df_equality(_loc8, loc8)
 
-        #TODO: tests for other index types
-
 
     def test_loc_set_scalar(self):
-        ints = [0,1,3,7,3]
-        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
-        strings = ["A", "C", "C", "DE", "Z"]
-
-        default_index = [0,1,2,3,4]
-        unordered_index = [9,3,0,23,3]
-        string_index = ['one','two','three','four','five']
-
-        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
-        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
-
-        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=unordered_index)
-        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=unordered_index)
-        
-        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
-        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
-
+        (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()
         # single row, single column, scalar value
         _df1.loc[2, 'floats'] = 100.0
         df1.loc[2, 'floats'] = 100.0
@@ -1611,21 +1564,10 @@ class DataFrameTest(ArkoudaTest):
         #incorrect row index type
         with self.assertRaises(TypeError):
             df1.loc[1.0, 'floats'] = 100.0
-
-        #TODO: df2 and _df2
         
 
     def test_loc_set_vector(self):
-        ints = [0,1,3,7,3]
-        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
-        strings = ["A", "C", "C", "DE", "Z"]
-
-        default_index = [0,1,2,3,4]
-        unordered_index = [9,3,0,23,3]
-        string_index = ['one','two','three','four','five']
-
-        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
-        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+        (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()
 
         # two rows, one column, two values
         _df1.loc[[2,3], 'floats'] = np.array([100.0, 101.0])
@@ -1648,16 +1590,7 @@ class DataFrameTest(ArkoudaTest):
         self.check_df_equality(_df1, df1)
 
     def test_set_new_values(self):
-        ints = [0,1,3,7,3]
-        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
-        strings = ["A", "C", "C", "DE", "Z"]
-
-        default_index = [0,1,2,3,4]
-        unordered_index = [9,3,0,23,3]
-        string_index = ['one','two','three','four','five']
-
-        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats)})
-        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats)})
+        (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()
 
         # new column
         _df1.loc[2, 'not'] = 100.0
@@ -1671,36 +1604,13 @@ class DataFrameTest(ArkoudaTest):
         #df1.loc[100, 'floats'] = 100.0
         #self.check_df_equality(_df1, df1)
 
-        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
-        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
-        
-        # can add new columns to a dataframe with string columns
-        _df2.loc[2, 'not'] = 100.0
-        df2.loc[2, 'not'] = 100.0
-        self.check_df_equality(_df2, df2)
-
         # cannot add new rows to a dataframe with string column
         with self.assertRaises(ValueError):
-            df2.loc[100, 'floats'] = 100.0
+            df2.loc[100, 7] = 100.0
         
 
     def test_iloc_get(self):
-        ints = [0,1,3,7,3]
-        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
-        strings = ["A", "C", "C", "DE", "Z"]
-
-        default_index = [0,1,2,3,4]
-        unordered_index = [9,3,0,23,3]
-        string_index = ['one','two','three','four','five']
-
-        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
-        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
-
-        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=unordered_index)
-        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=unordered_index)
-
-        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
-        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
+        (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()
 
         for (_df1,df1) in zip([_df1, _df2, _df3], [df1, df2, df3]):
             # integer input
@@ -1819,22 +1729,7 @@ class DataFrameTest(ArkoudaTest):
         pass
 
     def test_iloc_set(self):
-        ints = [0,1,3,7,3]
-        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
-        strings = ["A", "C", "C", "DE", "Z"]
-
-        default_index = [0,1,2,3,4]
-        unordered_index = [9,3,0,23,3]
-        string_index = ['one','two','three','four','five']
-
-        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
-        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
-
-        df2 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=unordered_index)
-        _df2 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=unordered_index)
-
-        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)},index=string_index)
-        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)},index=string_index)
+        (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()
 
         for (_df,df) in zip([_df1, _df2, _df3], [df1, df2, df3]):
             # tuple of integers
@@ -1873,17 +1768,7 @@ class DataFrameTest(ArkoudaTest):
         pass
 
     def test_at(self):
-        ints = [0,1,3,7,3]
-        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
-        strings = ["A", "C", "C", "DE", "Z"]
-
-        default_index = [0,1,2,3,4]
-        unordered_index = [9,3,0,23,3]
-        string_index = ['one','two','three','four','five']
-
-        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
-        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
-
+        (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()
 
         # single label for row and column
         _at1 = _df1.at[2, 'floats']
@@ -1904,16 +1789,7 @@ class DataFrameTest(ArkoudaTest):
         pass
 
     def test_iat(self):
-        ints = [0,1,3,7,3]
-        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
-        strings = ["A", "C", "C", "DE", "Z"]
-
-        default_index = [0,1,2,3,4]
-        unordered_index = [9,3,0,23,3]
-        string_index = ['one','two','three','four','five']
-
-        df1 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats), "strings":ak.array(strings)})
-        _df1 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats), "strings":np.array(strings)})
+        (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()
 
         # single label for row and column
         _iat1 = _df1.iat[2, 1]
@@ -1936,8 +1812,6 @@ class DataFrameTest(ArkoudaTest):
         _df1.iat[2, 1] = 100.0
         df1.iat[2, 1] = 100.0
         self.check_df_equality(_df1, df1)
-
-        pass
 
 
 
