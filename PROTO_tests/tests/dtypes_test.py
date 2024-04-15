@@ -72,6 +72,40 @@ class TestDTypes:
         assert "uint64" == dtypes.resolve_scalar_dtype(2**63 + 1)
         assert "bigint" == dtypes.resolve_scalar_dtype(2**64)
 
+    def test_is_dtype_in_union(self):
+        from arkouda.dtypes import _is_dtype_in_union
+        from typing import Union
+
+        float_scalars = Union[float, np.float64, np.float32]
+        assert _is_dtype_in_union(np.float64, float_scalars)
+        # Test with a type not present in the union
+        assert ~_is_dtype_in_union(np.int64, float_scalars)
+        # Test with a non-Union type
+        assert ~_is_dtype_in_union(np.float64, float)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_nbytes(self, size):
+        from arkouda.dtypes import BigInt
+
+        a = ak.cast(ak.arange(size), dt="bigint")
+        assert a.nbytes == size * BigInt.itemsize
+
+        dtype_list = [
+            ak.dtypes.uint8,
+            ak.dtypes.uint64,
+            ak.dtypes.int64,
+            ak.dtypes.float64,
+            ak.dtypes.bool,
+        ]
+
+        for dt in dtype_list:
+            a = ak.array(ak.arange(size), dtype=dt)
+            assert a.nbytes == size * dt.itemsize
+
+        a = ak.array(["a", "b", "c"])
+        c = ak.Categorical(a)
+        assert c.nbytes == 82
+
     def test_pdarrays_datatypes(self):
         assert dtypes.dtype("int64") == ak.array(np.arange(10)).dtype
         assert dtypes.dtype("uint64") == ak.array(np.arange(10), ak.uint64).dtype
@@ -176,8 +210,8 @@ class TestDTypes:
         ) == str(ak.int_scalars)
 
         assert (
-            "typing.Union[float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, "
-            + "numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]"
+            "typing.Union[float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, "
+            + "numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]"
         ) == str(ak.numeric_scalars)
 
         assert "typing.Union[str, numpy.str_]" == str(ak.str_scalars)

@@ -1,4 +1,4 @@
-from typing import Callable, Sequence, Tuple, Union, cast
+from typing import Callable, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -117,7 +117,7 @@ def join_on_eq_with_dt(
     return resI, resJ
 
 
-def gen_ranges(starts, ends, stride=1):
+def gen_ranges(starts, ends, stride=1, return_lengths=False):
     """
     Generate a segmented array of variable-length, contiguous ranges between pairs of
     start- and end-points.
@@ -130,6 +130,8 @@ def gen_ranges(starts, ends, stride=1):
         The end value (exclusive) of each range
     stride: int
         Difference between successive elements of each range
+    return_lengths: bool, optional
+        Whether or not to return the lengths of each segment. Default False.
 
     Returns
     -------
@@ -137,6 +139,8 @@ def gen_ranges(starts, ends, stride=1):
         The starting index of each range in the resulting array
     ranges : pdarray, int64
         The actual ranges, flattened into a single array
+    lengths : pdarray, int64
+        The lengths of each segment. Only returned if return_lengths=True.
     """
     if starts.size != ends.size:
         raise ValueError("starts and ends must be same length")
@@ -158,7 +162,12 @@ def gen_ranges(starts, ends, stride=1):
         )
     )
     slices[segs[non_empty]] = diffs
-    return segs, cumsum(slices)
+
+    sums = cumsum(slices)
+    if return_lengths:
+        return segs, sums, lengths
+    else:
+        return segs, sums
 
 
 @typechecked
@@ -182,10 +191,12 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
 def inner_join(
     left: Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
     right: Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
-    wherefunc: Callable = None,
-    whereargs: Tuple[
-        Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
-        Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
+    wherefunc: Optional[Callable] = None,
+    whereargs: Optional[
+        Tuple[
+            Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
+            Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
+        ]
     ] = None,
 ) -> Tuple[pdarray, pdarray]:
     """Perform inner join on values in <left> and <right>,
@@ -202,7 +213,7 @@ def inner_join(
         Function that takes two pdarray arguments and returns
         a pdarray(bool) used to filter the join. Results for
         which wherefunc is False will be dropped.
-    whereargs : 2-tuple of pdarray, Strings, Categorical, or Sequence of pdarray
+    whereargs : 2-tuple of pdarray, Strings, Categorical, or Sequence of pdarray, optional
         The two arguments for wherefunc
 
     Returns

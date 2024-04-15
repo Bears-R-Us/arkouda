@@ -496,7 +496,8 @@ module EfuncMsg
         These are functions which take two arrays and produce an array.
         vector = efunc(vector, vector)
     */
-    proc efunc2Msg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND(cmd_prefix="efunc2Arg")
+    proc efunc2Msg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
         var rname = st.nextName();
@@ -509,15 +510,15 @@ module EfuncMsg
             when (ObjectType.PDARRAY, ObjectType.PDARRAY) {
                 var aGen: borrowed GenSymEntry = getGenericTypedArrayEntry(aParam.val, st);
                 var bGen: borrowed GenSymEntry = getGenericTypedArrayEntry(bParam.val, st);
-                if aGen.size != bGen.size {
-                    var errorMsg = "size mismatch in arguments to "+pn;
+                if aGen.shape != bGen.shape {
+                    var errorMsg = "shape mismatch in arguments to "+pn;
                     eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
                 select (aGen.dtype, bGen.dtype) {
                     when (DType.Int64, DType.Int64) {
-                        var aEnt = toSymEntry(aGen, int);
-                        var bEnt = toSymEntry(bGen, int);
+                        var aEnt = toSymEntry(aGen, int, nd);
+                        var bEnt = toSymEntry(bGen, int, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
@@ -525,8 +526,8 @@ module EfuncMsg
                         }
                     }
                     when (DType.Int64, DType.UInt64) {
-                        var aEnt = toSymEntry(aGen, int);
-                        var bEnt = toSymEntry(bGen, uint);
+                        var aEnt = toSymEntry(aGen, int, nd);
+                        var bEnt = toSymEntry(bGen, uint, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
@@ -534,8 +535,8 @@ module EfuncMsg
                         }
                     }
                     when (DType.Int64, DType.Float64) {
-                        var aEnt = toSymEntry(aGen, int);
-                        var bEnt = toSymEntry(bGen, real);
+                        var aEnt = toSymEntry(aGen, int, nd);
+                        var bEnt = toSymEntry(bGen, real, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
@@ -546,8 +547,8 @@ module EfuncMsg
                         }
                     }
                     when (DType.UInt64, DType.Int64) {
-                        var aEnt = toSymEntry(aGen, uint);
-                        var bEnt = toSymEntry(bGen, int);
+                        var aEnt = toSymEntry(aGen, uint, nd);
+                        var bEnt = toSymEntry(bGen, int, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
@@ -555,8 +556,8 @@ module EfuncMsg
                         }
                     }
                     when (DType.UInt64, DType.UInt64) {
-                        var aEnt = toSymEntry(aGen, uint);
-                        var bEnt = toSymEntry(bGen, uint);
+                        var aEnt = toSymEntry(aGen, uint, nd);
+                        var bEnt = toSymEntry(bGen, uint, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
@@ -564,8 +565,8 @@ module EfuncMsg
                         }
                     }
                     when (DType.UInt64, DType.Float64) {
-                        var aEnt = toSymEntry(aGen, uint);
-                        var bEnt = toSymEntry(bGen, real);
+                        var aEnt = toSymEntry(aGen, uint, nd);
+                        var bEnt = toSymEntry(bGen, real, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
@@ -576,8 +577,8 @@ module EfuncMsg
                         }
                     }
                     when (DType.Float64, DType.Int64) {
-                        var aEnt = toSymEntry(aGen, real);
-                        var bEnt = toSymEntry(bGen, int);
+                        var aEnt = toSymEntry(aGen, real, nd);
+                        var bEnt = toSymEntry(bGen, int, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
@@ -588,8 +589,8 @@ module EfuncMsg
                         }
                     }
                     when (DType.Float64, DType.UInt64) {
-                        var aEnt = toSymEntry(aGen, real);
-                        var bEnt = toSymEntry(bGen, uint);
+                        var aEnt = toSymEntry(aGen, real, nd);
+                        var bEnt = toSymEntry(bGen, uint, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
@@ -600,8 +601,8 @@ module EfuncMsg
                         }
                     }
                     when (DType.Float64, DType.Float64) {
-                        var aEnt = toSymEntry(aGen, real);
-                        var bEnt = toSymEntry(bGen, real);
+                        var aEnt = toSymEntry(aGen, real, nd);
+                        var bEnt = toSymEntry(bGen, real, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aEnt.a, bEnt.a)));
@@ -622,7 +623,7 @@ module EfuncMsg
                 var aGen: borrowed GenSymEntry = getGenericTypedArrayEntry(aParam.val, st);
                 select (aGen.dtype, bParam.getDType()) {
                     when (DType.Int64, DType.Int64) {
-                        var aEnt = toSymEntry(aGen, int);
+                        var aEnt = toSymEntry(aGen, int, nd);
                         var bScal = bParam.getIntValue();
                         select efunc {
                             when "arctan2" {
@@ -631,7 +632,7 @@ module EfuncMsg
                         }
                     }
                     when (DType.Int64, DType.UInt64) {
-                        var aEnt = toSymEntry(aGen, int);
+                        var aEnt = toSymEntry(aGen, int, nd);
                         var bScal = bParam.getUIntValue();
                         select efunc {
                             when "arctan2" {
@@ -640,7 +641,7 @@ module EfuncMsg
                         }
                     }
                     when (DType.Int64, DType.Float64) {
-                        var aEnt = toSymEntry(aGen, int);
+                        var aEnt = toSymEntry(aGen, int, nd);
                         var bScal = bParam.getRealValue();
                         select efunc {
                             when "arctan2" {
@@ -652,7 +653,7 @@ module EfuncMsg
                         }
                     }
                     when (DType.UInt64, DType.Int64) {
-                        var aEnt = toSymEntry(aGen, uint);
+                        var aEnt = toSymEntry(aGen, uint, nd);
                         var bScal = bParam.getIntValue();
                         select efunc {
                             when "arctan2" {
@@ -661,7 +662,7 @@ module EfuncMsg
                         }
                     }
                     when (DType.UInt64, DType.UInt64) {
-                        var aEnt = toSymEntry(aGen, uint);
+                        var aEnt = toSymEntry(aGen, uint, nd);
                         var bScal = bParam.getUIntValue();
                         select efunc {
                             when "arctan2" {
@@ -670,7 +671,7 @@ module EfuncMsg
                         }
                     }
                     when (DType.UInt64, DType.Float64) {
-                        var aEnt = toSymEntry(aGen, uint);
+                        var aEnt = toSymEntry(aGen, uint, nd);
                         var bScal = bParam.getRealValue();
                         select efunc {
                             when "arctan2" {
@@ -682,7 +683,7 @@ module EfuncMsg
                         }
                     }
                     when (DType.Float64, DType.Int64) {
-                        var aEnt = toSymEntry(aGen, real);
+                        var aEnt = toSymEntry(aGen, real, nd);
                         var bScal = bParam.getIntValue();
                         select efunc {
                             when "arctan2" {
@@ -694,7 +695,7 @@ module EfuncMsg
                         }
                     }
                     when (DType.Float64, DType.UInt64) {
-                        var aEnt = toSymEntry(aGen, real);
+                        var aEnt = toSymEntry(aGen, real, nd);
                         var bScal = bParam.getUIntValue();
                         select efunc {
                             when "arctan2" {
@@ -706,7 +707,7 @@ module EfuncMsg
                         }
                     }
                     when (DType.Float64, DType.Float64) {
-                        var aEnt = toSymEntry(aGen, real);
+                        var aEnt = toSymEntry(aGen, real, nd);
                         var bScal = bParam.getRealValue();
                         select efunc {
                             when "arctan2" {
@@ -729,7 +730,7 @@ module EfuncMsg
                 select (aParam.getDType(), bGen.dtype) {
                     when (DType.Int64, DType.Int64) {
                         var aScal = aParam.getIntValue();
-                        var bEnt = toSymEntry(bGen, int);
+                        var bEnt = toSymEntry(bGen, int, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
@@ -738,7 +739,7 @@ module EfuncMsg
                     }
                     when (DType.Int64, DType.UInt64) {
                         var aScal = aParam.getIntValue();
-                        var bEnt = toSymEntry(bGen, uint);
+                        var bEnt = toSymEntry(bGen, uint, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
@@ -747,7 +748,7 @@ module EfuncMsg
                     }
                     when (DType.Int64, DType.Float64) {
                         var aScal = aParam.getIntValue();
-                        var bEnt = toSymEntry(bGen, real);
+                        var bEnt = toSymEntry(bGen, real, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
@@ -759,7 +760,7 @@ module EfuncMsg
                     }
                     when (DType.UInt64, DType.Int64) {
                         var aScal = aParam.getUIntValue();
-                        var bEnt = toSymEntry(bGen, int);
+                        var bEnt = toSymEntry(bGen, int, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
@@ -768,7 +769,7 @@ module EfuncMsg
                     }
                     when (DType.UInt64, DType.UInt64) {
                         var aScal = aParam.getUIntValue();
-                        var bEnt = toSymEntry(bGen, uint);
+                        var bEnt = toSymEntry(bGen, uint, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
@@ -777,7 +778,7 @@ module EfuncMsg
                     }
                     when (DType.UInt64, DType.Float64) {
                         var aScal = aParam.getUIntValue();
-                        var bEnt = toSymEntry(bGen, real);
+                        var bEnt = toSymEntry(bGen, real, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
@@ -789,7 +790,7 @@ module EfuncMsg
                     }
                     when (DType.Float64, DType.Int64) {
                         var aScal = aParam.getRealValue();
-                        var bEnt = toSymEntry(bGen, int);
+                        var bEnt = toSymEntry(bGen, int, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
@@ -801,7 +802,7 @@ module EfuncMsg
                     }
                     when (DType.Float64, DType.UInt64) {
                         var aScal = aParam.getRealValue();
-                        var bEnt = toSymEntry(bGen, uint);
+                        var bEnt = toSymEntry(bGen, uint, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
@@ -813,7 +814,7 @@ module EfuncMsg
                     }
                     when (DType.Float64, DType.Float64) {
                         var aScal = aParam.getRealValue();
-                        var bEnt = toSymEntry(bGen, real);
+                        var bEnt = toSymEntry(bGen, real, nd);
                         select efunc {
                             when "arctan2" {
                                 st.addEntry(rname, new shared SymEntry(atan2(aScal, bEnt.a)));
@@ -849,7 +850,8 @@ module EfuncMsg
     :returns: (MsgTuple)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vvMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND
+    proc efunc3vvMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -859,16 +861,16 @@ module EfuncMsg
         var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("condition"), st);
         var g2: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("a"), st);
         var g3: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("b"), st);
-        if !((g1.size == g2.size) && (g2.size == g3.size)) {
-            var errorMsg = "size mismatch in arguments to "+pn;
-            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
+        if !((g1.shape == g2.shape) && (g2.shape == g3.shape)) {
+            var errorMsg = "shape mismatch in arguments to "+pn;
+            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
         }
         select (g1.dtype, g2.dtype, g3.dtype) {
             when (DType.Bool, DType.Int64, DType.Int64) {
-                var e1 = toSymEntry(g1, bool);
-                var e2 = toSymEntry(g2, int);
-                var e3 = toSymEntry(g3, int);
+                var e1 = toSymEntry(g1, bool, nd);
+                var e2 = toSymEntry(g2, int, nd);
+                var e3 = toSymEntry(g3, int, nd);
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, e2.a, e3.a, 0);
@@ -883,9 +885,9 @@ module EfuncMsg
                 } 
             }
             when (DType.Bool, DType.UInt64, DType.UInt64) {
-                var e1 = toSymEntry(g1, bool);
-                var e2 = toSymEntry(g2, uint);
-                var e3 = toSymEntry(g3, uint);
+                var e1 = toSymEntry(g1, bool, nd);
+                var e2 = toSymEntry(g2, uint, nd);
+                var e3 = toSymEntry(g3, uint, nd);
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, e2.a, e3.a, 0);
@@ -900,9 +902,9 @@ module EfuncMsg
                 } 
             }
             when (DType.Bool, DType.Float64, DType.Float64) {
-                var e1 = toSymEntry(g1, bool);
-                var e2 = toSymEntry(g2, real);
-                var e3 = toSymEntry(g3, real);
+                var e1 = toSymEntry(g1, bool, nd);
+                var e2 = toSymEntry(g2, real, nd);
+                var e3 = toSymEntry(g3, real, nd);
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, e2.a, e3.a, 0);
@@ -917,9 +919,9 @@ module EfuncMsg
                 } 
             }
             when (DType.Bool, DType.Bool, DType.Bool) {
-                var e1 = toSymEntry(g1, bool);
-                var e2 = toSymEntry(g2, bool);
-                var e3 = toSymEntry(g3, bool);
+                var e1 = toSymEntry(g1, bool, nd);
+                var e2 = toSymEntry(g2, bool, nd);
+                var e3 = toSymEntry(g3, bool, nd);
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, e2.a, e3.a, 0);
@@ -956,7 +958,8 @@ module EfuncMsg
     :returns: (MsgTuple)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND
+    proc efunc3vsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var efunc = msgArgs.getValueOf("func");
@@ -971,15 +974,15 @@ module EfuncMsg
 
         var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
         var g2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
-        if !(g1.size == g2.size) {
-            var errorMsg = "size mismatch in arguments to "+pn;
+        if !(g1.shape == g2.shape) {
+            var errorMsg = "shape mismatch in arguments to "+pn;
             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
         select (g1.dtype, g2.dtype, dtype) {
             when (DType.Bool, DType.Int64, DType.Int64) {
-               var e1 = toSymEntry(g1, bool);
-               var e2 = toSymEntry(g2, int);
+               var e1 = toSymEntry(g1, bool, nd);
+               var e2 = toSymEntry(g2, int, nd);
                var val = msgArgs.get("scalar").getIntValue();
                select efunc {
                   when "where" {
@@ -995,8 +998,8 @@ module EfuncMsg
                } 
             }
             when (DType.Bool, DType.UInt64, DType.UInt64) {
-               var e1 = toSymEntry(g1, bool);
-               var e2 = toSymEntry(g2, uint);
+               var e1 = toSymEntry(g1, bool, nd);
+               var e2 = toSymEntry(g2, uint, nd);
                var val = msgArgs.get("scalar").getUIntValue();
                select efunc {
                   when "where" {
@@ -1012,8 +1015,8 @@ module EfuncMsg
                } 
             }
             when (DType.Bool, DType.Float64, DType.Float64) {
-                var e1 = toSymEntry(g1, bool);
-                var e2 = toSymEntry(g2, real);
+                var e1 = toSymEntry(g1, bool, nd);
+                var e2 = toSymEntry(g2, real, nd);
                 var val = msgArgs.get("scalar").getRealValue();
                 select efunc {
                     when "where" {
@@ -1029,8 +1032,8 @@ module EfuncMsg
                 }
             } 
             when (DType.Bool, DType.Bool, DType.Bool) {
-                var e1 = toSymEntry(g1, bool);
-                var e2 = toSymEntry(g2, bool);
+                var e1 = toSymEntry(g1, bool, nd);
+                var e2 = toSymEntry(g2, bool, nd);
                 var val = msgArgs.get("scalar").getBoolValue();
                 select efunc {
                     when "where" {
@@ -1070,7 +1073,8 @@ module EfuncMsg
     :returns: (MsgTuple)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3svMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND
+    proc efunc3svMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var efunc = msgArgs.getValueOf("func");
@@ -1085,16 +1089,16 @@ module EfuncMsg
 
         var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
         var g2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
-        if !(g1.size == g2.size) {
-            var errorMsg = "size mismatch in arguments to "+pn;
+        if !(g1.shape == g2.shape) {
+            var errorMsg = "shape mismatch in arguments to "+pn;
             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
         select (g1.dtype, dtype, g2.dtype) {
             when (DType.Bool, DType.Int64, DType.Int64) {
-                var e1 = toSymEntry(g1, bool);
+                var e1 = toSymEntry(g1, bool, nd);
                 var val = msgArgs.get("scalar").getIntValue();
-                var e2 = toSymEntry(g2, int);
+                var e2 = toSymEntry(g2, int, nd);
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, val, e2.a, 2);
@@ -1109,9 +1113,9 @@ module EfuncMsg
                } 
             }
             when (DType.Bool, DType.UInt64, DType.UInt64) {
-                var e1 = toSymEntry(g1, bool);
+                var e1 = toSymEntry(g1, bool, nd);
                 var val = msgArgs.get("scalar").getUIntValue();
-                var e2 = toSymEntry(g2, uint);
+                var e2 = toSymEntry(g2, uint, nd);
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, val, e2.a, 2);
@@ -1126,9 +1130,9 @@ module EfuncMsg
                } 
             }
             when (DType.Bool, DType.Float64, DType.Float64) {
-                var e1 = toSymEntry(g1, bool);
+                var e1 = toSymEntry(g1, bool, nd);
                 var val = msgArgs.get("scalar").getRealValue();
-                var e2 = toSymEntry(g2, real);
+                var e2 = toSymEntry(g2, real, nd);
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, val, e2.a, 2);
@@ -1143,9 +1147,9 @@ module EfuncMsg
                 } 
             }
             when (DType.Bool, DType.Bool, DType.Bool) {
-                var e1 = toSymEntry(g1, bool);
+                var e1 = toSymEntry(g1, bool, nd);
                 var val = msgArgs.get("scalar").getBoolValue();
-                var e2 = toSymEntry(g2, bool);
+                var e2 = toSymEntry(g2, bool, nd);
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, val, e2.a, 2);
@@ -1184,7 +1188,8 @@ module EfuncMsg
     :returns: (MsgTuple)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3ssMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.registerND
+    proc efunc3ssMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var dtype = str2dtype(msgArgs.getValueOf("dtype"));
@@ -1200,7 +1205,7 @@ module EfuncMsg
         var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
         select (g1.dtype, dtype) {
             when (DType.Bool, DType.Int64) {
-                var e1 = toSymEntry(g1, bool);
+                var e1 = toSymEntry(g1, bool, nd);
                 var val1 = msgArgs.get("a").getIntValue();
                 var val2 = msgArgs.get("b").getIntValue();
                 select efunc {
@@ -1217,7 +1222,7 @@ module EfuncMsg
                 } 
             }
             when (DType.Bool, DType.UInt64) {
-                var e1 = toSymEntry(g1, bool);
+                var e1 = toSymEntry(g1, bool, nd);
                 var val1 = msgArgs.get("a").getUIntValue();
                 var val2 = msgArgs.get("b").getUIntValue();
                 select efunc {
@@ -1234,7 +1239,7 @@ module EfuncMsg
                 } 
             }
             when (DType.Bool, DType.Float64) {
-                var e1 = toSymEntry(g1, bool);
+                var e1 = toSymEntry(g1, bool, nd);
                 var val1 = msgArgs.get("a").getRealValue();
                 var val2 = msgArgs.get("b").getRealValue();
                 select efunc {
@@ -1251,7 +1256,7 @@ module EfuncMsg
                 } 
             }
             when (DType.Bool, DType.Bool) {
-                var e1 = toSymEntry(g1, bool);
+                var e1 = toSymEntry(g1, bool, nd);
                 var val1 = msgArgs.get("a").getBoolValue();
                 var val2 = msgArgs.get("b").getBoolValue();
                 select efunc {
@@ -1371,12 +1376,5 @@ module EfuncMsg
         c = if ch then a else b;
       }
       return C;
-    }    
-
-    use CommandMap;
-    registerFunction("efunc2", efunc2Msg, getModuleName());
-    registerFunction("efunc3vv", efunc3vvMsg, getModuleName());
-    registerFunction("efunc3vs", efunc3vsMsg, getModuleName());
-    registerFunction("efunc3sv", efunc3svMsg, getModuleName());
-    registerFunction("efunc3ss", efunc3ssMsg, getModuleName());
+    }
 }

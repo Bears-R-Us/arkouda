@@ -470,6 +470,14 @@ module SegmentedString {
     }
 
     /*
+      Returns list of bools where index i indicates whether the string i of the SegString is a decimal
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is a decimal
+    */
+    proc isDecimal() throws {
+      return computeOnSegments(offsets.a, values.a, SegFunction.StringIsDecimal, bool);
+    }
+    
+    /*
       Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
       and the remaining characters replaced with their lowercase equivalent
       :returns: Strings – Substrings with first characters replaced with uppercase equivalent and remaining characters replaced with
@@ -1521,10 +1529,47 @@ module SegmentedString {
   }
 
   /*
+    The SegFunction called by computeOnSegments for isdecimal, using isDigit
+  */
+  inline proc stringIsDecimal(ref values, rng) throws {
+    return interpretAsString(values, rng, borrow=true).isDigit();
+  }
+
+  /*
     The SegFunction called by computeOnSegments for isdigit
   */
   inline proc stringIsDigit(ref values, rng) throws {
-    return interpretAsString(values, rng, borrow=true).isDigit();
+    use In1d;
+    const specialDigits = "⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉";
+    const myString = interpretAsString(values, rng, borrow=true);
+    // test if string is all regular digits for early out
+    if myString.isDigit(){
+      return true;
+    }
+    // test if string is all alphanumeric characters for early out
+    else if myString.isAlpha() || myString.isEmpty() {
+      return false;
+    }
+    // string contains at least one special digit character, full test
+    else {
+      // this function converts bytes to a uint64 to keep all bytes together for the comparison
+      // by shifting by 8 to combine into a single uint64 to use In1d on integer values
+      proc toUint64(c) {
+        var ret:uint = 0;
+        var i = 0;
+        for b in c.bytes() {
+          var tmp = b:uint;
+          ret |= (tmp << (i*8));
+          i += 1;
+        }
+        return ret;
+      }
+      var specialArray = [s in specialDigits] toUint64(s);
+      var myStringArray = [b in myString] toUint64(b);
+      var digitTruth = [b in myString] b.isDigit();
+      const specialTruth = In1d.in1d[myStringArray, specialArray];
+      return & reduce (specialTruth | digitTruth);
+    }
   }
 
   /*

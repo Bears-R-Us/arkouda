@@ -50,6 +50,27 @@ class TestIndex:
         with pytest.raises(ValueError):
             idx = ak.MultiIndex([ak.arange(size), ak.arange(size - 1)])
 
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_memory_usage(self, size):
+        from arkouda.dtypes import BigInt
+        from arkouda.index import Index, MultiIndex
+
+        idx = Index(ak.cast(ak.array([1, 2, 3]), dt="bigint"))
+        assert idx.memory_usage() == 3 * BigInt.itemsize
+
+        idx = Index(ak.cast(ak.arange(size), dt="int64"))
+        assert idx.memory_usage(unit="GB") == size * ak.dtypes.int64.itemsize / (1024 * 1024 * 1024)
+        assert idx.memory_usage(unit="MB") == size * ak.dtypes.int64.itemsize / (1024 * 1024)
+        assert idx.memory_usage(unit="KB") == size * ak.dtypes.int64.itemsize / 1024
+        assert idx.memory_usage(unit="B") == size * ak.dtypes.int64.itemsize
+
+        midx = MultiIndex([ak.cast(ak.arange(size), dt="int64"), ak.cast(ak.arange(size), dt="int64")])
+        assert midx.memory_usage(unit="GB") == 2 * size * ak.dtypes.int64.itemsize / (1024 * 1024 * 1024)
+
+        assert midx.memory_usage(unit="MB") == 2 * size * ak.dtypes.int64.itemsize / (1024 * 1024)
+        assert midx.memory_usage(unit="KB") == 2 * size * ak.dtypes.int64.itemsize / 1024
+        assert midx.memory_usage(unit="B") == 2 * size * ak.dtypes.int64.itemsize
+
     def test_is_unique(self):
         i = ak.Index(ak.array([0, 1, 2]))
         assert i.is_unique
@@ -96,6 +117,12 @@ class TestIndex:
         i4 = ak.Index(ak.array(["a", "b", "c"]))
         assert i4.argsort(ascending=True).to_list() == [0, 1, 2]
         assert i4.argsort(ascending=False).to_list() == [2, 1, 0]
+
+    def test_map(self):
+        idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
+
+        result = idx.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+        assert result.values.to_list() == [30.0, 5.0, 30.0, 5.0, 25.0]
 
     def test_concat(self):
         idx_1 = ak.Index.factory(ak.arange(5))

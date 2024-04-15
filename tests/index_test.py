@@ -59,6 +59,30 @@ class IndexTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             idx = ak.MultiIndex([ak.arange(5), ak.arange(3)])
 
+    def test_memory_usage(self):
+        from arkouda.dtypes import BigInt
+        from arkouda.index import Index, MultiIndex
+
+        idx = Index(ak.cast(ak.array([1, 2, 3]), dt="bigint"))
+        self.assertEqual(idx.memory_usage(), 3 * BigInt.itemsize)
+
+        n = 2000
+        idx = Index(ak.cast(ak.arange(n), dt="int64"))
+        self.assertEqual(
+            idx.memory_usage(unit="GB"), n * ak.dtypes.int64.itemsize / (1024 * 1024 * 1024)
+        )
+        self.assertEqual(idx.memory_usage(unit="MB"), n * ak.dtypes.int64.itemsize / (1024 * 1024))
+        self.assertEqual(idx.memory_usage(unit="KB"), n * ak.dtypes.int64.itemsize / (1024))
+        self.assertEqual(idx.memory_usage(unit="B"), n * ak.dtypes.int64.itemsize)
+
+        midx = MultiIndex([ak.cast(ak.arange(n), dt="int64"), ak.cast(ak.arange(n), dt="int64")])
+        self.assertEqual(
+            midx.memory_usage(unit="GB"), 2 * n * ak.dtypes.int64.itemsize / (1024 * 1024 * 1024)
+        )
+        self.assertEqual(midx.memory_usage(unit="MB"), 2 * n * ak.dtypes.int64.itemsize / (1024 * 1024))
+        self.assertEqual(midx.memory_usage(unit="KB"), 2 * n * ak.dtypes.int64.itemsize / (1024))
+        self.assertEqual(midx.memory_usage(unit="B"), 2 * n * ak.dtypes.int64.itemsize)
+
     def test_is_unique(self):
         i = ak.Index(ak.array([0, 1, 2]))
         self.assertTrue(i.is_unique)
@@ -104,6 +128,12 @@ class IndexTest(ArkoudaTest):
         i4 = ak.Index(ak.array(["a", "b", "c"]))
         self.assertListEqual(i4.argsort(ascending=True).to_list(), [0, 1, 2])
         self.assertListEqual(i4.argsort(ascending=False).to_list(), [2, 1, 0])
+
+    def test_map(self):
+        idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
+
+        result = idx.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+        self.assertListEqual(result.values.to_list(), [30.0, 5.0, 30.0, 5.0, 25.0])
 
     def test_concat(self):
         idx_1 = ak.Index.factory(ak.arange(5))

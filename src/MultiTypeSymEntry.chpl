@@ -11,6 +11,7 @@ module MultiTypeSymEntry
     public use NumPyDType;
     public use SymArrayDmapCompat;
     use ArkoudaSymEntryCompat;
+    use ArkoudaRandomCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -31,6 +32,8 @@ module MultiTypeSymEntry
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
 
             CompositeSymEntry,        // Entries that consist of multiple SymEntries of varying type
+
+            GeneratorSymEntry,  // Entry for random number generators
 
             AnythingSymEntry, // Placeholder to stick aritrary things in the map
             UnknownSymEntry,
@@ -180,8 +183,7 @@ module MultiTypeSymEntry
         }
     }
 
-    /* Symbol table entry
-       Only supports 1-d arrays for now */
+    /* Symbol table entry */
     class SymEntry : GenSymEntry
     {
         /*
@@ -254,28 +256,61 @@ module MultiTypeSymEntry
             :returns: s (string) containing the array data
         */
         override proc entry__str__(thresh:int=6, prefix:string = "[", suffix:string = "]", baseFormat:string = "%?"): string throws {
-            if this.dimensions == 1 {
-                var s:string = "";
-                if (this.size == 0) {
-                    s =  ""; // Unnecessary, but left for clarity
-                } else if (this.size < thresh || this.size <= 6) {
-                    for i in 0..(this.size-2) {s += try! baseFormat.doFormat(this.a[i]) + " ";}
-                    s += try! baseFormat.doFormat(this.a[this.size-1]);
+            const threshND = thresh / this.dimensions;
+            proc subArrayStr(param dim: int, in idx: this.dimensions*int): string {
+                const dimSize = this.tupShape[dim];
+                var s = prefix;
+                var first = true;
+                if dim < this.dimensions-1 {
+                    if dimSize <= threshND || dimSize <= 6 {
+                        for i in 0..<dimSize {
+                            if first then first = false; else s += " ";
+                            idx[dim] = i;
+                            s += subArrayStr(dim+1, idx);
+                        }
+                    } else {
+                        for i in 0..<3 {
+                            idx[dim] = i;
+                            s += subArrayStr(dim+1, idx) + " ";
+                        }
+                        s += "... ";
+                        for i in (dimSize - 3)..<dimSize {
+                            if first then first = false; else s += " ";
+                            idx[dim] = i;
+                            s += subArrayStr(dim+1, idx);
+                        }
+                    }
                 } else {
-                    var b = baseFormat + " " + baseFormat + " " + baseFormat + " ... " +
-                                baseFormat + " " + baseFormat + " " + baseFormat;
-                    s = try! b.doFormat(
-                                this.a[0], this.a[1], this.a[2],
-                                this.a[this.size-3], this.a[this.size-2], this.a[this.size-1]);
+                    if dimSize <= thresh || dimSize <= 6 {
+                        for i in 0..<dimSize {
+                            if first then first = false; else s += " ";
+                            idx[dim] = i;
+                            s += try! baseFormat.doFormat(this.a[idx]);
+                        }
+                    } else {
+                        for i in 0..<3 {
+                            idx[dim] = i;
+                            s += try! baseFormat.doFormat(this.a[idx]) + " ";
+                        }
+                        s += "... ";
+                        for i in (dimSize - 3)..<dimSize {
+                            if first then first = false; else s += " ";
+                            idx[dim] = i;
+                            s += try! baseFormat.doFormat(this.a[idx]);
+                        }
+                    }
                 }
-                if this.etype == bool {
-                    s = s.replace("true","True");
-                    s = s.replace("false","False");
-                }
-                return prefix + s + suffix;
-            } else {
-                return prefix + "ND array: " + this.shape + suffix;
+                s += suffix;
+                return s;
             }
+
+            var s = subArrayStr(0, this.tupShape);
+            if this.etype == bool {
+                s = s.replace("true","True");
+                s = s.replace("false","False");
+            }
+
+            return s;
         }
     }
 
@@ -371,6 +406,20 @@ module MultiTypeSymEntry
         }
     }
 
+    class GeneratorSymEntry:AbstractSymEntry {
+        type etype;
+        var generator: randomStream(etype);
+        var state: int;
+
+        proc init(generator: randomStream(?etype), state: int = 1) {
+            this.entryType = SymbolEntryType.GeneratorSymEntry;
+            assignableTypes.add(this.entryType);
+            this.etype = etype;
+            this.generator = generator;
+            this.state = state;
+        }
+    }
+
     /**
      * Helper proc to cast AbstrcatSymEntry to GenSymEntry
      */
@@ -390,6 +439,13 @@ module MultiTypeSymEntry
      */
     proc toSegStringSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed SegStringSymEntry);
+    }
+
+    /**
+     * Helper proc to cast AbstractSymEntry to GeneratorSymEntry
+     */
+    proc toGeneratorSymEntry(entry: borrowed AbstractSymEntry, type t) throws {
+        return (entry: borrowed GeneratorSymEntry(t));
     }
 
     /**

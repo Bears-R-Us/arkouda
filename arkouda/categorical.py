@@ -138,6 +138,38 @@ class Categorical:
         self.dtype = str_
         self.registered_name: Optional[str] = None
 
+    @property
+    def nbytes(self):
+        """
+        The size of the Categorical in bytes.
+
+        Returns
+        -------
+        int
+            The size of the Categorical in bytes.
+
+        """
+        nbytes = 0
+        if self.categories is not None:
+            nbytes += self.categories.nbytes
+
+        if isinstance(self.codes, pdarray):
+            nbytes += self.codes.nbytes
+        elif isinstance(self.codes, akint64):
+            nbytes += 1
+
+        if isinstance(self.permutation, pdarray):
+            nbytes += self.permutation.nbytes
+        elif isinstance(self.permutation, akint64):
+            nbytes += 1
+
+        if isinstance(self.segments, pdarray):
+            nbytes += self.segments.nbytes
+        elif isinstance(self.segments, akint64):
+            nbytes += 1
+
+        return nbytes
+
     @classmethod
     @typechecked
     def from_codes(
@@ -347,6 +379,32 @@ class Categorical:
         value, but proceed with caution.
         """
         return self.to_ndarray().tolist()
+
+    def to_strings(self) -> List:
+        """
+        Convert the Categorical to Strings.
+
+        Returns
+        -------
+        arkouda.strings.Strings
+            A Strings object corresponding to the values in
+            this Categorical.
+
+        Examples
+        --------
+        >>> from arkouda import ak
+        >>> ak.connect()
+        >>> a = ak.array(["a","b","c"])
+        >>> a
+        >>> c = ak.Categorical(a)
+        >>>  c.to_strings()
+        c.to_strings()
+
+        >>> isinstance(c.to_strings(), ak.Strings)
+        True
+
+        """
+        return self.categories[self.codes]
 
     def __iter__(self):
         raise NotImplementedError(

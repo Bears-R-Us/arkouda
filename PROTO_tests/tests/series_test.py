@@ -4,6 +4,7 @@ import pytest
 from pandas.testing import assert_frame_equal
 
 import arkouda as ak
+from arkouda.series import Series
 
 DTYPES = [ak.int64, ak.uint64, ak.bool, ak.float64, ak.bigint, ak.str_]
 NO_STRING = [ak.int64, ak.uint64, ak.bool, ak.float64, ak.bigint]
@@ -147,8 +148,10 @@ class TestSeries:
 
     def test_concat(self):
         s = ak.Series(ak.arange(5))
-        s2 = ak.Series(ak.arange(5, 11), ak.arange(5, 11))
-        s3 = ak.Series(ak.arange(5, 10), ak.arange(5, 10))
+        # added data= and index= clarifiers to the next two lines.
+        # without them, the index was interpreted as the name.
+        s2 = ak.Series(data=ak.arange(5, 11), index=ak.arange(5, 11))
+        s3 = ak.Series(data=ak.arange(5, 10), index=ak.arange(5, 10))
 
         df = ak.Series.concat([s, s2], axis=1)
         assert isinstance(df, ak.DataFrame)
@@ -189,3 +192,152 @@ class TestSeries:
         g = df.groupby(["a", "b"])
         series = ak.Series(data=g.sum("c")["c"], index=g.sum("c").index)
         g.broadcast(series)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_memory_usage(self, size):
+        s = ak.Series(ak.arange(size))
+        assert s.memory_usage(unit="GB", index=False) == size * ak.dtypes.int64.itemsize / (
+            1024 * 1024 * 1024
+        )
+        assert s.memory_usage(unit="MB", index=False) == size * ak.dtypes.int64.itemsize / (1024 * 1024)
+        assert s.memory_usage(unit="KB", index=False) == size * ak.dtypes.int64.itemsize / 1024
+        assert s.memory_usage(unit="B", index=False) == size * ak.dtypes.int64.itemsize
+
+        assert s.memory_usage(unit="GB", index=True) == 2 * size * ak.dtypes.int64.itemsize / (
+            1024 * 1024 * 1024
+        )
+        assert s.memory_usage(unit="MB", index=True) == 2 * size * ak.dtypes.int64.itemsize / (
+            1024 * 1024
+        )
+        assert s.memory_usage(unit="KB", index=True) == 2 * size * ak.dtypes.int64.itemsize / 1024
+        assert s.memory_usage(unit="B", index=True) == 2 * size * ak.dtypes.int64.itemsize
+
+    def test_map(self):
+        a = ak.Series(ak.array(["1", "1", "4", "4", "4"]))
+        b = ak.Series(ak.array([2, 3, 2, 3, 4]))
+        c = ak.Series(ak.array([1.0, 1.0, 2.2, 2.2, 4.4]), index=ak.array([5, 4, 2, 3, 1]))
+
+        result = a.map({"4": 25, "5": 30, "1": 7})
+        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
+        assert result.values.to_list() == [7, 7, 25, 25, 25]
+
+        result = a.map({"1": 7})
+        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
+        assert (
+            result.values.to_list()
+            == ak.cast(ak.array([7, 7, np.nan, np.nan, np.nan]), dt=ak.int64).to_list()
+        )
+
+        result = a.map({"1": 7.0})
+        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
+        assert np.allclose(result.values.to_list(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
+
+        result = b.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
+        assert result.values.to_list() == [30.0, 5.0, 30.0, 5.0, 25.0]
+
+        result = c.map({1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d"})
+        assert result.index.values.to_list() == [5, 4, 2, 3, 1]
+        assert result.values.to_list() == ["a", "a", "b", "b", "c"]
+
+        result = c.map({1.0: "a"})
+        assert result.index.values.to_list() == [5, 4, 2, 3, 1]
+        assert result.values.to_list() == ["a", "a", "null", "null", "null"]
+
+        result = c.map({1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d", 6.0: "e"})
+        assert result.index.values.to_list() == [5, 4, 2, 3, 1]
+        assert result.values.to_list() == ["a", "a", "b", "b", "c"]
+
+    def test_to_markdown(self):
+        s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
+        assert (
+            s.to_markdown() == "+----+----------+\n"
+            "|    | animal   |\n"
+            "+====+==========+\n"
+            "|  0 | elk      |\n"
+            "+----+----------+\n"
+            "|  1 | pig      |\n"
+            "+----+----------+\n"
+            "|  2 | dog      |\n"
+            "+----+----------+\n"
+            "|  3 | quetzal  |\n"
+            "+----+----------+"
+        )
+
+        assert (
+            s.to_markdown(index=False) == "+----------+\n"
+            "| animal   |\n"
+            "+==========+\n"
+            "| elk      |\n"
+            "+----------+\n"
+            "| pig      |\n"
+            "+----------+\n"
+            "| dog      |\n"
+            "+----------+\n"
+            "| quetzal  |\n"
+            "+----------+"
+        )
+
+        assert (
+            s.to_markdown(tablefmt="grid") == "+----+----------+\n"
+            "|    | animal   |\n"
+            "+====+==========+\n"
+            "|  0 | elk      |\n"
+            "+----+----------+\n"
+            "|  1 | pig      |\n"
+            "+----+----------+\n"
+            "|  2 | dog      |\n"
+            "+----+----------+\n"
+            "|  3 | quetzal  |\n"
+            "+----+----------+"
+        )
+
+        assert s.to_markdown(tablefmt="grid") == s.to_pandas().to_markdown(tablefmt="grid")
+        assert s.to_markdown(tablefmt="grid", index=False) == s.to_pandas().to_markdown(
+            tablefmt="grid", index=False
+        )
+        assert s.to_markdown(tablefmt="jira") == s.to_pandas().to_markdown(tablefmt="jira")
+
+    def test_isna_int(self):
+        # Test case with integer data type
+        data_int = Series([1, 2, 3, 4, 5])
+        expected_int = Series([False, False, False, False, False])
+        assert np.allclose(data_int.isna().values.to_ndarray(), expected_int.values.to_ndarray())
+        assert np.allclose(data_int.isnull().values.to_ndarray(), expected_int.values.to_ndarray())
+        assert np.allclose(data_int.notna().values.to_ndarray(), ~expected_int.values.to_ndarray())
+        assert np.allclose(data_int.notnull().values.to_ndarray(), ~expected_int.values.to_ndarray())
+        assert ~data_int.hasnans()
+
+    def test_isna_float(self):
+        # Test case with float data type
+        data_float = Series([1.0, 2.0, 3.0, np.nan, 5.0])
+        expected_float = Series([False, False, False, True, False])
+        assert np.allclose(data_float.isna().values.to_ndarray(), expected_float.values.to_ndarray())
+        assert np.allclose(data_float.isnull().values.to_ndarray(), expected_float.values.to_ndarray())
+        assert np.allclose(data_float.notna().values.to_ndarray(), ~expected_float.values.to_ndarray())
+        assert np.allclose(data_float.notnull().values.to_ndarray(), ~expected_float.values.to_ndarray())
+        assert data_float.hasnans()
+
+    def test_isna_string(self):
+        # Test case with string data type
+        data_string = Series(["a", "b", "c", "d", "e"])
+        expected_string = Series([False, False, False, False, False])
+        assert np.allclose(data_string.isna().values.to_ndarray(), expected_string.values.to_ndarray())
+        assert np.allclose(data_string.isnull().values.to_ndarray(), expected_string.values.to_ndarray())
+        assert np.allclose(data_string.notna().values.to_ndarray(), ~expected_string.values.to_ndarray())
+        assert np.allclose(
+            data_string.notnull().values.to_ndarray(), ~expected_string.values.to_ndarray()
+        )
+        assert ~data_string.hasnans()
+
+    def test_fillna(self):
+        data = ak.Series([1, np.nan, 3, np.nan, 5])
+
+        fill_values1 = ak.ones(5)
+        assert data.fillna(fill_values1).to_list() == [1.0, 1.0, 3.0, 1.0, 5.0]
+
+        fill_values2 = Series(2 * ak.ones(5))
+        assert data.fillna(fill_values2).to_list() == [1.0, 2.0, 3.0, 2.0, 5.0]
+
+        fill_values3 = 100.0
+        assert data.fillna(fill_values3).to_list() == [1.0, 100.0, 3.0, 100.0, 5.0]

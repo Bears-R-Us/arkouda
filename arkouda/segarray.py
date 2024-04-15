@@ -96,7 +96,7 @@ class SegArray:
             self.lengths = lengths
 
         self._non_empty = self.lengths > 0
-        self._non_empty_count = self.non_empty.sum()
+        self._non_empty_count = self._non_empty.sum()
 
         # grouping object computation. (This will need to be moved to the server)
         # GroupBy computation left here because of lack of server obj. May need to move in Future
@@ -228,8 +228,8 @@ class SegArray:
         elif (isinstance(i, pdarray) and i.dtype in [akint64, akuint64, akbool]) or isinstance(i, slice):
             starts = self.segments[i]
             ends = starts + self.lengths[i]
-            newsegs, inds = gen_ranges(starts, ends)
-            return SegArray(newsegs, self.values[inds])
+            newsegs, inds, lengths = gen_ranges(starts, ends, return_lengths=True)
+            return SegArray(newsegs, self.values[inds], lengths)
         else:
             raise TypeError(f"Invalid index type: {type(i)}")
 

@@ -84,8 +84,6 @@ def asarray(
                 f"allowed transfer size. Increase ak.client.maxTransferBytes to force."
             )
 
-        print(f"making array, shape: {np.shape(obj)},  dtype: {xdtype}")
-
         if obj.shape == ():
             return Array._new(
                 create_pdarray(
@@ -250,6 +248,8 @@ def linspace(
     device: Optional[Device] = None,
     endpoint: bool = True,
 ) -> Array:
+    from ._array_object import Array
+
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
@@ -362,6 +362,7 @@ def zeros(
         args={
             "dtype": dtype_name,
             "shape": shape,
+            "value": 0,
         },
     )
 

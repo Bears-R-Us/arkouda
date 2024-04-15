@@ -1,20 +1,17 @@
 from __future__ import annotations
 
-from ._array_object import Array
+from ._array_object import Array, implements_numpy
 
 from typing import List, Optional, Tuple, Union, cast
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray
+from arkouda.pdarraycreation import scalar_array
 from arkouda.util import broadcast_dims
+
+import numpy as np
 
 
 def broadcast_arrays(*arrays: Array) -> List[Array]:
-    """
-    Array API compatible wrapper for :py:func:`np.broadcast_arrays <numpy.broadcast_arrays>`.
-
-    See its docstring for more information.
-    """
-
     shapes = [a.shape for a in arrays]
     bcShape = shapes[0]
     for shape in shapes[1:]:
@@ -23,6 +20,7 @@ def broadcast_arrays(*arrays: Array) -> List[Array]:
     return [broadcast_to(a, shape=bcShape) for a in arrays]
 
 
+@implements_numpy(np.broadcast_to)
 def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
     """
     Broadcast the array to the specified shape.
@@ -47,15 +45,9 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
         raise ValueError(f"Failed to broadcast array: {e}")
 
 
-# Note: the function name is different here
 def concat(
     arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[int] = 0
 ) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.concatenate <numpy.concatenate>`.
-
-    See its docstring for more information.
-    """
     # TODO: type promotion across input arrays
 
     return Array._new(
@@ -78,11 +70,6 @@ def concat(
 
 
 def expand_dims(x: Array, /, *, axis: int) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.expand_dims <numpy.expand_dims>`.
-
-    See its docstring for more information.
-    """
     try:
         return Array._new(
             create_pdarray(
@@ -103,11 +90,6 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
 
 
 def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.flip <numpy.flip>`.
-
-    See its docstring for more information.
-    """
     axisList = []
     if axis is not None:
         axisList = list(axis) if isinstance(axis, tuple) else [axis]
@@ -131,12 +113,25 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
         raise IndexError(f"Failed to flip array: {e}")
 
 
-def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.transpose <numpy.transpose>`.
+def moveaxis(
+    x: Array, source: Union[int, Tuple[int, ...]], destination: Union[int, Tuple[int, ...]], /
+) -> Array:
+    perm = list(range(x.ndim))
+    if isinstance(source, tuple):
+        if isinstance(destination, tuple):
+            for s, d in zip(source, destination):
+                perm[s] = d
+        else:
+            raise ValueError("source and destination must both be tuples if source is a tuple")
+    elif isinstance(destination, int):
+        perm[source] = destination
+    else:
+        raise ValueError("source and destination must both be integers if source is a tuple")
 
-    See its docstring for more information.
-    """
+    return permute_dims(x, axes=tuple(perm))
+
+
+def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
     try:
         return Array._new(
             create_pdarray(
@@ -156,14 +151,34 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
         raise IndexError(f"Failed to permute array dimensions: {e}")
 
 
+def repeat(x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = None) -> Array:
+    if isinstance(repeats, int):
+        reps = Array._new(scalar_array(repeats))
+    else:
+        reps = repeats
+
+    if axis is None:
+        return Array._new(
+            create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"repeatFlat{x.ndim}D",
+                        args={
+                            "name": x._array,
+                            "repeats": reps._array,
+                        },
+                    ),
+                )
+            )
+        )
+    else:
+        raise NotImplementedError("repeat with 'axis' argument is not yet implemented")
+
+
 def reshape(
     x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None
 ) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.reshape <numpy.reshape>`.
-
-    See its docstring for more information.
-    """
 
     # TODO: figure out copying semantics (currently always creates a copy)
     try:
@@ -192,11 +207,6 @@ def roll(
     *,
     axis: Optional[Union[int, Tuple[int, ...]]] = None,
 ) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.roll <numpy.roll>`.
-
-    See its docstring for more information.
-    """
     axisList = []
     if axis is not None:
         axisList = list(axis) if isinstance(axis, tuple) else [axis]
@@ -227,11 +237,6 @@ def roll(
 
 
 def squeeze(x: Array, /, axis: Union[int, Tuple[int, ...]]) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.squeeze <numpy.squeeze>`.
-
-    See its docstring for more information.
-    """
     nAxes = len(axis) if isinstance(axis, tuple) else 1
     try:
         return Array._new(
@@ -254,11 +259,6 @@ def squeeze(x: Array, /, axis: Union[int, Tuple[int, ...]]) -> Array:
 
 
 def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) -> Array:
-    """
-    Array API compatible wrapper for :py:func:`np.stack <numpy.stack>`.
-
-    See its docstring for more information.
-    """
     # TODO: type promotion across input arrays
     return Array._new(
         create_pdarray(
@@ -275,3 +275,46 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
             )
         )
     )
+
+
+def tile(x: Array, repetitions: Tuple[int, ...], /) -> Array:
+    if len(repetitions) > x.ndim:
+        xr = reshape(x, (1,) * (len(repetitions) - x.ndim) + x.shape)
+        reps = repetitions
+    elif len(repetitions) < x.ndim:
+        xr = x
+        reps = (1,) * (x.ndim - len(repetitions)) + repetitions
+    else:
+        xr = x
+        reps = repetitions
+
+    return Array._new(
+        create_pdarray(
+            cast(
+                str,
+                generic_msg(
+                    cmd=f"tile{xr.ndim}D",
+                    args={
+                        "name": xr._array,
+                        "reps": reps,
+                    },
+                ),
+            )
+        )
+    )
+
+
+def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
+    resp = cast(
+                str,
+                generic_msg(
+                    cmd=f"unstack{x.ndim}D",
+                    args={
+                        "name": x._array,
+                        "axis": axis,
+                        "numReturnArrays": x.shape[axis],
+                    },
+                ),
+            )
+
+    return tuple([Array._new(create_pdarray(a)) for a in resp.split("+")])

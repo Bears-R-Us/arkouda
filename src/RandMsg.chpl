@@ -10,10 +10,12 @@ module RandMsg
     use Logging;
     use Message;
     use RandArray;
+    use CommAggregation;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+    use ArkoudaRandomCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -172,7 +174,255 @@ module RandMsg
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-    
+
+    /*
+     * Creates a generator server-side and returns the SymTab name used to
+     * retrieve the generator from the SymTab.
+     */
+    proc createGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName();
+        var rname: string;
+        const hasSeed = msgArgs.get("has_seed").getBoolValue();
+        const seed = if hasSeed then msgArgs.get("seed").getIntValue() else -1;
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        const dtype = str2dtype(dtypeStr);
+        const state = msgArgs.get("state").getIntValue();
+
+        if hasSeed {
+            randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                            "dtype: %? seed: %i state: %i".doFormat(dtypeStr,seed,state));
+        }
+        else {
+            randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                            "dtype: %? state: %i".doFormat(dtypeStr,state));
+        }
+
+        proc creationHelper(type t, seed, state, st: borrowed SymTab): string throws {
+            var generator = if hasSeed then new randomStream(t, seed) else new randomStream(t);
+            if state != 1 {
+                // you have to skip to one before where you want to be
+                generator.skipTo(state-1);
+            }
+            var entry = new shared GeneratorSymEntry(generator, state);
+            var name = st.nextName();
+            st.addEntry(name, entry);
+            return name;
+        }
+
+        select dtype {
+            when DType.Int64 {
+                rname = creationHelper(int, seed, state, st);
+            }
+            when DType.UInt64 {
+                rname = creationHelper(uint, seed, state, st);
+            }
+            when DType.Float64 {
+                rname = creationHelper(real, seed, state, st);
+            }
+            when DType.Bool {
+                rname = creationHelper(bool, seed, state, st);
+            }
+            otherwise {
+                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+
+        const repMsg = st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc uniformGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName();
+        var rname = st.nextName();
+        const name = msgArgs.getValueOf("name");
+        const size = msgArgs.get("size").getIntValue();
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        const dtype = str2dtype(dtypeStr);
+        const state = msgArgs.get("state").getIntValue();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i dtype: %? state %i".doFormat(name, size, dtypeStr, state));
+
+        st.checkTable(name);
+
+        proc uniformHelper(type t, low, high, state, st: borrowed SymTab) throws {
+            var generatorEntry: borrowed GeneratorSymEntry(t) = toGeneratorSymEntry(st.lookup(name), t);
+            ref rng = generatorEntry.generator;
+            if state != 1 {
+                // you have to skip to one before where you want to be
+                rng.skipTo(state-1);
+            }
+            var uniformEntry = createSymEntry(size, t);
+            if t != bool {
+                rng.fill(uniformEntry.a, low, high);
+            }
+            else {
+                // chpl doesn't support bounded random with boolean type
+                rng.fill(uniformEntry.a);
+            }
+            st.addEntry(rname, uniformEntry);
+        }
+
+        select dtype {
+            when DType.Int64 {
+                const low = msgArgs.get("low").getIntValue();
+                const high = msgArgs.get("high").getIntValue();
+                uniformHelper(int, low, high, state, st);
+            }
+            when DType.UInt64 {
+                const low = msgArgs.get("low").getIntValue();
+                const high = msgArgs.get("high").getIntValue();
+                uniformHelper(uint, low, high, state, st);
+            }
+            when DType.Float64 {
+                const low = msgArgs.get("low").getRealValue();
+                const high = msgArgs.get("high").getRealValue();
+                uniformHelper(real, low, high, state, st);
+            }
+            when DType.Bool {
+                // chpl doesn't support bounded random with boolean type
+                uniformHelper(bool, 0, 1, state, st);
+            }
+            otherwise {
+                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+        var repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc permutationMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName();
+        var rname = st.nextName();
+        const name = msgArgs.getValueOf("name");
+        const xName = msgArgs.getValueOf("x");
+        const size = msgArgs.get("size").getIntValue();
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        const dtype = str2dtype(dtypeStr);
+        const state = msgArgs.get("state").getIntValue();
+        const isDomPerm = msgArgs.get("isDomPerm").getBoolValue();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i dtype: %? state %i isDomPerm %?".doFormat(name, size, dtypeStr, state, isDomPerm));
+
+        st.checkTable(name);
+
+        proc permuteHelper(type t) throws {
+            // we need the int generator in order for permute(domain) to work correctly
+            var intGeneratorEntry: borrowed GeneratorSymEntry(int) = toGeneratorSymEntry(st.lookup(name), int);
+            ref intRng = intGeneratorEntry.generator;
+
+            if state != 1 {
+                // you have to skip to one before where you want to be
+                intRng.skipTo(state-1);
+            }
+            const permutedDom = makeDistDom(size);
+            const permutedIdx = intRng.permute(permutedDom);
+
+            if isDomPerm {
+                const permutedEntry = createSymEntry(permutedIdx);
+                st.addEntry(rname, permutedEntry);
+            }
+            else {
+                // permute requires that the stream's eltType is coercible to the array/domain's idxType,
+                // so we use permute(dom) and use that to gather the permuted vals
+                var permutedArr: [permutedDom] t;
+                ref myArr = toSymEntry(getGenericTypedArrayEntry(xName, st),t).a;
+
+                forall (pa,idx) in zip(permutedArr, permutedIdx) with (var agg = newSrcAggregator(t)) {
+                    agg.copy(pa, myArr[idx]);
+                }
+
+                const permutedEntry = createSymEntry(permutedArr);
+                st.addEntry(rname, permutedEntry);
+            }
+        }
+
+        select dtype {
+            when DType.Int64 {
+                permuteHelper(int);
+            }
+            when DType.UInt64 {
+                permuteHelper(uint);
+            }
+            when DType.Float64 {
+                permuteHelper(real);
+            }
+            when DType.Bool {
+                permuteHelper(bool);
+            }
+            otherwise {
+                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+        var repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc shuffleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName();
+        const name = msgArgs.getValueOf("name");
+        const xName = msgArgs.getValueOf("x");
+        const size = msgArgs.get("size").getIntValue();
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        const dtype = str2dtype(dtypeStr);
+        const state = msgArgs.get("state").getIntValue();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i dtype: %? state %i".doFormat(name, size, dtypeStr, state));
+
+        st.checkTable(name);
+
+        proc shuffleHelper(type t) throws {
+            var generatorEntry: borrowed GeneratorSymEntry(int) = toGeneratorSymEntry(st.lookup(name), int);
+            ref rng = generatorEntry.generator;
+
+            if state != 1 {
+                // you have to skip to one before where you want to be
+                rng.skipTo(state-1);
+            }
+
+            ref myArr = toSymEntry(getGenericTypedArrayEntry(xName, st),t).a;
+            rng.shuffle(myArr);
+        }
+
+        select dtype {
+            when DType.Int64 {
+                shuffleHelper(int);
+            }
+            when DType.UInt64 {
+                shuffleHelper(uint);
+            }
+            when DType.Float64 {
+                shuffleHelper(real);
+            }
+            when DType.Bool {
+                shuffleHelper(bool);
+            }
+            otherwise {
+                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+        var repMsg = "created " + st.attrib(xName);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     use CommandMap;
     registerFunction("randomNormal", randomNormalMsg, getModuleName());
+    registerFunction("createGenerator", createGeneratorMsg, getModuleName());
+    registerFunction("uniformGenerator", uniformGeneratorMsg, getModuleName());
+    registerFunction("permutation", permutationMsg, getModuleName());
+    registerFunction("shuffle", shuffleMsg, getModuleName());
 }

@@ -208,16 +208,17 @@ compile-arrow-cpp:
 $(ARROW_O): $(ARROW_CPP) $(ARROW_H)
 	make compile-arrow-cpp
 
-CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")
-CHPL_VERSION_OK := $(shell test $(CHPL_MINOR) -ge 31 && echo yes)
-CHPL_VERSION_WARN := $(shell test $(CHPL_MINOR) -le 31 && echo yes)
+CHPL_MAJOR := $(shell $(CHPL) --version | sed -n "s/chpl version \([0-9]\)\.[0-9]*.*/\1/p")
+CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version [0-9]\.\([0-9]*\).*/\1/p")
+CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 31  && echo yes)
+CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 32 && echo yes)
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
-	$(error Chapel 1.31.0 or newer is required)
+	$(error Chapel 1.31.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
 endif
 ifeq ($(CHPL_VERSION_WARN),yes)
-	$(warning Chapel 1.32.0 or newer is recommended)
+	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
 endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
@@ -322,8 +323,12 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-ifeq ($(shell expr $(CHPL_MINOR) \> 33),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-134
+ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-20
+endif
+
+ifeq ($(shell expr $(CHPL_MINOR) \= 34),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-134
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \= 33),1)
@@ -340,6 +345,10 @@ ifeq ($(shell expr $(CHPL_MINOR) \= 31),1)
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \> 33),1)
+	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
+endif
+
+ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
 	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
 endif
 
@@ -422,7 +431,7 @@ $(DOC_DIR):
 	mkdir -p $@
 
 .PHONY: doc
-doc: doc-python doc-server 
+doc: doc-python doc-server
 
 CHPLDOC := chpldoc
 CHPLDOC_FLAGS := --process-used-modules
@@ -512,7 +521,7 @@ $(TEST_TARGETS): $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)%: $(TEST_SOURCE_DIR)/%.
 print-%:
 	$(info $($*)) @true
 
-test-python: 
+test-python:
 	python3 -m pytest $(ARKOUDA_PYTEST_OPTIONS) -c pytest.ini
 
 CLEAN_TARGETS += test-clean

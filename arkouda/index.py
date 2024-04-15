@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import json
-from typing import List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 
 import pandas as pd  # type: ignore
 from numpy import array as ndarray
@@ -16,6 +18,9 @@ from arkouda.pdarraycreation import arange, array, create_pdarray, ones
 from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.util import convert_if_categorical, generic_concat, get_callback
+
+if TYPE_CHECKING:
+    from arkouda.series import Series
 
 
 class Index:
@@ -191,6 +196,41 @@ class Index:
                 idx.append(Categorical.from_return_msg(i_comps[1]))
 
         return cls.factory(idx) if len(idx) > 1 else cls.factory(idx[0])
+
+    def memory_usage(self, unit="B"):
+        """
+        Return the memory usage of the Index values.
+
+        Parameters
+        ----------
+        unit : str, default = "B"
+            Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+
+        Returns
+        -------
+        int
+            Bytes of memory consumed.
+
+        See Also
+        --------
+        arkouda.pdarrayclass.nbytes
+        arkouda.index.MultiIndex.memory_usage
+        arkouda.series.Series.memory_usage
+        arkouda.dataframe.DataFrame.memory_usage
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> idx = Index(ak.array([1, 2, 3]))
+        >>> idx.memory_usage()
+        24
+
+        """
+        from arkouda.util import convert_bytes
+
+        return convert_bytes(self.values.nbytes, unit=unit)
 
     def to_pandas(self):
         if isinstance(self.values, list):
@@ -412,6 +452,45 @@ class Index:
         else:
             i = argsort(self.values)
         return i
+
+    def map(self, arg: Union[dict, "Series"]) -> "Index":
+        """
+        Map values of Index according to an input mapping.
+
+        Parameters
+        ----------
+        arg : dict or Series
+            The mapping correspondence.
+
+        Returns
+        -------
+        arkouda.index.Index
+            A new index with the values transformed by the mapping correspondence.
+
+        Raises
+        ------
+        TypeError
+            Raised if arg is not of type dict or arkouda.Series.
+            Raised if index values not of type pdarray, Categorical, or Strings.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
+        >>> display(idx)
+        Index(array([2 3 2 3 4]), dtype='int64')
+        >>> idx.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+        Index(array([30.00000000000000000 5.00000000000000000 30.00000000000000000
+        5.00000000000000000 25.00000000000000000]), dtype='float64')
+        >>> s2 = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
+        >>> idx.map(s2)
+        Index(array(['b', 'b', 'd', 'd', 'a']), dtype='<U0')
+
+        """
+        from arkouda.util import map
+
+        return Index(map(self.values, arg))
 
     def concat(self, other):
         self._check_types(other)
@@ -866,6 +945,45 @@ class MultiIndex(Index):
     @property
     def index(self):
         return self.values
+
+    def memory_usage(self, unit="B"):
+        """
+        Return the memory usage of the MultiIndex values.
+
+        Parameters
+        ----------
+        unit : str, default = "B"
+            Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+
+        Returns
+        -------
+        int
+            Bytes of memory consumed.
+
+        See Also
+        --------
+        arkouda.pdarrayclass.nbytes
+        arkouda.index.Index.memory_usage
+        arkouda.series.Series.memory_usage
+        arkouda.dataframe.DataFrame.memory_usage
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
+        >>> m.memory_usage()
+        48
+
+        """
+        from arkouda.util import convert_bytes
+
+        nbytes = 0
+        for item in self.values:
+            nbytes += item.nbytes
+
+        return convert_bytes(nbytes, unit=unit)
 
     def to_pandas(self):
         idx = [convert_if_categorical(i) for i in self.index]

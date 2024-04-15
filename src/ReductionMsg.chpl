@@ -51,6 +51,7 @@ module ReductionMsg
             op = msgArgs.getValueOf("op"),
             nAxes = msgArgs.get("nAxes").getIntValue(),
             axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+            skipNan = msgArgs.get("skipNan").getBoolValue(),
             rname = st.nextName();
 
       var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
@@ -68,16 +69,16 @@ module ReductionMsg
         if nd == 1 || nAxes == 0 {
           var s: opType;
           select op {
-            when "sum" do s = (+ reduce eIn.a:opType):opType;
-            when "prod" do s = (* reduce eIn.a:opType):opType;
-            when "min" do s = min reduce eIn.a;
-            when "max" do s = max reduce eIn.a;
+            when "sum" do s = if skipNan then sumSkipNan(eIn.a, opType) else (+ reduce eIn.a:opType):opType;
+            when "prod" do s = if skipNan then prodSkipNan(eIn.a, opType) else (* reduce eIn.a:opType):opType;
+            when "min" do s = if skipNan then getMinSkipNan(eIn.a) else min reduce eIn.a;
+            when "max" do s = if skipNan then getMaxSkipNan(eIn.a) else max reduce eIn.a;
             otherwise halt("unreachable");
           }
 
           const scalarValue = if (t == bool && (op == "min" || op == "max"))
             then "bool " + bool2str(if s == 1 then true else false)
-            else "%s %s".doFormat(type2str(opType), type2fmt(opType)).doFormat(s);
+            else (type2str(opType) + " " + type2fmt(opType)).doFormat(s);
           rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
@@ -94,10 +95,18 @@ module ReductionMsg
               const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
               var s: opType;
               select op {
-                when "sum" do s = sum(eIn.a, sliceDom, opType);
-                when "prod" do s = prod(eIn.a, sliceDom, opType);
-                when "min" do s = getMin(eIn.a, sliceDom);
-                when "max" do s = getMax(eIn.a, sliceDom);
+                when "sum" do s = if skipNan
+                  then sumSkipNan(eIn.a, sliceDom, opType)
+                  else sum(eIn.a, sliceDom, opType);
+                when "prod" do s =if skipNan
+                  then prodSkipNan(eIn.a, sliceDom, opType)
+                  else prod(eIn.a, sliceDom, opType);
+                when "min" do s = if skipNan
+                  then getMinSkipNan(eIn.a, sliceDom)
+                  else getMin(eIn.a, sliceDom);
+                when "max" do s = if skipNan
+                  then getMaxSkipNan(eIn.a, sliceDom)
+                  else getMax(eIn.a, sliceDom);
                 otherwise halt("unreachable");
               }
               eOut.a[sliceIdx] = s;
@@ -314,7 +323,86 @@ module ReductionMsg
       }
     }
 
+    /*
+      Find the indices of all the non-zero elements along each dimension of the input array
+
+      Returns one array of indices for each dimension of the input array
+    */
+    @arkouda.registerND
+    proc nonzeroMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+      param pn = Reflection.getRoutineName();
+      const x = msgArgs.getValueOf("x"),
+            rnames = [i in 0..<nd] st.nextName();
+
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+
+      proc findNonZero(type t): MsgTuple throws {
+        const eIn = toSymEntry(gEnt, t, nd),
+              nTasks = here.maxTaskPar;
+
+        // count the number of non-zero elements in a chunk of the input array owned by each task
+        var nnzPerTask: [0..<numLocales] [0..<nTasks] int;
+        coforall loc in Locales with (ref nnzPerTask) do on loc {
+          const locDom = eIn.a.localSubdomain();
+          coforall tid in 0..<nTasks with (ref nnzPerTask) {
+            var nnzTask = 0;
+            // TODO: evaluate whether 'subDomChunk' chunking along the largest dimension
+            // is the best choice. Perhaps it would be better to always chunk along the
+            // zeroth dimension for best cache locality (or to use some other technique to
+            // split work among tasks).
+            for idx in subDomChunk(locDom, tid, nTasks) do
+              if eIn.a[idx] != 0:t then nnzTask += 1;
+            nnzPerTask[loc.id][tid] = nnzTask;
+          }
+        }
+
+        // calculate the total number of non-zero elements and the starting index of each locale
+        const nnzPerLocale = [locTasks in nnzPerTask] + reduce locTasks,
+              numNonZero = + reduce nnzPerLocale,
+              locStarts = (+ scan nnzPerLocale) - nnzPerLocale;
+
+        // create an index array for each dimension of the input array
+        var eOuts = for rn in rnames do st.addEntry(rn, numNonZero, int);
+
+        // populate the arrays with the indices of the non-zero elements
+        // TODO: refactor to use aggregation or bulk assignment to avoid fine-grained communication
+        coforall loc in Locales with (const ref nnzPerTask, const ref locStarts) do on loc {
+          const taskStarts = ((+ scan nnzPerTask[loc.id]) - nnzPerTask[loc.id]) + locStarts[loc.id],
+                locDom = eIn.a.localSubdomain();
+          coforall tid in 0..<nTasks {
+            var i = taskStarts[tid];
+            for idx in subDomChunk(locDom, tid, nTasks) {
+              if eIn.a[idx] != 0:t {
+                for d in 0..<nd do
+                  eOuts[d].a[i] = if nd == 1 then idx else idx[d];
+                i += 1;
+              }
+            }
+          }
+        }
+
+        const repMsg = try! '+'.join([rn in rnames] "created " + st.attrib(rn));
+        rmLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+      }
+
+      select gEnt.dtype {
+        when DType.Int64 do return findNonZero(int);
+        when DType.UInt64 do return findNonZero(uint);
+        when DType.Float64 do return findNonZero(real);
+        when DType.Bool do return findNonZero(bool);
+        otherwise {
+          var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+          rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg,MsgType.ERROR);
+        }
+      }
+    }
+
     private module SliceReductionOps {
+      private proc isArgandType(type t) param: bool do
+        return isRealType(t) || isImagType(t) || isComplexType(t);
+
       proc any(ref a: [] bool, slice): bool {
         var hasAny = false;
         forall i in slice with (|| reduce hasAny) do hasAny ||= a[i];
@@ -345,9 +433,33 @@ module ReductionMsg
         return sum;
       }
 
+      proc sumSkipNan(ref a: [?d], type opType): opType
+        do return sumSkipNan(a, d, opType);
+
+      proc sumSkipNan(ref a: [] ?t, slice, type opType): opType {
+        var sum = 0:opType;
+        forall i in slice with (+ reduce sum) {
+          if isArgandType(t) { if isNan(a[i]) then continue; }
+          sum += a[i]:opType;
+        }
+        return sum;
+      }
+
       proc prod(ref a: [] ?t, slice, type opType): opType {
         var prod = 1.0; // always use real(64) to avoid int overflow
         forall i in slice with (* reduce prod) do prod *= a[i]:opType;
+        return prod: opType;
+      }
+
+      proc prodSkipNan(ref a: [?d], type opType): opType
+        do return prodSkipNan(a, d, opType);
+
+      proc prodSkipNan(ref a: [] ?t, slice, type opType): opType {
+        var prod = 1.0; // always use real(64) to avoid int overflow
+        forall i in slice with (* reduce prod) {
+          if isArgandType(t) { if isNan(a[i]) then continue; }
+          prod *= a[i]:opType;
+        }
         return prod: opType;
       }
 
@@ -357,9 +469,33 @@ module ReductionMsg
         return minVal;
       }
 
+      proc getMinSkipNan(ref a: [?d] ?t): t
+        do return getMinSkipNan(a, d);
+
+      proc getMinSkipNan(ref a: [] ?t, slice): t {
+        var minVal = max(t);
+        forall i in slice with (min reduce minVal) {
+          if isArgandType(t) { if isNan(a[i]) then continue; }
+          minVal reduce= a[i];
+        }
+        return minVal;
+      }
+
       proc getMax(ref a: [] ?t, slice): t {
         var maxVal = min(t);
         forall i in slice with (max reduce maxVal) do maxVal reduce= a[i];
+        return maxVal;
+      }
+
+      proc getMaxSkipNan(ref a: [?d] ?t): t
+        do return getMaxSkipNan(a, d);
+
+      proc getMaxSkipNan(ref a: [] ?t, slice): t {
+        var maxVal = min(t);
+        forall i in slice with (max reduce maxVal) {
+          if isArgandType(t) { if isNan(a[i]) then continue; }
+          maxVal reduce= a[i];
+        }
         return maxVal;
       }
 

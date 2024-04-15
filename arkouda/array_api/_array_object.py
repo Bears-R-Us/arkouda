@@ -28,7 +28,7 @@ from ._dtypes import (
     _dtype_categories,
 )
 
-from typing import TYPE_CHECKING, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Optional, Tuple, Union, Any, Dict, Callable
 import types
 
 if TYPE_CHECKING:
@@ -38,8 +38,9 @@ import arkouda as ak
 import numpy as np
 
 from arkouda.pdarraycreation import scalar_array
-
 from arkouda import array_api
+
+HANDLED_FUNCTIONS: Dict[str, Callable] = {}
 
 
 class Array:
@@ -103,6 +104,34 @@ class Array:
         """
         return self._array.to_ndarray()
 
+    def item(self):
+        """
+        Convert the array to a Python scalar
+        """
+        return self._array[0]
+
+    def transpose(self, axes: Optional[Tuple[int, ...]] = None):
+        """
+        Return a view of the array with the specified axes transposed.
+
+        For axes=None, reverse all the dimensions of the array.
+        """
+        from ._manipulation_functions import permute_dims
+        if axes is None:
+            _axes = tuple(range(self.ndim - 1, -1, -1))
+        else:
+            if len(axes) < self.ndim:
+                _axes_list = list(range(0, self.ndim))
+                for i, j in enumerate(axes):
+                    _axes_list[i] = j
+                _axes = tuple(_axes_list)
+            elif len(axes) == self.ndim:
+                _axes = tuple(axes)
+            else:
+                raise ValueError("number of axes don't match array dimensions")
+
+        return permute_dims(self, _axes)
+
     # These functions are not required by the spec, but are implemented for
     # the sake of usability.
 
@@ -118,16 +147,18 @@ class Array:
         """
         return self._array.__repr__()
 
-    # # This function is not required by the spec, but we implement it here for
-    # # convenience so that np.asarray(np.array_api.Array) will work.
-    # def __array__(self, dtype: None | np.dtype[Any] = None) -> npt.NDArray[Any]:
-    #     """
-    #     Warning: this method is NOT part of the array API spec. Implementers
-    #     of other libraries need not include it, and users should not assume it
-    #     will be present in other implementations.
+    def __array__(self, dtype: None | np.dtype[Any] = None):
+        """
+        convert to numpy array
+        """
+        return np.asarray(self.to_ndarray(), dtype=dtype)
 
-    #     """
-    #     return ak.asarray(self._array, dtype=dtype)
+    __array_ufunc__ = None
+
+    def __array_function__(self, func, types, args, kwargs):
+        if func not in HANDLED_FUNCTIONS:
+            return NotImplemented
+        return HANDLED_FUNCTIONS[func](*args, **kwargs)
 
     # These are various helper functions to make the array behavior match the
     # spec in places where it either deviates from or is more strict than
@@ -284,7 +315,10 @@ class Array:
             return Array._new(self._array + other._array)
 
     def __and__(self: Array, other: Union[int, bool, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array and other)
+        else:
+            return Array._new(self._array and other._array)
 
     def __array_namespace__(
         self: Array, /, *, api_version: Optional[str] = None
@@ -294,43 +328,75 @@ class Array:
         return array_api
 
     def __bool__(self: Array, /) -> bool:
-        # TODO: retrieve the value from a 0D array as a boolean
-        return True
+        if s := self._single_elem():
+            return bool(s)
+        else:
+            raise ValueError(
+                "The truth value of an array with more than one element is ambiguous. "
+                "Use 'any' or 'all'"
+            )
 
     def __complex__(self: Array, /) -> complex:
-        return complex(1)
+        if s := self._single_elem():
+            return complex(s)
+        else:
+            raise ValueError("cannot convert non-scalar array to complex")
 
     def __dlpack_device__(self: Array, /) -> Tuple[IntEnum, int]:
         raise ValueError("Not implemented")
 
-    def __eq__(self: object, other: object, /) -> bool:
-        if isinstance(other, Array) and isinstance(self, Array):
+    def __eq__(self: Array, other: object, /) -> bool:
+        if isinstance(other, (int, bool, float)):
+            return self._array == scalar_array(other)
+        elif isinstance(other, Array):
             return self._array == other._array
-        elif isinstance(self, Array) and self._has_single_elem():
-            print(self._array)
-            print(type(self._array))
-            return self._array[0] == other
         else:
-            raise ValueError("Not implemented")
+            return False
 
     def __float__(self: Array, /) -> float:
-        if self._has_single_elem():
-            return float(self._array[0])
+        if s := self._single_elem():
+            if isinstance(s, complex):
+                raise TypeError("can't convert complex to float")
+            else:
+                return float(s)
         else:
             raise ValueError("cannot convert non-scalar array to float")
 
     def __floordiv__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array // other)
+        else:
+            return Array._new(self._array // other._array)
 
     def __ge__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array >= other)
+        else:
+            return Array._new(self._array >= other._array)
 
     def __getitem__(
         self: Array,
         key: Union[int, slice, Tuple[Union[int, slice], ...], Array],
         /,
     ) -> Array:
-        k = key._array if isinstance(key, Array) else key
+        if isinstance(key, Array):
+            if key.size == 1 or key.shape == ():
+                k = key._array[0]
+            else:
+                k = key._array
+        elif isinstance(key, tuple):
+            k = []
+            for kt in key:
+                if isinstance(kt, Array):
+                    if kt.size == 1 or kt.shape == ():
+                        k.append(kt._array[0])
+                    else :
+                        k.append(kt._array)
+                else:
+                    k.append(kt)
+            k = tuple(k)
+        else:  # int, slice
+            k = key
 
         a = self._array[k]
         if isinstance(a, ak.pdarray):
@@ -339,34 +405,91 @@ class Array:
             return Array._new(scalar_array(a))
 
     def __gt__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array > other)
+        else:
+            return Array._new(self._array > other._array)
 
     def __int__(self: Array, /) -> int:
-        if self._has_single_elem():
-            return int(self._array[0])
+        if s := self._single_elem():
+            if isinstance(s, complex):
+                raise TypeError("can't convert complex to int")
+            else:
+                return int(s)
         else:
             raise ValueError("cannot convert non-scalar array to int")
 
     def __index__(self: Array, /) -> int:
-        return 0
+        if s := self._single_elem():
+            if isinstance(s, int):
+                return s
+            else:
+                raise TypeError("Only integer arrays can be converted to a Python integer")
+        else:
+            raise ValueError("cannot convert non-scalar array to int")
 
     def __invert__(self: Array, /) -> Array:
-        return self
+        if self.dtype in _integer_dtypes or self.dtype in _boolean_dtypes:
+            return Array._new(~self._array)
+        else:
+            raise TypeError("Only integer and boolean arrays can be inverted")
 
     def __le__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array <= other)
+        else:
+            return Array._new(self._array <= other._array)
 
     def __lshift__(self: Array, other: Union[int, Array], /) -> Array:
-        return self
+        if isinstance(other, int):
+            return Array._new(self._array << other)
+        else:
+            return Array._new(self._array << other._array)
 
     def __lt__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array < other)
+        else:
+            return Array._new(self._array < other._array)
 
     def __matmul__(self: Array, other: Array, /) -> Array:
-        return self
+        # from .linalg import matmul
+        # from ._manipulation_functions import (reshape, squeeze)
+
+        # if self.ndim == 1:
+        #     left = reshape(self, (1, self.size))
+        #     ld = True
+        # else:
+        #     left = self
+        #     ld = False
+
+        # if other.ndim == 1:
+        #     right = reshape(other, (other.size, 1))
+        #     rd = True
+        # else:
+        #     right = other
+        #     rd = False
+
+        # if left.shape[-1] != right.shape[-2]:
+        #     raise ValueError(
+        #         f"matmul: shapes {left.shape} and {right.shape} are not compatible"
+        #     )
+
+        # prod = matmul(left, right)
+
+        # if ld:
+        #     prod = squeeze(prod, 0)
+        # if rd:
+        #     prod = squeeze(prod, 1)
+
+        # return prod
+        raise ValueError("Not implemented")
 
     def __mod__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array % other)
+        else:
+            return Array._new(self._array % other._array)
 
     def __mul__(self: Array, other: Union[int, float, Array], /) -> Array:
         if isinstance(other, (int, float)):
@@ -374,23 +497,37 @@ class Array:
         else:
             return Array._new(self._array * other._array)
 
-    def __ne__(self: object, other: object, /) -> bool:
-        raise ValueError("Not implemented")
+    def __ne__(self: Array, other: object, /) -> bool:
+        if isinstance(other, (int, bool, float)):
+            return self._array != scalar_array(other)
+        elif isinstance(other, Array):
+            return self._array != other._array
+        else:
+            return False
 
     def __neg__(self: Array, /) -> Array:
-        return self
+        return Array._new(-self._array)
 
     def __or__(self: Array, other: Union[int, bool, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, bool)):
+            return Array._new(self._array or other)
+        else:
+            return Array._new(self._array or other._array)
 
     def __pos__(self: Array, /) -> Array:
         return self
 
     def __pow__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(self._array ** other)
+        else:
+            return Array._new(self._array ** other._array)
 
     def __rshift__(self: Array, other: Union[int, Array], /) -> Array:
-        return self
+        if isinstance(other, int):
+            return Array._new(self._array >> other)
+        else:
+            return Array._new(self._array >> other._array)
 
     def __setitem__(
         self,
@@ -399,7 +536,6 @@ class Array:
         /,
     ) -> None:
         if isinstance(key, Array):
-            # TODO: hack for testing
             self._array[key._array] = value
         else:
             self._array[key] = value
@@ -410,8 +546,6 @@ class Array:
         else:
             return Array._new(self._array - other._array)
 
-    # PEP 484 requires int to be a subtype of float, but __truediv__ should
-    # not accept int.
     def __truediv__(self: Array, other: Union[float, Array], /) -> Array:
         if isinstance(other, (int, float)):
             return Array._new(self._array / other)
@@ -419,91 +553,196 @@ class Array:
             return Array._new(self._array / other._array)
 
     def __xor__(self: Array, other: Union[int, bool, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, bool)):
+            return Array._new(self._array ^ other)
+        else:
+            return Array._new(self._array ^ other._array)
 
     def __iadd__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            self._array += other
+            return self
+        else:
+            self._array += other._array
+            return self
 
     def __radd__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(other + self._array)
+        else:
+            return Array._new(other._array + self._array)
 
     def __iand__(self: Array, other: Union[int, bool, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            self._array &= other
+            return self
+        else:
+            self._array &= other._array
+            return self
 
     def __rand__(self: Array, other: Union[int, bool, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(other and self._array)
+        else:
+            return Array._new(other._array and self._array)
 
     def __ifloordiv__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            self._array //= other
+            return self
+        else:
+            self._array //= other._array
+            return self
 
     def __rfloordiv__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(other // self._array)
+        else:
+            return Array._new(other._array // self._array)
 
     def __ilshift__(self: Array, other: Union[int, Array], /) -> Array:
-        return self
+        if isinstance(other, int):
+            self._array <<= other
+            return self
+        else:
+            self._array <<= other._array
+            return self
 
     def __rlshift__(self: Array, other: Union[int, Array], /) -> Array:
-        return self
+        if isinstance(other, int):
+            return Array._new(other << self._array)
+        else:
+            return Array._new(other._array << self._array)
 
     def __imatmul__(self: Array, other: Array, /) -> Array:
-        return self
+        raise ValueError("Not implemented")
 
     def __rmatmul__(self: Array, other: Array, /) -> Array:
-        return self
+        raise ValueError("Not implemented")
 
     def __imod__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            self._array %= other
+            return self
+        else:
+            self._array %= other._array
+            return self
 
     def __rmod__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(other % self._array)
+        else:
+            return Array._new(other._array % self._array)
 
     def __imul__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            self._array *= other
+            return self
+        else:
+            self._array *= other._array
+            return self
 
     def __rmul__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(other * self._array)
+        else:
+            return Array._new(other._array * self._array)
 
     def __ior__(self: Array, other: Union[int, bool, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            self._array |= other
+            return self
+        else:
+            self._array |= other._array
+            return self
 
     def __ror__(self: Array, other: Union[int, bool, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(other or self._array)
+        else:
+            return Array._new(other._array or self._array)
 
     def __ipow__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            self._array **= other
+            return self
+        else:
+            self._array **= other._array
+            return self
 
     def __rpow__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(other ** self._array)
+        else:
+            return Array._new(other._array ** self._array)
 
     def __irshift__(self: Array, other: Union[int, Array], /) -> Array:
-        return self
+        if isinstance(other, int):
+            self._array >>= other
+            return self
+        else:
+            self._array >>= other._array
+            return self
 
     def __rrshift__(self: Array, other: Union[int, Array], /) -> Array:
-        return self
+        if isinstance(other, int):
+            return Array._new(other >> self._array)
+        else:
+            return Array._new(other._array >> self._array)
 
     def __isub__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            self._array -= other
+            return self
+        else:
+            self._array -= other._array
+            return self
 
     def __rsub__(self: Array, other: Union[int, float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(other - self._array)
+        else:
+            return Array._new(other._array - self._array)
 
     def __itruediv__(self: Array, other: Union[float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            self._array /= other
+            return self
+        else:
+            self._array /= other._array
+            return self
 
     def __rtruediv__(self: Array, other: Union[float, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(other / self._array)
+        else:
+            return Array._new(other._array / self._array)
 
     def __ixor__(self: Array, other: Union[int, bool, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            self._array ^= other
+            return self
+        else:
+            self._array ^= other._array
+            return self
 
     def __rxor__(self: Array, other: Union[int, bool, Array], /) -> Array:
-        return self
+        if isinstance(other, (int, float)):
+            return Array._new(other ^ self._array)
+        else:
+            return Array._new(other._array ^ self._array)
 
     def to_device(self: Array, device: Device, /, stream: None = None) -> Array:
         raise ValueError("Not implemented")
 
     def _has_single_elem(self: Array, /) -> bool:
         return self._array.shape == [] or self._array.size == 1
+
+    def _single_elem(self: Array) -> Optional[Union[int, float, complex, bool]]:
+        if self._has_single_elem():
+            return self._array[0]
+        else:
+            return None
 
     @property
     def dtype(self) -> Dtype:
@@ -513,13 +752,15 @@ class Array:
     def device(self) -> Device:
         return "cpu"
 
-    # Note: mT is new in array API spec (see matrix_transpose)
     @property
     def mT(self) -> Array:
-        return self
+        raise ValueError("Not implemented")
 
     @property
     def ndim(self) -> int:
+        # note: this is not the same as 'self._array.ndim'
+        # because 0D/scalar pdarrays will have ndim=1
+        # but have a shape of '()'
         return len(self._array.shape)
 
     @property
@@ -533,3 +774,11 @@ class Array:
     @property
     def T(self) -> Array:
         raise ValueError("Not implemented")
+
+
+def implements_numpy(numpy_function):
+    """Register an __array_function__ implementation for MyArray objects."""
+    def decorator(func):
+        HANDLED_FUNCTIONS[numpy_function] = func
+        return func
+    return decorator

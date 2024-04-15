@@ -54,6 +54,7 @@ class TestDataFrame:
             "nums1": [1, np.nan, 3, 4],
             "nums2": [1, np.nan, np.nan, 7],
             "nums3": [10, 8, 9, 7],
+            "bools": [True, False, True, False],
         }
         ak_df = ak.DataFrame({k: ak.array(v) for k, v in data.items()})
         return ak_df
@@ -878,14 +879,25 @@ class TestDataFrame:
         assert test_df["col_A"].to_list() == [True, True]
         assert test_df["col_B"].to_list() == [False, False]
 
+    def test_count(self):
+        akdf = self.build_ak_df_with_nans()
+        pddf = akdf.to_pandas()
+
+        for truth in [True, False]:
+            for axis in [0, 1, "index", "columns"]:
+                assert_series_equal(
+                    akdf.count(axis=axis, numeric_only=truth).to_pandas(),
+                    pddf.count(axis=axis, numeric_only=truth),
+                )
+
     def test_corr(self):
-        df = ak.DataFrame({'col1': [1, 2], 'col2': [-1, -2]})
+        df = ak.DataFrame({"col1": [1, 2], "col2": [-1, -2]})
         corr = df.corr()
         pd_corr = df.to_pandas().corr()
         assert_frame_equal(corr.to_pandas(retain_index=True), pd_corr)
 
         for i in range(5):
-            df = ak.DataFrame({'col1': ak.randint(0, 10, 10), 'col2': ak.randint(0, 10, 10)})
+            df = ak.DataFrame({"col1": ak.randint(0, 10, 10), "col2": ak.randint(0, 10, 10)})
             corr = df.corr()
             pd_corr = df.to_pandas().corr()
             assert_frame_equal(corr.to_pandas(retain_index=True), pd_corr)
@@ -989,6 +1001,59 @@ class TestDataFrame:
                     # from pandas.testing import assert_frame_equal
                     # assert_frame_equal(sorted_ak.to_pandas()[sorted_column_names],
                     # sorted_pd[sorted_column_names])
+
+    def test_memory_usage(self):
+        dtypes = [ak.int64, ak.float64, ak.bool]
+        data = dict([(str(t), ak.ones(5000, dtype=ak.int64).astype(t)) for t in dtypes])
+        df = ak.DataFrame(data)
+        ak_memory_usage = df.memory_usage()
+        pd_memory_usage = pd.Series(
+            [40000, 40000, 40000, 5000], index=["Index", "int64", "float64", "bool"]
+        )
+        assert_series_equal(ak_memory_usage.to_pandas(), pd_memory_usage)
+
+        assert df.memory_usage_info(unit="B") == "125000.00 B"
+        assert df.memory_usage_info(unit="KB") == "122.07 KB"
+        assert df.memory_usage_info(unit="MB") == "0.12 MB"
+        assert df.memory_usage_info(unit="GB") == "0.00 GB"
+
+        ak_memory_usage = df.memory_usage(index=False)
+        pd_memory_usage = pd.Series([40000, 40000, 5000], index=["int64", "float64", "bool"])
+        assert_series_equal(ak_memory_usage.to_pandas(), pd_memory_usage)
+
+        ak_memory_usage = df.memory_usage(unit="KB")
+        pd_memory_usage = pd.Series(
+            [39.0625, 39.0625, 39.0625, 4.88281], index=["Index", "int64", "float64", "bool"]
+        )
+        assert_series_equal(ak_memory_usage.to_pandas(), pd_memory_usage)
+
+    def test_to_markdown(self):
+        df = ak.DataFrame({"animal_1": ["elk", "pig"], "animal_2": ["dog", "quetzal"]})
+        assert (
+            df.to_markdown() == "+----+------------+------------+\n"
+            "|    | animal_1   | animal_2   |\n"
+            "+====+============+============+\n"
+            "|  0 | elk        | dog        |\n"
+            "+----+------------+------------+\n"
+            "|  1 | pig        | quetzal    |\n"
+            "+----+------------+------------+"
+        )
+
+        assert (
+            df.to_markdown(index=False) == "+------------+------------+\n"
+            "| animal_1   | animal_2   |\n"
+            "+============+============+\n"
+            "| elk        | dog        |\n"
+            "+------------+------------+\n"
+            "| pig        | quetzal    |\n"
+            "+------------+------------+"
+        )
+
+        assert df.to_markdown(tablefmt="grid") == df.to_pandas().to_markdown(tablefmt="grid")
+        assert df.to_markdown(tablefmt="grid", index=False) == df.to_pandas().to_markdown(
+            tablefmt="grid", index=False
+        )
+        assert df.to_markdown(tablefmt="jira") == df.to_pandas().to_markdown(tablefmt="jira")
 
 
 def pda_to_str_helper(pda):
