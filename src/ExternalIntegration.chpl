@@ -103,10 +103,10 @@ module ExternalIntegration {
         var path: string;
         var append: bool;
        
-        proc init(params: FileChannelParams) {
+        proc init(path: string, append: bool) {
             super.init();
-            this.path = params.path;
-            this.append = params.append;
+            this.path = path;
+            this.append = append;
         }
         
         override proc write(payload: string) throws {
@@ -123,62 +123,31 @@ module ExternalIntegration {
      * in a configurable format via a configurable request type.
      */
     class HttpChannel : Channel {
-        var params: borrowed HttpChannelParams;
+        var url: string;
+        var requestType: HttpRequestType;
+        var requestFormat: HttpRequestFormat;
  
-        proc init(params: HttpChannelParams) {
+        proc init(url: string, requestType: HttpRequestType, requestFormat: HttpRequestFormat) {
             super.init();
-            this.params = params;
+
+            this.url = url;
+            this.requestType = requestType;
+            this.requestFormat = requestFormat;
         }
 
         proc configureChannel(channel) throws {
-            enum AuthType{NONE,CERT,TOKEN};
-
-            proc getAuthType(params: HttpChannelParams) throws {
-                var type_string = params.type:string;
-
-                if type_string.find("HttpChannelParams") > -1 {
-                    return AuthType.NONE;
-                } else if type_string.find("HttpsChannelParams") > -1 {
-                    return AuthType.CERT;
-                } else {
-                    return AuthType.TOKEN;
-                }
-            }
-
             if logLevel == LogLevel.DEBUG {
                 Curl.setopt(channel, CURLOPT_VERBOSE, true);
             }
-            
-            var authType = getAuthType(this.params);
-
-            select authType {
-                when AuthType.CERT {
-                    var params = this.params:HttpsChannelParams;
-                    Curl.setopt(channel, CURLOPT_USE_SSL, true);
-                    Curl.setopt(channel, CURLOPT_SSLCERT, params.cert);
-                    Curl.setopt(channel, CURLOPT_SSLKEY, params.key);
-                    Curl.setopt(channel, CURLOPT_KEYPASSWD, params.keyPasswd);
-                    Curl.setopt(channel, CURLOPT_SSL_VERIFYPEER, 0); 
-                }
-                when AuthType.TOKEN {
-                    Curl.setopt(channel, CURLOPT_USE_SSL, true);
-                    Curl.curl_easy_setopt(channel, CURLOPT_USE_SSL, true);
-                    Curl.curl_easy_setopt(channel, CURLOPT_CAINFO, getEnv("CACERT_FILE"));
-                    Curl.curl_easy_setopt(channel, CURLOPT_SSL_VERIFYPEER, 0);
-                }
-                otherwise {
-                    Curl.setopt(channel, CURLOPT_USE_SSL, false);
-                }
-            }  
         }
         
         proc generateHeader(channel) throws {
             var args = new Curl.slist();
-            var format = this.params.requestFormat;
+            var format = this.requestFormat;
             select(format) {     
                 when HttpRequestFormat.JSON {
                     args.append("Accept: application/json");
-                    if this.params.requestType == HttpRequestType.PATCH {
+                    if this.requestType == HttpRequestType.PATCH {
                         args.append('Content-Type: application/json-patch+json');
                     } else {
                         args.append("Content-Type: application/json");    
@@ -205,7 +174,7 @@ module ExternalIntegration {
         override proc write(payload: string) throws {
             var curl = Curl.curl_easy_init();
 
-            Curl.curl_easy_setopt(curl, CURLOPT_URL, this.params.url);
+            Curl.curl_easy_setopt(curl, CURLOPT_URL, this.url);
            
             this.configureChannel(curl);
             
@@ -214,11 +183,11 @@ module ExternalIntegration {
             var args = generateHeader(curl);
 
             Curl.curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload);
-            Curl.curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, this.params.requestType:string);
+            Curl.curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, this.requestType:string);
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "Configured HttpChannel for type %s format %s".doFormat(
-                      this.params.requestType, this.params.requestFormat));
+                      this.requestType, this.requestFormat));
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "Executing Http request with payload %s".doFormat(payload));
@@ -231,7 +200,7 @@ module ExternalIntegration {
             } else {
                 if ret == 22 {
                     throw getErrorWithContext(getLineNumber(),getRoutineName(),getModuleName(),
-                       "invalid request to overwrite existing entry with payload %s. Delete the existing entry first".doFormat(payload),
+                       "error in HTTP request %s".doFormat(payload),
                        "ExternalSystemError");
 
                 } else { 
@@ -248,111 +217,27 @@ module ExternalIntegration {
                        "Closed HttpChannel");      
         }
     }    
-    
-    /*
-     * Encapsulates config parameters needed to open and write to
-     * a channel connected to an external system.
-     */
-    class ChannelParams {
-      var channelType: ChannelType;
-    }
-    
-    /*
-     * Encapsulates config parameters needed to open and write to
-     * a channel connected to a file.
-     */   
-    class FileChannelParams : ChannelParams {
-        var path: string;
-        var append: bool;
-        
-        proc init(channelType: ChannelType, path: string, append: bool=false) {
-            super.init(channelType);
-            this.path = path;
-            this.append = append;
-        }
-    }
 
-    /*
-     * Encapsulates config parameters needed to open and write to an HTTP connection.
-     */     
-    class HttpChannelParams : ChannelParams {
-        var url: string;
-        var requestType: HttpRequestType;
-        var requestFormat: HttpRequestFormat;
-        var debug: bool;
-        
-        proc init(channelType: ChannelType, url: string, requestType: HttpRequestType,
-                  requestFormat: HttpRequestFormat, debug: bool=false) {
-            super.init(channelType);
-
-            this.url = url;
-            this.requestType = requestType;
-            this.requestFormat = requestFormat;
-            this.debug = debug;
-        }
-    }
-
-    /**
-     * Encapsulates config parameters needed to open and read from or write to
-     * an HTTPS connection using a TLS token.
-     */
-    class HttpsTokenChannelParams : HttpChannelParams {
-        var caPath: string;
+    class HttpsChannel: HttpChannel {
+        var caCert: string;
         var token: string;
 
-        proc init(channelType: ChannelType, url: string, requestType: HttpRequestType,
-                  caPath: string, token: string) {
-            super.init(channelType, url, requestType, requestFormat);
-            this.caPath = caPath;
+        proc init(url: string, requestType: HttpRequestType, requestFormat: HttpRequestFormat, caCert: string, token: string) {
+            super.init(url, requestType, requestFormat);
+            this.caCert = caCert;
             this.token = token;
         }
-    }
 
-
-    /**
-     * Encapsulates config parameters needed to open and read from or write to 
-     * an HTTPS connection using a TLS key/cert pair.
-     */
-    class HttpsChannelParams : HttpChannelParams {
-        var key: string;
-        var keyPasswd: string;
-        var cert: string;
-        var caCert: string;
-        var caPath: string;
-
-        proc init(channelType: ChannelType, url: string, requestType: HttpRequestType,
-                  requestFormat: HttpRequestFormat, debug: bool=false, key: string,
-                  keyPasswd: string, cert: string, caCert: string, caPath: string) {
-            super.init(channelType, url, requestType, requestFormat, debug);
-
-            this.key = key;
-            this.keyPasswd = keyPasswd;
-            this.cert = cert;
-            this.caCert = caCert;
-            this.caPath = caPath;
-            this.keyPasswd = keyPasswd;
+        override proc configureChannel(channel) throws {
+            super.configureChannel(channel);
+            
+            Curl.setopt(channel, CURLOPT_USE_SSL, true);
+            Curl.curl_easy_setopt(channel, CURLOPT_USE_SSL, true);
+            Curl.curl_easy_setopt(channel, CURLOPT_CAINFO, this.caCert);
+            Curl.curl_easy_setopt(channel, CURLOPT_SSL_VERIFYPEER, 0);
         }
     }
-    
-    /*
-     * Factory function used to retrieve a Channel based upon ChannelParams.
-     */
-    proc getChannel(params: borrowed ChannelParams) : Channel throws {
-        const channelType = params.channelType;
-
-        select(channelType) {
-            when ChannelType.FILE {
-                return new FileChannel(params: FileChannelParams);
-            } 
-            when ChannelType.HTTP {
-                return new HttpChannel(params: HttpChannelParams);
-            }
-            otherwise {
-                throw new owned Error("Invalid channelType");
-            }
-        }
-    }
-    
+  
     /*
      * Registers Arkouda with Kubernetes by creating a Kubernetes Service--and an Endpoints 
      * if Arkouda is deployed outside of Kubernetes--to enable service discovery of Arkouda 
@@ -392,25 +277,20 @@ module ExternalIntegration {
                                          '{"name": "%s"},"spec": {"ports": [{"port": %i,' ,
                                          '"protocol": "TCP","targetPort": %i}],"selector":',
                                          ' {"app":"%s"}}}').doFormat(
-                                    serviceName,
-                                    servicePort,
-                                    targetPort,
-                                    appName);
+                                         serviceName,
+                                         servicePort,
+                                         targetPort,
+                                         appName);
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Registering internal service via payload %s and url %s".doFormat(
                                          servicePayload,serviceUrl));
 
-            var channel = getChannel(new HttpsChannelParams(
-                                         channelType=ChannelType.HTTP,
-                                         url=serviceUrl,
-                                         requestType=HttpRequestType.POST,
-                                         requestFormat=HttpRequestFormat.JSON,
-                                         key=ServerConfig.getEnv('KEY_FILE'),
-                                         keyPasswd=ServerConfig.getEnv('KEY_PASSWD'),
-                                         cert=ServerConfig.getEnv('CERT_FILE'),
-                                         caCert=ServerConfig.getEnv('CACERT_FILE'),
-                                         caPath=''));
+            var channel = new HttpsChannel(url=serviceUrl,
+                                           requestType=HttpRequestType.POST,
+                                           requestFormat=HttpRequestFormat.JSON,
+                                           caCert=ServerConfig.getEnv('CACERT_FILE'),
+                                           token=ServerConfig.getEnv('SSL_TOKEN'));
 
             channel.write(servicePayload);
         
@@ -438,16 +318,11 @@ module ExternalIntegration {
                      "Registering external service via payload %s and url %s".doFormat(
                                          servicePayload,serviceUrl));
 
-            var channel = getChannel(new HttpsChannelParams(
-                                         channelType=ChannelType.HTTP,
-                                         url=serviceUrl,
-                                         requestType=HttpRequestType.POST,
-                                         requestFormat=HttpRequestFormat.JSON,
-                                         key=ServerConfig.getEnv('KEY_FILE'),
-                                         keyPasswd=ServerConfig.getEnv('KEY_PASSWD'),
-                                         cert=ServerConfig.getEnv('CERT_FILE'),
-                                         caCert=ServerConfig.getEnv('CACERT_FILE'),
-                                         caPath=''));
+            var channel = new HttpsChannel(url=serviceUrl,
+                                           requestType=HttpRequestType.POST,
+                                           requestFormat=HttpRequestFormat.JSON,
+                                           caCert=ServerConfig.getEnv('CACERT_FILE'),
+                                           token=ServerConfig.getEnv('SSL_TOKEN'));
 
             channel.write(servicePayload);
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -464,16 +339,11 @@ module ExternalIntegration {
                                                 getConnectHostIp(),
                                                 servicePort);
         
-            channel = getChannel(new HttpsChannelParams(
-                                         channelType=ChannelType.HTTP,
-                                         url=endpointUrl,
-                                         requestType=HttpRequestType.POST,
-                                         requestFormat=HttpRequestFormat.JSON,
-                                         key=ServerConfig.getEnv('KEY_FILE'),
-                                         cert=ServerConfig.getEnv('CERT_FILE'),
-                                         caCert=ServerConfig.getEnv('CACERT_FILE'),
-                                         caPath='',
-                                         keyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
+            channel = new HttpsChannel(url=endpointUrl,
+                                       requestType=HttpRequestType.POST,
+                                       requestFormat=HttpRequestFormat.JSON,
+                                       caCert=ServerConfig.getEnv('CACERT_FILE'),
+                                       token=ServerConfig.getEnv('SSL_TOKEN'));
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Registering endpoint via payload %s and url %s".doFormat(
@@ -499,16 +369,11 @@ module ExternalIntegration {
         }
         
         var url = generateServiceDeleteUrl(serviceName);
-        var channel = getChannel(new HttpsChannelParams(
-                                         channelType=ChannelType.HTTP,
-                                         url=url,
-                                         requestType=HttpRequestType.DELETE,
-                                         requestFormat=HttpRequestFormat.JSON,
-                                         key=ServerConfig.getEnv('KEY_FILE'),
-                                         cert=ServerConfig.getEnv('CERT_FILE'),
-                                         caCert=ServerConfig.getEnv('CACERT_FILE'),
-                                         caPath='',
-                                         keyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
+        var channel = new HttpsChannel(url=url,
+                                       requestType=HttpRequestType.DELETE,
+                                       requestFormat=HttpRequestFormat.JSON,
+                                       caCert=ServerConfig.getEnv('CACERT_FILE'),
+                                       token=ServerConfig.getEnv('SSL_TOKEN'));
         channel.write('{}');
         eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Deregistered service %s from Kubernetes via url %s".doFormat(serviceName, 
@@ -534,6 +399,7 @@ module ExternalIntegration {
             targetServicePort = ServerConfig.getEnv('EXTERNAL_SERVICE_TARGET_PORT', 
                                                      default='5555'):int;
         }
+
         return (serviceName,servicePort,targetServicePort);
     } 
 
