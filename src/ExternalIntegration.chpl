@@ -119,7 +119,7 @@ module ExternalIntegration {
     }
     
     /*
-     * The HttpChannel class writes a payload out to an HTTP/S endpoint
+     * The HttpChannel class writes a payload out to an HTTP endpoint
      * in a configurable format via a configurable request type.
      */
     class HttpChannel : Channel {
@@ -162,7 +162,7 @@ module ExternalIntegration {
                 }
                 
             }
-            args.append("Authorization: Bearer %s".format(getEnv("SSL_TOKEN")));
+
             Curl.curl_easy_setopt(channel, CURLOPT_HTTPHEADER, args);  
             return args;
         }
@@ -219,16 +219,25 @@ module ExternalIntegration {
         }
     }    
 
+
+    /*
+     * The HttpChannel class writes a payload out to an HTTPS endpoint
+     * in a configurable format via a configurable request type.
+     */
     class HttpsChannel: HttpChannel {
         var caCert: string;
         var token: string;
 
-        proc init(url: string, requestType: HttpRequestType, requestFormat: HttpRequestFormat, caCert: string, token: string) {
+        proc init(url: string, requestType: HttpRequestType, requestFormat: HttpRequestFormat, 
+                  caCert: string, token: string) {
             super.init(url, requestType, requestFormat);
             this.caCert = caCert;
             this.token = token;
         }
 
+        /**
+         * Overridden proc adds token TLS configuration
+         */
         override proc configureChannel(channel) throws {
             super.configureChannel(channel);
             
@@ -239,7 +248,17 @@ module ExternalIntegration {
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "Configured channel for ssl and CA cert %s".format(this.caCert));
+        }
 
+        /**
+         * Overridden proc adds TLS token to the HTTPS header
+         */
+        override proc generateHeader(channel) throws {
+            var args = super.generateHeader(channel);
+
+            args.append("Authorization: Bearer %s".format(getEnv("SSL_TOKEN")));
+            Curl.curl_easy_setopt(channel, CURLOPT_HTTPHEADER, args);  
+            return args;
         }
     }
   
