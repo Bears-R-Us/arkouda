@@ -1077,6 +1077,7 @@
     <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">tag_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">has_non_float_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">pdarray</span><span class="p">,</span>
     <span class="n">Strings</span><span class="p">,</span>
@@ -1133,6 +1134,9 @@
 <span class="sd">        Default True, when True, SegArray objects will be read from the file. When False,</span>
 <span class="sd">        SegArray (or other nested Parquet columns) will be ignored.</span>
 <span class="sd">        If datasets is not None, this will be ignored.</span>
+<span class="sd">    has_non_float_nulls: bool</span>
+<span class="sd">        Default False. This flag must be set to True to read non-float parquet columns</span>
+<span class="sd">        that contain null values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1197,6 +1201,7 @@
                 <span class="n">allow_errors</span><span class="o">=</span><span class="n">allow_errors</span><span class="p">,</span>
                 <span class="n">tag_data</span><span class="o">=</span><span class="n">tag_data</span><span class="p">,</span>
                 <span class="n">read_nested</span><span class="o">=</span><span class="n">read_nested</span><span class="p">,</span>
+                <span class="n">has_non_float_nulls</span><span class="o">=</span><span class="n">has_non_float_nulls</span><span class="p">,</span>
             <span class="p">)[</span><span class="n">dset</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">datasets</span>
         <span class="p">}</span>
@@ -1211,6 +1216,7 @@
                 <span class="s2">&quot;dsets&quot;</span><span class="p">:</span> <span class="n">datasets</span><span class="p">,</span>
                 <span class="s2">&quot;filenames&quot;</span><span class="p">:</span> <span class="n">filenames</span><span class="p">,</span>
                 <span class="s2">&quot;tag_data&quot;</span><span class="p">:</span> <span class="n">tag_data</span><span class="p">,</span>
+                <span class="s2">&quot;has_non_float_nulls&quot;</span><span class="p">:</span> <span class="n">has_non_float_nulls</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="n">rep</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>  <span class="c1"># See GenSymIO._buildReadAllMsgJson for json structure</span>
@@ -2194,6 +2200,7 @@
     <span class="n">calc_string_offsets</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">column_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">has_non_float_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">pdarray</span><span class="p">,</span>
     <span class="n">Strings</span><span class="p">,</span>
@@ -2255,7 +2262,9 @@
 <span class="sd">        SegArray (or other nested Parquet columns) will be ignored.</span>
 <span class="sd">        Ignored if datasets is not None</span>
 <span class="sd">        Parquet Files only.</span>
-
+<span class="sd">    has_non_float_nulls: bool</span>
+<span class="sd">        Default False. This flag must be set to True to read non-float parquet columns</span>
+<span class="sd">        that contain null values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2320,6 +2329,7 @@
             <span class="n">strict_types</span><span class="o">=</span><span class="n">strictTypes</span><span class="p">,</span>
             <span class="n">allow_errors</span><span class="o">=</span><span class="n">allow_errors</span><span class="p">,</span>
             <span class="n">read_nested</span><span class="o">=</span><span class="n">read_nested</span><span class="p">,</span>
+            <span class="n">has_non_float_nulls</span><span class="o">=</span><span class="n">has_non_float_nulls</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">ftype</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">read_csv</span><span class="p">(</span>
@@ -2339,6 +2349,7 @@
     <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">calc_string_offsets</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">has_non_float_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read datasets from files and tag each record to the file it was read from.</span>
@@ -2370,6 +2381,9 @@
 <span class="sd">        SegArray (or other nested Parquet columns) will be ignored.</span>
 <span class="sd">        Ignored if datasets is not `None`</span>
 <span class="sd">        Parquet Files only.</span>
+<span class="sd">    has_non_float_nulls: bool</span>
+<span class="sd">        Default False. This flag must be set to True to read non-float parquet columns</span>
+<span class="sd">        that contain null values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    ------</span>
@@ -2420,6 +2434,7 @@
                 <span class="n">allow_errors</span><span class="o">=</span><span class="n">allow_errors</span><span class="p">,</span>
                 <span class="n">tag_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">read_nested</span><span class="o">=</span><span class="n">read_nested</span><span class="p">,</span>
+                <span class="n">has_non_float_nulls</span><span class="o">=</span><span class="n">has_non_float_nulls</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">file_cat</span><span class="p">,</span>
         <span class="p">)</span>

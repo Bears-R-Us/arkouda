@@ -32327,7 +32327,7 @@ Attributes
    array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
 
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read datasets from files.
    File Type is determined automatically.
@@ -32360,6 +32360,9 @@ Attributes
                        Ignored if datasets is not None
                        Parquet Files only.
    :type read_nested: bool
+   :param has_non_float_nulls: Default False. This flag must be set to True to read non-float parquet columns
+                               that contain null values.
+   :type has_non_float_nulls: bool
 
    :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,*
              * *or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,*
@@ -32502,7 +32505,7 @@ Attributes
    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read Arkouda objects from Parquet file/s
 
@@ -32530,6 +32533,9 @@ Attributes
                        SegArray (or other nested Parquet columns) will be ignored.
                        If datasets is not None, this will be ignored.
    :type read_nested: bool
+   :param has_non_float_nulls: Default False. This flag must be set to True to read non-float parquet columns
+                               that contain null values.
+   :type has_non_float_nulls: bool
 
    :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
              * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
@@ -32570,7 +32576,7 @@ Attributes
    >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
 
 
-.. py:function:: read_tagged_data(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, read_nested: bool = True)
+.. py:function:: read_tagged_data(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, read_nested: bool = True, has_non_float_nulls: bool = False)
 
    Read datasets from files and tag each record to the file it was read from.
    File Type is determined automatically.
@@ -32599,6 +32605,9 @@ Attributes
                        Ignored if datasets is not `None`
                        Parquet Files only.
    :type read_nested: bool
+   :param has_non_float_nulls: Default False. This flag must be set to True to read non-float parquet columns
+                               that contain null values.
+   :type has_non_float_nulls: bool
 
    .. rubric:: Notes
 
