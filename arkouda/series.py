@@ -150,14 +150,16 @@ class Series:
             # When only 1 positional argument it will be treated as data and not index
             if isinstance(data, Series):
                 self.values = data.values
-            elif not isinstance(data, (Strings, Categorical, SegArray)):
+            elif isinstance(data, List):
                 self.values = array(data)
             else:
                 self.values = data
             self.index = Index.factory(index) if index is not None else Index(arange(self.values.size))
 
         if self.index.size != self.values.size:
-            raise ValueError("Index size does not match data size: {} != {}".format(self.index.size, self.values.size))
+            raise ValueError(
+                "Index size does not match data size: {} != {}".format(
+                    self.index.size, self.values.size))
         self.name = name
         self.size = self.index.size
 
@@ -195,8 +197,8 @@ class Series:
         )
 
     def validate_key(
-        self, key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars]
-    ) -> Union[pdarray, Strings, Categorical, supported_scalars]:
+        self, key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars, SegArray]
+    ) -> Union[pdarray, Strings, Categorical, supported_scalars, SegArray]:
         """
         Validates type requirements for keys when reading or writing the Series.
         Also converts list and tuple arguments into pdarrays.
@@ -270,12 +272,13 @@ class Series:
             key = arange(start, stop)
         else:
             raise TypeError(
-                "Series [] only supports indexing by scalars, lists of scalars, and arrays of scalars. Received {}".format(type(key))
+                "Series [] only supports indexing by scalars, lists of scalars, "
+                "and arrays of scalars. Received {}".format(type(key))
             )
         return key
 
     @typechecked
-    def __getitem__(self, _key: Union[supported_scalars, pdarray, Strings, List, SegArray]):
+    def __getitem__(self, _key: Union[supported_scalars, pdarray, Strings, List, SegArray, Series]):
         """
         Gets values from Series.
 
@@ -403,7 +406,6 @@ class Series:
                 )
             self.values[indices] = val
             return
-        
 
     def has_repeat_labels(self) -> bool:
         """
@@ -414,10 +416,11 @@ class Series:
 
     def to_ndarray(self):
         return self.values.to_ndarray()
-    
+
     @property
     def ndim(self):
         return 1
+
     @property
     def loc(self) -> _LocIndexer:
         """
@@ -477,6 +480,7 @@ class Series:
     @property
     def dtype(self):
         return self.values.dtype
+
     @typechecked
     def isin(self, lst: Union[pdarray, Strings, List]) -> Series:
         """Find series elements whose values are in the specified list
@@ -1136,7 +1140,7 @@ class _iLocIndexer:
             key = arange(start, stop)
         else:
             raise TypeError(".{} requires integer keys".format(self.name))
-        
+
         return key
 
     def validate_val(self, val) -> Union[pdarray, supported_scalars]:
