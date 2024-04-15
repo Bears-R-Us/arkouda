@@ -162,6 +162,7 @@ module ExternalIntegration {
                 }
                 
             }
+            args.append("Authorization: Bearer %s".format(getEnv("SSL_TOKEN")));
             Curl.curl_easy_setopt(channel, CURLOPT_HTTPHEADER, args);  
             return args;
         }
@@ -235,6 +236,10 @@ module ExternalIntegration {
             Curl.curl_easy_setopt(channel, CURLOPT_USE_SSL, true);
             Curl.curl_easy_setopt(channel, CURLOPT_CAINFO, this.caCert);
             Curl.curl_easy_setopt(channel, CURLOPT_SSL_VERIFYPEER, 0);
+
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "Configured channel for ssl and CA cert %s".format(this.caCert));
+
         }
     }
   
