@@ -6,8 +6,14 @@ import arkouda.array_api as Array
 import numpy as np
 
 SEED = 12345
+s = SEED
 
-# requires the server to be built with 3D array support
+
+def randArr(shape):
+    global s
+    s += 2
+    return Array.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s))
+
 
 class ManipulationTests(ArkoudaTest):
     def test_broadcast(self):
@@ -22,64 +28,64 @@ class ManipulationTests(ArkoudaTest):
         self.assertEqual(abc[2].shape, (5, 6, 10))
 
     def test_concat(self):
-        a = Array.ones((5, 3, 10))
-        b = Array.ones((5, 3, 2))
-        c = Array.ones((5, 3, 17))
+        a = randArr((5, 3, 10))
+        b = randArr((5, 3, 2))
+        c = randArr((5, 3, 17))
 
         abcConcat = Array.concat([a, b, c], axis=2)
+        abcNP = np.concatenate([a.to_ndarray(), b.to_ndarray(), c.to_ndarray()], axis=2)
         self.assertEqual(abcConcat.shape, (5, 3, 29))
-        self.assertTrue(Array.all(abcConcat))
+        self.assertEqual(abcConcat.tolist(), abcNP.tolist())
 
-        d = Array.ones((10, 8))
-        e = Array.ones((11, 8))
-        f = Array.ones((12, 8))
+        d = randArr((10, 8))
+        e = randArr((11, 8))
+        f = randArr((12, 8))
 
         defConcat = Array.concat([d, e, f])
+        defNP = np.concatenate([d.to_ndarray(), e.to_ndarray(), f.to_ndarray()])
         self.assertEqual(defConcat.shape, (33, 8))
-        self.assertTrue(Array.all(defConcat))
+        self.assertEqual(defConcat.tolist(), defNP.tolist())
 
         defConcatNeg = Array.concat((d, e, f), axis=-2)
         self.assertEqual(defConcatNeg.shape, (33, 8))
-        self.assertTrue(Array.all(defConcatNeg))
+        self.assertEqual(defConcatNeg.tolist(), defNP.tolist())
 
-        h = Array.ones((1, 2, 3))
-        i = Array.ones((1, 2, 3))
-        j = Array.ones((1, 2, 3))
+        h = randArr((1, 2, 3))
+        i = randArr((1, 2, 3))
+        j = randArr((1, 2, 3))
 
         hijConcat = Array.concat((h, i, j), axis=None)
+        hijNP = np.concatenate([h.to_ndarray(), i.to_ndarray(), j.to_ndarray()], axis=None)
         self.assertEqual(hijConcat.shape, (18,))
-        self.assertTrue(Array.all(hijConcat))
+        self.assertEqual(hijConcat.tolist(), hijNP.tolist())
 
     def test_expand_dims(self):
-        a = Array.asarray(ak.randint(0, 100, (5, 3), dtype=ak.int64, seed=SEED))
+        a = randArr((5, 3))
         alist = a.tolist()
-
-        # TODO: once rank reducing slices are implemented,
-        # the squeeze operations can be removed below:
 
         a0 = Array.expand_dims(a, axis=0)
         self.assertEqual(a0.shape, (1, 5, 3))
-        self.assertEqual(Array.squeeze(a0[0, :, :], axis=0).tolist(), alist)
+        self.assertEqual(a0[0, ...].tolist(), alist)
 
         a1 = Array.expand_dims(a, axis=1)
         self.assertEqual(a1.shape, (5, 1, 3))
-        self.assertEqual(Array.squeeze(a1[:, 0, :], axis=1).tolist(), alist)
+        self.assertEqual(a1[:, 0, :].tolist(), alist)
 
         a2 = Array.expand_dims(a, axis=2)
         self.assertEqual(a2.shape, (5, 3, 1))
-        self.assertEqual(Array.squeeze(a2[:, :, 0], axis=2).tolist(), alist)
+        self.assertEqual(a2[..., 0].tolist(), alist)
 
         aNeg1 = Array.expand_dims(a, axis=-1)
         self.assertEqual(aNeg1.shape, (5, 3, 1))
-        self.assertEqual(Array.squeeze(aNeg1[:, :, 0], axis=2).tolist(), alist)
+        self.assertEqual(aNeg1[:, :, 0].tolist(), alist)
 
         aNeg2 = Array.expand_dims(a, axis=-2)
         self.assertEqual(aNeg2.shape, (5, 1, 3))
-        self.assertEqual(Array.squeeze(aNeg2[:, 0, :], axis=1).tolist(), alist)
+        self.assertEqual(aNeg2[:, 0, :].tolist(), alist)
 
         aNeg3 = Array.expand_dims(a, axis=-3)
         self.assertEqual(aNeg3.shape, (1, 5, 3))
-        self.assertEqual(Array.squeeze(aNeg3[0, :, :], axis=0).tolist(), alist)
+        self.assertEqual(aNeg3[0, :, :].tolist(), alist)
 
         with self.assertRaises(IndexError):
             Array.expand_dims(a, axis=3)
@@ -100,7 +106,7 @@ class ManipulationTests(ArkoudaTest):
         r = Array.asarray(ak.randint(0, 100, (7, 8, 9), dtype=ak.int64, seed=SEED))
         rn = np.asarray(r.tolist())
 
-        f1 = Array.flip(r) # flip all axes
+        f1 = Array.flip(r)  # flip all axes
         f2 = Array.flip(r, axis=0)
         f3 = Array.flip(r, axis=1)
         f4 = Array.flip(r, axis=(0, 2))
@@ -127,7 +133,7 @@ class ManipulationTests(ArkoudaTest):
             Array.flip(r, axis=-4)
 
     def test_permute_dims(self):
-        r = Array.asarray(ak.randint(0, 100, (7, 8, 9), dtype=ak.int64, seed=SEED))
+        r = randArr((7, 8, 9))
 
         p1 = Array.permute_dims(r, (0, 1, 2))
         p2 = Array.permute_dims(r, (2, 1, 0))
@@ -153,7 +159,7 @@ class ManipulationTests(ArkoudaTest):
             Array.permute_dims(r, (0, 1, -4))
 
     def test_reshape(self):
-        r = Array.asarray(ak.randint(0, 100, (2, 6, 12), dtype=ak.int64, seed=SEED))
+        r = randArr((2, 6, 12))
         nr = np.asarray(r.tolist())
 
         for shape in [(12, 12), (3, 12, 4), (2, 72), (6, 2, 12), (144,)]:
@@ -190,7 +196,7 @@ class ManipulationTests(ArkoudaTest):
         self.assertEqual(b2.tolist(), [3, 4, 5, 6, 7, 8, 9, 0, 1, 2])
 
         # ND case
-        r = Array.asarray(ak.randint(0, 100, (7, 8, 9), dtype=ak.int64, seed=SEED))
+        r = randArr((7, 8, 9))
 
         f1 = Array.roll(r, 3)
         f2 = Array.roll(r, -3)
@@ -223,10 +229,10 @@ class ManipulationTests(ArkoudaTest):
             Array.roll(r, 3, axis=-4)
 
     def test_squeeze(self):
-        r1 = Array.asarray(ak.randint(0, 100, (1, 2, 3), dtype=ak.int64, seed=SEED))
-        r2 = Array.asarray(ak.randint(0, 100, (2, 1, 3), dtype=ak.int64, seed=SEED))
-        r3 = Array.asarray(ak.randint(0, 100, (2, 3, 1), dtype=ak.int64, seed=SEED))
-        r4 = Array.asarray(ak.randint(0, 100, (1, 3, 1), dtype=ak.int64, seed=SEED))
+        r1 = randArr((1, 2, 3))
+        r2 = randArr((2, 1, 3))
+        r3 = randArr((2, 3, 1))
+        r4 = randArr((1, 3, 1))
 
         s1 = Array.squeeze(r1, axis=0)
         s2 = Array.squeeze(r2, axis=1)
@@ -253,3 +259,51 @@ class ManipulationTests(ArkoudaTest):
 
         with self.assertRaises(ValueError):
             Array.squeeze(r4, axis=1)
+
+    def test_stack_unstack(self):
+        a = randArr((5, 4))
+        b = randArr((5, 4))
+        c = randArr((5, 4))
+
+        abcStack0 = Array.stack([a, b, c], axis=0)
+        npabcStack0 = np.stack([a.to_ndarray(), b.to_ndarray(), c.to_ndarray()], axis=0)
+        self.assertEqual(abcStack0.shape, (3, 5, 4))
+        self.assertEqual(abcStack0.tolist(), npabcStack0.tolist())
+
+        (ap, bp, cp) = Array.unstack(abcStack0, axis=0)
+        self.assertEqual(ap.tolist(), a.tolist())
+        self.assertEqual(bp.tolist(), b.tolist())
+        self.assertEqual(cp.tolist(), c.tolist())
+
+        abcStackm1 = Array.stack([a, b, c], axis=-1)
+        npabcStackm1 = np.stack([a.to_ndarray(), b.to_ndarray(), c.to_ndarray()], axis=-1)
+        self.assertEqual(abcStackm1.shape, (5, 4, 3))
+        self.assertEqual(abcStackm1.tolist(), npabcStackm1.tolist())
+
+        (ap, bp, cp) = Array.unstack(abcStackm1, axis=-1)
+        self.assertEqual(ap.tolist(), a.tolist())
+        self.assertEqual(bp.tolist(), b.tolist())
+        self.assertEqual(cp.tolist(), c.tolist())
+
+    def test_tile(self):
+        a = randArr((2, 3))
+
+        print(a)
+
+        for reps in [(2, 1), (1, 2), (2, 2), (1, 1, 3), (3,)]:
+            at = Array.tile(a, reps)
+            npat = np.tile(np.asarray(a), reps)
+            self.assertEqual(at.shape, npat.shape)
+            self.assertEqual(at.tolist(), npat.tolist())
+
+    def test_repeat(self):
+        a = randArr((5, 10))
+        r = randArr((50,))
+
+        ar1 = Array.repeat(a, 2)
+        nar1 = np.repeat(np.asarray(a), 2)
+        self.assertEqual(ar1.tolist(), nar1.tolist())
+
+        ar2 = Array.repeat(a, r)
+        nar2 = np.repeat(np.asarray(a), np.asarray(r))
+        self.assertEqual(ar2.tolist(), nar2.tolist())

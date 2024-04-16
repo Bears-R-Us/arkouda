@@ -4,6 +4,7 @@ import pytest
 from pandas.testing import assert_frame_equal
 
 import arkouda as ak
+from arkouda.series import Series
 
 DTYPES = [ak.int64, ak.uint64, ak.bool, ak.float64, ak.bigint, ak.str_]
 NO_STRING = [ak.int64, ak.uint64, ak.bool, ak.float64, ak.bigint]
@@ -147,8 +148,10 @@ class TestSeries:
 
     def test_concat(self):
         s = ak.Series(ak.arange(5))
-        s2 = ak.Series(ak.arange(5, 11), ak.arange(5, 11))
-        s3 = ak.Series(ak.arange(5, 10), ak.arange(5, 10))
+        # added data= and index= clarifiers to the next two lines.
+        # without them, the index was interpreted as the name.
+        s2 = ak.Series(data=ak.arange(5, 11), index=ak.arange(5, 11))
+        s3 = ak.Series(data=ak.arange(5, 10), index=ak.arange(5, 10))
 
         df = ak.Series.concat([s, s2], axis=1)
         assert isinstance(df, ak.DataFrame)
@@ -294,3 +297,47 @@ class TestSeries:
             tablefmt="grid", index=False
         )
         assert s.to_markdown(tablefmt="jira") == s.to_pandas().to_markdown(tablefmt="jira")
+
+    def test_isna_int(self):
+        # Test case with integer data type
+        data_int = Series([1, 2, 3, 4, 5])
+        expected_int = Series([False, False, False, False, False])
+        assert np.allclose(data_int.isna().values.to_ndarray(), expected_int.values.to_ndarray())
+        assert np.allclose(data_int.isnull().values.to_ndarray(), expected_int.values.to_ndarray())
+        assert np.allclose(data_int.notna().values.to_ndarray(), ~expected_int.values.to_ndarray())
+        assert np.allclose(data_int.notnull().values.to_ndarray(), ~expected_int.values.to_ndarray())
+        assert ~data_int.hasnans()
+
+    def test_isna_float(self):
+        # Test case with float data type
+        data_float = Series([1.0, 2.0, 3.0, np.nan, 5.0])
+        expected_float = Series([False, False, False, True, False])
+        assert np.allclose(data_float.isna().values.to_ndarray(), expected_float.values.to_ndarray())
+        assert np.allclose(data_float.isnull().values.to_ndarray(), expected_float.values.to_ndarray())
+        assert np.allclose(data_float.notna().values.to_ndarray(), ~expected_float.values.to_ndarray())
+        assert np.allclose(data_float.notnull().values.to_ndarray(), ~expected_float.values.to_ndarray())
+        assert data_float.hasnans()
+
+    def test_isna_string(self):
+        # Test case with string data type
+        data_string = Series(["a", "b", "c", "d", "e"])
+        expected_string = Series([False, False, False, False, False])
+        assert np.allclose(data_string.isna().values.to_ndarray(), expected_string.values.to_ndarray())
+        assert np.allclose(data_string.isnull().values.to_ndarray(), expected_string.values.to_ndarray())
+        assert np.allclose(data_string.notna().values.to_ndarray(), ~expected_string.values.to_ndarray())
+        assert np.allclose(
+            data_string.notnull().values.to_ndarray(), ~expected_string.values.to_ndarray()
+        )
+        assert ~data_string.hasnans()
+
+    def test_fillna(self):
+        data = ak.Series([1, np.nan, 3, np.nan, 5])
+
+        fill_values1 = ak.ones(5)
+        assert data.fillna(fill_values1).to_list() == [1.0, 1.0, 3.0, 1.0, 5.0]
+
+        fill_values2 = Series(2 * ak.ones(5))
+        assert data.fillna(fill_values2).to_list() == [1.0, 2.0, 3.0, 2.0, 5.0]
+
+        fill_values3 = 100.0
+        assert data.fillna(fill_values3).to_list() == [1.0, 100.0, 3.0, 100.0, 5.0]

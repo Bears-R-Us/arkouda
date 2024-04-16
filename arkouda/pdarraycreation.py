@@ -1,5 +1,5 @@
 import itertools
-from typing import Iterable, List, Optional, Union, Tuple, cast
+from typing import Iterable, List, Optional, Tuple, Union, cast
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -138,7 +138,9 @@ def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> 
 
 
 def array(
-    a: Union[pdarray, np.ndarray, Iterable], dtype: Union[np.dtype, type, str] = None, max_bits: int = -1
+    a: Union[pdarray, np.ndarray, Iterable],
+    dtype: Union[np.dtype, type, str, None] = None,
+    max_bits: int = -1,
 ) -> Union[pdarray, Strings]:
     """
     Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
@@ -920,7 +922,7 @@ def randint(
     high: numeric_scalars,
     size: Union[int_scalars, Tuple[int_scalars, ...]] = 1,
     dtype=akint64,
-    seed: int_scalars = None,
+    seed: Optional[int_scalars] = None,
 ) -> pdarray:
     """
     Generate a pdarray of randomized int, float, or bool values in a
@@ -936,7 +938,7 @@ def randint(
         The length of the returned array
     dtype : Union[int64, float64, bool]
         The dtype of the array
-    seed : int_scalars
+    seed : int_scalars, optional
         Index for where to pull the first returned value
 
 

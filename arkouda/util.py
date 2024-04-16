@@ -1,5 +1,6 @@
+import builtins
 import json
-from typing import Sequence, Tuple, cast
+from typing import TYPE_CHECKING, Sequence, Tuple, Union, cast
 from warnings import warn
 
 from typeguard import typechecked
@@ -7,15 +8,25 @@ from typeguard import typechecked
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
+from arkouda.dtypes import (
+    _is_dtype_in_union,
+    dtype,
+    float_scalars,
+    int_scalars,
+    numeric_scalars,
+)
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_registry
-from arkouda.pdarrayclass import create_pdarray
+from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
 from arkouda.segarray import SegArray
 from arkouda.sorting import coargsort
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
+
+if TYPE_CHECKING:
+    from arkouda.series import Series
 
 
 def identity(x):
@@ -292,7 +303,7 @@ def attach_all(names: list):
     return {n: attach(n) for n in names}
 
 
-def sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=100):
+def sparse_sum_help(idx1, idx2, val1, val2, merge=False, percent_transfer_limit=100):
     """
     Helper for summing two sparse matrices together
 
@@ -408,3 +419,178 @@ def convert_bytes(nbytes, unit="B"):
         return nbytes / mb
     elif unit == "GB":
         return nbytes / gb
+
+
+def is_numeric(arry: Union[pdarray, Strings, Categorical]) -> builtins.bool:
+    """
+    Check if the dtype of the given array is numeric.
+
+    Parameters:
+         arry ((pdarray, Strings, Categorical)):
+            The input pdarray, Strings, or Categorical object.
+
+    Returns
+    -------
+    bool:
+        True if the dtype of pda is numeric, False otherwise.
+
+    Example:
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> data = ak.array([1, 2, 3, 4, 5])
+        >>> is_numeric(data)
+        True
+
+        >>> strings = ak.array(["a", "b", "c"])
+        >>> is_numeric(strings)
+        False
+
+    """
+    if isinstance(arry, pdarray):
+        return _is_dtype_in_union(dtype(arry.dtype), numeric_scalars)
+    else:
+        return False
+
+
+def is_float(arry: Union[pdarray, Strings, Categorical]):
+    """
+    Check if the dtype of the given array is float.
+
+    Parameters:
+         arry ((pdarray, Strings, Categorical)):
+            The input pdarray, Strings, or Categorical object.
+
+    Returns
+    -------
+    bool:
+        True if the dtype of pda is of type float, False otherwise.
+
+    Example:
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> data = ak.array([1.0, 2, 3, 4, np.nan])
+        >>> is_float(data)
+        True
+
+        >>> data2 = ak.arange(5)
+        >>> is_float(data2)
+        False
+
+    """
+    if isinstance(arry, pdarray):
+        return _is_dtype_in_union(dtype(arry.dtype), float_scalars)
+    else:
+        return False
+
+
+def is_int(arry: Union[pdarray, Strings, Categorical]):
+    """
+    Check if the dtype of the given array is int.
+
+    Parameters
+    ----------
+    arry ((pdarray, Strings, Categorical)):
+            The input pdarray, Strings, or Categorical object.
+
+    Returns
+    -------
+    bool:
+        True if the dtype of pda is of type int, False otherwise.
+
+    Example:
+    >>> import arkouda as ak
+    >>> ak.connect()
+    >>> data = ak.array([1.0, 2, 3, 4, np.nan])
+    >>> is_int(data)
+    False
+
+    >>> data2 = ak.arange(5)
+    >>> is_int(data2)
+    True
+
+    """
+    if isinstance(arry, pdarray):
+        return _is_dtype_in_union(dtype(arry.dtype), int_scalars)
+    else:
+        return False
+
+
+def map(
+    values: Union[pdarray, Strings, Categorical], mapping: Union[dict, "Series"]
+) -> Union[pdarray, Strings]:
+    """
+    Map values of an array according to an input mapping.
+
+    Parameters
+    ----------
+    values :  pdarray, Strings, or Categorical
+        The values to be mapped.
+    mapping : dict or Series
+        The mapping correspondence.
+
+    Returns
+    -------
+    arkouda.pdarrayclass.pdarray or arkouda.strings.Strings
+        A new array with the values mapped by the mapping correspondence.
+        When the input Series has Categorical values,
+        the return Series will have Strings values.
+        Otherwise, the return type will match the input type.
+    Raises
+    ------
+    TypeError
+        Raised if arg is not of type dict or arkouda.Series.
+        Raised if values not of type pdarray, Categorical, or Strings.
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.connect()
+    >>> from arkouda.util import map
+    >>> a = ak.array([2, 3, 2, 3, 4])
+    >>> a
+    array([2 3 2 3 4])
+    >>> map(a, {4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+    array([30.00000000000000000 5.00000000000000000 30.00000000000000000
+    5.00000000000000000 25.00000000000000000])
+    >>> s = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
+    >>> map(a, s)
+    array(['b', 'b', 'd', 'd', 'a'])
+
+    """
+    import numpy as np
+
+    from arkouda import Series, array, broadcast, full
+    from arkouda.pdarraysetops import in1d
+
+    keys = values
+    gb = GroupBy(keys, dropna=False)
+    gb_keys = gb.unique_keys
+
+    if isinstance(mapping, dict):
+        mapping = Series([array(list(mapping.keys())), array(list(mapping.values()))])
+
+    if isinstance(mapping, Series):
+        xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]
+
+        if xtra_keys.size > 0:
+            if not isinstance(mapping.values, (Strings, Categorical)):
+                nans = full(xtra_keys.size, np.nan, mapping.values.dtype)
+            else:
+                nans = full(xtra_keys.size, "null")
+
+            if isinstance(xtra_keys, Categorical):
+                xtra_keys = xtra_keys.to_strings()
+
+            xtra_series = Series(nans, index=xtra_keys)
+            mapping = Series.concat([mapping, xtra_series])
+
+        if isinstance(gb_keys, Categorical):
+            mapping = mapping[gb_keys.to_strings()]
+        else:
+            mapping = mapping[gb_keys]
+
+        if isinstance(mapping.values, (pdarray, Strings)):
+            return broadcast(gb.segments, mapping.values, permutation=gb.permutation)
+        else:
+            raise TypeError("Map values must be castable to pdarray or Strings.")
+    else:
+        raise TypeError("Map must be dict or arkouda.Series.")

@@ -1651,7 +1651,7 @@ class GroupBy:
             return create_pdarray(repMsg)
 
     @staticmethod
-    def build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy:
+    def build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy:
         """
         function to build a new GroupBy object from component keys and permutation.
 

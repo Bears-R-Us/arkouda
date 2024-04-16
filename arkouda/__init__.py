@@ -39,6 +39,6 @@ from arkouda.util import (
     is_registered,
     broadcast_dims,
 )
-from arkouda.akscipy.special import *
-from arkouda.akscipy import *
+from arkouda.scipy.special import *
+from arkouda.scipy import *
 from arkouda.random import *

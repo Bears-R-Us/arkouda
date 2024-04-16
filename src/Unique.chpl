@@ -59,13 +59,16 @@ module Unique
         return uniqueFromSorted(sorted, needCounts);
     }
 
-    proc uniqueSortWithInverse(a: [?aD] ?eltType) throws {
+    proc uniqueSortWithInverse(a: [?aD] ?eltType, param needIndices=false) throws {
         if (aD.size == 0) {
             try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
-            var u = makeDistArray(0, eltType);
-            var c = makeDistArray(0, int);
-            var inv = makeDistArray(0, int);
-            return (u, c, inv);
+            var u = makeDistArray(aD.size, eltType);
+            var c = makeDistArray(aD.size, int);
+            var inv = makeDistArray(aD.size, int);
+            var indices = makeDistArray(0, int);
+            if needIndices
+              then return (u, c, inv, indices);
+              else return (u, c, inv);
         }
         var sorted = makeDistArray(aD, eltType);
         var perm = makeDistArray(aD, int);
@@ -84,13 +87,23 @@ module Unique
         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
         overMemLimit(numBytes(int) * bcast.size);
         bcast = (+ scan bcast);
-        var inv = makeDistArray(aD, int);
+        var inv = makeDistArray(aD.size, int);
         forall (p, b) in zip(perm, bcast) with (var agg = newDstAggregator(int)) {
             agg.copy(inv[p], b);
         }
-        return (u, c, inv);
+
+        if needIndices {
+          overMemLimit(numBytes(int) * u.size);
+          var indices = makeDistArray(u.size, int);
+          forall i in indices.domain with (var agg = newSrcAggregator(int)) {
+            agg.copy(indices[i], perm[segs[i]]);
+          }
+          return (u, c, inv, indices);
+        } else {
+          return (u, c, inv);
+        }
     }
-    
+
     proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true) throws {
         var truth = makeDistArray(aD, bool);
         truth[0] = true;
@@ -283,4 +296,3 @@ module Unique
         return (uo, uv, counts);
     }
 }
-

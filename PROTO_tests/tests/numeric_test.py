@@ -456,7 +456,6 @@ class TestNumeric:
         """
         Test efunc `isnan`; it returns a pdarray of element-wise T/F values for whether it is NaN
         (not a number)
-        Currently we only support float based arrays since numpy doesn't support NaN in int-based arrays
         """
         npa = np.array([1, 2, None, 3, 4], dtype="float64")
         ark_s_float64 = ak.array(npa)
@@ -464,10 +463,12 @@ class TestNumeric:
         actual = ark_isna_float64.to_ndarray()
         assert np.array_equal(np.isnan(npa), actual)
 
-        # Currently we can't make an int64 array with a NaN in it so verify that we throw an Exception
         ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))
-        with pytest.raises(RuntimeError):
-            ak.isnan(ark_s_int64)
+        assert ak.isnan(ark_s_int64).to_list() ==  [False, False, False, False]
+
+        ark_s_string = ak.array(["a", "b", "c"])
+        with pytest.raises(TypeError):
+            ak.isnan(ark_s_string)
 
     def test_str_cat_cast(self):
         test_strs = [
@@ -604,3 +605,48 @@ class TestNumeric:
         h3, h4 = ak.hash([bi])
         assert h1.to_list() == h3.to_list()
         assert h2.to_list() == h4.to_list()
+
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_clip(self, prob_size):
+        ia = np.random.randint(1, 100, prob_size)
+        ilo = 25
+        ihi = 75
+
+        dtypes = ["int64","float64"]
+
+        # test clip.
+        # array to be clipped can be integer or float
+        # range limits can be integer, float, or none, and can be scalars or arrays
+
+        # Looping over all data types, the interior loop tests using lo, hi as:
+
+        #   None, Scalar
+        #   None, Array
+        #   Scalar, Scalar
+        #   Scalar, Array
+        #   Scalar, None
+        #   Array, Scalar
+        #   Array, Array
+        #   Array, None
+
+        # There is no test with lo and hi both equal to None, because that's not allowed
+
+        for dtype1 in dtypes :
+            hi = np.full(ia.shape,ihi,dtype=dtype1)
+            akhi = ak.array(hi)
+            for dtype2 in dtypes :
+                lo = np.full(ia.shape,ilo,dtype=dtype2)
+                aklo = ak.array(lo)
+                for dtype3 in dtypes :
+                    nd_arry = ia.astype(dtype3)
+                    ak_arry = ak.array(nd_arry)
+                    assert np.allclose(np.clip(nd_arry,None,hi[0]),ak.clip(ak_arry, None, hi[0]).to_ndarray())
+                    assert np.allclose(np.clip(nd_arry,None,hi),ak.clip(ak_arry, None, akhi).to_ndarray())
+                    assert np.allclose(np.clip(nd_arry,lo[0],hi[0]),ak.clip(ak_arry, lo[0], hi[0]).to_ndarray())
+                    assert np.allclose(np.clip(nd_arry,lo[0],hi),ak.clip(ak_arry, lo[0], akhi).to_ndarray())
+                    assert np.allclose(np.clip(nd_arry,lo[0],None),ak.clip(ak_arry, lo[0], None).to_ndarray())
+                    assert np.allclose(np.clip(nd_arry,lo,hi[0]),ak.clip(ak_arry, aklo, hi[0]).to_ndarray())
+                    assert np.allclose(np.clip(nd_arry,lo,hi),ak.clip(ak_arry, aklo, akhi).to_ndarray())
+                    assert np.allclose(np.clip(nd_arry,lo,None),ak.clip(ak_arry, aklo, None).to_ndarray())
+

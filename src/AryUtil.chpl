@@ -10,6 +10,7 @@ module AryUtil
     use BitOps;
     use GenSymIO;
     use PrivateDist;
+    use Communication;
 
     use ArkoudaPOSIXCompat;
     use ArkoudaCTypesCompat;
@@ -669,7 +670,7 @@ module AryUtil
     */
     proc broadcastShape(sa: ?Na*int, sb: ?Nb*int, param N: int): N*int throws {
       var s: N*int;
-      for param i in 0..<N by -1 do {
+      for param i in 0..<N by -1 {
         const n1 = Na - N + i,
               n2 = Nb - N + i,
               d1 = if n1 < 0 then 1 else sa[n1],
@@ -730,5 +731,152 @@ module AryUtil
         throw new Error("Axis out of bounds");
       }
       return s;
+    }
+
+    /*
+      unflatten a 1D array into a multi-dimensional array of the given shape
+    */
+    proc unflatten(const ref a: [?d] ?t, shape: ?N*int): [] t throws {
+      var unflat = makeDistArray((...shape), t);
+
+      if N == 1 {
+        unflat = a;
+        return unflat;
+      }
+
+      // ranges of flat indices owned by each locale
+      const flatLocRanges = [loc in Locales] d.localSubdomain(loc).dim(0);
+
+      coforall loc in Locales do on loc {
+        const lduf = unflat.domain.localSubdomain(),
+              lastRank = lduf.dim(N-1);
+
+        // iterate over each slice of contiguous memory in the local subdomain
+        forall idx in domOffAxis(lduf, N-1) with (
+            const ord = new orderer(shape),
+            const dufc = unflat.domain,
+            in flatLocRanges
+        ) {
+          var idxTup: (N-1)*int;
+          for i in 0..<(N-1) do idxTup[i] = idx[i];
+
+          const low = ((...idxTup), lastRank.low),
+                high = ((...idxTup), lastRank.high),
+                flatSlice = ord.indexToOrder(low)..ord.indexToOrder(high);
+
+          // compute which locales in the input array this slice corresponds to
+          var locInStart, locInStop = 0;
+          for (flr, locID) in zip(flatLocRanges, 0..<numLocales) {
+            if flr.contains(flatSlice.low) then locInStart = locID;
+            if flr.contains(flatSlice.high) then locInStop = locID;
+          }
+
+          if locInStart == locInStop {
+            // flat region sits within a single locale, do a single get
+            get(
+              c_ptrTo(unflat[low]),
+              c_ptrToConst(a[flatSlice.low]):c_ptr(t),
+              locInStart,
+              c_sizeof(t) * flatSlice.size
+            );
+          } else {
+            // flat region is spread across multiple locales, do a get for each source locale
+            for locInID in locInStart..locInStop {
+              const flatSubSlice = flatSlice[flatLocRanges[locInID]];
+
+              get(
+                c_ptrTo(unflat[dufc.orderToIndex(flatSubSlice.low)]),
+                c_ptrToConst(a[flatSubSlice.low]):c_ptr(t),
+                locInID,
+                c_sizeof(t) * flatSubSlice.size
+              );
+            }
+          }
+        }
+      }
+
+      return unflat;
+    }
+
+    /*
+      flatten a multi-dimensional array into a 1D array
+    */
+    proc flatten(const ref a: [?d] ?t): [] t throws
+      where a.rank > 1
+    {
+      var flat = makeDistArray(d.size, t);
+
+      // ranges of flat indices owned by each locale
+      const flatLocRanges = [loc in Locales] flat.domain.localSubdomain(loc).dim(0);
+
+      coforall loc in Locales do on loc {
+        const ld = d.localSubdomain(),
+              lastRank = ld.dim(d.rank-1);
+
+        // iterate over each slice of contiguous memory in the local subdomain
+        forall idx in domOffAxis(ld, d.rank-1) with (
+            const ord = new orderer(d.shape),
+            const dc = d,
+            in flatLocRanges
+        ) {
+          var idxTup: (d.rank-1)*int;
+          for i in 0..<(d.rank-1) do idxTup[i] = idx[i];
+
+          const low = ((...idxTup), lastRank.low),
+                high = ((...idxTup), lastRank.high),
+                flatSlice = ord.indexToOrder(low)..ord.indexToOrder(high);
+
+          // compute which locales in the output array this slice corresponds to
+          var locOutStart, locOutStop = 0;
+          for (flr, locID) in zip(flatLocRanges, 0..<numLocales) {
+            if flr.contains(flatSlice.low) then locOutStart = locID;
+            if flr.contains(flatSlice.high) then locOutStop = locID;
+          }
+
+          if locOutStart == locOutStop {
+            // flat region sits within a single locale, do a single put
+            put(
+                c_ptrTo(flat[flatSlice.low]),
+                c_ptrToConst(a[low]):c_ptr(t),
+                locOutStart,
+                c_sizeof(t) * flatSlice.size
+            );
+          } else {
+            // flat region is spread across multiple locales, do a put for each destination locale
+            for locOutID in locOutStart..locOutStop {
+              const flatSubSlice = flatSlice[flatLocRanges[locOutID]];
+
+              put(
+                c_ptrTo(flat[flatSubSlice.low]),
+                c_ptrToConst(a[dc.orderToIndex(flatSubSlice.low)]):c_ptr(t),
+                locOutID,
+                c_sizeof(t) * flatSubSlice.size
+              );
+            }
+          }
+        }
+      }
+
+      return flat;
+    }
+
+    // helper for computing an array element's index from its order
+    record orderer {
+      param rank: int;
+      const accumRankSizes: [0..<rank] int;
+
+      proc init(shape: ?N*int) {
+        this.rank = N;
+        const sizesRev = [i in 0..<N] shape[N - i - 1];
+        this.accumRankSizes = * scan sizesRev / sizesRev;
+      }
+
+      // index -> order for the input array's indices
+      // e.g., order = k + (nz * j) + (nz * ny * i)
+      inline proc indexToOrder(idx: rank*int): int {
+        var order = 0;
+        for param i in 0..<rank do order += idx[i] * accumRankSizes[rank - i - 1];
+        return order;
+      }
     }
 }

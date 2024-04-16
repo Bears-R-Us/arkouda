@@ -1,12 +1,14 @@
 import numpy.random as np_random
 
 from arkouda.client import generic_msg
+from arkouda.dtypes import _val_isinstance_of_union
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import dtype as to_numpy_dtype
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import int_scalars
 from arkouda.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import create_pdarray
+from arkouda.pdarrayclass import create_pdarray, pdarray
 
 
 class Generator:
@@ -211,6 +213,78 @@ class Generator:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_normal()
         return standard_normal(size=size, seed=self._seed)
+
+    def shuffle(self, x):
+        """
+        Randomly shuffle a pdarray in place.
+
+        Parameters
+        ----------
+        x: pdarray
+            shuffle the elements of x randomly in place
+
+        Returns
+        -------
+        None
+        """
+        if not isinstance(x, pdarray):
+            raise TypeError("shuffle only accepts a pdarray.")
+        dtype = to_numpy_dtype(x.dtype)
+        name = self._name_dict[to_numpy_dtype(akint64)]
+        generic_msg(
+            cmd="shuffle",
+            args={
+                "name": name,
+                "x": x,
+                "size": x.size,
+                "dtype": dtype,
+                "state": self._state,
+            },
+        )
+        self._state += x.size
+
+    def permutation(self, x):
+        """
+        Randomly permute a sequence, or return a permuted range.
+
+        Parameters
+        ----------
+        x: int or pdarray
+            If x is an integer, randomly permute ak.arange(x). If x is an array,
+            make a copy and shuffle the elements randomly.
+
+        Returns
+        -------
+        pdarray
+            pdarray of permuted elements
+        """
+        if _val_isinstance_of_union(x, int_scalars):
+            is_domain_perm = True
+            dtype = to_numpy_dtype(akint64)
+            size = x
+        elif isinstance(x, pdarray):
+            is_domain_perm = False
+            dtype = to_numpy_dtype(x.dtype)
+            size = x.size
+        else:
+            raise TypeError("permtation only accepts a pdarray or int scalar.")
+
+        # we have to use the int version since we permute the domain
+        name = self._name_dict[to_numpy_dtype(akint64)]
+
+        rep_msg = generic_msg(
+            cmd="permutation",
+            args={
+                "name": name,
+                "x": x,
+                "size": size,
+                "dtype": dtype,
+                "isDomPerm": is_domain_perm,
+                "state": self._state,
+            },
+        )
+        self._state += size
+        return create_pdarray(rep_msg)
 
     def uniform(self, low=0.0, high=1.0, size=None):
         """

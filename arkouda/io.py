@@ -763,6 +763,7 @@ def read_parquet(
     allow_errors: bool = False,
     tag_data: bool = False,
     read_nested: bool = True,
+    has_non_float_nulls: bool = False,
 ) -> Union[
     pdarray,
     Strings,
@@ -819,6 +820,9 @@ def read_parquet(
         Default True, when True, SegArray objects will be read from the file. When False,
         SegArray (or other nested Parquet columns) will be ignored.
         If datasets is not None, this will be ignored.
+    has_non_float_nulls: bool
+        Default False. This flag must be set to True to read non-float parquet columns
+        that contain null values.
 
     Returns
     -------
@@ -883,6 +887,7 @@ def read_parquet(
                 allow_errors=allow_errors,
                 tag_data=tag_data,
                 read_nested=read_nested,
+                has_non_float_nulls=has_non_float_nulls,
             )[dset]
             for dset in datasets
         }
@@ -897,6 +902,7 @@ def read_parquet(
                 "dsets": datasets,
                 "filenames": filenames,
                 "tag_data": tag_data,
+                "has_non_float_nulls": has_non_float_nulls,
             },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
@@ -1008,7 +1014,9 @@ def read_csv(
     return _build_objects(rep)
 
 
-def import_data(read_path: str, write_file: str = None, return_obj: bool = True, index: bool = False):
+def import_data(
+    read_path: str, write_file: Optional[str] = None, return_obj: bool = True, index: bool = False
+):
     """
     Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
     a file formatted to be read by Arkouda.
@@ -1086,7 +1094,7 @@ def import_data(read_path: str, write_file: str = None, return_obj: bool = True,
 def export(
     read_path: str,
     dataset_name: str = "ak_data",
-    write_file: str = None,
+    write_file: Optional[str] = None,
     return_obj: bool = True,
     index: bool = False,
 ):
@@ -1163,7 +1171,7 @@ def _bulk_write_prep(
         Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     convert_categoricals: bool = False,
 ):
     datasetNames = []
@@ -1202,7 +1210,7 @@ def to_parquet(
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
     prefix_path: str,
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     mode: str = "truncate",
     compression: Optional[str] = None,
     convert_categoricals: bool = False,
@@ -1308,7 +1316,7 @@ def to_hdf(
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
     prefix_path: str,
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     mode: str = "truncate",
     file_type: str = "distribute",
 ) -> None:
@@ -1420,7 +1428,7 @@ def update_hdf(
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
     prefix_path: str,
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     repack: bool = True,
 ):
     """
@@ -1470,7 +1478,7 @@ def update_hdf(
 def to_csv(
     columns: Union[Mapping[str, Union[pdarray, Strings]], List[Union[pdarray, Strings]]],
     prefix_path: str,
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     col_delim: str = ",",
     overwrite: bool = False,
 ):
@@ -1549,7 +1557,7 @@ def save_all(
         List[Union[pdarray, Strings, SegArray, ArrayView]],
     ],
     prefix_path: str,
-    names: List[str] = None,
+    names: Optional[List[str]] = None,
     file_format="HDF5",
     mode: str = "truncate",
     file_type: str = "distribute",
@@ -1845,6 +1853,7 @@ def read(
     calc_string_offsets=False,
     column_delim: str = ",",
     read_nested: bool = True,
+    has_non_float_nulls: bool = False,
 ) -> Union[
     pdarray,
     Strings,
@@ -1906,7 +1915,9 @@ def read(
         SegArray (or other nested Parquet columns) will be ignored.
         Ignored if datasets is not None
         Parquet Files only.
-
+    has_non_float_nulls: bool
+        Default False. This flag must be set to True to read non-float parquet columns
+        that contain null values.
 
     Returns
     -------
@@ -1971,6 +1982,7 @@ def read(
             strict_types=strictTypes,
             allow_errors=allow_errors,
             read_nested=read_nested,
+            has_non_float_nulls=has_non_float_nulls,
         )
     elif ftype.lower() == "csv":
         return read_csv(
@@ -1987,6 +1999,7 @@ def read_tagged_data(
     allow_errors: bool = False,
     calc_string_offsets=False,
     read_nested: bool = True,
+    has_non_float_nulls: bool = False,
 ):
     """
     Read datasets from files and tag each record to the file it was read from.
@@ -2018,6 +2031,9 @@ def read_tagged_data(
         SegArray (or other nested Parquet columns) will be ignored.
         Ignored if datasets is not `None`
         Parquet Files only.
+    has_non_float_nulls: bool
+        Default False. This flag must be set to True to read non-float parquet columns
+        that contain null values.
 
     Notes
     ------
@@ -2068,6 +2084,7 @@ def read_tagged_data(
                 allow_errors=allow_errors,
                 tag_data=True,
                 read_nested=read_nested,
+                has_non_float_nulls=has_non_float_nulls,
             ),
             file_cat,
         )

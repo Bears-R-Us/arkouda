@@ -127,6 +127,159 @@ def parse_single_value(msg: str) -> object:
         raise ValueError(f"unsupported value from server {mydtype.name} {value}")
 
 
+def _create_scalar_array(value):
+    """
+    Create a pdarray from a single scalar value
+    """
+    return create_pdarray(
+        generic_msg(
+            cmd="create0D",
+            args={
+                "dtype": resolve_scalar_dtype(value),
+                "value": value,
+            },
+        )
+    )
+
+
+def _reshape(array: pdarray, shape: Tuple[int, ...]):
+    """
+    Reshape the pdarray to the specified shape
+
+    Requires the ManipulationMsg server module
+    """
+    return create_pdarray(
+        generic_msg(
+            cmd=f"reshape{array.ndim}Dx{len(shape)}D",
+            args={
+                "name": array,
+                "shape": shape,
+            },
+        ),
+    )
+
+
+def _squeeze(array: pdarray, degen_axes: List[int]):
+    """
+    Remove degenerate axes from a pdarray
+
+    Requires the ManipulationMsg server module
+    """
+    return create_pdarray(
+        generic_msg(
+            cmd=f"squeeze{array.ndim}Dx{array.ndim-len(degen_axes)}D",
+            args={
+                "name": array,
+                "nAxes": len(degen_axes),
+                "axes": degen_axes,
+            },
+        )
+    )
+
+
+def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: List[int]):
+    """
+    Slice a pdarray with a set of start, stop and stride values
+    """
+    return create_pdarray(
+        generic_msg(
+            cmd=f"[slice]{array.ndim}D",
+            args={
+                "array": array,
+                "starts": tuple(starts) if array.ndim > 1 else starts[0],
+                "stops": tuple(stops) if array.ndim > 1 else stops[0],
+                "strides": tuple(strides) if array.ndim > 1 else strides[0],
+            },
+        )
+    )
+
+
+def _parse_index_tuple(key, shape):
+    """
+    Parse a tuple of indices into slices, scalars, and pdarrays
+
+    Returns a tuple of (starts, stops and strides) for the slices and scalar indices,
+    as well as lists indicating which axes are indexed by scalars and pdarrays
+    """
+    scalar_axes = []
+    pdarray_axes = []
+    slices = []
+
+    for dim, k in enumerate(key):
+        if isinstance(k, slice):
+            slices.append(k.indices(shape[dim]))
+        elif np.isscalar(k) and (resolve_scalar_dtype(k) in ["int64", "uint64"]):
+            scalar_axes.append(dim)
+
+            if k < 0:
+                # Interpret negative key as offset from end of array
+                k += int(shape[dim])
+            if k < 0 or k >= int(shape[dim]):
+                raise IndexError(
+                    f"index {k} is out of bounds in dimension {dim} with size {shape[dim]}"
+                )
+            else:
+                # treat this as a single-element slice
+                slices.append((k, k + 1, 1))
+        elif isinstance(k, pdarray):
+            pdarray_axes.append(dim)
+            kind, _ = translate_np_dtype(k.dtype)
+            if kind not in ("bool", "int", "uint"):
+                raise TypeError(f"unsupported pdarray index type {k.dtype}")
+            # select all indices (needed for mixed slice+pdarray indexing)
+            slices.append((0, shape[dim], 1))
+        else:
+            raise IndexError(f"Unhandled key type: {k} ({type(k)})")
+
+    return (tuple(zip(*slices)), scalar_axes, pdarray_axes)
+
+
+def _parse_none_and_ellipsis_keys(key, ndim):
+    """
+    Parse a key tuple for None and Ellipsis values
+
+    Return a tuple of the key with None values removed and the ellipsis replaced
+    with the appropriate number of colons
+
+    Also returns a tuple without the 'None' values removed
+    """
+
+    # create a copy to avoid modifying the original key
+    ret_key = key
+
+    # how many 'None' arguments are in the key tuple
+    num_none = ret_key.count(None)
+
+    # replace '...' with the appropriate number of ':'
+    elipsis_axis_idx = -1
+    for dim, k in enumerate(ret_key):
+        if isinstance(k, type(Ellipsis)):
+            if elipsis_axis_idx != -1:
+                raise IndexError("array index can only have one ellipsis")
+            else:
+                elipsis_axis_idx = dim
+
+    if elipsis_axis_idx != -1:
+        ret_key = tuple(
+                ret_key[:elipsis_axis_idx] +
+                (slice(None),) * (ndim - (len(ret_key) - num_none) + 1) +
+                ret_key[(elipsis_axis_idx+1):]
+            )
+
+    key_with_none = ret_key
+
+    if num_none > 0:
+        # remove all 'None' indices
+        ret_key = tuple([k for k in ret_key if k is not None])
+
+    if len(ret_key) != ndim:
+        raise IndexError(
+            f"cannot index {ndim}D array with {len(ret_key)} indices"
+        )
+
+    return (ret_key, num_none, key_with_none)
+
+
 # class for the pdarray
 class pdarray:
     """
@@ -521,7 +674,9 @@ class pdarray:
         return self._binop(other, ">=")
 
     def __eq__(self, other):
-        if (self.dtype == bool) and (isinstance(other, pdarray) and (other.dtype == bool)):
+        if other is None:
+            return False
+        elif (self.dtype == bool) and (isinstance(other, pdarray) and (other.dtype == bool)):
             return ~(self ^ other)
         else:
             return self._binop(other, "==")
@@ -649,64 +804,95 @@ class pdarray:
                 cmd="[slice]1D",
                 args={
                     "array": self,
-                    "start": start,
-                    "stop": stop,
-                    "stride": stride,
+                    "starts": start,
+                    "stops": stop,
+                    "strides": stride,
                 },
             )
             return create_pdarray(repMsg)
 
         if isinstance(key, tuple):
-            allScalar = True
-            starts = []
-            stops = []
-            strides = []
-            for dim, k in enumerate(key):
-                if isinstance(k, slice):
-                    allScalar = False
-                    (start, stop, stride) = k.indices(self.shape[dim])
-                    starts.append(start)
-                    stops.append(stop)
-                    strides.append(stride)
-                elif np.isscalar(k) and (resolve_scalar_dtype(k) in ["int64", "uint64"]):
-                    if k < 0:
-                        # Interpret negative key as offset from end of array
-                        k += int(self.shape[dim])
-                    if k < 0 or k >= int(self.shape[dim]):
-                        raise IndexError(
-                            f"index {k} is out of bounds in dimension {dim} with size {self.shape[dim]}"
-                        )
-                    else:
-                        # treat this as a single element slice
-                        # TODO: implement rank-reducing slices
-                        starts.append(k)
-                        stops.append(k + 1)
-                        strides.append(1)
-                else:
-                    raise IndexError(f"Unhandled key type: {k} ({type(k)})")
+            # handle None and Ellipsis in the key tuple
+            (clean_key, num_none, key_with_none) = _parse_none_and_ellipsis_keys(key, self.ndim)
 
-            if allScalar:
-                # use simpler indexing (and return a scalar) if we got a tuple of only scalars
+            # parse the tuple key into slices, scalars, and pdarrays
+            ((starts, stops, strides), scalar_axes, pdarray_axes) = \
+                _parse_index_tuple(clean_key, self.shape)
+
+            if len(scalar_axes) == len(clean_key):
+                # all scalars: use simpler indexing (and return a scalar)
                 repMsg = generic_msg(
                     cmd=f"[int]{self.ndim}D",
                     args={
                         "array": self,
-                        "idx": key,
+                        "idx": clean_key,
                     },
                 )
                 fields = repMsg.split()
-                return parse_single_value(" ".join(fields[1:]))
+                ret_array = parse_single_value(" ".join(fields[1:]))
+
+            elif len(pdarray_axes) > 0:
+                if len(pdarray_axes) == len(clean_key):
+                    # all pdarray indices: skip slice indexing
+                    temp1 = self
+
+                    # will return a 1D array where all but the first
+                    # dimensions are squeezed out
+                    degen_axes = pdarray_axes[1:]
+                else:
+                    # mix of pdarray and slice indices: do slice indexing first
+                    temp1 = _slice_index(self, starts, stops, strides)
+
+                    # will return a reduced-rank array, where all but the first
+                    # pdarray dimensions are squeezed out
+                    degen_axes = pdarray_axes[1:] + scalar_axes
+
+                # apply pdarray indexing (returning an ndim array with degenerate dimensions
+                # along all the indexed axes except the first one)
+                temp2 = create_pdarray(
+                        generic_msg(
+                            cmd=f"[pdarray]x{self.ndim}D",
+                            args={
+                                "array": temp1,
+                                "nIdxArrays": len(pdarray_axes),
+                                "idx": [clean_key[dim] for dim in pdarray_axes],
+                                "idxDims": pdarray_axes,
+                            },
+                        )
+                    )
+
+                # remove any degenerate dimensions
+                ret_array = _squeeze(temp2, degen_axes)
+
             else:
-                repMsg = generic_msg(
-                    cmd=f"[slice]{self.ndim}D",
-                    args={
-                        "array": self,
-                        "starts": tuple(starts),
-                        "stops": tuple(stops),
-                        "strides": tuple(strides),
-                    },
-                )
-                return create_pdarray(repMsg)
+                # all slice or scalar indices: use slice indexing only
+                maybe_degen_arr = _slice_index(self, starts, stops, strides)
+
+                if len(scalar_axes) > 0:
+                    # reduce the array rank if there are any scalar indices
+                    ret_array = _squeeze(maybe_degen_arr, scalar_axes)
+                else:
+                    ret_array = maybe_degen_arr
+
+            # expand the dimensions of the array if there were any 'None' values in the key
+            if num_none > 0:
+                # If scalar return value, put it into an array so it can be reshaped
+                if len(scalar_axes) == len(clean_key):
+                    ret_array = _create_scalar_array(ret_array)
+
+                # use 'None' values in the original key to expand the dimensions
+                shape = []
+                rs = ret_array.shape
+                for k in key_with_none:
+                    if k is None:
+                        shape.append(1)
+                    else:
+                        if len(rs) > 0:
+                            shape.append(rs.pop(0))
+
+                return _reshape(ret_array, tuple(shape))
+            else:
+                return ret_array
 
         if isinstance(key, pdarray) and self.ndim == 1:
             kind, _ = translate_np_dtype(key.dtype)
@@ -3045,7 +3231,7 @@ def popcount(pda: pdarray) -> pdarray:
     if pda.dtype == bigint:
         from builtins import sum
 
-        return sum(popcount(a) for a in pda.bigint_to_uint_arrays())
+        return sum(popcount(a) for a in pda.bigint_to_uint_arrays())  # type: ignore
     else:
         repMsg = generic_msg(
             cmd=f"efunc{pda.ndim}D",

@@ -72,12 +72,12 @@ extern "C" {
   int64_t c_getNumRows(const char*, char** errMsg);
   int64_t cpp_getNumRows(const char*, char** errMsg);
 
-  int c_readColumnByName(const char* filename, void* chpl_arr,
+  int c_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl,
                          const char* colname, int64_t numElems, int64_t startIdx,
-                         int64_t batchSize, int64_t byteLength, char** errMsg);
-  int cpp_readColumnByName(const char* filename, void* chpl_arr,
+                         int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg);
+  int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl,
                            const char* colname, int64_t numElems, int64_t startIdx,
-                           int64_t batchSize, int64_t byteLength, char** errMsg);
+                           int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg);
 
   int c_readListColumnByName(const char* filename, void* chpl_arr, 
                             const char* colname, int64_t numElems, 

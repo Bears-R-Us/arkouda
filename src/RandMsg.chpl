@@ -10,6 +10,7 @@ module RandMsg
     use Logging;
     use Message;
     use RandArray;
+    use CommAggregation;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -233,7 +234,6 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-
     proc uniformGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const pn = Reflection.getRoutineName();
         var rname = st.nextName();
@@ -296,9 +296,133 @@ module RandMsg
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-    
+
+    proc permutationMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName();
+        var rname = st.nextName();
+        const name = msgArgs.getValueOf("name");
+        const xName = msgArgs.getValueOf("x");
+        const size = msgArgs.get("size").getIntValue();
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        const dtype = str2dtype(dtypeStr);
+        const state = msgArgs.get("state").getIntValue();
+        const isDomPerm = msgArgs.get("isDomPerm").getBoolValue();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i dtype: %? state %i isDomPerm %?".doFormat(name, size, dtypeStr, state, isDomPerm));
+
+        st.checkTable(name);
+
+        proc permuteHelper(type t) throws {
+            // we need the int generator in order for permute(domain) to work correctly
+            var intGeneratorEntry: borrowed GeneratorSymEntry(int) = toGeneratorSymEntry(st.lookup(name), int);
+            ref intRng = intGeneratorEntry.generator;
+
+            if state != 1 {
+                // you have to skip to one before where you want to be
+                intRng.skipTo(state-1);
+            }
+            const permutedDom = makeDistDom(size);
+            const permutedIdx = intRng.permute(permutedDom);
+
+            if isDomPerm {
+                const permutedEntry = createSymEntry(permutedIdx);
+                st.addEntry(rname, permutedEntry);
+            }
+            else {
+                // permute requires that the stream's eltType is coercible to the array/domain's idxType,
+                // so we use permute(dom) and use that to gather the permuted vals
+                var permutedArr: [permutedDom] t;
+                ref myArr = toSymEntry(getGenericTypedArrayEntry(xName, st),t).a;
+
+                forall (pa,idx) in zip(permutedArr, permutedIdx) with (var agg = newSrcAggregator(t)) {
+                    agg.copy(pa, myArr[idx]);
+                }
+
+                const permutedEntry = createSymEntry(permutedArr);
+                st.addEntry(rname, permutedEntry);
+            }
+        }
+
+        select dtype {
+            when DType.Int64 {
+                permuteHelper(int);
+            }
+            when DType.UInt64 {
+                permuteHelper(uint);
+            }
+            when DType.Float64 {
+                permuteHelper(real);
+            }
+            when DType.Bool {
+                permuteHelper(bool);
+            }
+            otherwise {
+                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+        var repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc shuffleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName();
+        const name = msgArgs.getValueOf("name");
+        const xName = msgArgs.getValueOf("x");
+        const size = msgArgs.get("size").getIntValue();
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        const dtype = str2dtype(dtypeStr);
+        const state = msgArgs.get("state").getIntValue();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i dtype: %? state %i".doFormat(name, size, dtypeStr, state));
+
+        st.checkTable(name);
+
+        proc shuffleHelper(type t) throws {
+            var generatorEntry: borrowed GeneratorSymEntry(int) = toGeneratorSymEntry(st.lookup(name), int);
+            ref rng = generatorEntry.generator;
+
+            if state != 1 {
+                // you have to skip to one before where you want to be
+                rng.skipTo(state-1);
+            }
+
+            ref myArr = toSymEntry(getGenericTypedArrayEntry(xName, st),t).a;
+            rng.shuffle(myArr);
+        }
+
+        select dtype {
+            when DType.Int64 {
+                shuffleHelper(int);
+            }
+            when DType.UInt64 {
+                shuffleHelper(uint);
+            }
+            when DType.Float64 {
+                shuffleHelper(real);
+            }
+            when DType.Bool {
+                shuffleHelper(bool);
+            }
+            otherwise {
+                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+        var repMsg = "created " + st.attrib(xName);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     use CommandMap;
     registerFunction("randomNormal", randomNormalMsg, getModuleName());
     registerFunction("createGenerator", createGeneratorMsg, getModuleName());
     registerFunction("uniformGenerator", uniformGeneratorMsg, getModuleName());
+    registerFunction("permutation", permutationMsg, getModuleName());
+    registerFunction("shuffle", shuffleMsg, getModuleName());
 }

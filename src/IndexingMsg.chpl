@@ -333,10 +333,10 @@ module IndexingMsg
     proc sliceIndexMsg1DFast(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        const start = msgArgs.get("start").getIntValue();
-        const stop = msgArgs.get("stop").getIntValue();
-        const stride = msgArgs.get("stride").getIntValue();
-        var slice: stridableRange = convertSlice(start, stop, stride);
+        const start = msgArgs.get("starts").getTuple(1);
+        const stop = msgArgs.get("stops").getTuple(1);
+        const stride = msgArgs.get("strides").getTuple(1);
+        var slice: stridableRange = convertSlice(start[0], stop[0], stride[0]);
 
         // get next symbol name
         var rname = st.nextName();
@@ -345,7 +345,7 @@ module IndexingMsg
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s pdarray to slice: %s start: %i stop: %i stride: %i slice: %? new name: %s".doFormat(
-                       cmd, st.attrib(name), start, stop, stride, slice, rname));
+                       cmd, st.attrib(name), start[0], stop[0], stride[0], slice, rname));
 
         proc sliceHelper(type t) throws {
             var e = toSymEntry(gEnt,t);
@@ -380,9 +380,147 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);              
+                return new MsgTuple(errorMsg,MsgType.ERROR);
             }
         }
+    }
+
+    /*
+        Index into an array using one or more 1D arrays of indices.
+
+        Each index array corresponds to a particular dimension of the array being indexed.
+        Dimensions without an index array are indexed using all elements along that dimension.
+        For example, a 3D array could be indexed by 1, 2, or 3 1D arrays of indices.
+
+        Only one dimension in the output array corresponds to the index arrays. The other output
+        dimensions corresponding to the index arrays will be singleton dimensions (squeeze should be
+        called on the output array to remove them).
+
+        Example: a 5x6x7 array indexed by:
+         * rank 0: [1, 2, 3, 4]
+         * rank 2: [3, 4, 5, 6]
+
+        Would return a new 4x6x1 array, where the 1st and 3rd dimensions are indexed by
+        (1, 3), (2, 4), (3, 5), (4, 6), and the 2nd dimension is indexed by all of 0..<6.
+    */
+    @arkouda.registerND(cmd_prefix="[pdarray]x")
+    proc multiPDArrayIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        const name = msgArgs.getValueOf("array"),
+              nIdxArrays = msgArgs.get("nIdxArrays").getIntValue(),
+              idxArrays = msgArgs.get("idx").getList(nIdxArrays),           // lists of indices to use along a particular dimension
+              idxDims = msgArgs.get("idxDims").getListAs(int, nIdxArrays),  // which dimension each index array corresponds to
+              rname = st.nextName();
+
+        const gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        var gIdx: [0..<nIdxArrays] borrowed GenSymEntry = getGenericEntries(idxArrays, st);
+
+        // ensure all index arrays have the same length and dtype
+        const idxDT = gIdx[0].dtype,
+              outSize = gIdx[0].size;
+        for i in 0..<nIdxArrays {
+            if gIdx[i].ndim > 1 {
+                const errorMsg = "Only 1D index arrays are supported";
+                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+
+            if gIdx[i].size != outSize {
+                const errorMsg = "All index arrays must have the same length".doFormat(pn);
+                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+
+            if gIdx[i].dtype != idxDT {
+                const errorMsg = "All index arrays must have the same dtype".doFormat(pn);
+                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+        }
+
+        proc doMultiIdx(type arrType, type idxType): MsgTuple throws {
+            const eIn = toSymEntry(gEnt, arrType, nd),
+                  eIdxs = for g in gIdx do toSymEntry(g, idxType, 1),
+                  (valid, outRankIdx, outShape) = multiIndexShape(eIn.tupShape, idxDims, outSize);
+
+            if valid {
+                var eOut = st.addEntry(rname, (...outShape), arrType);
+
+                forall i in eOut.a.domain with (
+                    var agg = newSrcAggregator(arrType),
+                    in idxDims // short array: create a per-task copy
+                ) {
+                    const idx = if nd == 1 then (i, ) else i,
+                          iIdxArray = idx[outRankIdx];
+
+                    var inIdx = if nd == 1 then (i, ) else i;
+
+                    for (rank, j) in zip(idxDims, 0..<nIdxArrays) do
+                        inIdx[rank] = eIdxs[j].a[iIdxArray]:int;
+
+                    agg.copy(eOut.a[idx], eIn.a[inIdx]);
+                }
+
+                const repMsg =  "created " + st.attrib(rname);
+                imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+                return new MsgTuple(repMsg, MsgType.NORMAL);
+            } else {
+                const errorMsg = "Invalid index dimensions: %? for %iD array".doFormat(idxDims, nd);
+                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+        }
+
+        select (gEnt.dtype, idxDT) {
+            when (DType.Int64, DType.Int64) do return doMultiIdx(int, int);
+            when (DType.Int64, DType.UInt64) do return doMultiIdx(int, uint);
+            when (DType.UInt64, DType.Int64) do return doMultiIdx(uint, int);
+            when (DType.UInt64, DType.UInt64) do return doMultiIdx(uint, uint);
+            when (DType.Float64, DType.Int64) do return doMultiIdx(real, int);
+            when (DType.Float64, DType.UInt64) do return doMultiIdx(real, uint);
+            when (DType.Bool, DType.Int64) do return doMultiIdx(bool, int);
+            when (DType.Bool, DType.UInt64) do return doMultiIdx(bool, uint);
+            when (DType.BigInt, DType.Int64) do return doMultiIdx(bigint, int);
+            when (DType.BigInt, DType.UInt64) do return doMultiIdx(bigint, uint);
+            otherwise {
+                var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+        }
+    }
+
+    private proc multiIndexShape(inShape: ?N*int, idxDims: [?d] int, outSize: int): (bool, int, N*int) {
+        var minShape: N*int = inShape,
+            firstRank = -1;
+
+        if d.size > N then return (false, firstRank, minShape);
+
+        var isSet: N*bool,
+            first = true;
+
+        for rank in idxDims {
+            if rank < 0 || rank >=N then return (false, firstRank, minShape); // invalid rank index
+            if isSet[rank] then return (false, firstRank, minShape); // duplicate rank index
+
+            if first {
+                minShape[rank] = outSize;
+                first = false;
+                firstRank = rank;
+            } else {
+                minShape[rank] = 1;
+            }
+            isSet[rank] = true;
+        }
+
+        return (true, firstRank, minShape);
+    }
+
+    private proc getGenericEntries(names: [?d] string, st: borrowed SymTab): [] borrowed GenSymEntry throws {
+        var gEnts: [d] borrowed GenSymEntry?;
+        for (i, name) in zip(d, names) do gEnts[i] = getGenericTypedArrayEntry(name, st);
+        const ret = [i in d] gEnts[i]!;
+        return ret;
     }
 
     /* pdarrayIndex "a[pdarray]" response to __getitem__(pdarray) */

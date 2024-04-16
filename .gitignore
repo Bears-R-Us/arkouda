@@ -39,3 +39,4 @@ UsedModules.cfg
 .DS_Store
 */.benchmarks
 */.pytest_cache
+.cls-commands.json
