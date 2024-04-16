@@ -40,5 +40,6 @@ UsedModules.cfg
 */.benchmarks
 */.pytest_cache
 .cls-commands.json
-numpy/imports.pyi
-scipy/stats/imports.pyi
+arkouda/numpy/imports.pyi
+arkouda/scipy/stats/imports.pyi
+arkouda/scipy/imports.pyi
