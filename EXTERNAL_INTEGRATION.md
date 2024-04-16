@@ -46,7 +46,7 @@ The initial use case for Arkouda external integration is Kubernetes as described
 
 #### Required Files for Registering with Kubernetes
 
-The Chapel Curl logic must use HTTPS to register/deregister with Kubernetes via the Kubernetes Rest API. Accordingly, a Kubernetes [ServiceAccount](https://kubernetes.io/docs/concepts/security/service-accounts/) and corresponding TLS token secret must be generated. The token and cacert file bound to the ServiceAccount saare used to authenticate to the Kubrernetes API. A ClusterRole or Role authorizing Pod, Service, and Endpoint creates/updates/deletes is bound to the Arkouda ServiceAccount. The cacert file must be deplyed to all bare metal/slurm nodes to register Arkodua-on-Slurm with Kubernetes.
+The Chapel Curl logic must use HTTPS to register/deregister with Kubernetes via the Kubernetes Rest API. Accordingly, a Kubernetes [ServiceAccount](https://kubernetes.io/docs/concepts/security/service-accounts/) and corresponding TLS token secret must be generated. The token and cacert file bound to the ServiceAccount sa are used to authenticate to the Kubernetes API. A ClusterRole or Role authorizing Pod, Service, and Endpoint creates/updates/deletes is bound to the Arkouda ServiceAccount. The cacert file must be deployed to all bare metal/slurm nodes to register Arkodua-on-Slurm with Kubernetes.
 
 #### Create Kubernetes ServiceAccount
 
