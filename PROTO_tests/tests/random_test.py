@@ -50,6 +50,33 @@ class TestRandom:
         assert all(bounded_arr.to_ndarray() >= -5)
         assert all(bounded_arr.to_ndarray() < 5)
 
+    def test_shuffle(self):
+        # verify same seed gives reproducible arrays
+        rng = ak.random.default_rng(18)
+
+        int_pda = rng.integers(-(2**32), 2**32, 10)
+        pda_copy = int_pda[:]
+        # shuffle int_pda in place
+        rng.shuffle(int_pda)
+        # verify all the same elements are in permutation as the original
+        assert (ak.sort(int_pda) == ak.sort(pda_copy)).all()
+
+        float_pda = rng.uniform(-(2**32), 2**32, 10)
+        pda_copy = float_pda[:]
+        rng.shuffle(float_pda)
+        # verify all the same elements are in permutation as the original
+        assert (ak.sort(float_pda) == ak.sort(pda_copy)).all()
+
+        rng = ak.random.default_rng(18)
+
+        pda = rng.integers(-(2**32), 2**32, 10)
+        rng.shuffle(pda)
+        assert (pda == int_pda).all()
+
+        pda = rng.uniform(-(2**32), 2**32, 10)
+        rng.shuffle(pda)
+        assert np.allclose(pda.to_list(), float_pda.to_list())
+
     def test_permutation(self):
         # verify same seed gives reproducible arrays
         rng = ak.random.default_rng(18)
@@ -204,10 +231,14 @@ class TestRandom:
         assert ak.float64 == testArray.dtype
 
         uArray = ak.random.uniform(size=3, low=0, high=5, seed=0)
-        assert np.allclose([0.30013431967121934, 0.47383036230759112, 1.0441791878997098], uArray.to_list())
+        assert np.allclose(
+            [0.30013431967121934, 0.47383036230759112, 1.0441791878997098], uArray.to_list()
+        )
 
         uArray = ak.random.uniform(size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0))
-        assert np.allclose([0.30013431967121934, 0.47383036230759112, 1.0441791878997098], uArray.to_list())
+        assert np.allclose(
+            [0.30013431967121934, 0.47383036230759112, 1.0441791878997098], uArray.to_list()
+        )
 
         with pytest.raises(TypeError):
             ak.random.uniform(low="0", high=5, size=100)

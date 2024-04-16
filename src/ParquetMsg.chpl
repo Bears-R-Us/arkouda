@@ -20,6 +20,7 @@ module ParquetMsg {
   use Map;
   use ArkoudaCTypesCompat;
   use ArkoudaIOCompat;
+  use ArkoudaMathCompat;
 
   enum CompressionType {
     NONE=0,
@@ -82,6 +83,9 @@ module ParquetMsg {
       } catch e {
         err = "Error converting Parquet error message to Chapel string";
       }
+      if err == "Unexpected end of stream" {
+        err += ". This may be due to null values in a non-float column. Try again with the flag has_non_float_nulls=True";
+      }
       throw getErrorWithContext(
                      msg=err,
                      lineNumber,
@@ -119,8 +123,9 @@ module ParquetMsg {
     return (subdoms, (+ reduce lengths));
   }
 
-  proc readFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty, byteLength=-1) throws {
-    extern proc c_readColumnByName(filename, arr_chpl, colNum, numElems, startIdx, batchSize, byteLength, errMsg): int;
+  proc readFilesByName(ref A: [] ?t, ref whereNull: [] bool, filenames: [] string, sizes: [] int, dsetname: string, ty, byteLength=-1, hasNonFloatNulls=false) throws {
+    extern proc c_readColumnByName(filename, arr_chpl, where_null_chpl, colNum, numElems, startIdx, batchSize, byteLength, hasNonFloatNulls, errMsg): int;
+
     var (subdoms, length) = getSubdomains(sizes);
     var fileOffsets = (+ scan sizes) - sizes;
     
@@ -132,24 +137,22 @@ module ParquetMsg {
       forall (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
         for locdom in A.localSubdomains() {
           const intersection = domain_intersection(locdom, filedom);
-
           if intersection.size > 0 {
             var pqErr = new parquetErrorMsg();
-            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
+            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]), c_ptrTo(whereNull[intersection.low]),
                                   dsetname.localize().c_str(), intersection.size, intersection.low - off,
-                                  batchSize, byteLength,
+                                  batchSize, byteLength, hasNonFloatNulls,
                                   c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
           }
         }
       }
-      
     }
   }
 
-  proc readStrFilesByName(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_readColumnByName(filename, arr_chpl, colNum, numElems, startIdx, batchSize, byteLength, errMsg): int;
+  proc readStrFilesByName(A: [] ?t, ref whereNull: [] bool, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
+    extern proc c_readColumnByName(filename, arr_chpl, where_null_chpl, colNum, numElems, startIdx, batchSize, byteLength, hasNonFloatNulls, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     
     coforall loc in A.targetLocales() do on loc {
@@ -164,9 +167,9 @@ module ParquetMsg {
             var pqErr = new parquetErrorMsg();
             var col: [filedom] t;
 
-            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
+            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col), c_ptrTo(whereNull[intersection.low]),
                                   dsetname.localize().c_str(), intersection.size, 0,
-                                  batchSize, -1, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+                                  batchSize, -1, false, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
             A[filedom] = col;
@@ -711,6 +714,7 @@ module ParquetMsg {
     var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
     var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false
+    var hasNonFloatNulls: bool = msgArgs.get("has_non_float_nulls").getBoolValue();
     if allowErrors {
         pqLogger.warn(getModuleName(), getRoutineName(), getLineNumber(), "Allowing file read errors");
     }
@@ -782,7 +786,7 @@ module ParquetMsg {
     
     var rnames: list((string, ObjType, string)); // tuple (dsetName, item type, id)
     
-    for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
+    for (dsetidx, dsetname) in zip(dsetdom, dsetnames) {
         types[dsetidx] = getArrType(filenames[0], dsetname);
         for (i, fname) in zip(filedom, filenames) {
             var hadError = false;
@@ -820,17 +824,28 @@ module ParquetMsg {
           tagData = false; // turn off so we only run once
         }
 
+        var whereNull = makeDistArray(len, bool);
         // Only integer is implemented for now, do nothing if the Parquet
         // file has a different type
         if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
           var entryVal = createSymEntry(len, int);
-          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          readFilesByName(entryVal.a, whereNull, filenames, sizes, dsetname, ty, hasNonFloatNulls=hasNonFloatNulls);
           var valName = st.nextName();
-          st.addEntry(valName, entryVal);
+          if hasNonFloatNulls && (|| reduce whereNull) {
+            // if we have non-float nulls and there's at least one null
+            var floatEntry = createSymEntry(len, real);
+            floatEntry.a = (entryVal.a):real;
+            ref fa = floatEntry.a;
+            [(t, f) in zip(whereNull, fa)] if t then f = nan;
+            st.addEntry(valName, floatEntry);
+          }
+          else {
+            st.addEntry(valName, entryVal);
+          }
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
           var entryVal = createSymEntry(len, uint);
-          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          readFilesByName(entryVal.a, whereNull, filenames, sizes, dsetname, ty, hasNonFloatNulls=hasNonFloatNulls);
           if (ty == ArrowTypes.uint32){ // correction for high bit 
             ref ea = entryVal.a;
             // Access the high bit (64th bit) and shift it into the high bit for uint32 (32nd bit)
@@ -838,13 +853,33 @@ module ParquetMsg {
             entryVal.a = ((ea & (2**63))>>32 | ea) & (2**32 -1);
           }
           var valName = st.nextName();
-          st.addEntry(valName, entryVal);
+          if hasNonFloatNulls && (|| reduce whereNull) {
+            // if we have non-float nulls and there's at least one null
+            var floatEntry = createSymEntry(len, real);
+            floatEntry.a = (entryVal.a):real;
+            ref fa = floatEntry.a;
+            [(t, f) in zip(whereNull, fa)] if t then f = nan;
+            st.addEntry(valName, floatEntry);
+          }
+          else {
+            st.addEntry(valName, entryVal);
+          }
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.boolean {
           var entryVal = createSymEntry(len, bool);
-          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          readFilesByName(entryVal.a, whereNull, filenames, sizes, dsetname, ty, hasNonFloatNulls=hasNonFloatNulls);
           var valName = st.nextName();
-          st.addEntry(valName, entryVal);
+          if hasNonFloatNulls && (|| reduce whereNull) {
+            // if we have non-float nulls and there's at least one null
+            var floatEntry = createSymEntry(len, real);
+            floatEntry.a = (entryVal.a):real;
+            ref fa = floatEntry.a;
+            [(t, f) in zip(whereNull, fa)] if t then f = nan;
+            st.addEntry(valName, floatEntry);
+          }
+          else {
+            st.addEntry(valName, entryVal);
+          }
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.stringArr {
           var entrySeg = createSymEntry(len, int);
@@ -852,13 +887,13 @@ module ParquetMsg {
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
           
           var entryVal = createSymEntry((+ reduce byteSizes), uint(8));
-          readStrFilesByName(entryVal.a, filenames, byteSizes, dsetname, ty);
+          readStrFilesByName(entryVal.a, whereNull, filenames, byteSizes, dsetname, ty);
           
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.pushBack((dsetname, ObjType.STRINGS, "%s+%?".doFormat(stringsEntry.name, stringsEntry.nBytes)));
         } else if ty == ArrowTypes.double || ty == ArrowTypes.float {
           var entryVal = createSymEntry(len, real);
-          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          readFilesByName(entryVal.a, whereNull, filenames, sizes, dsetname, ty, hasNonFloatNulls=hasNonFloatNulls);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
@@ -874,7 +909,7 @@ module ParquetMsg {
         } else if ty == ArrowTypes.decimal {
           var byteLength = getByteLength(filenames[0], dsetname);
           var entryVal = createSymEntry(len, real);
-          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty, byteLength);
+          readFilesByName(entryVal.a, whereNull, filenames, sizes, dsetname, ty, byteLength);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
