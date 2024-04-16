@@ -46,16 +46,14 @@ def write_stub(module, filename):
             elif name.startswith("__") or inspect.ismodule(obj) or inspect.isbuiltin(obj):
                 continue
 
+            f.write("\n\n")
             if obj is None:
-                f.write("\n\n")
                 f.write(f"{name} : None")
 
             elif isinstance(obj, float):
-                f.write("\n\n")
                 f.write(f"{name} : float")
 
             elif inspect.isfunction(obj):
-                f.write("\n\n")
                 if not name.startswith("__"):
                     try:
                         f.write(f"def {name}{inspect.signature(obj)}:\n")
@@ -72,7 +70,6 @@ def write_stub(module, filename):
 
             else:
                 # Assume the object is a class
-                f.write("\n\n")
 
                 parent_module, parent = get_parent_class_str(obj)
                 if (
