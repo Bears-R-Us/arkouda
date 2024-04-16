@@ -151,14 +151,14 @@ or
 
    .. attribute:: var append: bool
 
-   .. method:: proc init(params: FileChannelParams)
+   .. method:: proc init(path: string, append: bool)
 
    .. method:: override proc write(payload: string) throws
 
 .. class:: HttpChannel : Channel
 
    
-   * The HttpChannel class writes a payload out to an HTTP/S endpoint
+   * The HttpChannel class writes a payload out to an HTTP endpoint
    * in a configurable format via a configurable request type.
    
 
@@ -168,21 +168,9 @@ or
 
    .. attribute:: var requestFormat: HttpRequestFormat
 
-   .. attribute:: var ssl: bool = false
+   .. method:: proc init(url: string, requestType: HttpRequestType, requestFormat: HttpRequestFormat)
 
-   .. attribute:: var sslKey: string
-
-   .. attribute:: var sslCert: string
-
-   .. attribute:: var sslCacert: string
-
-   .. attribute:: var sslCapath: string
-
-   .. attribute:: var sslKeyPasswd: string
-
-   .. method:: proc init(params: HttpChannelParams)
-
-   .. method:: proc configureSsl(channel) throws
+   .. method:: proc configureChannel(channel) throws
 
    .. method:: proc generateHeader(channel) throws
 
@@ -194,60 +182,30 @@ or
       * specified in the requestType instance attribute.
       
 
-.. class:: ChannelParams
+.. class:: HttpsChannel : HttpChannel
 
    
-   * Encapsulates config parameters needed to open and write to
-   * a channel connected to an external system.
+   * The HttpChannel class writes a payload out to an HTTPS endpoint
+   * in a configurable format via a configurable request type.
    
 
-   .. attribute:: var channelType: ChannelType
+   .. attribute:: var caCert: string
 
-.. class:: FileChannelParams : ChannelParams
+   .. attribute:: var token: string
 
-   
-   * Encapsulates config parameters needed to open and write to
-   * a channel connected to a file.
-   
+   .. method:: proc init(url: string, requestType: HttpRequestType, requestFormat: HttpRequestFormat, caCert: string, token: string)
 
-   .. attribute:: var path: string
+   .. method:: override proc configureChannel(channel) throws
 
-   .. attribute:: var append: bool
+      *
+      * Overridden proc adds token TLS configuration
+      
 
-   .. method:: proc init(channelType: ChannelType, path: string, append: bool = false)
+   .. method:: override proc generateHeader(channel) throws
 
-.. class:: HttpChannelParams : ChannelParams
-
-   
-   * Encapsulates config parameters needed to open and write to
-   * a HTTP or HTTPS connection.
-   
-
-   .. attribute:: var url: string
-
-   .. attribute:: var requestType: HttpRequestType
-
-   .. attribute:: var requestFormat: HttpRequestFormat
-
-   .. attribute:: var ssl: bool = false
-
-   .. attribute:: var sslKey: string
-
-   .. attribute:: var sslCert: string
-
-   .. attribute:: var sslCacert: string
-
-   .. attribute:: var sslCapath: string
-
-   .. attribute:: var sslKeyPasswd: string
-
-   .. method:: proc init(channelType: ChannelType, url: string, requestType: HttpRequestType, requestFormat: HttpRequestFormat, ssl: bool = false, sslKey: string, sslCert: string, sslCacert: string, sslCapath: string, sslKeyPasswd: string)
-
-.. function:: proc getExternalChannel(params: borrowed ChannelParams): Channel throws
-
-   
-   * Factory function used to retrieve a Channel based upon ChannelParams.
-   
+      *
+      * Overridden proc adds TLS token to the HTTPS header
+      
 
 .. function:: proc registerWithKubernetes(appName: string, serviceName: string, servicePort: int, targetServicePort: int) throws
 
