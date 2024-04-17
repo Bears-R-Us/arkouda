@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Building the Server" href="BUILD.html" /><link rel="prev" title="Windows (WSL2)" href="WINDOWS_INSTALL.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
         <title>MacOS - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -291,10 +291,10 @@
         </div>
         <article role="main">
           <section id="macos">
-<h1>MacOS<a class="headerlink" href="#macos" title="Link to this heading">#</a></h1>
+<h1>MacOS<a class="headerlink" href="#macos" title="Link to this heading">¶</a></h1>
 <p>Prerequisites for Arkouda can be installed using <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code> or manually.</p>
 <section id="clone-arkouda-repository">
-<h2>Clone Arkouda Repository<a class="headerlink" href="#clone-arkouda-repository" title="Link to this heading">#</a></h2>
+<h2>Clone Arkouda Repository<a class="headerlink" href="#clone-arkouda-repository" title="Link to this heading">¶</a></h2>
 <p>Download, clone, or fork the <a class="reference external" href="https://github.com/Bears-R-Us/arkouda">arkouda repo</a>.</p>
 <p>We encourage developers to fork the repo if they expect to make any changes to arkouda.
 They can then their fork and add the Bears-R-Us repo as a remote:</p>
@@ -309,7 +309,7 @@ git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </s
 <p>Further instructions assume that the current directory is the top-level directory of the arkouda repo.</p>
 </section>
 <section id="python-environment-anaconda">
-<h2>Python Environment - Anaconda<a class="headerlink" href="#python-environment-anaconda" title="Link to this heading">#</a></h2>
+<h2>Python Environment - Anaconda<a class="headerlink" href="#python-environment-anaconda" title="Link to this heading">¶</a></h2>
 <p>Arkouda provides 2 <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files for configuration, one for users and one for developers.
 The <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files are configured with a default name for the environment, which is used in the example interactions with conda below.
 To provide a different name for the environment, use the <code class="docutils literal notranslate"><span class="pre">-n</span></code> or <code class="docutils literal notranslate"><span class="pre">--name</span></code> parameters when calling <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span></code>.</p>
@@ -339,12 +339,12 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 </div>
 </section>
 <section id="updating-environment">
-<h2>Updating Environment<a class="headerlink" href="#updating-environment" title="Link to this heading">#</a></h2>
+<h2>Updating Environment<a class="headerlink" href="#updating-environment" title="Link to this heading">¶</a></h2>
 <p>As Arkouda progresses through its life-cycle, dependencies may change.
 As a result, it is recommended that you keep your development environment in sync with the latest dependencies.
 The instructions vary depending upon you preferred environment management tool.</p>
 <section id="anaconda">
-<h3>Anaconda<a class="headerlink" href="#anaconda" title="Link to this heading">#</a></h3>
+<h3>Anaconda<a class="headerlink" href="#anaconda" title="Link to this heading">¶</a></h3>
 <p><em>If you provided a different name when creating the environment, replace <code class="docutils literal notranslate"><span class="pre">arkouda-dev</span></code> or <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> with the name of your Conda environment.</em></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># developer environment update</span>
 conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>arkouda-dev<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
@@ -356,10 +356,10 @@ conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> <
 </section>
 </section>
 <section id="install-chapel">
-<h2>Install Chapel<a class="headerlink" href="#install-chapel" title="Link to this heading">#</a></h2>
+<h2>Install Chapel<a class="headerlink" href="#install-chapel" title="Link to this heading">¶</a></h2>
 <p>It is recommended to compile Chapel from source. Alternatively, it can be installed via <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code>.</p>
 <section id="build-from-source-recommended">
-<h3>Build from Source (Recommended)<a class="headerlink" href="#build-from-source-recommended" title="Link to this heading">#</a></h3>
+<h3>Build from Source (Recommended)<a class="headerlink" href="#build-from-source-recommended" title="Link to this heading">¶</a></h3>
 <p>For convenience, the steps to install Chapel from source are detailed here.
 If you need more information, please visit the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a>.</p>
 <p><strong>Step 1</strong></p>
@@ -458,7 +458,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev<span cl
 </div></blockquote>
 </section>
 <section id="homebrew">
-<h3>Homebrew<a class="headerlink" href="#homebrew" title="Link to this heading">#</a></h3>
+<h3>Homebrew<a class="headerlink" href="#homebrew" title="Link to this heading">¶</a></h3>
 <p>Alternatively, you can use homebrew to install Chapel and all it’s supporting dependencies.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>chapel
 </pre></div>
@@ -466,7 +466,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev<span cl
 </section>
 </section>
 <section id="next-steps">
-<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
 <p>We’ve installed Arkouda and its dependencies and built chapel with reasonable defautl environment variables.
 For more information on the options, a complete list of environment variables can be found at <a class="reference internal" href="#ENVIRONMENT.md"><span class="xref myst">ENVIRONMENT.md</span></a>.</p>
 <p>Now you are ready to build the server! Follow the build instructions at <a class="reference internal" href="BUILD.html"><span class="std std-doc">BUILD.md</span></a>.</p>
@@ -555,7 +555,7 @@ the instructions at <a class="reference external" href="https://bears-r-us.githu
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

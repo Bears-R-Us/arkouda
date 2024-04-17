@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="File I/O" href="../file_io/io_menu.html" /><link rel="prev" title="Modular Server Builds" href="MODULAR.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
         <title>Performance Testing - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -291,10 +291,10 @@
         </div>
         <article role="main">
           <section id="performance-testing">
-<h1>Performance Testing<a class="headerlink" href="#performance-testing" title="Link to this heading">#</a></h1>
+<h1>Performance Testing<a class="headerlink" href="#performance-testing" title="Link to this heading">¶</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">benchmarks</span></code> directory contains scripts for measuring the performance of arkouda, optionally compared to the (single-node) performance of NumPy.</p>
 <section id="argsort">
-<h2>Argsort<a class="headerlink" href="#argsort" title="Link to this heading">#</a></h2>
+<h2>Argsort<a class="headerlink" href="#argsort" title="Link to this heading">¶</a></h2>
 <p><p>Measure performance of sorting an array of random values.</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">argsort</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span>
@@ -303,7 +303,7 @@
 </pre></div>
 </div>
 <section id="positional-arguments">
-<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -314,7 +314,7 @@
 </dl>
 </section>
 <section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of array to argsort</p>
@@ -343,7 +343,7 @@
 </section>
 </section>
 <section id="gather">
-<h2>Gather<a class="headerlink" href="#gather" title="Link to this heading">#</a></h2>
+<h2>Gather<a class="headerlink" href="#gather" title="Link to this heading">¶</a></h2>
 <p><p>Measure the performance of random gather: C = V[I]</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">gather</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">INDEX_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span> <span class="n">VALUE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span>
@@ -352,7 +352,7 @@
 </pre></div>
 </div>
 <section id="positional-arguments">
-<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -363,7 +363,7 @@
 </dl>
 </section>
 <section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of index and gather arrays</p>
@@ -402,7 +402,7 @@
 </section>
 </section>
 <section id="reduce">
-<h2>Reduce<a class="headerlink" href="#reduce" title="Link to this heading">#</a></h2>
+<h2>Reduce<a class="headerlink" href="#reduce" title="Link to this heading">¶</a></h2>
 <p><p>Measure performance of reductions over arrays.</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reduce</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span>
@@ -411,7 +411,7 @@
 </pre></div>
 </div>
 <section id="positional-arguments">
-<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -422,7 +422,7 @@
 </dl>
 </section>
 <section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of array to reduce</p>
@@ -455,7 +455,7 @@
 </section>
 </section>
 <section id="scan">
-<h2>Scan<a class="headerlink" href="#scan" title="Link to this heading">#</a></h2>
+<h2>Scan<a class="headerlink" href="#scan" title="Link to this heading">¶</a></h2>
 <p><p>Measure the performance of scans (cumulative reductions) over arrays.</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">scan</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span>
@@ -464,7 +464,7 @@
 </pre></div>
 </div>
 <section id="positional-arguments">
-<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -475,7 +475,7 @@
 </dl>
 </section>
 <section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of array</p>
@@ -508,7 +508,7 @@
 </section>
 </section>
 <section id="scatter">
-<h2>Scatter<a class="headerlink" href="#scatter" title="Link to this heading">#</a></h2>
+<h2>Scatter<a class="headerlink" href="#scatter" title="Link to this heading">¶</a></h2>
 <p><p>Measure performance of random scatter: C[I] = V</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">scatter</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">INDEX_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span> <span class="n">VALUE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span>
@@ -517,7 +517,7 @@
 </pre></div>
 </div>
 <section id="positional-arguments">
-<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -528,7 +528,7 @@
 </dl>
 </section>
 <section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of index and scatter arrays</p>
@@ -567,7 +567,7 @@
 </section>
 </section>
 <section id="stream">
-<h2>Stream<a class="headerlink" href="#stream" title="Link to this heading">#</a></h2>
+<h2>Stream<a class="headerlink" href="#stream" title="Link to this heading">¶</a></h2>
 <p><p>Run the stream benchmark: C = A + alpha*B</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">stream</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ALPHA</span><span class="p">]</span>
@@ -576,7 +576,7 @@
 </pre></div>
 </div>
 <section id="positional-arguments">
-<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">#</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -587,7 +587,7 @@
 </dl>
 </section>
 <section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">#</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of arrays A and B</p>
@@ -723,7 +723,7 @@
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

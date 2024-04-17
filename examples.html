@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Contributing" href="CONTRIBUTING_LINK.html" /><link rel="prev" title="ArrayView in Arkouda" href="usage/arrayview.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
         <title>Examples - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -291,12 +291,12 @@
         </div>
         <article role="main">
           <section id="examples">
-<span id="examples-label"></span><h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h1>
+<span id="examples-label"></span><h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h1>
 <section id="arkouda-arrays">
-<h2>Arkouda Arrays<a class="headerlink" href="#arkouda-arrays" title="Link to this heading">#</a></h2>
+<h2>Arkouda Arrays<a class="headerlink" href="#arkouda-arrays" title="Link to this heading">¶</a></h2>
 <p>Arkouda arrays function similarly to arrays in NumPy, but allow for a much larger scale. In Arkouda, arrays are referred to as <cite>pdarray</cite> objects. It is possible to generate a <cite>pdarray</cite> from a Python <cite>list</cite>, NumPy <cite>ndarray</cite>, or using a generator method similar to those found in NumPy. This document aims to provide an introduction into some of the most commonly used elements of Arkouda and is not an exhaustive description of functionality.</p>
 <section id="pdarray-creation">
-<h3><cite>pdarray</cite> Creation<a class="headerlink" href="#pdarray-creation" title="Link to this heading">#</a></h3>
+<h3><cite>pdarray</cite> Creation<a class="headerlink" href="#pdarray-creation" title="Link to this heading">¶</a></h3>
 <p>Like <cite>ndarray</cite> objects in NumPy, Arkouda <cite>pdarray</cite> objects can be generated from a Python <cite>list</cite>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create the Python List</span>
 <span class="o">&gt;&gt;</span> <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
@@ -331,7 +331,7 @@
 </div>
 </section>
 <section id="exporting-pdarray-objects">
-<h3>Exporting <cite>pdarray</cite> Objects<a class="headerlink" href="#exporting-pdarray-objects" title="Link to this heading">#</a></h3>
+<h3>Exporting <cite>pdarray</cite> Objects<a class="headerlink" href="#exporting-pdarray-objects" title="Link to this heading">¶</a></h3>
 <p>Arkouda allows users to export <cite>pdarray</cite> objects to other formats to aide in transitioning between toolsets. A <cite>pdarray</cite> can be exported to a NumPy <cite>ndarray</cite> or a Python <cite>list</cite>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create pdarray</span>
 <span class="o">&gt;&gt;</span> <span class="n">ak_arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
@@ -349,7 +349,7 @@
 </div>
 </section>
 <section id="pdarray-set-operations">
-<h3><cite>pdarray</cite> Set operations<a class="headerlink" href="#pdarray-set-operations" title="Link to this heading">#</a></h3>
+<h3><cite>pdarray</cite> Set operations<a class="headerlink" href="#pdarray-set-operations" title="Link to this heading">¶</a></h3>
 <p>Like NumPy, Arkouda supports set operations on <cite>pdarray</cite> objects. The supported set operations are</p>
 <ul class="simple">
 <li><p><strong>IN</strong> (<cite>in1d</cite>) : Test whether each element of a 1-D array is also present in a second array.</p></li>
@@ -397,10 +397,10 @@
 </section>
 </section>
 <section id="arkouda-dataframes">
-<h2>Arkouda DataFrames<a class="headerlink" href="#arkouda-dataframes" title="Link to this heading">#</a></h2>
+<h2>Arkouda DataFrames<a class="headerlink" href="#arkouda-dataframes" title="Link to this heading">¶</a></h2>
 <p>Like in Pandas, Arkouda supports the construct of a <cite>DataFrame</cite>. The structure of these objects is very similar, though some functionality may vary. <cite>DataFrames</cite> are extremely useful when working with multiple <cite>pdarray</cite> objects that are related. In Arkouda, <cite>DataFrames</cite> consist of an <cite>Index</cite> (which uses are <cite>Arkouda.Index</cite>), <cite>Column Names</cite> and <cite>Column Data</cite>.</p>
 <section id="creating-using-a-dataframe">
-<h3>Creating &amp; Using a DataFrame<a class="headerlink" href="#creating-using-a-dataframe" title="Link to this heading">#</a></h3>
+<h3>Creating &amp; Using a DataFrame<a class="headerlink" href="#creating-using-a-dataframe" title="Link to this heading">¶</a></h3>
 <p>Let’s take a look at creating a <cite>DataFrame</cite> in Arkouda. Once again, we have several methods to create a <cite>DataFrame</cite> in Arkouda:</p>
 <ul class="simple">
 <li><p>Importing a Pandas <cite>DataFrame</cite></p></li>
@@ -408,7 +408,7 @@
 </ul>
 <p>The most important thing to remember is that each column of an Arkouda <cite>DataFrame</cite> is a <cite>pdarray</cite> and must be provided as such. The only exception is when a Pandas DataFrame is being imported because the constructor will generate the <cite>pdarray</cite> objects for you from the columns of the Pandas <cite>DataFrame</cite>.</p>
 <section id="importing-pandas-dataframe">
-<h4>Importing Pandas DataFrame<a class="headerlink" href="#importing-pandas-dataframe" title="Link to this heading">#</a></h4>
+<h4>Importing Pandas DataFrame<a class="headerlink" href="#importing-pandas-dataframe" title="Link to this heading">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># construct the Pandas DataFrame</span>
 <span class="o">&gt;&gt;</span> <span class="n">fname</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jane&#39;</span><span class="p">,</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jake&#39;</span><span class="p">]</span>
 <span class="o">&gt;&gt;</span> <span class="n">lname</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Smith&#39;</span><span class="p">,</span> <span class="s1">&#39;Brown&#39;</span><span class="p">]</span>
@@ -439,7 +439,7 @@
 </div>
 </section>
 <section id="python-mapping">
-<h4>Python Mapping<a class="headerlink" href="#python-mapping" title="Link to this heading">#</a></h4>
+<h4>Python Mapping<a class="headerlink" href="#python-mapping" title="Link to this heading">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jane&#39;</span><span class="p">,</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jake&#39;</span><span class="p">])</span>
 <span class="o">&gt;&gt;</span> <span class="n">lname</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Smith&#39;</span><span class="p">,</span> <span class="s1">&#39;Brown&#39;</span><span class="p">])</span>
 <span class="o">&gt;&gt;</span> <span class="n">age</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">37</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
@@ -462,7 +462,7 @@
 <p><strong>NOTICE</strong>: Here the call to the Arkouda <cite>DataFrame</cite> constructor takes in very close to the same information as the Pandas constructor, but with one key difference. Each of the columns is an Arkouda <cite>pdarray</cite>.</p>
 </section>
 <section id="basic-interaction">
-<h4>Basic Interaction<a class="headerlink" href="#basic-interaction" title="Link to this heading">#</a></h4>
+<h4>Basic Interaction<a class="headerlink" href="#basic-interaction" title="Link to this heading">¶</a></h4>
 <p><strong>Please Note:</strong> For this section we will be using the same <cite>DataFrame</cite> generated in the creation demos.</p>
 <p>In this section, we will highlight some of the basics of <cite>DataFrame</cite> interaction in Arkouda. You should notice that it is very similar to interacting with a Pandas <cite>DataFrame</cite>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding reference to dataframe created earlier for easy reference</span>
@@ -507,7 +507,7 @@
 </section>
 </section>
 <section id="exporting-to-pandas">
-<h3>Exporting to Pandas<a class="headerlink" href="#exporting-to-pandas" title="Link to this heading">#</a></h3>
+<h3>Exporting to Pandas<a class="headerlink" href="#exporting-to-pandas" title="Link to this heading">¶</a></h3>
 <p>Exporting an Arkouda <cite>DataFrame</cite> to Pandas is extremely simple using the <cite>to_pandas</cite> function.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding reference to dataframe created earlier for easy reference</span>
 <span class="o">&gt;&gt;</span> <span class="n">df</span>
@@ -529,10 +529,10 @@
 </section>
 </section>
 <section id="groupby">
-<h2>GroupBy<a class="headerlink" href="#groupby" title="Link to this heading">#</a></h2>
+<h2>GroupBy<a class="headerlink" href="#groupby" title="Link to this heading">¶</a></h2>
 <p>In Pandas, groupby-aggregate is a very useful pattern that can be computationally intensive. Arkouda supports grouping by key and most aggregations in Pandas. <cite>GroupBy</cite> functionality in Arkouda is supported on <cite>pdarray</cite> and <cite>DataFrame</cite> objects.</p>
 <section id="pdarrays">
-<h3><cite>pdarrays</cite><a class="headerlink" href="#pdarrays" title="Link to this heading">#</a></h3>
+<h3><cite>pdarrays</cite><a class="headerlink" href="#pdarrays" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># using randint for more interesting results. Note values will vary</span>
 <span class="o">&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="o">&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -542,7 +542,7 @@
 </div>
 </section>
 <section id="dataframes">
-<h3>DataFrames<a class="headerlink" href="#dataframes" title="Link to this heading">#</a></h3>
+<h3>DataFrames<a class="headerlink" href="#dataframes" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding reference to dataframe created earlier for easy reference</span>
 <span class="o">&gt;&gt;</span> <span class="n">df</span>
     <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
@@ -652,7 +652,7 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="PyTest Benchmarks" href="BENCHMARK.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
         <title>Adding Your First Feature - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -291,12 +291,12 @@
         </div>
         <article role="main">
           <section id="adding-your-first-feature">
-<h1>Adding Your First Feature<a class="headerlink" href="#adding-your-first-feature" title="Link to this heading">#</a></h1>
+<h1>Adding Your First Feature<a class="headerlink" href="#adding-your-first-feature" title="Link to this heading">¶</a></h1>
 <p>This guide describes how to add new functionality to arkouda.
 For each new feature, you need to add the client-side interface in Python and the server-side implementation in Chapel.
 To demonstrate this process, this guide walks through the process of implementing a custom function <code class="docutils literal notranslate"><span class="pre">times2</span></code> that will multiply all elements of an array by 2.</p>
 <section id="adding-python-functionality-client-interface">
-<h2>Adding Python Functionality (Client Interface)<a class="headerlink" href="#adding-python-functionality-client-interface" title="Link to this heading">#</a></h2>
+<h2>Adding Python Functionality (Client Interface)<a class="headerlink" href="#adding-python-functionality-client-interface" title="Link to this heading">¶</a></h2>
 <p>Python functions should follow the API of NumPy or Pandas, where possible. In general, functions should conform to the following:</p>
 <ol class="arabic simple">
 <li><p>Be defined somewhere in the <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> subdirectory, such as in <code class="docutils literal notranslate"><span class="pre">arkouda/pdarraysetops.py</span></code></p></li>
@@ -308,7 +308,7 @@ To demonstrate this process, this guide walks through the process of implementin
 <li><p>Return any results</p></li>
 </ol>
 <section id="example">
-<h3>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h3>
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
 <p>First, add the client-side implementation to construct the message to the server:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">times2</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
@@ -341,7 +341,7 @@ You can learn more about Python type checking in (this documentation)[<a class="
 </section>
 </section>
 <section id="adding-functionality-to-the-arkouda-server">
-<h2>Adding Functionality to the Arkouda Server<a class="headerlink" href="#adding-functionality-to-the-arkouda-server" title="Link to this heading">#</a></h2>
+<h2>Adding Functionality to the Arkouda Server<a class="headerlink" href="#adding-functionality-to-the-arkouda-server" title="Link to this heading">¶</a></h2>
 <p>Your contribution must include all the machinery to process a command from the client, in addition to the logic of the computation.
 This is broken into function(s) that implement the actual operation, a function that processes the command message and calls the appropriate implementation, and code to register the message processing function with the message dispatch system.
 For the <code class="docutils literal notranslate"><span class="pre">times2</span></code> example, we will add our functions to the <code class="docutils literal notranslate"><span class="pre">ArraySetOps</span></code> and <code class="docutils literal notranslate"><span class="pre">ArraySetOpsMsg</span></code> modules for the sake of simplicity.</p>
@@ -370,7 +370,7 @@ For the <code class="docutils literal notranslate"><span class="pre">times2</spa
 </ol>
 </section>
 <section id="id1">
-<h2>Example<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2>Example<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <p>First, define your message processing logic in <code class="docutils literal notranslate"><span class="pre">src/ArraySetopsMsg.chpl</span></code> in the following manner:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">ArraySetopsMsg</span> <span class="p">{</span>
 
@@ -517,7 +517,7 @@ For the <code class="docutils literal notranslate"><span class="pre">times2</spa
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

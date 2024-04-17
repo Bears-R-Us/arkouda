@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API Reference" href="autoapi/index.html" /><link rel="prev" title="Examples" href="examples.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
         <title>Contributing - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -291,18 +291,18 @@
         </div>
         <article role="main">
           <section id="contributing">
-<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">#</a></h1>
+<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h1>
 <p>Arkouda is an open source project and we love to see new contributors!
 We welcome contributions via issues and pull requests.</p>
 <section id="adding-issues">
-<h2>Adding Issues<a class="headerlink" href="#adding-issues" title="Link to this heading">#</a></h2>
+<h2>Adding Issues<a class="headerlink" href="#adding-issues" title="Link to this heading">¶</a></h2>
 <p>Most issues fall under the broad categories of bug reports or feature requests.
 If your issue doesn’t fit either of these, please add it anyway and provide as much detail as possible.</p>
 <p>It is always a good idea to review the current issue list and make sure your issue is not already present.</p>
 <p>Using github markdown (especially <a class="reference external" href="https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks">code blocks</a>)
 is very appreciated.</p>
 <section id="bug-reports">
-<h3>Bug Reports<a class="headerlink" href="#bug-reports" title="Link to this heading">#</a></h3>
+<h3>Bug Reports<a class="headerlink" href="#bug-reports" title="Link to this heading">¶</a></h3>
 <p>When reporting a bug, please be sure to include the following information:</p>
 <ul class="simple">
 <li><p>Summary of Problem</p>
@@ -326,13 +326,13 @@ Providing simplified programs demonstrating the problem will be appreciated.</p>
 </ul>
 </section>
 <section id="feature-requests">
-<h3>Feature Requests<a class="headerlink" href="#feature-requests" title="Link to this heading">#</a></h3>
+<h3>Feature Requests<a class="headerlink" href="#feature-requests" title="Link to this heading">¶</a></h3>
 <p>Be as specific as possible and provide examples when appropriate. If the requested feature is based on another library
 (i.e. numpy, pandas, scipy), please provide a link to their supporting documentation for reference.</p>
 </section>
 </section>
 <section id="developing-arkouda">
-<h2>Developing Arkouda<a class="headerlink" href="#developing-arkouda" title="Link to this heading">#</a></h2>
+<h2>Developing Arkouda<a class="headerlink" href="#developing-arkouda" title="Link to this heading">¶</a></h2>
 <p>If you don’t have anything in mind, check out our <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/issues">outstanding issues</a>
 (it’s likely a good idea to filter on the label <code class="docutils literal notranslate"><span class="pre">good</span> <span class="pre">first</span> <span class="pre">issue</span></code>).</p>
 <p>If you already have an idea for a new feature or have identified a bug, <a class="reference internal" href="#issues"><span class="xref myst">add an issue</span></a> before you start working on it.</p>
@@ -345,9 +345,9 @@ Add a comment tagging <code class="docutils literal notranslate"><span class="pr
 and recommend developers use a simple <a class="reference external" href="https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow">Git Feature Branch Workflow</a>
 on their own fork.</p>
 <section id="coding-conventions-and-linting">
-<h3>Coding Conventions and Linting<a class="headerlink" href="#coding-conventions-and-linting" title="Link to this heading">#</a></h3>
+<h3>Coding Conventions and Linting<a class="headerlink" href="#coding-conventions-and-linting" title="Link to this heading">¶</a></h3>
 <section id="python3">
-<h4>Python3<a class="headerlink" href="#python3" title="Link to this heading">#</a></h4>
+<h4>Python3<a class="headerlink" href="#python3" title="Link to this heading">¶</a></h4>
 <p>We follow the coding standards laid out in <a class="reference external" href="https://peps.python.org/pep-0008/">PEP8</a>.
 Our Continuous Integration workflow has a linter (<code class="docutils literal notranslate"><span class="pre">flake8</span></code>) to verify all our python code meets these requirements.</p>
 <p>We use <code class="docutils literal notranslate"><span class="pre">isort</span></code>, <code class="docutils literal notranslate"><span class="pre">black</span></code>, and <code class="docutils literal notranslate"><span class="pre">flake8</span></code> (typically in that order) to ensure our code is consistent.
@@ -368,7 +368,7 @@ $<span class="w"> </span>flake8<span class="w"> </span>arkouda/example_feature.p
 <p>We use numpy style doc strings. It’s a good idea to write code that looks similar to the surrounding functions.</p>
 </section>
 <section id="chapel">
-<h4>Chapel<a class="headerlink" href="#chapel" title="Link to this heading">#</a></h4>
+<h4>Chapel<a class="headerlink" href="#chapel" title="Link to this heading">¶</a></h4>
 <p>Our Chapel code linting is checking spaces only. The linter in the CI will fail if tabs are present.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">lowerCamelCase</span></code> is used for variable names and procedures</p></li>
@@ -388,7 +388,7 @@ $<span class="w"> </span>flake8<span class="w"> </span>arkouda/example_feature.p
 </section>
 </section>
 <section id="testing">
-<h3>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h3>
+<h3>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h3>
 <p>If you’re fixing a bug, add a test. Run it first to confirm it fails, then fix the bug, run it again to confirm it’s really fixed.</p>
 <p>If adding a new feature, add a test to make sure it behaves properly.</p>
 <p>Things to note:</p>
@@ -399,7 +399,7 @@ $<span class="w"> </span>flake8<span class="w"> </span>arkouda/example_feature.p
 <p>See our wiki for more info on how to run our tests and create your own:
 <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing">https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing</a></p>
 <section id="running-python-tests">
-<h4>Running python tests<a class="headerlink" href="#running-python-tests" title="Link to this heading">#</a></h4>
+<h4>Running python tests<a class="headerlink" href="#running-python-tests" title="Link to this heading">¶</a></h4>
 <div class="highlight-terminal notranslate"><div class="highlight"><pre><span></span># Run all tests in pytest.ini
 make test
 
@@ -412,14 +412,14 @@ python3 -m pytest tests/categorical_test.py::CategoricalTest::foo_test
 </div>
 </section>
 <section id="running-chapel-tests">
-<h4>Running chapel tests<a class="headerlink" href="#running-chapel-tests" title="Link to this heading">#</a></h4>
+<h4>Running chapel tests<a class="headerlink" href="#running-chapel-tests" title="Link to this heading">¶</a></h4>
 <div class="highlight-terminal notranslate"><div class="highlight"><pre><span></span>python3 server_util/test/parallel_start_test.py -d test
 </pre></div>
 </div>
 </section>
 </section>
 <section id="writing-pull-requests">
-<h3>Writing Pull Requests<a class="headerlink" href="#writing-pull-requests" title="Link to this heading">#</a></h3>
+<h3>Writing Pull Requests<a class="headerlink" href="#writing-pull-requests" title="Link to this heading">¶</a></h3>
 <p>Before posting a pull request, be sure to test locally to catch common CI failures early.
 This usually includes running:</p>
 <ul class="simple">
@@ -449,7 +449,7 @@ Note:
 </div>
 </section>
 <section id="reviewing-pull-requests">
-<h3>Reviewing Pull Requests<a class="headerlink" href="#reviewing-pull-requests" title="Link to this heading">#</a></h3>
+<h3>Reviewing Pull Requests<a class="headerlink" href="#reviewing-pull-requests" title="Link to this heading">¶</a></h3>
 <p>For the most part, only the core dev team or those assigned should review PRs.</p>
 <ul class="simple">
 <li><p>As the person who left the PR feedback, you should be the one to resolve the conversation once you decide the author has addressed the issue.</p></li>
@@ -462,9 +462,9 @@ Note:
 </section>
 </section>
 <section id="core-development-team-only">
-<h2>Core Development Team Only<a class="headerlink" href="#core-development-team-only" title="Link to this heading">#</a></h2>
+<h2>Core Development Team Only<a class="headerlink" href="#core-development-team-only" title="Link to this heading">¶</a></h2>
 <section id="merging-pull-requests">
-<h3>Merging Pull Requests<a class="headerlink" href="#merging-pull-requests" title="Link to this heading">#</a></h3>
+<h3>Merging Pull Requests<a class="headerlink" href="#merging-pull-requests" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Only members of the core dev team with quite a bit of experience writing and reviewing PRs should merge pull requests. If you’re unsure, ask first.</p></li>
 <li><p>Only merge PRs with 2 or more concurrent approvals from members of the core dev team with limited exceptions.</p></li>
@@ -476,7 +476,7 @@ Note:
 </ul>
 </section>
 <section id="release-process">
-<h3>Release Process<a class="headerlink" href="#release-process" title="Link to this heading">#</a></h3>
+<h3>Release Process<a class="headerlink" href="#release-process" title="Link to this heading">¶</a></h3>
 <p>New versions should only be released after the core dev team has reached a consensus.
 Follow our <a class="reference internal" href="developer/RELEASE_PROCESS.html"><span class="std std-doc">release process</span></a></p>
 </section>
@@ -576,7 +576,7 @@ Follow our <a class="reference internal" href="developer/RELEASE_PROCESS.html"><
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

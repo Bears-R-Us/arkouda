@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Modular Server Builds" href="MODULAR.html" /><link rel="prev" title="MacOS" href="MAC_INSTALL.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
         <title>Building the Server - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -291,21 +291,21 @@
         </div>
         <article role="main">
           <section id="building-the-server">
-<h1>Building the Server<a class="headerlink" href="#building-the-server" title="Link to this heading">#</a></h1>
+<h1>Building the Server<a class="headerlink" href="#building-the-server" title="Link to this heading">¶</a></h1>
 <section id="getting-started">
-<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h2>
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h2>
 <p>If you have not yet installed the Arkouda client and prerequisites, please follow the directions in the <a class="reference internal" href="install_menu.html"><span class="std std-doc">Installation Section</span></a> before proceeding with this build.</p>
 </section>
 <section id="environment-variables">
-<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Link to this heading">#</a></h2>
+<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Link to this heading">¶</a></h2>
 <p>In order to build the server executable, some environment variables need to be configured.
 For a full list, please refer to <a class="reference internal" href="../ENVIRONMENT.html"><span class="std std-doc">Environment Section</span></a>.</p>
 </section>
 <section id="dependency-configuration">
-<h2>Dependency Configuration<a class="headerlink" href="#dependency-configuration" title="Link to this heading">#</a></h2>
+<h2>Dependency Configuration<a class="headerlink" href="#dependency-configuration" title="Link to this heading">¶</a></h2>
 <p>Dependencies can be configured with a package manager like <code class="docutils literal notranslate"><span class="pre">Anaconda</span></code> or manually.</p>
 <section id="using-environment-installed-dependencies-recommended">
-<h3>Using Environment Installed Dependencies <em>(Recommended)</em><a class="headerlink" href="#using-environment-installed-dependencies-recommended" title="Link to this heading">#</a></h3>
+<h3>Using Environment Installed Dependencies <em>(Recommended)</em><a class="headerlink" href="#using-environment-installed-dependencies-recommended" title="Link to this heading">¶</a></h3>
 <p>When utilizing a package manager, like <code class="docutils literal notranslate"><span class="pre">Anaconda</span></code>, to install dependencies (see guides for <a class="reference internal" href="LINUX_INSTALL.html"><span class="std std-doc">Linux</span></a> or <a class="reference internal" href="MAC_INSTALL.html"><span class="std std-doc">Mac</span></a>), you will need to provide
 the path to the location of your installed packages. This is achieved by adding this path to your <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code> (Example Below).</p>
 <p>You might need create a <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code> file in the top level of the arkouda directly if it doesn’t already exist.</p>
@@ -334,12 +334,12 @@ ak-base          *  /opt/homebrew/Caskroom/miniforge/base/envs/ak-base
 <p>The <code class="docutils literal notranslate"><span class="pre">chpl</span></code> compiler will be executed with <code class="docutils literal notranslate"><span class="pre">-I</span></code>, <code class="docutils literal notranslate"><span class="pre">-L</span></code> and <code class="docutils literal notranslate"><span class="pre">-rpath</span></code> for each path in your <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code></p>
 </section>
 <section id="installing-dependencies-manually">
-<h3>Installing Dependencies Manually<a class="headerlink" href="#installing-dependencies-manually" title="Link to this heading">#</a></h3>
+<h3>Installing Dependencies Manually<a class="headerlink" href="#installing-dependencies-manually" title="Link to this heading">¶</a></h3>
 <p><em>Please Note: This step is to only be performed if you are NOT using dependencies from a conda/pip env. If you attempt to use both, it is possible that version mismatches will cause build failures</em>.</p>
 <p>This step only needs to be done once. Once dependencies are installed, you will not need to run again. You can install all dependencies with a single command or install individually for a customized build.</p>
 <p>Before installing, ensure the <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code> is empty.</p>
 <section id="dependencies">
-<h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h4>
+<h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>ZMQ</p></li>
 <li><p>HDF5</p></li>
@@ -348,12 +348,12 @@ ak-base          *  /opt/homebrew/Caskroom/miniforge/base/envs/ak-base
 <li><p>idn2</p></li>
 </ul>
 <section id="all-dependencies">
-<h5>All Dependencies<a class="headerlink" href="#all-dependencies" title="Link to this heading">#</a></h5>
+<h5>All Dependencies<a class="headerlink" href="#all-dependencies" title="Link to this heading">¶</a></h5>
 <p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install-deps</span></code></p>
 </section>
 </section>
 <section id="individual-installs">
-<h4>Individual Installs<a class="headerlink" href="#individual-installs" title="Link to this heading">#</a></h4>
+<h4>Individual Installs<a class="headerlink" href="#individual-installs" title="Link to this heading">¶</a></h4>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install ZMQ Only</span>
 make<span class="w"> </span>install-zmq
 
@@ -372,7 +372,7 @@ make<span class="w"> </span>install-idn2
 </div>
 </section>
 <section id="arrow-install-troubleshooting">
-<h4>Arrow Install Troubleshooting<a class="headerlink" href="#arrow-install-troubleshooting" title="Link to this heading">#</a></h4>
+<h4>Arrow Install Troubleshooting<a class="headerlink" href="#arrow-install-troubleshooting" title="Link to this heading">¶</a></h4>
 <p>You should be able to install arrow without issue, but in some instances the install will not complete using the Chapel dependencies. If that occurs, install the following packages.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># using conda to install</span>
 conda<span class="w"> </span>install<span class="w"> </span>boost-cpp<span class="w"> </span>snappy<span class="w"> </span>thrift-cpp<span class="w"> </span>re2<span class="w"> </span>utf8proc
@@ -383,7 +383,7 @@ pip<span class="w"> </span>install<span class="w"> </span>boost<span class="w"> 
 </div>
 </section>
 <section id="distributable-package">
-<h4>Distributable Package<a class="headerlink" href="#distributable-package" title="Link to this heading">#</a></h4>
+<h4>Distributable Package<a class="headerlink" href="#distributable-package" title="Link to this heading">¶</a></h4>
 <p>Alternatively you can build a distributable package:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># We&#39;ll use a virtual environment to build</span>
 python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>build-client-env
@@ -406,14 +406,14 @@ pip<span class="w"> </span>install<span class="w"> </span>dist/arkouda*.tar.gz
 </section>
 </section>
 <section id="build-the-server">
-<h2>Build the Server<a class="headerlink" href="#build-the-server" title="Link to this heading">#</a></h2>
+<h2>Build the Server<a class="headerlink" href="#build-the-server" title="Link to this heading">¶</a></h2>
 <p>Run the <code class="docutils literal notranslate"><span class="pre">make</span></code> command to build the <code class="docutils literal notranslate"><span class="pre">arkouda_server</span></code> executable.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
 </pre></div>
 </div>
 </section>
 <section id="building-the-arkouda-documentation">
-<h2>Building the Arkouda Documentation<a class="headerlink" href="#building-the-arkouda-documentation" title="Link to this heading">#</a></h2>
+<h2>Building the Arkouda Documentation<a class="headerlink" href="#building-the-arkouda-documentation" title="Link to this heading">¶</a></h2>
 <p>The Arkouda documentation is <a class="reference external" href="https://bears-r-us.github.io/arkouda/">here</a>. This section is only necessary
 if you’re updating the documentation.</p>
 <details>
@@ -450,7 +450,7 @@ Arkouda documentation homepage will be displayed.</p>
 </details>
 </section>
 <section id="modular-building">
-<h2>Modular Building<a class="headerlink" href="#modular-building" title="Link to this heading">#</a></h2>
+<h2>Modular Building<a class="headerlink" href="#modular-building" title="Link to this heading">¶</a></h2>
 <p>For information on Arkouda’s modular building feature, see <a class="reference internal" href="MODULAR.html"><span class="std std-doc">MODULAR.md</span></a>.</p>
 </section>
 </section>
@@ -542,7 +542,7 @@ Arkouda documentation homepage will be displayed.</p>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

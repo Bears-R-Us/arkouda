@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Summarizing Data" href="histogram.html" /><link rel="prev" title="Arithmetic and Numeric Operations" href="arithmetic.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
         <title>Indexing and Assignment - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -291,10 +291,10 @@
         </div>
         <article role="main">
           <section id="indexing-and-assignment">
-<span id="indexing-label"></span><h1>Indexing and Assignment<a class="headerlink" href="#indexing-and-assignment" title="Link to this heading">#</a></h1>
+<span id="indexing-label"></span><h1>Indexing and Assignment<a class="headerlink" href="#indexing-and-assignment" title="Link to this heading">¶</a></h1>
 <p>Arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects support the same indexing and assignment syntax as rank-1 NumPy arrays.</p>
 <section id="integer">
-<h2>Integer<a class="headerlink" href="#integer" title="Link to this heading">#</a></h2>
+<h2>Integer<a class="headerlink" href="#integer" title="Link to this heading">¶</a></h2>
 <p>Indexing and assigment with a single integer work the same as in Python.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
@@ -306,7 +306,7 @@
 </div>
 </section>
 <section id="slice">
-<h2>Slice<a class="headerlink" href="#slice" title="Link to this heading">#</a></h2>
+<h2>Slice<a class="headerlink" href="#slice" title="Link to this heading">¶</a></h2>
 <p>Indexing and assignment are also supported via Python-like slices. A Python slice has a start (inclusive), stop (exclusive), and stride. All three of these parameters can be implied; the default start is the beginning of the array (0 for positive strides, -1 for negative), the default stop is the end of the array (<code class="docutils literal notranslate"><span class="pre">len</span></code> for positive strides, -1 for negative), and the default stride is 1.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
@@ -322,10 +322,10 @@
 </div>
 </section>
 <section id="gather-scatter-pdarray">
-<h2>Gather/Scatter (<code class="docutils literal notranslate"><span class="pre">pdarray</span></code>)<a class="headerlink" href="#gather-scatter-pdarray" title="Link to this heading">#</a></h2>
+<h2>Gather/Scatter (<code class="docutils literal notranslate"><span class="pre">pdarray</span></code>)<a class="headerlink" href="#gather-scatter-pdarray" title="Link to this heading">¶</a></h2>
 <p>Gather and scatter operations can be expressed using a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> as an index to another <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>.</p>
 <section id="integer-pdarray-index">
-<h3>Integer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> index<a class="headerlink" href="#integer-pdarray-index" title="Link to this heading">#</a></h3>
+<h3>Integer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> index<a class="headerlink" href="#integer-pdarray-index" title="Link to this heading">¶</a></h3>
 <p>With an integer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, you can gather a list of indices from the target array. The indices can be out of order and non-unique. For assignment, the right-hand side must be a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> the same size as the index array.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">inds</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
@@ -338,7 +338,7 @@
 </div>
 </section>
 <section id="logical-indexing">
-<h3>Logical indexing<a class="headerlink" href="#logical-indexing" title="Link to this heading">#</a></h3>
+<h3>Logical indexing<a class="headerlink" href="#logical-indexing" title="Link to this heading">¶</a></h3>
 <p>Logical indexing is a powerful construct from NumPy (and Matlab). In logical indexing, the index must be a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> of type <code class="docutils literal notranslate"><span class="pre">bool</span></code> that is the same size as the outer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> being indexed. The indexing only touches those elements of the outer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> where the corresponding element of the index <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">inds</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
@@ -437,7 +437,7 @@
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>

@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Windows (WSL2)" href="WINDOWS_INSTALL.html" /><link rel="prev" title="Installation" href="install_menu.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
         <title>Linux - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -291,9 +291,9 @@
         </div>
         <article role="main">
           <section id="linux">
-<h1>Linux<a class="headerlink" href="#linux" title="Link to this heading">#</a></h1>
+<h1>Linux<a class="headerlink" href="#linux" title="Link to this heading">¶</a></h1>
 <section id="update-kernel">
-<h2>Update Kernel<a class="headerlink" href="#update-kernel" title="Link to this heading">#</a></h2>
+<h2>Update Kernel<a class="headerlink" href="#update-kernel" title="Link to this heading">¶</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update Linux kernel and install some Chapel dependencies</span>
 sudo<span class="w"> </span>apt-get<span class="w"> </span>update
 sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>g++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span>python3-venv<span class="w"> </span>python3-dev<span class="w"> </span>bash<span class="w"> </span>make<span class="w"> </span>mawk<span class="w"> </span>git<span class="w"> </span>pkg-config<span class="w"> </span>cmake<span class="w"> </span>llvm-14-dev<span class="w"> </span>llvm-14<span class="w"> </span>llvm-14-tools<span class="w"> </span>clang-14<span class="w"> </span>libclang-14-dev<span class="w"> </span>libclang-cpp14-dev<span class="w"> </span>libedit-dev
@@ -301,7 +301,7 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w
 </div>
 </section>
 <section id="clone-arkouda-repository">
-<h2>Clone Arkouda Repository<a class="headerlink" href="#clone-arkouda-repository" title="Link to this heading">#</a></h2>
+<h2>Clone Arkouda Repository<a class="headerlink" href="#clone-arkouda-repository" title="Link to this heading">¶</a></h2>
 <p>Download, clone, or fork the <a class="reference external" href="https://github.com/Bears-R-Us/arkouda">arkouda repo</a>.</p>
 <p>We encourage developers to fork the repo if they expect to make any changes to arkouda.
 They can then their fork and add the Bears-R-Us repo as a remote:</p>
@@ -316,7 +316,7 @@ git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </s
 <p>Further instructions assume that the current directory is the top-level directory of the arkouda repo.</p>
 </section>
 <section id="python-environment-anaconda-linux">
-<h2>Python Environment - Anaconda (Linux)<a class="headerlink" href="#python-environment-anaconda-linux" title="Link to this heading">#</a></h2>
+<h2>Python Environment - Anaconda (Linux)<a class="headerlink" href="#python-environment-anaconda-linux" title="Link to this heading">¶</a></h2>
 <p>As is the case with the MacOS install, it is highly recommended to <a class="reference external" href="https://docs.anaconda.com/anaconda/install/linux/">install Anaconda</a>
 to provide a Python environment and manage Python dependencies:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Go to https://repo.anaconda.com/archive/ to find the link for the latest version that&#39;s correct for your machine.</span>
@@ -341,7 +341,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 </div>
 </section>
 <section id="chapel-installation">
-<h2>Chapel Installation<a class="headerlink" href="#chapel-installation" title="Link to this heading">#</a></h2>
+<h2>Chapel Installation<a class="headerlink" href="#chapel-installation" title="Link to this heading">¶</a></h2>
 <p>For convenience, the steps to install Chapel from source are detailed below. If you need more information, please visit the
 <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a> and <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/prereqs.html">Chapel Prerequisites</a>.</p>
 <p>The first two steps in the Linux Arkouda install are to install the Chapel dependencies followed by downloading and building Chapel.
@@ -352,7 +352,7 @@ Consequently, a newer version of the gcc compiler must be installed via the
 In addition, the CentOS <a class="reference external" href="https://wiki.centos.org/AdditionalResources/Repositories/SCL">Software Collections packager</a> must
 be installed to enable the newer version of gcc to be leveraged for building Chapel.</p>
 <section id="install-chapel-ubuntu">
-<h3>Install Chapel (Ubuntu)<a class="headerlink" href="#install-chapel-ubuntu" title="Link to this heading">#</a></h3>
+<h3>Install Chapel (Ubuntu)<a class="headerlink" href="#install-chapel-ubuntu" title="Link to this heading">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download latest Chapel release, explode archive, and navigate to source root directory</span>
 wget<span class="w"> </span>https://github.com/chapel-lang/chapel/releases/download/1.32.0/chapel-1.32.0.tar.gz
 tar<span class="w"> </span>xvf<span class="w"> </span>chapel-1.32.0.tar.gz
@@ -385,7 +385,7 @@ make<span class="w"> </span>chpldoc
 </div>
 </section>
 <section id="install-chapel-rhel">
-<h3>Install Chapel (RHEL)<a class="headerlink" href="#install-chapel-rhel" title="Link to this heading">#</a></h3>
+<h3>Install Chapel (RHEL)<a class="headerlink" href="#install-chapel-rhel" title="Link to this heading">¶</a></h3>
 <p>For all RHEL distros, Chapel dependencies are installed as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum<span class="w"> </span>update<span class="w"> </span>-y<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>gcc-c++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-devel<span class="w"> </span><span class="se">\</span>
 make<span class="w"> </span>gawk<span class="w"> </span>git<span class="w"> </span>cmake<span class="w"> </span>llvm-devel<span class="w"> </span>clang<span class="w"> </span>clang-devel<span class="w"> </span>curl-devel<span class="w"> </span>-y
@@ -425,7 +425,7 @@ pip<span class="w"> </span>install<span class="w"> </span>cmake&gt;<span class="
 </section>
 </section>
 <section id="next-steps">
-<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
 <p>Now you are ready to build the server! Follow the build instructions at <a class="reference internal" href="BUILD.html"><span class="std std-doc">BUILD.md</span></a>.</p>
 <p>We’ve set up chapel to run locally, to simulate running on a distributed machine follow
 the instructions at <a class="reference external" href="https://bears-r-us.github.io/arkouda/developer/GASNET.html">GASNet Development</a>.</p>
@@ -509,7 +509,7 @@ the instructions at <a class="reference external" href="https://bears-r-us.githu
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
