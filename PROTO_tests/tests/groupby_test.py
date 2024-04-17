@@ -18,6 +18,8 @@ class TestGroupBy:
     OPS = list(ak.GroupBy.Reductions)
     OPS.append("count")
     NAN_OPS = frozenset(["mean", "min", "max", "sum", "prod"])
+    seed = pytest.seed if pytest.seed is not None else 867530
+    np.random.seed(seed)
 
     @classmethod
     def setup_class(cls):
