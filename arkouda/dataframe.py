@@ -2027,7 +2027,14 @@ class DataFrame(UserDict):
         col2 [3 4]
         """
         for key in self._columns:
-            yield key, UserDict.__getitem__(self, key)
+            elt = UserDict.__getitem__(self, key)
+            if isinstance(elt, Series):
+                elt = elt.values
+            yield key, elt
+
+    def values(self):
+        for key, elts in self.items():
+            yield elts
 
     def update_nrows(self):
         """
@@ -4419,9 +4426,9 @@ class DataFrame(UserDict):
             index_values_list = []
             count_values_list = []
             for col in self.columns:
-                if is_numeric(self[col]):
+                if is_numeric(self[col].values):
                     index_values_list.append(col)
-                    count_values_list.append((~isnan(self[col])).sum())
+                    count_values_list.append((~isnan(self[col].values)).sum())
                 elif not numeric_only or self[col].dtype == bool:
                     index_values_list.append(col)
                     # Non-numeric columns do not have NaN values.
@@ -4430,12 +4437,12 @@ class DataFrame(UserDict):
         elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
             first = True
             for col in self.columns:
-                if is_numeric(self[col]):
+                if is_numeric(self[col].values):
                     if first:
-                        count_values = akcast(~isnan(self[col]), dt="int64")
+                        count_values = akcast(~isnan(self[col].values), dt="int64")
                         first = False
                     else:
-                        count_values += ~isnan(self[col])
+                        count_values += ~isnan(self[col].values)
                 elif not numeric_only or self[col].dtype == bool:
                     if first:
                         count_values = full(self.index.size, 1, dtype=akint64)
@@ -5756,10 +5763,10 @@ def _right_join_merge(
     nan_cols = list(set(in_left) - set(not_in_left))
     for col in nan_cols:
         if convert_ints is True and in_left[col].dtype == int:
-            in_left[col] = akcast(in_left[col], akfloat64)
+            in_left[col] = akcast(in_left[col].values, akfloat64)
 
         # Create a nan array for all values not in the left df
-        not_in_left[col] = __nulls_like(in_left[col], len(not_in_left))
+        not_in_left[col] = __nulls_like(in_left[col].values, len(not_in_left))
     ret_df = DataFrame.append(in_left, not_in_left)
     if sort is True:
         ret_df = ret_df.sort_values(on).reset_index()
@@ -5816,14 +5823,14 @@ def _outer_join_merge(
     )
 
     if isinstance(on, str):
-        left_at_on = left[on]
-        right_at_on = right[on]
+        left_at_on = left[on].values
+        right_at_on = right[on].values
         left_cols.remove(on)
         right_cols.remove(on)
 
     else:
-        left_at_on = [left[col] for col in on]
-        right_at_on = [right[col] for col in on]
+        left_at_on = [left[col].values for col in on]
+        right_at_on = [right[col].values for col in on]
         for col in on:
             left_cols.remove(col)
             right_cols.remove(col)
@@ -5845,25 +5852,25 @@ def _outer_join_merge(
 
     for col in set(left_nan_cols).union(set(right_nan_cols)):
         if convert_ints is True and inner[col].dtype == int:
-            inner[col] = akcast(inner[col], akfloat64)
+            inner[col] = akcast(inner[col].values, akfloat64)
         if col in left_nan_cols:
             if convert_ints is True and not_in_right[col].dtype == int:
-                not_in_right[col] = akcast(not_in_right[col], akfloat64)
+                not_in_right[col] = akcast(not_in_right[col].values, akfloat64)
             elif col in not_in_left.columns.values:
-                not_in_right[col] = akcast(not_in_right[col], not_in_left[col].dtype)
+                not_in_right[col] = akcast(not_in_right[col].values, not_in_left[col].dtype)
         if col in right_nan_cols:
             if convert_ints is True and not_in_left[col].dtype == int:
-                not_in_left[col] = akcast(not_in_left[col], akfloat64)
+                not_in_left[col] = akcast(not_in_left[col].values, akfloat64)
             elif col in not_in_right.columns.values:
-                not_in_left[col] = akcast(not_in_left[col], not_in_right[col].dtype)
+                not_in_left[col] = akcast(not_in_left[col].values, not_in_right[col].dtype)
 
     for col in left_nan_cols:
         # Create a nan array for all values not in the left df
-        not_in_left[col] = __nulls_like(inner[col], len(not_in_left))
+        not_in_left[col] = __nulls_like(inner[col].values, len(not_in_left))
 
     for col in right_nan_cols:
         # Create a nan array for all values not in the left df
-        not_in_right[col] = __nulls_like(inner[col], len(not_in_right))
+        not_in_right[col] = __nulls_like(inner[col].values, len(not_in_right))
 
     ret_df = DataFrame.append(DataFrame.append(inner, not_in_left), not_in_right)
     if sort is True:

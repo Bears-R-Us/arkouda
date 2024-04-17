@@ -146,6 +146,8 @@ class Series:
                 raise TypeError("values must be a pdarray, Strings, SegArray, or Categorical")
             self.values = data[1] if not isinstance(data[1], Series) else data[1].values
             self.index = Index.factory(index) if index else Index.factory(data[0])
+        elif isinstance(data, tuple) and len(data) != 2:
+            raise TypeError("Series initialization requries a tuple of (index, values)")
         else:
             # When only 1 positional argument it will be treated as data and not index
             if isinstance(data, Series):
