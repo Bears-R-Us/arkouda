@@ -255,11 +255,11 @@ module ArraySetops
             // this not a local slice, but it should (hopefully) take advantage of bulk transfer
             if pullLocal[0] {
               const pullFromASlice = (aDom.last+1)..#numPullLocal;
-              tmp[(aSlice.size+bSlice.size)..#(numPullLocal+1)] = [(key,val) in zip(a[pullFromASlice], aVal[pullFromASlice])] (key,val);
+              tmp[(aSlice.size+bSlice.size)..#(numPullLocal)] = [(key,val) in zip(a[pullFromASlice], aVal[pullFromASlice])] (key,val);
             }
             else if pullLocal[1] {
               const pullFromBSlice = (bDom.last+1)..#numPullLocal;
-              tmp[(aSlice.size+bSlice.size)..#(numPullLocal+1)] = [(key,val) in zip(b[pullFromBSlice], bVal[pullFromBSlice])] (key,val);
+              tmp[(aSlice.size+bSlice.size)..#(numPullLocal)] = [(key,val) in zip(b[pullFromBSlice], bVal[pullFromBSlice])] (key,val);
             }
 
             // run chpl's builtin parallel radix sort for local arrays with a comparator defined in

@@ -103,10 +103,10 @@ module ExternalIntegration {
         var path: string;
         var append: bool;
        
-        proc init(params: FileChannelParams) {
+        proc init(path: string, append: bool) {
             super.init();
-            this.path = params.path;
-            this.append = params.append;
+            this.path = path;
+            this.append = append;
         }
         
         override proc write(payload: string) throws {
@@ -119,44 +119,24 @@ module ExternalIntegration {
     }
     
     /*
-     * The HttpChannel class writes a payload out to an HTTP/S endpoint
+     * The HttpChannel class writes a payload out to an HTTP endpoint
      * in a configurable format via a configurable request type.
      */
     class HttpChannel : Channel {
-
         var url: string;
         var requestType: HttpRequestType;
         var requestFormat: HttpRequestFormat;
-        var ssl: bool = false;
-        var sslKey: string;
-        var sslCert: string;
-        var sslCacert: string;
-        var sslCapath: string;
-        var sslKeyPasswd: string;
-        
-        proc init(params: HttpChannelParams) {
+ 
+        proc init(url: string, requestType: HttpRequestType, requestFormat: HttpRequestFormat) {
             super.init();
-            this.url = params.url;
-            this.requestType = params.requestType;
-            this.requestFormat = params.requestFormat;
-            this.ssl = params.ssl;
 
-            if this.ssl {
-                this.sslKey = params.sslKey;
-                this.sslCert = params.sslCert;
-                this.sslCacert = params.sslCacert;
-                this.sslCapath = params.sslCapath;
-                this.sslKeyPasswd = params.sslKeyPasswd;
-            }
+            this.url = url;
+            this.requestType = requestType;
+            this.requestFormat = requestFormat;
         }
-        
-        proc configureSsl(channel) throws {
-            Curl.setopt(channel, CURLOPT_USE_SSL, this.ssl);
-            Curl.setopt(channel, CURLOPT_SSLCERT, this.sslCert);
-            Curl.setopt(channel, CURLOPT_SSLKEY, this.sslKey);
-            Curl.setopt(channel, CURLOPT_KEYPASSWD, this.sslKeyPasswd);
-            Curl.setopt(channel, CURLOPT_SSL_VERIFYPEER, 0);   
-            if logLevel == LogLevel.DEBUG {      
+
+        proc configureChannel(channel) throws {
+            if logLevel == LogLevel.DEBUG {
                 Curl.setopt(channel, CURLOPT_VERBOSE, true);
             }
         }
@@ -182,6 +162,7 @@ module ExternalIntegration {
                 }
                 
             }
+
             Curl.curl_easy_setopt(channel, CURLOPT_HTTPHEADER, args);  
             return args;
         }
@@ -196,7 +177,7 @@ module ExternalIntegration {
 
             Curl.curl_easy_setopt(curl, CURLOPT_URL, this.url);
            
-            this.configureSsl(curl);
+            this.configureChannel(curl);
             
             Curl.curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
             
@@ -220,7 +201,7 @@ module ExternalIntegration {
             } else {
                 if ret == 22 {
                     throw getErrorWithContext(getLineNumber(),getRoutineName(),getModuleName(),
-                       "invalid request to overwrite existing entry with payload %s. Delete the existing entry first".doFormat(payload),
+                       "error in HTTP request %s".doFormat(payload),
                        "ExternalSystemError");
 
                 } else { 
@@ -237,83 +218,50 @@ module ExternalIntegration {
                        "Closed HttpChannel");      
         }
     }    
-    
-    /*
-     * Encapsulates config parameters needed to open and write to
-     * a channel connected to an external system.
-     */
-    class ChannelParams {
-      var channelType: ChannelType;
-    }
-    
-    /*
-     * Encapsulates config parameters needed to open and write to
-     * a channel connected to a file.
-     */   
-    class FileChannelParams : ChannelParams {
-        var path: string;
-        var append: bool;
-        
-        proc init(channelType: ChannelType, path: string, append: bool=false) {
-            super.init(channelType);
-            this.path = path;
-            this.append = append;
-        }
-    }
+
 
     /*
-     * Encapsulates config parameters needed to open and write to
-     * a HTTP or HTTPS connection.
-     */     
-    class HttpChannelParams : ChannelParams {
-        var url: string;
-        var requestType: HttpRequestType;
-        var requestFormat: HttpRequestFormat;
-        var ssl: bool = false;
-        var sslKey: string;
-        var sslCert: string;
-        var sslCacert: string;
-        var sslCapath: string;
-        var sslKeyPasswd: string;
-        
-        proc init(channelType: ChannelType, url: string, requestType: HttpRequestType,
-                    requestFormat: HttpRequestFormat, ssl: bool=false, 
-                    sslKey: string, sslCert: string, sslCacert: string, sslCapath: string, 
-                          sslKeyPasswd: string) {
-            super.init(channelType);
-            this.url = url;
-            this.requestType = requestType;
-            this.requestFormat = requestFormat;
-            this.ssl = ssl;
-            if this.ssl {
-                this.sslKey = sslKey;
-                this.sslCert = sslCert;
-                this.sslCacert = sslCacert;
-                this.sslCapath = sslCapath;
-                this.sslKeyPasswd = sslKeyPasswd;
-            }
-        }
-    }
-    
-    /*
-     * Factory function used to retrieve a Channel based upon ChannelParams.
+     * The HttpChannel class writes a payload out to an HTTPS endpoint
+     * in a configurable format via a configurable request type.
      */
-    proc getExternalChannel(params: borrowed ChannelParams) : Channel throws {
-        const channelType = params.channelType;
+    class HttpsChannel: HttpChannel {
+        var caCert: string;
+        var token: string;
 
-        select(channelType) {
-            when ChannelType.FILE {
-                return new FileChannel(params: FileChannelParams);
-            } 
-            when ChannelType.HTTP {
-                return new HttpChannel(params: HttpChannelParams);
-            }
-            otherwise {
-                throw new owned Error("Invalid channelType");
-            }
+        proc init(url: string, requestType: HttpRequestType, requestFormat: HttpRequestFormat, 
+                  caCert: string, token: string) {
+            super.init(url, requestType, requestFormat);
+            this.caCert = caCert;
+            this.token = token;
+        }
+
+        /**
+         * Overridden proc adds token TLS configuration
+         */
+        override proc configureChannel(channel) throws {
+            super.configureChannel(channel);
+            
+            Curl.setopt(channel, CURLOPT_USE_SSL, true);
+            Curl.curl_easy_setopt(channel, CURLOPT_USE_SSL, true);
+            Curl.curl_easy_setopt(channel, CURLOPT_CAINFO, this.caCert);
+            Curl.curl_easy_setopt(channel, CURLOPT_SSL_VERIFYPEER, 0);
+
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "Configured channel for ssl and CA cert %s".format(this.caCert));
+        }
+
+        /**
+         * Overridden proc adds TLS token to the HTTPS header
+         */
+        override proc generateHeader(channel) throws {
+            var args = super.generateHeader(channel);
+
+            args.append("Authorization: Bearer %s".format(getEnv("SSL_TOKEN")));
+            Curl.curl_easy_setopt(channel, CURLOPT_HTTPHEADER, args);  
+            return args;
         }
     }
-    
+  
     /*
      * Registers Arkouda with Kubernetes by creating a Kubernetes Service--and an Endpoints 
      * if Arkouda is deployed outside of Kubernetes--to enable service discovery of Arkouda 
@@ -353,26 +301,20 @@ module ExternalIntegration {
                                          '{"name": "%s"},"spec": {"ports": [{"port": %i,' ,
                                          '"protocol": "TCP","targetPort": %i}],"selector":',
                                          ' {"app":"%s"}}}').doFormat(
-                                    serviceName,
-                                    servicePort,
-                                    targetPort,
-                                    appName);
+                                         serviceName,
+                                         servicePort,
+                                         targetPort,
+                                         appName);
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Registering internal service via payload %s and url %s".doFormat(
                                          servicePayload,serviceUrl));
 
-            var channel = getExternalChannel(new HttpChannelParams(
-                                         channelType=ChannelType.HTTP,
-                                         url=serviceUrl,
-                                         requestType=HttpRequestType.POST,
-                                         requestFormat=HttpRequestFormat.JSON,
-                                         ssl=true,
-                                         sslKey=ServerConfig.getEnv('KEY_FILE'),
-                                         sslCert=ServerConfig.getEnv('CERT_FILE'),
-                                         sslCacert=ServerConfig.getEnv('CACERT_FILE'),
-                                         sslCapath='',
-                                         sslKeyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
+            var channel = new HttpsChannel(url=serviceUrl,
+                                           requestType=HttpRequestType.POST,
+                                           requestFormat=HttpRequestFormat.JSON,
+                                           caCert=ServerConfig.getEnv('CACERT_FILE'),
+                                           token=ServerConfig.getEnv('SSL_TOKEN'));
 
             channel.write(servicePayload);
         
@@ -400,17 +342,11 @@ module ExternalIntegration {
                      "Registering external service via payload %s and url %s".doFormat(
                                          servicePayload,serviceUrl));
 
-            var channel = getExternalChannel(new HttpChannelParams(
-                                         channelType=ChannelType.HTTP,
-                                         url=serviceUrl,
-                                         requestType=HttpRequestType.POST,
-                                         requestFormat=HttpRequestFormat.JSON,
-                                         ssl=true,
-                                         sslKey=ServerConfig.getEnv('KEY_FILE'),
-                                         sslCert=ServerConfig.getEnv('CERT_FILE'),
-                                         sslCacert=ServerConfig.getEnv('CACERT_FILE'),
-                                         sslCapath='',
-                                         sslKeyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
+            var channel = new HttpsChannel(url=serviceUrl,
+                                           requestType=HttpRequestType.POST,
+                                           requestFormat=HttpRequestFormat.JSON,
+                                           caCert=ServerConfig.getEnv('CACERT_FILE'),
+                                           token=ServerConfig.getEnv('SSL_TOKEN'));
 
             channel.write(servicePayload);
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -427,17 +363,11 @@ module ExternalIntegration {
                                                 getConnectHostIp(),
                                                 servicePort);
         
-            channel = getExternalChannel(new HttpChannelParams(
-                                         channelType=ChannelType.HTTP,
-                                         url=endpointUrl,
-                                         requestType=HttpRequestType.POST,
-                                         requestFormat=HttpRequestFormat.JSON,
-                                         ssl=true,
-                                         sslKey=ServerConfig.getEnv('KEY_FILE'),
-                                         sslCert=ServerConfig.getEnv('CERT_FILE'),
-                                         sslCacert=ServerConfig.getEnv('CACERT_FILE'),
-                                         sslCapath='',
-                                         sslKeyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
+            channel = new HttpsChannel(url=endpointUrl,
+                                       requestType=HttpRequestType.POST,
+                                       requestFormat=HttpRequestFormat.JSON,
+                                       caCert=ServerConfig.getEnv('CACERT_FILE'),
+                                       token=ServerConfig.getEnv('SSL_TOKEN'));
 
             eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Registering endpoint via payload %s and url %s".doFormat(
@@ -463,17 +393,11 @@ module ExternalIntegration {
         }
         
         var url = generateServiceDeleteUrl(serviceName);
-        var channel = getExternalChannel(new HttpChannelParams(
-                                         channelType=ChannelType.HTTP,
-                                         url=url,
-                                         requestType=HttpRequestType.DELETE,
-                                         requestFormat=HttpRequestFormat.JSON,
-                                         ssl=true,
-                                         sslKey=ServerConfig.getEnv('KEY_FILE'),
-                                         sslCert=ServerConfig.getEnv('CERT_FILE'),
-                                         sslCacert=ServerConfig.getEnv('CACERT_FILE'),
-                                         sslCapath='',
-                                         sslKeyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
+        var channel = new HttpsChannel(url=url,
+                                       requestType=HttpRequestType.DELETE,
+                                       requestFormat=HttpRequestFormat.JSON,
+                                       caCert=ServerConfig.getEnv('CACERT_FILE'),
+                                       token=ServerConfig.getEnv('SSL_TOKEN'));
         channel.write('{}');
         eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Deregistered service %s from Kubernetes via url %s".doFormat(serviceName, 
@@ -493,11 +417,13 @@ module ExternalIntegration {
                                                default='5556'):int;
         } else {
             serviceName = ServerConfig.getEnv('EXTERNAL_SERVICE_NAME');
+            serviceName = ServerConfig.getEnv('EXTERNAL_SERVICE_NAME');
             servicePort = ServerConfig.getEnv('EXTERNAL_SERVICE_PORT', 
                                                default='5555'):int;
             targetServicePort = ServerConfig.getEnv('EXTERNAL_SERVICE_TARGET_PORT', 
                                                      default='5555'):int;
         }
+
         return (serviceName,servicePort,targetServicePort);
     } 
 

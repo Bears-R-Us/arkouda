@@ -6,20 +6,15 @@ Given the crucial Exploratory Data Analysis (EDA) role Arkouda fulfills in a var
 
 ## Design
 
-Delivering integration with external systems such as Kubernetes requires four elements, all of which are encapsulated within the [ExternalIntegration](src/ExternalIntegration.chpl) module with the exception of one enum: 
+Delivering integration with external systems such as Kubernetes requires three elements, all of which are encapsulated within the [ExternalIntegration](src/ExternalIntegration.chpl) module with the exception of one enum: 
 
 1. Channel--implements logic for writing to external systems via export channels such as file systems and HTTP/S servers.
-2. ChannelParams--encapsulates configuration parameters needed by Channel objects to connect to external systems such as file systems and HTTP/S servers.
-3. register/deregister--various register and deregister functions that register/deregister Arkouda with external systems via the corresponding Channel.
-4. Enums--there are several enum classes that provide controlled vocabulary for external system and channel parameters.
+2. register/deregister--various register and deregister functions that register/deregister Arkouda with external systems via the corresponding Channel.
+3. Enums--there are several enum classes that provide controlled vocabulary for external system and channel parameters.
 
 ### Channel
 
 Channel derived classes override the Channel.write function to write the string payload parameter to an external system. For example, the HttpChannel class leverages the Chapel Curl module to write the JSON-formatted payloads used to register and deregister Arkouda with Kubernetes.
-
-### ChannelParams
-
-The ChannelParams derived classes encapsulate the metadata required to connect and write to external systems via a Channel.
 
 ### register and deregister Functions
 
@@ -51,50 +46,85 @@ The initial use case for Arkouda external integration is Kubernetes as described
 
 #### Required Files for Registering with Kubernetes
 
-The Chapel Curl logic must use HTTPS to register/deregister with Kubernetes via the Kubernetes Rest API. Accordingly, SSL .crt and .key files signed with the certificate authority (CA) file configured for the target Kubernetes cluster must be deployed to all bare-metal/Slurm nodes or as a secret for Arkouda-on-Kubernetes deployments.
+The Chapel Curl logic must use HTTPS to register/deregister with Kubernetes via the Kubernetes Rest API. Accordingly, a Kubernetes [ServiceAccount](https://kubernetes.io/docs/concepts/security/service-accounts/) and corresponding TLS token secret must be generated. The token and cacert file bound to the ServiceAccount sa are used to authenticate to the Kubernetes API. A ClusterRole or Role authorizing Pod, Service, and Endpoint creates/updates/deletes is bound to the Arkouda ServiceAccount. The cacert file must be deployed to all bare metal/slurm nodes to register Arkodua-on-Slurm with Kubernetes.
 
-An example of generating the required files is as follows:
+#### Create Kubernetes ServiceAccount
 
-```
-# Generate base key file
-openssl genrsa -out arkouda.key 2048
-
-# Generate the certificate signing request (CSR)
-openssl req -new -key arkouda.key -out arkouda.csr
-
-# Sign with Kubernetes-configured CA
-sudo openssl x509 -req -in arkouda.csr -CA /etc/kubernetes/ssl/kube-ca.pem -CAkey /etc/kubernetes/ssl/kube-ca-key.pem -CAcreateserial -out arkouda.crt -days 730
-```
-
-#### Creating the Kubernetes User
-
-With the private key and signed cert file, create the arkouda user as follows:
+An example ServiceAccount is as follows. A key element is automountServiceAccountToken, which needs to be set to false in order to bind a long-lived token.
 
 ```
-kubectl config set-credentials arkouda --client-certificate=arkouda.crt --client-key=arkouda.key
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: arkouda
+automountServiceAccountToken: false
+```
+
+#### Create ServiceAccount Token
+
+An example of secret encapsulating a ServiceAccount token is as follows. two key elements are the service-account.name and service-account-token Secret type:
+
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: arkouda-token
+  annotations:
+    kubernetes.io/service-account.name: arkouda
+type: kubernetes.io/service-account-token
+```
+
+#### Output Token Data to Environment Variable
+
+Once the token secret is created, the token string value used in the https command is created from the token secret is as follows:
+
+```
+export SECRET=arkouda-token
+ 
+export TOKEN=$(kubectl get secret ${SECRET} -o json | jq -Mr '.data.token' | base64 -d)
+```
+
+The token is added to the Curl header submitted to the Kubernetes API HTTPS enpoint.
+
+#### Output Token ca.crt Element to File
+
+Once the token secret is created, the ca.crt string value used in the https command is created from the token secret is as follows:
+
+```
+export SECRET=arkouda-token
+ 
+kubectl get secret ${SECRET} -o json | jq -Mr '.data["ca.crt"]' | base64 -d > ./ca.crt
+```
+
+The token string and ca.crt generated from the ServiceAccount token secret are used to authenticate to the Kubernetes API. An example Curl command is shown below using the TOKEN env variable and ca.crt file generated above:
+
+```
+export KUBE_URL=https://localhost:6443
+curl $KUBE_URL/api/v1/namespaces/default/pods/ --header "Authorization: Bearer $TOKEN" --cacert ca.crt
 ```
 
 #### Authorize read/write Access to Kubernetes Client API
 
-With the Kubernetes arkouda user and corresponding credentials composed of the arkouda.key and arkouda.crt in place, create the ClusterRoleBinding needed to authorize the arkouda user read/write access to the Kubernetes Client API.
+With the Kubernetes arkouda ServiceAccount, TLS token, and ca.crt in place, create the RoleBinding or ClusterRoleBinding needed to authorize the arkouda ServiceAccount read/write access to the Kubernetes Client API.
 
 ```
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: arkouda-rbac
-subjects:
-- kind: User
   name: arkouda
-  apiGroup: rbac.authorization.k8s.io
 roleRef:
-  kind: ClusterRole #this must be Role or ClusterRole
-  name: cluster-admin # must match the name of the Role
   apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: arkouda-service-pod
+subjects:
+- kind: ServiceAccount
+  name: arkouda
+  namespace: default
+
 ```
 
 ```
-kubectl apply -f arkouda-rbac.yaml
+kubectl apply -f arkouda-role-binding.yaml
 ```
 
 Important note: while this cluster role binding is valid, there may be some environments where it is desirable to narrow the arkouda user privileges.

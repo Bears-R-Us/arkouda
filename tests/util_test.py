@@ -7,42 +7,39 @@ from arkouda.util import is_float, is_int, is_numeric, map
 
 class UtilTest(ArkoudaTest):
     def test_sparse_sum_helper(self):
-        # seed and seed + 1 should produce completely different values...
-        # but I'm anxious about accidentally introducing dependent arrays
-        # that make this less likely to fail
         rng = np.random.default_rng()
-        seed1 = rng.choice(2**63)
-        seed2 = rng.choice(2**63)
-        seed3 = rng.choice(2**63)
-        seed4 = rng.choice(2**63)
-        cfg = ak.get_config()
-        N = (10**3) * cfg["numLocales"]
-        select_from = ak.arange(N)
-        inds1 = select_from[ak.randint(0, 10, N, seed=seed1) % 3 == 0]
-        inds2 = select_from[ak.randint(0, 10, N, seed=seed2) % 3 == 0]
-        vals1 = ak.randint(-(2**32), 2**32, inds1.size, seed=seed3)
-        vals2 = ak.randint(-(2**32), 2**32, inds2.size, seed=seed4)
+        seeds = [rng.choice(2**63), rng.choice(2**63), rng.choice(2**63), rng.choice(2**63)]
+        set_seeds = [1000509587142185552, 5931535381009490148, 5631286082363685405, 3867516237354681488]
+        # run twice: with random seeds and with the seeds that previously failed
+        for seed1, seed2, seed3, seed4 in seeds, set_seeds:
+            cfg = ak.get_config()
+            N = (10**3) * cfg["numLocales"]
+            select_from = ak.arange(N)
+            inds1 = select_from[ak.randint(0, 10, N, seed=seed1) % 3 == 0]
+            inds2 = select_from[ak.randint(0, 10, N, seed=seed2) % 3 == 0]
+            vals1 = ak.randint(-(2**32), 2**32, inds1.size, seed=seed3)
+            vals2 = ak.randint(-(2**32), 2**32, inds2.size, seed=seed4)
 
-        merge_idx, merge_vals = ak.util.sparse_sum_help(inds1, inds2, vals1, vals2, merge=True)
-        sort_idx, sort_vals = ak.util.sparse_sum_help(inds1, inds2, vals1, vals2, merge=False)
-        gb_idx, gb_vals = ak.GroupBy(ak.concatenate([inds1, inds2], ordered=False)).sum(
-            ak.concatenate((vals1, vals2), ordered=False)
-        )
+            merge_idx, merge_vals = ak.util.sparse_sum_help(inds1, inds2, vals1, vals2, merge=True)
+            sort_idx, sort_vals = ak.util.sparse_sum_help(inds1, inds2, vals1, vals2, merge=False)
+            gb_idx, gb_vals = ak.GroupBy(ak.concatenate([inds1, inds2], ordered=False)).sum(
+                ak.concatenate((vals1, vals2), ordered=False)
+            )
 
-        def are_pdarrays_equal(pda1, pda2):
-            # we first check the sizes so that we won't hit shape mismatch
-            # before we can print the seed (due to short-circuiting)
-            return (pda1.size == pda2.size) and ((pda1 == pda2).all())
+            def are_pdarrays_equal(pda1, pda2):
+                # we first check the sizes so that we won't hit shape mismatch
+                # before we can print the seed (due to short-circuiting)
+                return (pda1.size == pda2.size) and ((pda1 == pda2).all())
 
-        cond = (
-            are_pdarrays_equal(merge_idx, sort_idx)
-            and are_pdarrays_equal(merge_idx, gb_idx)
-            and are_pdarrays_equal(merge_vals, sort_vals)
-        )
-
-        if not cond:
-            print(f"Failure with seeds:\n{seed1},\n{seed2},\n{seed3},\n{seed4}")
-        self.assertTrue(cond)
+            cond = (
+                are_pdarrays_equal(merge_idx, sort_idx)
+                and are_pdarrays_equal(merge_idx, gb_idx)
+                and are_pdarrays_equal(merge_vals, sort_vals)
+            )
+            if not cond:
+                print(f"\nnum locales: {cfg['numLocales']}")
+                print(f"Failure with seeds:\n{seed1},\n{seed2},\n{seed3},\n{seed4}")
+            self.assertTrue(cond)
 
     def test_is_numeric(self):
         a = ak.array(["a", "b"])
