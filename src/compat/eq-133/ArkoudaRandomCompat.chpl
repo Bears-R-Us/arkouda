@@ -18,6 +18,9 @@ module ArkoudaRandomCompat {
     this.permutation(domArr);
     return domArr;
   }
-
+  proc ref randomStream.sample(d: domain(?), n: int, withReplacement = false): [] d.idxType throws where is1DRectangularDomain(d) && isCoercible(this.eltType, d.idxType) {
+    // unfortunately there isn't a domain permutation function so we will create an array to permute
+    return this.choice(d, n, withReplacement);
+  }
   proc ref randomStream.next() do return this.getNext();
 }

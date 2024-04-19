@@ -30,6 +30,9 @@ module ArkoudaRandomCompat {
       r.permutation(domArr);
       return domArr;
     }
+    proc ref sample(d: domain, n: int, withReplacement = false): [] d.idxType throws  where is1DRectangularDomain(d) {
+      return r.choice(d, n, withReplacement);
+    }
     proc ref next(): eltType do return r.getNext();
     proc skipTo(n: int) do try! r.skipToNth(n);
   }

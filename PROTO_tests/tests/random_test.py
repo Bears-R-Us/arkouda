@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda.scipy import chisquare as akchisquare
 
 
 class TestRandom:
@@ -125,6 +126,84 @@ class TestRandom:
         bounded_arr = rng.uniform(-5, 5, 1000)
         assert all(bounded_arr.to_ndarray() >= -5)
         assert all(bounded_arr.to_ndarray() < 5)
+
+    def test_choice_hypothesis_testing(self):
+        # perform a weighted sample and use chisquare to test
+        # if the observed frequency matches the expected frequency
+
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        weights = ak.array([0.25, 0.15, 0.20, 0.10, 0.30])
+        weighted_sample = rng.choice(ak.arange(5), size=num_samples, p=weights)
+
+        # count how many of each category we saw
+        uk, f_obs = ak.GroupBy(weighted_sample).count()
+
+        # I think the keys should always be sorted but just in case
+        if not ak.is_sorted(uk):
+            f_obs = f_obs[ak.argsort(uk)]
+
+        f_exp = weights * num_samples
+        _, pval = akchisquare(f_obs=f_obs, f_exp=f_exp)
+
+        # if pval <= 0.05, the difference from the expected distribution is significant
+        assert pval > 0.05
+
+    def test_choice(self):
+        # verify without replacement works
+        rng = ak.random.default_rng()
+        # test domains and selecting all
+        domain_choice = rng.choice(20, 20, replace=False)
+        # since our populations and sample size is the same without replacement,
+        # we should see all values
+        assert (ak.sort(domain_choice) == ak.arange(20)).all()
+
+        # test arrays and not selecting all
+        perm = rng.permutation(100)
+        array_choice = rng.choice(perm, 95, replace=False)
+        # verify all unique
+        _, count = ak.GroupBy(array_choice).count()
+        assert (count == 1).all()
+
+        # test single value
+        scalar = rng.choice(5)
+        assert type(scalar) is np.int64
+        assert scalar in [0, 1, 2, 3, 4]
+
+    def test_choice_flags(self):
+        # use numpy to randomly generate a set seed
+        seed = np.random.default_rng().choice(2**63)
+
+        rng = ak.random.default_rng(seed)
+        weights = rng.uniform(size=10)
+        a_vals = [
+            10,
+            rng.integers(0, 2**32, size=10, dtype="uint"),
+            rng.uniform(-1.0, 1.0, size=10),
+            rng.integers(0, 1, size=10, dtype="bool"),
+            rng.integers(-(2**32), 2**32, size=10, dtype="int"),
+        ]
+
+        rng = ak.random.default_rng(seed)
+        choice_arrays = []
+        for a in a_vals:
+            for size in 5, 10:
+                for replace in True, False:
+                    for p in [None, weights]:
+                        choice_arrays.append(rng.choice(a, size, replace, p))
+
+        # reset generator to ensure we get the same arrays
+        rng = ak.random.default_rng(seed)
+        for a in a_vals:
+            for size in 5, 10:
+                for replace in True, False:
+                    for p in [None, weights]:
+                        previous = choice_arrays.pop(0)
+                        current = rng.choice(a, size, replace, p)
+                        assert np.allclose(previous.to_list(), current.to_list())
 
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)
