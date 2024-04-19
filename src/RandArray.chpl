@@ -13,6 +13,8 @@ module RandArray {
 
   use Map;
 
+  use ArkoudaRandomCompat;
+
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const raLogger = new Logger(logLevel, logChannel);
