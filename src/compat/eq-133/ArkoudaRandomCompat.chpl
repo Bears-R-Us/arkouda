@@ -18,4 +18,6 @@ module ArkoudaRandomCompat {
     this.permutation(domArr);
     return domArr;
   }
+
+  proc ref randomStream.next() do return this.getNext();
 }

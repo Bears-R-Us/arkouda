@@ -30,7 +30,7 @@ module ArkoudaRandomCompat {
       r.permutation(domArr);
       return domArr;
     }
-    proc ref next(): eltType do return r.next();
+    proc ref next(): eltType do return r.getNext();
     proc skipTo(n: int) do try! r.skipToNth(n);
   }
 
