@@ -88,7 +88,10 @@ class Index:
                 if len(values) <= max_list_size:
                     self.values = values
                     self.size = len(values)
-                    self.dtype = self._dtype_of_list_values(values)
+                    if len(values) > 0:
+                        self.dtype = self._dtype_of_list_values(values)
+                    else:
+                        self.dtype = None
                 else:
                     raise ValueError(
                         f"Cannot create Index because list size {len(values)} "

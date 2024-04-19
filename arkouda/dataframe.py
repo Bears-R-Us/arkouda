@@ -4155,6 +4155,7 @@ class DataFrame(UserDict):
             return Series(array(count_values_list), index=Index(array(index_values_list)))
         elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
             first = True
+            count_values = arange(0)
             for col in self.columns:
                 if is_numeric(self[col]):
                     if first:
@@ -4170,8 +4171,11 @@ class DataFrame(UserDict):
                         count_values += 1
                 if first:
                     count_values = full(self.index.size, 0, dtype=akint64)
-            idx = self.index[:]
-            return Series(array(count_values), index=idx)
+            if self.index is not None:
+                idx = self.index[:]
+                return Series(array(count_values), index=idx)
+            else:
+                return Series(array(count_values))
         else:
             raise ValueError(f"No axis named {axis} for object type DataFrame")
 
@@ -4401,6 +4405,480 @@ class DataFrame(UserDict):
         return merge(
             self, right, on, how, left_suffix, right_suffix, convert_ints=convert_ints, sort=sort
         )
+
+    @typechecked
+    def isna(self) -> DataFrame:
+        """
+        Detect missing values.
+
+        Return a boolean same-sized object indicating if the values are NA.
+        numpy.NaN values get mapped to True values.
+        Everything else gets mapped to False values.
+
+        Returns
+        -------
+        arkouda.dataframe.DataFrame
+            Mask of bool values for each element in DataFrame
+            that indicates whether an element is an NA value.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> import numpy as np
+        >>> df = ak.DataFrame({"A": [np.nan, 2, 2, 3], "B": [3, np.nan, 5, 6],
+        ...          "C": [1, np.nan, 2, np.nan], "D":["a","b","c","d"]})
+        >>> display(df)
+
+        +----+-----+-----+-----+-----+
+        |    |   A |   B |   C | D   |
+        +====+=====+=====+=====+=====+
+        |  0 | nan |   3 |   1 | a   |
+        +----+-----+-----+-----+-----+
+        |  1 |   2 | nan | nan | b   |
+        +----+-----+-----+-----+-----+
+        |  2 |   2 |   5 |   2 | c   |
+        +----+-----+-----+-----+-----+
+        |  3 |   3 |   6 | nan | d   |
+        +----+-----+-----+-----+-----+
+
+        >>> df.isna()
+               A      B      C      D
+        0   True  False  False  False
+        1  False   True   True  False
+        2  False  False  False  False
+        3  False  False   True  False (4 rows x 4 columns)
+
+        """
+        from arkouda import full, isnan
+        from arkouda.util import is_numeric
+
+        def is_nan_col(col: str):
+            if is_numeric(self[col]):
+                return isnan(self[col])
+            else:
+                return full(self.shape[0], False, dtype=akbool)
+
+        data = {col: is_nan_col(col) for col in self.columns.values}
+        return DataFrame(data)
+
+    @typechecked
+    def notna(self) -> DataFrame:
+        """
+        Detect existing (non-missing) values.
+
+        Return a boolean same-sized object indicating if the values are not NA.
+        numpy.NaN values get mapped to False values.
+
+        Returns
+        -------
+        arkouda.dataframe.DataFrame
+            Mask of bool values for each element in DataFrame
+            that indicates whether an element is not an NA value.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> import numpy as np
+        >>> df = ak.DataFrame({"A": [np.nan, 2, 2, 3], "B": [3, np.nan, 5, 6],
+        ...          "C": [1, np.nan, 2, np.nan], "D":["a","b","c","d"]})
+        >>> display(df)
+
+        +----+-----+-----+-----+-----+
+        |    |   A |   B |   C | D   |
+        +====+=====+=====+=====+=====+
+        |  0 | nan |   3 |   1 | a   |
+        +----+-----+-----+-----+-----+
+        |  1 |   2 | nan | nan | b   |
+        +----+-----+-----+-----+-----+
+        |  2 |   2 |   5 |   2 | c   |
+        +----+-----+-----+-----+-----+
+        |  3 |   3 |   6 | nan | d   |
+        +----+-----+-----+-----+-----+
+
+        >>> df.notna()
+               A      B      C     D
+        0  False   True   True  True
+        1   True  False  False  True
+        2   True   True   True  True
+        3   True   True  False  True (4 rows x 4 columns)
+
+        """
+        from arkouda import full, isnan
+        from arkouda.util import is_numeric
+
+        def not_nan_col(col: str):
+            if is_numeric(self[col]):
+                return ~isnan(self[col])
+            else:
+                return full(self.shape[0], True, dtype=akbool)
+
+        data = {col: not_nan_col(col) for col in self.columns.values}
+        return DataFrame(data)
+
+    @typechecked
+    def any(self, axis=0) -> Union[Series, bool]:
+        """
+        Return whether any element is True, potentially over an axis.
+
+        Returns False unless there is at least one element along a Dataframe axis that is True.
+
+        Currently, will ignore any columns that are not type bool.
+        This is equivalent to the pandas option bool_only=True.
+
+        Parameters
+        ----------
+        axis: {0 or ‘index’, 1 or ‘columns’, None}, default = 0
+
+            Indicate which axis or axes should be reduced.
+
+            0 / ‘index’ : reduce the index, return a Series whose index is the original column labels.
+
+            1 / ‘columns’ : reduce the columns, return a Series whose index is the original index.
+
+            None : reduce all axes, return a scalar.
+
+        Returns
+        -------
+        arkouda.series.Series or bool
+
+        Raises
+        ------
+        ValueError
+            Raised if axis does not have a value in {0 or ‘index’, 1 or ‘columns’, None}.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> df = ak.DataFrame({"A":[True,True,True,False],"B":[True,True,True,False],
+        ...          "C":[True,False,True,False],"D":[False,False,False,False]})
+
+        +----+---------+---------+---------+---------+
+        |    |   A     |   B     |   C     |   D     |
+        +====+=========+=========+=========+=========+
+        |  0 |   True  |   True  |   True  |   False |
+        +----+---------+---------+---------+---------+
+        |  1 |   True  |   True  |   False |   False |
+        +----+---------+---------+---------+---------+
+        |  2 |   True  |   True  |   True  |   False |
+        +----+---------+---------+---------+---------+
+        |  3 |   False |   False |   False |   False |
+        +----+---------+---------+---------+---------+
+
+        >>> df.any(axis=0)
+        A     True
+        B     True
+        C     True
+        D    False
+        dtype: bool
+        >>> df.any(axis=1)
+        0     True
+        1     True
+        2     True
+        3    False
+        dtype: bool
+        >>> df.any(axis=None)
+        True
+
+        """
+        from arkouda import any as akany
+        from arkouda import array, full
+
+        if self.empty:
+            if axis is None:
+                return False
+            else:
+                return Series(array([], dtype=bool))
+
+        bool_cols = [col for col in self.columns.values if self.dtypes[col] == "bool"]
+        if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
+            return Series(
+                array([akany(self[col]) for col in bool_cols]),
+                index=Index(bool_cols),
+            )
+        elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
+            mask = None
+            first = True
+            for col in bool_cols:
+                if first:
+                    mask = self[col]
+                    first = False
+                else:
+                    mask |= self[col]
+            if first:
+                mask = full(self.shape[0], False, dtype=bool)
+            return Series(mask, index=self.index.values[:])
+        elif axis is None:
+            return any([akany(self[col]) for col in bool_cols])
+        else:
+            raise ValueError("axis must have value 0, 1, 'index', 'columns', or None.")
+
+    @typechecked
+    def all(self, axis=0) -> Union[Series, bool]:
+        """
+        Return whether all elements are True, potentially over an axis.
+
+        Returns True unless there at least one element along a Dataframe axis that is False.
+
+        Currently, will ignore any columns that are not type bool.
+        This is equivalent to the pandas option bool_only=True.
+
+        Parameters
+        ----------
+        axis: {0 or ‘index’, 1 or ‘columns’, None}, default = 0
+
+            Indicate which axis or axes should be reduced.
+
+            0 / ‘index’ : reduce the index, return a Series whose index is the original column labels.
+
+            1 / ‘columns’ : reduce the columns, return a Series whose index is the original index.
+
+            None : reduce all axes, return a scalar.
+
+        Returns
+        -------
+        arkouda.series.Series or bool
+
+        Raises
+        ------
+        ValueError
+            Raised if axis does not have a value in {0 or ‘index’, 1 or ‘columns’, None}.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> df = ak.DataFrame({"A":[True,True,True,False],"B":[True,True,True,False],
+        ...          "C":[True,False,True,False],"D":[True,True,True,True]})
+
+        +----+---------+---------+---------+--------+
+        |    |   A     |   B     |   C     |   D    |
+        +====+=========+=========+=========+========+
+        |  0 |   True  |   True  |   True  |   True |
+        +----+---------+---------+---------+--------+
+        |  1 |   True  |   True  |   False |   True |
+        +----+---------+---------+---------+--------+
+        |  2 |   True  |   True  |   True  |   True |
+        +----+---------+---------+---------+--------+
+        |  3 |   False |   False |   False |   True |
+        +----+---------+---------+---------+--------+
+
+        >>> df.all(axis=0)
+        A    False
+        B    False
+        C    False
+        D     True
+        dtype: bool
+        >>> df.all(axis=1)
+        0     True
+        1    False
+        2     True
+        3    False
+        dtype: bool
+        >>> df.all(axis=None)
+        False
+        """
+        from arkouda import all as akall
+        from arkouda import array, full
+
+        if self.empty:
+            if axis is None:
+                return True
+            else:
+                return Series(array([], dtype=bool))
+
+        bool_cols = [col for col in self.columns.values if self.dtypes[col] == "bool"]
+        if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
+            return Series(
+                array([akall(self[col]) for col in bool_cols]),
+                index=Index(bool_cols),
+            )
+        elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
+            mask = None
+            first = True
+            for col in bool_cols:
+                if first:
+                    mask = self[col]
+                    first = False
+                else:
+                    mask &= self[col]
+            if first:
+                mask = full(self.shape[0], True, dtype=bool)
+
+            return Series(mask, index=self.index.values[:])
+        elif axis is None:
+            return all([akall(self[col]) for col in bool_cols])
+        else:
+            raise ValueError("axis must have value 0, 1, 'index', 'columns', or None.")
+
+    @typechecked
+    def dropna(
+        self,
+        axis: Union[int, str] = 0,
+        how: Optional[str] = None,
+        thresh: Optional[int] = None,
+        ignore_index: bool = False,
+    ) -> DataFrame:
+        """
+        Remove missing values.
+
+        Parameters
+        ----------
+        axis: {0 or 'index', 1 or 'columns'}, default = 0
+            Determine if rows or columns which contain missing values are removed.
+
+            0, or 'index': Drop rows which contain missing values.
+
+            1, or 'columns': Drop columns which contain missing value.
+
+            Only a single axis is allowed.
+        how: {'any', 'all'}, default='any'
+            Determine if row or column is removed from DataFrame, when we have at least one NA or all NA.
+
+            'any': If any NA values are present, drop that row or column.
+
+            'all': If all values are NA, drop that row or column.
+        thresh: int, optional
+            Require that many non - NA values.Cannot be combined with how.
+        ignore_index: bool, default ``False``
+            If ``True``, the resulting axis will be labeled 0, 1, …, n - 1.
+
+        Returns
+        -------
+        arkouda.dataframe.DataFrame
+            DataFrame with NA entries dropped from it.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> import numpy as np
+        >>> df = ak.DataFrame(
+            {
+                "A": [True, True, True, True],
+                "B": [1, np.nan, 2, np.nan],
+                "C": [1, 2, 3, np.nan],
+                "D": [False, False, False, False],
+                "E": [1, 2, 3, 4],
+                "F": ["a", "b", "c", "d"],
+                "G": [1, 2, 3, 4],
+            }
+           )
+
+        >>> display(df)
+
+        +----+------+-----+-----+-------+-----+-----+-----+
+        |    | A    |   B |   C | D     |   E | F   |   G |
+        +====+======+=====+=====+=======+=====+=====+=====+
+        |  0 | True |   1 |   1 | False |   1 | a   |   1 |
+        +----+------+-----+-----+-------+-----+-----+-----+
+        |  1 | True | nan |   2 | False |   2 | b   |   2 |
+        +----+------+-----+-----+-------+-----+-----+-----+
+        |  2 | True |   2 |   3 | False |   3 | c   |   3 |
+        +----+------+-----+-----+-------+-----+-----+-----+
+        |  3 | True | nan | nan | False |   4 | d   |   4 |
+        +----+------+-----+-----+-------+-----+-----+-----+
+
+        >>> df.dropna()
+
+        +----+------+-----+-----+-------+-----+-----+-----+
+        |    | A    |   B |   C | D     |   E | F   |   G |
+        +====+======+=====+=====+=======+=====+=====+=====+
+        |  0 | True |   1 |   1 | False |   1 | a   |   1 |
+        +----+------+-----+-----+-------+-----+-----+-----+
+        |  1 | True |   2 |   3 | False |   3 | c   |   3 |
+        +----+------+-----+-----+-------+-----+-----+-----+
+
+        >>> df.dropna(axis=1)
+
+        +----+------+-------+-----+-----+-----+
+        |    | A    | D     |   E | F   |   G |
+        +====+======+=======+=====+=====+=====+
+        |  0 | True | False |   1 | a   |   1 |
+        +----+------+-------+-----+-----+-----+
+        |  1 | True | False |   2 | b   |   2 |
+        +----+------+-------+-----+-----+-----+
+        |  2 | True | False |   3 | c   |   3 |
+        +----+------+-------+-----+-----+-----+
+        |  3 | True | False |   4 | d   |   4 |
+        +----+------+-------+-----+-----+-----+
+
+        >>> df.dropna(axis=1, thresh=3)
+
+        +----+------+-----+-------+-----+-----+-----+
+        |    | A    |   C | D     |   E | F   |   G |
+        +====+======+=====+=======+=====+=====+=====+
+        |  0 | True |   1 | False |   1 | a   |   1 |
+        +----+------+-----+-------+-----+-----+-----+
+        |  1 | True |   2 | False |   2 | b   |   2 |
+        +----+------+-----+-------+-----+-----+-----+
+        |  2 | True |   3 | False |   3 | c   |   3 |
+        +----+------+-----+-------+-----+-----+-----+
+        |  3 | True | nan | False |   4 | d   |   4 |
+        +----+------+-----+-------+-----+-----+-----+
+
+        >>> df.dropna(axis=1, how="all")
+
+        +----+------+-----+-----+-------+-----+-----+-----+
+        |    | A    |   B |   C | D     |   E | F   |   G |
+        +====+======+=====+=====+=======+=====+=====+=====+
+        |  0 | True |   1 |   1 | False |   1 | a   |   1 |
+        +----+------+-----+-----+-------+-----+-----+-----+
+        |  1 | True | nan |   2 | False |   2 | b   |   2 |
+        +----+------+-----+-----+-------+-----+-----+-----+
+        |  2 | True |   2 |   3 | False |   3 | c   |   3 |
+        +----+------+-----+-----+-------+-----+-----+-----+
+        |  3 | True | nan | nan | False |   4 | d   |   4 |
+        +----+------+-----+-----+-------+-----+-----+-----+
+
+        """
+        from arkouda import all as akall
+
+        if (how is not None) and (thresh is not None):
+            raise TypeError("You cannot set both the how and thresh arguments at the same time.")
+
+        if how is None:
+            how = "any"
+
+        if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
+            agg_axis = 1
+
+        elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
+            agg_axis = 0
+
+        if thresh is not None:
+            counts = self.count(axis=agg_axis)
+            mask = counts >= thresh  # type: ignore
+        elif how == "any":
+            mask = self.notna().all(axis=agg_axis)
+        elif how == "all":
+            mask = self.notna().any(axis=agg_axis)
+        else:
+            raise ValueError(f"invalid how option: {how}")
+
+        if (isinstance(mask, bool) and mask is True) or (
+            isinstance(mask, Series) and akall(mask.values) is True
+        ):
+            result = self.copy(deep=None)
+        else:
+            if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
+                if self.empty is True:
+                    result = DataFrame()
+                else:
+                    result = self[mask].copy(deep=True)
+            elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
+                result = DataFrame()
+                if isinstance(mask, Series):
+                    for col, truth in zip(mask.index.values.to_list(), mask.values.to_list()):
+                        if truth is True:
+                            result[col] = self[col][:]
+
+        if ignore_index is True and result.empty is False:
+            result = result.reset_index()
+
+        return result
 
     @typechecked
     def register(self, user_defined_name: str) -> DataFrame:
