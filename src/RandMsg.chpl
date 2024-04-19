@@ -441,9 +441,10 @@ module RandMsg
                   wE = toSymEntry(wGEnt, real); // weights are always real
 
             var generatorEntry: borrowed GeneratorSymEntry(real) = toGeneratorSymEntry(st.lookup(gName), real);
-            if state != 1 then generatorEntry.generator.skipTo(state-1);
+            ref rng = generatorEntry.generator;
+            if state != 1 then rng.skipTo(state-1);
 
-            const s = randSampleWeights(generatorEntry.generator, aE.a, wE.a, n, replace);
+            const s = randSampleWeights(rng, aE.a, wE.a, n, replace);
             st.addEntry(rname, createSymEntry(s));
 
             const repMsg = "created " + st.attrib(rname);
