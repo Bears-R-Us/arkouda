@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.dtypes" href="../dtypes/index.html" /><link rel="prev" title="arkouda.client_dtypes" href="../client_dtypes/index.html" />
 
-    <!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>arkouda.dataframe - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -1069,6 +1069,176 @@ Otherwise returns an arkouda.groupbyclass.GroupBy object.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.all">
+<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../series/index.html#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">arkouda.series.Series</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.all" title="Link to this definition">¶</a></dt>
+<dd><p>Return whether all elements are True, potentially over an axis.</p>
+<p>Returns True unless there at least one element along a Dataframe axis that is False.</p>
+<p>Currently, will ignore any columns that are not type bool.
+This is equivalent to the pandas option bool_only=True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>axis</strong> (<em>{0</em><em> or </em><em>‘index’</em><em>, </em><em>1</em><em> or </em><em>‘columns’</em><em>, </em><em>None}</em><em>, </em><em>default = 0</em>) – <p>Indicate which axis or axes should be reduced.</p>
+<p>0 / ‘index’ : reduce the index, return a Series whose index is the original column labels.</p>
+<p>1 / ‘columns’ : reduce the columns, return a Series whose index is the original index.</p>
+<p>None : reduce all axes, return a scalar.</p>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../series/index.html#arkouda.series.Series" title="arkouda.series.Series">arkouda.series.Series</a> or bool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Raised if axis does not have a value in {0 or ‘index’, 1 or ‘columns’, None}.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:[</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">],</span><span class="s2">&quot;B&quot;</span><span class="p">:[</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s2">&quot;C&quot;</span><span class="p">:[</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">],</span><span class="s2">&quot;D&quot;</span><span class="p">:[</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">]})</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+<th class="head"><p>C</p></th>
+<th class="head"><p>D</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">A    False</span>
+<span class="go">B    False</span>
+<span class="go">C    False</span>
+<span class="go">D     True</span>
+<span class="go">dtype: bool</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">0     True</span>
+<span class="go">1    False</span>
+<span class="go">2     True</span>
+<span class="go">3    False</span>
+<span class="go">dtype: bool</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.any">
+<span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../series/index.html#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">arkouda.series.Series</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.any"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.any" title="Link to this definition">¶</a></dt>
+<dd><p>Return whether any element is True, potentially over an axis.</p>
+<p>Returns False unless there is at least one element along a Dataframe axis that is True.</p>
+<p>Currently, will ignore any columns that are not type bool.
+This is equivalent to the pandas option bool_only=True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>axis</strong> (<em>{0</em><em> or </em><em>‘index’</em><em>, </em><em>1</em><em> or </em><em>‘columns’</em><em>, </em><em>None}</em><em>, </em><em>default = 0</em>) – <p>Indicate which axis or axes should be reduced.</p>
+<p>0 / ‘index’ : reduce the index, return a Series whose index is the original column labels.</p>
+<p>1 / ‘columns’ : reduce the columns, return a Series whose index is the original index.</p>
+<p>None : reduce all axes, return a scalar.</p>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../series/index.html#arkouda.series.Series" title="arkouda.series.Series">arkouda.series.Series</a> or bool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Raised if axis does not have a value in {0 or ‘index’, 1 or ‘columns’, None}.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:[</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">],</span><span class="s2">&quot;B&quot;</span><span class="p">:[</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s2">&quot;C&quot;</span><span class="p">:[</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">],</span><span class="s2">&quot;D&quot;</span><span class="p">:[</span><span class="kc">False</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">False</span><span class="p">]})</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+<th class="head"><p>C</p></th>
+<th class="head"><p>D</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">A     True</span>
+<span class="go">B     True</span>
+<span class="go">C     True</span>
+<span class="go">D    False</span>
+<span class="go">dtype: bool</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">0     True</span>
+<span class="go">1     True</span>
+<span class="go">2     True</span>
+<span class="go">3    False</span>
+<span class="go">dtype: bool</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.append" title="Link to this definition">¶</a></dt>
 <dd><p>Concatenate data from ‘other’ onto the end of this DataFrame, in place.</p>
@@ -1384,7 +1554,7 @@ arkouda server which was registered using register().</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id443" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id448" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1921,6 +2091,299 @@ duplicated row will be returned (keep determines which row).</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.dropna">
+<span class="sig-name descname"><span class="pre">dropna</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">how</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.dropna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.dropna" title="Link to this definition">¶</a></dt>
+<dd><p>Remove missing values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>{0</em><em> or </em><em>'index'</em><em>, </em><em>1</em><em> or </em><em>'columns'}</em><em>, </em><em>default = 0</em>) – <p>Determine if rows or columns which contain missing values are removed.</p>
+<p>0, or ‘index’: Drop rows which contain missing values.</p>
+<p>1, or ‘columns’: Drop columns which contain missing value.</p>
+<p>Only a single axis is allowed.</p>
+</p></li>
+<li><p><strong>how</strong> (<em>{'any'</em><em>, </em><em>'all'}</em><em>, </em><em>default='any'</em>) – <p>Determine if row or column is removed from DataFrame, when we have at least one NA or all NA.</p>
+<p>’any’: If any NA values are present, drop that row or column.</p>
+<p>’all’: If all values are NA, drop that row or column.</p>
+</p></li>
+<li><p><strong>thresh</strong> (<em>int</em><em>, </em><em>optional</em>) – Require that many non - NA values.Cannot be combined with how.</p></li>
+<li><p><strong>ignore_index</strong> (bool, default <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the resulting axis will be labeled 0, 1, …, n - 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame with NA entries dropped from it.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="go">    {</span>
+<span class="go">        &quot;A&quot;: [True, True, True, True],</span>
+<span class="go">        &quot;B&quot;: [1, np.nan, 2, np.nan],</span>
+<span class="go">        &quot;C&quot;: [1, 2, 3, np.nan],</span>
+<span class="go">        &quot;D&quot;: [False, False, False, False],</span>
+<span class="go">        &quot;E&quot;: [1, 2, 3, 4],</span>
+<span class="go">        &quot;F&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;],</span>
+<span class="go">        &quot;G&quot;: [1, 2, 3, 4],</span>
+<span class="go">    }</span>
+<span class="go">   )</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+<th class="head"><p>C</p></th>
+<th class="head"><p>D</p></th>
+<th class="head"><p>E</p></th>
+<th class="head"><p>F</p></th>
+<th class="head"><p>G</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>True</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>False</p></td>
+<td><p>1</p></td>
+<td><p>a</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>True</p></td>
+<td><p>nan</p></td>
+<td><p>2</p></td>
+<td><p>False</p></td>
+<td><p>2</p></td>
+<td><p>b</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>True</p></td>
+<td><p>2</p></td>
+<td><p>3</p></td>
+<td><p>False</p></td>
+<td><p>3</p></td>
+<td><p>c</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>True</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>False</p></td>
+<td><p>4</p></td>
+<td><p>d</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+<th class="head"><p>C</p></th>
+<th class="head"><p>D</p></th>
+<th class="head"><p>E</p></th>
+<th class="head"><p>F</p></th>
+<th class="head"><p>G</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>True</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>False</p></td>
+<td><p>1</p></td>
+<td><p>a</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>True</p></td>
+<td><p>2</p></td>
+<td><p>3</p></td>
+<td><p>False</p></td>
+<td><p>3</p></td>
+<td><p>c</p></td>
+<td><p>3</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>D</p></th>
+<th class="head"><p>E</p></th>
+<th class="head"><p>F</p></th>
+<th class="head"><p>G</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>1</p></td>
+<td><p>a</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>2</p></td>
+<td><p>b</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>3</p></td>
+<td><p>c</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>4</p></td>
+<td><p>d</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>C</p></th>
+<th class="head"><p>D</p></th>
+<th class="head"><p>E</p></th>
+<th class="head"><p>F</p></th>
+<th class="head"><p>G</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>True</p></td>
+<td><p>1</p></td>
+<td><p>False</p></td>
+<td><p>1</p></td>
+<td><p>a</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>True</p></td>
+<td><p>2</p></td>
+<td><p>False</p></td>
+<td><p>2</p></td>
+<td><p>b</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>True</p></td>
+<td><p>3</p></td>
+<td><p>False</p></td>
+<td><p>3</p></td>
+<td><p>c</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>True</p></td>
+<td><p>nan</p></td>
+<td><p>False</p></td>
+<td><p>4</p></td>
+<td><p>d</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+<th class="head"><p>C</p></th>
+<th class="head"><p>D</p></th>
+<th class="head"><p>E</p></th>
+<th class="head"><p>F</p></th>
+<th class="head"><p>G</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>True</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>False</p></td>
+<td><p>1</p></td>
+<td><p>a</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>True</p></td>
+<td><p>nan</p></td>
+<td><p>2</p></td>
+<td><p>False</p></td>
+<td><p>2</p></td>
+<td><p>b</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>True</p></td>
+<td><p>2</p></td>
+<td><p>3</p></td>
+<td><p>False</p></td>
+<td><p>3</p></td>
+<td><p>c</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>True</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>False</p></td>
+<td><p>4</p></td>
+<td><p>d</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.filter_by_range">
 <span class="sig-name descname"><span class="pre">filter_by_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.filter_by_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.filter_by_range" title="Link to this definition">¶</a></dt>
 <dd><p>Find all rows where the value count of the items in a given set of
@@ -2353,7 +2816,7 @@ appending rows.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id443" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components.</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id448" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -2530,6 +2993,79 @@ Note that 9 is not found because the column name does not match.</p>
 </tr>
 </tbody>
 </table>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.isna">
+<span class="sig-name descname"><span class="pre">isna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.isna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.isna" title="Link to this definition">¶</a></dt>
+<dd><p>Detect missing values.</p>
+<p>Return a boolean same-sized object indicating if the values are NA.
+numpy.NaN values get mapped to True values.
+Everything else gets mapped to False values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Mask of bool values for each element in DataFrame
+that indicates whether an element is an NA value.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="s2">&quot;D&quot;</span><span class="p">:[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">]})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+<th class="head"><p>C</p></th>
+<th class="head"><p>D</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>nan</p></td>
+<td><p>3</p></td>
+<td><p>1</p></td>
+<td><p>a</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>b</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>5</p></td>
+<td><p>2</p></td>
+<td><p>c</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>3</p></td>
+<td><p>6</p></td>
+<td><p>nan</p></td>
+<td><p>d</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
+<span class="go">       A      B      C      D</span>
+<span class="go">0   True  False  False  False</span>
+<span class="go">1  False   True   True  False</span>
+<span class="go">2  False  False  False  False</span>
+<span class="go">3  False  False   True  False (4 rows x 4 columns)</span>
+</pre></div>
 </div>
 </dd></dl>
 
@@ -3065,6 +3601,78 @@ Otherwise, the DataFrame is not sorted.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.notna">
+<span class="sig-name descname"><span class="pre">notna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.notna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.notna" title="Link to this definition">¶</a></dt>
+<dd><p>Detect existing (non-missing) values.</p>
+<p>Return a boolean same-sized object indicating if the values are not NA.
+numpy.NaN values get mapped to False values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Mask of bool values for each element in DataFrame
+that indicates whether an element is not an NA value.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="s2">&quot;D&quot;</span><span class="p">:[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">]})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+<th class="head"><p>C</p></th>
+<th class="head"><p>D</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>nan</p></td>
+<td><p>3</p></td>
+<td><p>1</p></td>
+<td><p>a</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>b</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>5</p></td>
+<td><p>2</p></td>
+<td><p>c</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>3</p></td>
+<td><p>6</p></td>
+<td><p>nan</p></td>
+<td><p>d</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+<span class="go">       A      B      C     D</span>
+<span class="go">0  False   True   True  True</span>
+<span class="go">1   True  False  False  True</span>
+<span class="go">2   True   True   True  True</span>
+<span class="go">3   True   True  False  True (4 rows x 4 columns)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.read_csv">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.read_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.read_csv" title="Link to this definition">¶</a></dt>
 <dd><p>Read the columns of a CSV file into an Arkouda DataFrame.
@@ -3165,7 +3773,7 @@ Please note you cannot register two different DataFrames with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str.</p></li>
-<li><p><a class="reference internal" href="../index.html#id443" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name.</p></li>
+<li><p><a class="reference internal" href="../index.html#id448" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name.</p></li>
 </ul>
 </dd>
 </dl>
@@ -4329,7 +4937,7 @@ a supported dtype</p></li>
 registered using register() and/or attached to using attach().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id443" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id448" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister.</p>
 </dd>
 </dl>
@@ -4365,7 +4973,7 @@ with the arkouda server via register().</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – If user_defined_name is not a string.</p></li>
-<li><p><a class="reference internal" href="../index.html#id443" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If there is an issue attempting to unregister any underlying components.</p></li>
+<li><p><a class="reference internal" href="../index.html#id448" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If there is an issue attempting to unregister any underlying components.</p></li>
 </ul>
 </dd>
 </dl>
@@ -5063,6 +5671,8 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.size"><code class="docutils literal notranslate"><span class="pre">DataFrame.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.objType"><code class="docutils literal notranslate"><span class="pre">DataFrame.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.GroupBy"><code class="docutils literal notranslate"><span class="pre">DataFrame.GroupBy()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.all"><code class="docutils literal notranslate"><span class="pre">DataFrame.all()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.any"><code class="docutils literal notranslate"><span class="pre">DataFrame.any()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.append"><code class="docutils literal notranslate"><span class="pre">DataFrame.append()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.apply_permutation"><code class="docutils literal notranslate"><span class="pre">DataFrame.apply_permutation()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.argsort"><code class="docutils literal notranslate"><span class="pre">DataFrame.argsort()</span></code></a></li>
@@ -5074,6 +5684,7 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.count"><code class="docutils literal notranslate"><span class="pre">DataFrame.count()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.drop"><code class="docutils literal notranslate"><span class="pre">DataFrame.drop()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.drop_duplicates"><code class="docutils literal notranslate"><span class="pre">DataFrame.drop_duplicates()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.dropna"><code class="docutils literal notranslate"><span class="pre">DataFrame.dropna()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.filter_by_range"><code class="docutils literal notranslate"><span class="pre">DataFrame.filter_by_range()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.from_pandas"><code class="docutils literal notranslate"><span class="pre">DataFrame.from_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.from_return_msg"><code class="docutils literal notranslate"><span class="pre">DataFrame.from_return_msg()</span></code></a></li>
@@ -5081,10 +5692,12 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.head"><code class="docutils literal notranslate"><span class="pre">DataFrame.head()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.is_registered"><code class="docutils literal notranslate"><span class="pre">DataFrame.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.isin"><code class="docutils literal notranslate"><span class="pre">DataFrame.isin()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.isna"><code class="docutils literal notranslate"><span class="pre">DataFrame.isna()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.load"><code class="docutils literal notranslate"><span class="pre">DataFrame.load()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.memory_usage"><code class="docutils literal notranslate"><span class="pre">DataFrame.memory_usage()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.memory_usage_info"><code class="docutils literal notranslate"><span class="pre">DataFrame.memory_usage_info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.merge"><code class="docutils literal notranslate"><span class="pre">DataFrame.merge()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.notna"><code class="docutils literal notranslate"><span class="pre">DataFrame.notna()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.read_csv"><code class="docutils literal notranslate"><span class="pre">DataFrame.read_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.register"><code class="docutils literal notranslate"><span class="pre">DataFrame.register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.rename"><code class="docutils literal notranslate"><span class="pre">DataFrame.rename()</span></code></a></li>
