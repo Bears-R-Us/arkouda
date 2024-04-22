@@ -419,10 +419,58 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    proc sampleWeightsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName(),
+              gName = msgArgs.getValueOf("gName"),              // generator name
+              aName = msgArgs.getValueOf("aName"),              // values array name
+              wName = msgArgs.getValueOf("wName"),              // weights array name
+              n = msgArgs.get("n").getIntValue(),               // number of samples
+              replace = msgArgs.get("replace").getBoolValue(),  // sample with replacement?
+              state = msgArgs.get("state").getIntValue(),       // rng state
+              rname = st.nextName();
+
+        randLogger.debug(getModuleName(),pn,getLineNumber(),
+                         "gname: %? aname %? wname: %? n %i replace %i state %i rname %?"
+                         .doFormat(gName, aName, wName, n, replace, state, rname));
+
+        var aGEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(aName, st),
+            wGEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(wName, st);
+
+        proc sampleHelper(type t): MsgTuple throws {
+            const aE = toSymEntry(aGEnt, t),
+                  wE = toSymEntry(wGEnt, real); // weights are always real
+
+            var generatorEntry: borrowed GeneratorSymEntry(real) = toGeneratorSymEntry(st.lookup(gName), real);
+            ref rng = generatorEntry.generator;
+            if state != 1 then rng.skipTo(state-1);
+
+            const s = randSampleWeights(rng, aE.a, wE.a, n, replace);
+            st.addEntry(rname, createSymEntry(s));
+
+            const repMsg = "created " + st.attrib(rname);
+            randLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select aGEnt.dtype {
+            when DType.Int64 do return sampleHelper(int);
+            when DType.UInt64 do return sampleHelper(uint);
+            when DType.Float64 do return sampleHelper(real);
+            when DType.Bool do return sampleHelper(bool);
+            otherwise {
+                const errorMsg = "Unhandled data type %s".doFormat(dtype2str(aGEnt.dtype));
+                randLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+
+    }
+
     use CommandMap;
     registerFunction("randomNormal", randomNormalMsg, getModuleName());
     registerFunction("createGenerator", createGeneratorMsg, getModuleName());
     registerFunction("uniformGenerator", uniformGeneratorMsg, getModuleName());
     registerFunction("permutation", permutationMsg, getModuleName());
     registerFunction("shuffle", shuffleMsg, getModuleName());
+    registerFunction("sampleWeights", sampleWeightsMsg, getModuleName());
 }
