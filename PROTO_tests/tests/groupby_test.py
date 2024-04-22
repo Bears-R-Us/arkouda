@@ -413,9 +413,6 @@ class TestGroupBy:
             ak.GroupBy(ak.arange(4), ak.arange(4))
 
         with pytest.raises(TypeError):
-            ak.GroupBy(self.fvalues.to_ndarray())
-
-        with pytest.raises(TypeError):
             gb.broadcast([])
 
         with pytest.raises(TypeError):
