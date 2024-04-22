@@ -161,14 +161,12 @@ class TestNumeric:
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_histogram(self, num_type):
         pda = ak.randint(10, 30, 40, dtype=num_type)
-        # The line below has bins and result in the wrong order.
-#       bins, result = ak.histogram(pda, bins=20)
         result, bins = ak.histogram(pda, bins=20)
 
         assert isinstance(result, ak.pdarray)
         assert 21 == len(bins) 
         assert 20 == len(result)
-        assert int == result.dtype # this is failing; is this check new?
+        assert int == result.dtype
 
         with pytest.raises(TypeError):
             ak.histogram(np.array([range(0, 10)]).astype(num_type), bins=1)
@@ -457,12 +455,6 @@ class TestNumeric:
 
     def test_value_counts_error(self):
         pda = ak.linspace(1, 10, 10)
-
-        # This first test should not raise TypeError, and so it causes the test to fail.
-        # Why is this here?
-
-#       with pytest.raises(TypeError):
-#           ak.value_counts(pda)
 
         with pytest.raises(TypeError):
             ak.value_counts([0])

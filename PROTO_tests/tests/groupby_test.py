@@ -89,7 +89,7 @@ class TestGroupBy:
 # For pandas equivalency tests, the standard problem size of 10**8 is much too large, especially
 # in the case of "aggregate by product."  For large vectors of random integers from 0 through N,
 # it's inevitable that the product will either be zero (if the vector includes a zero) or infinity
-# (if it doesn't).  So in the case of 'prod', size is arbitrarily reduced to 20.
+# (if it doesn't).  So in the case of 'prod', size is arbitrarily set to 100.
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("levels", LEVELS)
@@ -413,8 +413,7 @@ class TestGroupBy:
             ak.GroupBy(ak.arange(4), ak.arange(4))
 
         with pytest.raises(TypeError):
-            ak.GroupBy(self.fvalues)
-#       ak.GroupBy(self.fvalues)  # will this cause a different error?
+            ak.GroupBy(self.fvalues.to_ndarray())
 
         with pytest.raises(TypeError):
             gb.broadcast([])
