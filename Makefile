@@ -431,7 +431,7 @@ $(DOC_DIR):
 	mkdir -p $@
 
 .PHONY: doc
-doc: doc-python doc-server
+doc: gen-stubs doc-python doc-server
 
 CHPLDOC := chpldoc
 CHPLDOC_FLAGS := --process-used-modules
@@ -553,3 +553,6 @@ cleanall: clean $(CLEANALL_TARGETS)
 
 .PHONY: help
 help: $(HELP_TARGETS)
+
+gen-stubs:
+	python3 pydoc/preprocess/generate_import_stubs.py
