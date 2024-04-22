@@ -143,6 +143,7 @@ Functions
 
    Returns
     -------
+   :
     List[Mapping[str, Union[str, int, float]]]
         total_mem: total physical memory on locale host
         avail_mem: current available memory on locale host

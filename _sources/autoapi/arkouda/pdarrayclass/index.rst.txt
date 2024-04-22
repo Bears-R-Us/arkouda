@@ -1510,8 +1510,8 @@ Functions
                  original value. Default set to True.
    :type where: Boolean or pdarray
 
-   :returns: * *pdarray*
-             * *Returns a pdarray of values raised to a power, under the boolean where condition.*
+   :returns: pdarray
+             Returns a pdarray of values raised to a power, under the boolean where condition.
 
    .. rubric:: Examples
 
@@ -1591,15 +1591,14 @@ Functions
                  Default set to True.
    :type where: Boolean or pdarray
 
-   :returns: * *pdarray*
-             * *Returns a pdarray of square rooted values, under the boolean where condition.*
-
-   Examples:
-   >>> a = ak.arange(5)
-   >>> ak.sqrt(a)
-   array([0 1 1.4142135623730951 1.7320508075688772 2])
-   >>> ak.sqrt(a, ak.sqrt([True, True, False, False, True]))
-   array([0, 1, 2, 3, 2])
+   :returns: * pdarray
+               Returns a pdarray of square rooted values, under the boolean where condition.
+             * *Examples*
+             * *>>> a = ak.arange(5)*
+             * *>>> ak.sqrt(a)*
+             * *array([0 1 1.4142135623730951 1.7320508075688772 2])*
+             * *>>> ak.sqrt(a, ak.sqrt([True, True, False, False, True]))*
+             * *array([0, 1, 2, 3, 2])*
 
 
 .. py:function:: std(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64

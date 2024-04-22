@@ -83,11 +83,9 @@ Functions
                   to (but is faster than) ``~ak.in1d(a, b)``.
    :type invert: bool, optional
 
-   :rtype: True for each row in a that is contained in b
-
-   Return Type
-   ------------
-       pdarray, bool
+   :returns: * True for each row in a that is contained in b
+             * *Return Type*
+             * *------------* -- pdarray, bool
 
    .. rubric:: Notes
 

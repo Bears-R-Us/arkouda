@@ -10,6 +10,8 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -202,11 +204,17 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/char/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy.char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy.imports</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../random/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.random</span></code></a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.special</span></code></a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../scipy/stats/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.stats</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.scipy.stats</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../scipy/stats/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.stats.imports</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../scipy/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.imports</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
@@ -246,7 +254,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -671,7 +679,7 @@ until they are unregistered.</p>
 <dd><p>Count leading zeros for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.uint64" title="arkouda.numpy.imports.uint64"><em>uint64</em></a><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>lz</strong> – The number of leading zeros of each element.</p>
@@ -763,7 +771,7 @@ cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))</p>
 <dd><p>Count trailing zeros for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.uint64" title="arkouda.numpy.imports.uint64"><em>uint64</em></a><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>lz</strong> – The number of trailing zeros of each element.</p>
@@ -1093,7 +1101,7 @@ It is equivalent to np.mod, the remainder has the same sign as the divisor.</p>
 <dd><p>Find the bit parity (XOR of all bits) for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.uint64" title="arkouda.numpy.imports.uint64"><em>uint64</em></a><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>parity</strong> – The parity of each element: 0 if even number of bits set, 1 if odd.</p>
@@ -2294,7 +2302,7 @@ the file name is checked for _LOCALE#### to determine if it is distributed.</p><
 <dd><p>Find the population (number of bits set) for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em>, </em><em>uint64</em><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.uint64" title="arkouda.numpy.imports.uint64"><em>uint64</em></a><em>, </em><em>bigint</em>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>population</strong> – The number of bits set (1) in each element</p>
@@ -2335,11 +2343,8 @@ original value. Default set to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>pdarray</em></p></li>
-<li><p><em>Returns a pdarray of values raised to a power, under the boolean where condition.</em></p></li>
-</ul>
-</p>
+<dd class="field-even"><p>pdarray
+Returns a pdarray of values raised to a power, under the boolean where condition.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -2450,18 +2455,18 @@ Default set to True.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><em>pdarray</em></p></li>
-<li><p><em>Returns a pdarray of square rooted values, under the boolean where condition.</em></p></li>
+<li><p>pdarray
+Returns a pdarray of square rooted values, under the boolean where condition.</p></li>
+<li><p><em>Examples</em></p></li>
+<li><p><em>&gt;&gt;&gt; a = ak.arange(5)</em></p></li>
+<li><p><em>&gt;&gt;&gt; ak.sqrt(a)</em></p></li>
+<li><p><em>array([0 1 1.4142135623730951 1.7320508075688772 2])</em></p></li>
+<li><p><em>&gt;&gt;&gt; ak.sqrt(a, ak.sqrt([True, True, False, False, True]))</em></p></li>
+<li><p><em>array([0, 1, 2, 3, 2])</em></p></li>
 </ul>
 </p>
 </dd>
 </dl>
-<p>Examples:
-&gt;&gt;&gt; a = ak.arange(5)
-&gt;&gt;&gt; ak.sqrt(a)
-array([0 1 1.4142135623730951 1.7320508075688772 2])
-&gt;&gt;&gt; ak.sqrt(a, ak.sqrt([True, True, False, False, True]))
-array([0, 1, 2, 3, 2])</p>
 </dd></dl>
 
 <dl class="py function">
@@ -2783,5 +2788,6 @@ normally distributed variables.</p>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
     </body>
 </html>

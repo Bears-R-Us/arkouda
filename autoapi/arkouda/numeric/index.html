@@ -10,6 +10,8 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -202,11 +204,17 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/char/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy.char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy.imports</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../random/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.random</span></code></a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.special</span></code></a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../scipy/stats/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.stats</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.scipy.stats</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../scipy/stats/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.stats.imports</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../scipy/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.imports</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
@@ -246,7 +254,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -774,9 +782,9 @@ See examples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em> or </em><em>float64</em>) – the array of values to clip</p></li>
-<li><p><strong>lo</strong> (<em>scalar</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em> or </em><em>float64</em>) – the lower value of the clipping range</p></li>
-<li><p><strong>hi</strong> (<em>scalar</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em> or </em><em>float64</em>) – the higher value of the clipping range</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a><em> or </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.float64" title="arkouda.numpy.imports.float64"><em>float64</em></a>) – the array of values to clip</p></li>
+<li><p><strong>lo</strong> (<em>scalar</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a><em> or </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.float64" title="arkouda.numpy.imports.float64"><em>float64</em></a>) – the lower value of the clipping range</p></li>
+<li><p><strong>hi</strong> (<em>scalar</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a><em> or </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.float64" title="arkouda.numpy.imports.float64"><em>float64</em></a>) – the higher value of the clipping range</p></li>
 <li><p><strong>pdarrays</strong> (<em>If lo</em><em> or </em><em>hi</em><em> (or </em><em>both</em><em>) </em><em>are</em>) – See examples.</p></li>
 <li><p><strong>elements.</strong> (<em>the check is by pairwise</em>) – See examples.</p></li>
 </ul>
@@ -1121,7 +1129,7 @@ do a rotation by the ordinal of the array.</p>
 <dd class="field-even"><p>Bin edges and The number of values present in each bin</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int64 or float64])</p>
+<dd class="field-odd"><p>(<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64">int64</a> or <a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.float64" title="arkouda.numpy.imports.float64">float64</a>])</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1673,7 +1681,7 @@ of the original pdarray</p>
 <dd><p>Count the occurrences of the unique values of an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The array of values to count</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a>) – The array of values to count</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
@@ -1907,5 +1915,6 @@ is not currently supported in Arkouda</p>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
     </body>
 </html>

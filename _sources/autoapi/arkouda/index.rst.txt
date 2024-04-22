@@ -20585,11 +20585,9 @@ Attributes
                   to (but is faster than) ``~ak.in1d(a, b)``.
    :type invert: bool, optional
 
-   :rtype: True for each row in a that is contained in b
-
-   Return Type
-   ------------
-       pdarray, bool
+   :returns: * True for each row in a that is contained in b
+             * *Return Type*
+             * *------------* -- pdarray, bool
 
    .. rubric:: Notes
 
@@ -20620,11 +20618,9 @@ Attributes
                   to (but is faster than) ``~ak.in1d(a, b)``.
    :type invert: bool, optional
 
-   :rtype: True for each row in a that is contained in b
-
-   Return Type
-   ------------
-       pdarray, bool
+   :returns: * True for each row in a that is contained in b
+             * *Return Type*
+             * *------------* -- pdarray, bool
 
    .. rubric:: Notes
 
@@ -20655,11 +20651,9 @@ Attributes
                   to (but is faster than) ``~ak.in1d(a, b)``.
    :type invert: bool, optional
 
-   :rtype: True for each row in a that is contained in b
-
-   Return Type
-   ------------
-       pdarray, bool
+   :returns: * True for each row in a that is contained in b
+             * *Return Type*
+             * *------------* -- pdarray, bool
 
    .. rubric:: Notes
 
@@ -27449,8 +27443,8 @@ Attributes
                  original value. Default set to True.
    :type where: Boolean or pdarray
 
-   :returns: * *pdarray*
-             * *Returns a pdarray of values raised to a power, under the boolean where condition.*
+   :returns: pdarray
+             Returns a pdarray of values raised to a power, under the boolean where condition.
 
    .. rubric:: Examples
 
@@ -28463,13 +28457,14 @@ Attributes
    :param bias: If False, then the calculations are corrected for statistical bias.
    :type bias: bool, optional
 
-   :returns: The skew of all elements in the array
-   :rtype: np.float64
+   :returns: *
 
-   Examples:
-   >>> a = ak.array([1, 1, 1, 5, 10])
-   >>> ak.skew(a)
-   0.9442193396379163
+               np.float64
+                   The skew of all elements in the array
+             * *Examples*
+             * *>>> a = ak.array([1, 1, 1, 5, 10])*
+             * *>>> ak.skew(a)*
+             * *0.9442193396379163*
 
 
 .. py:function:: snapshot(filename)
@@ -28532,15 +28527,14 @@ Attributes
                  Default set to True.
    :type where: Boolean or pdarray
 
-   :returns: * *pdarray*
-             * *Returns a pdarray of square rooted values, under the boolean where condition.*
-
-   Examples:
-   >>> a = ak.arange(5)
-   >>> ak.sqrt(a)
-   array([0 1 1.4142135623730951 1.7320508075688772 2])
-   >>> ak.sqrt(a, ak.sqrt([True, True, False, False, True]))
-   array([0, 1, 2, 3, 2])
+   :returns: * pdarray
+               Returns a pdarray of square rooted values, under the boolean where condition.
+             * *Examples*
+             * *>>> a = ak.arange(5)*
+             * *>>> ak.sqrt(a)*
+             * *array([0 1 1.4142135623730951 1.7320508075688772 2])*
+             * *>>> ak.sqrt(a, ak.sqrt([True, True, False, False, True]))*
+             * *array([0, 1, 2, 3, 2])*
 
 
 .. py:function:: square(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray

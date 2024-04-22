@@ -10,6 +10,8 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -202,11 +204,17 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/char/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy.char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy.imports</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../random/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.random</span></code></a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.special</span></code></a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../scipy/stats/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.stats</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.scipy.stats</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../scipy/stats/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.stats.imports</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../scipy/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.imports</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
@@ -246,7 +254,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -699,7 +707,7 @@ Accordingly, the supported dtypes match are defined by the ak.full method.</p>
 <dd class="field-even"><p>Array of evenly spaced float values along the interval</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, float64</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.float64" title="arkouda.numpy.imports.float64">float64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if start or stop is not a float or int or if length is not an int</p>
@@ -735,7 +743,7 @@ in descending order.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>size</strong> (<em>int_scalars</em>) – Size of the array (only rank-1 arrays supported)</p></li>
-<li><p><strong>dtype</strong> (<em>Union</em><em>[</em><em>float64</em><em>, </em><em>int64</em><em>, </em><em>bool</em><em>]</em>) – Resulting array type, default float64</p></li>
+<li><p><strong>dtype</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.float64" title="arkouda.numpy.imports.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a><em>, </em><em>bool</em><em>]</em>) – Resulting array type, default float64</p></li>
 <li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays</p></li>
 </ul>
 </dd>
@@ -824,7 +832,7 @@ specified range bounded by the low and high parameters.</p>
 <li><p><strong>low</strong> (<em>numeric_scalars</em>) – The low value (inclusive) of the range</p></li>
 <li><p><strong>high</strong> (<em>numeric_scalars</em>) – The high value (exclusive for int, inclusive for float) of the range</p></li>
 <li><p><strong>size</strong> (<em>int_scalars</em>) – The length of the returned array</p></li>
-<li><p><strong>dtype</strong> (<em>Union</em><em>[</em><em>int64</em><em>, </em><em>float64</em><em>, </em><em>bool</em><em>]</em>) – The dtype of the array</p></li>
+<li><p><strong>dtype</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.float64" title="arkouda.numpy.imports.float64"><em>float64</em></a><em>, </em><em>bool</em><em>]</em>) – The dtype of the array</p></li>
 <li><p><strong>seed</strong> (<em>int_scalars</em><em>, </em><em>optional</em>) – Index for where to pull the first returned value</p></li>
 </ul>
 </dd>
@@ -979,7 +987,7 @@ minlen and maxlen, and with characters drawn from a specified set.</p>
 <dd class="field-even"><p>The array of random numbers</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, float64</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.float64" title="arkouda.numpy.imports.float64">float64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1020,7 +1028,7 @@ in a specified range.</p>
 <dd class="field-even"><p>Values drawn uniformly from the specified range</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, float64</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.float64" title="arkouda.numpy.imports.float64">float64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1224,6 +1232,7 @@ pdarray.</p>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     </body>
 </html>

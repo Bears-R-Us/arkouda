@@ -13,3 +13,12 @@ Subpackages
    char/index.rst
 
 
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   imports/index.rst
+
+

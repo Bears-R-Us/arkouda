@@ -10,6 +10,8 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -202,11 +204,17 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/char/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy.char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numpy.imports</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../random/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.random</span></code></a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.special</span></code></a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../scipy/stats/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.stats</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.scipy.stats</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../scipy/stats/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.stats.imports</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../scipy/imports/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.scipy.imports</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
@@ -246,7 +254,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -479,7 +487,7 @@ another array of values and perform a bitwise AND reduction on
 each group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The values to group and reduce with AND</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a>) – The values to group and reduce with AND</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
@@ -509,7 +517,7 @@ another array of values and perform a bitwise OR reduction on
 each group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The values to group and reduce with OR</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a>) – The values to group and reduce with OR</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
@@ -539,7 +547,7 @@ another array of values and perform a bitwise XOR reduction on
 each group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The values to group and reduce with XOR</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a>) – The values to group and reduce with XOR</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
@@ -1155,7 +1163,7 @@ modal value that occurs first.</p>
 array of values and return the number of unique values in each group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The values to group and find unique values</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a>) – The values to group and find unique values</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
@@ -1571,12 +1579,12 @@ normally distributed variables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>segments</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – Offsets of the start of each row in the sparse matrix or grouped array.
+<li><p><strong>segments</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a>) – Offsets of the start of each row in the sparse matrix or grouped array.
 Must be sorted in ascending order.</p></li>
 <li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a>) – The values to broadcast, one per row (or group)</p></li>
 <li><p><strong>size</strong> (<em>int</em>) – The total number of nonzeros in the matrix. If permutation is given, this
 argument is ignored and the size is inferred from the permutation array.</p></li>
-<li><p><strong>permutation</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The permutation to go from the original ordering of nonzeros to the ordering
+<li><p><strong>permutation</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.int64" title="arkouda.numpy.imports.int64"><em>int64</em></a>) – The permutation to go from the original ordering of nonzeros to the ordering
 grouped by row. To broadcast values back to the original ordering, this
 permutation will be inverted. If no permutation is supplied, it is assumed
 that the original nonzeros were already grouped by row. In this case, the
@@ -1792,5 +1800,6 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
     </body>
 </html>

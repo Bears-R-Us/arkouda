@@ -11,6 +11,16 @@ Subpackages
    :maxdepth: 3
 
    special/index.rst
+   stats/index.rst
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   imports/index.rst
 
 
 Package Contents
