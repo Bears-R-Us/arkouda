@@ -31,7 +31,7 @@ or
    (i.e., the 25th matrix)
    
 
-.. function:: proc domOnAxis(D: domain, idx: D.rank*int, axes: [?aD] int): domain throws
+.. function:: proc domOnAxis(D: domain(?), idx: D.rank*int, axes: [?aD] int): domain throws
 
 .. function:: proc domOffAxis(D: domain(?), axes: int ...?NA): domain(?) where NA < D.rank
 
@@ -46,9 +46,9 @@ or
    (i.e., a set of indices for the 1000 matrices)
    
 
-.. function:: proc domOffAxis(D: domain, axes: [?aD] int): domain throws
+.. function:: proc domOffAxis(D: domain(?), axes: [?aD] int): domain throws
 
-.. function:: proc subDomChunk(dom: domain, chunkIdx: int, nChunks: int): domain
+.. function:: proc subDomChunk(dom: domain(?), chunkIdx: int, nChunks: int): domain
 
    
    Naively create a domain over a chunk of the input domain

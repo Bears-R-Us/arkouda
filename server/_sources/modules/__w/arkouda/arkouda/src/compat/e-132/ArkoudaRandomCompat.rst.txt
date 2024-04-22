@@ -33,6 +33,8 @@ or
 
    .. method:: proc ref permute(d: domain(?)): [] d.idxType where is1DRectangularDomain(d) && isCoercible(this.eltType, d.idxType)
 
+   .. method:: proc ref next(): eltType
+
    .. method:: proc skipTo(n: int)
 
 .. function:: proc sample(arr: [?d] ?t, n: int, withReplacement: bool): [] t throws
