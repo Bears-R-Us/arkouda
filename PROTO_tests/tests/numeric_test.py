@@ -20,7 +20,7 @@ NP_TRIG_ARRAYS = {
             np.array([np.nan, -np.inf, -0.0, 0.0, np.inf]),
         ]
     ),
-    ak.bool: np.arange(10) % 2 == 0,
+    ak.bool: alternatingTF(10),
     ak.uint64: np.arange(2**64 - 10, 2**64, dtype=np.uint64),
 }
 
@@ -40,13 +40,13 @@ ROUNDTRIP_CAST = [
 # This is a fairly fast and fairly straightforward approach.
 
 def alternatingTF (n) :
-    a = np.full(n,False)
-    a[::2] = True
-    return a
+    atf = np.full(n,False)
+    atf[::2] = True
+    return atf
 
 def _trig_test_helper(np_func, na, ak_func, pda):
     assert np.allclose(np_func(na), ak_func(pda).to_ndarray(), equal_nan=True)
-    truth_np = np.arange(len(na)) % 2 == 0
+    truth_np = alternatingTF(len(na)
     truth_ak = ak.array(truth_np)
     assert np.allclose(np_func(na, where=True), ak_func(pda, where=True).to_ndarray(), equal_nan=True)
     assert np.allclose(na, ak_func(pda, where=False).to_ndarray(), equal_nan=True)
@@ -306,7 +306,7 @@ class TestNumeric:
         pda_num = ak.array(na_num, dtype=num_type)
         pda_denom = ak.array(na_denom, dtype=denom_type)
 
-        truth_np = np.arange(len(na_num)) % 2 == 0
+        truth_np = alternatingTF(len(na_num))
         truth_ak = ak.array(truth_np)
 
         assert np.allclose(
