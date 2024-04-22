@@ -12,6 +12,14 @@ INT_FLOAT = [ak.int64, ak.float64]
 
 SUPPORTED_TYPES = [ak.bool, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
 
+# There are many ways to create a vector of alternating True, False values.
+# This is a fairly fast and fairly straightforward approach.
+
+def alternatingTF (n) :
+    atf = np.full(n,False)
+    atf[::2] = True
+    return atf
+
 NP_TRIG_ARRAYS = {
     ak.int64: np.arange(-5, 5),
     ak.float64: np.concatenate(
@@ -36,17 +44,9 @@ ROUNDTRIP_CAST = [
     (ak.uint8, npstr),
 ]
 
-# There are many ways to create a vector of alternating True, False values.
-# This is a fairly fast and fairly straightforward approach.
-
-def alternatingTF (n) :
-    atf = np.full(n,False)
-    atf[::2] = True
-    return atf
-
 def _trig_test_helper(np_func, na, ak_func, pda):
     assert np.allclose(np_func(na), ak_func(pda).to_ndarray(), equal_nan=True)
-    truth_np = alternatingTF(len(na)
+    truth_np = alternatingTF(len(na))
     truth_ak = ak.array(truth_np)
     assert np.allclose(np_func(na, where=True), ak_func(pda, where=True).to_ndarray(), equal_nan=True)
     assert np.allclose(na, ak_func(pda, where=False).to_ndarray(), equal_nan=True)
