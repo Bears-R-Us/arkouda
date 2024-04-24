@@ -11,6 +11,8 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 
 from arkouda import io_util
+from arkouda import to_zarr, read_zarr
+import arkouda.array_api as Array
 
 """
 Tests writing Arkouda pdarrays to and reading from files
@@ -1400,6 +1402,19 @@ class IOTest(ArkoudaTest):
 
                     self.assertIsInstance(rd_idx, ak.MultiIndex)
                     self.assertListEqual(idx.to_list(), rd_idx.to_list())
+
+    def test_zarr_read_write(self):
+        shapes = [(10,), (10, 20), (10, 20, 30)]
+        chunk_shapes = [(2,), (2, 5), (2, 7, 12)]
+        dtypes = [ak.int64, ak.float64]
+        for shape,chunk_shape in zip(shapes,chunk_shapes):
+            for dtype in dtypes:
+                a = Array.full(shape, 7, dtype=dtype)
+                with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+                    to_zarr(f"{tmp_dirname}", a._array, chunk_shape)
+                    b = read_zarr(f"{tmp_dirname}", len(shape), dtype)
+                    self.assertTrue(np.allclose(a.to_ndarray(), b.to_ndarray()))
+
 
     def tearDown(self):
         super(IOTest, self).tearDown()

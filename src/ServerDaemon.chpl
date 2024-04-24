@@ -26,6 +26,7 @@ module ServerDaemon {
     use BigIntMsg;
     use NumPyDType;
     use StatusMsg;
+    use ZarrMsg;
 
     use ArkoudaFileCompat;
     use ArkoudaIOCompat;

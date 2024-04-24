@@ -19,6 +19,7 @@ from arkouda.pdarraycreation import arange, array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
+import arkouda.array_api as Array
 
 __all__ = [
     "get_filetype",
@@ -30,6 +31,7 @@ __all__ = [
     "read_hdf",
     "read_parquet",
     "read_csv",
+    "read_zarr",
     "read",
     "read_tagged_data",
     "import_data",
@@ -37,6 +39,7 @@ __all__ = [
     "to_hdf",
     "to_parquet",
     "to_csv",
+    "to_zarr",
     "save_all",
     "load",
     "load_all",
@@ -1550,6 +1553,28 @@ def to_csv(
         },
     )
 
+def to_zarr(store_path: str, arr: Union[pdarray, Strings], chunk_shape):
+    ndim = arr.ndim
+    assert(ndim == len(chunk_shape))
+    generic_msg(
+        cmd=f"writeAllZarr{ndim}D",
+        args={
+            "store_path": store_path,
+            "arr": arr,
+            "chunk_shape": chunk_shape
+        }
+    )
+
+def read_zarr(store_path: str, ndim: int, dtype):
+    rep_msg = generic_msg(
+        cmd=f"readAllZarr{ndim}D",
+        args={
+            "store_path": store_path,
+            "dtype": dtype
+        }
+    )
+    return Array.asarray(create_pdarray(rep_msg))
+    
 
 def save_all(
     columns: Union[
