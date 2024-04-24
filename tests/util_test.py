@@ -10,8 +10,9 @@ class UtilTest(ArkoudaTest):
         rng = np.random.default_rng()
         seeds = [rng.choice(2**63), rng.choice(2**63), rng.choice(2**63), rng.choice(2**63)]
         set_seeds = [1000509587142185552, 5931535381009490148, 5631286082363685405, 3867516237354681488]
-        # run twice: with random seeds and with the seeds that previously failed
-        for seed1, seed2, seed3, seed4 in seeds, set_seeds:
+        set_seeds2 = [8086790153783974714, 2380734683647922470, 2906987507681887800, 4967208342496478642]
+        # run three times: with random seeds and with the seeds that previously failed
+        for seed1, seed2, seed3, seed4 in [seeds, set_seeds, set_seeds2]:
             cfg = ak.get_config()
             N = (10**3) * cfg["numLocales"]
             select_from = ak.arange(N)
@@ -35,6 +36,7 @@ class UtilTest(ArkoudaTest):
                 are_pdarrays_equal(merge_idx, sort_idx)
                 and are_pdarrays_equal(merge_idx, gb_idx)
                 and are_pdarrays_equal(merge_vals, sort_vals)
+                and are_pdarrays_equal(merge_vals, gb_vals)
             )
             if not cond:
                 print(f"\nnum locales: {cfg['numLocales']}")
