@@ -355,6 +355,30 @@ This mimics the behavior we see in numpy</p></li>
 </dl>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.random._generator.Generator.choice">
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/random/_generator.html#Generator.choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random._generator.Generator.choice" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a randomly sample from a.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>int</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – If a is an integer, randomly sample from ak.arange(a).
+If a is a pdarray, randomly sample from a.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements to be sampled</p></li>
+<li><p><strong>replace</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, sample with replacement. Otherwise sample without replacement.
+Defaults to True</p></li>
+<li><p><strong>p</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – p is the probabilities or weights associated with each element of a</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing the sampled values or a single random value if size not provided.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, numeric_scalar</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.random._generator.Generator.integers">
 <span class="sig-name descname"><span class="pre">integers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">akint64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/random/_generator.html#Generator.integers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random._generator.Generator.integers" title="Link to this definition">¶</a></dt>
 <dd><p>Return random integers from low (inclusive) to high (exclusive),
@@ -591,6 +615,7 @@ then the value must be non-negative. If passed a <cite>Generator</cite>, it will
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a><ul>
 <li><a class="reference internal" href="#arkouda.random._generator.Generator"><code class="docutils literal notranslate"><span class="pre">Generator</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.random._generator.Generator.choice"><code class="docutils literal notranslate"><span class="pre">Generator.choice()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random._generator.Generator.integers"><code class="docutils literal notranslate"><span class="pre">Generator.integers()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random._generator.Generator.permutation"><code class="docutils literal notranslate"><span class="pre">Generator.permutation()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random._generator.Generator.random"><code class="docutils literal notranslate"><span class="pre">Generator.random()</span></code></a></li>

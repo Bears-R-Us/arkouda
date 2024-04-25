@@ -9171,6 +9171,25 @@ Attributes
       :obj:`default_rng`
           Recommended constructor for `Generator`.
 
+   .. py:method:: choice(a, size=None, replace=True, p=None)
+
+      Generates a randomly sample from a.
+
+      :param a: If a is an integer, randomly sample from ak.arange(a).
+                If a is a pdarray, randomly sample from a.
+      :type a: int or pdarray
+      :param size: Number of elements to be sampled
+      :type size: int, optional
+      :param replace: If True, sample with replacement. Otherwise sample without replacement.
+                      Defaults to True
+      :type replace: bool, optional
+      :param p: p is the probabilities or weights associated with each element of a
+      :type p: pdarray, optional
+
+      :returns: A pdarray containing the sampled values or a single random value if size not provided.
+      :rtype: pdarray, numeric_scalar
+
+
    .. py:method:: integers(low, high=None, size=None, dtype=akint64, endpoint=False)
 
       Return random integers from low (inclusive) to high (exclusive),

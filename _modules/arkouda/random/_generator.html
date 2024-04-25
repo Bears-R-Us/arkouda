@@ -356,6 +356,91 @@
         <span class="n">_str</span> <span class="o">+=</span> <span class="s2">&quot;(PCG64)&quot;</span>
         <span class="k">return</span> <span class="n">_str</span>
 
+<div class="viewcode-block" id="Generator.choice">
+<a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.choice">[docs]</a>
+    <span class="k">def</span> <span class="nf">choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a randomly sample from a.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        a: int or pdarray</span>
+<span class="sd">            If a is an integer, randomly sample from ak.arange(a).</span>
+<span class="sd">            If a is a pdarray, randomly sample from a.</span>
+
+<span class="sd">        size: int, optional</span>
+<span class="sd">            Number of elements to be sampled</span>
+
+<span class="sd">        replace: bool, optional</span>
+<span class="sd">            If True, sample with replacement. Otherwise sample without replacement.</span>
+<span class="sd">            Defaults to True</span>
+
+<span class="sd">        p: pdarray, optional</span>
+<span class="sd">            p is the probabilities or weights associated with each element of a</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray, numeric_scalar</span>
+<span class="sd">            A pdarray containing the sampled values or a single random value if size not provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ret_scalar</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret_scalar</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+
+        <span class="k">if</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">):</span>
+            <span class="n">is_domain</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">to_numpy_dtype</span><span class="p">(</span><span class="n">akint64</span><span class="p">)</span>
+            <span class="n">pop_size</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="n">is_domain</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">to_numpy_dtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">pop_size</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;choice only accepts a pdarray or int scalar.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">replace</span> <span class="ow">and</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="n">pop_size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot take a larger sample than population when replace is False&quot;</span><span class="p">)</span>
+
+        <span class="n">has_weights</span> <span class="o">=</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">has_weights</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;weights must be a pdarray&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">akfloat64</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># weighted sample requires float and non-weighted uses int</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">to_numpy_dtype</span><span class="p">(</span><span class="n">akfloat64</span> <span class="k">if</span> <span class="n">has_weights</span> <span class="k">else</span> <span class="n">akint64</span><span class="p">)]</span>
+
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;choice&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;gName&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;aName&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
+                <span class="s2">&quot;wName&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">,</span>
+                <span class="s2">&quot;numSamples&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+                <span class="s2">&quot;replace&quot;</span><span class="p">:</span> <span class="n">replace</span><span class="p">,</span>
+                <span class="s2">&quot;hasWeights&quot;</span><span class="p">:</span> <span class="n">has_weights</span><span class="p">,</span>
+                <span class="s2">&quot;isDom&quot;</span><span class="p">:</span> <span class="n">is_domain</span><span class="p">,</span>
+                <span class="s2">&quot;popSize&quot;</span><span class="p">:</span> <span class="n">pop_size</span><span class="p">,</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">,</span>
+                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="c1"># for the non-weighted domain case we pull pop_size numbers from the generator.</span>
+        <span class="c1"># for other cases we may be more than the numbers drawn, but that&#39;s okay. The important</span>
+        <span class="c1"># thing is not repeating any positions in the state.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="n">pop_size</span>
+
+        <span class="n">pda</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pda</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ret_scalar</span> <span class="k">else</span> <span class="n">pda</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
 <div class="viewcode-block" id="Generator.integers">
 <a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.integers">[docs]</a>
     <span class="k">def</span> <span class="nf">integers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -582,7 +667,7 @@
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">to_numpy_dtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
             <span class="n">size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;permtation only accepts a pdarray or int scalar.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;permutation only accepts a pdarray or int scalar.&quot;</span><span class="p">)</span>
 
         <span class="c1"># we have to use the int version since we permute the domain</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">to_numpy_dtype</span><span class="p">(</span><span class="n">akint64</span><span class="p">)]</span>
