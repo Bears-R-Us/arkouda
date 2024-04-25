@@ -207,8 +207,8 @@ module RandArray {
         // add the sampled index to the list of indices and the list of samples
         weightsCopy[ii] = 0;
         indices += ii;
-        i += 1;
         samples[i] = ii;
+        i += 1;
 
         // recompute the normalized cumulative weights
         cw = + scan weightsCopy;
