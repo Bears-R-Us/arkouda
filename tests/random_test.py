@@ -176,7 +176,6 @@ class RandomTest(ArkoudaTest):
         self.assertIs(type(scalar), np.int64)
         self.assertIn(scalar, [0, 1, 2, 3, 4])
 
-    @pytest.mark.skip(reason="skip until issue #3118 is resolved")
     def test_choice_flags(self):
         # use numpy to randomly generate a set seed
         seed = np.random.default_rng().choice(2**63)

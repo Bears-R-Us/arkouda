@@ -32,7 +32,70 @@ module ArkoudaRandomCompat {
     }
 
     proc ref sample(d: domain(?), n: int, withReplacement = false): [] d.idxType throws  where is1DRectangularDomain(d) {
-      return r.choice(d, n, withReplacement);
+      return choiceUniform(r, d, n, withReplacement);
+
+      /* _choice branch for uniform distribution */
+      proc choiceUniform(stream, X: domain(?), size: ?sizeType, replace: bool) throws
+      {
+        use Set;
+        use Math;
+
+        const low = X.low,
+              stride = abs(X.stride);
+
+        if isNothingType(sizeType) {
+          // Return 1 sample
+          var randVal = stream.getNext(resultType=int, 0, X.sizeAs(X.idxType)-1);
+          var randIdx = X.dim(0).orderToIndex(randVal);
+          return randIdx;
+        } else {
+          // Return numElements samples
+
+          // Compute numElements for tuple case
+          var m = 1;
+          if isDomainType(sizeType) then m = size.size;
+
+          var numElements = if isDomainType(sizeType) then m
+                            else if isIntegralType(sizeType) then size:int
+                            else compilerError('choice() size type must be integral or tuple of ranges');
+
+          // Return N samples
+          var samples: [0..<numElements] int;
+
+          if replace {
+            for sample in samples {
+              var randVal = stream.getNext(resultType=int, 0, X.sizeAs(X.idxType)-1);
+              var randIdx = X.dim(0).orderToIndex(randVal);
+              sample = randIdx;
+            }
+          } else {
+            if numElements < log2(X.sizeAs(X.idxType)) {
+              var indices: set(int);
+              var i: int = 0;
+              while i < numElements {
+                var randVal = stream.getNext(resultType=int, 0, X.sizeAs(X.idxType)-1);
+                if !indices.contains(randVal) {
+                  var randIdx = X.dim(0).orderToIndex(randVal);
+                  samples[i] = randIdx;
+                  indices.add(randVal);
+                  i += 1;
+                }
+              }
+            } else {
+              var indices: [X] int = X;
+              stream.shuffle(indices);
+              for i in samples.domain {
+                samples[i] = (indices[X.dim(0).orderToIndex(i)]);
+              }
+            }
+          }
+          if isIntegralType(sizeType) {
+            return samples;
+          } else if isDomainType(sizeType) {
+            return reshape(samples, size);
+          }
+        }
+      }
     }
     proc ref next(): eltType do return r.getNext();
     proc skipTo(n: int) do try! r.skipToNth(n);
