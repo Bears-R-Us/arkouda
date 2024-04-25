@@ -140,7 +140,7 @@ class TestRandom:
         weighted_sample = rng.choice(ak.arange(5), size=num_samples, p=weights)
 
         # count how many of each category we saw
-        uk, f_obs = ak.GroupBy(weighted_sample).count()
+        uk, f_obs = ak.GroupBy(weighted_sample).size()
 
         # I think the keys should always be sorted but just in case
         if not ak.is_sorted(uk):
@@ -165,7 +165,7 @@ class TestRandom:
         perm = rng.permutation(100)
         array_choice = rng.choice(perm, 95, replace=False)
         # verify all unique
-        _, count = ak.GroupBy(array_choice).count()
+        _, count = ak.GroupBy(array_choice).size()
         assert (count == 1).all()
 
         # test single value
