@@ -739,8 +739,6 @@ module AryUtil
     proc unflatten(const ref a: [?d] ?t, shape: ?N*int): [] t throws {
       var unflat = makeDistArray((...shape), t);
 
-      writeln("unflatten from: ", d.size, " to: ", shape);
-
       if N == 1 {
         unflat = a;
         return unflat;
@@ -796,10 +794,6 @@ module AryUtil
           }
         }
       }
-
-      writeln("---------------------");
-      writeln("unflat: ", unflat);
-      writeln("---------------------");
 
       return unflat;
     }

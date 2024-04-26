@@ -472,10 +472,10 @@ class pdarray:
             except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
             repMsg = generic_msg(cmd=f"binopvv{x1.ndim}D", args={"op": op, "a": x1, "b": x2})
-            # if tmp_x1:
-            #     del x1
-            # if tmp_x2:
-            #     del x2
+            if tmp_x1:
+                del x1
+            if tmp_x2:
+                del x2
             return create_pdarray(repMsg)
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
