@@ -44,6 +44,7 @@ pd.set_option("display.max_colwidth", 65)
 
 __all__ = [
     "DataFrame",
+    "DataFrameGroupBy",
     "DiffAggregate",
     "intersect",
     "invert_permutation",
@@ -59,7 +60,7 @@ def groupby_operators(cls):
 
 
 @groupby_operators
-class GroupBy:
+class DataFrameGroupBy:
     """
     A DataFrame that has been grouped by a subset of columns.
 
@@ -385,7 +386,7 @@ class GroupBy:
 
         >>> import arkouda as ak
         >>> ak.connect()
-        >>> from arkouda.dataframe import GroupBy
+        >>> from arkouda.dataframe import DataFrameGroupBy
         >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
 
         +----+-----+-----+
@@ -402,7 +403,7 @@ class GroupBy:
 
         >>> gb = df.groupby("A")
         >>> x = ak.array([10,11,12])
-        >>> s = GroupBy.broadcast(gb, x)
+        >>> s = DataFrameGroupBy.broadcast(gb, x)
         >>> df["C"] = s.values
         >>> display(df)
 
@@ -2355,7 +2356,7 @@ class DataFrame(UserDict):
         keys : str or list of str
             An (ordered) list of column names or a single string to group by.
         use_series : bool, default=False
-            If True, returns an arkouda.dataframe.GroupBy object.
+            If True, returns an arkouda.dataframe.DataFrameGroupBy object.
             Otherwise an arkouda.groupbyclass.GroupBy object.
         as_index: bool, default=True
             If True, groupby columns will be set as index
@@ -2366,8 +2367,8 @@ class DataFrame(UserDict):
             Otherwise, the rows corresponding to NaN values will be kept.
         Returns
         -------
-        arkouda.dataframe.GroupBy or arkouda.groupbyclass.GroupBy
-            If use_series = True, returns an arkouda.dataframe.GroupBy object.
+        arkouda.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy
+            If use_series = True, returns an arkouda.dataframe.DataFrameGroupBy object.
             Otherwise returns an arkouda.groupbyclass.GroupBy object.
 
         See Also
@@ -2428,7 +2429,7 @@ class DataFrame(UserDict):
 
         gb = akGroupBy(cols, dropna=dropna)
         if use_series:
-            gb = GroupBy(gb, self, gb_key_names=keys, as_index=as_index)
+            gb = DataFrameGroupBy(gb, self, gb_key_names=keys, as_index=as_index)
         return gb
 
     def memory_usage(self, index=True, unit="B") -> Series:
@@ -3851,7 +3852,7 @@ class DataFrame(UserDict):
         keys : str or list of str
             An (ordered) list of column names or a single string to group by.
         use_series : bool, default=True
-            If True, returns an arkouda.dataframe.GroupBy object.
+            If True, returns an arkouda.dataframe.DataFrameGroupBy object.
             Otherwise an arkouda.groupbyclass.GroupBy object.
         as_index: bool, default=True
             If True, groupby columns will be set as index
@@ -3862,8 +3863,8 @@ class DataFrame(UserDict):
             Otherwise, the rows corresponding to NaN values will be kept.
         Returns
         -------
-        arkouda.dataframe.GroupBy or arkouda.groupbyclass.GroupBy
-            If use_series = True, returns an arkouda.dataframe.GroupBy object.
+        arkouda.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy
+            If use_series = True, returns an arkouda.dataframe.DataFrameGroupBy object.
             Otherwise returns an arkouda.groupbyclass.GroupBy object.
 
         See Also
