@@ -297,6 +297,92 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    proc choiceMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName(),
+              gName = msgArgs.getValueOf("gName"),                      // generator name
+              aName = msgArgs.getValueOf("aName"),                      // values array name
+              wName = msgArgs.getValueOf("wName"),                      // weights array name
+              numSamples = msgArgs.get("numSamples").getIntValue(),     // number of samples
+              replace = msgArgs.get("replace").getBoolValue(),          // sample with replacement
+              hasWeights = msgArgs.get("hasWeights").getBoolValue(),    // flag indicating whether weighted sample
+              isDom = msgArgs.get("isDom").getBoolValue(),              // flag indicating whether return is domain or array
+              popSize  = msgArgs.get("popSize").getIntValue(),          // population size
+              dtypeStr = msgArgs.getValueOf("dtype"),                   // string version of dtype
+              dtype = str2dtype(dtypeStr),                              // DType enum
+              state = msgArgs.get("state").getIntValue(),               // rng state
+              rname = st.nextName();
+
+        randLogger.debug(getModuleName(),pn,getLineNumber(),
+                         "gname: %? aname %? wname: %? numSamples %i replace %i hasWeights %i isDom %i dtype %? popSize %? state %i rname %?"
+                         .doFormat(gName, aName, wName, numSamples, replace, hasWeights, isDom, dtypeStr, popSize, state, rname));
+
+        proc weightedIdxHelper() throws {
+            var generatorEntry = toGeneratorSymEntry(st.lookup(gName), real);
+            ref rng = generatorEntry.generator;
+
+            if state != 1 then rng.skipTo(state-1);
+
+            st.checkTable(wName);
+            const weights = toSymEntry(getGenericTypedArrayEntry(wName, st),real).a;
+            return sampleDomWeighted(rng, numSamples, weights, replace);
+        }
+
+        proc idxHelper() throws {
+            var generatorEntry = toGeneratorSymEntry(st.lookup(gName), int);
+            ref rng = generatorEntry.generator;
+
+            if state != 1 then rng.skipTo(state-1);
+
+            const choiceDom = {0..<popSize};
+            return rng.sample(choiceDom, numSamples, replace);
+        }
+
+        proc choiceHelper(type t) throws {
+            // I had to break these 2 helpers out into seprate functions since they have different types for generatorEntry
+            const choiceIdx = if hasWeights then weightedIdxHelper() else idxHelper();
+
+            if isDom {
+                const choiceEntry = createSymEntry(choiceIdx);
+                st.addEntry(rname, choiceEntry);
+            }
+            else {
+                var choiceArr: [makeDistDom(numSamples)] t;
+                st.checkTable(aName);
+                const myArr = toSymEntry(getGenericTypedArrayEntry(aName, st),t).a;
+
+                forall (ca,idx) in zip(choiceArr, choiceIdx) with (var agg = newSrcAggregator(t)) {
+                    agg.copy(ca, myArr[idx]);
+                }
+
+                const choiceEntry = createSymEntry(choiceArr);
+                st.addEntry(rname, choiceEntry);
+            }
+            const repMsg = "created " + st.attrib(rname);
+            randLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select dtype {
+            when DType.Int64 {
+                return choiceHelper(int);
+            }
+            when DType.UInt64 {
+                return choiceHelper(uint);
+            }
+            when DType.Float64 {
+                return choiceHelper(real);
+            }
+            when DType.Bool {
+                return choiceHelper(bool);
+            }
+            otherwise {
+                const errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+    }
+
     proc permutationMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const pn = Reflection.getRoutineName();
         var rname = st.nextName();
@@ -419,58 +505,11 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc sampleWeightsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        const pn = Reflection.getRoutineName(),
-              gName = msgArgs.getValueOf("gName"),              // generator name
-              aName = msgArgs.getValueOf("aName"),              // values array name
-              wName = msgArgs.getValueOf("wName"),              // weights array name
-              n = msgArgs.get("n").getIntValue(),               // number of samples
-              replace = msgArgs.get("replace").getBoolValue(),  // sample with replacement?
-              state = msgArgs.get("state").getIntValue(),       // rng state
-              rname = st.nextName();
-
-        randLogger.debug(getModuleName(),pn,getLineNumber(),
-                         "gname: %? aname %? wname: %? n %i replace %i state %i rname %?"
-                         .doFormat(gName, aName, wName, n, replace, state, rname));
-
-        var aGEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(aName, st),
-            wGEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(wName, st);
-
-        proc sampleHelper(type t): MsgTuple throws {
-            const aE = toSymEntry(aGEnt, t),
-                  wE = toSymEntry(wGEnt, real); // weights are always real
-
-            var generatorEntry: borrowed GeneratorSymEntry(real) = toGeneratorSymEntry(st.lookup(gName), real);
-            ref rng = generatorEntry.generator;
-            if state != 1 then rng.skipTo(state-1);
-
-            const s = randSampleWeights(rng, aE.a, wE.a, n, replace);
-            st.addEntry(rname, createSymEntry(s));
-
-            const repMsg = "created " + st.attrib(rname);
-            randLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        select aGEnt.dtype {
-            when DType.Int64 do return sampleHelper(int);
-            when DType.UInt64 do return sampleHelper(uint);
-            when DType.Float64 do return sampleHelper(real);
-            when DType.Bool do return sampleHelper(bool);
-            otherwise {
-                const errorMsg = "Unhandled data type %s".doFormat(dtype2str(aGEnt.dtype));
-                randLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
-            }
-        }
-
-    }
-
     use CommandMap;
     registerFunction("randomNormal", randomNormalMsg, getModuleName());
     registerFunction("createGenerator", createGeneratorMsg, getModuleName());
     registerFunction("uniformGenerator", uniformGeneratorMsg, getModuleName());
+    registerFunction("choice", choiceMsg, getModuleName());
     registerFunction("permutation", permutationMsg, getModuleName());
     registerFunction("shuffle", shuffleMsg, getModuleName());
-    registerFunction("sampleWeights", sampleWeightsMsg, getModuleName());
 }

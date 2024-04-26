@@ -55,6 +55,88 @@ class Generator:
         _str += "(PCG64)"
         return _str
 
+    def choice(self, a, size=None, replace=True, p=None):
+        """
+        Generates a randomly sample from a.
+
+        Parameters
+        ----------
+        a: int or pdarray
+            If a is an integer, randomly sample from ak.arange(a).
+            If a is a pdarray, randomly sample from a.
+
+        size: int, optional
+            Number of elements to be sampled
+
+        replace: bool, optional
+            If True, sample with replacement. Otherwise sample without replacement.
+            Defaults to True
+
+        p: pdarray, optional
+            p is the probabilities or weights associated with each element of a
+
+        Returns
+        -------
+        pdarray, numeric_scalar
+            A pdarray containing the sampled values or a single random value if size not provided.
+        """
+        if size is None:
+            ret_scalar = True
+            size = 1
+        else:
+            ret_scalar = False
+
+        from arkouda.numeric import cast as akcast
+
+        if _val_isinstance_of_union(a, int_scalars):
+            is_domain = True
+            dtype = to_numpy_dtype(akint64)
+            pop_size = a
+        elif isinstance(a, pdarray):
+            is_domain = False
+            dtype = to_numpy_dtype(a.dtype)
+            pop_size = a.size
+        else:
+            raise TypeError("choice only accepts a pdarray or int scalar.")
+
+        if not replace and size > pop_size:
+            raise ValueError("Cannot take a larger sample than population when replace is False")
+
+        has_weights = p is not None
+        if has_weights:
+            if not isinstance(p, pdarray):
+                raise TypeError("weights must be a pdarray")
+            if p.dtype != akfloat64:
+                p = akcast(p, akfloat64)
+        else:
+            p = ""
+
+        # weighted sample requires float and non-weighted uses int
+        name = self._name_dict[to_numpy_dtype(akfloat64 if has_weights else akint64)]
+
+        rep_msg = generic_msg(
+            cmd="choice",
+            args={
+                "gName": name,
+                "aName": a,
+                "wName": p,
+                "numSamples": size,
+                "replace": replace,
+                "hasWeights": has_weights,
+                "isDom": is_domain,
+                "popSize": pop_size,
+                "dtype": dtype,
+                "state": self._state,
+            },
+        )
+        # for the non-weighted domain case we pull pop_size numbers from the generator.
+        # for other cases we may be more than the numbers drawn, but that's okay. The important
+        # thing is not repeating any positions in the state.
+        self._state += pop_size
+
+        pda = create_pdarray(rep_msg)
+        return pda if not ret_scalar else pda[0]
+
     def integers(self, low, high=None, size=None, dtype=akint64, endpoint=False):
         """
         Return random integers from low (inclusive) to high (exclusive),
@@ -267,7 +349,7 @@ class Generator:
             dtype = to_numpy_dtype(x.dtype)
             size = x.size
         else:
-            raise TypeError("permtation only accepts a pdarray or int scalar.")
+            raise TypeError("permutation only accepts a pdarray or int scalar.")
 
         # we have to use the int version since we permute the domain
         name = self._name_dict[to_numpy_dtype(akint64)]
