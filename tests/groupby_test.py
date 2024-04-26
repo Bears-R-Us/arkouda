@@ -5,6 +5,7 @@ from context import arkouda as ak
 
 from arkouda.dtypes import float64, int64
 from arkouda.groupbyclass import GroupByReductionType
+from arkouda.scipy import chisquare as akchisquare
 
 SIZE = 100
 GROUPS = 8
@@ -650,6 +651,93 @@ class GroupByTest(ArkoudaTest):
             self.assertListEqual(a, r)
         for a, r in zip(ans, res2[1].to_list()):
             self.assertListEqual(a, r)
+
+    def test_sample_hypothesis_testing(self):
+        # perform a weighted sample and use chisquare to test
+        # if the observed frequency matches the expected frequency
+
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        prob_arr = ak.array([0.35, 0.10, 0.55])
+        weights = ak.concatenate([prob_arr, prob_arr, prob_arr])
+        keys = ak.concatenate([ak.zeros(3, int), ak.ones(3, int), ak.full(3, 2, int)])
+        values = ak.arange(9)
+
+        g = ak.GroupBy(keys)
+
+        weighted_sample = g.sample(
+            values, n=num_samples, replace=True, weights=weights, random_state=rng
+        )
+
+        # count how many of each category we saw
+        uk, f_obs = ak.GroupBy(weighted_sample).size()
+
+        # I think the keys should always be sorted but just in case
+        if not ak.is_sorted(uk):
+            f_obs = f_obs[ak.argsort(uk)]
+
+        f_exp = weights * num_samples
+
+        _, pval = akchisquare(f_obs=f_obs, f_exp=f_exp)
+
+        # if pval <= 0.05, the difference from the expected distribution is significant
+        self.assertTrue(pval > 0.05)
+
+    def test_sample_flags(self):
+        # use numpy to randomly generate a set seed
+        seed = np.random.default_rng().choice(2**63)
+        cfg = ak.get_config()
+
+        rng = ak.random.default_rng(seed)
+        weights = rng.uniform(size=12)
+        a_vals = [
+            rng.integers(0, 2**32, size=12, dtype="uint"),
+            rng.uniform(-1.0, 1.0, size=12),
+            rng.integers(0, 1, size=12, dtype="bool"),
+            rng.integers(-(2**32), 2**32, size=12, dtype="int"),
+        ]
+        grouping_keys = ak.concatenate([ak.zeros(4, int), ak.ones(4, int), ak.full(4, 2, int)])
+        rng.shuffle(grouping_keys)
+
+        choice_arrays = []
+        # return_indices and permute_samples are tested by the dataframe version
+        rng = ak.random.default_rng(seed)
+        for a in a_vals:
+            for size in 2, 4:
+                for replace in True, False:
+                    for p in [None, weights]:
+                        g = ak.GroupBy(grouping_keys)
+                        choice_arrays.append(
+                            g.sample(a, n=size, replace=replace, weights=p, random_state=rng)
+                        )
+                        choice_arrays.append(
+                            g.sample(a, frac=(size / 4), replace=replace, weights=p, random_state=rng)
+                        )
+
+        # reset generator to ensure we get the same arrays
+        rng = ak.random.default_rng(seed)
+        for a in a_vals:
+            for size in 2, 4:
+                for replace in True, False:
+                    for p in [None, weights]:
+                        previous1 = choice_arrays.pop(0)
+                        previous2 = choice_arrays.pop(0)
+                        g = ak.GroupBy(grouping_keys)
+                        current1 = g.sample(a, n=size, replace=replace, weights=p, random_state=rng)
+                        current2 = g.sample(
+                            a, frac=(size / 4), replace=replace, weights=p, random_state=rng
+                        )
+
+                        res = np.allclose(previous1.to_list(), current1.to_list()) and np.allclose(
+                            previous2.to_list(), current2.to_list()
+                        )
+                        if not res:
+                            print(f"\nnum locales: {cfg['numLocales']}")
+                            print(f"Failure with seed:\n{seed}")
+                        self.assertTrue(res)
 
     def test_nunique_ordering_bug(self):
         keys = ak.array(["1" for _ in range(8)] + ["2" for _ in range(3)])

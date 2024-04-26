@@ -577,6 +577,7 @@ module ReductionMsg
       return nancounts;
     }
     
+    // SegmentedSample is in RandMsg
     proc segmentedReductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         // reqMsg: segmentedReduction values segments operator
