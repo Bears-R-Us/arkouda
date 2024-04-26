@@ -498,7 +498,7 @@ def logical_not(x: Array, /) -> Array:
             "array": x._array,
         },
     )
-    return ak.create_pdarray(repMsg)
+    return Array._new(ak.create_pdarray(repMsg))
 
 
 def logical_or(x1: Array, x2: Array, /) -> Array:

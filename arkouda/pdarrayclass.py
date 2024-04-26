@@ -248,7 +248,7 @@ def _parse_none_and_ellipsis_keys(key, ndim):
     ret_key = key
 
     # how many 'None' arguments are in the key tuple
-    num_none = ret_key.count(None)
+    num_none = reduce(lambda x, y: x + (1 if y is None else 0), ret_key, 0)
 
     # replace '...' with the appropriate number of ':'
     elipsis_axis_idx = -1
@@ -472,10 +472,10 @@ class pdarray:
             except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
             repMsg = generic_msg(cmd=f"binopvv{x1.ndim}D", args={"op": op, "a": x1, "b": x2})
-            if tmp_x1:
-                del x1
-            if tmp_x2:
-                del x2
+            # if tmp_x1:
+            #     del x1
+            # if tmp_x2:
+            #     del x2
             return create_pdarray(repMsg)
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
