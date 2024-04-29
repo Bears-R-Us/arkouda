@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.04.27 -->
         <title>arkouda.dataframe - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -113,6 +113,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -295,7 +297,7 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.dataframe</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
@@ -343,6 +345,7 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;DataFrame&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DataFrameGroupBy&quot;</span><span class="p">,</span>
     <span class="s2">&quot;DiffAggregate&quot;</span><span class="p">,</span>
     <span class="s2">&quot;intersect&quot;</span><span class="p">,</span>
     <span class="s2">&quot;invert_permutation&quot;</span><span class="p">,</span>
@@ -357,8 +360,10 @@
     <span class="k">return</span> <span class="bp">cls</span>
 
 
+<div class="viewcode-block" id="DataFrameGroupBy">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy">[docs]</a>
 <span class="nd">@groupby_operators</span>
-<span class="k">class</span> <span class="nc">GroupBy</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">DataFrameGroupBy</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A DataFrame that has been grouped by a subset of columns.</span>
 
@@ -449,6 +454,8 @@
 
         <span class="k">return</span> <span class="n">aggop</span>
 
+<div class="viewcode-block" id="DataFrameGroupBy.count">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy.count">[docs]</a>
     <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_series</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the count of each value as the total number of rows, including NaN values.</span>
@@ -501,8 +508,11 @@
         <span class="k">if</span> <span class="n">as_series</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="p">(</span><span class="n">as_series</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_index</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_agg_series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">count</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_agg_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">count</span><span class="p">(),</span> <span class="s2">&quot;count&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_agg_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">count</span><span class="p">(),</span> <span class="s2">&quot;count&quot;</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="DataFrameGroupBy.size">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy.size">[docs]</a>
     <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_series</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the size of each value as the total number of rows, including NaN values.</span>
@@ -556,7 +566,8 @@
         <span class="k">if</span> <span class="n">as_series</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="p">(</span><span class="n">as_series</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_index</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_agg_series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">sort_index</span><span class="o">=</span><span class="n">sort_index</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_agg_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="n">sort_index</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_agg_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="n">sort_index</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_return_agg_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_index</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
@@ -612,6 +623,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">index_labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="n">value_label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
+<div class="viewcode-block" id="DataFrameGroupBy.diff">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy.diff">[docs]</a>
     <span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a difference aggregate for the given column.</span>
@@ -659,8 +672,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">DiffAggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">colname</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">DiffAggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">colname</span><span class="p">])</span></div>
 
+
+<div class="viewcode-block" id="DataFrameGroupBy.broadcast">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy.broadcast">[docs]</a>
     <span class="k">def</span> <span class="nf">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fill each group’s segment with a constant value.</span>
@@ -684,7 +700,7 @@
 
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; ak.connect()</span>
-<span class="sd">        &gt;&gt;&gt; from arkouda.dataframe import GroupBy</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.dataframe import DataFrameGroupBy</span>
 <span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;A&quot;:[1,2,2,3],&quot;B&quot;:[3,4,5,6]})</span>
 
 <span class="sd">        +----+-----+-----+</span>
@@ -701,7 +717,7 @@
 
 <span class="sd">        &gt;&gt;&gt; gb = df.groupby(&quot;A&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; x = ak.array([10,11,12])</span>
-<span class="sd">        &gt;&gt;&gt; s = GroupBy.broadcast(gb, x)</span>
+<span class="sd">        &gt;&gt;&gt; s = DataFrameGroupBy.broadcast(gb, x)</span>
 <span class="sd">        &gt;&gt;&gt; df[&quot;C&quot;] = s.values</span>
 <span class="sd">        &gt;&gt;&gt; display(df)</span>
 
@@ -723,7 +739,9 @@
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="n">permute</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="n">permute</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
+</div>
+
 
 
 <div class="viewcode-block" id="DiffAggregate">
@@ -2697,7 +2715,7 @@
 <span class="sd">        keys : str or list of str</span>
 <span class="sd">            An (ordered) list of column names or a single string to group by.</span>
 <span class="sd">        use_series : bool, default=False</span>
-<span class="sd">            If True, returns an arkouda.dataframe.GroupBy object.</span>
+<span class="sd">            If True, returns an arkouda.dataframe.DataFrameGroupBy object.</span>
 <span class="sd">            Otherwise an arkouda.groupbyclass.GroupBy object.</span>
 <span class="sd">        as_index: bool, default=True</span>
 <span class="sd">            If True, groupby columns will be set as index</span>
@@ -2708,8 +2726,8 @@
 <span class="sd">            Otherwise, the rows corresponding to NaN values will be kept.</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        arkouda.dataframe.GroupBy or arkouda.groupbyclass.GroupBy</span>
-<span class="sd">            If use_series = True, returns an arkouda.dataframe.GroupBy object.</span>
+<span class="sd">        arkouda.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy</span>
+<span class="sd">            If use_series = True, returns an arkouda.dataframe.DataFrameGroupBy object.</span>
 <span class="sd">            Otherwise returns an arkouda.groupbyclass.GroupBy object.</span>
 
 <span class="sd">        See Also</span>
@@ -2770,7 +2788,7 @@
 
         <span class="n">gb</span> <span class="o">=</span> <span class="n">akGroupBy</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="n">dropna</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">use_series</span><span class="p">:</span>
-            <span class="n">gb</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">gb_key_names</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="n">as_index</span><span class="p">)</span>
+            <span class="n">gb</span> <span class="o">=</span> <span class="n">DataFrameGroupBy</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">gb_key_names</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="n">as_index</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">gb</span></div>
 
 
@@ -4250,7 +4268,7 @@
 <span class="sd">        keys : str or list of str</span>
 <span class="sd">            An (ordered) list of column names or a single string to group by.</span>
 <span class="sd">        use_series : bool, default=True</span>
-<span class="sd">            If True, returns an arkouda.dataframe.GroupBy object.</span>
+<span class="sd">            If True, returns an arkouda.dataframe.DataFrameGroupBy object.</span>
 <span class="sd">            Otherwise an arkouda.groupbyclass.GroupBy object.</span>
 <span class="sd">        as_index: bool, default=True</span>
 <span class="sd">            If True, groupby columns will be set as index</span>
@@ -4261,8 +4279,8 @@
 <span class="sd">            Otherwise, the rows corresponding to NaN values will be kept.</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        arkouda.dataframe.GroupBy or arkouda.groupbyclass.GroupBy</span>
-<span class="sd">            If use_series = True, returns an arkouda.dataframe.GroupBy object.</span>
+<span class="sd">        arkouda.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy</span>
+<span class="sd">            If use_series = True, returns an arkouda.dataframe.DataFrameGroupBy object.</span>
 <span class="sd">            Otherwise returns an arkouda.groupbyclass.GroupBy object.</span>
 
 <span class="sd">        See Also</span>
@@ -6485,7 +6503,7 @@
 </div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
     </body>
 </html>

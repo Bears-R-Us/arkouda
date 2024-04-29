@@ -13,6 +13,7 @@ Classes
 .. autoapisummary::
 
    arkouda.dataframe.DataFrame
+   arkouda.dataframe.DataFrameGroupBy
    arkouda.dataframe.DiffAggregate
 
 
@@ -364,7 +365,7 @@ Functions
 
       :param keys: An (ordered) list of column names or a single string to group by.
       :type keys: str or list of str
-      :param use_series: If True, returns an arkouda.dataframe.GroupBy object.
+      :param use_series: If True, returns an arkouda.dataframe.DataFrameGroupBy object.
                          Otherwise an arkouda.groupbyclass.GroupBy object.
       :type use_series: bool, default=False
       :param as_index: If True, groupby columns will be set as index
@@ -375,9 +376,9 @@ Functions
                      Otherwise, the rows corresponding to NaN values will be kept.
       :type dropna: bool, default=True
 
-      :returns: If use_series = True, returns an arkouda.dataframe.GroupBy object.
+      :returns: If use_series = True, returns an arkouda.dataframe.DataFrameGroupBy object.
                 Otherwise returns an arkouda.groupbyclass.GroupBy object.
-      :rtype: arkouda.dataframe.GroupBy or arkouda.groupbyclass.GroupBy
+      :rtype: arkouda.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy
 
       .. seealso:: :obj:`arkouda.GroupBy`
 
@@ -1263,7 +1264,7 @@ Functions
 
       :param keys: An (ordered) list of column names or a single string to group by.
       :type keys: str or list of str
-      :param use_series: If True, returns an arkouda.dataframe.GroupBy object.
+      :param use_series: If True, returns an arkouda.dataframe.DataFrameGroupBy object.
                          Otherwise an arkouda.groupbyclass.GroupBy object.
       :type use_series: bool, default=True
       :param as_index: If True, groupby columns will be set as index
@@ -1274,9 +1275,9 @@ Functions
                      Otherwise, the rows corresponding to NaN values will be kept.
       :type dropna: bool, default=True
 
-      :returns: If use_series = True, returns an arkouda.dataframe.GroupBy object.
+      :returns: If use_series = True, returns an arkouda.dataframe.DataFrameGroupBy object.
                 Otherwise returns an arkouda.groupbyclass.GroupBy object.
-      :rtype: arkouda.dataframe.GroupBy or arkouda.groupbyclass.GroupBy
+      :rtype: arkouda.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy
 
       .. seealso:: :obj:`arkouda.GroupBy`
 
@@ -2810,6 +2811,224 @@ Functions
    .. py:method:: update_nrows()
 
       Computes the number of rows on the arkouda server and updates the size parameter.
+
+
+
+.. py:class:: DataFrameGroupBy(gb, df, gb_key_names=None, as_index=True)
+
+
+   A DataFrame that has been grouped by a subset of columns.
+
+   :param gb_key_names: The column name(s) associated with the aggregated columns.
+   :type gb_key_names: str or list(str), default=None
+   :param as_index: If True, interpret aggregated column as index
+                    (only implemented for single dimensional aggregates).
+                    Otherwise, treat aggregated column as a dataframe column.
+   :type as_index: bool, default=True
+
+   .. attribute:: gb
+
+      GroupBy object, where the aggregation keys are values of column(s) of a dataframe,
+      usually in preparation for aggregating with respect to the other columns.
+
+      :type: arkouda.groupbyclass.GroupBy
+
+   .. attribute:: df
+
+      The dataframe containing the original data.
+
+      :type: arkouda.dataframe.DataFrame
+
+   .. attribute:: gb_key_names
+
+      The column name(s) associated with the aggregated columns.
+
+      :type: str or list(str)
+
+   .. attribute:: as_index
+
+      If True the grouped values of the aggregation keys will be treated as an index.
+
+      :type: bool, default=True
+
+   .. py:method:: broadcast(x, permute=True)
+
+      Fill each group’s segment with a constant value.
+
+      :param x: The values to put in each group’s segment.
+      :type x: Series or pdarray
+      :param permute: If True (default), permute broadcast values back to the
+                      ordering of the original array on which GroupBy was called.
+                      If False, the broadcast values are grouped by value.
+      :type permute: bool, default=True
+
+      :returns: A Series with the Index of the original frame and the values of the broadcast.
+      :rtype: arkouda.series.Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda.dataframe import DataFrameGroupBy
+      >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
+
+      +----+-----+-----+
+      |    |   A |   B |
+      +====+=====+=====+
+      |  0 |   1 |   3 |
+      +----+-----+-----+
+      |  1 |   2 |   4 |
+      +----+-----+-----+
+      |  2 |   2 |   5 |
+      +----+-----+-----+
+      |  3 |   3 |   6 |
+      +----+-----+-----+
+
+      >>> gb = df.groupby("A")
+      >>> x = ak.array([10,11,12])
+      >>> s = DataFrameGroupBy.broadcast(gb, x)
+      >>> df["C"] = s.values
+      >>> display(df)
+
+      +----+-----+-----+-----+
+      |    |   A |   B |   C |
+      +====+=====+=====+=====+
+      |  0 |   1 |   3 |  10 |
+      +----+-----+-----+-----+
+      |  1 |   2 |   4 |  11 |
+      +----+-----+-----+-----+
+      |  2 |   2 |   5 |  11 |
+      +----+-----+-----+-----+
+      |  3 |   3 |   6 |  12 |
+      +----+-----+-----+-----+
+
+
+   .. py:method:: count(as_series=None)
+
+      Compute the count of each value as the total number of rows, including NaN values.
+      This is an alias for size(), and may change in the future.
+
+      :param as_series: Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
+                        arkouda.series.Series (if as_series = True)
+      :type as_series: bool, default=None
+
+      :rtype: arkouda.dataframe.DataFrame or arkouda.series.Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
+      >>> display(df)
+
+      +----+-----+-----+
+      |    |   A |   B |
+      +====+=====+=====+
+      |  0 |   1 |   3 |
+      +----+-----+-----+
+      |  1 |   2 |   4 |
+      +----+-----+-----+
+      |  2 |   2 |   5 |
+      +----+-----+-----+
+      |  3 |   3 |   6 |
+      +----+-----+-----+
+
+      >>> df.groupby("A").count(as_series = False)
+
+      +----+---------+
+      |    |   count |
+      +====+=========+
+      |  0 |       1 |
+      +----+---------+
+      |  1 |       2 |
+      +----+---------+
+      |  2 |       1 |
+      +----+---------+
+
+
+   .. py:method:: diff(colname)
+
+      Create a difference aggregate for the given column.
+
+      For each group, the difference between successive values is calculated.
+      Aggregate operations (mean,min,max,std,var) can be done on the results.
+
+      :param colname: Name of the column to compute the difference on.
+      :type colname: str
+
+      :returns: Object containing the differences, which can be aggregated.
+      :rtype: DiffAggregate
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({"A":[1,2,2,2,3,3],"B":[3,9,11,27,86,100]})
+      >>> display(df)
+
+      +----+-----+-----+
+      |    |   A |   B |
+      +====+=====+=====+
+      |  0 |   1 |   3 |
+      +----+-----+-----+
+      |  1 |   2 |   9 |
+      +----+-----+-----+
+      |  2 |   2 |  11 |
+      +----+-----+-----+
+      |  3 |   2 |  27 |
+      +----+-----+-----+
+      |  4 |   3 |  86 |
+      +----+-----+-----+
+      |  5 |   3 | 100 |
+      +----+-----+-----+
+
+      >>> gb = df.groupby("A")
+      >>> gb.diff("B").values
+      array([nan nan 2.00000000000000000 16.00000000000000000 nan 14.00000000000000000])
+
+
+   .. py:method:: size(as_series=None, sort_index=True)
+
+      Compute the size of each value as the total number of rows, including NaN values.
+
+      :param as_series: Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
+                        arkouda.series.Series (if as_series = True)
+      :type as_series: bool, default=None
+      :param sort_index: If True, results will be returned with index values sorted in ascending order.
+      :type sort_index: bool, default=True
+
+      :rtype: arkouda.dataframe.DataFrame or arkouda.series.Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
+      >>> display(df)
+
+      +----+-----+-----+
+      |    |   A |   B |
+      +====+=====+=====+
+      |  0 |   1 |   3 |
+      +----+-----+-----+
+      |  1 |   2 |   4 |
+      +----+-----+-----+
+      |  2 |   2 |   5 |
+      +----+-----+-----+
+      |  3 |   3 |   6 |
+      +----+-----+-----+
+
+      >>> df.groupby("A").size(as_series = False)
+
+      +----+---------+
+      |    |   size  |
+      +====+=========+
+      |  0 |       1 |
+      +----+---------+
+      |  1 |       2 |
+      +----+---------+
+      |  2 |       1 |
+      +----+---------+
 
 
 
