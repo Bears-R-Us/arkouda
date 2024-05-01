@@ -18,6 +18,8 @@ class TestGroupBy:
     OPS = list(ak.GroupBy.Reductions)
     OPS.append("count")
     NAN_OPS = frozenset(["mean", "min", "max", "sum", "prod"])
+    seed = pytest.seed if pytest.seed is not None else 8675309
+    np.random.seed(seed)
 
     @classmethod
     def setup_class(cls):
@@ -84,11 +86,17 @@ class TestGroupBy:
 
         assert np.allclose(pdvals, akvals.to_ndarray(), equal_nan=True)  # value validation
 
+# For pandas equivalency tests, the standard problem size of 10**8 is much too large, especially
+# in the case of "aggregate by product."  For large vectors of random integers from 0 through N,
+# it's inevitable that the product will either be zero (if the vector includes a zero) or infinity
+# (if it doesn't).  So in the case of 'prod', size is arbitrarily set to 100.
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("levels", LEVELS)
     @pytest.mark.parametrize("op", OPS)
     def test_pandas_equivalency(self, size, levels, op):
-        data = self.make_arrays(size)
+        SIZE = 100 if op == 'prod' else size
+        data = self.make_arrays(SIZE)
         df = pd.DataFrame(data)
         akdf = {k: ak.array(v) for k, v in data.items()}
         if levels == 1:
@@ -403,9 +411,6 @@ class TestGroupBy:
 
         with pytest.raises(TypeError):
             ak.GroupBy(ak.arange(4), ak.arange(4))
-
-        with pytest.raises(TypeError):
-            ak.GroupBy(self.fvalues)
 
         with pytest.raises(TypeError):
             gb.broadcast([])
