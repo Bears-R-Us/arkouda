@@ -366,6 +366,17 @@ module Message {
             this.size = param_list.size;
         }
 
+        proc init(param_list: list(ParameterObj, parSafe=true)) {
+            // Intentionally initializes the param_list with `parSafe=false`.
+            // It would be initialized that way anyways due to the field
+            // declaration relying on the default value, this just makes it
+            // explicit (and avoids a warning as a result).
+            this.param_list = new list(ParameterObj);
+            this.size = param_list.size;
+
+            this.param_list = param_list;
+        }
+
         proc getJSON(keys: list(string) = list(string)): string throws {
             const noKeys: bool = keys.isEmpty();
             var s: int = if noKeys then this.size else keys.size;
