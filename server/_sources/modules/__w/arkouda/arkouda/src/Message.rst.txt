@@ -233,6 +233,8 @@ or
 
    .. method:: proc init(param_list: list(ParameterObj))
 
+   .. method:: proc init(param_list: list(ParameterObj, parSafe = true))
+
    .. method:: proc getJSON(keys: list(string) = list(string)): string throws
 
    .. method:: proc get(key: string) throws
