@@ -686,9 +686,7 @@ class DataFrame(UserDict):
                     if len(sizes) > 1:
                         raise ValueError("Input arrays must have equal size.")
                     self._empty = False
-                    UserDict.__setitem__(self, key, val)
-                    # Update the column index
-                    self._columns.append(key)
+                    self[key] = val
 
             # Initial data is a list of arkouda arrays
             elif isinstance(initialdata, list):
@@ -712,9 +710,7 @@ class DataFrame(UserDict):
                     if len(sizes) > 1:
                         raise ValueError("Input arrays must have equal size.")
                     self._empty = False
-                    UserDict.__setitem__(self, key, col)
-                    # Update the column index
-                    self._columns.append(key)
+                    self[key] = col
 
             # Initial data is invalid.
             else:
@@ -779,8 +775,7 @@ class DataFrame(UserDict):
                 raise TypeError("Invalid selector: too many types in list.")
             if isinstance(key[0], str):
                 for k in key:
-                    result.data[k] = UserDict.__getitem__(self, k)
-                    result._columns.append(k)
+                    result[k] = self[k]
                 result._empty = False
                 result._set_index(self.index)  # column lens remain the same. Copy the indexing
                 return result
