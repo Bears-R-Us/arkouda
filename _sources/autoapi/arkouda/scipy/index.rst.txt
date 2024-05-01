@@ -4,27 +4,18 @@
 .. py:module:: arkouda.scipy
 
 
-Subpackages
------------
-.. toctree::
-   :titlesonly:
-   :maxdepth: 3
-
-   special/index.rst
-   stats/index.rst
-
-
 Submodules
 ----------
 .. toctree::
    :titlesonly:
    :maxdepth: 1
 
-   imports/index.rst
+   special/index.rst
+   stats/index.rst
 
 
-Package Contents
-----------------
+Module Contents
+---------------
 
 Classes
 ~~~~~~~
@@ -48,7 +39,7 @@ Functions
 .. py:class:: Power_divergenceResult
 
 
-   Bases: :py:obj:`namedtuple`\ (\ :py:obj:`'Power_divergenceResult'`\ , (\ :py:obj:`'statistic'`\ , :py:obj:`'pvalue'`\ )\ )
+   Bases: :py:obj:`Power_divergenceResult`
 
    The results of a power divergence statistical test.
 
@@ -82,7 +73,7 @@ Functions
 
    >>> import arkouda as ak
    >>> ak.connect()
-   >>> from arkouda.akstats import chisquare
+   >>> from arkouda.stats import chisquare
    >>> chisquare(ak.array([10, 20, 30, 10]), ak.array([10, 30, 20, 10]))
    Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)
 
@@ -131,7 +122,7 @@ Functions
 
    >>> import arkouda as ak
    >>> ak.connect()
-   >>> from arkouda.akstats import power_divergence
+   >>> from arkouda.stats import power_divergence
    >>> x = ak.array([10, 20, 30, 10])
    >>> y = ak.array([10, 30, 20, 10])
    >>> power_divergence(x, y, lambda_="pearson")

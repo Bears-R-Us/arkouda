@@ -4,21 +4,1021 @@
 .. py:module:: arkouda.numpy
 
 
-Subpackages
------------
-.. toctree::
-   :titlesonly:
-   :maxdepth: 3
+Module Contents
+---------------
 
-   char/index.rst
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.numpy.bool_
+   arkouda.numpy.byte
+   arkouda.numpy.cdouble
+   arkouda.numpy.clongdouble
+   arkouda.numpy.csingle
+   arkouda.numpy.double
+   arkouda.numpy.float32
+   arkouda.numpy.float64
+   arkouda.numpy.half
+   arkouda.numpy.int16
+   arkouda.numpy.int32
+   arkouda.numpy.int64
+   arkouda.numpy.int8
+   arkouda.numpy.int_
+   arkouda.numpy.intc
+   arkouda.numpy.longdouble
+   arkouda.numpy.longlong
+   arkouda.numpy.short
+   arkouda.numpy.single
+   arkouda.numpy.ubyte
+   arkouda.numpy.uint
+   arkouda.numpy.uint16
+   arkouda.numpy.uint32
+   arkouda.numpy.uint64
+   arkouda.numpy.uint8
+   arkouda.numpy.uintc
+   arkouda.numpy.ulonglong
+   arkouda.numpy.ushort
 
 
-Submodules
-----------
-.. toctree::
-   :titlesonly:
-   :maxdepth: 1
 
-   imports/index.rst
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.numpy.Inf
+   arkouda.numpy.Infinity
+   arkouda.numpy.NAN
+   arkouda.numpy.NINF
+   arkouda.numpy.NZERO
+   arkouda.numpy.NaN
+   arkouda.numpy.PINF
+   arkouda.numpy.PZERO
+   arkouda.numpy.e
+   arkouda.numpy.euler_gamma
+   arkouda.numpy.inf
+   arkouda.numpy.infty
+   arkouda.numpy.nan
+   arkouda.numpy.newaxis
+   arkouda.numpy.pi
+
+
+.. py:data:: Inf
+   :type: float
+
+   
+
+.. py:data:: Infinity
+   :type: float
+
+   
+
+.. py:data:: NAN
+   :type: float
+
+   
+
+.. py:data:: NINF
+   :type: float
+
+   
+
+.. py:data:: NZERO
+   :type: float
+
+   
+
+.. py:data:: NaN
+   :type: float
+
+   
+
+.. py:data:: PINF
+   :type: float
+
+   
+
+.. py:data:: PZERO
+   :type: float
+
+   
+
+.. py:class:: bool_(value)
+
+
+   Bases: :py:obj:`numpy.generic`
+
+   Boolean type (True or False), stored as a byte.
+
+       .. warning::
+
+          The :class:`bool_` type is not a subclass of the :class:`int_` type
+          (the :class:`bool_` is not even a number type). This is different
+          than Python's default implementation of :class:`bool` as a
+          sub-class of :class:`int`.
+
+       :Character code: ``'?'``
+
+
+
+.. py:class:: byte(value)
+
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+   Signed integer type, compatible with C ``char``.
+
+       :Character code: ``'b'``
+       :Canonical name: `numpy.byte`
+       :Alias on this platform (Linux x86_64): `numpy.int8`: 8-bit signed integer (``-128`` to ``127``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int8.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int8(127).bit_count()
+              7
+              >>> np.int8(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: cdouble(value)
+
+
+   Bases: :py:obj:`numpy.complexfloating`
+
+   Complex number type composed of two double-precision floating-point
+       numbers, compatible with Python `complex`.
+
+       :Character code: ``'D'``
+       :Canonical name: `numpy.cdouble`
+       :Alias: `numpy.cfloat`
+       :Alias: `numpy.complex_`
+       :Alias on this platform (Linux x86_64): `numpy.complex128`: Complex number type composed of 2 64-bit-precision floating-point numbers.
+
+
+
+.. py:class:: clongdouble(value)
+
+
+   Bases: :py:obj:`numpy.complexfloating`
+
+   Complex number type composed of two extended-precision floating-point
+       numbers.
+
+       :Character code: ``'G'``
+       :Alias: `numpy.clongfloat`
+       :Alias: `numpy.longcomplex`
+       :Alias on this platform (Linux x86_64): `numpy.complex256`: Complex number type composed of 2 128-bit extended-precision floating-point numbers.
+
+
+
+.. py:class:: csingle(value)
+
+
+   Bases: :py:obj:`numpy.complexfloating`
+
+   Complex number type composed of two single-precision floating-point
+       numbers.
+
+       :Character code: ``'F'``
+       :Canonical name: `numpy.csingle`
+       :Alias: `numpy.singlecomplex`
+       :Alias on this platform (Linux x86_64): `numpy.complex64`: Complex number type composed of 2 32-bit-precision floating-point numbers.
+
+
+
+.. py:class:: double(value)
+
+
+   Bases: :py:obj:`numpy.floating`
+
+   Double-precision floating-point number type, compatible with Python `float`
+       and C ``double``.
+
+       :Character code: ``'d'``
+       :Canonical name: `numpy.double`
+       :Alias: `numpy.float_`
+       :Alias on this platform (Linux x86_64): `numpy.float64`: 64-bit precision floating-point number type: sign bit, 11 bits exponent, 52 bits mantissa.
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      double.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.double(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.double(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.double(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+   .. py:method:: fromhex(string, /)
+
+      Create a floating-point number from a hexadecimal string.
+
+      >>> float.fromhex('0x1.ffffp10')
+      2047.984375
+      >>> float.fromhex('-0x1p-1074')
+      -5e-324
+
+
+
+   .. py:method:: hex(/)
+
+      Return a hexadecimal representation of a floating-point number.
+
+      >>> (-0.1).hex()
+      '-0x1.999999999999ap-4'
+      >>> 3.14159.hex()
+      '0x1.921f9f01b866ep+1'
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      double.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.double(-2.0).is_integer()
+              True
+              >>> np.double(3.2).is_integer()
+              False
+
+
+
+
+.. py:data:: e
+   :type: float
+
+   
+
+.. py:data:: euler_gamma
+   :type: float
+
+   
+
+.. py:class:: float32(value)
+
+
+   Bases: :py:obj:`numpy.floating`
+
+   Single-precision floating-point number type, compatible with C ``float``.
+
+       :Character code: ``'f'``
+       :Canonical name: `numpy.single`
+       :Alias on this platform (Linux x86_64): `numpy.float32`: 32-bit-precision floating-point number type: sign bit, 8 bits exponent, 23 bits mantissa.
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      single.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.single(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.single(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.single(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      single.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.single(-2.0).is_integer()
+              True
+              >>> np.single(3.2).is_integer()
+              False
+
+
+
+
+.. py:class:: float64(value)
+
+
+   Bases: :py:obj:`numpy.floating`
+
+   Double-precision floating-point number type, compatible with Python `float`
+       and C ``double``.
+
+       :Character code: ``'d'``
+       :Canonical name: `numpy.double`
+       :Alias: `numpy.float_`
+       :Alias on this platform (Linux x86_64): `numpy.float64`: 64-bit precision floating-point number type: sign bit, 11 bits exponent, 52 bits mantissa.
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      double.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.double(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.double(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.double(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+   .. py:method:: fromhex(string, /)
+
+      Create a floating-point number from a hexadecimal string.
+
+      >>> float.fromhex('0x1.ffffp10')
+      2047.984375
+      >>> float.fromhex('-0x1p-1074')
+      -5e-324
+
+
+
+   .. py:method:: hex(/)
+
+      Return a hexadecimal representation of a floating-point number.
+
+      >>> (-0.1).hex()
+      '-0x1.999999999999ap-4'
+      >>> 3.14159.hex()
+      '0x1.921f9f01b866ep+1'
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      double.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.double(-2.0).is_integer()
+              True
+              >>> np.double(3.2).is_integer()
+              False
+
+
+
+
+.. py:class:: half(value)
+
+
+   Bases: :py:obj:`numpy.floating`
+
+   Half-precision floating-point number type.
+
+       :Character code: ``'e'``
+       :Canonical name: `numpy.half`
+       :Alias on this platform (Linux x86_64): `numpy.float16`: 16-bit-precision floating-point number type: sign bit, 5 bits exponent, 10 bits mantissa.
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      half.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.half(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.half(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.half(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      half.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.half(-2.0).is_integer()
+              True
+              >>> np.half(3.2).is_integer()
+              False
+
+
+
+
+.. py:data:: inf
+   :type: float
+
+   
+
+.. py:data:: infty
+   :type: float
+
+   
+
+.. py:class:: int16(value)
+
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+   Signed integer type, compatible with C ``short``.
+
+       :Character code: ``'h'``
+       :Canonical name: `numpy.short`
+       :Alias on this platform (Linux x86_64): `numpy.int16`: 16-bit signed integer (``-32_768`` to ``32_767``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int16.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int16(127).bit_count()
+              7
+              >>> np.int16(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: int32(value)
+
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+   Signed integer type, compatible with C ``int``.
+
+       :Character code: ``'i'``
+       :Canonical name: `numpy.intc`
+       :Alias on this platform (Linux x86_64): `numpy.int32`: 32-bit signed integer (``-2_147_483_648`` to ``2_147_483_647``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int32.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int32(127).bit_count()
+              7
+              >>> np.int32(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: int64(value)
+
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+   Signed integer type, compatible with Python `int` and C ``long``.
+
+       :Character code: ``'l'``
+       :Canonical name: `numpy.int_`
+       :Alias on this platform (Linux x86_64): `numpy.int64`: 64-bit signed integer (``-9_223_372_036_854_775_808`` to ``9_223_372_036_854_775_807``).
+       :Alias on this platform (Linux x86_64): `numpy.intp`: Signed integer large enough to fit pointer, compatible with C ``intptr_t``.
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int64.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int64(127).bit_count()
+              7
+              >>> np.int64(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: int8(value)
+
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+   Signed integer type, compatible with C ``char``.
+
+       :Character code: ``'b'``
+       :Canonical name: `numpy.byte`
+       :Alias on this platform (Linux x86_64): `numpy.int8`: 8-bit signed integer (``-128`` to ``127``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int8.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int8(127).bit_count()
+              7
+              >>> np.int8(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: int_(value)
+
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+   Signed integer type, compatible with Python `int` and C ``long``.
+
+       :Character code: ``'l'``
+       :Canonical name: `numpy.int_`
+       :Alias on this platform (Linux x86_64): `numpy.int64`: 64-bit signed integer (``-9_223_372_036_854_775_808`` to ``9_223_372_036_854_775_807``).
+       :Alias on this platform (Linux x86_64): `numpy.intp`: Signed integer large enough to fit pointer, compatible with C ``intptr_t``.
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int64.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int64(127).bit_count()
+              7
+              >>> np.int64(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: intc(value)
+
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+   Signed integer type, compatible with C ``int``.
+
+       :Character code: ``'i'``
+       :Canonical name: `numpy.intc`
+       :Alias on this platform (Linux x86_64): `numpy.int32`: 32-bit signed integer (``-2_147_483_648`` to ``2_147_483_647``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int32.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int32(127).bit_count()
+              7
+              >>> np.int32(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: longdouble(value)
+
+
+   Bases: :py:obj:`numpy.floating`
+
+   Extended-precision floating-point number type, compatible with C
+       ``long double`` but not necessarily with IEEE 754 quadruple-precision.
+
+       :Character code: ``'g'``
+       :Alias: `numpy.longfloat`
+       :Alias on this platform (Linux x86_64): `numpy.float128`: 128-bit extended-precision floating-point number type.
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      longdouble.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.longdouble(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.longdouble(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.longdouble(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      longdouble.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.longdouble(-2.0).is_integer()
+              True
+              >>> np.longdouble(3.2).is_integer()
+              False
+
+
+
+
+.. py:class:: longlong(value)
+
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+   Signed integer type, compatible with C ``long long``.
+
+       :Character code: ``'q'``
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+
+
+.. py:data:: nan
+   :type: float
+
+   
+
+.. py:data:: newaxis
+   :type: None
+
+   
+
+.. py:data:: pi
+   :type: float
+
+   
+
+.. py:class:: short(value)
+
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+   Signed integer type, compatible with C ``short``.
+
+       :Character code: ``'h'``
+       :Canonical name: `numpy.short`
+       :Alias on this platform (Linux x86_64): `numpy.int16`: 16-bit signed integer (``-32_768`` to ``32_767``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int16.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int16(127).bit_count()
+              7
+              >>> np.int16(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: single(value)
+
+
+   Bases: :py:obj:`numpy.floating`
+
+   Single-precision floating-point number type, compatible with C ``float``.
+
+       :Character code: ``'f'``
+       :Canonical name: `numpy.single`
+       :Alias on this platform (Linux x86_64): `numpy.float32`: 32-bit-precision floating-point number type: sign bit, 8 bits exponent, 23 bits mantissa.
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      single.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.single(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.single(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.single(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      single.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.single(-2.0).is_integer()
+              True
+              >>> np.single(3.2).is_integer()
+              False
+
+
+
+
+.. py:class:: ubyte(value)
+
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+   Unsigned integer type, compatible with C ``unsigned char``.
+
+       :Character code: ``'B'``
+       :Canonical name: `numpy.ubyte`
+       :Alias on this platform (Linux x86_64): `numpy.uint8`: 8-bit unsigned integer (``0`` to ``255``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint8.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint8(127).bit_count()
+              7
+
+
+
+
+.. py:class:: uint(value)
+
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+   Unsigned integer type, compatible with C ``unsigned long``.
+
+       :Character code: ``'L'``
+       :Canonical name: `numpy.uint`
+       :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
+       :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint64.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint64(127).bit_count()
+              7
+
+
+
+
+.. py:class:: uint16(value)
+
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+   Unsigned integer type, compatible with C ``unsigned short``.
+
+       :Character code: ``'H'``
+       :Canonical name: `numpy.ushort`
+       :Alias on this platform (Linux x86_64): `numpy.uint16`: 16-bit unsigned integer (``0`` to ``65_535``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint16.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint16(127).bit_count()
+              7
+
+
+
+
+.. py:class:: uint32(value)
+
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+   Unsigned integer type, compatible with C ``unsigned int``.
+
+       :Character code: ``'I'``
+       :Canonical name: `numpy.uintc`
+       :Alias on this platform (Linux x86_64): `numpy.uint32`: 32-bit unsigned integer (``0`` to ``4_294_967_295``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint32.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint32(127).bit_count()
+              7
+
+
+
+
+.. py:class:: uint64(value)
+
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+   Unsigned integer type, compatible with C ``unsigned long``.
+
+       :Character code: ``'L'``
+       :Canonical name: `numpy.uint`
+       :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
+       :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint64.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint64(127).bit_count()
+              7
+
+
+
+
+.. py:class:: uint8(value)
+
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+   Unsigned integer type, compatible with C ``unsigned char``.
+
+       :Character code: ``'B'``
+       :Canonical name: `numpy.ubyte`
+       :Alias on this platform (Linux x86_64): `numpy.uint8`: 8-bit unsigned integer (``0`` to ``255``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint8.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint8(127).bit_count()
+              7
+
+
+
+
+.. py:class:: uintc(value)
+
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+   Unsigned integer type, compatible with C ``unsigned int``.
+
+       :Character code: ``'I'``
+       :Canonical name: `numpy.uintc`
+       :Alias on this platform (Linux x86_64): `numpy.uint32`: 32-bit unsigned integer (``0`` to ``4_294_967_295``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint32.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint32(127).bit_count()
+              7
+
+
+
+
+.. py:class:: ulonglong(value)
+
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+   Signed integer type, compatible with C ``unsigned long long``.
+
+       :Character code: ``'Q'``
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+
+
+.. py:class:: ushort(value)
+
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+   Unsigned integer type, compatible with C ``unsigned short``.
+
+       :Character code: ``'H'``
+       :Canonical name: `numpy.ushort`
+       :Alias on this platform (Linux x86_64): `numpy.uint16`: 16-bit unsigned integer (``0`` to ``65_535``).
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint16.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint16(127).bit_count()
+              7
+
+
 
 

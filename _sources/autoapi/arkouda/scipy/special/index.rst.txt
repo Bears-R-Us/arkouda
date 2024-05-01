@@ -4,8 +4,8 @@
 .. py:module:: arkouda.scipy.special
 
 
-Package Contents
-----------------
+Module Contents
+---------------
 
 
 Functions

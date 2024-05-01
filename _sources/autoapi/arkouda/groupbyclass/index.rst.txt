@@ -12,6 +12,7 @@ Classes
 
 .. autoapisummary::
 
+   arkouda.groupbyclass.GROUPBY_REDUCTION_TYPES
    arkouda.groupbyclass.GroupBy
 
 
@@ -26,19 +27,73 @@ Functions
 
 
 
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   arkouda.groupbyclass.GROUPBY_REDUCTION_TYPES
+.. py:class:: GROUPBY_REDUCTION_TYPES
 
 
-.. py:data:: GROUPBY_REDUCTION_TYPES
+   frozenset() -> empty frozenset object
+   frozenset(iterable) -> frozenset object
 
-   
+   Build an immutable unordered collection of unique elements.
 
-.. py:class:: GroupBy(keys: Optional[groupable] = None, assume_sorted: bool = False, dropna: bool = True, **kwargs)
+
+   .. py:method:: copy(*args, **kwargs)
+
+      Return a shallow copy of a set.
+
+
+
+   .. py:method:: difference(*args, **kwargs)
+
+      Return the difference of two or more sets as a new set.
+
+      (i.e. all elements that are in this set but not the others.)
+
+
+
+   .. py:method:: intersection(*args, **kwargs)
+
+      Return the intersection of two sets as a new set.
+
+      (i.e. all elements that are in both sets.)
+
+
+
+   .. py:method:: isdisjoint(*args, **kwargs)
+
+      Return True if two sets have a null intersection.
+
+
+
+   .. py:method:: issubset(*args, **kwargs)
+
+      Report whether another set contains this set.
+
+
+
+   .. py:method:: issuperset(*args, **kwargs)
+
+      Report whether this set contains another set.
+
+
+
+   .. py:method:: symmetric_difference(*args, **kwargs)
+
+      Return the symmetric difference of two sets as a new set.
+
+      (i.e. all elements that are in exactly one of the sets.)
+
+
+
+   .. py:method:: union(*args, **kwargs)
+
+      Return the union of sets as a new set.
+
+      (i.e. all elements that are in either set.)
+
+
+
+
+.. py:class:: GroupBy
 
 
    Group an array or list of arrays by value, usually in preparation
@@ -115,16 +170,7 @@ Attributes
    If the input is a single array with a .group() method defined, method 2
    will be used; otherwise, method 1 will be used.
 
-   .. py:attribute:: Reductions
-
-      
-
-   .. py:attribute:: objType
-      :value: 'GroupBy'
-
-      
-
-   .. py:method:: AND(values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. py:method:: AND(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       Bitwise AND of values in each segment.
 
@@ -145,7 +191,7 @@ Attributes
       :raises RuntimeError: Raised if all is not supported for the values dtype
 
 
-   .. py:method:: OR(values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. py:method:: OR(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       Bitwise OR of values in each segment.
 
@@ -166,7 +212,16 @@ Attributes
       :raises RuntimeError: Raised if all is not supported for the values dtype
 
 
-   .. py:method:: XOR(values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. py:method:: Reductions(*args, **kwargs)
+
+      frozenset() -> empty frozenset object
+      frozenset(iterable) -> frozenset object
+
+      Build an immutable unordered collection of unique elements.
+
+
+
+   .. py:method:: XOR(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       Bitwise XOR of values in each segment.
 
@@ -187,7 +242,7 @@ Attributes
       :raises RuntimeError: Raised if all is not supported for the values dtype
 
 
-   .. py:method:: aggregate(values: groupable, operator: str, skipna: bool = True, ddof: arkouda.dtypes.int_scalars = 1) -> Tuple[groupable, groupable]
+   .. py:method:: aggregate(values: groupable, operator: str, skipna: bool = True, ddof: int_scalars = 1) -> Tuple[groupable, groupable]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and apply a reduction to each group's values.
@@ -226,7 +281,7 @@ Attributes
       0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))
 
 
-   .. py:method:: all(values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. py:method:: all(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and perform an "and" reduction on
@@ -245,7 +300,7 @@ Attributes
       :raises RuntimeError: Raised if all is not supported for the values dtype
 
 
-   .. py:method:: any(values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. py:method:: any(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and perform an "or" reduction on each group.
@@ -262,7 +317,7 @@ Attributes
           if the operator is not in the GroupBy.Reductions array
 
 
-   .. py:method:: argmax(values: arkouda.pdarrayclass.pdarray) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: argmax(values: pdarray) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the location of the first
@@ -299,7 +354,7 @@ Attributes
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
-   .. py:method:: argmin(values: arkouda.pdarrayclass.pdarray) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: argmin(values: pdarray) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the location of the first
@@ -338,7 +393,6 @@ Attributes
 
 
    .. py:method:: attach(user_defined_name: str) -> GroupBy
-      :staticmethod:
 
       Function to return a GroupBy object attached to the registered name in the
       arkouda server which was registered using register()
@@ -354,7 +408,7 @@ Attributes
       .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_groupby_by_name`
 
 
-   .. py:method:: broadcast(values: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], permute: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+   .. py:method:: broadcast(values: Union[pdarray, Strings], permute: bool = True) -> Union[pdarray, Strings]
 
       Fill each group's segment with a constant value.
 
@@ -404,7 +458,6 @@ Attributes
 
 
    .. py:method:: build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy
-      :staticmethod:
 
       function to build a new GroupBy object from component keys and permutation.
 
@@ -417,7 +470,7 @@ Attributes
       :rtype: GroupBy
 
 
-   .. py:method:: count() -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: count() -> Tuple[groupable, pdarray]
 
       Count the number of elements in each group, i.e. the number of times
       each key appears.  This counts the total number of rows (including NaN values).
@@ -456,12 +509,11 @@ Attributes
 
 
    .. py:method:: from_return_msg(rep_msg)
-      :staticmethod:
 
 
    .. py:method:: is_registered() -> bool
 
-       Return True if the object is contained in the registry
+      Return True if the object is contained in the registry
 
       :returns: Indicates if the object is contained in the registry
       :rtype: bool
@@ -476,7 +528,7 @@ Attributes
       they are unregistered.
 
 
-   .. py:method:: max(values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: max(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the maximum of each
@@ -511,7 +563,7 @@ Attributes
       (array([2, 3, 4]), array([4, 4, 3]))
 
 
-   .. py:method:: mean(values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: mean(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and compute the mean of each group's
@@ -548,7 +600,7 @@ Attributes
       (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))
 
 
-   .. py:method:: median(values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: median(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and compute the median of each group's
@@ -585,7 +637,7 @@ Attributes
       (array([1 2 3 4]), array([-3.75 1.25 3.75 -3.75]))
 
 
-   .. py:method:: min(values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: min(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the minimum of each group's
@@ -637,7 +689,8 @@ Attributes
       (Deprecated) See `GroupBy.mode()`.
 
 
-   .. py:method:: nunique(values: groupable) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+
+   .. py:method:: nunique(values: groupable) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and return the number of unique values in each group.
@@ -673,7 +726,22 @@ Attributes
       #    Group (4) has values [4] -> 1 unique value
 
 
-   .. py:method:: prod(values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: objType(*args, **kwargs)
+
+      str(object='') -> str
+      str(bytes_or_buffer[, encoding[, errors]]) -> str
+
+      Create a new string object from the given object. If encoding or
+      errors is specified, then the object must expose a data buffer
+      that will be decoded using the given encoding and error handler.
+      Otherwise, returns the result of object.__str__() (if defined)
+      or repr(object).
+      encoding defaults to sys.getdefaultencoding().
+      errors defaults to 'strict'.
+
+
+
+   .. py:method:: prod(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and compute the product of each group's
@@ -736,7 +804,7 @@ Attributes
       they are unregistered.
 
 
-   .. py:method:: size() -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: size() -> Tuple[groupable, pdarray]
 
       Count the number of elements in each group, i.e. the number of times
       each key appears.  This counts the total number of rows (including NaN values).
@@ -761,7 +829,7 @@ Attributes
       array([1, 2, 4, 3])
 
 
-   .. py:method:: std(values: arkouda.pdarrayclass.pdarray, skipna: bool = True, ddof: arkouda.dtypes.int_scalars = 1) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: std(values: pdarray, skipna: bool = True, ddof: int_scalars = 1) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and compute the standard deviation of
@@ -813,7 +881,7 @@ Attributes
       (array([2 3 4]), array([1.5275252316519465 1.0954451150103321 0]))
 
 
-   .. py:method:: sum(values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: sum(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and sum each group's values.
@@ -900,7 +968,6 @@ Attributes
 
 
    .. py:method:: unregister_groupby_by_name(user_defined_name: str) -> None
-      :staticmethod:
 
       Function to unregister GroupBy object by name which was registered
       with the arkouda server via register()
@@ -917,7 +984,7 @@ Attributes
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'groupby', repack: bool = True)
 
 
-   .. py:method:: var(values: arkouda.pdarrayclass.pdarray, skipna: bool = True, ddof: arkouda.dtypes.int_scalars = 1) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: var(values: pdarray, skipna: bool = True, ddof: int_scalars = 1) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and compute the variance of
@@ -967,7 +1034,7 @@ Attributes
 
 
 
-.. py:function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], size: Union[int, numpy.int64, numpy.uint64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
+.. py:function:: broadcast(segments: pdarray, values: Union[pdarray, Strings], size: Union[int, np.int64, np.uint64] = -1, permutation: Union[pdarray, None] = None)
 
    Broadcast a dense column vector to the rows of a sparse matrix or grouped array.
 
@@ -1010,7 +1077,7 @@ Attributes
    array([2 2 1 1 1 0 0])
 
 
-.. py:function:: unique(pda: groupable, return_groups: bool = False, assume_sorted: bool = False, return_indices: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
+.. py:function:: unique(pda: groupable, return_groups: bool = False, assume_sorted: bool = False, return_indices: bool = False) -> Union[groupable, Tuple[groupable, pdarray, pdarray, int]]
 
    Find the unique elements of an array.
 

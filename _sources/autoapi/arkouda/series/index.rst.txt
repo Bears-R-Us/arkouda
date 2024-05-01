@@ -17,7 +17,7 @@ Classes
 
 
 
-.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type], name=None, index: Optional[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Tuple, List, arkouda.index.Index]] = None)
+.. py:class:: Series
 
 
    One-dimensional arkouda array with axis labels.
@@ -49,7 +49,6 @@ Classes
        'index' (optional) must match size of 'data'
 
    .. py:property:: at
-      :type: _LocIndexer
 
       Accesses entries of a Series by label
 
@@ -57,7 +56,7 @@ Classes
       :type key: pdarray, Strings, Series, list, supported_scalars
 
    .. py:property:: iat
-      :type: _iLocIndexer
+      :type: Series
 
       Accesses entries of a Series by position
 
@@ -65,7 +64,7 @@ Classes
       :type key: int
 
    .. py:property:: iloc
-      :type: _iLocIndexer
+      :type: Series
 
       Accesses entries of a Series by position
 
@@ -73,7 +72,7 @@ Classes
       :type key: int
 
    .. py:property:: loc
-      :type: _LocIndexer
+      :type: Series
 
       Accesses entries of a Series by label
 
@@ -83,24 +82,16 @@ Classes
    .. py:property:: shape
 
 
-   .. py:attribute:: dt
-
-      
-
-   .. py:attribute:: objType
-      :value: 'Series'
-
-      
-
-   .. py:attribute:: str_acc
-
-      
-
    .. py:method:: add(b: Series) -> Series
 
 
+   .. py:method:: argmax()
+
+
+   .. py:method:: argmin()
+
+
    .. py:method:: attach(label: str, nkeys: int = 1) -> Series
-      :staticmethod:
 
       DEPRECATED
       Retrieve a series registered with arkouda
@@ -112,33 +103,39 @@ Classes
 
 
    .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None) -> Union[arkouda.dataframe.DataFrame, Series]
-      :staticmethod:
 
       Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
-      vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
-      grouping is a 2-tuple with the first item being the key(s) and the second being the value.
-      If horizontal, each series or grouping must have the same length and the same index. The index
-      of the series is converted to a column in the dataframe.  If it is a multi-index,each level is
-      converted to a column.
+              vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
+              grouping is a 2-tuple with the first item being the key(s) and the second being the value.
+              If horizontal, each series or grouping must have the same length and the same index. The index
+              of the series is converted to a column in the dataframe.  If it is a multi-index,each level is
+              converted to a column.
 
-      :param arrays:
-      :type arrays: The list of series/groupings to concat.
-      :param axis:
-      :type axis: Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
-      :param index_labels:
-      :type index_labels: column names(s) to label the index.
-      :param value_labels:
-      :type value_labels: column names to label values of each series.
+              Parameters
+              ----------
+              arrays:  The list of series/groupings to concat.
+              axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
+              index_labels:  column names(s) to label the index.
+              value_labels:  column names to label values of each series.
 
-      :returns: * **axis=0** (*an arkouda series.*)
-                * **axis=1** (*an arkouda dataframe.*)
+              Returns
+              -------
+              axis=0: an arkouda series.
+              axis=1: an arkouda dataframe.
+
+
 
 
    .. py:method:: diff() -> Series
 
       Diffs consecutive values of the series.
 
-      Returns a new series with the same index and length.  First value is set to NaN.
+              Returns a new series with the same index and length.  First value is set to NaN.
+
+
+
+
+   .. py:method:: dt(series)
 
 
    .. py:method:: fillna(value) -> Series
@@ -230,7 +227,6 @@ Classes
 
 
    .. py:method:: from_return_msg(repMsg: str) -> Series
-      :classmethod:
 
       Return a Series instance pointing to components created by the arkouda server.
       The user should not call this function directly.
@@ -249,6 +245,7 @@ Classes
    .. py:method:: has_repeat_labels() -> bool
 
       Returns whether the Series has any labels that appear more than once
+
 
 
    .. py:method:: hasnans() -> bool
@@ -276,10 +273,11 @@ Classes
       Return the first n values of the series
 
 
+
    .. py:method:: is_registered() -> bool
 
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
+      Return True iff the object is contained in the registry or is a component of a
+      registered object.
 
       :returns: Indicates if the object is contained in the registry
       :rtype: numpy.bool
@@ -294,15 +292,19 @@ Classes
       they are unregistered.
 
 
-   .. py:method:: isin(lst: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, List]) -> Series
+   .. py:method:: isin(lst: Union[pdarray, Strings, List]) -> Series
 
       Find series elements whose values are in the specified list
 
-      Input
-      -----
-      Either a python list or an arkouda array.
+              Input
+              -----
+              Either a python list or an arkouda array.
 
-      :rtype: Arkouda boolean which is true for elements that are in the list and false otherwise.
+              Returns
+              -------
+              Arkouda boolean which is true for elements that are in the list and false otherwise.
+
+
 
 
    .. py:method:: isna() -> Series
@@ -375,20 +377,24 @@ Classes
       +----+---------+
 
 
-   .. py:method:: locate(key: Union[int, arkouda.pdarrayclass.pdarray, arkouda.index.Index, Series, List, Tuple]) -> Series
+   .. py:method:: locate(key: Union[int, pdarray, Index, Series, List, Tuple]) -> Series
 
       Lookup values by index label
 
-      The input can be a scalar, a list of scalers, or a list of lists (if the series has a
-      MultiIndex). As a special case, if a Series is used as the key, the series labels are
-      preserved with its values use as the key.
+              The input can be a scalar, a list of scalers, or a list of lists (if the series has a
+              MultiIndex). As a special case, if a Series is used as the key, the series labels are
+              preserved with its values use as the key.
 
-      Keys will be turned into arkouda arrays as needed.
+              Keys will be turned into arkouda arrays as needed.
 
-      :rtype: A Series containing the values corresponding to the key.
+              Returns
+              -------
+              A Series containing the values corresponding to the key.
 
 
-   .. py:method:: map(arg: Union[dict, arkouda.Series]) -> arkouda.Series
+
+
+   .. py:method:: map(arg: Union[dict, Series]) -> Series
 
       Map values of Series according to an input mapping.
 
@@ -459,6 +465,12 @@ Classes
       +----+-----+
 
 
+   .. py:method:: max()
+
+
+   .. py:method:: mean()
+
+
    .. py:method:: memory_usage(index: bool = True, unit='B') -> int
 
       Return the memory usage of the Series.
@@ -494,6 +506,9 @@ Classes
       >>> s = ak.Series(ak.arange(3000))
       >>> s.memory_usage(unit="KB")
       46.875
+
+
+   .. py:method:: min()
 
 
    .. py:method:: notna() -> Series
@@ -566,27 +581,47 @@ Classes
       +----+---------+
 
 
-   .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: Union[arkouda.strings.Strings, None] = None) -> Union[pandas.Series, pandas.DataFrame]
-      :staticmethod:
+   .. py:method:: objType(*args, **kwargs)
+
+      str(object='') -> str
+      str(bytes_or_buffer[, encoding[, errors]]) -> str
+
+      Create a new string object from the given object. If encoding or
+      errors is specified, then the object must expose a data buffer
+      that will be decoded using the given encoding and error handler.
+      Otherwise, returns the result of object.__str__() (if defined)
+      or repr(object).
+      encoding defaults to sys.getdefaultencoding().
+      errors defaults to 'strict'.
+
+
+
+   .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: Union[Strings, None] = None) -> Union[pd.Series, pd.DataFrame]
 
       Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
 
-      If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping
-      is a 2-tuple with the first item being the key(s) and the second being the value.
+              If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping
+              is a 2-tuple with the first item being the key(s) and the second being the value.
 
-      If horizontal, each series or grouping must have the same length and the same index. The index of
-      the series is converted to a column in the dataframe.  If it is a multi-index,each level is
-      converted to a column.
+              If horizontal, each series or grouping must have the same length and the same index. The index of
+              the series is converted to a column in the dataframe.  If it is a multi-index,each level is
+              converted to a column.
 
-      :param arrays:
-      :type arrays: The list of series/groupings to concat.
-      :param axis:
-      :type axis: Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
-      :param labels:
-      :type labels: names to give the columns of the data frame.
+              Parameters
+              ----------
+              arrays:  The list of series/groupings to concat.
+              axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
+              labels:  names to give the columns of the data frame.
 
-      :returns: * **axis=0** (*a local PANDAS series*)
-                * **axis=1** (*a local PANDAS dataframe*)
+              Returns
+              -------
+              axis=0: a local PANDAS series
+              axis=1: a local PANDAS dataframe
+
+
+
+
+   .. py:method:: prod()
 
 
    .. py:method:: register(user_defined_name: str)
@@ -618,20 +653,41 @@ Classes
 
       Sort the series by its index
 
-      :param ascending: Sort values in ascending (default) or descending order.
-      :type ascending: bool
+              Parameters
+              ----------
+              ascending : bool
+                  Sort values in ascending (default) or descending order.
 
-      :rtype: A new Series sorted.
+              Returns
+              -------
+              A new Series sorted.
+
+
 
 
    .. py:method:: sort_values(ascending: bool = True) -> Series
 
       Sort the series numerically
 
-      :param ascending: Sort values in ascending (default) or descending order.
-      :type ascending: bool
+              Parameters
+              ----------
+              ascending : bool
+                  Sort values in ascending (default) or descending order.
 
-      :rtype: A new Series sorted smallest to largest
+              Returns
+              -------
+              A new Series sorted smallest to largest
+
+
+
+
+   .. py:method:: std()
+
+
+   .. py:method:: str_acc(series)
+
+
+   .. py:method:: sum()
 
 
    .. py:method:: tail(n: int = 10) -> Series
@@ -639,16 +695,21 @@ Classes
       Return the last n values of the series
 
 
+
    .. py:method:: to_dataframe(index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None) -> arkouda.dataframe.DataFrame
 
       Converts series to an arkouda data frame
 
-      :param index_labels:
-      :type index_labels: column names(s) to label the index.
-      :param value_label:
-      :type value_label: column name to label values.
+              Parameters
+              ----------
+              index_labels:  column names(s) to label the index.
+              value_label:  column name to label values.
 
-      :rtype: An arkouda dataframe.
+              Returns
+              -------
+              An arkouda dataframe.
+
+
 
 
    .. py:method:: to_list() -> list
@@ -708,19 +769,25 @@ Classes
       +----+----------+
 
 
-   .. py:method:: to_pandas() -> pandas.Series
+   .. py:method:: to_pandas() -> pd.Series
 
       Convert the series to a local PANDAS series
+
 
 
    .. py:method:: topn(n: int = 10) -> Series
 
       Return the top values of the series
 
-      :param n:
-      :type n: Number of values to return
+              Parameters
+              ----------
+              n: Number of values to return
 
-      :rtype: A new Series with the top values
+              Returns
+              -------
+              A new Series with the top values
+
+
 
 
    .. py:method:: unregister()
@@ -739,7 +806,7 @@ Classes
       they are unregistered.
 
 
-   .. py:method:: validate_key(key: Union[Series, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, List, supported_scalars]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, supported_scalars]
+   .. py:method:: validate_key(key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars]) -> Union[pdarray, Strings, Categorical, supported_scalars]
 
       Validates type requirements for keys when reading or writing the Series.
       Also converts list and tuple arguments into pdarrays.
@@ -756,7 +823,7 @@ Classes
           from the Series
 
 
-   .. py:method:: validate_val(val: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, supported_scalars, List]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, supported_scalars]
+   .. py:method:: validate_val(val: Union[pdarray, Strings, supported_scalars, List]) -> Union[pdarray, Strings, supported_scalars]
 
       Validates type requirements for values being written into the Series.
       Also converts list and tuple arguments into pdarrays.
@@ -776,11 +843,17 @@ Classes
 
       Return a Series containing counts of unique values.
 
-      The resulting object will be in descending order so that the
-      first element is the most frequently-occurring element.
+              The resulting object will be in descending order so that the
+              first element is the most frequently-occurring element.
 
-      :param sort:
-      :type sort: Boolean. Whether or not to sort the results.  Default is true.
+              Parameters
+              ----------
+              sort : Boolean. Whether or not to sort the results.  Default is true.
+
+
+
+
+   .. py:method:: var()
 
 
 
