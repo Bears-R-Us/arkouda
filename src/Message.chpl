@@ -374,8 +374,6 @@ module Message {
             this.param_list = new list(ParameterObj);
             this.size = param_list.size;
 
-            init this;
-
             this.param_list = param_list;
         }
 
