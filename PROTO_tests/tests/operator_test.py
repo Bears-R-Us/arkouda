@@ -233,6 +233,43 @@ class TestOperator:
         np_invert = ~np.arange(10, dtype=np.uint)
         assert ak_invert.to_list() == np_invert.tolist()
 
+    def test_bool_bool_addition_binop(self):
+        np_x = np.array([True, True, False, False])
+        np_y = np.array([True, False, True, False])
+        ak_x = ak.array(np_x)
+        ak_y = ak.array(np_y)
+        # Vector-Vector Case
+        assert (np_x+np_y).tolist() == (ak_x+ak_y).to_list()
+        # Scalar-Vector Case
+        assert (np_x[0]+np_y).tolist() == (ak_x[0]+ak_y).to_list()
+        assert (np_x[-1]+np_y).tolist() == (ak_x[-1]+ak_y).to_list()
+        # Vector-Scalar Case
+        assert (np_x+np_y[0]).tolist() == (ak_x+ak_y[0]).to_list()
+        assert (np_x+np_y[-1]).tolist() == (ak_x+ak_y[-1]).to_list()
+
+    def test_bool_bool_addition_opeq(self):
+        np_x = np.array([True, True, False, False])
+        np_y = np.array([True, False, True, False])
+        ak_x = ak.array(np_x)
+        ak_y = ak.array(np_y)
+        np_x += np_y
+        ak_x += ak_y
+        # Vector-Vector Case
+        assert np_x.tolist() == ak_x.to_list()
+        # Scalar-Vector Case
+        # True
+        np_true = np_x[0]
+        ak_true = ak_x[0]
+        np_true += np_y
+        ak_true += ak_y
+        assert np_x.tolist() == ak_x.to_list()
+        # False
+        np_false = np_x[-1]
+        ak_false = ak_x[-1]
+        np_false += np_y
+        ak_false += ak_y
+        assert np_x.tolist() == ak_x.to_list()
+
     def test_uint_bool_binops(self):
         # Test fix for issue #1932
         # Adding support to binopvv to correctly handle uint and bool types
