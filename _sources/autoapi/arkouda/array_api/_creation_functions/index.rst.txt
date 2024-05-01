@@ -37,7 +37,7 @@ Functions
 .. py:function:: arange(start: Union[int, float], /, stop: Optional[Union[int, float]] = None, step: Union[int, float] = 1, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._array_object.Array
 
 
-.. py:function:: asarray(obj: Union[arkouda.array_api._array_object.Array, bool, int, float, arkouda.array_api._typing.NestedSequence[bool | int | float], arkouda.array_api._typing.SupportsBufferProtocol], /, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None, copy: Optional[bool] = None) -> arkouda.array_api._array_object.Array
+.. py:function:: asarray(obj: Union[arkouda.array_api._array_object.Array, bool, int, float, arkouda.array_api._typing.NestedSequence[bool | int | float], arkouda.array_api._typing.SupportsBufferProtocol, arkouda.pdarray], /, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None, copy: Optional[bool] = None) -> arkouda.array_api._array_object.Array
 
 
 .. py:function:: empty(shape: Union[int, Tuple[int, Ellipsis]], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._array_object.Array

@@ -474,7 +474,9 @@
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays_and_dtypes</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
             <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_all_dtypes</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">elif</span> <span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_all_dtypes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;result_type() inputs must be array_api arrays or dtypes&quot;</span><span class="p">)</span>
         <span class="n">A</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
