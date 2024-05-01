@@ -101,7 +101,7 @@ class Series:
         an array of indices associated with the data array.
         If empty, it will default to a range of ints whose size match the size of the data.
         optional
-    data : Tuple, List, groupable_element_type
+    data : Tuple, List, groupable_element_type, Series, SegArray
         a 1D array. Must not be None.
 
     Raises
@@ -280,7 +280,7 @@ class Series:
         return key
 
     @typechecked
-    def __getitem__(self, _key: Union[supported_scalars, pdarray, Strings, List, SegArray, Series]):
+    def __getitem__(self, _key: Union[supported_scalars, pdarray, Strings, List, Series]):
         """
         Gets values from Series.
 
@@ -1110,6 +1110,9 @@ class Series:
         axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
         index_labels:  column names(s) to label the index.
         value_labels:  column names to label values of each series.
+        ordered:  If True (default), the arrays will be appended in the order given. If False, array 
+                    data may be interleaved in blocks, which can greatly improve performance but 
+                    results in non-deterministic ordering of elements.
 
         Returns
         -------

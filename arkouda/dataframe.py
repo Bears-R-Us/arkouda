@@ -624,7 +624,6 @@ class DataFrame(UserDict):
         self.registered_name = None
 
         if isinstance(initialdata, DataFrame):
-            print("copy constructor")
             # Copy constructor
             self._nrows = initialdata._nrows
             self._bytes = initialdata._bytes
@@ -783,10 +782,10 @@ class DataFrame(UserDict):
             return key
 
         if isinstance(key, (pdarray, Strings, Categorical, SegArray)):
-            for k in key.to_ndarray():
-                if len(self.columns) != 0 and dtype(type(k)) != dtype(type(self.columns[0])):
-                    raise TypeError(
-                        "Expected key of type {}, received {}".format(type(self.columns[0]), type(k)))
+            k = key[0]
+            if len(self.columns) != 0 and dtype(type(k)) != dtype(type(self.columns[0])):
+                raise TypeError(
+                    "Expected key of type {}, received {}".format(type(self.columns[0]), type(k)))
             return key
 
         raise TypeError("Indexing with keys of type {} not supported".format(type(key)))
@@ -839,13 +838,13 @@ class DataFrame(UserDict):
 
         # boolean mask
         if isinstance(key, pdarray) and key.dtype == akbool:
-            return self.get_rows(key)
+            return self._get_rows(key)
 
         # slice
         if isinstance(key, slice):
             start_index = key.start if key.start is not None else 0
             stop_index = key.stop if key.stop is not None else len(self.index)
-            return self.get_rows(arange(start_index, stop_index, 1))
+            return self._get_rows(arange(start_index, stop_index, 1))
 
         if isinstance(key, (pdarray, Strings)):
             for k in key.to_ndarray():
@@ -975,7 +974,7 @@ class DataFrame(UserDict):
         TypeError
             Raised if the key or value types are not supported.
         """
-        return LocIndexer(self)
+        return _LocIndexer(self)
 
     @property
     def iloc(self):
@@ -999,7 +998,7 @@ class DataFrame(UserDict):
         ValueError
             Raised if a boolean mask is of the wrong length.
         """
-        return ILocIndexer(self)
+        return _ILocIndexer(self)
 
     @property
     def at(self) -> AtIndexer:
@@ -1217,12 +1216,12 @@ class DataFrame(UserDict):
         new_df._set_index(self.index.index[idx])
         return new_df.to_pandas(retain_index=True)[self._columns]
 
-    def get_rows(self, key):
+    def _get_rows(self, key):
         """
         Gets rows of the dataframe based with the provided indices
         """
         if not isinstance(key, (pdarray, slice)):
-            raise TypeError("get_rows requires pdarray of row indices or a slice")
+            raise TypeError("_get_rows requires pdarray of row indices or a slice")
 
         if isinstance(key, slice):
             start = key.start if key.start is not None else 0
@@ -1243,7 +1242,7 @@ class DataFrame(UserDict):
         """
         return self._columns
 
-    def add_new_rows(self, key):
+    def _add_new_rows(self, key):
         # If the key is a scalar, convert it to an array
         if is_supported_scalar(key) and dtype(type(key)) == self.index.dtype:
             key = array([key])
@@ -1262,14 +1261,15 @@ class DataFrame(UserDict):
             self._set_index(self.index.concat(Index(new_keys)))
             for k in self._columns:
                 current_col = UserDict.__getitem__(self, k)
-                new_col = concatenate([current_col, full(len(new_keys), 0, dtype=current_col.dtype)])
+                default_val = np.nan if current_col.dtype == akfloat64 else 0
+                new_col = concatenate([current_col, full(len(new_keys), default_val, dtype=current_col.dtype)])
                 UserDict.__setitem__(self, k, new_col)
 
             self.update_nrows()
         else:
             raise ValueError("Invalid key type for adding new rows")
 
-    def add_column(self, key, dtype):
+    def _add_column(self, key, dtype):
         """
         Adds a column to the DataFrame with the given key and dtype.
         """
@@ -2402,7 +2402,6 @@ class DataFrame(UserDict):
         for col in columnlist:
             try:
                 ret[col] = util_concatenate([df[col] for df in items], ordered=ordered)
-                print(ret[col])
             except TypeError:
                 raise TypeError(f"Incompatible types for column {col}")
         return ret
@@ -3904,7 +3903,7 @@ class DataFrame(UserDict):
             i = self.coargsort(by, ascending=ascending)
         else:
             raise TypeError("Column name(s) must be str or list/tuple of str")
-        return self.get_rows(i)
+        return self._get_rows(i)
 
     def apply_permutation(self, perm):
         """
@@ -5054,25 +5053,25 @@ class DataFrame(UserDict):
         return cls(columns, idx)
 
 
-class LocIndexer:
+class _LocIndexer:
     def __init__(self, df):
         self.df = df
 
     def __getitem__(self, key):
         if isinstance(key, tuple) and len(key) == 2:
-            return self.get_row_col(key[0], key[1])
+            return self._get_row_col(key[0], key[1])
         if isinstance(key, list):
             key = array(key)
         if isinstance(key, Series):
             key = key.values
         if is_supported_scalar(key) and self.df.index.dtype == dtype(type(key)):
-            return self.df.get_rows(indexof1d(array([key]), self.df.index.values))
+            return self.df._get_rows(indexof1d(array([key]), self.df.index.values))
 
         if isinstance(key, pdarray) and key.dtype == self.df.index.dtype:
-            return self.df.get_rows(indexof1d(key, self.df.index.values))
+            return self.df._get_rows(indexof1d(key, self.df.index.values))
 
         if isinstance(key, slice):
-            if key.start is not None and not (in1d(array([key.start]), self.df.index.values)):
+            if key.start is not None and not akany(in1d(array([key.start]), self.df.index.values)):
                 raise KeyError(f"Index {key.start} not found in DataFrame index")
             if key.stop is not None and not akany(in1d(array([key.stop]), self.df.index.values)):
                 raise KeyError(f"Index {key.stop} not found in DataFrame index")
@@ -5083,44 +5082,45 @@ class LocIndexer:
                         if key.stop is not None else self.df.index.size)
 
             indices = arange(start_idx, stop_idx)
-            return self.df.get_rows(indices)
+            return self.df._get_rows(indices)
 
         if isinstance(key, pdarray) and key.dtype == akbool:
-            return self.df.get_rows(key)
+            return self.df._get_rows(key)
 
         return None
 
-    def get_row_col(self, row_key, col_key):
+    def _get_row_col(self, row_key, col_key):
         return self[row_key][col_key]
 
     def __setitem__(self, key, val):
         if isinstance(key, tuple) and len(key) == 2:
-            self.set_row_col(key[0], key[1], val)
+            self._set_row_col(key[0], key[1], val)
             return
         else:
             raise ValueError(
                 "Invalid key type. '.loc' indexing only supports keys with row and column selectors."
             )
 
-    def set_row_col(self, row_key, col_key, val):
+    def _set_row_col(self, row_key, col_key, val):
         if isinstance(row_key, list):
             row_key = array(row_key)
         if isinstance(row_key, Series):
             row_key = row_key.values
-        if is_supported_scalar(col_key) and col_key not in self.df.column_labels():
-            self.df.add_column(col_key, dtype(type(val)))
+        if is_supported_scalar(col_key) and col_key not in self.df.columns.values:
+            self.df._add_column(col_key, dtype(type(val)))
 
         if is_supported_scalar(val):
-            return self.set_row_col_scalar_val(row_key, col_key, val)
+            return self._set_row_col_scalar_val(row_key, col_key, val)
         else:
-            return self.set_row_col_vector_val(row_key, col_key, val)
+            assert(isinstance(val, (pdarray, Series, Strings, SegArray))), "Invalid value type"
+            return self._set_row_col_vector_val(row_key, col_key, val)
 
-    def set_row_col_scalar_val(self, row_key, col_key, val):
+    def _set_row_col_scalar_val(self, row_key, col_key, val):
         if is_supported_scalar(row_key):
             if not self.df.index.dtype == dtype(type(row_key)):
                 raise TypeError("Row key must be of the same type as the DataFrame index")
             if akany(in1d(array([row_key]), self.df.index.values, invert=True)):
-                self.df.add_new_rows(row_key)
+                self.df._add_new_rows(row_key)
             # updating a single row
             row_idx = indexof1d(array([row_key]), self.df.index.values)
             if row_idx.size == 0:
@@ -5130,7 +5130,7 @@ class LocIndexer:
 
         if isinstance(row_key, pdarray) and row_key.dtype == self.df.index.dtype:
             if akany(in1d(row_key, self.df.index.values, invert=True)):
-                self.df.add_new_rows(row_key)
+                self.df._add_new_rows(row_key)
             # updating multiple rows
             row_idx = indexof1d(row_key, self.df.index.values)
             self.df.data[col_key][row_idx] = val
@@ -5152,15 +5152,14 @@ class LocIndexer:
             self.df.data[col_key][indices] = val
         return None
 
-    def set_row_col_vector_val(self, row_key, col_key, val):
+    def _set_row_col_vector_val(self, row_key, col_key, val):
         if isinstance(val, Series):
             aligned_indices = indexof1d(val.index.values, self.df.index.values)
-            print('aligned_indices:', aligned_indices)
             self.df.data[col_key][aligned_indices] = val.values
             return
         if isinstance(row_key, pdarray) and row_key.dtype == self.df.index.dtype:
             if akany(in1d(row_key, self.df.index.values, invert=True)):
-                self.df.add_new_rows(row_key)
+                self.df._add_new_rows(row_key)
             # updating multiple rows
             row_idx = indexof1d(row_key, self.df.index.values)
             self.df.data[col_key][row_idx] = val
@@ -5182,13 +5181,13 @@ class LocIndexer:
         return None
 
 
-class ILocIndexer:
+class _ILocIndexer:
     def __init__(self, df):
         self.df = df
 
     def __getitem__(self, key):
         if isinstance(key, tuple) and len(key) == 2:
-            return self.get_row_col(key[0], key[1])
+            return self._get_row_col(key[0], key[1])
         if isinstance(key, list):
             key = array(key)
         if isinstance(key, Series):
@@ -5199,17 +5198,17 @@ class ILocIndexer:
                 raise TypeError("iloc key must be an integer")
             if key >= len(self.df) or key < -len(self.df):
                 raise IndexError("Index out of range")
-            return self.df.get_rows(array([key]))
+            return self.df._get_rows(array([key]))
 
         if isinstance(key, pdarray):
             if key.dtype == akint64:
                 if akany(key < -len(self.df)) or akany(key >= len(self.df)):
                     raise IndexError("Index out of range")
-                return self.df.get_rows(key)
+                return self.df._get_rows(key)
             if key.dtype == akbool:
                 if key.size != self.df.index.size:
                     raise IndexError("Boolean array must be the same size as the DataFrame index")
-                return self.df.get_rows(key)
+                return self.df._get_rows(key)
             raise TypeError("Invalid dtype for iloc key, must be int or bool: {}".format(key.dtype))
 
         if isinstance(key, slice):
@@ -5224,11 +5223,11 @@ class ILocIndexer:
             step = key.step if key.step is not None else 1
             if start < 0 or start >= len(self.df) or stop < 0 or stop > len(self.df) or step <= 0:
                 raise IndexError("Slice index out of range")
-            return self.df.get_rows(arange(start, stop, step))
+            return self.df._get_rows(arange(start, stop, step))
 
         raise TypeError("Invalid iloc key: {}".format(key))
 
-    def get_row_col(self, row_key, col_key):
+    def _get_row_col(self, row_key, col_key):
         row_indexed = self[row_key]
 
         if isinstance(col_key, list):
@@ -5237,7 +5236,7 @@ class ILocIndexer:
             col_key = col_key.values
 
         if isinstance(row_indexed, DataFrame):
-            if is_supported_scalar(col_key) and isinstance(col_key, int):
+            if isinstance(col_key, int):
                 column_name = row_indexed.columns[col_key]
                 column = row_indexed[column_name]
                 if len(column) == 1:
@@ -5255,17 +5254,14 @@ class ILocIndexer:
 
     def __setitem__(self, key, val):
         if isinstance(key, tuple) and len(key) == 2:
-            self.set_row_col(key[0], key[1], val)
+            self._set_row_col(key[0], key[1], val)
             return
+        else:
+            raise ValueError(
+                "Invalid key type. '.iloc' indexing only supports keys with row and column selectors."
+            )
 
-        if isinstance(key, list):
-            key = array(key)
-        if isinstance(key, Series):
-            key = key.values
-
-        raise ValueError("Invalid iloc key: {}".format(key))
-
-    def set_row_col(self, row_key, col_key, val):
+    def _set_row_col(self, row_key, col_key, val):
         if isinstance(row_key, list):
             row_key = array(row_key)
         if isinstance(row_key, Series):
