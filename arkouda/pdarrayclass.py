@@ -248,7 +248,7 @@ def _parse_none_and_ellipsis_keys(key, ndim):
     ret_key = key
 
     # how many 'None' arguments are in the key tuple
-    num_none = ret_key.count(None)
+    num_none = reduce(lambda x, y: x + (1 if y is None else 0), ret_key, 0)
 
     # replace '...' with the appropriate number of ':'
     elipsis_axis_idx = -1

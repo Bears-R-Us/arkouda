@@ -111,16 +111,17 @@ module ManipulationMsg {
           //   eOut.a[(...outSliceIdx)] = eIn.a; // !!! Doesn't work because of rank mismatch !!!
           // }
 
-          // define a mapping from the output array's indices to the input array's indices
           inline proc imap(idx: ndOut*int, bc: ndIn*int): ndIn*int {
             var ret: ndIn*int;
-            for param i in 0..<ndIn do ret[i] = if bc[i] then 0 else idx[i];
+            for param i in 0..<ndIn do ret[i] = if bc[i] then 0 else idx[i + (ndOut - ndIn)];
             return ret;
           }
 
           // copy values from the input array into the output array
-          forall idx in eOut.a.domain with (var agg = newSrcAggregator(t), in bcDims) do
-            agg.copy(eOut.a[idx], eIn.a[imap(if ndOut==1 then (idx,) else idx, bcDims)]);
+          forall idx in eOut.a.domain with (var agg = newSrcAggregator(t), in bcDims) {
+            const idxIn = imap(if ndOut==1 then (idx,) else idx, bcDims);
+            agg.copy(eOut.a[idx], eIn.a[idxIn]);
+          }
         }
       }
 
@@ -526,8 +527,8 @@ module ManipulationMsg {
         var eOut = st.addEntry(rname, (...outShape), t);
 
         // copy the data from the input array to the output array while permuting the axes
-        forall idx in eOut.a.domain with (var agg = newSrcAggregator(t)) do
-          agg.copy(eOut.a[idx], eIn.a[permuteTuple(if nd == 1 then (idx,) else idx, perm)]);
+        forall idx in eIn.a.domain with (var agg = newDstAggregator(t)) do
+          agg.copy(eOut.a[permuteTuple(if nd == 1 then (idx,) else idx, perm)], eIn.a[idx]);
 
         const repMsg = "created " + st.attrib(rname);
         mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
