@@ -3,22 +3,54 @@ import pytest
 import arkouda as ak
 from arkouda.dtypes import npstr
 
+prob_size = 1000
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 NO_FLOAT = [ak.int64, ak.bool, ak.uint64]
 INT_FLOAT = [ak.int64, ak.float64]
 
+# There are many ways to create a vector of alternating values.
+# This is a fairly fast and fairly straightforward approach.
+
+def alternate(L,R,n):
+    v = np.full(n,R)
+    v[::2] = L
+    return v
+
+#np.random.seed (8675309)
+
+#  The following tuples support a simplification of the trigonometric
+#  and hyperbolic testing.
+
+TRIGONOMETRICS = (
+        (np.sin,ak.sin),
+        (np.cos,ak.cos),
+        (np.tan,ak.tan),
+        (np.arcsin,ak.arcsin),
+        (np.arccos,ak.arccos),
+        (np.arctan,ak.arctan)
+    )
+
+HYPERBOLICS = (
+        (np.sinh,ak.sinh),
+        (np.cosh,ak.cosh),
+        (np.tanh,ak.tanh),
+        (np.arcsinh,ak.arcsinh),
+        (np.arccosh,ak.arccosh),
+        (np.arctanh,ak.arctanh)
+    )
+
+INFINITY_EDGE_CASES = (
+        (np.arctan,ak.arctan),
+        (np.sinh,ak.sinh),
+        (np.cosh,ak.cosh),
+        (np.arcsinh,ak.arcsinh),
+        (np.arccosh,ak.arccosh)
+    )
+
 # as noted in serverConfig.json, only these types are supported
 
 SUPPORTED_TYPES = [ak.bool, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
-
-# There are many ways to create a vector of alternating True, False values.
-# This is a fairly fast and fairly straightforward approach.
-
-def alternatingTF (n) :
-    atf = np.full(n,False)
-    atf[::2] = True
-    return atf
 
 NP_TRIG_ARRAYS = {
     ak.int64: np.arange(-5, 5),
@@ -28,7 +60,18 @@ NP_TRIG_ARRAYS = {
             np.array([np.nan, -np.inf, -0.0, 0.0, np.inf]),
         ]
     ),
-    ak.bool: alternatingTF(10),
+    ak.bool: alternate(True,False,10),
+    ak.uint64: np.arange(2**64 - 10, 2**64, dtype=np.uint64),
+}
+
+DENOM_ARCTAN2_ARRAYS = {
+    ak.int64: np.concatenate((np.arange(-5, 0), np.arange(1, 6))),
+    ak.float64: np.concatenate(
+        [
+            np.linspace(-3.4, 3.5, 5),
+            np.array([np.nan, -np.inf, -1.0, 1.0, np.inf]),
+        ]
+    ),
     ak.uint64: np.arange(2**64 - 10, 2**64, dtype=np.uint64),
 }
 
@@ -44,17 +87,41 @@ ROUNDTRIP_CAST = [
     (ak.uint8, npstr),
 ]
 
-def _trig_test_helper(np_func, na, ak_func, pda):
+#  Most of the trigonometric and hyperbolic tests are identical, so they are combined
+#  into this helper utility.
+
+#  Some of the tests trigger overflow, invalid value, or divide by zero warnings.
+#  We use np.errstate to ignore those, because that's not what we're testing.  We're
+#  only testing that numpy's and arkouda's results match.
+#  To restore those warnings, comment out all of the lines below that invoke np.seterr.
+
+def _trig_and_hyp_test_helper(np_func, na, ak_func, pda):
+    old_settings = np.seterr(all="ignore")   # retrieve current settings 
+    np.seterr(over="ignore",invalid="ignore",divide="ignore")
     assert np.allclose(np_func(na), ak_func(pda).to_ndarray(), equal_nan=True)
-    truth_np = alternatingTF(len(na))
+    truth_np = alternate(True,False,len(na))
     truth_ak = ak.array(truth_np)
-    assert np.allclose(np_func(na, where=True), ak_func(pda, where=True).to_ndarray(), equal_nan=True)
+    assert np.allclose(
+        np_func(na, where=True), ak_func(pda, where=True).to_ndarray(), equal_nan=True
+    )
     assert np.allclose(na, ak_func(pda, where=False).to_ndarray(), equal_nan=True)
     assert np.allclose(
-        [np_func(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
-        ak_func(pda, where=truth_ak).to_list(),
-        equal_nan=True,
+       [np_func(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
+       ak_func(pda, where=truth_ak).to_list(),
+       equal_nan=True,
     )
+    np.seterr(**old_settings)                # restore original settings
+
+#  Similarly, the infinity case causes an invalid value in arccosh, and we don't need
+#  to be told that. To restore the warnings, comment out the lines that invoke np.seterr.
+
+def _infinity_edge_case_helper(np_func, ak_func):
+    na = np.array([np.inf, -np.inf])
+    pda = ak.array(na)
+    old_settings = np.seterr(all="ignore") 
+    np.seterr(invalid="ignore")
+    assert np.allclose(np_func(na), ak_func(pda).to_ndarray(), equal_nan=True)
+    np.seterr(**old_settings)
 
 
 class TestNumeric:
@@ -78,17 +145,23 @@ class TestNumeric:
         seed = pytest.seed if pytest.seed is not None else 8675309
         # Uniform
         assert not (ak.uniform(prob_size) == ak.uniform(prob_size)).all()
-        assert (ak.uniform(prob_size, seed=seed) == ak.uniform(prob_size, seed=seed)).all()
+        assert (
+            ak.uniform(prob_size, seed=seed) == ak.uniform(prob_size, seed=seed)
+        ).all()
 
         # Standard Normal
-        assert not (ak.standard_normal(prob_size) == ak.standard_normal(prob_size)).all()
+        assert not (
+            ak.standard_normal(prob_size) == ak.standard_normal(prob_size)
+        ).all()
         assert (
-            ak.standard_normal(prob_size, seed=seed) == ak.standard_normal(prob_size, seed=seed)
+            ak.standard_normal(prob_size, seed=seed)
+            == ak.standard_normal(prob_size, seed=seed)
         ).all()
 
         # Strings (uniformly distributed length)
         assert not (
-            ak.random_strings_uniform(1, 10, prob_size) == ak.random_strings_uniform(1, 10, prob_size)
+            ak.random_strings_uniform(1, 10, prob_size)
+            == ak.random_strings_uniform(1, 10, prob_size)
         ).all()
 
         assert (
@@ -98,7 +171,8 @@ class TestNumeric:
 
         # Strings (log-normally distributed length)
         assert not (
-            ak.random_strings_lognormal(2, 1, prob_size) == ak.random_strings_lognormal(2, 1, prob_size)
+            ak.random_strings_lognormal(2, 1, prob_size)
+            == ak.random_strings_lognormal(2, 1, prob_size)
         ).all()
         assert (
             ak.random_strings_lognormal(2, 1, prob_size, seed=seed)
@@ -108,6 +182,8 @@ class TestNumeric:
     @pytest.mark.parametrize("cast_to", SUPPORTED_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_cast(self, prob_size, cast_to):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        np.random.seed(seed)
         arrays = {
             ak.int64: ak.randint(-(2**48), 2**48, prob_size),
             ak.uint64: ak.randint(0, 2**48, prob_size, dtype=ak.uint64),
@@ -117,7 +193,9 @@ class TestNumeric:
         }
 
         for t1, orig in arrays.items():
-            if (t1 == ak.float64 and cast_to == ak.bigint) or (t1 == ak.str_ and cast_to == ak.bool):
+            if (t1 == ak.float64 and cast_to == ak.bigint) or (
+                t1 == ak.str_ and cast_to == ak.bool
+            ):
                 # we don't support casting a float to a bigint
                 # we do support str to bool, but it's expected to contain "true/false" not numerics
                 continue
@@ -133,18 +211,46 @@ class TestNumeric:
         ans = None
         if num_type == ak.int64:
             intNAN = -(2**63)
-            strarr = ak.array(["1", "2 ", "3?", "!4", "  5", "-45", "0b101", "0x30", "N/A"])
+            strarr = ak.array(
+                ["1", "2 ", "3?", "!4", "  5", "-45", "0b101", "0x30", "N/A"]
+            )
             ans = np.array([1, 2, intNAN, intNAN, 5, -45, 0b101, 0x30, intNAN])
         elif num_type == ak.uint64:
             uintNAN = 0
-            strarr = ak.array(["1", "2 ", "3?", "-4", "  5", "45", "0b101", "0x30", "N/A"])
+            strarr = ak.array(
+                ["1", "2 ", "3?", "-4", "  5", "45", "0b101", "0x30", "N/A"]
+            )
             ans = np.array([1, 2, uintNAN, uintNAN, 5, 45, 0b101, 0x30, uintNAN])
         elif num_type == ak.float64:
-            strarr = ak.array(["1.1", "2.2 ", "3?.3", "4.!4", "  5.5", "6.6e-6", "78.91E+4", "6", "N/A"])
-            ans = np.array([1.1, 2.2, np.nan, np.nan, 5.5, 6.6e-6, 78.91e4, 6.0, np.nan])
+            strarr = ak.array(
+                [
+                    "1.1",
+                    "2.2 ",
+                    "3?.3",
+                    "4.!4",
+                    "  5.5",
+                    "6.6e-6",
+                    "78.91E+4",
+                    "6",
+                    "N/A",
+                ]
+            )
+            ans = np.array(
+                [1.1, 2.2, np.nan, np.nan, 5.5, 6.6e-6, 78.91e4, 6.0, np.nan]
+            )
         elif num_type == ak.bool:
             strarr = ak.array(
-                ["True", "False ", "Neither", "N/A", "  True", "true", "false", "TRUE", "NOTTRUE"]
+                [
+                    "True",
+                    "False ",
+                    "Neither",
+                    "N/A",
+                    "  True",
+                    "true",
+                    "false",
+                    "TRUE",
+                    "NOTTRUE",
+                ]
             )
             ans = np.array([True, False, False, False, True, True, False, True, False])
 
@@ -160,11 +266,13 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_histogram(self, num_type):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        np.random.seed(seed)
         pda = ak.randint(10, 30, 40, dtype=num_type)
         result, bins = ak.histogram(pda, bins=20)
 
         assert isinstance(result, ak.pdarray)
-        assert 21 == len(bins) 
+        assert 21 == len(bins)
         assert 20 == len(result)
         assert int == result.dtype
 
@@ -177,24 +285,18 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.histogram(np.array([range(0, 10)]).astype(num_type), bins="1")
 
+#   log and exp tests were identical, and so have been combined.
+
     @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_log(self, num_type):
+    def test_log_and_exp(self, num_type):
         na = np.linspace(1, 10, 10).astype(num_type)
         pda = ak.array(na, dtype=num_type)
 
-        assert np.allclose(np.log(na), ak.log(pda).to_ndarray())
+        for npfunc,akfunc in ((np.log,ak.log),(np.exp,ak.exp)) :
+            assert np.allclose(npfunc(na), akfunc(pda).to_ndarray())
         with pytest.raises(TypeError):
-            ak.log(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_exp(self, num_type):
-        na = np.linspace(1, 10, 10).astype(num_type)
-        pda = ak.array(na, dtype=num_type)
-
-        assert np.allclose(np.exp(na), ak.exp(pda).to_ndarray())
-        with pytest.raises(TypeError):
-            ak.exp(np.array([range(0, 10)]).astype(num_type))
-
+            akfunc(np.array([range(0, 10)]).astype(num_type))
+            
     @pytest.mark.parametrize("num_type", INT_FLOAT)
     def test_abs(self, num_type):
         na = np.linspace(1, 10, 10).astype(num_type)
@@ -213,6 +315,8 @@ class TestNumeric:
     @pytest.mark.parametrize("num_type1", NO_BOOL)
     @pytest.mark.parametrize("num_type2", NO_BOOL)
     def test_dot(self, num_type1, num_type2):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        np.random.seed(seed)
         if num_type1 == ak.uint64 and num_type2 == ak.int64:
             pytest.skip()
         if num_type1 == ak.int64 and num_type2 == ak.uint64:
@@ -225,95 +329,57 @@ class TestNumeric:
         assert np.allclose(np.dot(na1[0], na2), ak.dot(pda1[0], pda2).to_ndarray())
         assert np.allclose(np.dot(na1, na2[0]), ak.dot(pda1, pda2[0]).to_ndarray())
 
+#   cumsum and cumprod tests were identical, and so have been combined.
+
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
-    def test_cumsum(self, num_type):
+    def test_cumsum_and_cumprod(self, num_type):
         na = np.linspace(1, 10, 10).astype(num_type)
         pda = ak.array(na, dtype=num_type)
 
-        assert np.allclose(np.cumsum(na), ak.cumsum(pda).to_ndarray())
+        for npfunc,akfunc in ((np.cumsum,ak.cumsum),(np.cumprod,ak.cumprod)) :
+            assert np.allclose(npfunc(na), akfunc(pda).to_ndarray())
         with pytest.raises(TypeError):
             ak.cumsum(np.array([range(0, 10)]).astype(num_type))
 
-    @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
-    def test_cumprod(self, num_type):
-        na = np.linspace(1, 10, 10).astype(num_type)
-        pda = ak.array(na, dtype=num_type)
+#   test_trig_and_hyp covers the testing for most trigonometric and hyperbolic
+#   functions.  The exception is arctan2.
 
-        assert np.allclose(np.cumprod(na), ak.cumprod(pda).to_ndarray())
-        with pytest.raises(TypeError):
-            ak.cumprod(np.array([range(0, 10)]).astype(num_type))
+#   TODO: address the multiple divide by zero, invalid value, and overflow
+#   warnings.  They were here before the test_trig_and_hyp change, so it wasn't
+#   introduced by this function, but they should be addressed.
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_sin(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.sin, na, ak.sin, pda)
+    def test_trig_and_hyp(self,num_type) :
 
-        with pytest.raises(TypeError):
-            ak.sin(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_cos(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.cos, na, ak.cos, pda)
-
-        with pytest.raises(TypeError):
-            ak.cos(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_tan(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.tan, na, ak.tan, pda)
-
-        with pytest.raises(TypeError):
-            ak.tan(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_arcsin(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.arcsin, na, ak.arcsin, pda)
-
-        with pytest.raises(TypeError):
-            ak.arcsin(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_arccos(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.arccos, na, ak.arccos, pda)
-
-        with pytest.raises(TypeError):
-            ak.arccos(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_arctan(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.arctan, na, ak.arctan, pda)
-
-        with pytest.raises(TypeError):
-            ak.arctan(np.array([range(0, 10)]).astype(num_type))
+        for (npfunc,akfunc) in set(TRIGONOMETRICS+HYPERBOLICS) :
+            na = NP_TRIG_ARRAYS[num_type]
+            pda = ak.array(na, dtype=num_type)
+            _trig_and_hyp_test_helper(npfunc, na, akfunc, pda)
+            if (npfunc,akfunc) in INFINITY_EDGE_CASES :
+                _infinity_edge_case_helper (npfunc,akfunc)
+            with pytest.raises(TypeError):
+                akfunc(np.array([range(0, 10)]).astype(num_type))
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     @pytest.mark.parametrize("denom_type", NO_BOOL)
     def test_arctan2(self, num_type, denom_type):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        np.random.seed(seed)
         na_num = np.random.permutation(NP_TRIG_ARRAYS[num_type])
-        na_denom = np.random.permutation(NP_TRIG_ARRAYS[denom_type])
+        #na_denom = np.random.permutation(NP_TRIG_ARRAYS[denom_type])
+        na_denom = np.random.permutation(DENOM_ARCTAN2_ARRAYS[denom_type])
 
         pda_num = ak.array(na_num, dtype=num_type)
         pda_denom = ak.array(na_denom, dtype=denom_type)
 
-        truth_np = alternatingTF(len(na_num))
+        truth_np = alternate(True,False,len(na_num))
         truth_ak = ak.array(truth_np)
 
         assert np.allclose(
             np.arctan2(na_num, na_denom, where=True),
             ak.arctan2(pda_num, pda_denom, where=True).to_ndarray(),
             equal_nan=True,
-        )
+        ) 
         assert np.allclose(
             np.arctan2(na_num[0], na_denom, where=True),
             ak.arctan2(pda_num[0], pda_denom, where=True).to_ndarray(),
@@ -326,7 +392,9 @@ class TestNumeric:
         )
 
         assert np.allclose(
-            na_num / na_denom, ak.arctan2(pda_num, pda_denom, where=False).to_list(), equal_nan=True
+            na_num / na_denom,
+            ak.arctan2(pda_num, pda_denom, where=False).to_list(),
+            equal_nan=True,
         )
         assert np.allclose(
             na_num[0] / na_denom,
@@ -341,7 +409,11 @@ class TestNumeric:
 
         assert np.allclose(
             [
-                np.arctan2(na_num[i], na_denom[i]) if truth_np[i] else na_num[i] / na_denom[i]
+                (
+                    np.arctan2(na_num[i], na_denom[i])
+                    if truth_np[i]
+                    else na_num[i] / na_denom[i]
+                )
                 for i in range(len(na_num))
             ],
             ak.arctan2(pda_num, pda_denom, where=truth_ak).to_ndarray(),
@@ -349,7 +421,11 @@ class TestNumeric:
         )
         assert np.allclose(
             [
-                np.arctan2(na_num[0], na_denom[i]) if truth_np[i] else na_num[0] / na_denom[i]
+                (
+                    np.arctan2(na_num[0], na_denom[i])
+                    if truth_np[i]
+                    else na_num[0] / na_denom[i]
+                )
                 for i in range(len(na_denom))
             ],
             ak.arctan2(pda_num[0], pda_denom, where=truth_ak).to_ndarray(),
@@ -357,16 +433,53 @@ class TestNumeric:
         )
         assert np.allclose(
             [
-                np.arctan2(na_num[i], na_denom[0]) if truth_np[i] else na_num[i] / na_denom[0]
+                (
+                    np.arctan2(na_num[i], na_denom[0])
+                    if truth_np[i]
+                    else na_num[i] / na_denom[0]
+                )
                 for i in range(len(na_num))
             ],
             ak.arctan2(pda_num, pda_denom[0], where=truth_ak).to_ndarray(),
             equal_nan=True,
         )
 
+        # Edge cases: infinities and zeros.  Doesn't use _infinity_edge_case_helper
+        # because arctan2 needs two numbers (numerator and denominator) rather than one.
+
+        na1 = np.array([np.inf, -np.inf])
+        pda1 = ak.array(na1)
+        na2 = np.array([1, 10])
+        pda2 = ak.array(na2)
+
+        assert np.allclose(
+            np.arctan2(na1, na2),
+            ak.arctan2(pda1, pda2).to_ndarray(),
+            equal_nan=True,
+        )
+
+        assert np.allclose(
+            np.arctan2(na2, na1),
+            ak.arctan2(pda2, pda1).to_ndarray(),
+            equal_nan=True,
+        )
+        assert np.allclose(
+            np.arctan2(na1, 5), ak.arctan2(pda1, 5).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(
+            np.arctan2(5, na1), ak.arctan2(5, pda1).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(
+            np.arctan2(na1, 0), ak.arctan2(pda1, 0).to_ndarray(), equal_nan=True
+        )
+        assert np.allclose(
+            np.arctan2(0, na1), ak.arctan2(0, pda1).to_ndarray(), equal_nan=True
+        )
+
         with pytest.raises(TypeError):
             ak.arctan2(
-                np.array([range(0, 10)]).astype(num_type), np.array([range(10, 20)]).astype(num_type)
+                np.array([range(0, 10)]).astype(num_type),
+                np.array([range(10, 20)]).astype(num_type),
             )
         with pytest.raises(TypeError):
             ak.arctan2(pda_num[0], np.array([range(10, 20)]).astype(num_type))
@@ -374,64 +487,10 @@ class TestNumeric:
             ak.arctan2(np.array([range(0, 10)]).astype(num_type), pda_denom[0])
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_sinh(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.sinh, na, ak.sinh, pda)
-
-        with pytest.raises(TypeError):
-            ak.sinh(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_cosh(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.cosh, na, ak.cosh, pda)
-
-        with pytest.raises(TypeError):
-            ak.cosh(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_tanh(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.tanh, na, ak.tanh, pda)
-
-        with pytest.raises(TypeError):
-            ak.tanh(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_arcsinh(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.arcsinh, na, ak.arcsinh, pda)
-
-        with pytest.raises(TypeError):
-            ak.arcsinh(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_arccosh(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.arccosh, na, ak.arccosh, pda)
-
-        with pytest.raises(TypeError):
-            ak.arccosh(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_arctanh(self, num_type):
-        na = NP_TRIG_ARRAYS[num_type]
-        pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.arctanh, na, ak.arctanh, pda)
-
-        with pytest.raises(TypeError):
-            ak.arctanh(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_rad2deg(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.rad2deg, na, ak.rad2deg, pda)
+        _trig_and_hyp_test_helper(np.rad2deg, na, ak.rad2deg, pda)
 
         with pytest.raises(TypeError):
             ak.rad2deg(np.array([range(0, 10)]).astype(num_type))
@@ -440,7 +499,7 @@ class TestNumeric:
     def test_deg2rad(self, num_type):
         na = NP_TRIG_ARRAYS[num_type]
         pda = ak.array(na, dtype=num_type)
-        _trig_test_helper(np.deg2rad, na, ak.deg2rad, pda)
+        _trig_and_hyp_test_helper(np.deg2rad, na, ak.deg2rad, pda)
 
         with pytest.raises(TypeError):
             ak.deg2rad(np.array([range(0, 10)]).astype(num_type))
@@ -455,6 +514,8 @@ class TestNumeric:
 
     def test_value_counts_error(self):
         pda = ak.linspace(1, 10, 10)
+        # with pytest.raises(TypeError):
+        #   ak.value_counts(pda)
 
         with pytest.raises(TypeError):
             ak.value_counts([0])
@@ -471,7 +532,7 @@ class TestNumeric:
         assert np.array_equal(np.isnan(npa), actual)
 
         ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))
-        assert ak.isnan(ark_s_int64).to_list() ==  [False, False, False, False]
+        assert ak.isnan(ark_s_int64).to_list() == [False, False, False, False]
 
         ark_s_string = ak.array(["a", "b", "c"])
         with pytest.raises(TypeError):
@@ -482,7 +543,9 @@ class TestNumeric:
             ak.array([f"str {i}" for i in range(101)]),
             ak.array([f"str {i % 3}" for i in range(101)]),
         ]
-        for test_str, test_cat in zip(test_strs, [ak.Categorical(s) for s in test_strs]):
+        for test_str, test_cat in zip(
+            test_strs, [ak.Categorical(s) for s in test_strs]
+        ):
             cast_str = ak.cast(test_cat, ak.Strings)
             assert (cast_str == test_str).all()
             cast_cat = ak.cast(test_str, ak.Categorical)
@@ -491,15 +554,15 @@ class TestNumeric:
             assert isinstance(cast_str, ak.Strings)
             assert isinstance(cast_cat, ak.Categorical)
 
-    def test_precision(self):
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_precision(self, prob_size):
         # See https://github.com/Bears-R-Us/arkouda/issues/964
         # Grouped sum was exacerbating floating point errors
         # This test verifies the fix
-        N = 10**6  # TODO - should this be set to prob_size?
-        G = N // 10
-        ub = 2**63 // N
-        groupnum = ak.randint(0, G, N, seed=1)
-        intval = ak.randint(0, ub, N, seed=2)
+        G = prob_size // 10
+        ub = 2**63 // prob_size
+        groupnum = ak.randint(0, G, prob_size, seed=1)
+        intval = ak.randint(0, ub, prob_size, seed=2)
         floatval = ak.cast(intval, ak.float64)
         g = ak.GroupBy(groupnum)
         _, intmean = g.mean(intval)
@@ -585,7 +648,9 @@ class TestNumeric:
         assert h2[0] != h2[1]
 
         # test categorical hash
-        categories, codes = ak.array([f"str {i}" for i in range(3)]), ak.randint(0, 3, 10**5)
+        categories, codes = ak.array([f"str {i}" for i in range(3)]), ak.randint(
+            0, 3, 10**5
+        )
         my_cat = ak.Categorical.from_codes(codes=codes, categories=categories)
         h1, h2 = ak.hash(my_cat)
         rev = ak.arange(10**5)[::-1]
@@ -613,14 +678,15 @@ class TestNumeric:
         assert h1.to_list() == h3.to_list()
         assert h2.to_list() == h4.to_list()
 
-
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_clip(self, prob_size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        np.random.seed(seed)
         ia = np.random.randint(1, 100, prob_size)
         ilo = 25
         ihi = 75
 
-        dtypes = ["int64","float64"]
+        dtypes = ["int64", "float64"]
 
         # test clip.
         # array to be clipped can be integer or float
@@ -639,21 +705,44 @@ class TestNumeric:
 
         # There is no test with lo and hi both equal to None, because that's not allowed
 
-        for dtype1 in dtypes :
-            hi = np.full(ia.shape,ihi,dtype=dtype1)
+        for dtype1 in dtypes:
+            hi = np.full(ia.shape, ihi, dtype=dtype1)
             akhi = ak.array(hi)
-            for dtype2 in dtypes :
-                lo = np.full(ia.shape,ilo,dtype=dtype2)
+            for dtype2 in dtypes:
+                lo = np.full(ia.shape, ilo, dtype=dtype2)
                 aklo = ak.array(lo)
-                for dtype3 in dtypes :
+                for dtype3 in dtypes:
                     nd_arry = ia.astype(dtype3)
                     ak_arry = ak.array(nd_arry)
-                    assert np.allclose(np.clip(nd_arry,None,hi[0]),ak.clip(ak_arry, None, hi[0]).to_ndarray())
-                    assert np.allclose(np.clip(nd_arry,None,hi),ak.clip(ak_arry, None, akhi).to_ndarray())
-                    assert np.allclose(np.clip(nd_arry,lo[0],hi[0]),ak.clip(ak_arry, lo[0], hi[0]).to_ndarray())
-                    assert np.allclose(np.clip(nd_arry,lo[0],hi),ak.clip(ak_arry, lo[0], akhi).to_ndarray())
-                    assert np.allclose(np.clip(nd_arry,lo[0],None),ak.clip(ak_arry, lo[0], None).to_ndarray())
-                    assert np.allclose(np.clip(nd_arry,lo,hi[0]),ak.clip(ak_arry, aklo, hi[0]).to_ndarray())
-                    assert np.allclose(np.clip(nd_arry,lo,hi),ak.clip(ak_arry, aklo, akhi).to_ndarray())
-                    assert np.allclose(np.clip(nd_arry,lo,None),ak.clip(ak_arry, aklo, None).to_ndarray())
-
+                    assert np.allclose(
+                        np.clip(nd_arry, None, hi[0]),
+                        ak.clip(ak_arry, None, hi[0]).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, None, hi),
+                        ak.clip(ak_arry, None, akhi).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], hi[0]),
+                        ak.clip(ak_arry, lo[0], hi[0]).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], hi),
+                        ak.clip(ak_arry, lo[0], akhi).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], None),
+                        ak.clip(ak_arry, lo[0], None).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, hi[0]),
+                        ak.clip(ak_arry, aklo, hi[0]).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, hi),
+                        ak.clip(ak_arry, aklo, akhi).to_ndarray(),
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, None),
+                        ak.clip(ak_arry, aklo, None).to_ndarray(),
+                    )
