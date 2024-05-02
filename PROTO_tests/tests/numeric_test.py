@@ -17,8 +17,6 @@ def alternate(L,R,n):
     v[::2] = L
     return v
 
-#np.random.seed (8675309)
-
 #  The following tuples support a simplification of the trigonometric
 #  and hyperbolic testing.
 
@@ -344,10 +342,6 @@ class TestNumeric:
 #   test_trig_and_hyp covers the testing for most trigonometric and hyperbolic
 #   functions.  The exception is arctan2.
 
-#   TODO: address the multiple divide by zero, invalid value, and overflow
-#   warnings.  They were here before the test_trig_and_hyp change, so it wasn't
-#   introduced by this function, but they should be addressed.
-
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_trig_and_hyp(self,num_type) :
 
@@ -366,7 +360,6 @@ class TestNumeric:
         seed = pytest.seed if pytest.seed is not None else 8675309
         np.random.seed(seed)
         na_num = np.random.permutation(NP_TRIG_ARRAYS[num_type])
-        #na_denom = np.random.permutation(NP_TRIG_ARRAYS[denom_type])
         na_denom = np.random.permutation(DENOM_ARCTAN2_ARRAYS[denom_type])
 
         pda_num = ak.array(na_num, dtype=num_type)
