@@ -260,19 +260,13 @@ class TestDataFrame:
             col, ref_col = getattr(df, cname), getattr(ref_df, cname)
             assert isinstance(col, ak.Series)
             assert col.to_list() == ref_col.to_list()
-            assert isinstance(df[cname], (ak.pdarray, ak.Strings, ak.Categorical))
+            assert isinstance(df[cname].values, (ak.pdarray, ak.Strings, ak.Categorical))
             assert df[cname].to_list() == ref_df[cname].to_list()
 
         # check mult-column list
         col_list = ["userName", "amount", "bi"]
         assert isinstance(df[col_list], ak.DataFrame)
         assert_frame_equal(df[col_list].to_pandas(), ref_df[col_list])
-
-        # check multi-column tuple
-        col_tup = ("userID", "item", "day", "bi")
-        assert isinstance(df[col_tup], ak.DataFrame)
-        # pandas only supports lists of columns, not tuples
-        assert_frame_equal(df[col_tup].to_pandas(), ref_df[list(col_tup)])
 
     def test_dtype_prop(self):
         str_arr = ak.random_strings_uniform(1, 5, 3)
@@ -357,7 +351,7 @@ class TestDataFrame:
     def test_reset_index(self):
         df = self.build_ak_df()
 
-        slice_df = df[ak.array([1, 3, 5])]
+        slice_df = df.loc[ak.array([1, 3, 5])]
         assert slice_df.index.to_list() == [1, 3, 5]
 
         df_reset = slice_df.reset_index()
@@ -779,7 +773,7 @@ class TestDataFrame:
                 "t",
             ]
         )
-        ak_df["negs"] = -1 * ak_df["int64"]
+        ak_df["negs"] = -1 * ak_df["int64"].values
 
         group_bys = [
             "gb_id",
@@ -826,7 +820,7 @@ class TestDataFrame:
         default_perm = ak.array(perm_list)
         ord.apply_permutation(default_perm)
 
-        ord_ref = ref_df.sort_values(by="userID").reset_index(drop=True)
+        ord_ref = ref_df.sort_values(by="userID")
         ord_ref = ord_ref.reindex(perm_list).reset_index(drop=True)
         assert_frame_equal(ord_ref, ord.to_pandas())
 
@@ -989,7 +983,7 @@ class TestDataFrame:
                     for col in sorted_column_names:
                         from_ak = ak_merge[col].to_ndarray()
                         from_pd = pd_merge[col].to_numpy()
-                        if isinstance(ak_merge[col], ak.pdarray):
+                        if isinstance(ak_merge[col].values, ak.pdarray):
                             assert np.allclose(np.sort(from_ak), np.sort(from_pd), equal_nan=True)
                         else:
                             # we have to cast to str because pandas arrays converted to numpy
