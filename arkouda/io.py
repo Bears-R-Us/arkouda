@@ -20,6 +20,7 @@ from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
 import arkouda.array_api as Array
+from arkouda.dtypes import float32, float64, int32, int64
 
 __all__ = [
     "get_filetype",
@@ -1553,9 +1554,31 @@ def to_csv(
         },
     )
 
-def to_zarr(store_path: str, arr: Union[pdarray, Strings], chunk_shape):
+def to_zarr(store_path: str, arr: pdarray, chunk_shape):
+    """
+    Writes a pdarray to disk as a Zarr store. Supports multi-dimensional pdarrays of numeric types.
+
+    Parameters
+    ----------
+    store_path : str
+        The path at which Zarr store should be written
+    arr : pdarray
+        The pdarray to be written to disk
+    chunk_shape : tuple
+        The shape of the chunks to be used in the Zarr store
+
+    Raises
+    ------
+    ValueError
+        Raised if the number of dimensions in the chunk shape does not match the number of dimensions in the array
+        or if the array is not a 32 or 64 bit numeric type
+    """
     ndim = arr.ndim
-    assert(ndim == len(chunk_shape))
+    if ndim != len(chunk_shape):
+        raise ValueError("The number of dimensions in the chunk shape must match the number of dimensions in the array")
+    if arr.dtype not in [int64, int32, float64, float32]:
+        raise ValueError("Only pdarrays of 64 and 32 bit numeric types are supported")
+    
     generic_msg(
         cmd=f"writeAllZarr{ndim}D",
         args={
@@ -1566,6 +1589,24 @@ def to_zarr(store_path: str, arr: Union[pdarray, Strings], chunk_shape):
     )
 
 def read_zarr(store_path: str, ndim: int, dtype):
+    """
+    Reads a Zarr store from disk into a pdarray. Supports multi-dimensional pdarrays of numeric types.
+
+    Parameters
+    ----------
+    store_path : str
+        The path to the Zarr store. The path must be to a directory that contains a `.zarray` file containing the Zarr store metadata.
+    ndim : int
+        The number of dimensions in the array
+    dtype : str
+        The data type of the array
+
+    Returns
+    -------
+    pdarray
+        The pdarray read from the Zarr store.
+    """
+    
     rep_msg = generic_msg(
         cmd=f"readAllZarr{ndim}D",
         args={
