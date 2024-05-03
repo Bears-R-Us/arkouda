@@ -210,7 +210,7 @@ class RandomTest(ArkoudaTest):
                         if not res:
                             print(f"\nnum locales: {cfg['numLocales']}")
                             print(f"Failure with seed:\n{seed}")
-                        self.assertTrue()
+                        self.assertTrue(res)
 
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)
