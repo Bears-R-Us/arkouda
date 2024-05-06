@@ -129,13 +129,13 @@ from ._manipulation_functions import (
     unstack,
 )
 
-from ._searching_functions import argmax, argmin, nonzero, where
+from ._searching_functions import argmax, argmin, nonzero, where, searchsorted
 
 from ._set_functions import unique_all, unique_counts, unique_inverse, unique_values
 
 from ._sorting_functions import argsort, sort
 
-from ._statistical_functions import max, mean, min, prod, std, sum, var
+from ._statistical_functions import max, mean, min, prod, std, sum, var, cumulative_sum
 
 from ._utility_functions import all, any
 
@@ -270,13 +270,13 @@ __all__ += [
     "unstack",
 ]
 
-__all__ += ["argmax", "argmin", "nonzero", "where"]
+__all__ += ["argmax", "argmin", "nonzero", "where", "searchsorted"]
 
 __all__ += ["unique_all", "unique_counts", "unique_inverse", "unique_values"]
 
 __all__ += ["argsort", "sort"]
 
-__all__ += ["max", "mean", "min", "prod", "std", "sum", "var"]
+__all__ += ["max", "mean", "min", "prod", "std", "sum", "var", "cumulative_sum"]
 
 __all__ += ["all", "any"]
 

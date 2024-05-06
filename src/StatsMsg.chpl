@@ -302,6 +302,86 @@ module StatsMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    // https://data-apis.org/array-api/latest/API_specification/generated/array_api.cumulative_sum.html#array_api.cumulative_sum
+    @arkouda.registerND
+    proc cumSumMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+
+        const axis = msgArgs.get("axis").getPositiveIntValue(nd),
+              x = msgArgs.getValueOf("x"),
+              includeInitial = msgArgs.get("include_initial").getBoolValue(),
+              rname = st.nextName();
+
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+
+        proc computeCumSum(type t): MsgTuple throws
+            where nd == 1
+        {
+            const eIn = toSymEntry(gEnt, t);
+            const cs = + scan eIn.a;
+
+            if includeInitial {
+                var eOut = st.addEntry(rname, cs.size + 1, t);
+                eOut.a[0] = 0:t;
+                eOut.a[1..] = cs;
+            } else {
+                st.addEntry(rname, createSymEntry(cs));
+            }
+
+            const repMsg = "created " + st.attrib(rname);
+            sLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        proc computeCumSum(type t): MsgTuple throws
+            where nd > 1
+        {
+            const eIn = toSymEntry(gEnt, t, nd);
+
+            var outShape = eIn.tupShape;
+            if includeInitial then outShape[axis] += 1;
+            var eOut = st.addEntry(rname, outShape, t);
+
+            const DD = domOffAxis(eIn.a.domain, axis);
+            writeln("DD: ", DD);
+            forall idx in DD {
+                // TODO: avoid making a copy of the slice here
+                const sliceDom = domOnAxis(eIn.a.domain, idx, axis),
+                      slice = removeDegenRanks(eIn.a[sliceDom], 1);
+                const cs = + scan slice;
+
+                writeln("\tslice @ ", idx, " : ", sliceDom, " -> ", slice, " = ", cs);
+
+                if includeInitial {
+                    // put the additive identity in the first element
+                    eOut.a[idx] = 0:t;
+
+                    forall i in sliceDom {
+                        var iShift = i;
+                        iShift[axis] += 1;
+                        eOut.a[iShift] = cs[i[axis]];
+                    }
+                } else {
+                    forall i in sliceDom do eOut.a[i] = cs[i[axis]];
+                }
+            }
+
+            const repMsg = "created " + st.attrib(rname);
+            sLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select gEnt.dtype {
+            when DType.Int64 do return computeCumSum(int);
+            when DType.UInt64 do return computeCumSum(uint);
+            when DType.Float64 do return computeCumSum(real);
+            otherwise {
+                const errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+                sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg,MsgType.ERROR);
+            }
+        }
+    }
 
     use CommandMap;
     registerFunction("cov", covMsg, getModuleName());
