@@ -4,7 +4,7 @@ import json
 import os
 import random
 from collections import UserDict
-from typing import Callable, Dict, List, Optional, Union, cast
+from typing import Callable, Dict, List, Optional, Tuple, Union, cast
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -151,60 +151,6 @@ class DataFrameGroupBy:
 
         return aggop
 
-    def count(self, as_series=None):
-        """
-        Compute the count of each value as the total number of rows, including NaN values.
-        This is an alias for size(), and may change in the future.
-
-        Parameters
-        ----------
-
-        as_series : bool, default=None
-            Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
-            arkouda.series.Series (if as_series = True)
-
-        Returns
-        -------
-        arkouda.dataframe.DataFrame or arkouda.series.Series
-
-        Examples
-        --------
-
-        >>> import arkouda as ak
-        >>> ak.connect()
-        >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
-        >>> display(df)
-
-        +----+-----+-----+
-        |    |   A |   B |
-        +====+=====+=====+
-        |  0 |   1 |   3 |
-        +----+-----+-----+
-        |  1 |   2 |   4 |
-        +----+-----+-----+
-        |  2 |   2 |   5 |
-        +----+-----+-----+
-        |  3 |   3 |   6 |
-        +----+-----+-----+
-
-        >>> df.groupby("A").count(as_series = False)
-
-        +----+---------+
-        |    |   count |
-        +====+=========+
-        |  0 |       1 |
-        +----+---------+
-        |  1 |       2 |
-        +----+---------+
-        |  2 |       1 |
-        +----+---------+
-
-        """
-        if as_series is True or (as_series is None and self.as_index is True):
-            return self._return_agg_series(self.gb.count())
-        else:
-            return self._return_agg_dataframe(self.gb.count(), "count")
-
     def size(self, as_series=None, sort_index=True):
         """
         Compute the size of each value as the total number of rows, including NaN values.
@@ -263,11 +209,26 @@ class DataFrameGroupBy:
     def _return_agg_series(self, values, sort_index=True):
         if self.as_index is True:
             if isinstance(self.gb_key_names, str):
+                # handle when values is a tuple/list containing data and index
+                # since we are also sending the index keyword
+                if isinstance(values, (Tuple, List)) and len(values) == 2:
+                    _, values = values
+
                 series = Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names))
             elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) == 1:
+                # handle when values is a tuple/list containing data and index
+                # since we are also sending the index keyword
+                if isinstance(values, (Tuple, List)) and len(values) == 2:
+                    _, values = values
+
                 series = Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names[0]))
             elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) > 1:
                 from arkouda.index import MultiIndex
+
+                # handle when values is a tuple/list containing data and index
+                # since we are also sending the index keyword
+                if isinstance(values, (Tuple, List)) and len(values) == 2:
+                    _, values = values
 
                 series = Series(
                     values,
@@ -3746,7 +3707,7 @@ class DataFrame(UserDict):
         if isinstance(keys, str):
             keys = [keys]
         gb = self.GroupBy(keys, use_series=False)
-        vals, cts = gb.count()
+        vals, cts = gb.size()
         if not high:
             positions = where(cts >= low, 1, 0)
         else:

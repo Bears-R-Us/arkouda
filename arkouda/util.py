@@ -97,7 +97,7 @@ def enrich_inplace(data, keynames, aggregations, **kwargs):
         except (KeyError, TypeError):
             pass
         if reduction == "count":
-            pergroupval = g.count()[1]
+            pergroupval = g.size()[1]
         else:
             pergroupval = g.aggregate(values, reduction)[1]
         data[resname] = g.broadcast(pergroupval, permute=True)

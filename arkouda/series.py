@@ -137,7 +137,7 @@ class Series:
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
         self.registered_name: Optional[str] = None
-        if isinstance(data, (tuple, list)) and len(data) == 2:
+        if index is None and isinstance(data, (tuple, list)) and len(data) == 2:
             # handles the previous `ar_tuple` case
             if not isinstance(data[0], (pdarray, Index, Strings, Categorical, list, tuple)):
                 raise TypeError("indices must be a pdarray, Strings, Categorical, List, or Tuple")
@@ -365,7 +365,7 @@ class Series:
             indices = self.index == key
         else:
             indices = in1d(self.index.values, key)  # type: ignore
-        tf, counts = GroupBy(indices).count()
+        tf, counts = GroupBy(indices).size()
         update_count = counts[1] if len(counts) == 2 else 0
         if update_count == 0:
             # adding a new entry
@@ -446,7 +446,7 @@ class Series:
         """
         Returns whether the Series has any labels that appear more than once
         """
-        tf, counts = GroupBy(self.index.values).count()
+        tf, counts = GroupBy(self.index.values).size()
         return counts.size != self.index.size
 
     @property

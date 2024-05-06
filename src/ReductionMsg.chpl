@@ -512,7 +512,7 @@ module ReductionMsg
       }
     }
 
-    proc countReductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc sizeReductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       // 'segments_name' describes the segment offsets
@@ -661,6 +661,10 @@ module ReductionMsg
                         var res = segNumUnique(values.a, segments.a);
                         st.addEntry(rname, createSymEntry(res));
                     }
+                    when "count" {
+                        var res = segCount(segments.a, values.size);
+                        st.addEntry(rname, createSymEntry(res));
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -727,6 +731,10 @@ module ReductionMsg
                         var res = segNumUnique(values.a, segments.a);
                         st.addEntry(rname, createSymEntry(res));
                     }
+                    when "count" {
+                        var res = segCount(segments.a, values.size);
+                        st.addEntry(rname, createSymEntry(res));
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -777,6 +785,10 @@ module ReductionMsg
                         var (vals, locs) = segArgmax(values.a, segments.a);
                         st.addEntry(rname, createSymEntry(locs));
                     }
+                    when "count" {
+                        var res = segCount(segments.a, values.size) - nanCounts(values.a, segments.a);
+                        st.addEntry(rname, createSymEntry(res));
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);         
@@ -823,6 +835,10 @@ module ReductionMsg
                         var (vals, locs) = segArgmax(values.a, segments.a);
                         st.addEntry(rname, createSymEntry(locs));
                     }
+                    when "count" {
+                        var res = segCount(segments.a, values.size);
+                        st.addEntry(rname, createSymEntry(res));
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -867,6 +883,10 @@ module ReductionMsg
                         var res = segAnd(values.a, segments.a);
                         st.addEntry(rname, createSymEntry(res));
                     }
+                    when "count" {
+                        var res = segCount(segments.a, values.size);
+                        st.addEntry(rname, createSymEntry(res));
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -884,7 +904,6 @@ module ReductionMsg
        rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-
           
     /* Segmented Reductions of the form: seg<Op>(values:[] t, segments: [] int)
        Use <segments> as the boundary indices to divide <values> into chunks, 
@@ -1529,7 +1548,6 @@ module ReductionMsg
         return new unmanaged ResettingAndScanOp(eltType=eltType);
       }
     }
-    
 
     proc segXor(values:[] ?t, segments:[?D] int) throws {
       // Because XOR has an inverse (itself), this can be
@@ -1665,5 +1683,5 @@ module ReductionMsg
 
     use CommandMap;
     registerFunction("segmentedReduction", segmentedReductionMsg, getModuleName());
-    registerFunction("countReduction", countReductionMsg, getModuleName());
+    registerFunction("sizeReduction", sizeReductionMsg, getModuleName());
 }

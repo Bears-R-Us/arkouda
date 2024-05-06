@@ -465,76 +465,51 @@ class TestDataFrame:
         tdf_ref = ref_df.tail(2).reset_index(drop=True)
         assert_frame_equal(tdf_ref, tdf.to_pandas())
 
-    def test_groupby_standard(self):
-        df = self.build_ak_df()
-        gb = df.GroupBy("userName")
-        keys, count = gb.count()
-        assert keys.to_list() == ["Bob", "Alice", "Carol"]
-        assert count.to_list() == [2, 3, 1]
-        assert gb.permutation.to_list() == [1, 4, 0, 2, 5, 3]
-
-        gb = df.GroupBy(["userName", "userID"])
-        keys, count = gb.count()
-        assert len(keys) == 2
-        assert keys[0].to_list() == ["Bob", "Alice", "Carol"]
-        assert keys[1].to_list() == [222, 111, 333]
-        assert count.to_list() == [2, 3, 1]
-
-        # testing counts with IPv4 column
-        s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count(as_series=True)
-        pds = pd.Series(
-            data=np.ones(4, dtype=np.int64),
-            index=pd.Index(
-                data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7"), name="a"
-            ),
-        )
-        assert_series_equal(pds, s.to_pandas())
-
-        # testing counts with Categorical column
-        s = (
-            ak.DataFrame({"a": ak.Categorical(ak.array(["a", "a", "a", "b"]))})
-            .groupby("a")
-            .count(as_series=True)
-        )
-        pds = pd.Series(
-            data=np.array([3, 1]), index=pd.Index(data=np.array(["a", "b"], dtype="<U7"), name="a")
-        )
-        assert_series_equal(pds, s.to_pandas())
-
     def test_gb_series(self):
         df = self.build_ak_df()
 
         gb = df.GroupBy("userName", use_series=True)
 
-        c = gb.count(as_series=True)
+        c = gb.size(as_series=True)
         assert isinstance(c, ak.Series)
         assert c.index.to_list() == ["Alice", "Bob", "Carol"]
         assert c.values.to_list() == [3, 2, 1]
 
-    @pytest.mark.parametrize("agg", ["sum", "first"])
+    @pytest.mark.parametrize("agg", ["sum", "first", "count"])
     def test_gb_aggregations(self, agg):
         df = self.build_ak_df()
         pd_df = self.build_pd_df()
         # remove strings col because many aggregations don't support it
-        cols_without_str = list(set(df.columns.values) - {"userName"})
+        cols_without_str = list(set(df.columns) - {"userName"})
         df = df[cols_without_str]
         pd_df = pd_df[cols_without_str]
 
         group_on = "userID"
+        ak_result = getattr(df.groupby(group_on), agg)()
+        pd_result = getattr(pd_df.groupby(group_on), agg)()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
 
-        for col in df.columns.values:
-            if col == group_on:
-                # pandas groupby doesn't return the column used to group
-                continue
-            ak_ans = getattr(df.groupby(group_on), agg)()[col]
-            pd_ans = getattr(pd_df.groupby(group_on), agg)()[col]
-            assert ak_ans.to_list() == pd_ans.to_list()
+    @pytest.mark.parametrize("agg", ["sum", "first", "count"])
+    def test_gb_aggregations_example_numeric_types(self, agg):
+        df = self.build_ak_df_example_numeric_types()
+        pd_df = df.to_pandas()
 
-        # pandas groupby doesn't return the column used to group
-        cols_without_group_on = list(set(df.columns.values) - {group_on})
-        ak_ans = getattr(df.groupby(group_on), agg)()[cols_without_group_on]
-        pd_ans = getattr(pd_df.groupby(group_on), agg)()[cols_without_group_on]
-        assert_frame_equal(pd_ans, ak_ans.to_pandas(retain_index=True))
+        group_on = "gb_id"
+        ak_result = getattr(df.groupby(group_on), agg)()
+        pd_result = getattr(pd_df.groupby(group_on), agg)()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+
+    @pytest.mark.parametrize("agg", ["count", "max", "mean", "median", "min", "std", "sum", "var"])
+    def test_gb_aggregations_with_nans(self, agg):
+        df = self.build_ak_df_with_nans()
+        # @TODO handle bool columns correctly
+        df.drop("bools", axis=1, inplace=True)
+        pd_df = df.to_pandas()
+
+        group_on = ["key1", "key2"]
+        ak_result = getattr(df.groupby(group_on), agg)()
+        pd_result = getattr(pd_df.groupby(group_on, as_index=False), agg)()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
 
     def test_gb_aggregations_return_dataframe(self):
         ak_df = self.build_ak_df_example2()
@@ -579,37 +554,6 @@ class TestDataFrame:
         assert set(ak_df.groupby(["gb_id"]).sum().columns.values) == set(
             pd_df.groupby(["gb_id"]).sum().columns.values
         )
-
-    def test_gb_count_single(self):
-        ak_df = self.build_ak_df_example_numeric_types()
-        pd_df = ak_df.to_pandas(retain_index=True)
-
-        assert_frame_equal(
-            ak_df.groupby("gb_id", as_index=False).count().to_pandas(retain_index=True),
-            pd_df.groupby("gb_id", as_index=False)
-            .count()
-            .drop(["int64", "uint64", "bigint"], axis=1)
-            .rename(columns={"float64": "count"}, errors="raise"),
-        )
-
-        assert_frame_equal(
-            ak_df.groupby(["gb_id"], as_index=False).count().to_pandas(retain_index=True),
-            pd_df.groupby(["gb_id"], as_index=False)
-            .count()
-            .drop(["int64", "uint64", "bigint"], axis=1)
-            .rename(columns={"float64": "count"}, errors="raise"),
-        )
-
-    def test_gb_count_multiple(self):
-        ak_df = self.build_ak_df_example2()
-        pd_df = ak_df.to_pandas(retain_index=True)
-
-        pd_result1 = (
-            pd_df.groupby(["key1", "key2"], as_index=False).count().drop(["nums", "key3"], axis=1)
-        )
-        ak_result1 = ak_df.groupby(["key1", "key2"]).count(as_series=False)
-        assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
-        assert isinstance(ak_result1, ak.dataframe.DataFrame)
 
     def test_gb_size_single(self):
         ak_df = self.build_ak_df_example_numeric_types()

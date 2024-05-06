@@ -108,7 +108,7 @@ class TestGroupBy:
 
         for vname in ("int64", "uint64", "float64", "bool"):
             if op == "count":
-                print(f"Doing .count() - {vname}")
+                print(f"Doing .size() - {vname}")
             else:
                 print(f"\nDoing aggregate({vname}, {op})")
 
@@ -119,7 +119,7 @@ class TestGroupBy:
                 print("Pandas does not implement")
                 do_check = False
             try:
-                akkeys, akvals = akg.count() if op == "count" else akg.aggregate(akdf[vname], op)
+                akkeys, akvals = akg.size() if op == "count" else akg.aggregate(akdf[vname], op)
             except Exception as E:
                 print("Arkouda error: ", E)
                 continue  # skip check
@@ -182,7 +182,7 @@ class TestGroupBy:
         a = ak.array([True, False, True, True, False])
         true_ct = a.sum()
         g = ak.GroupBy(a)
-        k, ct = g.count()
+        k, ct = g.size()
 
         assert ct[1] == true_ct
         assert k.to_list() == [False, True]
@@ -195,7 +195,7 @@ class TestGroupBy:
 
         b = ak.array([False, False, True, False, False])
         g = ak.GroupBy([a, b])
-        k, ct = g.count()
+        k, ct = g.size()
         assert ct.to_list() == [2, 2, 1]
         assert k[0].to_list() == [False, True, True]
         assert k[1].to_list() == [False, False, True]
@@ -242,13 +242,13 @@ class TestGroupBy:
             )
 
     def test_count(self):
-        keys, counts = self.igb.count()
+        keys, counts = self.igb.size()
 
         assert [1, 2, 3, 4, 5] == keys.to_list()
         assert [1, 4, 2, 1, 2] == counts.to_list()
 
     def test_broadcast_ints(self):
-        keys, counts = self.igb.count()
+        keys, counts = self.igb.size()
 
         results = self.igb.broadcast(1 * (counts > 2), permute=False)
         assert [0, 1, 1, 1, 1, 0, 0, 0, 0, 0] == results.to_list()
@@ -269,7 +269,7 @@ class TestGroupBy:
         assert [1, 1, 1, 0, 0, 0, 1, 1, 0, 1] == results.to_list()
 
     def test_broadcast_uints(self):
-        keys, counts = self.ugb.count()
+        keys, counts = self.ugb.size()
         assert [1, 4, 2, 1, 2] == counts.to_list()
         assert [1, 2, 3, 4, 5] == keys.to_list()
 
@@ -299,7 +299,7 @@ class TestGroupBy:
         assert i_results.to_list() == u_results.to_list()
 
     def test_broadcast_strings(self):
-        keys, counts = self.sgb.count()
+        keys, counts = self.sgb.size()
         assert [1, 4, 2, 1, 2] == counts.to_list()
         assert ["1", "2", "3", "4", "5"] == keys.to_list()
 
@@ -340,7 +340,7 @@ class TestGroupBy:
         assert bi_broad.max_bits == a.max_bits
 
         # do the same tests as uint and compare the results
-        keys, counts = self.bigb.count()
+        keys, counts = self.bigb.size()
         assert [1, 4, 2, 1, 2] == counts.to_list()
         assert [1, 2, 3, 4, 5] == keys.to_list()
 
@@ -372,7 +372,7 @@ class TestGroupBy:
         assert bi_results.to_list() == u_results.to_list()
 
     def test_broadcast_booleans(self):
-        keys, counts = self.igb.count()
+        keys, counts = self.igb.size()
 
         results = self.igb.broadcast(counts > 2, permute=False)
         assert [0, 1, 1, 1, 1, 0, 0, 0, 0, 0] == results.to_list()
@@ -514,6 +514,29 @@ class TestGroupBy:
         assert u_unique_keys.to_list() == i_unique_keys.to_list()
         assert u_group_nunique.to_list() == i_group_nunique.to_list()
 
+    def test_groupby_count(self):
+        a = ak.array([1, 0, -1, 1, -1, -1])
+        b0 = ak.array([1, np.nan, 1, 1, np.nan, np.nan])
+
+        dtypes = ["float64", "bool", "int64"]
+
+        gb = ak.GroupBy(a)
+
+        for dt in dtypes:
+            b = ak.cast(b0, dt=dt)
+            keys, counts = gb.count(b)
+            assert np.allclose(keys.to_ndarray(), np.array([-1, 0, 1]), equal_nan=True)
+
+            if dt == "float64":
+                assert np.allclose(counts.to_ndarray(), np.array([1, 0, 2]), equal_nan=True)
+            else:
+                assert np.allclose(counts.to_ndarray(), np.array([3, 1, 2]), equal_nan=True)
+
+        #   Test BigInt separately
+        b = ak.array(np.array([1, 0, 1, 1, 0, 0]), dtype="bigint")
+        assert np.allclose(keys.to_ndarray(), np.array([-1, 0, 1]), equal_nan=True)
+        assert np.allclose(counts.to_ndarray(), np.array([3, 1, 2]), equal_nan=True)
+
     def test_bigint_groupby(self):
         bi = 2**200
         # these bigint arrays are the int arrays shifted up by 2**200
@@ -526,8 +549,8 @@ class TestGroupBy:
         int_arrays = [a, b]
         bigint_arrays = [bi_a, bi_b]
         for i_arr, bi_arr in zip(int_arrays, bigint_arrays):
-            i_unique, i_counts = ak.GroupBy(i_arr).count()
-            bi_unique, bi_counts = ak.GroupBy(bi_arr).count()
+            i_unique, i_counts = ak.GroupBy(i_arr).size()
+            bi_unique, bi_counts = ak.GroupBy(bi_arr).size()
             shift_down = ak.cast(bi_unique - bi, ak.int64)
             # order isn't guaranteed so argsort and permute
             i_perm = ak.argsort(i_unique)
@@ -536,8 +559,8 @@ class TestGroupBy:
             assert i_unique[i_perm].to_list() == shift_down[bi_perm].to_list()
 
         # multilevel groupby
-        (i1_unique, i2_unique), i_counts = ak.GroupBy(int_arrays).count()
-        (bi1_unique, bi2_unique), bi_counts = ak.GroupBy(bigint_arrays).count()
+        (i1_unique, i2_unique), i_counts = ak.GroupBy(int_arrays).size()
+        (bi1_unique, bi2_unique), bi_counts = ak.GroupBy(bigint_arrays).size()
         shift_down1 = ak.cast(bi1_unique - bi, ak.int64)
         shift_down2 = ak.cast(bi2_unique - bi, ak.int64)
         # order isn't guaranteed so argsort and permute
@@ -550,7 +573,7 @@ class TestGroupBy:
         # verify we can groupby bigint with other typed arrays
         mixted_types_arrays = [[bi_a, b], [a, bi_b], [bi_b, a], [b, bi_a]]
         for arrs in mixted_types_arrays:
-            ak.GroupBy(arrs).count()
+            ak.GroupBy(arrs).size()
 
     def test_bigint_groupby_aggregations(self):
         # test equivalent to uint when max_bits=64

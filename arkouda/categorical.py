@@ -304,7 +304,7 @@ class Categorical:
         )
         # Group combined categories to find matches
         g = GroupBy(bothcats)
-        ct = g.count()[1]
+        ct = g.size()[1]
         if (ct > 2).any():
             raise ValueError("User-specified categories must be unique")
         # Matches have two hits in concatenated array
@@ -392,7 +392,7 @@ class Categorical:
 
         Examples
         --------
-        >>> from arkouda import ak
+        >>> import arkouda as ak
         >>> ak.connect()
         >>> a = ak.array(["a","b","c"])
         >>> a
