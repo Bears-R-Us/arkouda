@@ -16153,6 +16153,13 @@ Attributes
    .. py:property:: grouping
 
 
+   .. py:property:: nbytes
+
+      The size of the segarray in bytes.
+
+      :returns: The size of the segarray in bytes.
+      :rtype: int
+
    .. py:property:: non_empty
 
 
