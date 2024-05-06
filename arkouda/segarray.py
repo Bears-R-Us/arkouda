@@ -212,6 +212,19 @@ class SegArray:
                 broadcast(self.segments[self.non_empty], arange(self._non_empty_count), self.valsize)
             )
 
+    @property
+    def nbytes(self):
+        """
+        The size of the segarray in bytes.
+
+        Returns
+        -------
+        int
+            The size of the segarray in bytes.
+
+        """
+        return self.values.nbytes
+
     def _get_lengths(self):
         if self.size == 0:
             return zeros(0, dtype=akint64)
