@@ -14,7 +14,12 @@ module ZarrMsg {
   use CommAggregation;
   use AryUtil;
   use CTypes;
+  use Zarr;
+  use ServerConfig;
 
+  use Reflection;
+  use ServerErrors;
+  use ServerErrorStrings;
   use SegmentedString;
 
   use Map;

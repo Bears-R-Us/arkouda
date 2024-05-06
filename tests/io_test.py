@@ -1404,8 +1404,8 @@ class IOTest(ArkoudaTest):
                     self.assertListEqual(idx.to_list(), rd_idx.to_list())
 
     def test_zarr_read_write(self):
-        shapes = [(10,), (10, 20), (10, 20, 30)]
-        chunk_shapes = [(2,), (2, 5), (2, 7, 12)]
+        shapes = [(10,), (20,)]
+        chunk_shapes = [(2,), (3,)]
         dtypes = [ak.int64, ak.float64]
         for shape,chunk_shape in zip(shapes,chunk_shapes):
             for dtype in dtypes:

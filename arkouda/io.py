@@ -1614,7 +1614,7 @@ def read_zarr(store_path: str, ndim: int, dtype):
             "dtype": dtype
         }
     )
-    return Array.asarray(create_pdarray(rep_msg))
+    return create_pdarray(rep_msg)
     
 
 def save_all(
