@@ -43,3 +43,4 @@ UsedModules.cfg
 arkouda/*.pyi
 arkouda/numpy/*.pyi
 arkouda/scipy/*.pyi
+arkouda/scipy/stats/*.pyi

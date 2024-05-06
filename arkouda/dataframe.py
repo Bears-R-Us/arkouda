@@ -4,7 +4,7 @@ import json
 import os
 import random
 from collections import UserDict
-from typing import Callable, Dict, List, Optional, Union, cast
+from typing import Callable, Dict, List, Optional, Tuple, Union, cast
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -209,11 +209,26 @@ class DataFrameGroupBy:
     def _return_agg_series(self, values, sort_index=True):
         if self.as_index is True:
             if isinstance(self.gb_key_names, str):
+                # handle when values is a tuple/list containing data and index
+                # since we are also sending the index keyword
+                if isinstance(values, (Tuple, List)) and len(values) == 2:
+                    _, values = values
+
                 series = Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names))
             elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) == 1:
+                # handle when values is a tuple/list containing data and index
+                # since we are also sending the index keyword
+                if isinstance(values, (Tuple, List)) and len(values) == 2:
+                    _, values = values
+
                 series = Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names[0]))
             elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) > 1:
                 from arkouda.index import MultiIndex
+
+                # handle when values is a tuple/list containing data and index
+                # since we are also sending the index keyword
+                if isinstance(values, (Tuple, List)) and len(values) == 2:
+                    _, values = values
 
                 series = Series(
                     values,
