@@ -343,14 +343,11 @@ module StatsMsg {
             var eOut = st.addEntry(rname, outShape, t);
 
             const DD = domOffAxis(eIn.a.domain, axis);
-            writeln("DD: ", DD);
             forall idx in DD {
                 // TODO: avoid making a copy of the slice here
                 const sliceDom = domOnAxis(eIn.a.domain, idx, axis),
                       slice = removeDegenRanks(eIn.a[sliceDom], 1);
                 const cs = + scan slice;
-
-                writeln("\tslice @ ", idx, " : ", sliceDom, " -> ", slice, " = ", cs);
 
                 if includeInitial {
                     // put the additive identity in the first element
