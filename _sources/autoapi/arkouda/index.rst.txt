@@ -1329,7 +1329,7 @@ Attributes
 
       .. rubric:: Examples
 
-      >>> from arkouda import ak
+      >>> import arkouda as ak
       >>> ak.connect()
       >>> a = ak.array(["a","b","c"])
       >>> a
@@ -2052,7 +2052,7 @@ Attributes
 
       .. rubric:: Examples
 
-      >>> from arkouda import ak
+      >>> import arkouda as ak
       >>> ak.connect()
       >>> a = ak.array(["a","b","c"])
       >>> a
@@ -2775,7 +2775,7 @@ Attributes
 
       .. rubric:: Examples
 
-      >>> from arkouda import ak
+      >>> import arkouda as ak
       >>> ak.connect()
       >>> a = ak.array(["a","b","c"])
       >>> a
@@ -8480,47 +8480,14 @@ Attributes
       +----+-----+-----+-----+
 
 
-   .. py:method:: count(as_series=None)
+   .. py:method:: count(colnames=None)
 
-      Compute the count of each value as the total number of rows, including NaN values.
-      This is an alias for size(), and may change in the future.
+      Aggregate the operation, with the grouped column(s) values as keys.
 
-      :param as_series: Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
-                        arkouda.series.Series (if as_series = True)
-      :type as_series: bool, default=None
+      :param colnames: Column name or list of column names to compute the aggregation over.
+      :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame or arkouda.series.Series
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
-      >>> display(df)
-
-      +----+-----+-----+
-      |    |   A |   B |
-      +====+=====+=====+
-      |  0 |   1 |   3 |
-      +----+-----+-----+
-      |  1 |   2 |   4 |
-      +----+-----+-----+
-      |  2 |   2 |   5 |
-      +----+-----+-----+
-      |  3 |   3 |   6 |
-      +----+-----+-----+
-
-      >>> df.groupby("A").count(as_series = False)
-
-      +----+---------+
-      |    |   count |
-      +====+=========+
-      |  0 |       1 |
-      +----+---------+
-      |  1 |       2 |
-      +----+---------+
-      |  2 |       1 |
-      +----+---------+
+      :rtype: arkouda.dataframe.DataFrame
 
 
    .. py:method:: diff(colname)
@@ -9366,6 +9333,9 @@ Attributes
    .. py:method:: argmin()
 
 
+   .. py:method:: count()
+
+
    .. py:method:: first()
 
 
@@ -10085,7 +10055,7 @@ Attributes
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.size()
       >>> g.broadcast(counts > 2)
       array([True False True True True False True True False False])
       >>> g.broadcast(counts == 3)
@@ -10107,31 +10077,30 @@ Attributes
       :rtype: GroupBy
 
 
-   .. py:method:: count() -> Tuple[groupable, pdarray]
+   .. py:method:: count(values: pdarray) -> Tuple[groupable, pdarray]
 
-      Count the number of elements in each group, i.e. the number of times
-      each key appears.  This counts the total number of rows (including NaN values).
+      Count the number of elements in each group.  NaN values will be excluded from the total.
 
-      :param none:
+      :param values: The values to be count by group (excluding NaN values).
+      :type values: pdarray
 
       :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **counts** (*pdarray, int64*) -- The number of times each unique key appears
-
-      .. rubric:: Notes
-
-      This alias is an alias of "size".
+                * **counts** (*pdarray, int64*) -- The number of times each unique key appears (excluding NaN values).
 
       .. rubric:: Examples
 
-      >>> a = ak.randint(1,5,10)
+      >>> a = ak.array([1, 0, -1, 1, 0, -1])
       >>> a
-      array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+      array([1 0 -1 1 0 -1])
+      >>> b = ak.array([1, np.nan, -1, np.nan, np.nan, -1], dtype = "float64")
+      >>> b
+      array([1.00000000000000000 nan -1.00000000000000000 nan nan -1.00000000000000000])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.count(b)
       >>> keys
-      array([1, 2, 3, 4])
+      array([-1 0 1])
       >>> counts
-      array([1, 2, 4, 3])
+      array([2 0 1])
 
 
    .. py:method:: first(values: groupable_element_type) -> Tuple[groupable, groupable_element_type]
@@ -11026,7 +10995,7 @@ Attributes
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.size()
       >>> g.broadcast(counts > 2)
       array([True False True True True False True True False False])
       >>> g.broadcast(counts == 3)
@@ -11048,31 +11017,30 @@ Attributes
       :rtype: GroupBy
 
 
-   .. py:method:: count() -> Tuple[groupable, pdarray]
+   .. py:method:: count(values: pdarray) -> Tuple[groupable, pdarray]
 
-      Count the number of elements in each group, i.e. the number of times
-      each key appears.  This counts the total number of rows (including NaN values).
+      Count the number of elements in each group.  NaN values will be excluded from the total.
 
-      :param none:
+      :param values: The values to be count by group (excluding NaN values).
+      :type values: pdarray
 
       :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **counts** (*pdarray, int64*) -- The number of times each unique key appears
-
-      .. rubric:: Notes
-
-      This alias is an alias of "size".
+                * **counts** (*pdarray, int64*) -- The number of times each unique key appears (excluding NaN values).
 
       .. rubric:: Examples
 
-      >>> a = ak.randint(1,5,10)
+      >>> a = ak.array([1, 0, -1, 1, 0, -1])
       >>> a
-      array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+      array([1 0 -1 1 0 -1])
+      >>> b = ak.array([1, np.nan, -1, np.nan, np.nan, -1], dtype = "float64")
+      >>> b
+      array([1.00000000000000000 nan -1.00000000000000000 nan nan -1.00000000000000000])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.count(b)
       >>> keys
-      array([1, 2, 3, 4])
+      array([-1 0 1])
       >>> counts
-      array([1, 2, 4, 3])
+      array([2 0 1])
 
 
    .. py:method:: first(values: groupable_element_type) -> Tuple[groupable, groupable_element_type]
@@ -11967,7 +11935,7 @@ Attributes
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.size()
       >>> g.broadcast(counts > 2)
       array([True False True True True False True True False False])
       >>> g.broadcast(counts == 3)
@@ -11989,31 +11957,30 @@ Attributes
       :rtype: GroupBy
 
 
-   .. py:method:: count() -> Tuple[groupable, pdarray]
+   .. py:method:: count(values: pdarray) -> Tuple[groupable, pdarray]
 
-      Count the number of elements in each group, i.e. the number of times
-      each key appears.  This counts the total number of rows (including NaN values).
+      Count the number of elements in each group.  NaN values will be excluded from the total.
 
-      :param none:
+      :param values: The values to be count by group (excluding NaN values).
+      :type values: pdarray
 
       :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **counts** (*pdarray, int64*) -- The number of times each unique key appears
-
-      .. rubric:: Notes
-
-      This alias is an alias of "size".
+                * **counts** (*pdarray, int64*) -- The number of times each unique key appears (excluding NaN values).
 
       .. rubric:: Examples
 
-      >>> a = ak.randint(1,5,10)
+      >>> a = ak.array([1, 0, -1, 1, 0, -1])
       >>> a
-      array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+      array([1 0 -1 1 0 -1])
+      >>> b = ak.array([1, np.nan, -1, np.nan, np.nan, -1], dtype = "float64")
+      >>> b
+      array([1.00000000000000000 nan -1.00000000000000000 nan nan -1.00000000000000000])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.count(b)
       >>> keys
-      array([1, 2, 3, 4])
+      array([-1 0 1])
       >>> counts
-      array([1, 2, 4, 3])
+      array([2 0 1])
 
 
    .. py:method:: first(values: groupable_element_type) -> Tuple[groupable, groupable_element_type]
@@ -12908,7 +12875,7 @@ Attributes
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.size()
       >>> g.broadcast(counts > 2)
       array([True False True True True False True True False False])
       >>> g.broadcast(counts == 3)
@@ -12930,31 +12897,30 @@ Attributes
       :rtype: GroupBy
 
 
-   .. py:method:: count() -> Tuple[groupable, pdarray]
+   .. py:method:: count(values: pdarray) -> Tuple[groupable, pdarray]
 
-      Count the number of elements in each group, i.e. the number of times
-      each key appears.  This counts the total number of rows (including NaN values).
+      Count the number of elements in each group.  NaN values will be excluded from the total.
 
-      :param none:
+      :param values: The values to be count by group (excluding NaN values).
+      :type values: pdarray
 
       :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **counts** (*pdarray, int64*) -- The number of times each unique key appears
-
-      .. rubric:: Notes
-
-      This alias is an alias of "size".
+                * **counts** (*pdarray, int64*) -- The number of times each unique key appears (excluding NaN values).
 
       .. rubric:: Examples
 
-      >>> a = ak.randint(1,5,10)
+      >>> a = ak.array([1, 0, -1, 1, 0, -1])
       >>> a
-      array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+      array([1 0 -1 1 0 -1])
+      >>> b = ak.array([1, np.nan, -1, np.nan, np.nan, -1], dtype = "float64")
+      >>> b
+      array([1.00000000000000000 nan -1.00000000000000000 nan nan -1.00000000000000000])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.count(b)
       >>> keys
-      array([1, 2, 3, 4])
+      array([-1 0 1])
       >>> counts
-      array([1, 2, 4, 3])
+      array([2 0 1])
 
 
    .. py:method:: first(values: groupable_element_type) -> Tuple[groupable, groupable_element_type]
@@ -13849,7 +13815,7 @@ Attributes
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.size()
       >>> g.broadcast(counts > 2)
       array([True False True True True False True True False False])
       >>> g.broadcast(counts == 3)
@@ -13871,31 +13837,30 @@ Attributes
       :rtype: GroupBy
 
 
-   .. py:method:: count() -> Tuple[groupable, pdarray]
+   .. py:method:: count(values: pdarray) -> Tuple[groupable, pdarray]
 
-      Count the number of elements in each group, i.e. the number of times
-      each key appears.  This counts the total number of rows (including NaN values).
+      Count the number of elements in each group.  NaN values will be excluded from the total.
 
-      :param none:
+      :param values: The values to be count by group (excluding NaN values).
+      :type values: pdarray
 
       :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **counts** (*pdarray, int64*) -- The number of times each unique key appears
-
-      .. rubric:: Notes
-
-      This alias is an alias of "size".
+                * **counts** (*pdarray, int64*) -- The number of times each unique key appears (excluding NaN values).
 
       .. rubric:: Examples
 
-      >>> a = ak.randint(1,5,10)
+      >>> a = ak.array([1, 0, -1, 1, 0, -1])
       >>> a
-      array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+      array([1 0 -1 1 0 -1])
+      >>> b = ak.array([1, np.nan, -1, np.nan, np.nan, -1], dtype = "float64")
+      >>> b
+      array([1.00000000000000000 nan -1.00000000000000000 nan nan -1.00000000000000000])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.count(b)
       >>> keys
-      array([1, 2, 3, 4])
+      array([-1 0 1])
       >>> counts
-      array([1, 2, 4, 3])
+      array([2 0 1])
 
 
    .. py:method:: first(values: groupable_element_type) -> Tuple[groupable, groupable_element_type]
@@ -14790,7 +14755,7 @@ Attributes
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.size()
       >>> g.broadcast(counts > 2)
       array([True False True True True False True True False False])
       >>> g.broadcast(counts == 3)
@@ -14812,31 +14777,30 @@ Attributes
       :rtype: GroupBy
 
 
-   .. py:method:: count() -> Tuple[groupable, pdarray]
+   .. py:method:: count(values: pdarray) -> Tuple[groupable, pdarray]
 
-      Count the number of elements in each group, i.e. the number of times
-      each key appears.  This counts the total number of rows (including NaN values).
+      Count the number of elements in each group.  NaN values will be excluded from the total.
 
-      :param none:
+      :param values: The values to be count by group (excluding NaN values).
+      :type values: pdarray
 
       :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **counts** (*pdarray, int64*) -- The number of times each unique key appears
-
-      .. rubric:: Notes
-
-      This alias is an alias of "size".
+                * **counts** (*pdarray, int64*) -- The number of times each unique key appears (excluding NaN values).
 
       .. rubric:: Examples
 
-      >>> a = ak.randint(1,5,10)
+      >>> a = ak.array([1, 0, -1, 1, 0, -1])
       >>> a
-      array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+      array([1 0 -1 1 0 -1])
+      >>> b = ak.array([1, np.nan, -1, np.nan, np.nan, -1], dtype = "float64")
+      >>> b
+      array([1.00000000000000000 nan -1.00000000000000000 nan nan -1.00000000000000000])
       >>> g = ak.GroupBy(a)
-      >>> keys,counts = g.count()
+      >>> keys,counts = g.count(b)
       >>> keys
-      array([1, 2, 3, 4])
+      array([-1 0 1])
       >>> counts
-      array([1, 2, 4, 3])
+      array([2 0 1])
 
 
    .. py:method:: first(values: groupable_element_type) -> Tuple[groupable, groupable_element_type]

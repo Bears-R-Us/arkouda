@@ -466,7 +466,7 @@
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">))</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">ct</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">ct</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">ct</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Index.factory">

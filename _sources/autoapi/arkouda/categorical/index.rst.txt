@@ -638,7 +638,7 @@ Classes
 
       .. rubric:: Examples
 
-      >>> from arkouda import ak
+      >>> import arkouda as ak
       >>> ak.connect()
       >>> a = ak.array(["a","b","c"])
       >>> a

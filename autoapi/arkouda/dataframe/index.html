@@ -5224,76 +5224,16 @@ If False, the broadcast values are grouped by value.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrameGroupBy.count">
-<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrameGroupBy.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrameGroupBy.count" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the count of each value as the total number of rows, including NaN values.
-This is an alias for size(), and may change in the future.</p>
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colnames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrameGroupBy.count" title="Link to this definition">¶</a></dt>
+<dd><p>Aggregate the operation, with the grouped column(s) values as keys.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>as_series</strong> (<em>bool</em><em>, </em><em>default=None</em>) – Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
-arkouda.series.Series (if as_series = True)</p>
+<dd class="field-odd"><p><strong>colnames</strong> (<em>(</em><em>list of</em><em>) </em><em>str</em><em>, </em><em>default=None</em>) – Column name or list of column names to compute the aggregation over.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a> or <a class="reference internal" href="../series/index.html#arkouda.series.Series" title="arkouda.series.Series">arkouda.series.Series</a></p>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="s2">&quot;B&quot;</span><span class="p">:[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="table-wrapper docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"></th>
-<th class="head"><p>A</p></th>
-<th class="head"><p>B</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>0</p></td>
-<td><p>1</p></td>
-<td><p>3</p></td>
-</tr>
-<tr class="row-odd"><td><p>1</p></td>
-<td><p>2</p></td>
-<td><p>4</p></td>
-</tr>
-<tr class="row-even"><td><p>2</p></td>
-<td><p>2</p></td>
-<td><p>5</p></td>
-</tr>
-<tr class="row-odd"><td><p>3</p></td>
-<td><p>3</p></td>
-<td><p>6</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">as_series</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="table-wrapper docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"></th>
-<th class="head"><p>count</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>0</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-odd"><td><p>1</p></td>
-<td><p>2</p></td>
-</tr>
-<tr class="row-even"><td><p>2</p></td>
-<td><p>1</p></td>
-</tr>
-</tbody>
-</table>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -5668,6 +5608,11 @@ Aggregation operations can be done on the result.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DiffAggregate.argmin">
 <span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DiffAggregate.argmin" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DiffAggregate.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DiffAggregate.count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -6365,6 +6310,7 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DiffAggregate.any"><code class="docutils literal notranslate"><span class="pre">DiffAggregate.any()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DiffAggregate.argmax"><code class="docutils literal notranslate"><span class="pre">DiffAggregate.argmax()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DiffAggregate.argmin"><code class="docutils literal notranslate"><span class="pre">DiffAggregate.argmin()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DiffAggregate.count"><code class="docutils literal notranslate"><span class="pre">DiffAggregate.count()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DiffAggregate.first"><code class="docutils literal notranslate"><span class="pre">DiffAggregate.first()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DiffAggregate.max"><code class="docutils literal notranslate"><span class="pre">DiffAggregate.max()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DiffAggregate.mean"><code class="docutils literal notranslate"><span class="pre">DiffAggregate.mean()</span></code></a></li>

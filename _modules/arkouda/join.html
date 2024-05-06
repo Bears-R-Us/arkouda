@@ -478,9 +478,9 @@
 <span class="sd">    both the number of elements and number of bytes required for the join.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bya</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">ua</span><span class="p">,</span> <span class="n">asize</span> <span class="o">=</span> <span class="n">bya</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">ua</span><span class="p">,</span> <span class="n">asize</span> <span class="o">=</span> <span class="n">bya</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
     <span class="n">byb</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-    <span class="n">ub</span><span class="p">,</span> <span class="n">bsize</span> <span class="o">=</span> <span class="n">byb</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">ub</span><span class="p">,</span> <span class="n">bsize</span> <span class="o">=</span> <span class="n">byb</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
     <span class="n">afact</span> <span class="o">=</span> <span class="n">asize</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">ua</span><span class="p">,</span> <span class="n">ub</span><span class="p">)]</span>
     <span class="n">bfact</span> <span class="o">=</span> <span class="n">bsize</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">ub</span><span class="p">,</span> <span class="n">ua</span><span class="p">)]</span>
     <span class="n">nelem</span> <span class="o">=</span> <span class="p">(</span><span class="n">afact</span> <span class="o">*</span> <span class="n">bfact</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>

@@ -407,7 +407,7 @@
         <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">if</span> <span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span>
-            <span class="n">pergroupval</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">count</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">pergroupval</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">pergroupval</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">reduction</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">data</span><span class="p">[</span><span class="n">resname</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">pergroupval</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>

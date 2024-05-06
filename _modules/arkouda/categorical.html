@@ -610,7 +610,7 @@
         <span class="p">)</span>
         <span class="c1"># Group combined categories to find matches</span>
         <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">bothcats</span><span class="p">)</span>
-        <span class="n">ct</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">count</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">ct</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;User-specified categories must be unique&quot;</span><span class="p">)</span>
         <span class="c1"># Matches have two hits in concatenated array</span>
@@ -707,7 +707,7 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; from arkouda import ak</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; ak.connect()</span>
 <span class="sd">        &gt;&gt;&gt; a = ak.array([&quot;a&quot;,&quot;b&quot;,&quot;c&quot;])</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
