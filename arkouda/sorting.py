@@ -235,5 +235,8 @@ def sort(
         raise ValueError(f"ak.sort supports int64, uint64, or float64, not {pda.dtype}")
     if pda.size == 0:
         return zeros(0, dtype=pda.dtype)
-    repMsg = generic_msg(cmd=f"sort{pda.ndim}D", args={"alg": algorithm.name, "array": pda, "axis": axis})
+    repMsg = generic_msg(
+        cmd=f"sort{pda.ndim}D",
+        args={"alg": algorithm.name, "array": pda, "axis": axis}
+    )
     return create_pdarray(cast(str, repMsg))
