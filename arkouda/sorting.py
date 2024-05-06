@@ -186,7 +186,11 @@ def coargsort(
 
 
 @typechecked
-def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis=-1) -> pdarray:
+def sort(
+    pda: pdarray,
+    algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+    axis=-1
+) -> pdarray:
     """
     Return a sorted copy of the array. Only sorts numeric arrays;
     for Strings, use argsort.

@@ -1,5 +1,5 @@
 {
-    "max_array_dims": 1,
+    "max_array_dims": 3,
     "supported_scalar_types": {
         "uint8": true,
         "uint16": false,
