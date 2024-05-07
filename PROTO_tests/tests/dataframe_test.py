@@ -1519,7 +1519,6 @@ class TestDataFrame:
             _iloc11 = _df1.iloc[2, 1]
             iloc11 = df1.iloc[2, 1]
             assert isinstance(_iloc11, np.float64)
-            print("iloc11 type: ", type(iloc11))
             assert isinstance(iloc11, np.float64)
             assert _iloc11 == iloc11
 

@@ -1901,7 +1901,6 @@ class DataFrameTest(ArkoudaTest):
             _iloc11 = _df1.iloc[2, 1]
             iloc11 = df1.iloc[2, 1]
             self.assertIsInstance(_iloc11, np.float64)
-            print("iloc11 type: ", type(iloc11))
             self.assertIsInstance(iloc11, np.float64)
             self.assertEqual(_iloc11, iloc11)
 
