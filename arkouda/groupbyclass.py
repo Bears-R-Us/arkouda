@@ -1603,7 +1603,7 @@ class GroupBy:
             raise ValueError("Cannot take a larger sample than population when replace is False")
 
         if (num_samples <= 0).any():
-            raise ValueError("Cannot take a larger sample than population when replace is False")
+            raise ValueError("Cannot take a negative number of samples")
 
         has_weights = weights is not None
         if has_weights:
