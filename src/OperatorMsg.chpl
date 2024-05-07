@@ -1843,10 +1843,7 @@ module OperatorMsg
                 var l = toSymEntry(left, bool, nd);
                 var val = value.getBoolValue();
                 select op {
-                    when "+=" {
-                      ref la = l.a;
-                      [li in la] la = if (li == true || val == true) then true else false;
-                    }
+                    when "+=" {l.a |= val;}
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
