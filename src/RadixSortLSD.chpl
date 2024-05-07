@@ -67,11 +67,12 @@ module RadixSortLSD
     private proc radixSortLSDCore(ref a:[?aD] ?t, nBits, negs, comparator) throws {
         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "type = %s nBits = %?".doFormat(t:string,nBits));
-        var temp = makeDistArray(a);
-        
+        var temp = makeDistArray((...aD.shape), a.eltType);
+        temp = a;
+
         // create a global count array to scan
         var globalCounts = makeDistArray((numLocales*numTasks*numBuckets), int);
-        
+
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
             const last = (rshift + bitsPerDigit) >= nBits;
