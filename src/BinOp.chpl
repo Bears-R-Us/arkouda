@@ -524,7 +524,7 @@ module BinOp
             e.a = l.a:int >= val:int;
           }
           when "+" {
-            e.a = (l.a:int + val:int):bool;
+            e.a = l.a | val;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
@@ -918,7 +918,7 @@ module BinOp
             e.a = val:int >= r.a:int;
           }
           when "+" {
-            e.a = (val:int + r.a:int):bool;
+            e.a = val | r.a;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
