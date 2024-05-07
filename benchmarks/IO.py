@@ -93,7 +93,7 @@ def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet, com
                 readtimes = []
                 for i in range(trials):
                     start = time.time()
-                    a = ak.read_parquet(path + comp + "*")
+                    a = ak.read_parquet(path + comp + "*").popitem()[1]
                     end = time.time()
                     readtimes.append(end - start)
                 times[comp] = sum(readtimes) / trials
@@ -102,7 +102,7 @@ def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet, com
         readtimes = []
         for i in range(trials):
             start = time.time()
-            a = ak.read_hdf(path + "*")
+            a = ak.read_hdf(path + "*").popitem()[1]
             end = time.time()
             readtimes.append(end - start)
         times["HDF5"] = sum(readtimes) / trials
@@ -142,6 +142,7 @@ def check_correctness(dtype, path, seed, parquet, multifile=False):
         b.to_hdf(f"{path}{2}") if not parquet else b.to_parquet(f"{path}{2}")
 
     c = ak.read_hdf(path + "*") if not parquet else ak.read_parquet(path + "*")
+    c = c.popitem()[1]
 
     remove_files(path)
     if not multifile:
