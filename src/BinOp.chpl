@@ -110,7 +110,7 @@ module BinOp
             e.a = l.a:int >= r.a:int;
           }
           when "+" {
-            e.a = (l.a:int + r.a:int):bool;
+            e.a = l.a | r.a;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);

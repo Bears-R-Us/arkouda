@@ -1346,11 +1346,7 @@ module OperatorMsg
                     when "|=" {l.a |= r.a;}
                     when "&=" {l.a &= r.a;}
                     when "^=" {l.a ^= r.a;}
-                    when "+=" {
-                      ref la = l.a;
-                      ref ra = r.a;
-                      [(li,ri) in zip(la,ra)] li = if (li == true || ri == true) then true else false;
-                    }
+                    when "+=" {l.a |= r.a;}
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
