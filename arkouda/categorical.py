@@ -31,6 +31,7 @@ from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort
+from arkouda.sorting import sort as pda_sort
 from arkouda.strings import Strings
 
 __all__ = ["Categorical"]
@@ -813,7 +814,7 @@ class Categorical:
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
         newvals = inverse[self.codes]
-        return Categorical.from_codes(newvals, self.categories[idxperm])
+        return Categorical.from_codes(pda_sort(newvals), self.categories[idxperm])
 
     @typechecked
     def concatenate(self, others: Sequence[Categorical], ordered: bool = True) -> Categorical:
